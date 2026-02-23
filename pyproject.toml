@@ -3,22 +3,20 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "juniper"
-version = "1.0.0"
+name = "juniper-ml"
+version = "0.1.0"
 description = "Juniper - Cascade Correlation Neural Network Research Platform"
 readme = "README.md"
 license = "MIT"
 authors = [{ name = "Paul Calnon" }]
-requires-python = ">=3.11"
-keywords = ["juniper", "cascade-correlation", "neural-network", "machine-learning"]
+requires-python = ">=3.12"
+keywords = ["juniper", "cascade-correlation", "neural-network", "machine-learning", "artificial-intelligence", "research", "dynamic-neural-network"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
