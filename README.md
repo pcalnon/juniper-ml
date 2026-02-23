@@ -1,6 +1,6 @@
 # juniper
 
-Meta-package for the Juniper Cascade Correlation Neural Network Research Platform.
+Meta-package for the Juniper-ML Project, a Research Platform for investigating dynamic neural networks and novel learning algorithms.  Prototype implementation uses Cascade Correlation neural networks.
 
 ## Installation
 
