@@ -1,2 +1,61 @@
+# Build artifacts
 dist/
+build/
 *.egg-info/
+*.egg
+.eggs/
+
+# Compiled Python bytecode
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Package files
+*.whl
+*.tar.gz
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+results.xml
+
+# Type checking
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Log files
+*.log
+
+# Temp files
+*.tmp
+*.temp
+.~lock.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+.trunk/
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Vim swap files
+*.sw[a-z]
+
+# Python profiling
+*.prof
+
+# Claude Code session files
+__RESUME_CLAUDE_SESSION__
