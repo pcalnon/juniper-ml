@@ -111,8 +111,16 @@ claude mcp add -s project serena -- \
 
 #### 2b. Context7
 
-```bash
-claude mcp add -s project context7 -- npx -y @upstash/context7-mcp
+> **Note**: The stdio approach (`npx -y @upstash/context7-mcp`) requires `npm`/`npx`
+> which are not installed on this system. Switched to the hosted HTTP endpoint instead.
+
+The `.mcp.json` entry uses HTTP transport directly:
+
+```json
+"context7": {
+  "type": "http",
+  "url": "https://mcp.context7.com/mcp"
+}
 ```
 
 #### 2c. Kaggle
