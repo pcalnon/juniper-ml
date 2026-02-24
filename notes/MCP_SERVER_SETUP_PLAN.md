@@ -115,14 +115,37 @@ claude mcp add -s project serena -- \
 claude mcp add -s project context7 -- npx -y @upstash/context7-mcp
 ```
 
-#### 2c. Kaggle (requires `kaggle-mcp` installed)
+#### 2c. Kaggle
+
+> **Note**: The `54yyyu/kaggle-mcp` package has broken packaging (source files not included
+> in the built wheel) and API incompatibility with current MCP SDK (`FastMCP.__init__()` signature
+> change). The `arrismo/kaggle-mcp` implementation works correctly and is used instead.
 
 ```bash
-pip install git+https://github.com/54yyyu/kaggle-mcp.git
-claude mcp add -s project kaggle -- kaggle-mcp
+# Clone to a stable location
+git clone --depth 1 https://github.com/arrismo/kaggle-mcp.git \
+  ~/.local/share/mcp-servers/kaggle-mcp
+
+# Ensure dependencies are installed
+pip install mcp-server python-dotenv kaggle
+```
+
+The `.mcp.json` entry invokes the server script directly:
+
+```json
+"kaggle": {
+  "type": "stdio",
+  "command": "python",
+  "args": [
+    "/home/pcalnon/.local/share/mcp-servers/kaggle-mcp/src/server.py"
+  ],
+  "env": {}
+}
 ```
 
 **Prerequisite**: Kaggle API credentials must exist at `~/.kaggle/kaggle.json`.
+
+**Available tools**: `search_kaggle_datasets`, `download_kaggle_dataset`.
 
 #### 2d. arXiv (optional)
 
@@ -259,7 +282,7 @@ Before execution, the following decisions are needed:
 |------|------------|
 | HuggingFace token in `.mcp.json` committed to git | Ensure `.mcp.json` is in `.gitignore` |
 | Kaggle credentials missing | Check for `~/.kaggle/kaggle.json` before adding |
-| `kaggle-mcp` package not stable (community project) | Can be removed easily via `claude mcp remove kaggle` |
+| `kaggle-mcp` community packages have broken packaging | Using `arrismo/kaggle-mcp` cloned to `~/.local/share/mcp-servers/kaggle-mcp/`, invoked directly via `python src/server.py` |
 | Too many MCP servers slow down Claude Code startup | Start with Tier 1+2, add Tier 3 only if needed |
 | `.claude/settings.local.json` is local-only, not portable | This is by design — local settings shouldn't be committed |
 
@@ -269,7 +292,8 @@ Before execution, the following decisions are needed:
 
 - Serena docs: https://oraios.github.io/serena/02-usage/030_clients.html
 - HuggingFace MCP: https://huggingface.co/docs/hub/en/hf-mcp-server
-- Kaggle MCP: https://github.com/54yyyu/kaggle-mcp
+- Kaggle MCP (used): https://github.com/arrismo/kaggle-mcp
+- Kaggle MCP (broken packaging, not used): https://github.com/54yyyu/kaggle-mcp
 - DeepWiki MCP: https://mcp.deepwiki.com/
 - Context7 MCP: https://github.com/upstash/context7
 - JuniperCanopy reference: `/home/pcalnon/Development/python/Juniper/JuniperCanopy/juniper_canopy/.mcp.json`
