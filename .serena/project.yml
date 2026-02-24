@@ -1,0 +1,41 @@
+# the name by which the project can be referenced within Serena
+project_name: "juniper_ml"
+
+# list of languages for which language servers are started
+languages:
+- python
+
+# the encoding used by text files in the project
+encoding: "utf-8"
+
+# whether to use project's .gitignore files to ignore files
+ignore_all_files_in_gitignore: true
+
+# list of additional paths to ignore
+ignored_paths:
+- "dist/"
+- "*.egg-info/"
+
+# whether the project is in read-only mode
+read_only: false
+
+# list of tool names to exclude
+excluded_tools: []
+
+# list of tools to include that would otherwise be disabled
+included_optional_tools: []
+
+# fixed set of tools to use as the base tool set
+fixed_tools: []
+
+# list of mode names that are always to be included in the set of active modes
+base_modes:
+
+# list of mode names that are to be activated by default
+default_modes:
+
+# initial prompt for the project
+initial_prompt: ""
+
+# override of the corresponding setting in serena_config.yml
+symbol_info_budget:

@@ -59,3 +59,9 @@ Thumbs.db
 
 # Claude Code session files
 __RESUME_CLAUDE_SESSION__
+
+# Claude Code local settings (contains permissions, not portable)
+.claude/settings.local.json
+
+# MCP server config (contains API tokens)
+.mcp.json
