@@ -1,4 +1,4 @@
-# juniper
+# juniper-ml
 
 Meta-package for the Juniper-ML Project, a Research Platform for investigating dynamic neural networks and novel learning algorithms.  Prototype implementation uses Cascade Correlation neural networks.
 
@@ -7,15 +7,26 @@ Meta-package for the Juniper-ML Project, a Research Platform for investigating d
 Install all client libraries and the distributed worker:
 
 ```bash
-pip install juniper[all]
+pip install juniper-ml[all]
 ```
 
 Or install selectively:
 
 ```bash
-pip install juniper[clients]  # All client libraries
-pip install juniper[worker]   # Distributed training worker
+pip install juniper-ml[clients]  # All client libraries
+pip install juniper-ml[worker]   # Distributed training worker
 ```
+
+## Ecosystem Compatibility
+
+This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml) ecosystem.
+Verified compatible service versions:
+
+| juniper-data | juniper-cascor | juniper-canopy | data-client | cascor-client | cascor-worker |
+|---|---|---|---|---|---|
+| 0.4.x | 0.3.x | 0.2.x | >=0.3.1 | >=0.1.0 | >=0.1.0 |
+
+For full-stack Docker deployment and integration tests, see [juniper-deploy](https://github.com/pcalnon/juniper-deploy).
 
 ## Packages
 
