@@ -1,3 +1,24 @@
+---
+#####################################################################################################################################################################################################
+# Project:       Juniper
+# Application:   juniper-ml
+# File Name:     publish.yml
+# Author:        Paul Calnon
+# Version:       0.2.0
+#
+# Date Created:  2026-02-23
+# Last Modified: 2026-02-25
+#
+# License:       MIT License
+# Copyright:     Copyright (c) 2024-2026 Paul Calnon
+#
+# Description:
+#    GitHub Actions publish pipeline for juniper-ml meta-package.
+#    Triggered by GitHub release. Publishes TestPyPI first (with install
+#    verification), then PyPI. Uses OIDC trusted publishing (no API tokens).
+#
+#####################################################################################################################################################################################################
+
 name: Publish to PyPI
 
 on:
@@ -8,10 +29,12 @@ permissions:
   id-token: write
 
 jobs:
-  testpypi:
-    name: Publish to TestPyPI
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Build: Validate the package before publishing
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  build:
+    name: Build and Validate
     runs-on: ubuntu-latest
-    environment: testpypi
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +51,34 @@ jobs:
       - name: Check package
         run: twine check dist/*
 
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # TestPyPI: Publish and verify install
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -38,8 +89,12 @@ jobs:
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
           sleep 30
-          pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ juniper==${VERSION}
+          pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ juniper-ml==${VERSION}
+          python -c "import importlib.metadata; print('juniper-ml', importlib.metadata.version('juniper-ml'))"
 
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # PyPI: Publish after TestPyPI verification
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
   pypi:
     name: Publish to PyPI
     needs: testpypi
@@ -52,14 +107,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install build tools
-        run: pip install build twine
-
-      - name: Build package
-        run: python -m build
-
-      - name: Check package
-        run: twine check dist/*
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

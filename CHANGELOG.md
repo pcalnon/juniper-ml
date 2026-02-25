@@ -28,5 +28,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README with installation instructions and ecosystem overview
 - MIT License
 
-[Unreleased]: https://github.com/pcalnon/juniper/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/pcalnon/juniper/releases/tag/v0.1.0
+[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/pcalnon/juniper-ml/releases/tag/v0.1.0

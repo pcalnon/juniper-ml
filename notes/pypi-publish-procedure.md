@@ -127,9 +127,9 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pcalnon/juniper"
-Repository = "https://github.com/pcalnon/juniper"
-Issues = "https://github.com/pcalnon/juniper/issues"
+Homepage = "https://github.com/pcalnon/juniper-ml"
+Repository = "https://github.com/pcalnon/juniper-ml"
+Issues = "https://github.com/pcalnon/juniper-ml/issues"
 ```
 
 ### Key metadata decisions
