@@ -58,10 +58,20 @@ jobs:
       - name: Verify installable (editable)
         run: pip install -e .
 
-      - name: Verify optional extras installable
+      - name: Verify extras metadata is declared
+        # Sub-packages (juniper-data-client etc.) are not yet on PyPI, so
+        # extras can't be installed. Verify the extras are declared in metadata.
         run: |
-          pip install -e ".[clients]"
-          pip install -e ".[worker]"
+          python -c "
+          import importlib.metadata
+          meta = importlib.metadata.metadata('juniper-ml')
+          extras = importlib.metadata.requires('juniper-ml') or []
+          print('Declared extras:', meta.get_all('Provides-Extra'))
+          print('Requirements:', extras)
+          assert 'clients' in (meta.get_all('Provides-Extra') or []), 'clients extra missing'
+          assert 'worker' in (meta.get_all('Provides-Extra') or []), 'worker extra missing'
+          print('All extras verified.')
+          "
 
       - name: Upload dist
         uses: actions/upload-artifact@v4
