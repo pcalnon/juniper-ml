@@ -34,8 +34,11 @@ worker = [
     "juniper-cascor-worker>=0.1.0",
 ]
 all = [
-    "juniper[clients,worker]",
+    "juniper-ml[clients,worker]",
 ]
+
+[tool.setuptools]
+packages = []
 
 [project.urls]
 Homepage = "https://github.com/pcalnon/juniper-ml"
