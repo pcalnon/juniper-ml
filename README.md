@@ -50,7 +50,7 @@ Juniper is an AI/ML research platform implementing the Cascade Correlation Neura
 
 - **JuniperCascor** - Cascade Correlation neural network training service
 - **JuniperData** - Dataset generation and management service
-- **JuniperCanopy** - Real-time monitoring dashboard
+- **juniper-canopy** - Real-time monitoring dashboard
 
 ## License
 
