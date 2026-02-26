@@ -4,7 +4,7 @@
 **Created**: 2026-02-25
 **Author**: Paul Calnon / Claude Code
 **Status**: Planning — Implementation Roadmap (No Code Changes)
-**Reference**: [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md) — Sections 2.4, 3.5
+**Reference**: [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md) — Sections 2.4, 3.5, 4.3, 5
 
 ---
 
@@ -98,6 +98,33 @@
   - [7.9 Verification Procedure](#79-verification-procedure)
   - [7.10 Security Considerations](#710-security-considerations)
   - [7.11 Performance Considerations](#711-performance-considerations)
+- [Service Discovery and Health Checking — Overview](#service-discovery-and-health-checking--overview)
+- [Phase 8: Enhanced Health Checks with Dependency Status (Immediate)](#phase-8-enhanced-health-checks-with-dependency-status-immediate)
+  - [8.1 Objectives](#81-objectives)
+  - [8.2 Prerequisites](#82-prerequisites)
+  - [8.3 Current Health Endpoint Analysis](#83-current-health-endpoint-analysis)
+  - [8.4 Enhanced Readiness Response Schema](#84-enhanced-readiness-response-schema)
+  - [8.5 Per-Service Implementation Design](#85-per-service-implementation-design)
+  - [8.6 Response Envelope Standardization](#86-response-envelope-standardization)
+  - [8.7 Startup Health Verification for Canopy](#87-startup-health-verification-for-canopy)
+  - [8.8 Implementation Tasks](#88-implementation-tasks)
+  - [8.9 Verification Procedure](#89-verification-procedure)
+  - [8.10 Security Considerations](#810-security-considerations)
+  - [8.11 Performance Considerations](#811-performance-considerations)
+- [Configuration Management — Overview](#configuration-management--overview)
+- [Phase 9: Configuration Standardization — Pydantic BaseSettings (Near-Term)](#phase-9-configuration-standardization--pydantic-basesettings-near-term)
+  - [9.1 Objectives](#91-objectives)
+  - [9.2 Prerequisites](#92-prerequisites)
+  - [9.3 Current Configuration Divergence](#93-current-configuration-divergence)
+  - [9.4 Target Architecture](#94-target-architecture)
+  - [9.5 JuniperCanopy Migration Design](#95-junipercanopy-migration-design)
+  - [9.6 Environment Variable Prefix Standardization](#96-environment-variable-prefix-standardization)
+  - [9.7 Environment Profiles](#97-environment-profiles)
+  - [9.8 Backward Compatibility Strategy](#98-backward-compatibility-strategy)
+  - [9.9 Implementation Tasks](#99-implementation-tasks)
+  - [9.10 Verification Procedure](#910-verification-procedure)
+  - [9.11 Security Considerations](#911-security-considerations)
+  - [9.12 Performance Considerations](#912-performance-considerations)
 - [Cross-Phase Concerns](#cross-phase-concerns)
   - [Health Check Standardization](#health-check-standardization)
   - [Logging and Log Aggregation](#logging-and-log-aggregation)
@@ -126,6 +153,18 @@ Phase 4 (Intermediate): Kubernetes via k3s when multi-machine or production scal
 Phase 5 (Immediate):    BackendProtocol interface — unify DemoMode and CascorServiceAdapter
 Phase 6 (Near-term):    Client library fakes — FakeCascorClient and FakeDataClient for testing/demo
 Phase 7 (With Docker):  Docker Compose demo profile — real CasCor with auto-start configuration
+```
+
+**Service Discovery and Health Checking** (Section 4.3):
+
+```bash
+Phase 8 (Immediate):    Enhanced /v1/health/ready with dependency status and response standardization
+```
+
+**Configuration Management** (Section 5):
+
+```bash
+Phase 9 (Near-term):    Migrate JuniperCanopy to Pydantic BaseSettings, standardize prefixes and .env
 ```
 
 ### Current State Reference
@@ -3709,6 +3748,933 @@ docker compose --profile full down
 
 ---
 
+## Service Discovery and Health Checking — Overview
+
+This section provides the implementation plan for the health check enhancements recommended in [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md), Section 4.3.
+
+**Service discovery** continues with the current direct URL approach (`JUNIPER_DATA_URL`, `CASCOR_SERVICE_URL` environment variables). Docker Compose DNS and Kubernetes DNS handle resolution automatically in containerized environments. No service registry infrastructure is needed at this scale (Section 4.2).
+
+The health check enhancement requires a single phase:
+
+```bash
+Phase 8 (Immediate):  Enhance /v1/health/ready to include dependency health status across all services
+```
+
+### Current Health Check State
+
+| Service           | `/v1/health`                  | `/v1/health/live`          | `/v1/health/ready`                                          | Response Format    |
+|-------------------|-------------------------------|----------------------------|-------------------------------------------------------------|--------------------|
+| **JuniperData**   | `{"status": "ok", "version"}` | `{"status": "alive"}`      | `{"status": "ready", "version"}`                            | Plain dict         |
+| **JuniperCascor** | Envelope: `data.status: "ok"` | Envelope: `data.status: "alive"}` | Envelope: `data.status: "ready", data.network_loaded: bool` | Pydantic envelope  |
+| **JuniperCanopy** | `{"status": "healthy", ...}`  | `{"status": "alive"}`      | `{"status": "ready", "version", "juniper_data_available"}`  | Plain dict         |
+
+### Gap Analysis
+
+| Gap                                          | Impact                                                                                  |
+|----------------------------------------------|-----------------------------------------------------------------------------------------|
+| Response format inconsistency                | Consumers must handle both plain dicts and Pydantic envelopes                           |
+| No dependency health in readiness            | Orchestrators cannot detect cascading failures (e.g., CasCor healthy but Data down)     |
+| JuniperData reports ready unconditionally    | No storage availability check — may report ready while storage is unavailable           |
+| JuniperCanopy checks Data only at startup    | Health endpoint reports stale status if Data becomes unavailable mid-session             |
+| Canopy has 5 health routes (with aliases)    | Maintenance burden; non-standard `/health` and `/api/health` routes                     |
+
+---
+
+## Phase 8: Enhanced Health Checks with Dependency Status (Immediate)
+
+### 8.1 Objectives
+
+- Enhance `/v1/health/ready` on all three services to report dependency health status
+- Standardize health response schemas across all services using a common Pydantic model
+- Add startup health verification to JuniperCanopy: probe CasCor health during lifespan startup, log and fall back to demo mode if unreachable (addresses CAN-HIGH-001)
+- Consolidate JuniperCanopy's 5 health routes to the standard 3 (`/v1/health`, `/v1/health/live`, `/v1/health/ready`)
+- Deprecate JuniperCanopy's non-standard `/health` and `/api/health` routes
+- Ensure health checks are fast (< 500ms) and do not block the main event loop
+
+### 8.2 Prerequisites
+
+| Requirement                     | Version   | Verification                                               |
+|---------------------------------|-----------|------------------------------------------------------------|
+| Python                          | >= 3.12   | `python --version`                                         |
+| pydantic                        | >= 2.0    | `pip show pydantic` (already a dependency in all services) |
+| All services running and testable | —       | `make up && make health` (Phase 1)                         |
+| Existing test suites green      | —         | All service tests passing                                  |
+
+### 8.3 Current Health Endpoint Analysis
+
+**JuniperData** (`juniper_data/api/routes/health.py`):
+
+- Returns plain dicts with `status` and `version` fields
+- No dependency checks — always returns ready
+- No Pydantic response models
+- Should check: storage directory availability
+
+**JuniperCascor** (`src/api/routes/health.py`):
+
+- Uses `ResponseEnvelope` Pydantic model (`status`, `data`, `meta`)
+- Readiness checks `app.state.lifecycle.has_network()` to report `network_loaded`
+- Should check: JuniperData service reachability, training state
+
+**JuniperCanopy** (`src/main.py` — inline routes):
+
+- Returns plain dicts with varying schemas per endpoint
+- 5 different health routes (3 standard + 2 aliases)
+- Checks `juniper_data_available` flag (set at startup, not refreshed)
+- Should check: CasCor service reachability (live, not just startup), active mode
+
+### 8.4 Enhanced Readiness Response Schema
+
+All services adopt a common readiness response structure:
+
+```python
+from pydantic import BaseModel, Field
+from typing import Dict, Literal, Optional
+from datetime import datetime
+
+
+class DependencyStatus(BaseModel):
+    """Health status of a single dependency."""
+    name: str
+    status: Literal["healthy", "unhealthy", "degraded", "not_configured"]
+    latency_ms: Optional[float] = None  # Round-trip probe time
+    message: Optional[str] = None       # Human-readable detail
+
+
+class ReadinessResponse(BaseModel):
+    """Standard /v1/health/ready response for all Juniper services."""
+    status: Literal["ready", "degraded", "not_ready"]
+    version: str
+    service: str                        # e.g., "juniper-data", "juniper-cascor", "juniper-canopy"
+    timestamp: float = Field(default_factory=lambda: datetime.now().timestamp())
+    dependencies: Dict[str, DependencyStatus] = {}
+    details: Dict[str, object] = {}     # Service-specific fields (e.g., network_loaded, mode)
+```
+
+**Per-service readiness responses**:
+
+**JuniperData**:
+
+```json
+{
+  "status": "ready",
+  "version": "0.4.0",
+  "service": "juniper-data",
+  "timestamp": 1740000000.123,
+  "dependencies": {
+    "storage": {
+      "name": "Dataset Storage",
+      "status": "healthy",
+      "message": "/app/data/datasets (42 datasets, 128 MB)"
+    }
+  },
+  "details": {
+    "generators_loaded": 4
+  }
+}
+```
+
+**JuniperCascor**:
+
+```json
+{
+  "status": "ready",
+  "version": "0.4.0",
+  "service": "juniper-cascor",
+  "timestamp": 1740000000.123,
+  "dependencies": {
+    "juniper_data": {
+      "name": "JuniperData Service",
+      "status": "healthy",
+      "latency_ms": 2.3,
+      "message": "http://juniper-data:8100"
+    }
+  },
+  "details": {
+    "network_loaded": true,
+    "training_state": "idle"
+  }
+}
+```
+
+**JuniperCanopy**:
+
+```json
+{
+  "status": "ready",
+  "version": "0.15.1",
+  "service": "juniper-canopy",
+  "timestamp": 1740000000.123,
+  "dependencies": {
+    "juniper_data": {
+      "name": "JuniperData Service",
+      "status": "healthy",
+      "latency_ms": 1.8,
+      "message": "http://juniper-data:8100"
+    },
+    "juniper_cascor": {
+      "name": "JuniperCascor Service",
+      "status": "healthy",
+      "latency_ms": 3.1,
+      "message": "http://juniper-cascor:8200"
+    }
+  },
+  "details": {
+    "mode": "service",
+    "active_connections": 2,
+    "training_active": true
+  }
+```
+
+**Degraded status logic**: A service reports `"degraded"` (not `"not_ready"`) when a non-critical dependency is unhealthy. For example, Canopy is `"degraded"` if CasCor is down but it can fall back to demo mode. A service reports `"not_ready"` only when it genuinely cannot serve requests.
+
+### 8.5 Per-Service Implementation Design
+
+#### JuniperData — Storage Check
+
+Add a storage availability check to the readiness endpoint:
+
+```python
+# In juniper_data/api/routes/health.py
+
+import os
+from pathlib import Path
+from api.settings import get_settings
+
+@router.get("/health/ready", response_model=ReadinessResponse)
+async def readiness():
+    settings = get_settings()
+    storage_path = Path(settings.storage_path)
+
+    if storage_path.is_dir():
+        dataset_count = len(list(storage_path.glob("*.npz")))
+        storage_dep = DependencyStatus(
+            name="Dataset Storage",
+            status="healthy",
+            message=f"{storage_path} ({dataset_count} datasets)"
+        )
+    else:
+        storage_dep = DependencyStatus(
+            name="Dataset Storage",
+            status="unhealthy",
+            message=f"{storage_path} not found or not a directory"
+        )
+
+    overall = "ready" if storage_dep.status == "healthy" else "degraded"
+    return ReadinessResponse(
+        status=overall,
+        version=__version__,
+        service="juniper-data",
+        dependencies={"storage": storage_dep},
+    )
+```
+
+#### JuniperCascor — Data Service Check
+
+Add an HTTP probe to JuniperData's health endpoint:
+
+```python
+# In src/api/routes/health.py
+
+import time
+import urllib.request
+
+@router.get("/health/ready")
+async def readiness(request: Request):
+    lifecycle = getattr(request.app.state, "lifecycle", None)
+    network_loaded = lifecycle.has_network() if lifecycle else False
+    training_state = lifecycle.get_training_state() if lifecycle else "unknown"
+
+    # Probe JuniperData
+    data_url = os.getenv("JUNIPER_DATA_URL", "http://localhost:8100")
+    data_dep = _probe_dependency("JuniperData Service", f"{data_url}/v1/health/live")
+
+    overall = "ready"
+    if data_dep.status == "unhealthy":
+        overall = "degraded"
+
+    return ResponseEnvelope(data=ReadinessResponse(
+        status=overall,
+        version=__version__,
+        service="juniper-cascor",
+        dependencies={"juniper_data": data_dep},
+        details={"network_loaded": network_loaded, "training_state": training_state},
+    ))
+```
+
+#### JuniperCanopy — Full Dependency Check
+
+Canopy probes both upstream services:
+
+```python
+# Enhanced readiness in main.py (or extracted to a health module)
+
+@app.get("/v1/health/ready")
+async def readiness():
+    data_url = os.getenv("JUNIPER_DATA_URL", "http://localhost:8100")
+    cascor_url = os.getenv("CASCOR_SERVICE_URL")
+
+    data_dep = _probe_dependency("JuniperData Service", f"{data_url}/v1/health/live")
+
+    if cascor_url:
+        cascor_dep = _probe_dependency("JuniperCascor Service", f"{cascor_url}/v1/health/live")
+    else:
+        cascor_dep = DependencyStatus(
+            name="JuniperCascor Service",
+            status="not_configured",
+            message="CASCOR_SERVICE_URL not set (demo mode)"
+        )
+
+    overall = "ready"
+    if data_dep.status == "unhealthy" or cascor_dep.status == "unhealthy":
+        overall = "degraded"
+
+    return ReadinessResponse(
+        status=overall,
+        version=__version__,
+        service="juniper-canopy",
+        dependencies={"juniper_data": data_dep, "juniper_cascor": cascor_dep},
+        details={
+            "mode": backend.backend_type,  # From Phase 5 BackendProtocol
+            "active_connections": websocket_manager.active_connections,
+            "training_active": backend.is_training_active(),
+        },
+    )
+```
+
+### 8.6 Response Envelope Standardization
+
+Currently, only JuniperCascor uses a `ResponseEnvelope` wrapper. Two options:
+
+**Option A (Recommended): Adopt envelope in all services**
+
+All services wrap health responses in `ResponseEnvelope`:
+
+```json
+{
+  "status": "success",
+  "data": { /* ReadinessResponse */ },
+  "meta": { "timestamp": 1740000000.123, "version": "0.4.0" }
+}
+```
+
+**Pros**: Consistent parsing across all services. Consumers always expect the same structure.
+
+**Option B: Drop envelope, return flat responses**
+
+All services return `ReadinessResponse` directly (JuniperCascor removes its envelope for health routes).
+
+**Pros**: Simpler. Health endpoints are often consumed by orchestrators (Docker, k8s) that expect flat JSON with a `status` field at the top level.
+
+**Recommendation**: **Option B for health endpoints only**. Orchestrator health checks (Docker `healthcheck`, Kubernetes `httpGet`) work best with a flat `{"status": "ready"}` at the top level. Non-health API endpoints in JuniperCascor continue using the envelope.
+
+This means JuniperCascor's health routes would return `ReadinessResponse` directly (breaking change for health endpoints only, not for API endpoints). The `wait_for_services.sh` script and Docker `healthcheck` commands parse `status` at the top level — this change makes them consistent.
+
+### 8.7 Startup Health Verification for Canopy
+
+When `CASCOR_SERVICE_URL` is set, Canopy should probe the CasCor health endpoint during FastAPI lifespan startup. This addresses the CAN-HIGH-001 roadmap item.
+
+```python
+# In main.py lifespan or startup event
+
+async def verify_upstream_services():
+    """Probe upstream services at startup. Log and fall back gracefully."""
+    data_url = os.getenv("JUNIPER_DATA_URL", "http://localhost:8100")
+    cascor_url = os.getenv("CASCOR_SERVICE_URL")
+
+    # Check JuniperData
+    data_status = _probe_dependency("JuniperData", f"{data_url}/v1/health/live")
+    if data_status.status == "healthy":
+        system_logger.info(f"JuniperData reachable at {data_url} ({data_status.latency_ms:.1f}ms)")
+    else:
+        system_logger.warning(f"JuniperData unreachable at {data_url}: {data_status.message}")
+
+    # Check JuniperCascor (if service mode)
+    if cascor_url:
+        cascor_status = _probe_dependency("JuniperCascor", f"{cascor_url}/v1/health/live")
+        if cascor_status.status == "healthy":
+            system_logger.info(f"JuniperCascor reachable at {cascor_url} ({cascor_status.latency_ms:.1f}ms)")
+        else:
+            system_logger.warning(
+                f"JuniperCascor unreachable at {cascor_url} — falling back to demo mode"
+            )
+            # Switch backend to DemoBackend (using Phase 5 factory)
+            global backend
+            backend = DemoBackend(get_demo_mode(update_interval=1.0))
+```
+
+**Shared probe utility** (used by both startup verification and readiness endpoints):
+
+```python
+import time
+import urllib.request
+
+def _probe_dependency(name: str, url: str, timeout: float = 5.0) -> DependencyStatus:
+    """Probe a dependency health endpoint. Returns status with latency."""
+    start = time.monotonic()
+    try:
+        urllib.request.urlopen(url, timeout=timeout)
+        latency = (time.monotonic() - start) * 1000
+        return DependencyStatus(name=name, status="healthy", latency_ms=round(latency, 1), message=url)
+    except Exception as e:
+        latency = (time.monotonic() - start) * 1000
+        return DependencyStatus(
+            name=name, status="unhealthy", latency_ms=round(latency, 1),
+            message=f"{url} — {type(e).__name__}: {e}"
+        )
+```
+
+### 8.8 Implementation Tasks
+
+| #    | Task                                                                                                                                               | Files                                              | Depends On |
+|------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|------------|
+| 8.1  | Create shared Pydantic models: `DependencyStatus`, `ReadinessResponse` — consider a `juniper-common` package or duplicate in each service          | New models file per service                         | —          |
+| 8.2  | Implement `_probe_dependency()` utility function in each service (or shared)                                                                       | Utility module per service                          | 8.1        |
+| 8.3  | Enhance JuniperData `/v1/health/ready` — add storage directory check, return `ReadinessResponse`                                                   | `juniper_data/api/routes/health.py`                 | 8.1        |
+| 8.4  | Enhance JuniperCascor `/v1/health/ready` — add JuniperData probe, return flat `ReadinessResponse` (remove envelope for health routes only)         | `src/api/routes/health.py`                          | 8.1, 8.2   |
+| 8.5  | Enhance JuniperCanopy `/v1/health/ready` — add JuniperData + CasCor probes, return `ReadinessResponse`                                            | `src/main.py` (or new `src/health.py`)              | 8.1, 8.2   |
+| 8.6  | Deprecate JuniperCanopy's `/health` and `/api/health` aliases — add deprecation warning header, plan removal                                       | `src/main.py`                                       | 8.5        |
+| 8.7  | Implement startup health verification in Canopy: probe CasCor, fallback to demo mode (Section 8.7, addresses CAN-HIGH-001)                        | `src/main.py`                                       | 8.2, Phase 5 |
+| 8.8  | Update `juniper-deploy/scripts/wait_for_services.sh` to parse new `ReadinessResponse` format                                                      | `scripts/wait_for_services.sh`                      | 8.3, 8.4, 8.5 |
+| 8.9  | Update `juniper-deploy/scripts/health_check.sh` (Phase 1) to display dependency status from readiness responses                                   | `scripts/health_check.sh`                           | 8.3, 8.4, 8.5 |
+| 8.10 | Write unit tests for `_probe_dependency()` — healthy, unhealthy, timeout scenarios                                                                 | Test files per service                              | 8.2        |
+| 8.11 | Write unit tests for enhanced readiness endpoints — all dependency combinations                                                                    | Test files per service                              | 8.3, 8.4, 8.5 |
+| 8.12 | Write integration test: start full stack, verify readiness responses include dependency status                                                     | `juniper-deploy/scripts/test_health_enhanced.sh`    | 8.3, 8.4, 8.5 |
+| 8.13 | Update Docker Compose `healthcheck` commands if response format changes affect health check parsing                                                | `juniper-deploy/docker-compose.yml`                 | 8.3, 8.4, 8.5 |
+| 8.14 | Verify Kubernetes probe compatibility: ensure `httpGet` probes still work with new response format (HTTP 200 = healthy)                             | —                                                   | 8.3, 8.4, 8.5 |
+
+### 8.9 Verification Procedure
+
+```bash
+# 1. Verify JuniperData readiness (standalone)
+cd juniper-data
+python -m juniper_data &
+sleep 3
+curl -s http://localhost:8100/v1/health/ready | python -m json.tool
+# Expected: {"status": "ready", "service": "juniper-data", "dependencies": {"storage": {"status": "healthy", ...}}}
+kill %1
+
+# 2. Verify JuniperCascor readiness (with Data running)
+cd juniper-deploy && make up
+sleep 10
+curl -s http://localhost:8200/v1/health/ready | python -m json.tool
+# Expected: {"status": "ready", "dependencies": {"juniper_data": {"status": "healthy", "latency_ms": ...}}}
+
+# 3. Verify JuniperCanopy readiness (full stack)
+curl -s http://localhost:8050/v1/health/ready | python -m json.tool
+# Expected: {"status": "ready", "dependencies": {"juniper_data": {"status": "healthy"}, "juniper_cascor": {"status": "healthy"}}}
+
+# 4. Verify degraded status (stop CasCor, leave others running)
+docker compose stop juniper-cascor
+sleep 5
+curl -s http://localhost:8050/v1/health/ready | python -m json.tool
+# Expected: {"status": "degraded", "dependencies": {"juniper_cascor": {"status": "unhealthy", ...}}}
+
+# 5. Verify startup fallback (Canopy with unreachable CasCor)
+CASCOR_SERVICE_URL=http://localhost:9999 python src/main.py &
+sleep 5
+# Expected log: "JuniperCascor unreachable at http://localhost:9999 — falling back to demo mode"
+curl -s http://localhost:8050/v1/health/ready | python -m json.tool
+# Expected: {"details": {"mode": "demo"}}
+kill %1
+
+# 6. Verify Docker healthcheck compatibility
+docker compose up -d
+docker compose ps
+# Expected: All services show "healthy" status (HTTP 200 still returned)
+
+# 7. Run all service test suites
+cd juniper-data && pytest tests/ -v
+cd juniper-cascor/src/tests && bash scripts/run_tests.bash
+cd JuniperCanopy/juniper_canopy/src && pytest tests/ -v
+# Expected: All green, no regressions
+
+# 8. Clean up
+make down
+```
+
+### 8.10 Security Considerations
+
+| Concern                                        | Mitigation                                                                                                          |
+|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| Health endpoints expose internal service URLs  | URLs are only internal Docker/localhost addresses. In production, restrict health endpoint access via network policy  |
+| Dependency probes make outbound HTTP calls     | Probes use `urllib` with 5s timeout. No credentials sent (only `/v1/health/live` which is public)                   |
+| Readiness response reveals service versions    | Already exposed in current implementation. Versions are public (PyPI packages). Not a security risk                  |
+| Denial-of-service via readiness endpoint       | Probe calls are fast (< 5s timeout). Rate limiting can be added if needed. Health endpoints are lightweight          |
+| Startup fallback to demo mode                  | Logged at WARNING level. Demo mode is safe (no external dependencies). Operator can monitor for unexpected fallbacks |
+
+### 8.11 Performance Considerations
+
+| Concern                                  | Impact                                                           | Mitigation                                                                                      |
+|------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| Dependency probes add latency to readiness | ~1-10ms per dependency (localhost HTTP). Total: ~5-20ms          | Probes run in sequence (max 2 dependencies). Well within Docker healthcheck timeout (10s)       |
+| Probe timeout on unhealthy dependency     | Up to 5s if dependency is down and connection hangs              | `timeout=5.0` on `urllib.request.urlopen`. Readiness returns `"degraded"` after timeout          |
+| Filesystem check in JuniperData           | `Path.is_dir()` + `glob("*.npz")` — ~1-5ms                     | Single directory listing. Dataset count is informational, not critical-path                       |
+| Startup health verification blocks lifespan | ~5-10s if CasCor is unreachable (timeout + fallback)            | Non-blocking in practice — runs once at startup. Lifespan continues after fallback               |
+| Concurrent readiness requests             | Each request probes dependencies independently                   | Probes are stateless and idempotent. Could add short-lived caching (~5s) if load is high         |
+
+---
+
+## Configuration Management — Overview
+
+This section provides the implementation plan for configuration standardization recommended in [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md), Section 5.
+
+```bash
+Phase 9 (Near-term):  Migrate JuniperCanopy to Pydantic BaseSettings and standardize
+                       environment variable patterns across all three services
+```
+
+### Current Configuration Divergence
+
+| Aspect                    | JuniperData                      | JuniperCascor                    | JuniperCanopy (Legacy)                    |
+|---------------------------|----------------------------------|----------------------------------|-------------------------------------------|
+| **Framework**             | Pydantic v2 `BaseSettings`       | Pydantic v2 `BaseSettings`       | YAML `ConfigManager` + env var overrides  |
+| **Env prefix**            | `JUNIPER_DATA_`                  | `JUNIPER_CASCOR_`                | `CASCOR_`                                 |
+| **`.env` file support**   | Yes (automatic via Pydantic)     | Yes (automatic via Pydantic)     | No                                        |
+| **Case sensitivity**      | No (case_sensitive=False)        | No (case_sensitive=False)        | Yes                                       |
+| **Nesting**               | Flat only                        | Flat only                        | Full (dot-notation, YAML hierarchy)       |
+| **Validation**            | Pydantic type coercion           | Pydantic type coercion           | Manual `validate_training_param_value()`  |
+| **Config file**           | None (env-only)                  | None (env-only)                  | `conf/app_config.yaml`                    |
+| **Env var expansion**     | No                               | No                               | Yes (`${VAR}`, `${VAR:default}`)          |
+| **Singleton access**      | `get_settings()` (`@lru_cache`)  | `get_settings()` (`@lru_cache`)  | `ConfigManager()` (singleton pattern)     |
+
+### Key Inconsistencies
+
+1. **Prefix divergence**: `JUNIPER_DATA_*`, `JUNIPER_CASCOR_*`, and `CASCOR_*` — three different naming patterns
+2. **Architecture mismatch**: Two services use Pydantic BaseSettings; one uses YAML with manual env overrides
+3. **No `.env` support in Canopy**: Requires environment variables set externally or YAML edits
+4. **Case sensitivity mismatch**: Canopy is case-sensitive for env vars; others are not
+5. **YAML-specific features at risk**: Canopy's nested config access (`config.get("training.parameters.epochs.default")`) and hot reload have no Pydantic equivalent without design work
+
+---
+
+## Phase 9: Configuration Standardization — Pydantic BaseSettings (Near-Term)
+
+### 9.1 Objectives
+
+- Migrate JuniperCanopy from YAML-based `ConfigManager` to Pydantic v2 `BaseSettings`
+- Standardize the environment variable prefix to `JUNIPER_CANOPY_*` (matching the `JUNIPER_<SERVICE>_*` pattern)
+- Maintain backward compatibility with `CASCOR_*` environment variables during a transition period
+- Add `.env` file support to JuniperCanopy
+- Create `.env.example` templates for all services with consistent documentation
+- Preserve Canopy's training parameter validation and nested config access through Pydantic nested models
+
+### 9.2 Prerequisites
+
+| Requirement                     | Version   | Verification                                               |
+|---------------------------------|-----------|------------------------------------------------------------|
+| Python                          | >= 3.12   | `python --version`                                         |
+| pydantic                        | >= 2.0    | `pip show pydantic`                                        |
+| pydantic-settings               | >= 2.0    | `pip show pydantic-settings`                               |
+| Existing Canopy tests green     | —         | `cd src && pytest tests/ -v` (3,215+ passed)               |
+| Phase 5 complete (BackendProtocol) | —      | Backend factory no longer relies on ConfigManager singleton |
+
+### 9.3 Current Configuration Divergence
+
+**JuniperData settings** (`juniper_data/api/settings.py`):
+
+```python
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="JUNIPER_DATA_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+    storage_path: str = "./data/datasets"
+    host: str = "127.0.0.1"
+    port: int = 8100
+    log_level: str = "INFO"
+    cors_origins: list[str] = ["*"]
+    api_keys: Optional[list[str]] = None
+    rate_limit_enabled: bool = False
+    rate_limit_requests_per_minute: int = 60
+```
+
+**JuniperCascor settings** (`src/api/settings.py`):
+
+```python
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="JUNIPER_CASCOR_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+    host: str = "127.0.0.1"
+    port: int = 8200
+    log_level: str = "INFO"
+    cors_origins: list[str] = ["*"]
+    ws_max_connections: int = 50
+    ws_heartbeat_interval_sec: int = 30
+```
+
+**JuniperCanopy config** (`src/config_manager.py` + `conf/app_config.yaml`):
+
+- YAML-based with `${VAR:default}` expansion
+- Nested access: `config.get("application.server.host")`
+- Training parameter validation with min/max/modifiable metadata
+- Hot reload: `config.reload()`
+- ~500 lines of custom config management code
+
+### 9.4 Target Architecture
+
+All three services use Pydantic v2 `BaseSettings` with consistent patterns:
+
+```python
+# Target pattern for all services:
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="JUNIPER_<SERVICE>_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
+```
+
+**Prefix convention**:
+
+| Service           | Current Prefix       | Target Prefix          |
+|-------------------|----------------------|------------------------|
+| JuniperData       | `JUNIPER_DATA_`      | `JUNIPER_DATA_` (no change) |
+| JuniperCascor     | `JUNIPER_CASCOR_`    | `JUNIPER_CASCOR_` (no change) |
+| JuniperCanopy     | `CASCOR_`            | `JUNIPER_CANOPY_`      |
+
+### 9.5 JuniperCanopy Migration Design
+
+Replace `ConfigManager` with a Pydantic `BaseSettings` class that preserves all current functionality.
+
+**New file**: `src/settings.py`
+
+```python
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
+from functools import lru_cache
+
+
+class TrainingParamConfig(BaseModel):
+    """Nested model replacing YAML training parameter config."""
+    min: float
+    max: float
+    default: float
+    modifiable_during_training: bool = False
+
+    @field_validator("default")
+    @classmethod
+    def default_in_range(cls, v, info):
+        data = info.data
+        if "min" in data and "max" in data:
+            if not data["min"] <= v <= data["max"]:
+                raise ValueError(f"default {v} not in [{data['min']}, {data['max']}]")
+        return v
+
+
+class TrainingSettings(BaseModel):
+    """Nested training parameters (replaces YAML training section)."""
+    epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=1000, default=500)
+    learning_rate: TrainingParamConfig = TrainingParamConfig(min=0.0001, max=1.0, default=0.01)
+    hidden_units: TrainingParamConfig = TrainingParamConfig(min=0, max=100, default=40)
+
+
+class ServerSettings(BaseModel):
+    """Server configuration (replaces YAML application.server section)."""
+    host: str = "127.0.0.1"
+    port: int = 8050
+    debug: bool = False
+
+
+class WebSocketSettings(BaseModel):
+    """WebSocket configuration (replaces YAML backend.communication section)."""
+    max_connections: int = 50
+    heartbeat_interval: int = 30
+    reconnect_attempts: int = 5
+    reconnect_delay: int = 2
+
+
+class Settings(BaseSettings):
+    """JuniperCanopy application settings."""
+    model_config = SettingsConfigDict(
+        env_prefix="JUNIPER_CANOPY_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+        env_nested_delimiter="__",  # Enables JUNIPER_CANOPY_SERVER__PORT=8051
+    )
+
+    # Server
+    server: ServerSettings = ServerSettings()
+
+    # Training
+    training: TrainingSettings = TrainingSettings()
+
+    # WebSocket
+    websocket: WebSocketSettings = WebSocketSettings()
+
+    # Backend
+    demo_mode: bool = False
+    backend_path: str = "../../JuniperCascor/juniper_cascor"
+    juniper_data_url: str = "http://localhost:8100"
+    cascor_service_url: Optional[str] = None
+
+    # Demo
+    demo_update_interval: float = 1.0
+    demo_cascade_every: int = 30
+
+    # Logging
+    log_level: str = "INFO"
+
+    def get_training_defaults(self) -> dict:
+        """Backward-compatible method matching ConfigManager.get_training_defaults()."""
+        return {
+            "epochs": self.training.epochs.default,
+            "learning_rate": self.training.learning_rate.default,
+            "hidden_units": self.training.hidden_units.default,
+        }
+
+    def validate_training_param(self, param: str, value: float) -> bool:
+        """Backward-compatible validation matching ConfigManager.validate_training_param_value()."""
+        config = getattr(self.training, param, None)
+        if config is None:
+            return False
+        return config.min <= value <= config.max
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+```
+
+**Nested env var access** (via `env_nested_delimiter="__"`):
+
+```bash
+# Flat settings
+JUNIPER_CANOPY_LOG_LEVEL=DEBUG
+JUNIPER_CANOPY_DEMO_MODE=1
+JUNIPER_CANOPY_JUNIPER_DATA_URL=http://juniper-data:8100
+
+# Nested settings (double underscore delimiter)
+JUNIPER_CANOPY_SERVER__HOST=0.0.0.0
+JUNIPER_CANOPY_SERVER__PORT=8051
+JUNIPER_CANOPY_TRAINING__EPOCHS__DEFAULT=300
+JUNIPER_CANOPY_WEBSOCKET__MAX_CONNECTIONS=100
+```
+
+### 9.6 Environment Variable Prefix Standardization
+
+**Cross-service environment variable reference** (after migration):
+
+| Variable                          | Service       | Purpose                          |
+|-----------------------------------|---------------|----------------------------------|
+| `JUNIPER_DATA_HOST`               | JuniperData   | Bind address                     |
+| `JUNIPER_DATA_PORT`               | JuniperData   | Listen port                      |
+| `JUNIPER_DATA_LOG_LEVEL`          | JuniperData   | Log level                        |
+| `JUNIPER_DATA_STORAGE_PATH`       | JuniperData   | Dataset storage directory        |
+| `JUNIPER_DATA_API_KEYS`           | JuniperData   | Authentication keys              |
+| `JUNIPER_CASCOR_HOST`             | JuniperCascor | Bind address                     |
+| `JUNIPER_CASCOR_PORT`             | JuniperCascor | Listen port                      |
+| `JUNIPER_CASCOR_LOG_LEVEL`        | JuniperCascor | Log level                        |
+| `JUNIPER_CANOPY_SERVER__HOST`     | JuniperCanopy | Bind address                     |
+| `JUNIPER_CANOPY_SERVER__PORT`     | JuniperCanopy | Listen port                      |
+| `JUNIPER_CANOPY_LOG_LEVEL`        | JuniperCanopy | Log level                        |
+| `JUNIPER_CANOPY_DEMO_MODE`        | JuniperCanopy | Enable demo mode                 |
+| `JUNIPER_CANOPY_CASCOR_SERVICE_URL` | JuniperCanopy | CasCor service URL             |
+| `JUNIPER_DATA_URL`                | Shared        | JuniperData URL (used by CasCor + Canopy) |
+
+### 9.7 Environment Profiles
+
+Standardize `.env` file patterns across all services:
+
+**`.env.example`** (per-service template — committed):
+
+```bash
+# juniper-data/.env.example
+JUNIPER_DATA_HOST=127.0.0.1
+JUNIPER_DATA_PORT=8100
+JUNIPER_DATA_LOG_LEVEL=INFO
+JUNIPER_DATA_STORAGE_PATH=./data/datasets
+# JUNIPER_DATA_API_KEYS=["key1","key2"]  # Uncomment to enable auth
+```
+
+```bash
+# JuniperCanopy/.env.example
+JUNIPER_CANOPY_SERVER__HOST=127.0.0.1
+JUNIPER_CANOPY_SERVER__PORT=8050
+JUNIPER_CANOPY_LOG_LEVEL=INFO
+JUNIPER_CANOPY_JUNIPER_DATA_URL=http://localhost:8100
+# JUNIPER_CANOPY_CASCOR_SERVICE_URL=http://localhost:8200  # Uncomment for service mode
+# JUNIPER_CANOPY_DEMO_MODE=true  # Uncomment for demo mode
+```
+
+**`.env`** (per-service — NOT committed, in `.gitignore`):
+
+Developer-specific overrides. Created by copying `.env.example`.
+
+### 9.8 Backward Compatibility Strategy
+
+The migration from `CASCOR_*` to `JUNIPER_CANOPY_*` environment variables requires a transition period.
+
+**Strategy**: Pydantic `@field_validator` checks for legacy `CASCOR_*` variables and uses them as fallbacks:
+
+```python
+import os
+import warnings
+
+class Settings(BaseSettings):
+    # ...
+
+    @field_validator("demo_mode", mode="before")
+    @classmethod
+    def _check_legacy_demo_mode(cls, v):
+        legacy = os.getenv("CASCOR_DEMO_MODE")
+        if legacy is not None:
+            warnings.warn(
+                "CASCOR_DEMO_MODE is deprecated. Use JUNIPER_CANOPY_DEMO_MODE instead.",
+                DeprecationWarning, stacklevel=2,
+            )
+            return legacy in ("1", "true", "True", "yes", "Yes")
+        return v
+
+    @field_validator("server", mode="before")
+    @classmethod
+    def _check_legacy_server_vars(cls, v):
+        if isinstance(v, dict):
+            if "host" not in v and os.getenv("CASCOR_SERVER_HOST"):
+                v["host"] = os.getenv("CASCOR_SERVER_HOST")
+                warnings.warn("CASCOR_SERVER_HOST is deprecated. Use JUNIPER_CANOPY_SERVER__HOST.", DeprecationWarning)
+            if "port" not in v and os.getenv("CASCOR_SERVER_PORT"):
+                v["port"] = int(os.getenv("CASCOR_SERVER_PORT"))
+                warnings.warn("CASCOR_SERVER_PORT is deprecated. Use JUNIPER_CANOPY_SERVER__PORT.", DeprecationWarning)
+        return v
+```
+
+**Deprecation timeline**:
+
+| Phase              | Legacy `CASCOR_*` vars | New `JUNIPER_CANOPY_*` vars | Behavior                           |
+|--------------------|------------------------|-----------------------------|------------------------------------|
+| Initial migration  | Supported (fallback)   | Primary                     | Legacy vars work but log warnings  |
+| +6 months          | Supported (warnings)   | Primary                     | Louder deprecation warnings        |
+| +12 months         | Removed                | Only                        | Legacy vars ignored                |
+
+### 9.9 Implementation Tasks
+
+| #    | Task                                                                                                                                          | Files                                                    | Depends On |
+|------|-----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|------------|
+| 9.1  | Create `src/settings.py` with `Settings` Pydantic BaseSettings class (Section 9.5)                                                           | `src/settings.py` (new)                                  | —          |
+| 9.2  | Create nested Pydantic models: `TrainingParamConfig`, `TrainingSettings`, `ServerSettings`, `WebSocketSettings`                               | `src/settings.py`                                        | 9.1        |
+| 9.3  | Implement backward-compatible methods: `get_training_defaults()`, `validate_training_param()`                                                  | `src/settings.py`                                        | 9.2        |
+| 9.4  | Implement legacy `CASCOR_*` fallback validators with deprecation warnings (Section 9.8)                                                       | `src/settings.py`                                        | 9.1        |
+| 9.5  | Create `.env.example` for JuniperCanopy with all `JUNIPER_CANOPY_*` variables documented                                                      | `.env.example` (new)                                     | 9.1        |
+| 9.6  | Update `.gitignore` to exclude `.env` but not `.env.example`                                                                                   | `.gitignore`                                             | 9.5        |
+| 9.7  | Refactor `main.py` to import `get_settings()` instead of `ConfigManager()` for all configuration access                                       | `src/main.py`                                            | 9.1        |
+| 9.8  | Refactor `demo_mode.py` to use `get_settings()` instead of `ConfigManager()` for demo configuration                                           | `src/demo_mode.py`                                       | 9.1        |
+| 9.9  | Update all source files that import `ConfigManager` to use `get_settings()` — search for `from config_manager import`                          | Multiple `src/*.py` files                                | 9.1        |
+| 9.10 | Write unit tests for `Settings` — default values, env overrides, nested models, validation, legacy fallback                                    | `src/tests/unit/test_settings.py` (new)                  | 9.1        |
+| 9.11 | Write migration test: verify `CASCOR_*` env vars produce same behavior as `JUNIPER_CANOPY_*` equivalents                                      | `src/tests/unit/test_settings_migration.py` (new)        | 9.4        |
+| 9.12 | Update `conftest.py` — replace `ConfigManager` singleton reset with `get_settings.cache_clear()`                                               | `src/tests/conftest.py`                                  | 9.7        |
+| 9.13 | Run full test suite: verify all 3,215+ tests pass with new settings                                                                            | —                                                        | 9.7-9.12   |
+| 9.14 | Deprecate `ConfigManager` — mark class as deprecated, add import warning, do NOT delete yet                                                    | `src/config_manager.py`                                  | 9.13       |
+| 9.15 | Update JuniperCanopy AGENTS.md configuration sections to reference `JUNIPER_CANOPY_*` variables                                                | `AGENTS.md`                                              | 9.7        |
+| 9.16 | Update `juniper-deploy/.env.example` with new `JUNIPER_CANOPY_*` variable names                                                                | `juniper-deploy/.env.example`                            | 9.7        |
+| 9.17 | Update `juniper-deploy/docker-compose.yml` Canopy service `environment` block with new variable names                                          | `juniper-deploy/docker-compose.yml`                      | 9.7        |
+
+### 9.10 Verification Procedure
+
+```bash
+cd JuniperCanopy/juniper_canopy
+
+# 1. Verify default settings load correctly
+python -c "
+from settings import get_settings
+s = get_settings()
+print(f'Host: {s.server.host}')
+print(f'Port: {s.server.port}')
+print(f'Training defaults: {s.get_training_defaults()}')
+print(f'Demo mode: {s.demo_mode}')
+print('Settings load: OK')
+"
+
+# 2. Verify new env vars work
+JUNIPER_CANOPY_SERVER__PORT=8051 JUNIPER_CANOPY_DEMO_MODE=true python -c "
+from settings import get_settings
+s = get_settings()
+assert s.server.port == 8051, f'Expected 8051, got {s.server.port}'
+assert s.demo_mode is True
+print('New env vars: OK')
+"
+
+# 3. Verify legacy CASCOR_* fallback works (with deprecation warning)
+CASCOR_DEMO_MODE=1 python -W all -c "
+from settings import get_settings
+s = get_settings()
+assert s.demo_mode is True
+print('Legacy fallback: OK (check for deprecation warning above)')
+"
+# Expected: DeprecationWarning: CASCOR_DEMO_MODE is deprecated. Use JUNIPER_CANOPY_DEMO_MODE instead.
+
+# 4. Verify nested env vars
+JUNIPER_CANOPY_TRAINING__EPOCHS__DEFAULT=300 python -c "
+from settings import get_settings
+s = get_settings()
+assert s.training.epochs.default == 300
+print(f'Training epochs default: {s.training.epochs.default}')
+print('Nested env vars: OK')
+"
+
+# 5. Verify validation
+python -c "
+from settings import get_settings
+s = get_settings()
+assert s.validate_training_param('epochs', 500) is True
+assert s.validate_training_param('epochs', 9999) is False
+print('Validation: OK')
+"
+
+# 6. Verify .env file loading
+echo 'JUNIPER_CANOPY_LOG_LEVEL=DEBUG' > .env
+python -c "
+from settings import get_settings
+s = get_settings()
+assert s.log_level == 'DEBUG'
+print(f'Log level from .env: {s.log_level}')
+print('.env loading: OK')
+"
+rm .env
+
+# 7. Run full test suite
+cd src && pytest tests/ -v
+# Expected: 3,215+ passed, 0 failed
+
+# 8. Verify demo mode still works
+./demo
+# Open http://localhost:8050 — all 4 tabs should display data
+```
+
+### 9.11 Security Considerations
+
+| Concern                                          | Mitigation                                                                                                    |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `.env` file committed with secrets               | `.gitignore` excludes `.env`. `.env.example` contains only non-sensitive defaults                             |
+| Legacy `CASCOR_*` vars bypass new validation     | Legacy validators apply the same Pydantic validation. No bypass possible                                      |
+| Deprecation warnings in production logs          | Warnings are Python `DeprecationWarning` — suppressed by default in production. Visible with `-W all`         |
+| Pydantic exposes settings in repr/logging        | Use `Field(repr=False)` for sensitive fields (e.g., `api_key`). Default Pydantic repr is safe for most fields |
+| ConfigManager removal breaks downstream tools    | `ConfigManager` is deprecated, not removed. Import warning guides migration. 12-month timeline                |
+
+### 9.12 Performance Considerations
+
+| Concern                              | Impact                                                           | Mitigation                                                                                   |
+|--------------------------------------|------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| Pydantic model initialization        | ~1-5ms at startup (one-time)                                     | `@lru_cache` on `get_settings()` ensures single initialization                              |
+| YAML config loading removed          | Eliminates ~5-10ms YAML parse at startup                         | Net performance improvement — Pydantic env loading is faster than YAML parse + expansion     |
+| Nested model validation              | ~0.1ms per access (Pydantic validation is pre-computed at init)  | All validation happens at startup. Runtime access is plain attribute access (~0ns overhead)    |
+| Legacy fallback validator overhead   | ~0.1ms per `os.getenv` check at startup                          | Negligible. Runs once. Removed after transition period                                        |
+| `.env` file parsing                  | ~1ms at startup (small file)                                     | One-time cost. Faster than YAML parsing                                                       |
+
+---
+
 ## Cross-Phase Concerns
 
 ### Health Check Standardization
@@ -3721,7 +4687,7 @@ All phases depend on consistent health endpoints. The current implementation is 
 | `GET /v1/health/live`  | Liveness — is the process running?           | Kubernetes livenessProbe, systemd watchdog             |
 | `GET /v1/health/ready` | Readiness — can the service handle requests? | Kubernetes readinessProbe, Phase 3 Prometheus scraping |
 
-**Enhancement recommended** (applies to all phases): Add dependency health status to `/v1/health/ready` responses (see [MICROSERVICES_ARCHITECTURE_ANALYSIS.md, Section 4.3](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md#43-health-check-pattern-recommendation)).
+**Enhancement planned**: [Phase 8](#phase-8-enhanced-health-checks-with-dependency-status-immediate) adds dependency health status to `/v1/health/ready` responses with standardized `ReadinessResponse` Pydantic models (see [MICROSERVICES_ARCHITECTURE_ANALYSIS.md, Section 4.3](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md#43-health-check-pattern-recommendation)).
 
 ### Logging and Log Aggregation
 
@@ -3780,16 +4746,42 @@ Phase 7: Docker Compose Demo Profile (independent — infrastructure only)
 - **Phase 6** depends on Phase 5 (the `BackendProtocol` defines the interface fakes must match)
 - **Phase 7** depends on Phase 1 (Makefile exists) and Phase 3 (profile infrastructure); independent of Phases 5-6
 
+### Service Discovery and Health Checking (Phase 8)
+
+```bash
+Phase 8: Enhanced Health Checks (independent — applies to all services)
+    │
+    └── benefits from Phase 5 (BackendProtocol provides backend_type for Canopy readiness)
+```
+
+- **Phase 8** is independent of infrastructure phases (1-4) — it modifies service application code
+- **Phase 8** benefits from Phase 5 (`backend.backend_type` in Canopy's readiness response) but does not require it
+- Phase 8's startup health verification (CAN-HIGH-001) requires Phase 5 for graceful backend fallback
+
+### Configuration Management (Phase 9)
+
+```bash
+Phase 9: Configuration Standardization (depends on Phase 5 for clean backend factory)
+    │
+    └── updates Phase 7 Docker Compose env vars (JUNIPER_CANOPY_* prefix)
+```
+
+- **Phase 9** depends on Phase 5 — the backend factory must not rely on `ConfigManager` singleton
+- **Phase 9** triggers updates to Phase 7's Docker Compose `environment` blocks
+- Phase 9 is independent of Phases 1-4 and Phase 8
+
 ### Cross-Track Dependencies
 
 ```bash
-Startup Track:  Phase 1 → Phase 3 → Phase 7 (demo profile extends Compose profiles)
-Code Track:     Phase 5 → Phase 6 (protocol defines fake interfaces)
+Startup Track:      Phase 1 → Phase 3 → Phase 7 (demo profile extends Compose profiles)
+Code Track:         Phase 5 → Phase 6 (protocol defines fake interfaces)
+Health Track:       Phase 8 (independent, benefits from Phase 5)
+Config Track:       Phase 9 (depends on Phase 5, updates Phase 7)
 ```
 
-Phase 7 bridges both tracks — it uses Phase 3's profile infrastructure and benefits from (but does not require) Phase 5's code refactoring.
+Phase 7 bridges startup and code tracks. Phase 9 bridges code and startup tracks (updates Compose env vars).
 
-**Coexistence**: All seven phases can coexist. A developer can use:
+**Coexistence**: All nine phases can coexist. A developer can use:
 
 - `make up` (Phase 1/3) for containerized development
 - `make demo` (Phase 7) for auto-configured demo stack
@@ -3804,6 +4796,7 @@ The same Dockerfiles, health endpoints, and environment variable conventions are
 
 | Date       | Author                    | Changes                                                                                                         |
 |------------|---------------------------|-----------------------------------------------------------------------------------------------------------------|
+| 2026-02-26 | Paul Calnon / Claude Code | Added Health Checks (Phase 8) and Configuration Standardization (Phase 9) roadmaps                             |
 | 2026-02-26 | Paul Calnon / Claude Code | Added Modes of Operation roadmap: Phase 5 (BackendProtocol), Phase 6 (Client Fakes), Phase 7 (Demo Profile)    |
 | 2026-02-25 | Paul Calnon / Claude Code | Initial creation: detailed development roadmaps for all four startup orchestration phases                       |
 
