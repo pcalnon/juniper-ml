@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-27
+
 ### Added
 
 - CLAUDE.md for Claude Code onboarding
@@ -18,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Raised minimum Python version to `>=3.12`
 - Expanded keywords in package metadata
 
+### Fixed
+
+- Added `attestations: false` to publish.yml for both TestPyPI and PyPI steps
+
 ## [0.1.0] - 2026-02-22
 
 ### Added
@@ -28,5 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README with installation instructions and ecosystem overview
 - MIT License
 
-[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/pcalnon/juniper-ml/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/pcalnon/juniper-ml/releases/tag/v0.1.0
