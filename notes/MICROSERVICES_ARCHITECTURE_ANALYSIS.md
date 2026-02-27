@@ -36,7 +36,7 @@
 
 ### Service Topology
 
-```
+```bash
 ┌─────────────────────┐     REST/WS      ┌──────────────────────┐
 │   JuniperCanopy     │ ◄──────────────► │    JuniperCascor     │
 │   (Dashboard)       │                  │    (Training Svc)    │
@@ -58,24 +58,24 @@
 
 ### Service Inventory
 
-| Service | Port | Entry Point | Framework | Startup Method |
-| --- | --- | --- | --- | --- |
-| **JuniperData** | 8100 | `python -m juniper_data` | FastAPI + uvicorn | CLI with `--host`, `--port`, `--log-level` flags |
-| **JuniperCascor** | 8200 | `python src/server.py` | FastAPI + uvicorn | Pydantic Settings (`JUNIPER_CASCOR_*` env vars) |
-| **JuniperCanopy** | 8050 | `uvicorn src.main:app` | FastAPI + Dash + uvicorn | YAML config (`src/conf/app_config.yaml`) + env vars |
+| Service           | Port | Entry Point              | Framework                | Startup Method                                      |
+|-------------------|------|--------------------------|--------------------------|-----------------------------------------------------|
+| **JuniperData**   | 8100 | `python -m juniper_data` | FastAPI + uvicorn        | CLI with `--host`, `--port`, `--log-level` flags    |
+| **JuniperCascor** | 8200 | `python src/server.py`   | FastAPI + uvicorn        | Pydantic Settings (`JUNIPER_CASCOR_*` env vars)     |
+| **JuniperCanopy** | 8050 | `uvicorn src.main:app`   | FastAPI + Dash + uvicorn | YAML config (`src/conf/app_config.yaml`) + env vars |
 
 ### Client Packages (PyPI)
 
-| Package | Version | Purpose |
-| --- | --- | --- |
-| `juniper-data-client` | 0.3.0 | HTTP client for JuniperData API |
-| `juniper-cascor-client` | 0.1.0 | HTTP/WS client for CasCor service |
-| `juniper-cascor-worker` | 0.1.0 | Remote candidate training worker |
-| `juniper-ml` | 0.1.0 | Meta-package (installs all of the above) |
+| Package                 | Version | Purpose                                  |
+|-------------------------|---------|------------------------------------------|
+| `juniper-data-client`   | 0.3.0   | HTTP client for JuniperData API          |
+| `juniper-cascor-client` | 0.1.0   | HTTP/WS client for CasCor service        |
+| `juniper-cascor-worker` | 0.1.0   | Remote candidate training worker         |
+| `juniper-ml`            | 0.1.0   | Meta-package (installs all of the above) |
 
 ### Dependency Graph (Runtime)
 
-```
+```bash
 JuniperCanopy ──REST──► JuniperData       (via juniper-data-client)
 JuniperCanopy ──REST/WS──► JuniperCascor  (via juniper-cascor-client)
 JuniperCascor ──REST──► JuniperData       (via juniper-data-client)
@@ -200,18 +200,18 @@ A Makefile as the developer-facing interface, with a Procfile for simple multi-p
 .PHONY: up down status logs
 
 up:
-	honcho start -f Procfile
+ honcho start -f Procfile
 
 down:
-	honcho stop || pkill -f "juniper_data|server.py|uvicorn"
+ honcho stop || pkill -f "juniper_data|server.py|uvicorn"
 
 status:
-	@curl -sf http://localhost:8100/v1/health | jq .status || echo "data: DOWN"
-	@curl -sf http://localhost:8200/v1/health | jq .status || echo "cascor: DOWN"
-	@curl -sf http://localhost:8050/v1/health/live | jq .status || echo "canopy: DOWN"
+ @curl -sf http://localhost:8100/v1/health | jq .status || echo "data: DOWN"
+ @curl -sf http://localhost:8200/v1/health | jq .status || echo "cascor: DOWN"
+ @curl -sf http://localhost:8050/v1/health/live | jq .status || echo "canopy: DOWN"
 ```
 
-```
+```bash
 # Procfile
 data: cd /path/to/juniper-data && python -m juniper_data
 cascor: cd /path/to/juniper-cascor/src && python server.py
@@ -281,29 +281,30 @@ Deploy all services as Kubernetes Deployments with Services, using k3s (lightwei
 
 ### 2.3 Comparative Evaluation
 
-| Criterion | Docker Compose | supervisord | Makefile+Procfile | systemd | Kubernetes |
-| --- | --- | --- | --- | --- | --- |
-| **Orchestration quality** | Excellent | Moderate | Basic | Good | Excellent |
-| **Dependency ordering** | Health-gated | None | None | Unit-based | Probe-gated |
-| **Auto-restart** | Yes (policy) | Yes | No | Yes (policy) | Yes (self-healing) |
-| **Dev experience** | Good | Fair | Excellent | Fair | Poor (alone) |
-| **Production readiness** | Good | Good | Poor | Excellent | Excellent |
-| **Setup complexity** | Medium | Low | Very Low | Medium | Very High |
-| **GPU support** | NVIDIA Toolkit | Native | Native | Native | Native (scheduling) |
-| **Multi-machine** | Swarm | No | No | Ansible | Yes (native) |
-| **Security isolation** | Containers | None | None | Sandboxing | Full (namespaces + RBAC) |
-| **Performance overhead** | Minimal (Linux) | Zero | Zero | Zero | ~500 MB control plane |
-| **Adding a new service** | YAML block | INI block | Procfile line | Unit file | Manifest set |
-| **Log aggregation** | `docker compose logs` | supervisorctl tail | Interleaved stdout | journalctl | kubectl logs / EFK |
+| Criterion                 | Docker Compose        | supervisord        | Makefile+Procfile  | systemd      | Kubernetes               |
+|---------------------------|-----------------------|--------------------|--------------------|--------------|--------------------------|
+| **Orchestration quality** | Excellent             | Moderate           | Basic              | Good         | Excellent                |
+| **Dependency ordering**   | Health-gated          | None               | None               | Unit-based   | Probe-gated              |
+| **Auto-restart**          | Yes (policy)          | Yes                | No                 | Yes (policy) | Yes (self-healing)       |
+| **Dev experience**        | Good                  | Fair               | Excellent          | Fair         | Poor (alone)             |
+| **Production readiness**  | Good                  | Good               | Poor               | Excellent    | Excellent                |
+| **Setup complexity**      | Medium                | Low                | Very Low           | Medium       | Very High                |
+| **GPU support**           | NVIDIA Toolkit        | Native             | Native             | Native       | Native (scheduling)      |
+| **Multi-machine**         | Swarm                 | No                 | No                 | Ansible      | Yes (native)             |
+| **Security isolation**    | Containers            | None               | None               | Sandboxing   | Full (namespaces + RBAC) |
+| **Performance overhead**  | Minimal (Linux)       | Zero               | Zero               | Zero         | ~500 MB control plane    |
+| **Adding a new service**  | YAML block            | INI block          | Procfile line      | Unit file    | Manifest set             |
+| **Log aggregation**       | `docker compose logs` | supervisorctl tail | Interleaved stdout | journalctl   | kubectl logs / EFK       |
 
 ### 2.4 Recommendation
 
 **Recommended approach: Layered strategy with Docker Compose as the primary orchestrator.**
 
-```
+```bash
 Phase 1 (Immediate):  Makefile as developer interface + Docker Compose as orchestration engine
-Phase 2 (Near-term):  Docker Compose with profiles for dev/demo/full environments
-Phase 3 (If needed):  Kubernetes via k3s when multi-machine or production scale is required
+Phase 2 (Near-term):  Utilize systemd with unit files, health checks and performance monitoring
+Phase 3 (Near-term):  Docker Compose with profiles for dev/demo/full environments
+Phase 4 (Intermediate):  Kubernetes via k3s when multi-machine or production scale is required
 ```
 
 **Rationale**:
@@ -328,7 +329,7 @@ Phase 3 (If needed):  Kubernetes via k3s when multi-machine or production scale 
 
 JuniperCanopy implements a two-mode activation system in `src/main.py` (lines 213-247):
 
-```
+```bash
 Priority 1: CASCOR_DEMO_MODE=1      → Demo mode (explicit override)
 Priority 2: CASCOR_SERVICE_URL set   → Service mode (REST/WS via CascorServiceAdapter)
 Priority 3: Neither set              → Demo mode (default fallback)
@@ -343,18 +344,21 @@ Priority 3: Neither set              → Demo mode (default fallback)
 #### Demo Mode
 
 **Purpose**:
+
 - Showcase Canopy's dashboard features without requiring a running CasCor backend
 - Enable frontend development and testing in isolation
 - Provide a zero-dependency demonstration for stakeholders
 - Serve as CI test backend (all 3,130+ tests run with `CASCOR_DEMO_MODE=1`)
 
 **Strengths**:
+
 - Zero external dependencies — starts instantly with `CASCOR_DEMO_MODE=1`
 - Simulates realistic training lifecycle: idle → training → paused → complete
 - WebSocket broadcasting works identically to real mode
 - Covers the full Canopy API surface (metrics, topology, status, decision boundary)
 
 **Weaknesses**:
+
 - Demo data is static/formulaic — does not reflect real CasCor training dynamics
 - Demo code paths diverge from real code paths; changes to the dashboard may work in demo but fail in service mode
 - `if demo_mode_instance:` / `if backend:` branching throughout `main.py` increases cognitive load and maintenance burden
@@ -364,16 +368,19 @@ Priority 3: Neither set              → Demo mode (default fallback)
 #### Service Mode
 
 **Purpose**:
+
 - Production operation: monitor real CasCor neural network training
 - Integration testing against a live backend
 - Full-featured demonstration with real training runs
 
 **Strengths**:
+
 - Exercises the real API contract — issues are caught early
 - Enables monitoring of actual training runs with real data
 - Leverages all CasCor service capabilities (snapshots, decision boundary, worker management)
 
 **Weaknesses**:
+
 - Requires JuniperCascor and JuniperData to be running and healthy
 - Startup is more complex (3 services, correct env vars, port availability)
 - No graceful degradation if CasCor becomes unavailable mid-session
@@ -386,22 +393,22 @@ Keep the `CASCOR_DEMO_MODE` environment variable toggle but refactor the branchi
 
 **Enhancement**: Instead of scattered `if demo_mode_instance:` checks, use a common backend interface. Both `DemoMode` and `CascorServiceAdapter` implement the same protocol. The route handlers call `backend.get_status()` regardless of mode.
 
-```
-┌──────────────────────┐
-│  Canopy main.py      │
-│  (route handlers)    │
-│                      │
-│  backend.get_status() ◄─── uniform interface
-│  backend.start()     │
-│  backend.get_metrics()│
-└──────────┬───────────┘
-           │
-    ┌──────┴──────┐
-    │             │
-┌───▼───┐   ┌────▼────────────┐
-│DemoMode│   │CascorService   │
-│(local) │   │Adapter (REST)  │
-└────────┘   └────────────────┘
+```bash
+┌────────────────────────┐
+│  Canopy main.py        │
+│  (route handlers)      │
+│                        │
+│  backend.get_status()  │◄─── uniform interface
+│  backend.start()       │
+│  backend.get_metrics() │
+└───────────┬────────────┘
+            │
+     ┌──────┴────────┐
+     │               │
+┌────▼─────┐   ┌─────▼────────────┐
+│ DemoMode │   │  CascorService   │
+│ (local)  │   │  Adapter (REST)  │
+└──────────┘   └──────────────────┘
 ```
 
 **Best practices**: Clean separation of concerns. Strategy pattern. Easy to test each backend implementation independently.
@@ -420,7 +427,7 @@ Keep the `CASCOR_DEMO_MODE` environment variable toggle but refactor the branchi
 
 Replace the in-process `DemoMode` with a lightweight mock service container that implements the CasCor API contract. JuniperCanopy always runs in "service mode" — it just points at the mock instead of the real service.
 
-```
+```bash
 Demo scenario:
   CASCOR_SERVICE_URL=http://mock-cascor:8200
   → Canopy talks to mock container (same API, canned responses)
@@ -552,24 +559,24 @@ docker compose --profile full up
 
 ### 3.4 Comparative Evaluation
 
-| Criterion | Option 1: Feature Flag | Option 2: Mock Containers | Option 3: Client Fakes | Option 4: VCR | Option 5: Demo Profile |
-| --- | --- | --- | --- | --- | --- |
-| **Code complexity in Canopy** | Medium (branching) | None | Low (DI only) | Low (fixture loading) | None |
-| **Demo realism** | Low (formulaic) | Medium (canned) | Medium (configurable) | High (recorded real) | Very High (real services) |
-| **Infrastructure overhead** | None | Container(s) | None | None | Full service stack |
-| **Resource usage** | Minimal | Low | Minimal | Minimal | Full |
-| **Startup speed (demo)** | Instant | ~5-10s (containers) | Instant | Instant | ~15-30s (full stack) |
-| **API drift risk** | High | Low (if spec-gen) | Medium | Low (until stale) | None |
-| **CI/CD test utility** | Low | High | High | Very High | Medium |
-| **Stakeholder demo quality** | Medium | Medium | Medium | Medium-High | Excellent |
-| **Maintenance burden** | High | Low | Medium | Medium | Low |
-| **Security risk** | Flag bypass | Mock in prod | Minimal | Cassette secrets | Minimal |
+| Criterion                     | Option 1: Feature Flag | Option 2: Mock Containers | Option 3: Client Fakes | Option 4: VCR         | Option 5: Demo Profile    |
+|-------------------------------|------------------------|---------------------------|------------------------|-----------------------|---------------------------|
+| **Code complexity in Canopy** | Medium (branching)     | None                      | Low (DI only)          | Low (fixture loading) | None                      |
+| **Demo realism**              | Low (formulaic)        | Medium (canned)           | Medium (configurable)  | High (recorded real)  | Very High (real services) |
+| **Infrastructure overhead**   | None                   | Container(s)              | None                   | None                  | Full service stack        |
+| **Resource usage**            | Minimal                | Low                       | Minimal                | Minimal               | Full                      |
+| **Startup speed (demo)**      | Instant                | ~5-10s (containers)       | Instant                | Instant               | ~15-30s (full stack)      |
+| **API drift risk**            | High                   | Low (if spec-gen)         | Medium                 | Low (until stale)     | None                      |
+| **CI/CD test utility**        | Low                    | High                      | High                   | Very High             | Medium                    |
+| **Stakeholder demo quality**  | Medium                 | Medium                    | Medium                 | Medium-High           | Excellent                 |
+| **Maintenance burden**        | High                   | Low                       | Medium                 | Medium                | Low                       |
+| **Security risk**             | Flag bypass            | Mock in prod              | Minimal                | Cassette secrets      | Minimal                   |
 
 ### 3.5 Recommendation
 
 **Recommended approach: Phased adoption combining Options 1, 3, and 5.**
 
-```
+```bash
 Phase 1 (Immediate):  Refactor Option 1 — unify DemoMode and CascorServiceAdapter
                        behind a common BackendProtocol interface. Eliminate scattered
                        if/else branching in main.py.
@@ -598,22 +605,22 @@ Phase 3 (With Docker): Adopt Option 5 — add a demo profile to Docker Compose t
 
 All three services already implement Kubernetes-compatible health probes:
 
-| Service | Liveness | Readiness | Combined |
-| --- | --- | --- | --- |
-| **JuniperData** | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ...}` | `GET /v1/health` |
+| Service           | Liveness                                      | Readiness                                                                             | Combined         |
+|-------------------|-----------------------------------------------|---------------------------------------------------------------------------------------|------------------|
+| **JuniperData**   | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ...}`                        | `GET /v1/health` |
 | **JuniperCascor** | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ..., "network_loaded": ...}` | `GET /v1/health` |
-| **JuniperCanopy** | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ...}` | — |
+| **JuniperCanopy** | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ...}`                        | —                |
 
 This is a strong foundation. The liveness/readiness separation follows the standard cloud-native pattern.
 
 ### 4.2 Discovery Approach Evaluation
 
-| Approach | Complexity | Suitability for Juniper | When to Adopt |
-| --- | --- | --- | --- |
-| **Direct URL (env vars)** | Very Low | Excellent (current) | Now — already in place |
-| **Docker Compose DNS** | Zero (automatic) | Excellent | When Docker Compose is adopted |
-| **Consul/etcd** | Very High | Overkill | Only if 10+ services or multi-datacenter |
-| **Kubernetes DNS** | Zero (automatic) | Excellent | When Kubernetes is adopted |
+| Approach                  | Complexity       | Suitability for Juniper | When to Adopt                            |
+|---------------------------|------------------|-------------------------|------------------------------------------|
+| **Direct URL (env vars)** | Very Low         | Excellent (current)     | Now — already in place                   |
+| **Docker Compose DNS**    | Zero (automatic) | Excellent               | When Docker Compose is adopted           |
+| **Consul/etcd**           | Very High        | Overkill                | Only if 10+ services or multi-datacenter |
+| **Kubernetes DNS**        | Zero (automatic) | Excellent               | When Kubernetes is adopted               |
 
 **Recommendation**: Continue with direct URL configuration (`JUNIPER_DATA_URL`, `CASCOR_SERVICE_URL`). Docker Compose DNS will handle discovery automatically when containerization is adopted. No service registry infrastructure is needed at this scale.
 
@@ -621,7 +628,7 @@ This is a strong foundation. The liveness/readiness separation follows the stand
 
 **Enhance readiness checks to include dependency health**:
 
-```
+```bash
 JuniperCanopy /v1/health/ready should report:
   - self: alive
   - cascor_service: reachable / unreachable / demo_mode
@@ -647,11 +654,11 @@ JuniperData /v1/health/ready should report:
 
 ### Current State
 
-| Service | Config Approach | Config Source |
-| --- | --- | --- |
-| **JuniperData** | Pydantic `BaseSettings` | Env vars with `JUNIPER_DATA_*` prefix |
-| **JuniperCascor** | Pydantic `BaseSettings` | Env vars with `JUNIPER_CASCOR_*` prefix |
-| **JuniperCanopy** | YAML config + env vars | `src/conf/app_config.yaml` + `${VAR:default}` substitution |
+| Service           | Config Approach         | Config Source                                              |
+|-------------------|-------------------------|------------------------------------------------------------|
+| **JuniperData**   | Pydantic `BaseSettings` | Env vars with `JUNIPER_DATA_*` prefix                      |
+| **JuniperCascor** | Pydantic `BaseSettings` | Env vars with `JUNIPER_CASCOR_*` prefix                    |
+| **JuniperCanopy** | YAML config + env vars  | `src/conf/app_config.yaml` + `${VAR:default}` substitution |
 
 ### Evaluation
 
@@ -667,7 +674,7 @@ The mixed approach (Pydantic Settings for two services, YAML for one) creates in
 
 **Environment profiles**: Use `JUNIPER_ENV` to select `.env` files:
 
-```
+```bash
 .env.example    # Template with placeholder values (committed)
 .env.dev        # Development defaults (committed, no secrets)
 .env.prod       # Production configuration (NEVER committed)
@@ -677,7 +684,7 @@ The mixed approach (Pydantic Settings for two services, YAML for one) creates in
 
 ## 6. Architectural Growth Path
 
-```
+```bash
                          Current                Near-Term              Future
                     ┌──────────────┐      ┌──────────────────┐   ┌──────────────┐
 Orchestration:      │ Manual       │  →   │ Docker Compose   │ → │ Kubernetes   │
@@ -719,22 +726,24 @@ Each transition is incremental — no "big bang" migration required. Docker Comp
 
 ### Near-Term (Docker Compose Adoption)
 
-4. **Create ecosystem-level `docker-compose.yml`**: Define all 3 services + Redis with health-gated dependency ordering. Place at `Juniper/docker-compose.yml` (or `Juniper/juniper/docker-compose.yml`).
-5. **Add Docker Compose profiles**: `default` (data + canopy), `full` (all services), `demo` (canopy in demo mode).
-6. **Create ecosystem-level Makefile**: `make up`, `make down`, `make logs`, `make status`, `make build` targets wrapping Docker Compose.
-7. **Add client library fakes**: Ship `FakeCascorClient` in `juniper-cascor-client` and `FakeDataClient` in `juniper-data-client` for testing and lightweight demo mode.
-8. **Standardize configuration**: Migrate Canopy from YAML config to Pydantic `BaseSettings`. Create `.env.example` with all cross-service variables.
+1. **Create ecosystem-level `docker-compose.yml`**: Define all 3 services + Redis with health-gated dependency ordering. Place at `Juniper/docker-compose.yml` (or `Juniper/juniper/docker-compose.yml`).
+2. **Add Docker Compose profiles**: `default` (data + canopy), `full` (all services), `demo` (canopy in demo mode).
+3. **Create ecosystem-level Makefile**: `make up`, `make down`, `make logs`, `make status`, `make build` targets wrapping Docker Compose.
+4. **Add client library fakes**: Ship `FakeCascorClient` in `juniper-cascor-client` and `FakeDataClient` in `juniper-data-client` for testing and lightweight demo mode.
+5. **Standardize configuration**: Migrate Canopy from YAML config to Pydantic `BaseSettings`. Create `.env.example` with all cross-service variables.
 
 ### Future (If Scale Demands)
 
-9. **Docker Compose demo profile**: Run real CasCor with auto-start training for stakeholder demos.
-10. **Kubernetes migration**: When multi-machine or multi-user production deployment is needed, transition Docker Compose definitions to Kubernetes manifests via k3s.
-11. **Centralized secret management**: Adopt HashiCorp Vault or Kubernetes Secrets when API key management and rotation become operational concerns.
+1. **Docker Compose demo profile**: Run real CasCor with auto-start training for stakeholder demos.
+2. **Kubernetes migration**: When multi-machine or multi-user production deployment is needed, transition Docker Compose definitions to Kubernetes manifests via k3s.
+3. **Centralized secret management**: Adopt HashiCorp Vault or Kubernetes Secrets when API key management and rotation become operational concerns.
 
 ---
 
 ## Document History
 
-| Date | Author | Changes |
-| --- | --- | --- |
+| Date       | Author   | Changes                                                                                                              |
+|------------|----------|----------------------------------------------------------------------------------------------------------------------|
 | 2026-02-25 | AI Agent | Initial creation: startup orchestration, operating modes, service discovery, configuration, and growth path analysis |
+
+---

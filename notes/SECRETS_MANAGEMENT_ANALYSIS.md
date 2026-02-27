@@ -33,25 +33,25 @@
 
 The Juniper ecosystem manages several categories of secrets:
 
-| Category | Variables | Used By |
-|----------|----------|---------|
-| **Third-party API keys** | `HF_TOKEN`, `ALPHA_VANTAGE_TOKEN`, `SCOUT_TOKEN`, `EXA_API_KEY`, `KAGGLE_API_TOKEN`, `ANTHROPIC_API_KEY` | juniper-cascor (development/research) |
-| **Observability** | `SENTRY_SDK_DSN` | juniper-cascor |
-| **Publishing credentials** | `JUNIPER_ML_TEST_PYPI`, `JUNIPER_ML_PYPI`, `TEST_TWINE_PASSWORD`, `TWINE_PASSWORD` | juniper-ml (manual publishing) |
-| **Inter-service auth** | `JUNIPER_DATA_API_KEY`, `JUNIPER_DATA_API_KEYS` (JSON list) | juniper-data, juniper-cascor, juniper-data-client |
-| **Worker auth** | `CASCOR_AUTHKEY` (default: `"juniper"`) | juniper-cascor-worker |
-| **CI/CD tokens** | `GITHUB_TOKEN`, `CODECOV_TOKEN`, `CROSS_REPO_DISPATCH_TOKEN` | GitHub Actions workflows |
+| Category                   | Variables                                                                                                | Used By                                           |
+|----------------------------|----------------------------------------------------------------------------------------------------------|---------------------------------------------------|
+| **Third-party API keys**   | `HF_TOKEN`, `ALPHA_VANTAGE_TOKEN`, `SCOUT_TOKEN`, `EXA_API_KEY`, `KAGGLE_API_TOKEN`, `ANTHROPIC_API_KEY` | juniper-cascor (development/research)             |
+| **Observability**          | `SENTRY_SDK_DSN`                                                                                         | juniper-cascor                                    |
+| **Publishing credentials** | `JUNIPER_ML_TEST_PYPI`, `JUNIPER_ML_PYPI`, `TEST_TWINE_PASSWORD`, `TWINE_PASSWORD`                       | juniper-ml (manual publishing)                    |
+| **Inter-service auth**     | `JUNIPER_DATA_API_KEY`, `JUNIPER_DATA_API_KEYS` (JSON list)                                              | juniper-data, juniper-cascor, juniper-data-client |
+| **Worker auth**            | `CASCOR_AUTHKEY` (default: `"juniper"`)                                                                  | juniper-cascor-worker                             |
+| **CI/CD tokens**           | `GITHUB_TOKEN`, `CODECOV_TOKEN`, `CROSS_REPO_DISPATCH_TOKEN`                                             | GitHub Actions workflows                          |
 
 ### Current Management Practices
 
-| Practice | Status | Assessment |
-|----------|--------|------------|
-| **pydantic-settings** with `.env` loading | juniper-data, juniper-cascor | Good pattern, but `.env` files contain secrets |
-| **`os.getenv()` with hardcoded defaults** | juniper-cascor-worker | Weak -- hardcoded `authkey="juniper"` |
-| **GitHub Actions Secrets** | All CI/CD workflows | Correct for CI/CD scope |
-| **OIDC trusted publishing** | All `publish.yml` workflows | Best practice -- no stored PyPI tokens in CI |
-| **Gitleaks + Bandit + detect-private-key** | Pre-commit hooks across projects | Good detection layer |
-| **`.env` file in juniper-cascor** | Contains exposed credentials | Critical vulnerability |
+| Practice                                   | Status                           | Assessment                                     |
+|--------------------------------------------|----------------------------------|------------------------------------------------|
+| **pydantic-settings** with `.env` loading  | juniper-data, juniper-cascor     | Good pattern, but `.env` files contain secrets |
+| **`os.getenv()` with hardcoded defaults**  | juniper-cascor-worker            | Weak -- hardcoded `authkey="juniper"`          |
+| **GitHub Actions Secrets**                 | All CI/CD workflows              | Correct for CI/CD scope                        |
+| **OIDC trusted publishing**                | All `publish.yml` workflows      | Best practice -- no stored PyPI tokens in CI   |
+| **Gitleaks + Bandit + detect-private-key** | Pre-commit hooks across projects | Good detection layer                           |
+| **`.env` file in juniper-cascor**          | Contains exposed credentials     | Critical vulnerability                         |
 
 ### Current Security Tooling
 
@@ -78,41 +78,41 @@ The ecosystem already has meaningful security infrastructure:
 
 ### Juniper-Specific Requirements
 
-| Requirement | Source | Priority |
-|-------------|--------|----------|
-| Python 3.12+ compatibility | All projects (pyproject.toml) | Must-have |
-| pydantic-settings integration | juniper-data, juniper-cascor settings.py | Must-have |
-| Docker Compose compatibility | juniper-deploy orchestration | Must-have |
-| Environment variable injection | All services consume config via env vars | Must-have |
-| GitHub Actions integration | All CI/CD workflows | Must-have |
-| Local development simplicity | Solo developer / small team | Must-have |
-| Inter-service credential management | `JUNIPER_DATA_API_KEY` between services | Should-have |
-| Automatic secret rotation | Third-party API keys, service keys | Nice-to-have |
-| Audit logging | Secret access tracking | Nice-to-have |
+| Requirement                         | Source                                   | Priority     |
+|-------------------------------------|------------------------------------------|--------------|
+| Python 3.12+ compatibility          | All projects (pyproject.toml)            | Must-have    |
+| pydantic-settings integration       | juniper-data, juniper-cascor settings.py | Must-have    |
+| Docker Compose compatibility        | juniper-deploy orchestration             | Must-have    |
+| Environment variable injection      | All services consume config via env vars | Must-have    |
+| GitHub Actions integration          | All CI/CD workflows                      | Must-have    |
+| Local development simplicity        | Solo developer / small team              | Must-have    |
+| Inter-service credential management | `JUNIPER_DATA_API_KEY` between services  | Should-have  |
+| Automatic secret rotation           | Third-party API keys, service keys       | Nice-to-have |
+| Audit logging                       | Secret access tracking                   | Nice-to-have |
 
 ### Project Constraints
 
-| Constraint | Detail |
-|------------|--------|
-| **Team size** | Solo developer with potential for small team growth |
-| **Budget** | Research project -- cost sensitivity is high |
-| **Infrastructure** | Local Docker Compose + GitHub Actions CI; no dedicated cloud infrastructure currently |
-| **Operational overhead** | Minimal -- no dedicated DevOps/platform team |
-| **Licensing preference** | Open source preferred (MIT, Apache 2.0); BSL is less desirable |
-| **Existing patterns** | pydantic-settings `BaseSettings` with `.env` file support is the established config pattern |
+| Constraint               | Detail                                                                                      |
+|--------------------------|---------------------------------------------------------------------------------------------|
+| **Team size**            | Solo developer with potential for small team growth                                         |
+| **Budget**               | Research project -- cost sensitivity is high                                                |
+| **Infrastructure**       | Local Docker Compose + GitHub Actions CI; no dedicated cloud infrastructure currently       |
+| **Operational overhead** | Minimal -- no dedicated DevOps/platform team                                                |
+| **Licensing preference** | Open source preferred (MIT, Apache 2.0); BSL is less desirable                              |
+| **Existing patterns**    | pydantic-settings `BaseSettings` with `.env` file support is the established config pattern |
 
 ### Evaluation Criteria
 
 Each solution is evaluated on six dimensions, weighted by relevance to Juniper:
 
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| **Ease of use** | High | Setup complexity, learning curve, daily developer friction |
-| **Cost / Open source** | High | Pricing at current scale and growth trajectory |
-| **Security** | High | Encryption model, access controls, known vulnerabilities |
-| **Maintainability** | Medium | Operational burden, upgrades, monitoring requirements |
-| **Scalability** | Medium | Ability to grow with additional services, team members, environments |
-| **Best practice conformity** | Medium | Alignment with industry standards and 12-factor app principles |
+| Criterion                    | Weight | Description                                                          |
+|------------------------------|--------|----------------------------------------------------------------------|
+| **Ease of use**              | High   | Setup complexity, learning curve, daily developer friction           |
+| **Cost / Open source**       | High   | Pricing at current scale and growth trajectory                       |
+| **Security**                 | High   | Encryption model, access controls, known vulnerabilities             |
+| **Maintainability**          | Medium | Operational burden, upgrades, monitoring requirements                |
+| **Scalability**              | Medium | Ability to grow with additional services, team members, environments |
+| **Best practice conformity** | Medium | Alignment with industry standards and 12-factor app principles       |
 
 ---
 
@@ -134,14 +134,14 @@ The `hvac` library is the primary Python client. It is mature, well-maintained, 
 
 #### Juniper Fit Assessment
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Poor | Requires running and configuring a Vault server; complex auth model; significant learning curve |
-| Cost | Good (Community) / Poor (Enterprise) | Community is free but BSL-licensed; cloud/enterprise pricing is prohibitive for a research project |
-| Security | Good | Strong encryption, dynamic secrets, audit logging; however, 14 "Vault Fault" vulnerabilities reported in 2025 including RCE and auth bypass |
-| Maintainability | Poor | Requires storage backend (Consul, Raft, etc.), unsealing procedures, HA configuration, upgrades |
-| Scalability | Excellent | Designed for large-scale multi-team, multi-datacenter deployments |
-| Best practice conformity | Excellent | Industry standard for enterprise secrets management |
+| Criterion                | Rating                               | Notes                                                                                                                                       |
+|--------------------------|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Ease of use              | Poor                                 | Requires running and configuring a Vault server; complex auth model; significant learning curve                                             |
+| Cost                     | Good (Community) / Poor (Enterprise) | Community is free but BSL-licensed; cloud/enterprise pricing is prohibitive for a research project                                          |
+| Security                 | Good                                 | Strong encryption, dynamic secrets, audit logging; however, 14 "Vault Fault" vulnerabilities reported in 2025 including RCE and auth bypass |
+| Maintainability          | Poor                                 | Requires storage backend (Consul, Raft, etc.), unsealing procedures, HA configuration, upgrades                                             |
+| Scalability              | Excellent                            | Designed for large-scale multi-team, multi-datacenter deployments                                                                           |
+| Best practice conformity | Excellent                            | Industry standard for enterprise secrets management                                                                                         |
 
 #### Advantages
 
@@ -177,14 +177,14 @@ First-class support via `boto3`, the standard AWS SDK. Secret retrieval is a sin
 
 #### Juniper Fit Assessment
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Simple API; `boto3` is well-documented; requires AWS account and IAM configuration |
-| Cost | Good | ~$5-10/month for Juniper's ~12 secrets; effectively free at small scale |
-| Security | Excellent | AWS-managed encryption, IAM access control, no self-hosted vulnerabilities to manage |
-| Maintainability | Excellent | Fully managed -- no servers, upgrades, or patching |
-| Scalability | Excellent | Scales to any number of secrets and access patterns |
-| Best practice conformity | Excellent | Widely adopted industry standard |
+| Criterion                | Rating    | Notes                                                                                |
+|--------------------------|-----------|--------------------------------------------------------------------------------------|
+| Ease of use              | Good      | Simple API; `boto3` is well-documented; requires AWS account and IAM configuration   |
+| Cost                     | Good      | ~$5-10/month for Juniper's ~12 secrets; effectively free at small scale              |
+| Security                 | Excellent | AWS-managed encryption, IAM access control, no self-hosted vulnerabilities to manage |
+| Maintainability          | Excellent | Fully managed -- no servers, upgrades, or patching                                   |
+| Scalability              | Excellent | Scales to any number of secrets and access patterns                                  |
+| Best practice conformity | Excellent | Widely adopted industry standard                                                     |
 
 #### Advantages
 
@@ -220,14 +220,14 @@ Official `azure-keyvault-secrets` SDK with `DefaultAzureCredential` for seamless
 
 #### Juniper Fit Assessment
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Simple SDK; `DefaultAzureCredential` handles auth transparently |
-| Cost | Excellent | Lowest cost option -- $0.03/10k operations, no storage fees |
-| Security | Excellent | Azure-managed, soft-delete and purge protection, Managed Identity |
-| Maintainability | Excellent | Fully managed |
-| Scalability | Excellent | Enterprise-grade |
-| Best practice conformity | Excellent | Industry standard for Azure workloads |
+| Criterion                | Rating    | Notes                                                             |
+|--------------------------|-----------|-------------------------------------------------------------------|
+| Ease of use              | Good      | Simple SDK; `DefaultAzureCredential` handles auth transparently   |
+| Cost                     | Excellent | Lowest cost option -- $0.03/10k operations, no storage fees       |
+| Security                 | Excellent | Azure-managed, soft-delete and purge protection, Managed Identity |
+| Maintainability          | Excellent | Fully managed                                                     |
+| Scalability              | Excellent | Enterprise-grade                                                  |
+| Best practice conformity | Excellent | Industry standard for Azure workloads                             |
 
 #### Advantages
 
@@ -261,14 +261,14 @@ Official `google-cloud-secret-manager` library with Application Default Credenti
 
 #### Juniper Fit Assessment
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Simple API; ADC handles auth well |
-| Cost | Good | Free tier covers ~6 secrets; low cost beyond |
-| Security | Excellent | Google-managed encryption, IAM with Conditions for time-bound access |
-| Maintainability | Excellent | Fully managed |
-| Scalability | Excellent | Enterprise-grade |
-| Best practice conformity | Excellent | Industry standard for GCP workloads |
+| Criterion                | Rating    | Notes                                                                |
+|--------------------------|-----------|----------------------------------------------------------------------|
+| Ease of use              | Good      | Simple API; ADC handles auth well                                    |
+| Cost                     | Good      | Free tier covers ~6 secrets; low cost beyond                         |
+| Security                 | Excellent | Google-managed encryption, IAM with Conditions for time-bound access |
+| Maintainability          | Excellent | Fully managed                                                        |
+| Scalability              | Excellent | Enterprise-grade                                                     |
+| Best practice conformity | Excellent | Industry standard for GCP workloads                                  |
 
 #### Advantages
 

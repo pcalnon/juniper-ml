@@ -152,6 +152,9 @@ For each package:
 | No `publish.yml` workflow | juniper-cascor | Create from template (see Appendix B) |
 | Python version inconsistency | All | Decide on `>=3.11` vs `>=3.12` floor across ecosystem |
 | `juniper-ml` extras don't include `juniper-data` or `juniper-cascor` | juniper-ml | Add `services` extra in Phase 4 |
+| Legacy Juniper repo tag conflicts | juniper-data-client | `v0.3.1` tag rejected as "immutable release" from legacy repo; workaround: use `-alpha` suffix (`v0.3.1-alpha`) |
+| Post-migration releases not flagged as pre-release | All repos | GitHub releases created post-migration should be marked as pre-release until stable 1.0 versions; audit all existing releases and set `--prerelease` flag |
+| `publish.yml` attestation inconsistency | All repos | `attestations: false` only on TestPyPI in some repos; should be explicit on both TestPyPI and PyPI steps for consistency |
 
 ---
 

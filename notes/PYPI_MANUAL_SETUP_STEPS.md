@@ -16,26 +16,27 @@ workflow.
 
 ## 1. Trusted Publishing — TestPyPI
 
-For each package below, go to **https://test.pypi.org** > Account Settings >
+For each package below, go to **<https://test.pypi.org>** > Account Settings >
 Publishing > **Add a new pending publisher**.
 
 > If the project already exists on TestPyPI (from a prior upload), go to the
 > project's Settings > Publishing > Add a new publisher instead.
 
-| # | PyPI Project Name | GitHub Owner | GitHub Repo | Workflow | Environment |
-|:-:|-------------------|:------------:|-------------|:--------:|:-----------:|
-| 1 | `juniper-data-client` | `pcalnon` | `juniper-data-client` | `publish.yml` | `testpypi` |
-| 2 | `juniper-data` | `pcalnon` | `juniper-data` | `publish.yml` | `testpypi` |
-| 3 | `juniper-cascor` | `pcalnon` | `juniper-cascor` | `publish.yml` | `testpypi` |
+| # | PyPI Project Name     | GitHub Owner | GitHub Repo           |   Workflow    | Environment |
+|:-:|-----------------------|:------------:|-----------------------|:-------------:|:-----------:|
+| 1 | `juniper-data-client` |  `pcalnon`   | `juniper-data-client` | `publish.yml` | `testpypi`  |
+| 2 | `juniper-data`        |  `pcalnon`   | `juniper-data`        | `publish.yml` | `testpypi`  |
+| 3 | `juniper-cascor`      |  `pcalnon`   | `juniper-cascor`      | `publish.yml` | `testpypi`  |
 
 **Already configured** (published successfully before):
+
 - `juniper-ml` — testpypi trusted publishing OK
 - `juniper-cascor-client` — testpypi trusted publishing OK
 - `juniper-cascor-worker` — testpypi trusted publishing OK
 
 ### Steps per package
 
-1. Log in to https://test.pypi.org
+1. Log in to <https://test.pypi.org>
 2. Go to **Account Settings** > **Publishing**
 3. Under "Add a new pending publisher", fill in:
    - **PyPI project name**: (from table above)
@@ -49,22 +50,23 @@ Publishing > **Add a new pending publisher**.
 
 ## 2. Trusted Publishing — PyPI
 
-Same process on **https://pypi.org** for each package.
+Same process on **<https://pypi.org>** for each package.
 
-| # | PyPI Project Name | GitHub Owner | GitHub Repo | Workflow | Environment |
-|:-:|-------------------|:------------:|-------------|:--------:|:-----------:|
-| 1 | `juniper-data-client` | `pcalnon` | `juniper-data-client` | `publish.yml` | `pypi` |
-| 2 | `juniper-data` | `pcalnon` | `juniper-data` | `publish.yml` | `pypi` |
-| 3 | `juniper-cascor` | `pcalnon` | `juniper-cascor` | `publish.yml` | `pypi` |
+| # | PyPI Project Name     | GitHub Owner | GitHub Repo           |   Workflow    | Environment |
+|:-:|-----------------------|:------------:|-----------------------|:-------------:|:-----------:|
+| 1 | `juniper-data-client` |  `pcalnon`   | `juniper-data-client` | `publish.yml` |   `pypi`    |
+| 2 | `juniper-data`        |  `pcalnon`   | `juniper-data`        | `publish.yml` |   `pypi`    |
+| 3 | `juniper-cascor`      |  `pcalnon`   | `juniper-cascor`      | `publish.yml` |   `pypi`    |
 
 **Already configured** (published successfully before):
+
 - `juniper-ml` — pypi trusted publishing OK
 - `juniper-cascor-client` — pypi trusted publishing OK
 - `juniper-cascor-worker` — pypi trusted publishing OK
 
-### Steps per package
+### Steps per package: Trusted Publishing
 
-1. Log in to https://pypi.org
+1. Log in to <https://pypi.org>
 2. Go to **Account Settings** > **Publishing**
 3. Under "Add a new pending publisher", fill in:
    - **PyPI project name**: (from table above)
@@ -96,7 +98,7 @@ These will be created automatically by the agent via the GitHub API:
 
 If they were not created automatically, create them manually:
 
-1. Go to **github.com/pcalnon/<repo>** > Settings > Environments
+1. Go to **github.com/pcalnon/< repo >** > Settings > Environments
 2. Click **New environment**
 3. Name: `testpypi` — no protection rules needed
 4. Click **New environment** again
@@ -133,6 +135,6 @@ gh run rerun 22403454114
 
 ## Document History
 
-| Date | Author | Changes |
-|------|--------|---------|
+| Date       | Author                 | Changes          |
+|------------|------------------------|------------------|
 | 2026-02-25 | Paul Calnon / AI Agent | Initial creation |
