@@ -30,6 +30,11 @@ venv/
 
 # Environment variables
 .env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
 
 # Log files
 *.log
