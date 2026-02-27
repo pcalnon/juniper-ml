@@ -3,7 +3,7 @@
 **Project**: Juniper — Cascade Correlation Neural Network Research Platform
 **Author**: Paul Calnon
 **Created**: 2026-02-25
-**Status**: IN PROGRESS
+**Status**: COMPLETE
 **Related**: [PYPI_DEPLOYMENT_PLAN.md](PYPI_DEPLOYMENT_PLAN.md)
 
 ---
@@ -121,15 +121,33 @@ gh run rerun 22403454114
 
 ### Verification checklist
 
-- [ ] TestPyPI trusted publisher configured for `juniper-data-client`
-- [ ] PyPI trusted publisher configured for `juniper-data-client`
-- [ ] TestPyPI trusted publisher configured for `juniper-data`
-- [ ] PyPI trusted publisher configured for `juniper-data`
-- [ ] TestPyPI trusted publisher configured for `juniper-cascor`
-- [ ] PyPI trusted publisher configured for `juniper-cascor`
-- [ ] GitHub environments exist for `juniper-data` (`testpypi`, `pypi`)
-- [ ] GitHub environments exist for `juniper-cascor` (`testpypi`, `pypi`)
-- [ ] Re-run `juniper-data-client` publish workflow succeeds
+- [x] TestPyPI trusted publisher configured for `juniper-data-client`
+- [x] PyPI trusted publisher configured for `juniper-data-client`
+- [x] TestPyPI trusted publisher configured for `juniper-data`
+- [x] PyPI trusted publisher configured for `juniper-data`
+- [x] TestPyPI trusted publisher configured for `juniper-cascor`
+- [x] PyPI trusted publisher configured for `juniper-cascor`
+- [x] GitHub environments exist for `juniper-data` (`testpypi`, `pypi`)
+- [x] GitHub environments exist for `juniper-cascor` (`testpypi`, `pypi`)
+- [x] Re-run `juniper-data-client` publish workflow succeeds
+- [x] TestPyPI trusted publisher configured for `juniper-canopy`
+- [x] PyPI trusted publisher configured for `juniper-canopy`
+- [x] GitHub environments exist for `juniper-canopy` (`testpypi`, `pypi`)
+- [x] TestPyPI trusted publisher configured for `juniper-ml`
+- [x] PyPI trusted publisher configured for `juniper-ml`
+- [x] GitHub environments exist for `juniper-ml` (`testpypi`, `pypi`)
+
+### Published packages (verified)
+
+| Package | Version | TestPyPI | PyPI | Verified |
+|---------|---------|:--------:|:----:|:--------:|
+| `juniper-cascor` | 0.3.17 | OK | OK | Prior session |
+| `juniper-data` | 0.4.2 | OK | OK | Prior session |
+| `juniper-cascor-client` | — | OK | OK | Prior session |
+| `juniper-cascor-worker` | — | OK | OK | Prior session |
+| `juniper-data-client` | 0.3.1 | OK | OK | 2026-02-27 |
+| `juniper-canopy` | 0.3.0 | OK | OK | 2026-02-27 |
+| `juniper-ml` | 0.2.0 | OK | OK | 2026-02-27 |
 
 ---
 
@@ -138,3 +156,4 @@ gh run rerun 22403454114
 | Date       | Author                 | Changes          |
 |------------|------------------------|------------------|
 | 2026-02-25 | Paul Calnon / AI Agent | Initial creation |
+| 2026-02-27 | Paul Calnon / AI Agent | All packages published; checklist complete |
