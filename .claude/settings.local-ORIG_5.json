@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash*",
+      "WebSearch",
+      "WebFetch",
+      "mcp__serena__activate_project",
+      "mcp__serena__check_onboarding_performed",
+      "mcp__serena__onboarding",
+      "mcp__serena__list_dir",
+      "mcp__serena__think_about_collected_information",
+      "mcp__serena__write_memory",
+      "mcp__serena__list_memories",
+      "mcp__serena__read_memory",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__initial_instructions",
+      "mcp__serena__think_about_task_adherence",
+      "mcp__serena__think_about_whether_you_are_done",
+      "mcp__hf-mcp-server__space_search",
+      "mcp__hf-mcp-server__hub_repo_search",
+      "mcp__deepwiki__ask_question",
+      "/opt/miniforge3/envs/JuniperCanopy/bin/pip",
+      "/opt/miniforge3/envs/JuniperPython/bin/python",
+      "/opt/miniforge3/envs/JuniperPython/bin/ruff",
+      "/opt/miniforge3/envs/JuniperPython/bin/pytest",
+      "~/.cache/pre-commit/repou8f_qfs3/py_env-python3/bin/bandit",
+      "~/.cache/pre-commit/repop0hxonq5/py_env-python3/bin/bandit",
+      "~/.cache/pre-commit/repop0hxonq5/py_env-python3/bin/python",
+      "Bash(do:*)",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(cat:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "hf-mcp-server",
+    "deepwiki",
+    "serena",
+    "context7",
+    "kaggle"
+  ]
+}
