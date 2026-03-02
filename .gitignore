@@ -30,6 +30,7 @@ venv/
 
 # Environment variables
 .env
+.env.secrets
 .env.local
 .env.development
 .env.production

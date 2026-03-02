@@ -2,7 +2,8 @@
 
 **Date**: 2026-02-26
 **Completed**: 2026-02-27
-**Status**: Complete
+**Audited**: 2026-03-02
+**Status**: Complete (audited and remediated)
 **Prerequisite**: `juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md`
 
 ---
@@ -20,6 +21,7 @@ Single `age` key pair shared across all Juniper repos. The private key lives at 
 ### Step 1: Install SOPS and age — COMPLETE
 
 Installed SOPS v3.9.4 (`/usr/local/bin/sops`) and age v1.3.1 (`/opt/miniforge3/envs/JuniperCascor/bin/age`).
+Updated SOPS to v3.12.1 on 2026-03-02.
 
 ### Step 2: Generate age key pair — COMPLETE
 
@@ -65,7 +67,7 @@ Created `.sops.yaml` and `.env.example` in juniper-data, juniper-data-client, ju
 
 ### Step 7: Add SOPS pre-commit hook — COMPLETE
 
-Added `no-unencrypted-env` local hook to juniper-cascor and juniper-data (the 2 repos with existing `.pre-commit-config.yaml` files). The other 3 repos listed in the original plan (juniper-data-client, juniper-cascor-client, juniper-cascor-worker) do not have pre-commit configs.
+Added `no-unencrypted-env` local hook to juniper-cascor, juniper-data, and juniper-canopy (all 3 repos with `.pre-commit-config.yaml` files). The other repos (juniper-data-client, juniper-cascor-client, juniper-cascor-worker) do not have pre-commit configs. juniper-canopy hook was added during the 2026-03-02 audit.
 
 Hook definition:
 ```yaml
@@ -96,8 +98,8 @@ Stored the age private key as `SOPS_AGE_KEY` GitHub Secret in all 8 repos (junip
 | `.env.example` | Created | juniper-cascor, juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker, juniper-canopy |
 | `.env.enc` | Created (encrypted) | juniper-cascor |
 | `.env.secrets.example` | Created | juniper-deploy |
-| `.gitignore` | Modified (added `.env` + variants) | All 8 repos |
-| `.pre-commit-config.yaml` | Modified (added hook) | juniper-cascor, juniper-data |
+| `.gitignore` | Modified (added `.env` + `.env.secrets` + variants) | All 8 repos |
+| `.pre-commit-config.yaml` | Modified (added hook) | juniper-cascor, juniper-data, juniper-canopy |
 | `notes/SOPS_USAGE_GUIDE.md` | Created | juniper-ml |
 | `SOPS_AGE_KEY` | GitHub Secret set | All 8 repos |
 
@@ -117,6 +119,16 @@ Stored the age private key as `SOPS_AGE_KEY` GitHub Secret in all 8 repos (junip
 4. **juniper-canopy**: Added to the plan (8th repo, not in original 7-repo scope)
 5. **GitHub Secrets**: Originally listed as out of scope but completed via `gh secret set`
 6. **dotenv format flags**: Required `--input-type dotenv --output-type dotenv` for proper key=value encryption
+
+## Post-Implementation Audit (2026-03-02)
+
+A full audit of all 8 repos found and remediated 3 gaps:
+
+1. **`.env.secrets` missing from `.gitignore`** in 5 repos (juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker, juniper-ml) — added as defense-in-depth alongside the pre-commit hook
+2. **juniper-canopy missing pre-commit hook** — had `.pre-commit-config.yaml` but no `no-unencrypted-env` hook — added
+3. **SOPS outdated** (v3.9.4 → v3.12.1) — updated system binary
+
+All other checks passed: `.sops.yaml` correct in all repos, `.env.enc` decrypts successfully, `SOPS_AGE_KEY` GitHub Secret present in all 8 repos, `.env` properly gitignored everywhere.
 
 ## Out of Scope
 

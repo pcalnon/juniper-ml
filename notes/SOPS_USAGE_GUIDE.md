@@ -1,6 +1,7 @@
 # SOPS Usage Guide — Juniper Ecosystem
 
 **Date**: 2026-02-27
+**Updated**: 2026-03-02
 **Prerequisite**: `juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md`
 
 ---
