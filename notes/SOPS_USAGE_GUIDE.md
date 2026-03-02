@@ -107,6 +107,7 @@ git add .env.enc && git commit -m "chore: update encrypted secrets"
 | juniper-data-client | (none yet) | `.env.example` | No (future) |
 | juniper-cascor-client | (none yet) | `.env.example` | No (future) |
 | juniper-cascor-worker | (none yet) | `.env.example` | No (future) |
+| juniper-canopy | (none yet) | `.env.example` | No (future) |
 | juniper-ml | (none) | (none) | No (meta-package) |
 
 When a repo starts needing secrets:
