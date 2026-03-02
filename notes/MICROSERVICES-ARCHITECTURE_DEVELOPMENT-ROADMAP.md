@@ -2304,7 +2304,7 @@ Phase 6 (Near-term):    Add FakeCascorClient and FakeDataClient to client librar
 Phase 7 (With Docker):  Add a demo profile to Docker Compose with auto-start configuration
 ```
 
-### Current State Reference
+### Current State Reference, Overview
 
 JuniperCanopy operates in two mutually exclusive modes, controlled by environment variables:
 
@@ -2314,12 +2314,12 @@ Priority 2: CASCOR_SERVICE_URL set   → Service mode (REST/WS via CascorService
 Priority 3: Neither set              → Demo mode (default fallback)
 ```
 
-| Component                 | Location (Legacy)                                        | Lines | Purpose                                               |
-|---------------------------|----------------------------------------------------------|-------|-------------------------------------------------------|
-| **DemoMode**              | `JuniperCanopy/juniper_canopy/src/demo_mode.py`         | ~1100 | In-process training simulation with synthetic data    |
-| **MockCascorNetwork**     | `JuniperCanopy/juniper_canopy/src/demo_mode.py`         | ~80   | Simulated neural network for demo mode                |
-| **CascorServiceAdapter**  | `JuniperCanopy/juniper_canopy/src/backend/cascor_service_adapter.py` | ~307  | REST/WS adapter wrapping `juniper-cascor-client`      |
-| **Mode selection logic**  | `JuniperCanopy/juniper_canopy/src/main.py`              | ~40+  | Scattered `if demo_mode_instance:` / `if backend:` branching |
+| Component                | Location (Legacy)                                                    | Lines | Purpose                                                      |
+|--------------------------|----------------------------------------------------------------------|-------|--------------------------------------------------------------|
+| **DemoMode**             | `JuniperCanopy/juniper_canopy/src/demo_mode.py`                      | ~1100 | In-process training simulation with synthetic data           |
+| **MockCascorNetwork**    | `JuniperCanopy/juniper_canopy/src/demo_mode.py`                      | ~80   | Simulated neural network for demo mode                       |
+| **CascorServiceAdapter** | `JuniperCanopy/juniper_canopy/src/backend/cascor_service_adapter.py` | ~307  | REST/WS adapter wrapping `juniper-cascor-client`             |
+| **Mode selection logic** | `JuniperCanopy/juniper_canopy/src/main.py`                           | ~40+  | Scattered `if demo_mode_instance:` / `if backend:` branching |
 
 ### Problem Statement
 
@@ -2358,12 +2358,12 @@ Phase 7 is infrastructure-only and can proceed in parallel with Phase 5/6. Phase
 
 ### 5.2 Prerequisites
 
-| Requirement                     | Version   | Verification                                               |
-|---------------------------------|-----------|------------------------------------------------------------|
-| Python                          | >= 3.12   | `python --version` (Protocol with `@runtime_checkable`)    |
-| juniper-cascor-client           | >= 0.1.0  | `pip show juniper-cascor-client`                           |
-| Existing test suite green       | —         | `cd src && pytest tests/ -v` (3,215 passed, 0 failed)     |
-| mypy                            | >= 1.8    | `mypy --version`                                           |
+| Requirement               | Version  | Verification                                            |
+|---------------------------|----------|---------------------------------------------------------|
+| Python                    | >= 3.12  | `python --version` (Protocol with `@runtime_checkable`) |
+| juniper-cascor-client     | >= 0.1.0 | `pip show juniper-cascor-client`                        |
+| Existing test suite green | —        | `cd src && pytest tests/ -v` (3,215 passed, 0 failed)   |
+| mypy                      | >= 1.8   | `mypy --version`                                        |
 
 ### 5.3 Current Branching Analysis
 
@@ -2371,41 +2371,41 @@ The following operations are called on `demo_mode_instance` and/or `backend` in 
 
 **Training control** (called from `/ws/control` handler and Dash callbacks):
 
-| Operation                       | DemoMode Method               | CascorServiceAdapter Method        |
-|---------------------------------|-------------------------------|------------------------------------|
-| Start training                  | `start(reset=True)`          | `start_training_background()`      |
-| Stop training                   | `stop()`                     | `request_training_stop()`          |
-| Pause training                  | `pause()`                    | *(not yet implemented)*            |
-| Resume training                 | `resume()`                   | *(not yet implemented)*            |
-| Reset training                  | `reset()`                    | *(not yet implemented)*            |
-| Check if training               | `get_current_state()["is_running"]` | `is_training_in_progress()`   |
+| Operation         | DemoMode Method                     | CascorServiceAdapter Method   |
+|-------------------|-------------------------------------|-------------------------------|
+| Start training    | `start(reset=True)`                 | `start_training_background()` |
+| Stop training     | `stop()`                            | `request_training_stop()`     |
+| Pause training    | `pause()`                           | *(not yet implemented)*       |
+| Resume training   | `resume()`                          | *(not yet implemented)*       |
+| Reset training    | `reset()`                           | *(not yet implemented)*       |
+| Check if training | `get_current_state()["is_running"]` | `is_training_in_progress()`   |
 
 **Status and metrics** (called from REST endpoints):
 
-| Operation                       | DemoMode Method               | CascorServiceAdapter Method        |
-|---------------------------------|-------------------------------|------------------------------------|
-| Get current status              | `get_current_state()`        | `get_training_status()`            |
-| Get metrics history             | `get_metrics_history()`      | `training_monitor.get_recent_metrics()` |
-| Get current metrics             | `get_current_state()`        | `training_monitor.get_current_metrics()` |
+| Operation           | DemoMode Method         | CascorServiceAdapter Method              |
+|---------------------|-------------------------|------------------------------------------|
+| Get current status  | `get_current_state()`   | `get_training_status()`                  |
+| Get metrics history | `get_metrics_history()` | `training_monitor.get_recent_metrics()`  |
+| Get current metrics | `get_current_state()`   | `training_monitor.get_current_metrics()` |
 
 **Network and data** (called from REST endpoints):
 
-| Operation                       | DemoMode Method               | CascorServiceAdapter Method        |
-|---------------------------------|-------------------------------|------------------------------------|
-| Get network object              | `get_network()`              | `.network` (property)              |
-| Get network topology            | *(derived from network)*     | `extract_network_topology()`       |
-| Get network data/stats          | *(derived from network)*     | `get_network_data()`               |
-| Get dataset                     | `get_dataset()`              | `get_dataset_info()`               |
-| Get decision boundary           | *(computed from network)*    | `get_prediction_function()` → None |
+| Operation              | DemoMode Method           | CascorServiceAdapter Method        |
+|------------------------|---------------------------|------------------------------------|
+| Get network object     | `get_network()`           | `.network` (property)              |
+| Get network topology   | *(derived from network)*  | `extract_network_topology()`       |
+| Get network data/stats | *(derived from network)*  | `get_network_data()`               |
+| Get dataset            | `get_dataset()`           | `get_dataset_info()`               |
+| Get decision boundary  | *(computed from network)* | `get_prediction_function()` → None |
 
 **Lifecycle** (called from startup/shutdown):
 
-| Operation                       | DemoMode Method               | CascorServiceAdapter Method        |
-|---------------------------------|-------------------------------|------------------------------------|
-| Initialize/connect              | `__init__()` + `start()`     | `connect()` (async)                |
-| Shutdown                        | `stop()`                     | `shutdown()`                       |
-| Training state machine          | `.state_machine` / `.training_state` | *(not applicable — managed by CasCor service)* |
-| Apply parameter changes         | `apply_params()`             | *(not yet implemented)*            |
+| Operation               | DemoMode Method                      | CascorServiceAdapter Method                    |
+|-------------------------|--------------------------------------|------------------------------------------------|
+| Initialize/connect      | `__init__()` + `start()`             | `connect()` (async)                            |
+| Shutdown                | `stop()`                             | `shutdown()`                                   |
+| Training state machine  | `.state_machine` / `.training_state` | *(not applicable — managed by CasCor service)* |
+| Apply parameter changes | `apply_params()`                     | *(not yet implemented)*                        |
 
 ### 5.4 BackendProtocol Design
 
@@ -2771,30 +2771,30 @@ backend = create_backend()
 
 **Impact summary**:
 
-| Metric                         | Before        | After          |
-|--------------------------------|---------------|----------------|
-| `if demo_mode_instance:` checks | ~40           | 0              |
-| `if backend:` checks            | ~15           | 0              |
-| Global variables for mode        | 3 (`demo_mode_instance`, `backend`, `demo_mode_active`) | 1 (`backend`) |
-| Lines of branching code          | ~120          | ~0             |
-| Type safety (mypy)               | No contract   | Full protocol  |
+| Metric                          | Before                                                  | After         |
+|---------------------------------|---------------------------------------------------------|---------------|
+| `if demo_mode_instance:` checks | ~40                                                     | 0             |
+| `if backend:` checks            | ~15                                                     | 0             |
+| Global variables for mode       | 3 (`demo_mode_instance`, `backend`, `demo_mode_active`) | 1 (`backend`) |
+| Lines of branching code         | ~120                                                    | ~0            |
+| Type safety (mypy)              | No contract                                             | Full protocol |
 
 ### 5.8 Implementation Tasks
 
-| #   | Task                                                                                                                                             | Files                                       | Depends On |
-|-----|--------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|------------|
-| 5.1 | Define `BackendProtocol` in `src/backend/protocol.py` with all methods from Section 5.4                                                        | `src/backend/protocol.py` (new)             | —          |
-| 5.2 | Create `DemoBackend` adapter in `src/backend/demo_backend.py` wrapping `DemoMode`                                                               | `src/backend/demo_backend.py` (new)         | 5.1        |
-| 5.3 | Create `ServiceBackend` adapter in `src/backend/service_backend.py` wrapping `CascorServiceAdapter`                                             | `src/backend/service_backend.py` (new)      | 5.1        |
-| 5.4 | Create `create_backend()` factory function in `src/backend/__init__.py`                                                                          | `src/backend/__init__.py`                   | 5.2, 5.3   |
-| 5.5 | Refactor `main.py` — replace all `demo_mode_instance` / `backend` branching with single `backend: BackendProtocol` dispatch                     | `src/main.py`                               | 5.4        |
-| 5.6 | Add `mypy` protocol conformance check: `assert isinstance(DemoBackend(...), BackendProtocol)` and same for `ServiceBackend`                     | `src/backend/protocol.py`                   | 5.2, 5.3   |
-| 5.7 | Write unit tests for `DemoBackend` — all protocol methods return expected types                                                                  | `src/tests/unit/test_demo_backend.py` (new) | 5.2        |
-| 5.8 | Write unit tests for `ServiceBackend` — all protocol methods return expected types (mocked `CascorServiceAdapter`)                               | `src/tests/unit/test_service_backend.py` (new) | 5.3     |
-| 5.9 | Write unit test for `create_backend()` factory — verify correct backend type for each env var combination                                        | `src/tests/unit/test_backend_factory.py` (new) | 5.4     |
-| 5.10 | Run full test suite (`pytest tests/ -v`) — verify all 3,215+ tests pass with refactored main.py                                                | —                                           | 5.5        |
-| 5.11 | Run `mypy src/ --ignore-missing-imports` — verify no protocol violations                                                                        | —                                           | 5.5        |
-| 5.12 | Update `conftest.py` `reset_singletons` fixture if `DemoBackend`/`ServiceBackend` introduce new singletons                                      | `src/tests/conftest.py`                     | 5.5        |
+| #    | Task                                                                                                                        | Files                                          | Depends On |
+|------|-----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------|------------|
+| 5.1  | Define `BackendProtocol` in `src/backend/protocol.py` with all methods from Section 5.4                                     | `src/backend/protocol.py` (new)                | —          |
+| 5.2  | Create `DemoBackend` adapter in `src/backend/demo_backend.py` wrapping `DemoMode`                                           | `src/backend/demo_backend.py` (new)            | 5.1        |
+| 5.3  | Create `ServiceBackend` adapter in `src/backend/service_backend.py` wrapping `CascorServiceAdapter`                         | `src/backend/service_backend.py` (new)         | 5.1        |
+| 5.4  | Create `create_backend()` factory function in `src/backend/__init__.py`                                                     | `src/backend/__init__.py`                      | 5.2, 5.3   |
+| 5.5  | Refactor `main.py` — replace all `demo_mode_instance` / `backend` branching with single `backend: BackendProtocol` dispatch | `src/main.py`                                  | 5.4        |
+| 5.6  | Add `mypy` protocol conformance check: `assert isinstance(DemoBackend(...), BackendProtocol)` and same for `ServiceBackend` | `src/backend/protocol.py`                      | 5.2, 5.3   |
+| 5.7  | Write unit tests for `DemoBackend` — all protocol methods return expected types                                             | `src/tests/unit/test_demo_backend.py` (new)    | 5.2        |
+| 5.8  | Write unit tests for `ServiceBackend` — all protocol methods return expected types (mocked `CascorServiceAdapter`)          | `src/tests/unit/test_service_backend.py` (new) | 5.3        |
+| 5.9  | Write unit test for `create_backend()` factory — verify correct backend type for each env var combination                   | `src/tests/unit/test_backend_factory.py` (new) | 5.4        |
+| 5.10 | Run full test suite (`pytest tests/ -v`) — verify all 3,215+ tests pass with refactored main.py                             | —                                              | 5.5        |
+| 5.11 | Run `mypy src/ --ignore-missing-imports` — verify no protocol violations                                                    | —                                              | 5.5        |
+| 5.12 | Update `conftest.py` `reset_singletons` fixture if `DemoBackend`/`ServiceBackend` introduce new singletons                  | `src/tests/conftest.py`                        | 5.5        |
 
 ### 5.9 Verification Procedure
 
@@ -2848,22 +2848,22 @@ print('Fallback to demo: OK')
 
 ### 5.10 Security Considerations
 
-| Concern                                   | Mitigation                                                                                                                                     |
-|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| Demo mode enabled in production           | `create_backend()` logs the active mode at INFO level. Add a WARNING if `CASCOR_DEMO_MODE=1` and `JUNIPER_ENV=production` (future enhancement) |
-| Protocol methods expose internal state    | Protocol returns `Dict[str, Any]` — no direct access to `MockCascorNetwork` or `JuniperCascorClient` internals from route handlers            |
-| Factory function trusts env vars          | Same security posture as current `main.py` — no regression. Env var validation unchanged                                                      |
-| ServiceBackend exposes service URL in logs | Already the case in current implementation. No new exposure                                                                                   |
+| Concern                                    | Mitigation                                                                                                                                     |
+|--------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| Demo mode enabled in production            | `create_backend()` logs the active mode at INFO level. Add a WARNING if `CASCOR_DEMO_MODE=1` and `JUNIPER_ENV=production` (future enhancement) |
+| Protocol methods expose internal state     | Protocol returns `Dict[str, Any]` — no direct access to `MockCascorNetwork` or `JuniperCascorClient` internals from route handlers             |
+| Factory function trusts env vars           | Same security posture as current `main.py` — no regression. Env var validation unchanged                                                       |
+| ServiceBackend exposes service URL in logs | Already the case in current implementation. No new exposure                                                                                    |
 
 ### 5.11 Performance Considerations
 
-| Concern                              | Impact                                                           | Mitigation                                                                                              |
-|--------------------------------------|------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| Additional indirection layer         | ~1 method call overhead per request (~0.001ms)                   | Negligible. Python method dispatch is ~100ns. Dashboard update intervals are 500-1000ms                 |
-| DemoBackend wraps DemoMode           | Thin adapter — no data copying, no serialization                 | All methods delegate directly to DemoMode. No performance regression                                    |
-| ServiceBackend wraps adapter         | Thin adapter — same as above                                     | All methods delegate directly to CascorServiceAdapter. No performance regression                        |
-| Factory called once at startup       | Single call, no ongoing cost                                     | Backend object is created once and reused for the lifetime of the application                            |
-| Protocol `isinstance()` check        | Only used in tests/assertions, not in hot paths                  | `@runtime_checkable` adds no overhead to normal method calls                                            |
+| Concern                        | Impact                                           | Mitigation                                                                              |
+|--------------------------------|--------------------------------------------------|-----------------------------------------------------------------------------------------|
+| Additional indirection layer   | ~1 method call overhead per request (~0.001ms)   | Negligible. Python method dispatch is ~100ns. Dashboard update intervals are 500-1000ms |
+| DemoBackend wraps DemoMode     | Thin adapter — no data copying, no serialization | All methods delegate directly to DemoMode. No performance regression                    |
+| ServiceBackend wraps adapter   | Thin adapter — same as above                     | All methods delegate directly to CascorServiceAdapter. No performance regression        |
+| Factory called once at startup | Single call, no ongoing cost                     | Backend object is created once and reused for the lifetime of the application           |
+| Protocol `isinstance()` check  | Only used in tests/assertions, not in hot paths  | `@runtime_checkable` adds no overhead to normal method calls                            |
 
 ---
 
@@ -2881,13 +2881,13 @@ print('Fallback to demo: OK')
 
 ### 6.2 Prerequisites
 
-| Requirement                          | Version   | Verification                                               |
-|--------------------------------------|-----------|------------------------------------------------------------|
-| Python                               | >= 3.12   | `python --version`                                         |
-| Phase 5 complete (BackendProtocol)   | —         | `BackendProtocol` defined and both backends passing tests  |
-| juniper-cascor-client                | >= 0.1.0  | `pip show juniper-cascor-client`                           |
-| juniper-data-client                  | >= 0.3.0  | `pip show juniper-data-client`                             |
-| numpy                                | >= 1.24   | For generating synthetic NPZ artifacts in FakeDataClient   |
+| Requirement                        | Version  | Verification                                              |
+|------------------------------------|----------|-----------------------------------------------------------|
+| Python                             | >= 3.12  | `python --version`                                        |
+| Phase 5 complete (BackendProtocol) | —        | `BackendProtocol` defined and both backends passing tests |
+| juniper-cascor-client              | >= 0.1.0 | `pip show juniper-cascor-client`                          |
+| juniper-data-client                | >= 0.3.0 | `pip show juniper-data-client`                            |
+| numpy                              | >= 1.24  | For generating synthetic NPZ artifacts in FakeDataClient  |
 
 ### 6.3 FakeCascorClient Design
 
@@ -2973,13 +2973,13 @@ class FakeCascorClient:
 
 **Scenario presets**:
 
-| Scenario                | Initial State   | Network   | Dataset       | Behavior                                  |
-|-------------------------|-----------------|-----------|---------------|-------------------------------------------|
-| `"idle"`                | Idle            | None      | None          | Ready for network creation                |
-| `"two_spiral_training"` | Training        | 2→1 CasCor | Two spiral    | Generates realistic loss/accuracy curves  |
-| `"xor_converged"`       | Complete        | 2→1 CasCor | XOR           | Fully trained, static metrics             |
-| `"empty"`               | Idle            | None      | None          | Minimal responses, for negative testing   |
-| `"error_prone"`         | Varies          | Varies    | Varies        | Raises exceptions on ~10% of calls        |
+| Scenario                | Initial State | Network    | Dataset    | Behavior                                 |
+|-------------------------|---------------|------------|------------|------------------------------------------|
+| `"idle"`                | Idle          | None       | None       | Ready for network creation               |
+| `"two_spiral_training"` | Training      | 2→1 CasCor | Two spiral | Generates realistic loss/accuracy curves |
+| `"xor_converged"`       | Complete      | 2→1 CasCor | XOR        | Fully trained, static metrics            |
+| `"empty"`               | Idle          | None       | None       | Minimal responses, for negative testing  |
+| `"error_prone"`         | Varies        | Varies     | Varies     | Raises exceptions on ~10% of calls       |
 
 ### 6.4 FakeDataClient Design
 
@@ -3039,12 +3039,12 @@ class FakeDataClient:
 
 **Generator presets** (matching real JuniperData generators):
 
-| Generator    | Output Keys                                           | Description                         |
-|--------------|-------------------------------------------------------|-------------------------------------|
-| `spiral`     | `X_train`, `y_train`, `X_test`, `y_test`, `X_full`, `y_full` | Configurable n_spirals, noise, seed |
-| `xor`        | Same                                                  | 4-point XOR with optional noise     |
-| `circle`     | Same                                                  | Concentric circles                  |
-| `moon`       | Same                                                  | Two interleaving half-moons         |
+| Generator | Output Keys                                                  | Description                         |
+|-----------|--------------------------------------------------------------|-------------------------------------|
+| `spiral`  | `X_train`, `y_train`, `X_test`, `y_test`, `X_full`, `y_full` | Configurable n_spirals, noise, seed |
+| `xor`     | Same                                                         | 4-point XOR with optional noise     |
+| `circle`  | Same                                                         | Concentric circles                  |
+| `moon`    | Same                                                         | Two interleaving half-moons         |
 
 All artifact downloads return `float32` NumPy arrays matching the NPZ data contract.
 
@@ -3182,22 +3182,22 @@ backend = ServiceBackend(adapter)
 
 ### 6.8 Implementation Tasks
 
-| #   | Task                                                                                                                                           | Files                                                   | Depends On |
-|-----|------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------|------------|
-| 6.1 | Create `juniper_cascor_client/testing/__init__.py` with public exports                                                                        | `testing/__init__.py` (new)                             | —          |
-| 6.2 | Create `scenarios.py` — metric curve generators, topology templates, pre-built scenario data                                                   | `testing/scenarios.py` (new)                            | —          |
-| 6.3 | Implement `FakeCascorClient` with all methods from Section 6.3, using scenario data from 6.2                                                   | `testing/fake_client.py` (new)                          | 6.1, 6.2   |
-| 6.4 | Implement `FakeCascorTrainingStream` with message injection and async iteration                                                                | `testing/fake_ws_client.py` (new)                       | 6.1        |
-| 6.5 | Write tests for `FakeCascorClient` — all methods, all scenarios, error cases                                                                   | `tests/test_fake_client.py` (new)                       | 6.3        |
-| 6.6 | Write tests for `FakeCascorTrainingStream` — stream, callbacks, injection                                                                      | `tests/test_fake_ws_client.py` (new)                    | 6.4        |
-| 6.7 | Create `juniper_data_client/testing/__init__.py` with public exports                                                                           | `testing/__init__.py` (new)                             | —          |
-| 6.8 | Create `generators.py` — synthetic dataset generators matching real JuniperData output                                                          | `testing/generators.py` (new)                           | —          |
-| 6.9 | Implement `FakeDataClient` with all methods from Section 6.4, using generators from 6.8                                                        | `testing/fake_client.py` (new)                          | 6.7, 6.8   |
-| 6.10 | Write tests for `FakeDataClient` — all methods, dataset creation, artifact downloads                                                          | `tests/test_fake_client.py` (new)                       | 6.9        |
-| 6.11 | Add `client` parameter to `CascorServiceAdapter.__init__()` for dependency injection (Section 6.7)                                            | `src/backend/cascor_service_adapter.py`                 | 6.3        |
-| 6.12 | Write integration test: `ServiceBackend` + `CascorServiceAdapter` + `FakeCascorClient` — full protocol exercised without real CasCor           | `src/tests/integration/test_fake_service_backend.py` (new) | 6.3, 6.11, Phase 5 |
-| 6.13 | Verify both client library test suites pass: `cd juniper-cascor-client && pytest tests/ -v` and `cd juniper-data-client && pytest tests/ -v`   | —                                                       | 6.5, 6.6, 6.10 |
-| 6.14 | Verify JuniperCanopy test suite passes with no regressions: `cd JuniperCanopy/juniper_canopy/src && pytest tests/ -v`                          | —                                                       | 6.11, 6.12 |
+| #    | Task                                                                                                                                         | Files                                                      | Depends On         |
+|------|----------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|--------------------|
+| 6.1  | Create `juniper_cascor_client/testing/__init__.py` with public exports                                                                       | `testing/__init__.py` (new)                                | —                  |
+| 6.2  | Create `scenarios.py` — metric curve generators, topology templates, pre-built scenario data                                                 | `testing/scenarios.py` (new)                               | —                  |
+| 6.3  | Implement `FakeCascorClient` with all methods from Section 6.3, using scenario data from 6.2                                                 | `testing/fake_client.py` (new)                             | 6.1, 6.2           |
+| 6.4  | Implement `FakeCascorTrainingStream` with message injection and async iteration                                                              | `testing/fake_ws_client.py` (new)                          | 6.1                |
+| 6.5  | Write tests for `FakeCascorClient` — all methods, all scenarios, error cases                                                                 | `tests/test_fake_client.py` (new)                          | 6.3                |
+| 6.6  | Write tests for `FakeCascorTrainingStream` — stream, callbacks, injection                                                                    | `tests/test_fake_ws_client.py` (new)                       | 6.4                |
+| 6.7  | Create `juniper_data_client/testing/__init__.py` with public exports                                                                         | `testing/__init__.py` (new)                                | —                  |
+| 6.8  | Create `generators.py` — synthetic dataset generators matching real JuniperData output                                                       | `testing/generators.py` (new)                              | —                  |
+| 6.9  | Implement `FakeDataClient` with all methods from Section 6.4, using generators from 6.8                                                      | `testing/fake_client.py` (new)                             | 6.7, 6.8           |
+| 6.10 | Write tests for `FakeDataClient` — all methods, dataset creation, artifact downloads                                                         | `tests/test_fake_client.py` (new)                          | 6.9                |
+| 6.11 | Add `client` parameter to `CascorServiceAdapter.__init__()` for dependency injection (Section 6.7)                                           | `src/backend/cascor_service_adapter.py`                    | 6.3                |
+| 6.12 | Write integration test: `ServiceBackend` + `CascorServiceAdapter` + `FakeCascorClient` — full protocol exercised without real CasCor         | `src/tests/integration/test_fake_service_backend.py` (new) | 6.3, 6.11, Phase 5 |
+| 6.13 | Verify both client library test suites pass: `cd juniper-cascor-client && pytest tests/ -v` and `cd juniper-data-client && pytest tests/ -v` | —                                                          | 6.5, 6.6, 6.10     |
+| 6.14 | Verify JuniperCanopy test suite passes with no regressions: `cd JuniperCanopy/juniper_canopy/src && pytest tests/ -v`                        | —                                                          | 6.11, 6.12         |
 
 ### 6.9 Verification Procedure
 
@@ -3272,22 +3272,22 @@ asyncio.run(test())
 
 ### 6.10 Security Considerations
 
-| Concern                                  | Mitigation                                                                                                                     |
-|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| Fake clients imported in production      | Fakes are in a `testing` submodule — import path makes intent clear. No runtime guard needed (they are safe, just synthetic)   |
-| Synthetic data contains patterns of real data | Fakes generate mathematical curves (sin, spiral), not copies of real training data. No PII or proprietary data risk          |
-| FakeDataClient generates NPZ artifacts   | Artifacts contain only synthetic NumPy arrays. No file system access — all in-memory                                          |
-| Fake exception raising                   | `error_prone` scenario raises real exception types — consuming code must handle them correctly (this is a feature, not a risk) |
+| Concern                                       | Mitigation                                                                                                                     |
+|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| Fake clients imported in production           | Fakes are in a `testing` submodule — import path makes intent clear. No runtime guard needed (they are safe, just synthetic)   |
+| Synthetic data contains patterns of real data | Fakes generate mathematical curves (sin, spiral), not copies of real training data. No PII or proprietary data risk            |
+| FakeDataClient generates NPZ artifacts        | Artifacts contain only synthetic NumPy arrays. No file system access — all in-memory                                           |
+| Fake exception raising                        | `error_prone` scenario raises real exception types — consuming code must handle them correctly (this is a feature, not a risk) |
 
 ### 6.11 Performance Considerations
 
-| Concern                           | Impact                                                          | Mitigation                                                                                     |
-|-----------------------------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| Fake client in demo mode          | Faster than real HTTP calls (~0.001ms vs ~1-10ms per method)    | Performance improvement over current DemoMode in some paths                                    |
-| Scenario data generation          | Pre-computed at `__init__` time (~1-10ms depending on scenario) | One-time cost. Negligible for demo or test startup                                             |
-| NPZ artifact generation           | NumPy array creation (~1ms for 200-sample dataset)              | Equivalent to current DemoMode dataset generation. No regression                               |
-| FakeCascorTrainingStream overhead  | In-memory async iteration (~0.01ms per message)                 | Orders of magnitude faster than real WebSocket I/O                                              |
-| Package size increase              | ~5-20 KB per testing submodule                                  | Negligible addition to package size. No new dependencies                                        |
+| Concern                           | Impact                                                          | Mitigation                                                       |
+|-----------------------------------|-----------------------------------------------------------------|------------------------------------------------------------------|
+| Fake client in demo mode          | Faster than real HTTP calls (~0.001ms vs ~1-10ms per method)    | Performance improvement over current DemoMode in some paths      |
+| Scenario data generation          | Pre-computed at `__init__` time (~1-10ms depending on scenario) | One-time cost. Negligible for demo or test startup               |
+| NPZ artifact generation           | NumPy array creation (~1ms for 200-sample dataset)              | Equivalent to current DemoMode dataset generation. No regression |
+| FakeCascorTrainingStream overhead | In-memory async iteration (~0.01ms per message)                 | Orders of magnitude faster than real WebSocket I/O               |
+| Package size increase             | ~5-20 KB per testing submodule                                  | Negligible addition to package size. No new dependencies         |
 
 ---
 
@@ -3304,14 +3304,14 @@ asyncio.run(test())
 
 ### 7.2 Prerequisites
 
-| Requirement                 | Version   | Verification                                  |
-|-----------------------------|-----------|-----------------------------------------------|
-| Docker Engine               | >= 24.0   | `docker --version`                            |
-| Docker Compose V2           | >= 2.20   | `docker compose version`                      |
-| Phase 1 complete            | —         | `juniper-deploy/Makefile` and Compose working |
-| juniper-data images built   | —         | `docker images juniper-data`                  |
-| juniper-cascor images built | —         | `docker images juniper-cascor`                |
-| juniper-canopy images built | —         | `docker images juniper-canopy`                |
+| Requirement                 | Version | Verification                                  |
+|-----------------------------|---------|-----------------------------------------------|
+| Docker Engine               | >= 24.0 | `docker --version`                            |
+| Docker Compose V2           | >= 2.20 | `docker compose version`                      |
+| Phase 1 complete            | —       | `juniper-deploy/Makefile` and Compose working |
+| juniper-data images built   | —       | `docker images juniper-data`                  |
+| juniper-cascor images built | —       | `docker images juniper-cascor`                |
+| juniper-canopy images built | —       | `docker images juniper-canopy`                |
 
 Phase 7 is infrastructure-only and does not depend on Phase 5 or Phase 6.
 
@@ -3332,15 +3332,15 @@ docker compose --profile dev up
 
 **Profile membership**:
 
-| Service                | `full` | `demo` | `dev` | Notes                                              |
-|------------------------|--------|--------|-------|----------------------------------------------------|
-| `juniper-data`         | yes    | yes    | yes   | Always needed (real dataset service)               |
-| `juniper-cascor`       | yes    | no     | yes   | Real CasCor for full/dev stacks                    |
-| `juniper-cascor-demo`  | no     | yes    | no    | Auto-configured CasCor for demo                    |
-| `juniper-canopy`       | yes    | no     | no    | Full Canopy (service mode, real CasCor)            |
-| `juniper-canopy-demo`  | no     | yes    | no    | Canopy pointing at demo CasCor                     |
-| `juniper-canopy-dev`   | no     | no     | yes   | Canopy in demo mode (`CASCOR_DEMO_MODE=1`)         |
-| `demo-seed`            | no     | yes    | no    | Init container: seeds demo dataset in JuniperData  |
+| Service               | `full` | `demo` | `dev` | Notes                                             |
+|-----------------------|--------|--------|-------|---------------------------------------------------|
+| `juniper-data`        | yes    | yes    | yes   | Always needed (real dataset service)              |
+| `juniper-cascor`      | yes    | no     | yes   | Real CasCor for full/dev stacks                   |
+| `juniper-cascor-demo` | no     | yes    | no    | Auto-configured CasCor for demo                   |
+| `juniper-canopy`      | yes    | no     | no    | Full Canopy (service mode, real CasCor)           |
+| `juniper-canopy-demo` | no     | yes    | no    | Canopy pointing at demo CasCor                    |
+| `juniper-canopy-dev`  | no     | no     | yes   | Canopy in demo mode (`CASCOR_DEMO_MODE=1`)        |
+| `demo-seed`           | no     | yes    | no    | Init container: seeds demo dataset in JuniperData |
 
 ### 7.4 Compose File Modifications
 
@@ -3613,14 +3613,14 @@ The `demo-seed` init container creates a canonical demo dataset before CasCor st
 
 **Seed dataset specification**:
 
-| Parameter                 | Value     | Rationale                                      |
-|---------------------------|-----------|-------------------------------------------------|
-| Generator                 | `spiral`  | Visually interesting, classic CasCor benchmark  |
-| `n_spirals`               | 2         | Binary classification — CasCor's primary use    |
-| `n_points_per_spiral`     | 200       | 400 total points — enough for clear boundaries  |
-| `noise`                   | 0.15      | Moderate noise — shows CasCor's capability      |
-| `seed`                    | 42        | Reproducible across demo runs                   |
-| `train_ratio`             | 0.8       | 320 train / 80 test                             |
+| Parameter             | Value    | Rationale                                      |
+|-----------------------|----------|------------------------------------------------|
+| Generator             | `spiral` | Visually interesting, classic CasCor benchmark |
+| `n_spirals`           | 2        | Binary classification — CasCor's primary use   |
+| `n_points_per_spiral` | 200      | 400 total points — enough for clear boundaries |
+| `noise`               | 0.15     | Moderate noise — shows CasCor's capability     |
+| `seed`                | 42       | Reproducible across demo runs                  |
+| `train_ratio`         | 0.8      | 320 train / 80 test                            |
 
 ### 7.7 Environment Configuration
 
@@ -3655,22 +3655,22 @@ docker compose --profile full up
 
 ### 7.8 Implementation Tasks
 
-| #   | Task                                                                                                                                                          | Files                                                | Depends On  |
-|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|-------------|
-| 7.1 | Add `profiles: [full, demo, dev]` to `juniper-data` service in `docker-compose.yml`                                                                          | `docker-compose.yml`                                 | —           |
-| 7.2 | Add `profiles: [full, dev]` to `juniper-cascor` service and `profiles: [full]` to `juniper-canopy` service                                                   | `docker-compose.yml`                                 | —           |
-| 7.3 | Add `juniper-cascor-demo` service definition with auto-start env vars (Section 7.4)                                                                          | `docker-compose.yml`                                 | 7.1         |
-| 7.4 | Add `demo-seed` init container service definition (Section 7.4)                                                                                               | `docker-compose.yml`                                 | 7.1         |
-| 7.5 | Add `juniper-canopy-demo` service definition pointing at `juniper-cascor-demo` (Section 7.4)                                                                  | `docker-compose.yml`                                 | 7.3         |
-| 7.6 | Add `juniper-canopy-dev` service definition with `CASCOR_DEMO_MODE=1` (Section 7.4)                                                                          | `docker-compose.yml`                                 | 7.1         |
-| 7.7 | Implement auto-start training hook in `juniper-cascor/src/server.py` (Section 7.5) — new `CASCOR_AUTO_START` env vars                                        | `juniper-cascor/src/server.py`                       | —           |
-| 7.8 | Add auto-start Pydantic settings to JuniperCascor config: `CASCOR_AUTO_START`, `CASCOR_AUTO_DATASET`, `CASCOR_AUTO_NETWORK`, `CASCOR_AUTO_TRAIN_EPOCHS`      | `juniper-cascor/src/config.py` (or settings module)  | —           |
-| 7.9 | Create `.env.demo` template in `juniper-deploy/` (Section 7.7)                                                                                               | `.env.demo`                                          | —           |
-| 7.10 | Add `demo` target to `juniper-deploy/Makefile`: `docker compose --profile demo up -d`                                                                        | `Makefile`                                           | Phase 1     |
-| 7.11 | Add `dev` target to `juniper-deploy/Makefile`: `docker compose --profile dev up -d`                                                                           | `Makefile`                                           | Phase 1     |
-| 7.12 | Write integration test: `docker compose --profile demo up && wait_for_services.sh && verify training started`                                                 | `scripts/test_demo_profile.sh` (new)                 | 7.3, 7.4, 7.5, 7.7 |
-| 7.13 | Update `juniper-deploy/README.md` with profile usage documentation                                                                                            | `README.md`                                          | 7.10, 7.11  |
-| 7.14 | Validate `docker compose config --profiles demo` outputs valid YAML with all expected services                                                                 | —                                                    | 7.1-7.6     |
+| #    | Task                                                                                                                                                    | Files                                               | Depends On         |
+|------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|--------------------|
+| 7.1  | Add `profiles: [full, demo, dev]` to `juniper-data` service in `docker-compose.yml`                                                                     | `docker-compose.yml`                                | —                  |
+| 7.2  | Add `profiles: [full, dev]` to `juniper-cascor` service and `profiles: [full]` to `juniper-canopy` service                                              | `docker-compose.yml`                                | —                  |
+| 7.3  | Add `juniper-cascor-demo` service definition with auto-start env vars (Section 7.4)                                                                     | `docker-compose.yml`                                | 7.1                |
+| 7.4  | Add `demo-seed` init container service definition (Section 7.4)                                                                                         | `docker-compose.yml`                                | 7.1                |
+| 7.5  | Add `juniper-canopy-demo` service definition pointing at `juniper-cascor-demo` (Section 7.4)                                                            | `docker-compose.yml`                                | 7.3                |
+| 7.6  | Add `juniper-canopy-dev` service definition with `CASCOR_DEMO_MODE=1` (Section 7.4)                                                                     | `docker-compose.yml`                                | 7.1                |
+| 7.7  | Implement auto-start training hook in `juniper-cascor/src/server.py` (Section 7.5) — new `CASCOR_AUTO_START` env vars                                   | `juniper-cascor/src/server.py`                      | —                  |
+| 7.8  | Add auto-start Pydantic settings to JuniperCascor config: `CASCOR_AUTO_START`, `CASCOR_AUTO_DATASET`, `CASCOR_AUTO_NETWORK`, `CASCOR_AUTO_TRAIN_EPOCHS` | `juniper-cascor/src/config.py` (or settings module) | —                  |
+| 7.9  | Create `.env.demo` template in `juniper-deploy/` (Section 7.7)                                                                                          | `.env.demo`                                         | —                  |
+| 7.10 | Add `demo` target to `juniper-deploy/Makefile`: `docker compose --profile demo up -d`                                                                   | `Makefile`                                          | Phase 1            |
+| 7.11 | Add `dev` target to `juniper-deploy/Makefile`: `docker compose --profile dev up -d`                                                                     | `Makefile`                                          | Phase 1            |
+| 7.12 | Write integration test: `docker compose --profile demo up && wait_for_services.sh && verify training started`                                           | `scripts/test_demo_profile.sh` (new)                | 7.3, 7.4, 7.5, 7.7 |
+| 7.13 | Update `juniper-deploy/README.md` with profile usage documentation                                                                                      | `README.md`                                         | 7.10, 7.11         |
+| 7.14 | Validate `docker compose config --profiles demo` outputs valid YAML with all expected services                                                          | —                                                   | 7.1-7.6            |
 
 ### 7.9 Verification Procedure
 
@@ -3728,23 +3728,23 @@ docker compose --profile full down
 
 ### 7.10 Security Considerations
 
-| Concern                                     | Mitigation                                                                                                                                |
-|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| Demo services accessible on host ports      | Demo profile binds to same ports as production. Do not run demo and full profiles simultaneously                                         |
-| Auto-start env vars exposed in Compose file | No secrets in auto-start config. Dataset params and network config are non-sensitive. API keys (if any) come from `.env` file             |
-| `demo-seed` container has data service access | Init container runs to completion and exits. No persistent access. `restart: "no"` ensures it doesn't restart                           |
-| Demo profile accidentally deployed to production | Profile names make intent explicit. CI/CD should use `--profile full` only. Document the distinction in README                        |
-| `CASCOR_AUTO_START` enabled in production   | Default is `false`. Only set to `true` in demo profile env block. Server logs a prominent WARNING if auto-start is enabled                |
+| Concern                                          | Mitigation                                                                                                                    |
+|--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| Demo services accessible on host ports           | Demo profile binds to same ports as production. Do not run demo and full profiles simultaneously                              |
+| Auto-start env vars exposed in Compose file      | No secrets in auto-start config. Dataset params and network config are non-sensitive. API keys (if any) come from `.env` file |
+| `demo-seed` container has data service access    | Init container runs to completion and exits. No persistent access. `restart: "no"` ensures it doesn't restart                 |
+| Demo profile accidentally deployed to production | Profile names make intent explicit. CI/CD should use `--profile full` only. Document the distinction in README                |
+| `CASCOR_AUTO_START` enabled in production        | Default is `false`. Only set to `true` in demo profile env block. Server logs a prominent WARNING if auto-start is enabled    |
 
 ### 7.11 Performance Considerations
 
-| Concern                           | Impact                                                                 | Mitigation                                                                                   |
-|-----------------------------------|------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| Demo stack resource usage         | 3 services + init container (~1.5-2 GB RAM total)                      | Same as full stack. Demo training runs at normal speed — no throttling                       |
-| Demo startup time                 | ~30-60s (build images + health checks + seed + auto-start)             | Longer than in-process demo mode (~1s). Acceptable for demo context                         |
-| Auto-start training CPU usage     | Real CasCor training uses real CPU (single core, no GPU in container)  | CPU-only PyTorch in container. Training 500 epochs of 400-point spiral: ~30-60s              |
-| Demo dataset seed time            | `demo-seed` container runs ~5-10s                                      | One-time init container. Runs before CasCor starts                                           |
-| Simultaneous profile conflicts    | Cannot run `demo` and `full` profiles at same time (port conflicts)    | Document in README. `docker compose ps` shows which profile is active                        |
+| Concern                        | Impact                                                                | Mitigation                                                                      |
+|--------------------------------|-----------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| Demo stack resource usage      | 3 services + init container (~1.5-2 GB RAM total)                     | Same as full stack. Demo training runs at normal speed — no throttling          |
+| Demo startup time              | ~30-60s (build images + health checks + seed + auto-start)            | Longer than in-process demo mode (~1s). Acceptable for demo context             |
+| Auto-start training CPU usage  | Real CasCor training uses real CPU (single core, no GPU in container) | CPU-only PyTorch in container. Training 500 epochs of 400-point spiral: ~30-60s |
+| Demo dataset seed time         | `demo-seed` container runs ~5-10s                                     | One-time init container. Runs before CasCor starts                              |
+| Simultaneous profile conflicts | Cannot run `demo` and `full` profiles at same time (port conflicts)   | Document in README. `docker compose ps` shows which profile is active           |
 
 ---
 
@@ -3762,21 +3762,21 @@ Phase 8 (Immediate):  Enhance /v1/health/ready to include dependency health stat
 
 ### Current Health Check State
 
-| Service           | `/v1/health`                  | `/v1/health/live`          | `/v1/health/ready`                                          | Response Format    |
-|-------------------|-------------------------------|----------------------------|-------------------------------------------------------------|--------------------|
-| **JuniperData**   | `{"status": "ok", "version"}` | `{"status": "alive"}`      | `{"status": "ready", "version"}`                            | Plain dict         |
-| **JuniperCascor** | Envelope: `data.status: "ok"` | Envelope: `data.status: "alive"}` | Envelope: `data.status: "ready", data.network_loaded: bool` | Pydantic envelope  |
-| **JuniperCanopy** | `{"status": "healthy", ...}`  | `{"status": "alive"}`      | `{"status": "ready", "version", "juniper_data_available"}`  | Plain dict         |
+| Service           | `/v1/health`                  | `/v1/health/live`                 | `/v1/health/ready`                                          | Response Format   |
+|-------------------|-------------------------------|-----------------------------------|-------------------------------------------------------------|-------------------|
+| **JuniperData**   | `{"status": "ok", "version"}` | `{"status": "alive"}`             | `{"status": "ready", "version"}`                            | Plain dict        |
+| **JuniperCascor** | Envelope: `data.status: "ok"` | Envelope: `data.status: "alive"}` | Envelope: `data.status: "ready", data.network_loaded: bool` | Pydantic envelope |
+| **JuniperCanopy** | `{"status": "healthy", ...}`  | `{"status": "alive"}`             | `{"status": "ready", "version", "juniper_data_available"}`  | Plain dict        |
 
 ### Gap Analysis
 
-| Gap                                          | Impact                                                                                  |
-|----------------------------------------------|-----------------------------------------------------------------------------------------|
-| Response format inconsistency                | Consumers must handle both plain dicts and Pydantic envelopes                           |
-| No dependency health in readiness            | Orchestrators cannot detect cascading failures (e.g., CasCor healthy but Data down)     |
-| JuniperData reports ready unconditionally    | No storage availability check — may report ready while storage is unavailable           |
-| JuniperCanopy checks Data only at startup    | Health endpoint reports stale status if Data becomes unavailable mid-session             |
-| Canopy has 5 health routes (with aliases)    | Maintenance burden; non-standard `/health` and `/api/health` routes                     |
+| Gap                                       | Impact                                                                              |
+|-------------------------------------------|-------------------------------------------------------------------------------------|
+| Response format inconsistency             | Consumers must handle both plain dicts and Pydantic envelopes                       |
+| No dependency health in readiness         | Orchestrators cannot detect cascading failures (e.g., CasCor healthy but Data down) |
+| JuniperData reports ready unconditionally | No storage availability check — may report ready while storage is unavailable       |
+| JuniperCanopy checks Data only at startup | Health endpoint reports stale status if Data becomes unavailable mid-session        |
+| Canopy has 5 health routes (with aliases) | Maintenance burden; non-standard `/health` and `/api/health` routes                 |
 
 ---
 
@@ -3793,12 +3793,12 @@ Phase 8 (Immediate):  Enhance /v1/health/ready to include dependency health stat
 
 ### 8.2 Prerequisites
 
-| Requirement                     | Version   | Verification                                               |
-|---------------------------------|-----------|------------------------------------------------------------|
-| Python                          | >= 3.12   | `python --version`                                         |
-| pydantic                        | >= 2.0    | `pip show pydantic` (already a dependency in all services) |
+| Requirement                       | Version | Verification                                               |
+|-----------------------------------|---------|------------------------------------------------------------|
+| Python                            | >= 3.12 | `python --version`                                         |
+| pydantic                          | >= 2.0  | `pip show pydantic` (already a dependency in all services) |
 | All services running and testable | —       | `make up && make health` (Phase 1)                         |
-| Existing test suites green      | —         | All service tests passing                                  |
+| Existing test suites green        | —       | All service tests passing                                  |
 
 ### 8.3 Current Health Endpoint Analysis
 
@@ -3923,6 +3923,7 @@ class ReadinessResponse(BaseModel):
     "active_connections": 2,
     "training_active": true
   }
+}
 ```
 
 **Degraded status logic**: A service reports `"degraded"` (not `"not_ready"`) when a non-critical dependency is unhealthy. For example, Canopy is `"degraded"` if CasCor is down but it can fall back to demo mode. A service reports `"not_ready"` only when it genuinely cannot serve requests.
@@ -4045,7 +4046,7 @@ async def readiness():
 
 Currently, only JuniperCascor uses a `ResponseEnvelope` wrapper. Two options:
 
-**Option A (Recommended): Adopt envelope in all services**
+**Option A (Recommended): Adopt envelope in all services:**
 
 All services wrap health responses in `ResponseEnvelope`:
 
@@ -4059,7 +4060,7 @@ All services wrap health responses in `ResponseEnvelope`:
 
 **Pros**: Consistent parsing across all services. Consumers always expect the same structure.
 
-**Option B: Drop envelope, return flat responses**
+**Option B: Drop envelope, return flat responses:**
 
 All services return `ReadinessResponse` directly (JuniperCascor removes its envelope for health routes).
 
@@ -4125,22 +4126,22 @@ def _probe_dependency(name: str, url: str, timeout: float = 5.0) -> DependencySt
 
 ### 8.8 Implementation Tasks
 
-| #    | Task                                                                                                                                               | Files                                              | Depends On |
-|------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|------------|
-| 8.1  | Create shared Pydantic models: `DependencyStatus`, `ReadinessResponse` — consider a `juniper-common` package or duplicate in each service          | New models file per service                         | —          |
-| 8.2  | Implement `_probe_dependency()` utility function in each service (or shared)                                                                       | Utility module per service                          | 8.1        |
-| 8.3  | Enhance JuniperData `/v1/health/ready` — add storage directory check, return `ReadinessResponse`                                                   | `juniper_data/api/routes/health.py`                 | 8.1        |
-| 8.4  | Enhance JuniperCascor `/v1/health/ready` — add JuniperData probe, return flat `ReadinessResponse` (remove envelope for health routes only)         | `src/api/routes/health.py`                          | 8.1, 8.2   |
-| 8.5  | Enhance JuniperCanopy `/v1/health/ready` — add JuniperData + CasCor probes, return `ReadinessResponse`                                            | `src/main.py` (or new `src/health.py`)              | 8.1, 8.2   |
-| 8.6  | Deprecate JuniperCanopy's `/health` and `/api/health` aliases — add deprecation warning header, plan removal                                       | `src/main.py`                                       | 8.5        |
-| 8.7  | Implement startup health verification in Canopy: probe CasCor, fallback to demo mode (Section 8.7, addresses CAN-HIGH-001)                        | `src/main.py`                                       | 8.2, Phase 5 |
-| 8.8  | Update `juniper-deploy/scripts/wait_for_services.sh` to parse new `ReadinessResponse` format                                                      | `scripts/wait_for_services.sh`                      | 8.3, 8.4, 8.5 |
-| 8.9  | Update `juniper-deploy/scripts/health_check.sh` (Phase 1) to display dependency status from readiness responses                                   | `scripts/health_check.sh`                           | 8.3, 8.4, 8.5 |
-| 8.10 | Write unit tests for `_probe_dependency()` — healthy, unhealthy, timeout scenarios                                                                 | Test files per service                              | 8.2        |
-| 8.11 | Write unit tests for enhanced readiness endpoints — all dependency combinations                                                                    | Test files per service                              | 8.3, 8.4, 8.5 |
-| 8.12 | Write integration test: start full stack, verify readiness responses include dependency status                                                     | `juniper-deploy/scripts/test_health_enhanced.sh`    | 8.3, 8.4, 8.5 |
-| 8.13 | Update Docker Compose `healthcheck` commands if response format changes affect health check parsing                                                | `juniper-deploy/docker-compose.yml`                 | 8.3, 8.4, 8.5 |
-| 8.14 | Verify Kubernetes probe compatibility: ensure `httpGet` probes still work with new response format (HTTP 200 = healthy)                             | —                                                   | 8.3, 8.4, 8.5 |
+| #    | Task                                                                                                                                       | Files                                            | Depends On    |
+|------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|---------------|
+| 8.1  | Create shared Pydantic models: `DependencyStatus`, `ReadinessResponse` — consider a `juniper-common` package or duplicate in each service  | New models file per service                      | —             |
+| 8.2  | Implement `_probe_dependency()` utility function in each service (or shared)                                                               | Utility module per service                       | 8.1           |
+| 8.3  | Enhance JuniperData `/v1/health/ready` — add storage directory check, return `ReadinessResponse`                                           | `juniper_data/api/routes/health.py`              | 8.1           |
+| 8.4  | Enhance JuniperCascor `/v1/health/ready` — add JuniperData probe, return flat `ReadinessResponse` (remove envelope for health routes only) | `src/api/routes/health.py`                       | 8.1, 8.2      |
+| 8.5  | Enhance JuniperCanopy `/v1/health/ready` — add JuniperData + CasCor probes, return `ReadinessResponse`                                     | `src/main.py` (or new `src/health.py`)           | 8.1, 8.2      |
+| 8.6  | Deprecate JuniperCanopy's `/health` and `/api/health` aliases — add deprecation warning header, plan removal                               | `src/main.py`                                    | 8.5           |
+| 8.7  | Implement startup health verification in Canopy: probe CasCor, fallback to demo mode (Section 8.7, addresses CAN-HIGH-001)                 | `src/main.py`                                    | 8.2, Phase 5  |
+| 8.8  | Update `juniper-deploy/scripts/wait_for_services.sh` to parse new `ReadinessResponse` format                                               | `scripts/wait_for_services.sh`                   | 8.3, 8.4, 8.5 |
+| 8.9  | Update `juniper-deploy/scripts/health_check.sh` (Phase 1) to display dependency status from readiness responses                            | `scripts/health_check.sh`                        | 8.3, 8.4, 8.5 |
+| 8.10 | Write unit tests for `_probe_dependency()` — healthy, unhealthy, timeout scenarios                                                         | Test files per service                           | 8.2           |
+| 8.11 | Write unit tests for enhanced readiness endpoints — all dependency combinations                                                            | Test files per service                           | 8.3, 8.4, 8.5 |
+| 8.12 | Write integration test: start full stack, verify readiness responses include dependency status                                             | `juniper-deploy/scripts/test_health_enhanced.sh` | 8.3, 8.4, 8.5 |
+| 8.13 | Update Docker Compose `healthcheck` commands if response format changes affect health check parsing                                        | `juniper-deploy/docker-compose.yml`              | 8.3, 8.4, 8.5 |
+| 8.14 | Verify Kubernetes probe compatibility: ensure `httpGet` probes still work with new response format (HTTP 200 = healthy)                    | —                                                | 8.3, 8.4, 8.5 |
 
 ### 8.9 Verification Procedure
 
@@ -4194,23 +4195,23 @@ make down
 
 ### 8.10 Security Considerations
 
-| Concern                                        | Mitigation                                                                                                          |
-|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| Health endpoints expose internal service URLs  | URLs are only internal Docker/localhost addresses. In production, restrict health endpoint access via network policy  |
-| Dependency probes make outbound HTTP calls     | Probes use `urllib` with 5s timeout. No credentials sent (only `/v1/health/live` which is public)                   |
-| Readiness response reveals service versions    | Already exposed in current implementation. Versions are public (PyPI packages). Not a security risk                  |
-| Denial-of-service via readiness endpoint       | Probe calls are fast (< 5s timeout). Rate limiting can be added if needed. Health endpoints are lightweight          |
-| Startup fallback to demo mode                  | Logged at WARNING level. Demo mode is safe (no external dependencies). Operator can monitor for unexpected fallbacks |
+| Concern                                       | Mitigation                                                                                                           |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| Health endpoints expose internal service URLs | URLs are only internal Docker/localhost addresses. In production, restrict health endpoint access via network policy |
+| Dependency probes make outbound HTTP calls    | Probes use `urllib` with 5s timeout. No credentials sent (only `/v1/health/live` which is public)                    |
+| Readiness response reveals service versions   | Already exposed in current implementation. Versions are public (PyPI packages). Not a security risk                  |
+| Denial-of-service via readiness endpoint      | Probe calls are fast (< 5s timeout). Rate limiting can be added if needed. Health endpoints are lightweight          |
+| Startup fallback to demo mode                 | Logged at WARNING level. Demo mode is safe (no external dependencies). Operator can monitor for unexpected fallbacks |
 
 ### 8.11 Performance Considerations
 
-| Concern                                  | Impact                                                           | Mitigation                                                                                      |
-|------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
-| Dependency probes add latency to readiness | ~1-10ms per dependency (localhost HTTP). Total: ~5-20ms          | Probes run in sequence (max 2 dependencies). Well within Docker healthcheck timeout (10s)       |
-| Probe timeout on unhealthy dependency     | Up to 5s if dependency is down and connection hangs              | `timeout=5.0` on `urllib.request.urlopen`. Readiness returns `"degraded"` after timeout          |
-| Filesystem check in JuniperData           | `Path.is_dir()` + `glob("*.npz")` — ~1-5ms                     | Single directory listing. Dataset count is informational, not critical-path                       |
-| Startup health verification blocks lifespan | ~5-10s if CasCor is unreachable (timeout + fallback)            | Non-blocking in practice — runs once at startup. Lifespan continues after fallback               |
-| Concurrent readiness requests             | Each request probes dependencies independently                   | Probes are stateless and idempotent. Could add short-lived caching (~5s) if load is high         |
+| Concern                                     | Impact                                                  | Mitigation                                                                                |
+|---------------------------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| Dependency probes add latency to readiness  | ~1-10ms per dependency (localhost HTTP). Total: ~5-20ms | Probes run in sequence (max 2 dependencies). Well within Docker healthcheck timeout (10s) |
+| Probe timeout on unhealthy dependency       | Up to 5s if dependency is down and connection hangs     | `timeout=5.0` on `urllib.request.urlopen`. Readiness returns `"degraded"` after timeout   |
+| Filesystem check in JuniperData             | `Path.is_dir()` + `glob("*.npz")` — ~1-5ms              | Single directory listing. Dataset count is informational, not critical-path               |
+| Startup health verification blocks lifespan | ~5-10s if CasCor is unreachable (timeout + fallback)    | Non-blocking in practice — runs once at startup. Lifespan continues after fallback        |
+| Concurrent readiness requests               | Each request probes dependencies independently          | Probes are stateless and idempotent. Could add short-lived caching (~5s) if load is high  |
 
 ---
 
@@ -4225,17 +4226,17 @@ Phase 9 (Near-term):  Migrate JuniperCanopy to Pydantic BaseSettings and standar
 
 ### Current Configuration Divergence
 
-| Aspect                    | JuniperData                      | JuniperCascor                    | JuniperCanopy (Legacy)                    |
-|---------------------------|----------------------------------|----------------------------------|-------------------------------------------|
-| **Framework**             | Pydantic v2 `BaseSettings`       | Pydantic v2 `BaseSettings`       | YAML `ConfigManager` + env var overrides  |
-| **Env prefix**            | `JUNIPER_DATA_`                  | `JUNIPER_CASCOR_`                | `CASCOR_`                                 |
-| **`.env` file support**   | Yes (automatic via Pydantic)     | Yes (automatic via Pydantic)     | No                                        |
-| **Case sensitivity**      | No (case_sensitive=False)        | No (case_sensitive=False)        | Yes                                       |
-| **Nesting**               | Flat only                        | Flat only                        | Full (dot-notation, YAML hierarchy)       |
-| **Validation**            | Pydantic type coercion           | Pydantic type coercion           | Manual `validate_training_param_value()`  |
-| **Config file**           | None (env-only)                  | None (env-only)                  | `conf/app_config.yaml`                    |
-| **Env var expansion**     | No                               | No                               | Yes (`${VAR}`, `${VAR:default}`)          |
-| **Singleton access**      | `get_settings()` (`@lru_cache`)  | `get_settings()` (`@lru_cache`)  | `ConfigManager()` (singleton pattern)     |
+| Aspect                  | JuniperData                     | JuniperCascor                   | JuniperCanopy (Legacy)                   |
+|-------------------------|---------------------------------|---------------------------------|------------------------------------------|
+| **Framework**           | Pydantic v2 `BaseSettings`      | Pydantic v2 `BaseSettings`      | YAML `ConfigManager` + env var overrides |
+| **Env prefix**          | `JUNIPER_DATA_`                 | `JUNIPER_CASCOR_`               | `CASCOR_`                                |
+| **`.env` file support** | Yes (automatic via Pydantic)    | Yes (automatic via Pydantic)    | No                                       |
+| **Case sensitivity**    | No (case_sensitive=False)       | No (case_sensitive=False)       | Yes                                      |
+| **Nesting**             | Flat only                       | Flat only                       | Full (dot-notation, YAML hierarchy)      |
+| **Validation**          | Pydantic type coercion          | Pydantic type coercion          | Manual `validate_training_param_value()` |
+| **Config file**         | None (env-only)                 | None (env-only)                 | `conf/app_config.yaml`                   |
+| **Env var expansion**   | No                              | No                              | Yes (`${VAR}`, `${VAR:default}`)         |
+| **Singleton access**    | `get_settings()` (`@lru_cache`) | `get_settings()` (`@lru_cache`) | `ConfigManager()` (singleton pattern)    |
 
 ### Key Inconsistencies
 
@@ -4260,13 +4261,13 @@ Phase 9 (Near-term):  Migrate JuniperCanopy to Pydantic BaseSettings and standar
 
 ### 9.2 Prerequisites
 
-| Requirement                     | Version   | Verification                                               |
-|---------------------------------|-----------|------------------------------------------------------------|
-| Python                          | >= 3.12   | `python --version`                                         |
-| pydantic                        | >= 2.0    | `pip show pydantic`                                        |
-| pydantic-settings               | >= 2.0    | `pip show pydantic-settings`                               |
-| Existing Canopy tests green     | —         | `cd src && pytest tests/ -v` (3,215+ passed)               |
-| Phase 5 complete (BackendProtocol) | —      | Backend factory no longer relies on ConfigManager singleton |
+| Requirement                        | Version | Verification                                                |
+|------------------------------------|---------|-------------------------------------------------------------|
+| Python                             | >= 3.12 | `python --version`                                          |
+| pydantic                           | >= 2.0  | `pip show pydantic`                                         |
+| pydantic-settings                  | >= 2.0  | `pip show pydantic-settings`                                |
+| Existing Canopy tests green        | —       | `cd src && pytest tests/ -v` (3,215+ passed)                |
+| Phase 5 complete (BackendProtocol) | —       | Backend factory no longer relies on ConfigManager singleton |
 
 ### 9.3 Current Configuration Divergence
 
@@ -4336,11 +4337,11 @@ class Settings(BaseSettings):
 
 **Prefix convention**:
 
-| Service           | Current Prefix       | Target Prefix          |
-|-------------------|----------------------|------------------------|
-| JuniperData       | `JUNIPER_DATA_`      | `JUNIPER_DATA_` (no change) |
-| JuniperCascor     | `JUNIPER_CASCOR_`    | `JUNIPER_CASCOR_` (no change) |
-| JuniperCanopy     | `CASCOR_`            | `JUNIPER_CANOPY_`      |
+| Service       | Current Prefix    | Target Prefix                 |
+|---------------|-------------------|-------------------------------|
+| JuniperData   | `JUNIPER_DATA_`   | `JUNIPER_DATA_` (no change)   |
+| JuniperCascor | `JUNIPER_CASCOR_` | `JUNIPER_CASCOR_` (no change) |
+| JuniperCanopy | `CASCOR_`         | `JUNIPER_CANOPY_`             |
 
 ### 9.5 JuniperCanopy Migration Design
 
@@ -4467,22 +4468,22 @@ JUNIPER_CANOPY_WEBSOCKET__MAX_CONNECTIONS=100
 
 **Cross-service environment variable reference** (after migration):
 
-| Variable                          | Service       | Purpose                          |
-|-----------------------------------|---------------|----------------------------------|
-| `JUNIPER_DATA_HOST`               | JuniperData   | Bind address                     |
-| `JUNIPER_DATA_PORT`               | JuniperData   | Listen port                      |
-| `JUNIPER_DATA_LOG_LEVEL`          | JuniperData   | Log level                        |
-| `JUNIPER_DATA_STORAGE_PATH`       | JuniperData   | Dataset storage directory        |
-| `JUNIPER_DATA_API_KEYS`           | JuniperData   | Authentication keys              |
-| `JUNIPER_CASCOR_HOST`             | JuniperCascor | Bind address                     |
-| `JUNIPER_CASCOR_PORT`             | JuniperCascor | Listen port                      |
-| `JUNIPER_CASCOR_LOG_LEVEL`        | JuniperCascor | Log level                        |
-| `JUNIPER_CANOPY_SERVER__HOST`     | JuniperCanopy | Bind address                     |
-| `JUNIPER_CANOPY_SERVER__PORT`     | JuniperCanopy | Listen port                      |
-| `JUNIPER_CANOPY_LOG_LEVEL`        | JuniperCanopy | Log level                        |
-| `JUNIPER_CANOPY_DEMO_MODE`        | JuniperCanopy | Enable demo mode                 |
-| `JUNIPER_CANOPY_CASCOR_SERVICE_URL` | JuniperCanopy | CasCor service URL             |
-| `JUNIPER_DATA_URL`                | Shared        | JuniperData URL (used by CasCor + Canopy) |
+| Variable                            | Service       | Purpose                                   |
+|-------------------------------------|---------------|-------------------------------------------|
+| `JUNIPER_DATA_HOST`                 | JuniperData   | Bind address                              |
+| `JUNIPER_DATA_PORT`                 | JuniperData   | Listen port                               |
+| `JUNIPER_DATA_LOG_LEVEL`            | JuniperData   | Log level                                 |
+| `JUNIPER_DATA_STORAGE_PATH`         | JuniperData   | Dataset storage directory                 |
+| `JUNIPER_DATA_API_KEYS`             | JuniperData   | Authentication keys                       |
+| `JUNIPER_CASCOR_HOST`               | JuniperCascor | Bind address                              |
+| `JUNIPER_CASCOR_PORT`               | JuniperCascor | Listen port                               |
+| `JUNIPER_CASCOR_LOG_LEVEL`          | JuniperCascor | Log level                                 |
+| `JUNIPER_CANOPY_SERVER__HOST`       | JuniperCanopy | Bind address                              |
+| `JUNIPER_CANOPY_SERVER__PORT`       | JuniperCanopy | Listen port                               |
+| `JUNIPER_CANOPY_LOG_LEVEL`          | JuniperCanopy | Log level                                 |
+| `JUNIPER_CANOPY_DEMO_MODE`          | JuniperCanopy | Enable demo mode                          |
+| `JUNIPER_CANOPY_CASCOR_SERVICE_URL` | JuniperCanopy | CasCor service URL                        |
+| `JUNIPER_DATA_URL`                  | Shared        | JuniperData URL (used by CasCor + Canopy) |
 
 ### 9.7 Environment Profiles
 
@@ -4553,33 +4554,33 @@ class Settings(BaseSettings):
 
 **Deprecation timeline**:
 
-| Phase              | Legacy `CASCOR_*` vars | New `JUNIPER_CANOPY_*` vars | Behavior                           |
-|--------------------|------------------------|-----------------------------|------------------------------------|
-| Initial migration  | Supported (fallback)   | Primary                     | Legacy vars work but log warnings  |
-| +6 months          | Supported (warnings)   | Primary                     | Louder deprecation warnings        |
-| +12 months         | Removed                | Only                        | Legacy vars ignored                |
+| Phase             | Legacy `CASCOR_*` vars | New `JUNIPER_CANOPY_*` vars | Behavior                          |
+|-------------------|------------------------|-----------------------------|-----------------------------------|
+| Initial migration | Supported (fallback)   | Primary                     | Legacy vars work but log warnings |
+| +6 months         | Supported (warnings)   | Primary                     | Louder deprecation warnings       |
+| +12 months        | Removed                | Only                        | Legacy vars ignored               |
 
 ### 9.9 Implementation Tasks
 
-| #    | Task                                                                                                                                          | Files                                                    | Depends On |
-|------|-----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|------------|
-| 9.1  | Create `src/settings.py` with `Settings` Pydantic BaseSettings class (Section 9.5)                                                           | `src/settings.py` (new)                                  | —          |
-| 9.2  | Create nested Pydantic models: `TrainingParamConfig`, `TrainingSettings`, `ServerSettings`, `WebSocketSettings`                               | `src/settings.py`                                        | 9.1        |
-| 9.3  | Implement backward-compatible methods: `get_training_defaults()`, `validate_training_param()`                                                  | `src/settings.py`                                        | 9.2        |
-| 9.4  | Implement legacy `CASCOR_*` fallback validators with deprecation warnings (Section 9.8)                                                       | `src/settings.py`                                        | 9.1        |
-| 9.5  | Create `.env.example` for JuniperCanopy with all `JUNIPER_CANOPY_*` variables documented                                                      | `.env.example` (new)                                     | 9.1        |
-| 9.6  | Update `.gitignore` to exclude `.env` but not `.env.example`                                                                                   | `.gitignore`                                             | 9.5        |
-| 9.7  | Refactor `main.py` to import `get_settings()` instead of `ConfigManager()` for all configuration access                                       | `src/main.py`                                            | 9.1        |
-| 9.8  | Refactor `demo_mode.py` to use `get_settings()` instead of `ConfigManager()` for demo configuration                                           | `src/demo_mode.py`                                       | 9.1        |
-| 9.9  | Update all source files that import `ConfigManager` to use `get_settings()` — search for `from config_manager import`                          | Multiple `src/*.py` files                                | 9.1        |
-| 9.10 | Write unit tests for `Settings` — default values, env overrides, nested models, validation, legacy fallback                                    | `src/tests/unit/test_settings.py` (new)                  | 9.1        |
-| 9.11 | Write migration test: verify `CASCOR_*` env vars produce same behavior as `JUNIPER_CANOPY_*` equivalents                                      | `src/tests/unit/test_settings_migration.py` (new)        | 9.4        |
-| 9.12 | Update `conftest.py` — replace `ConfigManager` singleton reset with `get_settings.cache_clear()`                                               | `src/tests/conftest.py`                                  | 9.7        |
-| 9.13 | Run full test suite: verify all 3,215+ tests pass with new settings                                                                            | —                                                        | 9.7-9.12   |
-| 9.14 | Deprecate `ConfigManager` — mark class as deprecated, add import warning, do NOT delete yet                                                    | `src/config_manager.py`                                  | 9.13       |
-| 9.15 | Update JuniperCanopy AGENTS.md configuration sections to reference `JUNIPER_CANOPY_*` variables                                                | `AGENTS.md`                                              | 9.7        |
-| 9.16 | Update `juniper-deploy/.env.example` with new `JUNIPER_CANOPY_*` variable names                                                                | `juniper-deploy/.env.example`                            | 9.7        |
-| 9.17 | Update `juniper-deploy/docker-compose.yml` Canopy service `environment` block with new variable names                                          | `juniper-deploy/docker-compose.yml`                      | 9.7        |
+| #    | Task                                                                                                                  | Files                                             | Depends On |
+|------|-----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|------------|
+| 9.1  | Create `src/settings.py` with `Settings` Pydantic BaseSettings class (Section 9.5)                                    | `src/settings.py` (new)                           | —          |
+| 9.2  | Create nested Pydantic models: `TrainingParamConfig`, `TrainingSettings`, `ServerSettings`, `WebSocketSettings`       | `src/settings.py`                                 | 9.1        |
+| 9.3  | Implement backward-compatible methods: `get_training_defaults()`, `validate_training_param()`                         | `src/settings.py`                                 | 9.2        |
+| 9.4  | Implement legacy `CASCOR_*` fallback validators with deprecation warnings (Section 9.8)                               | `src/settings.py`                                 | 9.1        |
+| 9.5  | Create `.env.example` for JuniperCanopy with all `JUNIPER_CANOPY_*` variables documented                              | `.env.example` (new)                              | 9.1        |
+| 9.6  | Update `.gitignore` to exclude `.env` but not `.env.example`                                                          | `.gitignore`                                      | 9.5        |
+| 9.7  | Refactor `main.py` to import `get_settings()` instead of `ConfigManager()` for all configuration access               | `src/main.py`                                     | 9.1        |
+| 9.8  | Refactor `demo_mode.py` to use `get_settings()` instead of `ConfigManager()` for demo configuration                   | `src/demo_mode.py`                                | 9.1        |
+| 9.9  | Update all source files that import `ConfigManager` to use `get_settings()` — search for `from config_manager import` | Multiple `src/*.py` files                         | 9.1        |
+| 9.10 | Write unit tests for `Settings` — default values, env overrides, nested models, validation, legacy fallback           | `src/tests/unit/test_settings.py` (new)           | 9.1        |
+| 9.11 | Write migration test: verify `CASCOR_*` env vars produce same behavior as `JUNIPER_CANOPY_*` equivalents              | `src/tests/unit/test_settings_migration.py` (new) | 9.4        |
+| 9.12 | Update `conftest.py` — replace `ConfigManager` singleton reset with `get_settings.cache_clear()`                      | `src/tests/conftest.py`                           | 9.7        |
+| 9.13 | Run full test suite: verify all 3,215+ tests pass with new settings                                                   | —                                                 | 9.7-9.12   |
+| 9.14 | Deprecate `ConfigManager` — mark class as deprecated, add import warning, do NOT delete yet                           | `src/config_manager.py`                           | 9.13       |
+| 9.15 | Update JuniperCanopy AGENTS.md configuration sections to reference `JUNIPER_CANOPY_*` variables                       | `AGENTS.md`                                       | 9.7        |
+| 9.16 | Update `juniper-deploy/.env.example` with new `JUNIPER_CANOPY_*` variable names                                       | `juniper-deploy/.env.example`                     | 9.7        |
+| 9.17 | Update `juniper-deploy/docker-compose.yml` Canopy service `environment` block with new variable names                 | `juniper-deploy/docker-compose.yml`               | 9.7        |
 
 ### 9.10 Verification Procedure
 
@@ -4655,23 +4656,23 @@ cd src && pytest tests/ -v
 
 ### 9.11 Security Considerations
 
-| Concern                                          | Mitigation                                                                                                    |
-|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `.env` file committed with secrets               | `.gitignore` excludes `.env`. `.env.example` contains only non-sensitive defaults                             |
-| Legacy `CASCOR_*` vars bypass new validation     | Legacy validators apply the same Pydantic validation. No bypass possible                                      |
-| Deprecation warnings in production logs          | Warnings are Python `DeprecationWarning` — suppressed by default in production. Visible with `-W all`         |
-| Pydantic exposes settings in repr/logging        | Use `Field(repr=False)` for sensitive fields (e.g., `api_key`). Default Pydantic repr is safe for most fields |
-| ConfigManager removal breaks downstream tools    | `ConfigManager` is deprecated, not removed. Import warning guides migration. 12-month timeline                |
+| Concern                                       | Mitigation                                                                                                    |
+|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `.env` file committed with secrets            | `.gitignore` excludes `.env`. `.env.example` contains only non-sensitive defaults                             |
+| Legacy `CASCOR_*` vars bypass new validation  | Legacy validators apply the same Pydantic validation. No bypass possible                                      |
+| Deprecation warnings in production logs       | Warnings are Python `DeprecationWarning` — suppressed by default in production. Visible with `-W all`         |
+| Pydantic exposes settings in repr/logging     | Use `Field(repr=False)` for sensitive fields (e.g., `api_key`). Default Pydantic repr is safe for most fields |
+| ConfigManager removal breaks downstream tools | `ConfigManager` is deprecated, not removed. Import warning guides migration. 12-month timeline                |
 
 ### 9.12 Performance Considerations
 
-| Concern                              | Impact                                                           | Mitigation                                                                                   |
-|--------------------------------------|------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
-| Pydantic model initialization        | ~1-5ms at startup (one-time)                                     | `@lru_cache` on `get_settings()` ensures single initialization                              |
-| YAML config loading removed          | Eliminates ~5-10ms YAML parse at startup                         | Net performance improvement — Pydantic env loading is faster than YAML parse + expansion     |
-| Nested model validation              | ~0.1ms per access (Pydantic validation is pre-computed at init)  | All validation happens at startup. Runtime access is plain attribute access (~0ns overhead)    |
-| Legacy fallback validator overhead   | ~0.1ms per `os.getenv` check at startup                          | Negligible. Runs once. Removed after transition period                                        |
-| `.env` file parsing                  | ~1ms at startup (small file)                                     | One-time cost. Faster than YAML parsing                                                       |
+| Concern                            | Impact                                                          | Mitigation                                                                                  |
+|------------------------------------|-----------------------------------------------------------------|---------------------------------------------------------------------------------------------|
+| Pydantic model initialization      | ~1-5ms at startup (one-time)                                    | `@lru_cache` on `get_settings()` ensures single initialization                              |
+| YAML config loading removed        | Eliminates ~5-10ms YAML parse at startup                        | Net performance improvement — Pydantic env loading is faster than YAML parse + expansion    |
+| Nested model validation            | ~0.1ms per access (Pydantic validation is pre-computed at init) | All validation happens at startup. Runtime access is plain attribute access (~0ns overhead) |
+| Legacy fallback validator overhead | ~0.1ms per `os.getenv` check at startup                         | Negligible. Runs once. Removed after transition period                                      |
+| `.env` file parsing                | ~1ms at startup (small file)                                    | One-time cost. Faster than YAML parsing                                                     |
 
 ---
 
@@ -4794,10 +4795,10 @@ The same Dockerfiles, health endpoints, and environment variable conventions are
 
 ## Document History
 
-| Date       | Author                    | Changes                                                                                                         |
-|------------|---------------------------|-----------------------------------------------------------------------------------------------------------------|
-| 2026-02-26 | Paul Calnon / Claude Code | Added Health Checks (Phase 8) and Configuration Standardization (Phase 9) roadmaps                             |
-| 2026-02-26 | Paul Calnon / Claude Code | Added Modes of Operation roadmap: Phase 5 (BackendProtocol), Phase 6 (Client Fakes), Phase 7 (Demo Profile)    |
-| 2026-02-25 | Paul Calnon / Claude Code | Initial creation: detailed development roadmaps for all four startup orchestration phases                       |
+| Date       | Author                    | Changes                                                                                                     |
+|------------|---------------------------|-------------------------------------------------------------------------------------------------------------|
+| 2026-02-26 | Paul Calnon / Claude Code | Added Health Checks (Phase 8) and Configuration Standardization (Phase 9) roadmaps                          |
+| 2026-02-26 | Paul Calnon / Claude Code | Added Modes of Operation roadmap: Phase 5 (BackendProtocol), Phase 6 (Client Fakes), Phase 7 (Demo Profile) |
+| 2026-02-25 | Paul Calnon / Claude Code | Initial creation: detailed development roadmaps for all four startup orchestration phases                   |
 
 ---

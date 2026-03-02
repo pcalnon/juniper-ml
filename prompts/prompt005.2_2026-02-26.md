@@ -1,6 +1,6 @@
 # Install and config SOPS
 
-## Execute the SOPS with age encryption implementation plan for the Juniper ecosystem.
+## Execute the SOPS with age encryption implementation plan for the Juniper ecosystem
 
 The full plan is at: juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md
 The analysis that led to this plan is at: juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md
@@ -26,9 +26,18 @@ The analysis that led to this plan is at: juniper-ml/notes/SECRETS_MANAGEMENT_AN
 8. Write SOPS_USAGE_GUIDE.md documentation in juniper-ml/notes/
 9. Commit changes in each repo
 
+## Next Steps
+
+- Perform an audit of the code base and configuration for all repos against the Juniper/juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md
+  - Also consider the SECRETS_MANAGEMENT_ANALYSIS.md file and the SOPS_USAGE_GUIDE.md
+- identify and document any remaining tasks or issues identified during audit
+- complete any remaining tasks and remediate any issues identified during audit
+- fully implement the SOPS sulution and integrate it with all active juniper repos.
+- update all documentation to relfect the status of SOPS install, configuration, implementation, and integration.
+
 ## Key context
 
-- All repos are at /home/pcalnon/Development/python/Juniper/<repo-name>/
+- All repos are at /home/pcalnon/Development/python/Juniper/\<repo-name>/
 - .env is already in .gitignore across all repos; .env.enc will NOT be matched (safe to commit)
 - juniper-deploy .gitignore needs !.env.enc and !.env.secrets.enc exceptions added
 - Only juniper-cascor has a real .env file with secrets to encrypt
@@ -48,5 +57,13 @@ The analysis that led to this plan is at: juniper-ml/notes/SECRETS_MANAGEMENT_AN
 
 on branch main in juniper-ml, notes/SOPS_IMPLEMENTATION_PLAN.md is untracked (commit it first)
 Pre-existing untracked/modified files (not related to this task): .claude/, prompts/, notes/MICROSERVICES_ARCHITECTURE_ANALYSIS.md, notes/PYPI_MANUAL_SETUP_STEPS.md
+
+---
+
+## Launch Command
+
+```bash
+claude --dangerously-skip-permissions --rename "P5.2: Install and config SOPS"
+```
 
 ---

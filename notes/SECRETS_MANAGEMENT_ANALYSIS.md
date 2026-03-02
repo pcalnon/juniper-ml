@@ -167,15 +167,15 @@ The `hvac` library is the primary Python client. It is mature, well-maintained, 
 **License**: Proprietary (AWS service)
 **Cost**: $0.40/secret/month + $0.05/10k API calls | Free tier: up to $200 in credits for new AWS customers
 
-#### How It Works
+#### How It Works, 3.2
 
 AWS Secrets Manager stores secrets in AWS infrastructure, accessible via IAM-authenticated API calls. Supports automatic rotation via Lambda functions. Secrets are encrypted at rest with AWS KMS.
 
-#### Python Integration
+#### Python Integration, 3.2
 
 First-class support via `boto3`, the standard AWS SDK. Secret retrieval is a single `get_secret_value()` call. Integration with pydantic-settings can be achieved via a custom settings source or by loading secrets into environment variables at startup.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.2
 
 | Criterion                | Rating    | Notes                                                                                |
 |--------------------------|-----------|--------------------------------------------------------------------------------------|
@@ -186,7 +186,7 @@ First-class support via `boto3`, the standard AWS SDK. Secret retrieval is a sin
 | Scalability              | Excellent | Scales to any number of secrets and access patterns                                  |
 | Best practice conformity | Excellent | Widely adopted industry standard                                                     |
 
-#### Advantages
+#### Advantages, 3.2
 
 - Zero operational overhead (fully managed)
 - Automatic rotation with Lambda functions for supported services
@@ -194,7 +194,7 @@ First-class support via `boto3`, the standard AWS SDK. Secret retrieval is a sin
 - Native integration with ECS/Fargate for container workloads
 - Excellent Python SDK (`boto3`)
 
-#### Disadvantages
+#### Disadvantages, 3.2
 
 - **Requires AWS infrastructure commitment** -- Juniper currently has no AWS footprint
 - Vendor lock-in: secrets are only accessible from AWS-authenticated contexts
@@ -210,15 +210,15 @@ First-class support via `boto3`, the standard AWS SDK. Secret retrieval is a sin
 **License**: Proprietary (Azure service)
 **Cost**: $0.03/10k operations (no per-secret storage fee) | Premium tier for HSM-backed keys
 
-#### How It Works
+#### How It Works, 3.3
 
 Azure Key Vault stores secrets, keys, and certificates. Access is controlled via Azure AD and managed identities. Secrets are encrypted at rest with Microsoft-managed or customer-managed keys.
 
-#### Python Integration
+#### Python Integration, 3.3
 
 Official `azure-keyvault-secrets` SDK with `DefaultAzureCredential` for seamless authentication across development and production environments. Well-documented with quickstart guides.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.3
 
 | Criterion                | Rating    | Notes                                                             |
 |--------------------------|-----------|-------------------------------------------------------------------|
@@ -229,14 +229,14 @@ Official `azure-keyvault-secrets` SDK with `DefaultAzureCredential` for seamless
 | Scalability              | Excellent | Enterprise-grade                                                  |
 | Best practice conformity | Excellent | Industry standard for Azure workloads                             |
 
-#### Advantages
+#### Advantages, 3.3
 
 - Cheapest cloud option (operations-only pricing)
 - `DefaultAzureCredential` provides excellent developer experience
 - Soft-delete prevents accidental secret loss
 - Managed Identity eliminates credential bootstrapping
 
-#### Disadvantages
+#### Disadvantages, 3.3
 
 - **Requires Azure infrastructure commitment** -- Juniper has no Azure footprint
 - Same vendor lock-in concerns as AWS
@@ -251,15 +251,15 @@ Official `azure-keyvault-secrets` SDK with `DefaultAzureCredential` for seamless
 **License**: Proprietary (GCP service)
 **Cost**: $0.06/active secret version/month + $0.03/10k access operations | Free tier: 6 versions, 10k operations/month
 
-#### How It Works
+#### How It Works, 3.4
 
 GCP Secret Manager stores secret data with version history. Access is controlled via GCP IAM. Supports rotation notifications via Pub/Sub.
 
-#### Python Integration
+#### Python Integration, 3.4
 
 Official `google-cloud-secret-manager` library with Application Default Credentials (ADC) for transparent authentication. Available on both PyPI and conda-forge.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.4
 
 | Criterion                | Rating    | Notes                                                                |
 |--------------------------|-----------|----------------------------------------------------------------------|
@@ -270,14 +270,14 @@ Official `google-cloud-secret-manager` library with Application Default Credenti
 | Scalability              | Excellent | Enterprise-grade                                                     |
 | Best practice conformity | Excellent | Industry standard for GCP workloads                                  |
 
-#### Advantages
+#### Advantages, 3.4
 
 - Free tier could cover a small Juniper deployment
 - IAM Conditions allow time-bound access (unique feature)
 - Secret versioning with automatic version management
 - ADC provides seamless local/production auth
 
-#### Disadvantages
+#### Disadvantages, 3.4
 
 - **Requires GCP infrastructure commitment** -- Juniper has no GCP footprint
 - Same vendor lock-in concerns as AWS/Azure
@@ -291,28 +291,28 @@ Official `google-cloud-secret-manager` library with Application Default Credenti
 **License**: MIT
 **Cost**: Free (self-hosted, unlimited) | Cloud free tier: 5 team members | Pro: ~$18/identity/month | Enterprise: custom
 
-#### How It Works
+#### How It Works, 3.5
 
 Infisical is a centralized secrets management platform with a web dashboard, CLI, and language SDKs. It supports environment-specific secrets (dev, staging, prod), secret versioning, and access controls. Self-hosted version runs as Docker containers.
 
-#### Python Integration
+#### Python Integration, 3.5
 
 Official `infisicalsdk` package on PyPI (v1.0.15, January 2026). Actively maintained with regular releases. The SDK supports fetching individual secrets or bulk retrieval by environment/project.
 
 A pydantic-settings integration would require a custom settings source, but the SDK provides all necessary primitives.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.5
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Web dashboard for management; CLI for injection; SDK for runtime access |
-| Cost | Excellent | Free self-hosted (MIT); cloud free tier covers 5 users |
-| Security | Good | End-to-end encryption (client-side encryption before server storage); RBAC on paid tiers |
-| Maintainability | Fair (self-hosted) / Good (cloud) | Self-hosted requires Docker infrastructure; cloud is managed |
-| Scalability | Good | Supports multiple projects, environments, and team members |
-| Best practice conformity | Good | Modern approach with proper encryption model; growing adoption (25k+ GitHub stars) |
+| Criterion                | Rating                            | Notes                                                                                    |
+|--------------------------|-----------------------------------|------------------------------------------------------------------------------------------|
+| Ease of use              | Good                              | Web dashboard for management; CLI for injection; SDK for runtime access                  |
+| Cost                     | Excellent                         | Free self-hosted (MIT); cloud free tier covers 5 users                                   |
+| Security                 | Good                              | End-to-end encryption (client-side encryption before server storage); RBAC on paid tiers |
+| Maintainability          | Fair (self-hosted) / Good (cloud) | Self-hosted requires Docker infrastructure; cloud is managed                             |
+| Scalability              | Good                              | Supports multiple projects, environments, and team members                               |
+| Best practice conformity | Good                              | Modern approach with proper encryption model; growing adoption (25k+ GitHub stars)       |
 
-#### Advantages
+#### Advantages, 3.5
 
 - **True open source (MIT license)** -- no BSL restrictions, no vendor lock-in
 - Self-hosted option gives full control over secret data
@@ -323,7 +323,7 @@ A pydantic-settings integration would require a custom settings source, but the 
 - Secret versioning and audit logging
 - Docker Compose deployment for the platform itself
 
-#### Disadvantages
+#### Disadvantages, 3.5
 
 - Self-hosted adds operational overhead (another service to maintain, monitor, back up)
 - Cloud free tier limited to 5 team members (sufficient for now, but a constraint)
@@ -339,26 +339,26 @@ A pydantic-settings integration would require a custom settings source, but the 
 **License**: Proprietary (SaaS only -- no self-hosted option)
 **Cost**: Free (3 users, unlimited projects/secrets) | Team: $21/user/month | Enterprise: custom
 
-#### How It Works
+#### How It Works, 3.6
 
 Doppler is a centralized SaaS platform for secrets management. Secrets are organized by project and environment (dev, staging, prod). The Doppler CLI (`doppler run`) injects secrets as environment variables at process startup. There are no language-specific SDKs; the model is purely environment variable injection.
 
-#### Python Integration
+#### Python Integration, 3.6
 
 No Python SDK. Doppler's architecture is language-agnostic by design -- it injects secrets as environment variables before your application starts. This aligns well with pydantic-settings `BaseSettings`, which reads from environment variables natively.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.6
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Excellent | Best-in-class developer experience; `doppler run -- python app.py` replaces `.env` files entirely |
-| Cost | Good | Free tier (3 users) is sufficient for current team; scales to $21/user |
-| Security | Good | Secrets stored on Doppler's infrastructure with encryption; no client-side encryption model |
-| Maintainability | Excellent | Zero infrastructure to maintain (SaaS) |
-| Scalability | Good | Supports multiple projects and environments |
-| Best practice conformity | Good | Clean environment variable injection; follows 12-factor principles |
+| Criterion                | Rating    | Notes                                                                                             |
+|--------------------------|-----------|---------------------------------------------------------------------------------------------------|
+| Ease of use              | Excellent | Best-in-class developer experience; `doppler run -- python app.py` replaces `.env` files entirely |
+| Cost                     | Good      | Free tier (3 users) is sufficient for current team; scales to $21/user                            |
+| Security                 | Good      | Secrets stored on Doppler's infrastructure with encryption; no client-side encryption model       |
+| Maintainability          | Excellent | Zero infrastructure to maintain (SaaS)                                                            |
+| Scalability              | Good      | Supports multiple projects and environments                                                       |
+| Best practice conformity | Good      | Clean environment variable injection; follows 12-factor principles                                |
 
-#### Advantages
+#### Advantages, 3.6
 
 - **First-class Docker Compose integration** -- `doppler run -- docker compose up` injects all secrets seamlessly
 - Zero infrastructure overhead (SaaS)
@@ -367,7 +367,7 @@ No Python SDK. Doppler's architecture is language-agnostic by design -- it injec
 - Free tier (3 users, unlimited secrets) covers current needs
 - Excellent CLI developer experience
 
-#### Disadvantages
+#### Disadvantages, 3.6
 
 - **SaaS only** -- secrets are stored on Doppler's servers; no self-hosted option
 - No Python SDK -- cannot fetch individual secrets programmatically at runtime
@@ -384,30 +384,30 @@ No Python SDK. Doppler's architecture is language-agnostic by design -- it injec
 **License**: Mozilla Public License 2.0 (MPL) -- true open source, CNCF Sandbox project
 **Cost**: Free
 
-#### How It Works
+#### How It Works, 3.7
 
 SOPS encrypts structured files (YAML, JSON, ENV, INI) so they can be safely committed to Git. For YAML and JSON, only values are encrypted while keys remain in plaintext, making diffs readable in pull requests. Encryption uses AES-256-GCM for data, with the data key protected by a configurable KMS backend.
 
 Supported encryption backends: `age` (recommended for local/simple use), AWS KMS, GCP KMS, Azure Key Vault, HashiCorp Vault Transit, PGP (legacy).
 
-#### Python Integration
+#### Python Integration, 3.7
 
 Limited. SOPS is a Go CLI tool. Python wrappers exist (`sopsy` for loading encrypted files, `sops-run` for env injection), but they are thin wrappers around the CLI binary. No native Python SDK.
 
 Integration with pydantic-settings would use SOPS to decrypt `.env` files at startup, producing plaintext that pydantic-settings can read normally.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.7
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Simple encrypt/decrypt workflow; `age` backend requires no cloud accounts |
-| Cost | Excellent | Completely free (CNCF project) |
-| Security | Good | AES-256-GCM encryption; security depends on KMS backend and key management |
-| Maintainability | Excellent | Stateless CLI tool -- nothing to run, monitor, or upgrade (beyond the binary itself) |
-| Scalability | Fair | Each encrypted file is independent; no centralized management or access control |
-| Best practice conformity | Good | CNCF Sandbox project; widely adopted for "secrets as code" |
+| Criterion                | Rating    | Notes                                                                                |
+|--------------------------|-----------|--------------------------------------------------------------------------------------|
+| Ease of use              | Good      | Simple encrypt/decrypt workflow; `age` backend requires no cloud accounts            |
+| Cost                     | Excellent | Completely free (CNCF project)                                                       |
+| Security                 | Good      | AES-256-GCM encryption; security depends on KMS backend and key management           |
+| Maintainability          | Excellent | Stateless CLI tool -- nothing to run, monitor, or upgrade (beyond the binary itself) |
+| Scalability              | Fair      | Each encrypted file is independent; no centralized management or access control      |
+| Best practice conformity | Good      | CNCF Sandbox project; widely adopted for "secrets as code"                           |
 
-#### Advantages
+#### Advantages, 3.7
 
 - **Zero infrastructure** -- no server, no service, no account; just a CLI binary
 - Encrypted files are Git-friendly with readable diffs (keys visible, values encrypted)
@@ -417,7 +417,7 @@ Integration with pydantic-settings would use SOPS to decrypt `.env` files at sta
 - Can be integrated into pre-commit hooks for automated encryption enforcement
 - Solves the immediate problem (exposed `.env` secrets) with minimal disruption
 
-#### Disadvantages
+#### Disadvantages, 3.7
 
 - **Not a runtime secrets manager** -- decrypts files at rest, not on-demand
 - No centralized dashboard, access control, or audit logging
@@ -435,26 +435,26 @@ Integration with pydantic-settings would use SOPS to decrypt `.env` files at sta
 **License**: Proprietary
 **Cost**: Teams: ~$3.99/user/month | Business: $7.99/user/month (includes Secrets Automation) | Enterprise: custom
 
-#### How It Works
+#### How It Works, 3.8
 
 1Password provides developer tools including the `op` CLI for secret injection, Service Accounts for automated access, and Connect Server (two Docker containers) for a private REST API within your infrastructure. Secrets are stored in 1Password vaults and accessed via biometric-authenticated CLI or service account tokens.
 
-#### Python Integration
+#### Python Integration, 3.8
 
 Official Python SDK available for programmatic vault access. The `op` CLI can also inject secrets as environment variables (`op run -- python app.py`), similar to Doppler's model.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.8
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Familiar if already using 1Password; `op run` pattern is clean |
-| Cost | Good | $7.99/user/month for Business tier with Secrets Automation |
-| Security | Excellent | Strong encryption model (Secret Key + master password); no server-only breach exposure |
-| Maintainability | Good | SaaS + optional Connect Server (two Docker containers) |
-| Scalability | Good | Vault-based organization with team sharing |
-| Best practice conformity | Fair | Primarily a password manager; developer tools are a secondary product |
+| Criterion                | Rating    | Notes                                                                                  |
+|--------------------------|-----------|----------------------------------------------------------------------------------------|
+| Ease of use              | Good      | Familiar if already using 1Password; `op run` pattern is clean                         |
+| Cost                     | Good      | $7.99/user/month for Business tier with Secrets Automation                             |
+| Security                 | Excellent | Strong encryption model (Secret Key + master password); no server-only breach exposure |
+| Maintainability          | Good      | SaaS + optional Connect Server (two Docker containers)                                 |
+| Scalability              | Good      | Vault-based organization with team sharing                                             |
+| Best practice conformity | Fair      | Primarily a password manager; developer tools are a secondary product                  |
 
-#### Advantages
+#### Advantages, 3.8
 
 - Strong security model with client-side encryption
 - Connect Server provides Docker-native secret access
@@ -462,7 +462,7 @@ Official Python SDK available for programmatic vault access. The `op` CLI can al
 - Official Python SDK for programmatic access
 - Reasonable pricing for small teams
 
-#### Disadvantages
+#### Disadvantages, 3.8
 
 - **Primarily a password manager** -- secrets management is a secondary use case
 - Connect Server adds two more Docker containers to manage
@@ -479,33 +479,33 @@ Official Python SDK available for programmatic vault access. The `op` CLI can al
 **License**: Open source (BSD 3-Clause)
 **Cost**: Free
 
-#### How It Works
+#### How It Works, 3.9
 
 dotenvx encrypts `.env` files locally so they can be committed to Git. It is the successor to the deprecated dotenv-vault. The CLI provides `dotenvx encrypt` and `dotenvx decrypt` commands. No cloud service is required.
 
-#### Python Integration
+#### Python Integration, 3.9
 
 `python-dotenvx` exists on PyPI but is a work-in-progress. The recommended approach is to use the `dotenvx` CLI directly until the Python library is complete.
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.9
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Good | Simple encrypt/decrypt; familiar `.env` file workflow |
-| Cost | Excellent | Free |
-| Security | Fair | Local encryption; key management is manual |
-| Maintainability | Good | CLI tool, no infrastructure |
-| Scalability | Poor | No centralized management; limited team collaboration features |
-| Best practice conformity | Fair | Created by the `dotenv` author, but not an industry-standard approach |
+| Criterion                | Rating    | Notes                                                                 |
+|--------------------------|-----------|-----------------------------------------------------------------------|
+| Ease of use              | Good      | Simple encrypt/decrypt; familiar `.env` file workflow                 |
+| Cost                     | Excellent | Free                                                                  |
+| Security                 | Fair      | Local encryption; key management is manual                            |
+| Maintainability          | Good      | CLI tool, no infrastructure                                           |
+| Scalability              | Poor      | No centralized management; limited team collaboration features        |
+| Best practice conformity | Fair      | Created by the `dotenv` author, but not an industry-standard approach |
 
-#### Advantages
+#### Advantages, 3.9
 
 - Direct replacement for plaintext `.env` files with minimal workflow change
 - Free and open source
 - Created by the original `dotenv` author
 - No cloud dependency
 
-#### Disadvantages
+#### Disadvantages, 3.9
 
 - **Python SDK is a work-in-progress** -- not production-ready
 - Less mature and less adopted than SOPS for the same use case
@@ -521,7 +521,7 @@ dotenvx encrypts `.env` files locally so they can be committed to Git. It is the
 **License**: Included with GitHub
 **Cost**: Free (included with GitHub plans)
 
-#### How It Works
+#### How It Works, 3.10
 
 GitHub provides encrypted secrets at organization, repository, and environment levels. Secrets are available as environment variables during workflow execution. OIDC support enables secretless authentication to cloud providers (AWS, GCP, Azure) via short-lived tokens.
 
@@ -535,25 +535,25 @@ Juniper already uses GitHub Actions Secrets effectively:
 - `ANTHROPIC_API_KEY` (juniper-ml Claude workflow)
 - OIDC trusted publishing for all PyPI packages (no stored tokens)
 
-#### Juniper Fit Assessment
+#### Juniper Fit Assessment, 3.10
 
-| Criterion | Rating | Notes |
-|-----------|--------|-------|
-| Ease of use | Excellent | Already in use; no additional setup |
-| Cost | Excellent | Free |
-| Security | Good | Encrypted storage; OIDC eliminates long-lived cloud tokens; but supply chain risks exist (tj-actions incident, March 2025) |
-| Maintainability | Excellent | Managed by GitHub |
-| Scalability | Limited | 100 secrets per repo, 100 per environment; no runtime access |
-| Best practice conformity | Good for CI/CD | Industry standard for pipeline secrets; not for application runtime |
+| Criterion                | Rating         | Notes                                                                                                                      |
+|--------------------------|----------------|----------------------------------------------------------------------------------------------------------------------------|
+| Ease of use              | Excellent      | Already in use; no additional setup                                                                                        |
+| Cost                     | Excellent      | Free                                                                                                                       |
+| Security                 | Good           | Encrypted storage; OIDC eliminates long-lived cloud tokens; but supply chain risks exist (tj-actions incident, March 2025) |
+| Maintainability          | Excellent      | Managed by GitHub                                                                                                          |
+| Scalability              | Limited        | 100 secrets per repo, 100 per environment; no runtime access                                                               |
+| Best practice conformity | Good for CI/CD | Industry standard for pipeline secrets; not for application runtime                                                        |
 
-#### Advantages
+#### Advantages, 3.10
 
 - Already in use and working well for Juniper's CI/CD
 - OIDC trusted publishing eliminates PyPI token storage
 - Zero additional cost or infrastructure
 - SHA-pinned Actions mitigate supply chain risks (already implemented)
 
-#### Disadvantages
+#### Disadvantages, 3.10
 
 - **Not a runtime secrets manager** -- secrets exist only during workflow execution
 - No API for application code to fetch secrets at runtime
@@ -567,65 +567,65 @@ Juniper already uses GitHub Actions Secrets effectively:
 
 ### Feature Comparison Matrix
 
-| Feature | Vault | AWS SM | Azure KV | GCP SM | Infisical | Doppler | SOPS | 1Password | dotenvx | GH Secrets |
-|---------|-------|--------|----------|--------|-----------|---------|------|-----------|---------|------------|
-| Runtime secret access | Yes | Yes | Yes | Yes | Yes | Via env | No | Yes | No | No |
-| Automatic rotation | Yes | Yes | Yes | Notify | Yes | No | No | No | No | No |
-| Python SDK quality | Good | Excellent | Excellent | Excellent | Good | None | Limited | Good | WIP | N/A |
-| Docker Compose compat. | Good | Via SDK | Via SDK | Via SDK | Via SDK/CLI | Excellent | Decrypt-time | Good | Decrypt-time | N/A |
-| Self-hosted option | Yes | No | No | No | Yes | No | N/A | Partial | N/A | No |
-| Web dashboard | Yes | Yes | Yes | Yes | Yes | Yes | No | Yes | No | Yes |
-| Audit logging | Yes | Yes | Yes | Yes | Yes | Yes | No | No | No | Limited |
-| Dynamic secrets | Yes | No | No | No | No | No | No | No | No | No |
-| Git-friendly encrypted files | No | No | No | No | No | No | Yes | No | Yes | No |
-| Env var injection (CLI) | Via envconsul | No | No | No | Yes | Yes | Via wrapper | Yes | Yes | N/A |
+| Feature                      | Vault         | AWS SM    | Azure KV  | GCP SM    | Infisical   | Doppler   | SOPS         | 1Password | dotenvx      | GH Secrets |
+|------------------------------|---------------|-----------|-----------|-----------|-------------|-----------|--------------|-----------|--------------|------------|
+| Runtime secret access        | Yes           | Yes       | Yes       | Yes       | Yes         | Via env   | No           | Yes       | No           | No         |
+| Automatic rotation           | Yes           | Yes       | Yes       | Notify    | Yes         | No        | No           | No        | No           | No         |
+| Python SDK quality           | Good          | Excellent | Excellent | Excellent | Good        | None      | Limited      | Good      | WIP          | N/A        |
+| Docker Compose compat.       | Good          | Via SDK   | Via SDK   | Via SDK   | Via SDK/CLI | Excellent | Decrypt-time | Good      | Decrypt-time | N/A        |
+| Self-hosted option           | Yes           | No        | No        | No        | Yes         | No        | N/A          | Partial   | N/A          | No         |
+| Web dashboard                | Yes           | Yes       | Yes       | Yes       | Yes         | Yes       | No           | Yes       | No           | Yes        |
+| Audit logging                | Yes           | Yes       | Yes       | Yes       | Yes         | Yes       | No           | No        | No           | Limited    |
+| Dynamic secrets              | Yes           | No        | No        | No        | No          | No        | No           | No        | No           | No         |
+| Git-friendly encrypted files | No            | No        | No        | No        | No          | No        | Yes          | No        | Yes          | No         |
+| Env var injection (CLI)      | Via envconsul | No        | No        | No        | Yes         | Yes       | Via wrapper  | Yes       | Yes          | N/A        |
 
 ### Cost Comparison at Juniper's Scale
 
 Assumptions: ~15 secrets, 1-2 developers, <50k API calls/month
 
-| Solution | Monthly Cost | Notes |
-|----------|-------------|-------|
-| **SOPS** | $0 | Free; uses `age` keys (no cloud KMS needed) |
-| **dotenvx** | $0 | Free |
-| **GitHub Actions Secrets** | $0 | Already included |
-| **Infisical (self-hosted)** | $0 | Free (MIT); requires Docker host |
-| **Infisical (cloud)** | $0 | Free tier (5 users) |
-| **Doppler** | $0 | Free tier (3 users) |
-| **Google Cloud SM** | $0-1 | Free tier covers 6 versions + 10k ops |
-| **1Password** | ~$8-16 | $7.99/user/month (Business tier) |
-| **AWS Secrets Manager** | ~$6-8 | $0.40/secret x 15 + API calls |
-| **Azure Key Vault** | <$1 | Operations-only pricing |
-| **HashiCorp Vault (HCP)** | ~$1,137+ | $1.58/hr minimum; Community is free but requires self-hosting |
+| Solution                    | Monthly Cost | Notes                                                         |
+|-----------------------------|--------------|---------------------------------------------------------------|
+| **SOPS**                    | $0           | Free; uses `age` keys (no cloud KMS needed)                   |
+| **dotenvx**                 | $0           | Free                                                          |
+| **GitHub Actions Secrets**  | $0           | Already included                                              |
+| **Infisical (self-hosted)** | $0           | Free (MIT); requires Docker host                              |
+| **Infisical (cloud)**       | $0           | Free tier (5 users)                                           |
+| **Doppler**                 | $0           | Free tier (3 users)                                           |
+| **Google Cloud SM**         | $0-1         | Free tier covers 6 versions + 10k ops                         |
+| **1Password**               | ~$8-16       | $7.99/user/month (Business tier)                              |
+| **AWS Secrets Manager**     | ~$6-8        | $0.40/secret x 15 + API calls                                 |
+| **Azure Key Vault**         | <$1          | Operations-only pricing                                       |
+| **HashiCorp Vault (HCP)**   | ~$1,137+     | $1.58/hr minimum; Community is free but requires self-hosting |
 
 ### Operational Overhead Comparison
 
-| Solution | Infrastructure Required | Ongoing Maintenance | Complexity |
-|----------|------------------------|--------------------| -----------|
-| **SOPS** | None (CLI binary) | Update binary occasionally | Low |
-| **dotenvx** | None (CLI binary) | Update binary occasionally | Low |
-| **GitHub Actions Secrets** | None | None | Minimal |
-| **Doppler** | None (SaaS) | None | Low |
-| **Infisical (cloud)** | None (SaaS) | None | Low-Medium |
-| **1Password** | Optional Connect Server (2 containers) | Minimal | Low-Medium |
-| **Cloud SM (AWS/GCP/Azure)** | Cloud account + IAM config | IAM policy management | Medium |
-| **Infisical (self-hosted)** | Docker containers (API + DB) | Upgrades, backups, monitoring | Medium |
-| **HashiCorp Vault** | Server + storage backend + HA | Unsealing, upgrades, monitoring, backups | High |
+| Solution                     | Infrastructure Required                | Ongoing Maintenance                      | Complexity |
+|------------------------------|----------------------------------------|------------------------------------------|------------|
+| **SOPS**                     | None (CLI binary)                      | Update binary occasionally               | Low        |
+| **dotenvx**                  | None (CLI binary)                      | Update binary occasionally               | Low        |
+| **GitHub Actions Secrets**   | None                                   | None                                     | Minimal    |
+| **Doppler**                  | None (SaaS)                            | None                                     | Low        |
+| **Infisical (cloud)**        | None (SaaS)                            | None                                     | Low-Medium |
+| **1Password**                | Optional Connect Server (2 containers) | Minimal                                  | Low-Medium |
+| **Cloud SM (AWS/GCP/Azure)** | Cloud account + IAM config             | IAM policy management                    | Medium     |
+| **Infisical (self-hosted)**  | Docker containers (API + DB)           | Upgrades, backups, monitoring            | Medium     |
+| **HashiCorp Vault**          | Server + storage backend + HA          | Unsealing, upgrades, monitoring, backups | High       |
 
 ### Security Model Comparison
 
-| Solution | Encryption at Rest | Encryption in Transit | Access Control | Client-Side Encryption |
-|----------|-------------------|----------------------|----------------|----------------------|
-| **Vault** | Yes (configurable) | TLS | Policy-based | No (server decrypts) |
-| **AWS SM** | KMS-managed | TLS | IAM policies | No |
-| **Azure KV** | Microsoft/customer-managed | TLS | Azure AD + RBAC | No |
-| **GCP SM** | Google/customer-managed | TLS | IAM + Conditions | No |
-| **Infisical** | Yes | TLS | RBAC | Yes (E2E encryption) |
-| **Doppler** | Yes | TLS | Project/env scoping | No |
-| **SOPS** | AES-256-GCM | N/A (file-based) | KMS key access | Yes (file encryption) |
-| **1Password** | Yes | TLS | Vault-based | Yes (Secret Key model) |
-| **dotenvx** | Yes (local) | N/A (file-based) | Key access | Yes (file encryption) |
-| **GH Secrets** | libsodium sealed box | TLS | Repo/env permissions | No |
+| Solution       | Encryption at Rest         | Encryption in Transit | Access Control       | Client-Side Encryption |
+|----------------|----------------------------|-----------------------|----------------------|------------------------|
+| **Vault**      | Yes (configurable)         | TLS                   | Policy-based         | No (server decrypts)   |
+| **AWS SM**     | KMS-managed                | TLS                   | IAM policies         | No                     |
+| **Azure KV**   | Microsoft/customer-managed | TLS                   | Azure AD + RBAC      | No                     |
+| **GCP SM**     | Google/customer-managed    | TLS                   | IAM + Conditions     | No                     |
+| **Infisical**  | Yes                        | TLS                   | RBAC                 | Yes (E2E encryption)   |
+| **Doppler**    | Yes                        | TLS                   | Project/env scoping  | No                     |
+| **SOPS**       | AES-256-GCM                | N/A (file-based)      | KMS key access       | Yes (file encryption)  |
+| **1Password**  | Yes                        | TLS                   | Vault-based          | Yes (Secret Key model) |
+| **dotenvx**    | Yes (local)                | N/A (file-based)      | Key access           | Yes (file encryption)  |
+| **GH Secrets** | libsodium sealed box       | TLS                   | Repo/env permissions | No                     |
 
 ---
 
@@ -635,44 +635,44 @@ Assumptions: ~15 secrets, 1-2 developers, <50k API calls/month
 
 Juniper's established configuration pattern is **pydantic-settings `BaseSettings`** loading from environment variables with `.env` file fallback. Any solution must integrate cleanly with this pattern.
 
-| Solution | pydantic-settings Compatibility | Integration Approach |
-|----------|-------------------------------|---------------------|
-| **SOPS** | Excellent | Decrypt `.env.enc` to `.env` at startup; pydantic-settings reads `.env` as normal |
-| **Doppler** | Excellent | `doppler run` injects env vars; pydantic-settings reads them directly |
-| **Infisical** | Good | CLI injects env vars, or SDK fetches secrets in custom settings source |
-| **1Password** | Good | `op run` injects env vars; pydantic-settings reads them directly |
-| **Cloud SM** | Good | Custom settings source or startup script loads secrets into env vars |
-| **dotenvx** | Good | Decrypt `.env` at startup; same pattern as SOPS |
-| **Vault** | Fair | Requires custom settings source with `hvac` client |
-| **GH Secrets** | N/A | CI/CD only |
+| Solution       | pydantic-settings Compatibility | Integration Approach                                                              |
+|----------------|---------------------------------|-----------------------------------------------------------------------------------|
+| **SOPS**       | Excellent                       | Decrypt `.env.enc` to `.env` at startup; pydantic-settings reads `.env` as normal |
+| **Doppler**    | Excellent                       | `doppler run` injects env vars; pydantic-settings reads them directly             |
+| **Infisical**  | Good                            | CLI injects env vars, or SDK fetches secrets in custom settings source            |
+| **1Password**  | Good                            | `op run` injects env vars; pydantic-settings reads them directly                  |
+| **Cloud SM**   | Good                            | Custom settings source or startup script loads secrets into env vars              |
+| **dotenvx**    | Good                            | Decrypt `.env` at startup; same pattern as SOPS                                   |
+| **Vault**      | Fair                            | Requires custom settings source with `hvac` client                                |
+| **GH Secrets** | N/A                             | CI/CD only                                                                        |
 
 ### Compatibility with Docker Compose (juniper-deploy)
 
 The current `docker-compose.yml` uses `${VAR:-default}` environment variable substitution. This is important because the solution must work with this deployment model.
 
-| Solution | Docker Compose Integration |
-|----------|--------------------------|
-| **Doppler** | `doppler run -- docker compose up` -- seamless |
-| **SOPS** | Decrypt `.env` before running `docker compose up` (one extra step) |
-| **dotenvx** | Same approach as SOPS |
-| **1Password** | `op run -- docker compose up` -- seamless |
-| **Infisical** | `infisical run -- docker compose up` -- seamless |
-| **Cloud SM** | Application-level SDK integration; less relevant for Compose orchestration |
-| **Vault** | envconsul or application-level integration |
+| Solution      | Docker Compose Integration                                                 |
+|---------------|----------------------------------------------------------------------------|
+| **Doppler**   | `doppler run -- docker compose up` -- seamless                             |
+| **SOPS**      | Decrypt `.env` before running `docker compose up` (one extra step)         |
+| **dotenvx**   | Same approach as SOPS                                                      |
+| **1Password** | `op run -- docker compose up` -- seamless                                  |
+| **Infisical** | `infisical run -- docker compose up` -- seamless                           |
+| **Cloud SM**  | Application-level SDK integration; less relevant for Compose orchestration |
+| **Vault**     | envconsul or application-level integration                                 |
 
 ### Compatibility with GitHub Actions CI/CD
 
 All Juniper repos use GitHub Actions. The solution must not conflict with existing OIDC publishing or CI workflows.
 
-| Solution | GitHub Actions Integration |
-|----------|--------------------------|
-| **SOPS** | Decrypt step in workflow using `age` key stored as GH Secret |
-| **Doppler** | Official GH Action for injecting secrets |
-| **Infisical** | Official GH Action available |
-| **1Password** | Official GH Action (`1password/load-secrets-action`) |
-| **Cloud SM** | Native via OIDC (AWS/GCP/Azure) |
-| **GH Secrets** | Already in use -- no change needed |
-| **Vault** | `hashicorp/vault-action` available |
+| Solution       | GitHub Actions Integration                                   |
+|----------------|--------------------------------------------------------------|
+| **SOPS**       | Decrypt step in workflow using `age` key stored as GH Secret |
+| **Doppler**    | Official GH Action for injecting secrets                     |
+| **Infisical**  | Official GH Action available                                 |
+| **1Password**  | Official GH Action (`1password/load-secrets-action`)         |
+| **Cloud SM**   | Native via OIDC (AWS/GCP/Azure)                              |
+| **GH Secrets** | Already in use -- no change needed                           |
+| **Vault**      | `hashicorp/vault-action` available                           |
 
 ---
 
@@ -699,6 +699,7 @@ SOPS is the strongest fit for Juniper's current situation because it:
 - **Strong community**: 17k+ GitHub stars, CNCF backing, active maintenance
 
 **Suggested implementation**:
+
 1. Install SOPS + `age` CLI
 2. Generate an `age` key pair (store private key securely; add public key to `.sops.yaml`)
 3. Encrypt existing `.env` files: `sops -e .env > .env.enc`
@@ -710,7 +711,7 @@ SOPS is the strongest fit for Juniper's current situation because it:
 
 #### Tier 2: Strong Alternatives
 
-**Infisical (cloud free tier or self-hosted)**
+**Infisical (cloud free tier or self-hosted):**
 
 Best alternative if Juniper outgrows file-based encryption and needs centralized management:
 
@@ -723,7 +724,7 @@ Best alternative if Juniper outgrows file-based encryption and needs centralized
 
 **When to choose over SOPS**: When the project grows to multiple developers who need different access levels, or when runtime secret fetching (not just env var loading) becomes a requirement.
 
-**Doppler (cloud free tier)**
+**Doppler (cloud free tier):**
 
 Best alternative if developer experience is the top priority:
 
@@ -732,25 +733,25 @@ Best alternative if developer experience is the top priority:
 - Free tier (3 users, unlimited secrets)
 - Zero infrastructure
 
-**When to choose over SOPS**: When the team wants a managed dashboard for secrets and values immediate developer productivity over self-sovereignty. The SaaS-only model is the primary trade-off.
+**When to choose over SOPS:**: When the team wants a managed dashboard for secrets and values immediate developer productivity over self-sovereignty. The SaaS-only model is the primary trade-off.
 
 #### Tier 3: Situationally Appropriate
 
-| Solution | When to Consider |
-|----------|-----------------|
-| **AWS Secrets Manager** | If Juniper deploys to AWS (ECS, Fargate, Lambda) |
-| **Google Cloud Secret Manager** | If Juniper deploys to GCP (Cloud Run, GKE) |
-| **Azure Key Vault** | If Juniper deploys to Azure |
-| **1Password Dev Tools** | If the team already uses 1Password Business |
-| **HashiCorp Vault** | If the project scales to enterprise with a dedicated platform team |
+| Solution                        | When to Consider                                                   |
+|---------------------------------|--------------------------------------------------------------------|
+| **AWS Secrets Manager**         | If Juniper deploys to AWS (ECS, Fargate, Lambda)                   |
+| **Google Cloud Secret Manager** | If Juniper deploys to GCP (Cloud Run, GKE)                         |
+| **Azure Key Vault**             | If Juniper deploys to Azure                                        |
+| **1Password Dev Tools**         | If the team already uses 1Password Business                        |
+| **HashiCorp Vault**             | If the project scales to enterprise with a dedicated platform team |
 
 #### Not Recommended
 
-| Solution | Reason |
-|----------|--------|
-| **dotenvx** | SOPS does the same thing with a larger community, CNCF backing, and more encryption backend options. The Python SDK is a work-in-progress. |
+| Solution                               | Reason                                                                                                                                                                                                             |
+|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **dotenvx**                            | SOPS does the same thing with a larger community, CNCF backing, and more encryption backend options. The Python SDK is a work-in-progress.                                                                         |
 | **HashiCorp Vault (at current scale)** | Operational overhead is disproportionate to the project's needs. BSL license is less desirable than MIT/MPL. 2025 "Vault Fault" vulnerabilities are concerning. Consider only if the project scales significantly. |
-| **GitHub Actions Secrets alone** | Already in use for CI/CD (good), but insufficient as a standalone solution for application runtime secrets. |
+| **GitHub Actions Secrets alone**       | Already in use for CI/CD (good), but insufficient as a standalone solution for application runtime secrets.                                                                                                        |
 
 ### Immediate Actions (Regardless of Solution Choice)
 
