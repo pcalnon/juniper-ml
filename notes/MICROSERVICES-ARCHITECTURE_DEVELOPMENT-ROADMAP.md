@@ -520,7 +520,7 @@ The target groups all Juniper services. `systemctl --user start juniper.target` 
 ```ini
 [Unit]
 Description=Juniper ML Platform — All Services
-Documentation=https://github.com/your-org/juniper
+Documentation=https://github.com/pcalnon/juniper
 After=network-online.target
 Wants=network-online.target
 
@@ -533,7 +533,7 @@ WantedBy=default.target
 ```ini
 [Unit]
 Description=JuniperData — Dataset Generation Service (Port 8100)
-Documentation=https://github.com/your-org/juniper-data
+Documentation=https://github.com/pcalnon/juniper-data
 After=network-online.target
 PartOf=juniper.target
 
@@ -599,7 +599,7 @@ WantedBy=juniper.target
 ```ini
 [Unit]
 Description=JuniperCascor — Cascade Correlation Training Service (Port 8200)
-Documentation=https://github.com/your-org/juniper-cascor
+Documentation=https://github.com/pcalnon/juniper-cascor
 After=network-online.target juniper-data.service
 Requires=juniper-data.service
 PartOf=juniper.target
@@ -659,7 +659,7 @@ WantedBy=juniper.target
 ```ini
 [Unit]
 Description=JuniperCanopy — Real-Time Monitoring Dashboard (Port 8050)
-Documentation=https://github.com/your-org/juniper-canopy
+Documentation=https://github.com/pcalnon/juniper-canopy
 After=network-online.target juniper-data.service juniper-cascor.service
 Requires=juniper-data.service
 Wants=juniper-cascor.service
