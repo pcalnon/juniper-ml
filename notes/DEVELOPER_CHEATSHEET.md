@@ -543,7 +543,7 @@ Add the config entry at the appropriate level based on how dynamic it needs to b
 export JUNIPER_DATA_LOG_LEVEL=DEBUG
 
 # juniper-cascor
-export CASCOR_LOG_LEVEL=DEBUG
+export JUNIPER_CASCOR_LOG_LEVEL=DEBUG
 
 # Extended levels (cascor/canopy): TRACE, VERBOSE, DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
 ```
@@ -582,13 +582,115 @@ export JUNIPER_CASCOR_METRICS_ENABLED=true
 export JUNIPER_CANOPY_METRICS_ENABLED=true
 ```
 
-Metrics: `http_requests_total{method,endpoint,status}`, `http_request_duration_seconds{method,endpoint}`. Use the `observability` Docker Compose profile for Prometheus + Grafana.
+23 namespaced metrics across all services (e.g., `juniper_data_http_requests_total`, `juniper_cascor_training_loss`, `juniper_canopy_websocket_connections_active`). Use `make obs` for the easiest setup — it auto-enables metrics via `.env.observability`.
 
 ```bash
-docker compose --profile full --profile observability up -d
+# Preferred: Makefile targets auto-enable metrics
+make obs        # full stack + Prometheus + Grafana
+make obs-demo   # demo stack + Prometheus + Grafana
+
+# Manual: compose with observability profile
+docker compose --env-file .env --env-file .env.observability \
+  --profile full --profile observability up -d
 ```
 
-> **Docs:** [juniper-data Observability](../juniper-data/juniper_data/api/observability.py) | [Observability Plan](STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Deploy .env.observability](../juniper-deploy/.env.observability)
+
+### Start Observability Stack
+
+```bash
+# Full stack with monitoring
+make obs
+
+# Demo stack with monitoring
+make obs-demo
+```
+
+Access points:
+- **Grafana**: http://localhost:3000 (admin / admin)
+- **Prometheus**: http://localhost:9090
+
+> **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Deploy Makefile](../juniper-deploy/Makefile)
+
+### View Grafana Dashboards
+
+Four auto-provisioned dashboards in the "Juniper" folder:
+
+| Dashboard | UID | Purpose |
+|-----------|-----|---------|
+| Juniper Overview | `juniper-overview` | Cross-service health, request rates, error rates, latency (home dashboard) |
+| JuniperData | `juniper-data` | Dataset generation metrics, cache status, build info |
+| JuniperCascor | `juniper-cascor` | Training sessions, loss/accuracy, hidden units, inference |
+| JuniperCanopy | `juniper-canopy` | WebSocket connections/messages, demo mode, build info |
+
+> **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Dashboard JSON](../juniper-deploy/grafana/provisioning/dashboards/)
+
+### Metric Naming Convention
+
+All metrics use service namespace prefix: `juniper_data_`, `juniper_cascor_`, `juniper_canopy_`.
+
+Pattern: `<namespace>_<subsystem>_<metric_name>_<unit>`
+
+Examples:
+- `juniper_data_dataset_generations_total` — Counter of dataset generations
+- `juniper_cascor_training_loss` — Current training loss gauge
+- `juniper_canopy_websocket_connections_active` — Active WebSocket connections
+
+> **Docs:** [Observability Guide — Metrics Catalog](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md#metrics-catalog)
+
+### Add a Custom Metric to a Service
+
+```python
+from prometheus_client import Counter, Gauge, Histogram
+
+# 1. Define in observability.py with service namespace
+my_metric = Counter(
+    "juniper_data_my_operations_total",
+    "Total operations processed",
+    ["operation_type"],
+)
+
+# 2. Instrument in route/handler
+my_metric.labels(operation_type="create").inc()
+```
+
+Metric types: Counter (monotonic), Gauge (up/down), Histogram (distributions), Info (static labels).
+
+> **Docs:** [Prometheus Python Client](https://github.com/prometheus/client_python) | [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md#adding-custom-metrics)
+
+### Add a Grafana Dashboard
+
+1. Create JSON in `juniper-deploy/grafana/provisioning/dashboards/`
+2. Set `uid`, `title`, use `datasource: { type: "prometheus", uid: "prometheus" }`
+3. Use template variables `$datasource` and `$interval` for flexibility
+4. Dashboard auto-loads within 30 seconds (configurable in `dashboard-providers.yml`)
+
+> **Docs:** [Dashboard Providers YAML](../juniper-deploy/grafana/provisioning/dashboards/dashboard-providers.yml) | [Grafana Provisioning Docs](https://grafana.com/docs/grafana/latest/administration/provisioning/)
+
+### Query Prometheus Directly
+
+```bash
+# Check if all services are UP
+curl -s 'http://localhost:9090/api/v1/query?query=up' | python -m json.tool
+
+# HTTP request rate (last 5 minutes)
+curl -s 'http://localhost:9090/api/v1/query?query=rate(juniper_data_http_requests_total[5m])'
+
+# View all Juniper metrics
+curl -s 'http://localhost:9090/api/v1/label/__name__/values' | python -m json.tool | grep juniper
+```
+
+> **Docs:** [Prometheus HTTP API](https://prometheus.io/docs/prometheus/latest/querying/api/) | [PromQL Basics](https://prometheus.io/docs/prometheus/latest/querying/basics/)
+
+### Troubleshoot Missing Metrics
+
+1. **Metrics not in Prometheus?** Verify `*_METRICS_ENABLED=true` is set (check `.env.observability`). Check http://localhost:9090/targets — all should show "UP". Curl the service `/metrics` endpoint directly: `curl http://localhost:8100/metrics`.
+
+2. **Grafana shows "No data"?** Check dashboard time range (metrics only exist after stack start). Verify Prometheus datasource (Settings > Data Sources). Check PromQL in panel edit mode.
+
+3. **Custom metric not scraped?** Ensure metric is defined at module level (not inside a function). Restart the service after adding new metrics.
+
+> **Docs:** [Observability Guide — Troubleshooting](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md#troubleshooting)
 
 ---
 
