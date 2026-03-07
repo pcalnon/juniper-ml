@@ -4,9 +4,9 @@
 
 | Meta Data         | Value                                                          |
 |-------------------|----------------------------------------------------------------|
-| **Version:**      | 1.0.0                                                          |
+| **Version:**      | 1.2.0                                                          |
 | **Status:**       | Active                                                         |
-| **Last Updated:** | March 3, 2026                                                  |
+| **Last Updated:** | March 7, 2026                                                  |
 | **Project:**      | Juniper - Cascade Correlation Neural Network Research Platform |
 
 ---
@@ -72,6 +72,10 @@
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
+- [Claude Tooling](#claude-tooling)
+  - [Start a Claude Session (Background)](#start-a-claude-session-background)
+  - [Resume a Session by UUID or File](#resume-a-session-by-uuid-or-file)
+  - [Troubleshoot Session Resume](#troubleshoot-session-resume)
 - [Data Contract](#data-contract)
   - [Add a New Generator](#add-a-new-generator)
   - [Download a Dataset Artifact](#download-a-dataset-artifact)
@@ -772,6 +776,65 @@ git worktree prune
 
 ---
 
+## Claude Tooling
+
+### Start a Claude Session (Background)
+
+Use `scripts/wake_the_claude.bash` to build Claude CLI arguments and launch Claude in the background via `nohup`.
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --id \
+  --worktree \
+  --skip-permissions \
+  --prompt "Summarize current branch changes" \
+  -- --effort high --print
+```
+
+What the script does:
+- Parses alias flags (for example `--id`, `--resume`, `--prompt`, `--path`, `--file`)
+- Builds one Claude argument string
+- Executes `nohup claude ... &` so the process continues after shell exit
+
+### Resume a Session by UUID or File
+
+`--resume` accepts either:
+- A UUID directly (for example `7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd`)
+- A filename in the current working directory containing only the UUID text
+
+```bash
+# Resume directly by UUID
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous context" \
+  -- --effort medium --print
+
+# Resume from a file (local path in current directory)
+printf '%s\n' '7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd' > session-id.txt
+bash scripts/wake_the_claude.bash \
+  --resume session-id.txt \
+  --prompt "Continue from previous context" \
+  -- --effort medium --print
+```
+
+Important constraints:
+- Resume files are read from `./<filename>` only
+- After reading, the script deletes the resume file (`rm -f`)
+- Invalid or empty resume values terminate with usage output
+
+### Troubleshoot Session Resume
+
+If `--resume` fails:
+
+1. Confirm the value is either a UUID or an existing local file: `test -f ./session-id.txt && echo ok`
+2. Verify file content is a UUID only: `tr -d '\n' < session-id.txt`
+3. Ensure the script is run from the directory that contains the resume file
+4. Re-run and inspect stderr logs; validation diagnostics are emitted on stderr, while function return values are kept on stdout for clean command substitution
+
+> **Docs:** [Session ID Validation Bugfix Plan](SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [wake_the_claude.bash](../scripts/wake_the_claude.bash)
+
+---
+
 ## Data Contract
 
 ### Add a New Generator
@@ -923,6 +986,6 @@ Three things to update per repo:
 
 ---
 
-**Last Updated:** March 5, 2026
-**Version:** 1.1.0
+**Last Updated:** March 7, 2026
+**Version:** 1.2.0
 **Maintainer:** Paul Calnon
