@@ -18,6 +18,7 @@ Fixes four interrelated bugs in the session ID validation and resume flow of `wa
 The `wake_the_claude.bash` script supports resuming a previous Claude Code session via `--resume <session-id-or-file>`. The `test.bash` test harness exercises this flow: Test 000 creates a session and saves its UUID to a `.txt` file, then Test 001 passes that filename to `--resume` to resume the session.
 
 Test 001 always failed because:
+
 - Functions that return values via `echo` also used `echo` for diagnostic logging, and callers captured all stdout via `$(...)`, corrupting the return value with log messages
 - The exit status capture was inside the subshell and never propagated to the parent
 - `exit` calls inside `$(...)` only terminated the subshell, not the script
@@ -56,11 +57,11 @@ Test 001 always failed because:
 
 ### Test Summary
 
-| Test Type   | Passed | Failed | Skipped | Notes                                                    |
-| ----------- | ------ | ------ | ------- | -------------------------------------------------------- |
-| Unit        | 5      | 0      | 0       | Isolated function tests: valid UUID, UUID-from-file, invalid, empty, file-with-bad-content |
-| Regression  | 3      | 0      | 0       | `-u`, `--usage`, `-h` flags produce correct output       |
-| E2E         | N/A    | N/A    | 2       | Full `test.bash` requires active `claude` CLI session    |
+| Test Type  | Passed | Failed | Skipped | Notes                                                                                      |
+|------------|--------|--------|---------|--------------------------------------------------------------------------------------------|
+| Unit       | 5      | 0      | 0       | Isolated function tests: valid UUID, UUID-from-file, invalid, empty, file-with-bad-content |
+| Regression | 3      | 0      | 0       | `-u`, `--usage`, `-h` flags produce correct output                                         |
+| E2E        | N/A    | N/A    | 2       | Full `test.bash` requires active `claude` CLI session                                      |
 
 ### Environments Tested
 
