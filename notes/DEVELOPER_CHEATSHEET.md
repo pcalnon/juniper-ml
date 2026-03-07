@@ -519,6 +519,38 @@ Expected:
 - Error output includes path-separator rejection and invalid-session message
 - `scripts/test_resume_file_safety.bash` prints `PASS: invalid resume file is preserved`
 
+Edge-case checks for missing and empty `.txt` resume sources:
+
+```bash
+script_path="$(pwd)/scripts/wake_the_claude.bash"
+tmpdir="$(mktemp -d)"
+(
+  cd "$tmpdir" || exit 1
+  : > empty-session-id.txt
+
+  bash "$script_path" --resume missing-session-id.txt --prompt "hello" >/tmp/wtc_missing.out 2>/tmp/wtc_missing.err
+  echo "missing_exit=$?"
+
+  bash "$script_path" --resume empty-session-id.txt --prompt "hello" >/tmp/wtc_empty.out 2>/tmp/wtc_empty.err
+  echo "empty_exit=$?"
+
+  test -f empty-session-id.txt && echo "empty_file_preserved=yes"
+)
+python3 - <<'PY'
+from pathlib import Path
+for name in ("missing", "empty"):
+    content = (Path(f"/tmp/wtc_{name}.out").read_text() + Path(f"/tmp/wtc_{name}.err").read_text())
+    print(f"{name}_usage_count={content.count('usage: wake_the_claude.bash')}")
+    print(f"{name}_executing_claude={'Executing claude' in content}")
+PY
+```
+
+Expected:
+- `missing_exit=1` and `empty_exit=1`
+- `missing_usage_count=1` and `empty_usage_count=1`
+- `missing_executing_claude=False` and `empty_executing_claude=False`
+- `empty_file_preserved=yes`
+
 ### Verify pattern-matching hardening (no eval)
 
 ```bash
@@ -541,6 +573,8 @@ This suite stubs the `claude` binary in a temp directory, so no local Claude ins
 Coverage highlights:
 - `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
 - Invalid `--resume <file.txt>` content fails validation without deleting the input file.
+- Missing `--resume <file.txt>` sources fail cleanly with one usage print and no Claude launch attempt.
+- Empty `--resume <file.txt>` sources fail the same invalid-session path and preserve the input file.
 - `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
 - Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
 
