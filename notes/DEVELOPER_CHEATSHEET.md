@@ -506,17 +506,51 @@ test ! -s /tmp/wtc_debug.err && echo "stderr clean"
 - A UUID value
 - A `.txt` filename in the current working directory (no `/` path separators)
 
-Quick failure-path check (does not require a successful `claude` launch):
+Quick failure-path checks (do not require a successful `claude` launch):
 
 ```bash
 bash scripts/wake_the_claude.bash --resume ../secret.txt --print; echo "exit=$?"
 WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume ../secret.txt --print >/tmp/wtc_resume_debug.out 2>/tmp/wtc_resume_debug.err
 rg "contains path separators|Session ID is invalid" /tmp/wtc_resume_debug.err /tmp/wtc_resume_debug.out
+bash scripts/test_resume_file_safety.bash
 ```
 
 Expected:
 - Exit code `1`
 - Error output includes path-separator rejection and invalid-session message
+- `scripts/test_resume_file_safety.bash` prints `PASS: invalid resume file is preserved`
+
+Edge-case checks for missing and empty `.txt` resume sources:
+
+```bash
+script_path="$(pwd)/scripts/wake_the_claude.bash"
+tmpdir="$(mktemp -d)"
+(
+  cd "$tmpdir" || exit 1
+  : > empty-session-id.txt
+
+  bash "$script_path" --resume missing-session-id.txt --prompt "hello" >/tmp/wtc_missing.out 2>/tmp/wtc_missing.err
+  echo "missing_exit=$?"
+
+  bash "$script_path" --resume empty-session-id.txt --prompt "hello" >/tmp/wtc_empty.out 2>/tmp/wtc_empty.err
+  echo "empty_exit=$?"
+
+  test -f empty-session-id.txt && echo "empty_file_preserved=yes"
+)
+python3 - <<'PY'
+from pathlib import Path
+for name in ("missing", "empty"):
+    content = (Path(f"/tmp/wtc_{name}.out").read_text() + Path(f"/tmp/wtc_{name}.err").read_text())
+    print(f"{name}_usage_count={content.count('usage: wake_the_claude.bash')}")
+    print(f"{name}_executing_claude={'Executing claude' in content}")
+PY
+```
+
+Expected:
+- `missing_exit=1` and `empty_exit=1`
+- `missing_usage_count=1` and `empty_usage_count=1`
+- `missing_executing_claude=False` and `empty_executing_claude=False`
+- `empty_file_preserved=yes`
 
 ### Troubleshoot --id UUID generation fallback
 
@@ -556,13 +590,16 @@ The flag pattern parser in `matches_pattern()` now compares candidates in a spli
 
 ```bash
 python3 -m unittest tests/test_wake_the_claude.py -v
+bash scripts/test_resume_file_safety.bash
 ```
 
 This suite stubs the `claude` binary in a temp directory, so no local Claude install is required.
 
 Coverage highlights:
 - `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
-- `--id` without a value generates a session UUID using validated fallbacks (`uuidgen`, `/proc`, then `python3`) and still launches Claude when possible.
+- Invalid `--resume <file.txt>` content fails validation without deleting the input file.
+- Missing `--resume <file.txt>` sources fail cleanly with one usage print and no Claude launch attempt.
+- Empty `--resume <file.txt>` sources fail the same invalid-session path and preserve the input file.
 - `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
 - Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
 
@@ -872,6 +909,104 @@ If `--cross-repo check` reports "Ecosystem root not found":
    `.github/workflows/docs-full-check.yml` (runs weekly and on manual dispatch).
 
 > **Docs:** [Cross-Repo Link Resolution Proposal](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) | [docs-full-check.yml](../.github/workflows/docs-full-check.yml)
+
+---
+
+## Claude Code Session Script
+
+### Launch a New Session
+
+Use `scripts/wake_the_claude.bash` to construct and launch `claude` invocations with validated flags:
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --id \
+  --prompt "Review recent test failures and suggest fixes" \
+  -- --effort high --print
+```
+
+Notes:
+- `--id` stores the generated/provided UUID in `<uuid>.txt` in the current working directory.
+- The script launches `claude` via `nohup ... &` and exits after dispatch.
+
+> **Docs:** [Script Source](../juniper-ml/scripts/wake_the_claude.bash)
+
+### Resume an Existing Session
+
+Resume by UUID:
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous analysis"
+```
+
+Resume with the explicit session alias (equivalent to `--resume`):
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous analysis"
+```
+
+Resume by saved session file (basename only, from current directory):
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt \
+  --prompt "Continue from previous analysis"
+```
+
+### Resume Flag Aliases and Parser Contract
+
+The parser accepts these resume flag aliases:
+
+| Accepted Flag | Internal Handling |
+|---|---|
+| `-r` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume-thread` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume-session` | Normalized to `--resume <uuid>` before `claude` launch |
+
+Constraints:
+
+- The token after any resume alias must be either a UUID or a local `.txt` basename.
+- If the next token is another flag, the script treats resume as missing/invalid and exits non-zero.
+- Alias matching is exact; typo variants are rejected.
+
+Regression check for trailing alias handling:
+
+```bash
+python3 -m unittest -v tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_resume_alias_flag_passes_session_id_to_claude
+```
+
+### Session ID Files and Safety Constraints
+
+- `--resume` accepts either a UUID or a local `.txt` filename.
+- Filenames containing `/` are rejected to block path traversal.
+- Non-`.txt` resume filenames are rejected.
+- Resume file content must itself be a valid UUID.
+- Resume reads are non-destructive: session files are not deleted.
+- `--id` refuses to write when the target `*.txt` path is a symlink.
+
+### Troubleshoot Resume Failures
+
+Enable debug logging for parser/validation traces:
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "hello" 2>&1
+```
+
+Common failure patterns:
+
+| Symptom | Likely Cause | Fix |
+|---|---|---|
+| `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
+| `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
+| Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a local `*.txt` session file in current directory |
+| `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
+
+> **Docs:** [Regression Tests](../juniper-ml/tests/test_wake_the_claude.py) | [Session Validation Bugfix Plan](../juniper-ml/notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [Security Remediation Plan](../juniper-ml/notes/SECURITY_REMEDIATION_PLAN.md)
 
 ---
 

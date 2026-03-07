@@ -26,9 +26,10 @@ pip install -e ".[all]"        # everything
 
 # Run tooling script regression tests
 python3 -m unittest -v tests/test_wake_the_claude.py
+bash scripts/test_resume_file_safety.bash
 ```
 
-There is no importable Python application package in this repository. Functional behavior here is primarily package metadata plus shell tooling in `scripts/`, with regression coverage in `tests/test_wake_the_claude.py`.
+There is no importable Python application package in this repository. Functional behavior here is primarily package metadata plus shell tooling in `scripts/`, with regression coverage in `tests/test_wake_the_claude.py` and `scripts/test_resume_file_safety.bash`.
 
 ## Publishing
 
@@ -40,6 +41,7 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 - `README.md` — PyPI landing page content
 - `.github/workflows/publish.yml` — CI/CD publish pipeline
 - `scripts/wake_the_claude.bash` — Claude Code launcher with flag parsing, session ID persistence, and resume handling
+- `scripts/test_resume_file_safety.bash` — Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 - `tests/test_wake_the_claude.py` — Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 
 ## Ecosystem Context
