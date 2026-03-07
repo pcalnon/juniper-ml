@@ -56,6 +56,11 @@
   - [Run Tests with Coverage](#run-tests-with-coverage)
   - [Add a Pytest Marker](#add-a-pytest-marker)
   - [Run Specific Marker Subsets](#run-specific-marker-subsets)
+- [Claude Automation Script](#claude-automation-script)
+  - [Validate wake_the_claude.bash usage/help flags](#validate-wake_the_claudebash-usagehelp-flags)
+  - [Enable debug mode and verify clean stderr](#enable-debug-mode-and-verify-clean-stderr)
+  - [Troubleshoot --resume validation failures](#troubleshoot---resume-validation-failures)
+  - [Verify pattern-matching hardening (no eval)](#verify-pattern-matching-hardening-no-eval)
 - [Dependencies](#dependencies)
   - [Add a Dependency](#add-a-dependency)
   - [Remove a Dependency](#remove-a-dependency)
@@ -466,6 +471,60 @@ pytest --run-long                # Include long-running tests (juniper-cascor)
 ```
 
 > **Docs:** Per-repo AGENTS.md files | [juniper-canopy Selective Test Guide](../juniper-canopy/docs/testing/SELECTIVE_TEST_GUIDE.md)
+
+---
+
+## Claude Automation Script
+
+### Validate wake_the_claude.bash usage/help flags
+
+```bash
+bash scripts/wake_the_claude.bash -u >/tmp/wtc_usage.out 2>/tmp/wtc_usage.err; echo "exit=$?"
+bash scripts/wake_the_claude.bash -h >/tmp/wtc_help.out 2>/tmp/wtc_help.err; echo "exit=$?"
+```
+
+Expected:
+- `-u` exits `1` and prints usage
+- `-h` exits `0` and prints usage
+- stderr files remain empty (no `command not found` noise)
+
+### Enable debug mode and verify clean stderr
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash -u >/tmp/wtc_debug.out 2>/tmp/wtc_debug.err; echo "exit=$?"
+rg "Define Claude Code parameter flags|usage:" /tmp/wtc_debug.out
+test ! -s /tmp/wtc_debug.err && echo "stderr clean"
+```
+
+`WTC_DEBUG=1` enables parser/flow debug logs. For `-u` and `-h`, debug and usage output are emitted on stdout.
+
+### Troubleshoot --resume validation failures
+
+`--resume` accepts either:
+- A UUID value
+- A `.txt` filename in the current working directory (no `/` path separators)
+
+Quick failure-path check (does not require a successful `claude` launch):
+
+```bash
+bash scripts/wake_the_claude.bash --resume ../secret.txt --print; echo "exit=$?"
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume ../secret.txt --print >/tmp/wtc_resume_debug.out 2>/tmp/wtc_resume_debug.err
+rg "contains path separators|Session ID is invalid" /tmp/wtc_resume_debug.err /tmp/wtc_resume_debug.out
+```
+
+Expected:
+- Exit code `1`
+- Error output includes path-separator rejection and invalid-session message
+
+### Verify pattern-matching hardening (no eval)
+
+```bash
+rg "eval" scripts/wake_the_claude.bash
+```
+
+Expected: no matches.
+
+The flag pattern parser in `matches_pattern()` now compares candidates in a split loop. Keep flag constant format as `"flag1 | flag2 | flag3"` when adding aliases.
 
 ---
 
