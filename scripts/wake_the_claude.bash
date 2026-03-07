@@ -16,6 +16,26 @@ WTC_DEBUG="${WTC_DEBUG:-0}"
 
 
 ########################################################################################################################################################################
+# Early function definitions (must precede top-level calls below)
+########################################################################################################################################################################
+
+function debug_log() {
+    if [[ "${WTC_DEBUG}" == "1" ]]; then
+        echo "$@"
+    fi
+}
+
+function redact_uuid() {
+    local value="$1"
+    if [[ ${#value} -ge 12 ]]; then
+        echo "${value:0:8}...${value: -4}"
+    else
+        echo "[redacted]"
+    fi
+}
+
+
+########################################################################################################################################################################
 # Claude Code parameter flags
 ########################################################################################################################################################################
 debug_log "Define Claude Code parameter flags"
@@ -70,26 +90,16 @@ debug_log "Default Testing Input parameters: \"${PARAMS_TEST}\""
 # Define functions for wake_the_claude.bash script
 ########################################################################################################################################################################
 
-function debug_log() {
-    if [[ "${WTC_DEBUG}" == "1" ]]; then
-        echo "$@"
-    fi
-}
-
-function redact_uuid() {
-    local value="$1"
-    if [[ ${#value} -ge 12 ]]; then
-        echo "${value:0:8}...${value: -4}"
-    else
-        echo "[redacted]"
-    fi
-}
-
 function matches_pattern() {
-    # shellcheck disable=SC2034
     local ip_value="$1"
     local pattern="$2"
-    eval "case \"\${ip_value}\" in ${pattern}) return 0;; *) return 1;; esac"
+    local candidate
+    while IFS= read -r -d '|' candidate || [[ -n "$candidate" ]]; do
+        candidate="${candidate# }"
+        candidate="${candidate% }"
+        [[ "$ip_value" == "$candidate" ]] && return 0
+    done <<< "$pattern"
+    return 1
 }
 
 # Validate UUID
