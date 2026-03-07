@@ -7,9 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Documentation
+### Added
 
-- Added `wake_the_claude.bash` operational guidance to `notes/DEVELOPER_CHEATSHEET.md`, including `--resume` usage, session file safety constraints, and troubleshooting commands.
+- `scripts/test_resume_file_safety.bash` — Added a focused regression script that verifies invalid `--resume <file.txt>` input returns non-zero and preserves the source file.
+- `notes/DEVELOPER_CHEATSHEET.md` — Added a `wake_the_claude.bash` quick runbook covering usage/help exit codes, debug-mode behavior, and `--resume` troubleshooting.
+- `notes/DEVELOPER_CHEATSHEET.md` — Added a regression-test command (`python3 -m unittest tests/test_wake_the_claude.py -v`) and coverage notes for resume validation, symlink-write protection, and prompt argument safety.
+- `notes/DEVELOPER_CHEATSHEET.md` — Documented regression-suite execution expectations (fake `claude` shim) and a troubleshooting note for `test_session_id_save_rejects_symlink_target` contract mismatches.
+- `notes/DEVELOPER_CHEATSHEET.md` and `AGENTS.md` — Documented the `test_resume_file_safety.bash` workflow so resume-file preservation checks are part of standard troubleshooting and regression runs.
+
+### Fixed
+
+- `scripts/wake_the_claude.bash` — Replaced `eval`-based flag matching in `matches_pattern()` with split-and-compare logic.
+- `scripts/wake_the_claude.bash` — Moved `debug_log` and `redact_uuid` definitions before top-level calls to prevent `command not found` stderr noise.
+
+### Security
+
+- `scripts/wake_the_claude.bash` — Removed a latent command-injection vector by eliminating `eval` from pattern matching.
 
 ## [0.2.1] - 2026-03-06
 
