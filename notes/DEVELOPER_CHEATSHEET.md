@@ -887,6 +887,72 @@ If `--cross-repo check` reports "Ecosystem root not found":
 
 ---
 
+## Claude Code Session Script
+
+### Launch a New Session
+
+Use `scripts/wake_the_claude.bash` to construct and launch `claude` invocations with validated flags:
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --id \
+  --prompt "Review recent test failures and suggest fixes" \
+  -- --effort high --print
+```
+
+Notes:
+- `--id` stores the generated/provided UUID in `<uuid>.txt` in the current working directory.
+- The script launches `claude` via `nohup ... &` and exits after dispatch.
+
+> **Docs:** [Script Source](../juniper-ml/scripts/wake_the_claude.bash)
+
+### Resume an Existing Session
+
+Resume by UUID:
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous analysis"
+```
+
+Resume by saved session file (basename only, from current directory):
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt \
+  --prompt "Continue from previous analysis"
+```
+
+### Session ID Files and Safety Constraints
+
+- `--resume` accepts either a UUID or a local `.txt` filename.
+- Filenames containing `/` are rejected to block path traversal.
+- Non-`.txt` resume filenames are rejected.
+- Resume file content must itself be a valid UUID.
+- Resume reads are non-destructive: session files are not deleted.
+- `--id` refuses to write when the target `*.txt` path is a symlink.
+
+### Troubleshoot Resume Failures
+
+Enable debug logging for parser/validation traces:
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "hello" 2>&1
+```
+
+Common failure patterns:
+
+| Symptom | Likely Cause | Fix |
+|---|---|---|
+| `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
+| `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
+| Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a local `*.txt` session file in current directory |
+
+> **Docs:** [Regression Tests](../juniper-ml/tests/test_wake_the_claude.py) | [Session Validation Bugfix Plan](../juniper-ml/notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [Security Remediation Plan](../juniper-ml/notes/SECURITY_REMEDIATION_PLAN.md)
+
+---
+
 ## Git Worktrees
 
 ### Create a Worktree for a New Task
