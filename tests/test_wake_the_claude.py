@@ -327,32 +327,64 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
-    def test_nohup_log_falls_back_to_home_when_cwd_is_not_writable(self) -> None:
+    def test_non_writable_cwd_falls_back_to_home_log_and_still_launches(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            env["HOME"] = temp_dir
+            home_dir = Path(temp_dir) / "home"
+            home_dir.mkdir(parents=True, exist_ok=True)
+            env["HOME"] = str(home_dir)
 
-            readonly_dir = Path(temp_dir) / "readonly"
-            readonly_dir.mkdir(parents=True, exist_ok=True)
-            readonly_dir.chmod(0o555)
-
+            read_only_dir = Path(temp_dir) / "read-only"
+            read_only_dir.mkdir(parents=True, exist_ok=True)
+            read_only_dir.chmod(0o555)
             try:
                 result = self._run_script(
                     ["--resume", VALID_UUID, "--prompt", "hello"],
-                    cwd=str(readonly_dir),
+                    cwd=str(read_only_dir),
                     env=env,
                 )
             finally:
-                readonly_dir.chmod(0o755)
+                # Restore permissions so TemporaryDirectory cleanup can remove it.
+                read_only_dir.chmod(0o755)
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertFalse((readonly_dir / "wake_the_claude.nohup.log").exists())
-            self.assertTrue((Path(temp_dir) / "wake_the_claude.nohup.log").exists())
+            self.assertFalse((read_only_dir / "wake_the_claude.nohup.log").exists())
+            self.assertTrue((home_dir / "wake_the_claude.nohup.log").exists())
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
+    def test_no_writable_log_location_fails_without_silent_success(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            read_only_dir = Path(temp_dir) / "read-only"
+            read_only_dir.mkdir(parents=True, exist_ok=True)
+            read_only_dir.chmod(0o555)
+
+            read_only_home = Path(temp_dir) / "read-only-home"
+            read_only_home.mkdir(parents=True, exist_ok=True)
+            read_only_home.chmod(0o555)
+            env["HOME"] = str(read_only_home)
+
+            try:
+                result = self._run_script(
+                    ["--resume", VALID_UUID, "--prompt", "hello"],
+                    cwd=str(read_only_dir),
+                    env=env,
+                )
+            finally:
+                # Restore permissions so TemporaryDirectory cleanup can remove them.
+                read_only_dir.chmod(0o755)
+                read_only_home.chmod(0o755)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Failed to open nohup log file", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
 
 
 if __name__ == "__main__":
