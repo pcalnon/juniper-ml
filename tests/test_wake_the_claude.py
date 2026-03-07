@@ -2,6 +2,8 @@
 """Regression tests for wake_the_claude resume/session-id handling."""
 
 import os
+import re
+import shutil
 import subprocess
 import tempfile
 import time
@@ -12,6 +14,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
+UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
@@ -108,6 +111,22 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
+    def test_resume_alias_flag_passes_session_id_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume-session", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -183,7 +202,9 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn("path separators", result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
@@ -201,7 +222,96 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn(".txt extension", result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_resume_with_missing_txt_file_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            missing_session_file = Path(temp_dir) / "missing-session-id.txt"
+
+            result = self._run_script(
+                ["--resume", missing_session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertFalse(
+                missing_session_file.exists(),
+                msg="Expected script not to create missing resume source file",
+            )
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_resume_with_filename_works_when_debug_logging_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+            session_file = Path(temp_dir) / "session-id.txt"
+            session_file.write_text(VALID_UUID, encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
+    def test_resume_flag_without_value_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--resume", "--", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_session_id_save_rejects_symlink_target(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            symlink_target = Path(temp_dir) / "sensitive-target.txt"
+            symlink_target.write_text("ORIGINAL", encoding="utf-8")
+            symlink_path = Path(temp_dir) / f"{VALID_UUID}.txt"
+            symlink_path.symlink_to(symlink_target)
+
+            result = self._run_script(
+                ["--id", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertTrue(symlink_path.is_symlink())
+            self.assertEqual(symlink_target.read_text(encoding="utf-8"), "ORIGINAL")
+            combined_output = result.stdout + result.stderr
+            self.assertIn("symlink", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
@@ -236,20 +346,131 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertTrue(nohup_file.exists(), msg="Expected existing nohup.out to be preserved")
+            self.assertEqual(
+                nohup_file.read_text(encoding="utf-8"),
+                original_nohup_content,
+                msg="Expected existing nohup.out contents to remain unchanged",
+            )
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
-            self.assertEqual(last_invocation_args[0], "--session-id")
-            self.assertRegex(
-                last_invocation_args[1],
-                r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+    def test_non_writable_cwd_falls_back_to_home_log_and_still_launches(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            home_dir = Path(temp_dir) / "home"
+            home_dir.mkdir(parents=True, exist_ok=True)
+            env["HOME"] = str(home_dir)
+
+            read_only_dir = Path(temp_dir) / "read-only"
+            read_only_dir.mkdir(parents=True, exist_ok=True)
+            read_only_dir.chmod(0o555)
+            try:
+                result = self._run_script(
+                    ["--resume", VALID_UUID, "--prompt", "hello"],
+                    cwd=str(read_only_dir),
+                    env=env,
+                )
+            finally:
+                # Restore permissions so TemporaryDirectory cleanup can remove it.
+                read_only_dir.chmod(0o755)
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertFalse((read_only_dir / "wake_the_claude.nohup.log").exists())
+            self.assertTrue((home_dir / "wake_the_claude.nohup.log").exists())
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
+    def test_no_writable_log_location_fails_without_silent_success(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            read_only_dir = Path(temp_dir) / "read-only"
+            read_only_dir.mkdir(parents=True, exist_ok=True)
+            read_only_dir.chmod(0o555)
+
+            read_only_home = Path(temp_dir) / "read-only-home"
+            read_only_home.mkdir(parents=True, exist_ok=True)
+            read_only_home.chmod(0o555)
+            env["HOME"] = str(read_only_home)
+
+            try:
+                result = self._run_script(
+                    ["--resume", VALID_UUID, "--prompt", "hello"],
+                    cwd=str(read_only_dir),
+                    env=env,
+                )
+            finally:
+                # Restore permissions so TemporaryDirectory cleanup can remove them.
+                read_only_dir.chmod(0o755)
+                read_only_home.chmod(0o755)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Failed to open nohup log file", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_missing_claude_binary_fails_without_silent_success(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log = Path(temp_dir) / "claude_invocations.log"
+            isolated_bin = Path(temp_dir) / "isolated-bin"
+            isolated_bin.mkdir(parents=True, exist_ok=True)
+
+            bash_path = shutil.which("bash")
+            self.assertIsNotNone(bash_path, msg="bash must be discoverable for this test")
+            os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
+
+            env = os.environ.copy()
+            env["PATH"] = str(isolated_bin)
+            env["HOME"] = temp_dir
+            env["CLAUDE_ARGS_LOG"] = str(invocations_log)
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
             )
-            self.assertEqual(last_invocation_args[2], "hello")
 
-            session_id_file = Path(temp_dir) / f"{last_invocation_args[1]}.txt"
-            self.assertTrue(session_id_file.exists(), msg="Expected generated session id to be persisted")
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("claude command not found in PATH", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_exported_claude_function_without_binary_fails_without_silent_success(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log = Path(temp_dir) / "claude_invocations.log"
+            isolated_bin = Path(temp_dir) / "isolated-bin"
+            isolated_bin.mkdir(parents=True, exist_ok=True)
+
+            bash_path = shutil.which("bash")
+            self.assertIsNotNone(bash_path, msg="bash must be discoverable for this test")
+            os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
+
+            env = os.environ.copy()
+            env["PATH"] = str(isolated_bin)
+            env["HOME"] = temp_dir
+            env["CLAUDE_ARGS_LOG"] = str(invocations_log)
+            env["BASH_FUNC_claude%%"] = "() { echo wrapper-function; }"
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("claude command not found in PATH", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
 
 
 if __name__ == "__main__":
