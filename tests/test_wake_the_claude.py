@@ -2,6 +2,7 @@
 """Regression tests for wake_the_claude resume/session-id handling."""
 
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -12,6 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
+UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
@@ -215,6 +217,51 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
+
+    def test_session_id_without_value_generates_uuid_when_uuidgen_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            # Override uuidgen to simulate environments where uuidgen is unavailable.
+            fake_uuidgen = Path(temp_dir) / "bin" / "uuidgen"
+            fake_uuidgen.write_text(
+                "#!/usr/bin/env bash\n"
+                "exit 127\n",
+                encoding="utf-8",
+            )
+            fake_uuidgen.chmod(0o755)
+
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertNotIn("can only be used in a function", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args[0], "--session-id")
+            self.assertRegex(last_invocation_args[1], UUID_REGEX)
+            self.assertEqual(last_invocation_args[2], "hello")
+
+    def test_session_id_with_invalid_value_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--session-id", "not-a-uuid", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Session ID value is invalid", result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
 
 
 if __name__ == "__main__":

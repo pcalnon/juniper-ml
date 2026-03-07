@@ -92,6 +92,30 @@ function is_valid_uuid() {
     fi
 }
 
+# Generate UUID for session-id when one is not provided.
+function generate_uuid() {
+    local generated_uuid=""
+
+    if command -v uuidgen >/dev/null 2>&1; then
+        generated_uuid="$(uuidgen 2>/dev/null || true)"
+    fi
+
+    if [[ "${generated_uuid}" == "" ]] && [[ -r "/proc/sys/kernel/random/uuid" ]]; then
+        generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null || true)"
+    fi
+
+    # Defensive trim for command/file output newlines.
+    generated_uuid="${generated_uuid//$'\n'/}"
+    generated_uuid="${generated_uuid//$'\r'/}"
+
+    if is_valid_uuid "${generated_uuid}"; then
+        echo "${generated_uuid}"
+        return "${TRUE}"
+    fi
+
+    return "${FALSE}"
+}
+
 # Save Session ID to file
 function save_session_id() {
     local session_id_value="$1"
@@ -376,14 +400,21 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             echo "Warning: Received Session ID Flag but no Session ID Name."
             echo "Session ID Value not Provided, Assigning a new UUID as Session ID."
             # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} $(uuidgen | tr -d '-')"
-            local generated_uuid
-            generated_uuid="$(uuidgen)"
+            generated_uuid="$(generate_uuid)"
+            RETURN_VALUE=$?
+            if [[ ( "${RETURN_VALUE}" != "${TRUE}" ) || ( "${generated_uuid}" == "" ) ]]; then
+                echo "Error: Unable to generate a valid Session ID. Exiting..."
+                usage "${FALSE}"
+            fi
             SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
             echo "Continuing with new Session ID value: \"${SESSION_ID_VALUE}\""
             CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
             echo "Received a new Session ID Param: \"${SESSION_ID_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         fi
-        save_session_id "${SESSION_ID_VALUE}"
+        if ! save_session_id "${SESSION_ID_VALUE}"; then
+            echo "Error: Session ID value is invalid. Exiting..."
+            usage "${FALSE}"
+        fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
         echo "Parsing worktree flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
