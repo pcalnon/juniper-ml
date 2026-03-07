@@ -505,13 +505,8 @@ echo "Completed Building Claude Code Prompt"
 ########################################################################################################################################################################
 echo "Execute Claude Code"
 
-# Remove nohup.out file if it exists
-if [[ -f "nohup.out" ]]; then
-    echo "nohup.out file exists, removing it"
-    rm -f "nohup.out"
-fi
-
-echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} &"
-nohup claude "${CLAUDE_CODE_PARAMS[@]}" &
+NOHUP_LOG_FILE="wake_the_claude.nohup.log"
+echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
+nohup claude "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
 echo "Completed Executing Claude Code"
 exit 0

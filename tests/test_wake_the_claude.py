@@ -216,6 +216,32 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
 
+    def test_existing_nohup_out_is_not_deleted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            nohup_file = Path(temp_dir) / "nohup.out"
+            original_nohup_content = "existing process output\n"
+            nohup_file.write_text(original_nohup_content, encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertTrue(nohup_file.exists(), msg="Expected existing nohup.out to be preserved")
+            self.assertEqual(
+                nohup_file.read_text(encoding="utf-8"),
+                original_nohup_content,
+                msg="Expected existing nohup.out contents to remain unchanged",
+            )
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
 
 if __name__ == "__main__":
     unittest.main()
