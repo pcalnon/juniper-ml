@@ -201,6 +201,46 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
+    def test_resume_rejects_missing_txt_file_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--resume", "missing-session-id.txt", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_resume_rejects_empty_session_id_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            session_file = Path(temp_dir) / "session-id.txt"
+            session_file.write_text("", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertTrue(session_file.exists(), msg="Expected empty session id file to remain after rejection")
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
     def test_resume_with_filename_works_when_debug_logging_enabled(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
