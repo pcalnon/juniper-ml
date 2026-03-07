@@ -72,7 +72,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             self.assertIn(f"--resume {VALID_UUID}", invocations[-1])
 
-    def test_resume_with_filename_loads_uuid_and_deletes_file(self) -> None:
+    def test_resume_with_filename_loads_uuid_and_preserves_non_generated_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             session_file = Path(temp_dir) / "session-id.txt"
@@ -85,7 +85,32 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertFalse(session_file.exists(), msg="Expected consumed session id file to be removed")
+            self.assertTrue(
+                session_file.exists(),
+                msg="Expected non-generated session id file to be preserved",
+            )
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            self.assertIn(f"--resume {VALID_UUID}", invocations[-1])
+
+    def test_resume_with_generated_session_file_loads_uuid_and_deletes_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            session_file = Path(temp_dir) / f"{VALID_UUID}.txt"
+            session_file.write_text(VALID_UUID, encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertFalse(
+                session_file.exists(),
+                msg="Expected generated session id file to be consumed and removed",
+            )
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
@@ -109,7 +134,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
-    def test_resume_with_file_containing_invalid_uuid_fails_and_deletes_file(self) -> None:
+    def test_resume_with_file_containing_invalid_uuid_fails_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             session_file = Path(temp_dir) / "session-id.txt"
@@ -122,7 +147,10 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertFalse(session_file.exists(), msg="Expected consumed session id file to be removed")
+            self.assertTrue(
+                session_file.exists(),
+                msg="Expected invalid session id file to be preserved",
+            )
 
             combined_output = result.stdout + result.stderr
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
