@@ -283,6 +283,67 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
 
+    def test_usage_flag_exits_1_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(["-u"], cwd=temp_dir, env=env)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("usage: wake_the_claude.bash", result.stdout)
+            self.assertEqual(result.stderr, "")
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_help_flag_exits_0_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(["-h"], cwd=temp_dir, env=env)
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertIn("usage: wake_the_claude.bash", result.stdout)
+            self.assertEqual(result.stderr, "")
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_usage_flag_with_debug_logging_has_clean_stderr(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+
+            result = self._run_script(["-u"], cwd=temp_dir, env=env)
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Define Claude Code parameter flags", result.stdout)
+            self.assertIn("usage: wake_the_claude.bash", result.stdout)
+            self.assertNotIn("command not found", result.stdout + result.stderr)
+            self.assertEqual(result.stderr, "")
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_malicious_flag_text_does_not_execute(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            sentinel = Path(temp_dir) / "should-not-exist.txt"
+            malicious_flag = "$(touch should-not-exist.txt)"
+
+            result = self._run_script(
+                [malicious_flag, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("Error: Received Invalid Input Param", result.stdout + result.stderr)
+            self.assertFalse(sentinel.exists(), msg="Unexpected side effect from flag parsing")
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
 
 if __name__ == "__main__":
     unittest.main()
