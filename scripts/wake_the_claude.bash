@@ -96,8 +96,15 @@ function is_valid_uuid() {
 function save_session_id() {
     local session_id_value="$1"
     echo "Extract Session ID from Session ID Value: \"${session_id_value}\" and save to file"
+    local session_id
     session_id="$(echo "${session_id_value}" | awk -F " " '{print $2;}')"
-    echo "${session_id}" > "${session_id}.txt"
+    if ! is_valid_uuid "${session_id}"; then
+        echo "Error: Session ID is not a valid UUID — refusing to write file" >&2
+        return "${FALSE}"
+    fi
+    local safe_filename
+    safe_filename="$(basename "${session_id}").txt"
+    echo "${session_id}" > "./${safe_filename}"
     echo "Completed extracting Session ID: \"${session_id}\" from Session ID Value: \"${session_id_value}\""
 }
 
@@ -106,11 +113,8 @@ function retrieve_session_id() {
     local session_id_filename="$1"
     echo "Retrieve saved Session ID from file: ${session_id_filename}" >&2
     local session_id
-    session_id="$(cat "${session_id_filename}")"
-    echo "Completed retrieving saved Session ID: \"${session_id}\" from file: \"${session_id_filename}\"" >&2
-    echo "Removing file: \"${session_id_filename}\"" >&2
-    rm -f "${session_id_filename}"
-    echo "Completed removing file: \"${session_id_filename}\"" >&2
+    session_id="$(cat "./${session_id_filename}")"
+    echo "Completed retrieving saved Session ID from file: \"${session_id_filename}\"" >&2
     echo "${session_id}"
 }
 
@@ -123,15 +127,21 @@ function validate_session_id() {
         return "${FALSE}"
     elif is_valid_uuid "${session_id}"; then
         echo "Session ID is valid: \"${session_id}\"" >&2
+    elif [[ "${session_id}" == */* ]]; then
+        echo "Session ID filename contains path separators — rejected" >&2
+        return "${FALSE}"
+    elif [[ "${session_id}" != *.txt ]]; then
+        echo "Session ID filename must have .txt extension — rejected" >&2
+        return "${FALSE}"
     elif [[ -f "./${session_id}" ]]; then
         session_id_filename="${session_id}"
         echo "Session ID is a file: \"${session_id_filename}\"" >&2
         session_id="$(retrieve_session_id "${session_id_filename}")"
-        echo "Completed retrieving Session ID: \"${session_id}\" from file: \"${session_id_filename}\"" >&2
+        echo "Completed retrieving Session ID from file: \"${session_id_filename}\"" >&2
         if is_valid_uuid "${session_id}"; then
             echo "Session ID is valid: \"${session_id}\"" >&2
         else
-            echo "Session ID is invalid: \"${session_id}\"" >&2
+            echo "Session ID file did not contain a valid UUID" >&2
             return "${FALSE}"
         fi
     else
@@ -226,7 +236,7 @@ PERMISSIONS_VALUE=""
 echo "Define Param values to be passed to Claude"
 
 CLAUDE_CODE_PROMPT=""
-CLAUDE_CODE_PARAMS=""
+CLAUDE_CODE_PARAMS=()
 
 
 ########################################################################################################################################################################
@@ -341,9 +351,9 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 echo "Session ID is valid: \"${SESSION_ID}\""
                 echo "Completed validating Session ID: \"${SESSION_ID}\""
                 RESUME_VALUE="${CLAUDE_RESUME_FLAGS} ${SESSION_ID}"
-                echo "Received a Valid Resume Param: \"${RESUME_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
-                CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${RESUME_VALUE} "
-                echo "Completed parsing resume session id value: \"${SESSION_ID}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+                echo "Received a Valid Resume Param: \"${RESUME_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
+                CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
+                echo "Completed parsing resume session id value: \"${SESSION_ID}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
             else
                 echo "Session ID is invalid: \"${SESSION_ID}\""
                 echo "Error: Session ID is invalid. Exiting..."
@@ -359,17 +369,19 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
             echo "Parsing session id value: \"${1}\""
             SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${1}"
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${1}")
             shift
-            CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${SESSION_ID_VALUE} "
-            echo "Received a Session ID Value Param: \"${SESSION_ID_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+            echo "Received a Session ID Value Param: \"${SESSION_ID_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         else
             echo "Warning: Received Session ID Flag but no Session ID Name."
             echo "Session ID Value not Provided, Assigning a new UUID as Session ID."
             # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} $(uuidgen | tr -d '-')"
-            SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} $(uuidgen)"
+            local generated_uuid
+            generated_uuid="$(uuidgen)"
+            SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
             echo "Continuing with new Session ID value: \"${SESSION_ID_VALUE}\""
-            CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${SESSION_ID_VALUE} "
-            echo "Received a new Session ID Param: \"${SESSION_ID_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
+            echo "Received a new Session ID Param: \"${SESSION_ID_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         fi
         save_session_id "${SESSION_ID_VALUE}"
     elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
@@ -377,25 +389,25 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
             echo "Parsing worktree value: \"${1}\""
             WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS} ${1}"
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_WORKTREE_FLAGS}" "${1}")
             shift
-            CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${WORKTREE_VALUE} "
-            echo "Received a Worktree Value Param: \"${WORKTREE_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+            echo "Received a Worktree Value Param: \"${WORKTREE_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         else
             echo "Worktree Value not Provided, Letting Claude Code Assign a worktree name."
             echo "Warning: Received Worktree Flag but no Worktree Name"
             WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS}"
             echo "Continuing without Worktree Name, Worktree value: \"${WORKTREE_VALUE}\""
-            CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${WORKTREE_VALUE} "
-            echo "Received a Worktree Param: \"${WORKTREE_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+            CLAUDE_CODE_PARAMS+=("${WORKTREE_VALUE}")
+            echo "Received a Worktree Param: \"${WORKTREE_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
         echo "Parsing effort flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) ) ]]; then
             echo "Parsing effort value: \"${1}\""
             EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
             shift
-            CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${EFFORT_VALUE} "
-            echo "Received an Effort Value Param: \"${EFFORT_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+            echo "Received an Effort Value Param: \"${EFFORT_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         else
             echo "Error:  Received Effort flag but no valid Effort Value"
             echo "Effort Value not Provided or Invalid. Exiting..."
@@ -406,9 +418,9 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         if [[ "${1}" != "" ]]; then
             # TODO: Validate Model value
             MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
             shift
-            CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${MODEL_VALUE} "
-            echo "Received an Effort Value Param: \"${EFFORT_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+            echo "Received a Model Value Param: \"${MODEL_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
         else
             echo "Model Value not Provided"
             echo "Error: Received Model Flag but no Model Name"
@@ -435,13 +447,13 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${HEADLESS_FLAGS}"; then
         echo "Parsing headless flags"
         HEADLESS_VALUE="${CLAUDE_HEADLESS_FLAGS}"
-        CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${HEADLESS_VALUE} "
-        echo "Received a Headless Value Param: \"${HEADLESS_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+        CLAUDE_CODE_PARAMS+=("${HEADLESS_VALUE}")
+        echo "Received a Headless Value Param: \"${HEADLESS_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
     elif matches_pattern "${CURRENT_ELEMENT}" "${PERMISSIONS_FLAGS}"; then
         echo "Parsing permissions flags"
         PERMISSIONS_VALUE="${CLAUDE_PERMISSIONS_FLAGS}"
-        CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}${PERMISSIONS_VALUE} "
-        echo "Received a Permissions Value Param: \"${PERMISSIONS_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+        CLAUDE_CODE_PARAMS+=("${PERMISSIONS_VALUE}")
+        echo "Received a Permissions Value Param: \"${PERMISSIONS_VALUE}\", Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
     elif matches_pattern "${CURRENT_ELEMENT}" "${SPACER_FLAGS}"; then
         echo "Parsing spacer flags"
         echo "Received a Spacer Flag: \"${CURRENT_ELEMENT}\""
@@ -462,7 +474,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         # continue
     fi
     echo "Completed Parsing input parameter: \"${CURRENT_ELEMENT}\""
-    echo "Current Claude Code Params: \"${CLAUDE_CODE_PARAMS}\", Prompt Value: \"${PROMPT_VALUE}\", Prompt File: \"${PROMPT_FILE}\", Valid File Param: \"${VALID_FILE_PARAM}\", Valid Path Param: \"${VALID_PATH_PARAM}\", Valid Prompt Param: \"${VALID_PROMPT_PARAM}\""
+    echo "Current Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\", Prompt Value: \"${PROMPT_VALUE}\", Prompt File: \"${PROMPT_FILE}\", Valid File Param: \"${VALID_FILE_PARAM}\", Valid Path Param: \"${VALID_PATH_PARAM}\", Valid Prompt Param: \"${VALID_PROMPT_PARAM}\""
 done
 echo "Completed Parsing input parameters"
 
@@ -479,12 +491,11 @@ elif [[ ( "${PROMPT_FILE}" != "" ) && ( ( "${VALID_FILE_PARAM}" == "${TRUE}" ) |
 fi
 
 if [[ "${CLAUDE_CODE_PROMPT}" != "" ]]; then
-    # shellcheck disable=SC2089
-    CLAUDE_CODE_PARAMS="${CLAUDE_CODE_PARAMS}\"${CLAUDE_CODE_PROMPT}\""
+    CLAUDE_CODE_PARAMS+=("${CLAUDE_CODE_PROMPT}")
 fi
 if [[ ( "${VALID_FILE_PARAM}" == "${TRUE}" ) || ( "${VALID_PATH_PARAM}" == "${TRUE}" ) || ( "${VALID_PROMPT_PARAM}" == "${TRUE}" ) ]]; then
     echo "Received Valid Script Input Params"
-    echo "Final Claude Code Params: \"${CLAUDE_CODE_PARAMS}\""
+    echo "Final Claude Code Params: \"${CLAUDE_CODE_PARAMS[*]}\""
 fi
 echo "Completed Building Claude Code Prompt"
 
@@ -500,9 +511,7 @@ if [[ -f "nohup.out" ]]; then
     rm -f "nohup.out"
 fi
 
-echo "nohup claude \"${CLAUDE_CODE_PARAMS}\" &"
-# shellcheck disable=SC2086
-# shellcheck disable=SC2090
-nohup claude ${CLAUDE_CODE_PARAMS} &
+echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} &"
+nohup claude "${CLAUDE_CODE_PARAMS[@]}" &
 echo "Completed Executing Claude Code"
 exit 0
