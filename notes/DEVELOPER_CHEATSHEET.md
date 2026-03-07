@@ -4,9 +4,9 @@
 
 | Meta Data         | Value                                                          |
 |-------------------|----------------------------------------------------------------|
-| **Version:**      | 1.0.0                                                          |
+| **Version:**      | 1.2.0                                                          |
 | **Status:**       | Active                                                         |
-| **Last Updated:** | March 3, 2026                                                  |
+| **Last Updated:** | March 7, 2026                                                  |
 | **Project:**      | Juniper - Cascade Correlation Neural Network Research Platform |
 
 > **Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve
@@ -75,6 +75,7 @@
   - [Publish a Package to PyPI](#publish-a-package-to-pypi)
   - [Add a CI Job](#add-a-ci-job)
   - [Validate Documentation Links Locally](#validate-documentation-links-locally)
+  - [Troubleshoot Cross-Repo Link Checks](#troubleshoot-cross-repo-link-checks)
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
@@ -740,45 +741,33 @@ CI pipeline: pre-commit -> unit-tests -> integration-tests -> build -> security 
 
 ### Validate Documentation Links Locally
 
-Use `scripts/check_doc_links.py` before opening a PR that changes markdown links.
+Use the mode that matches your goal:
 
-Validation behavior:
+| Goal | Command | Notes |
+|------|---------|-------|
+| Match PR CI behavior | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` | Fast and CI-parity. Cross-repo links are counted as skipped, not errors. |
+| Full local validation | `python scripts/check_doc_links.py --cross-repo check` | Validates cross-repo links against sibling repos on disk. |
+| Audit link growth without failing | `python scripts/check_doc_links.py --cross-repo warn` | Prints cross-repo warnings and exits non-failing unless other links are broken. |
 
-- Checks relative file links and same-file heading anchors.
-- Ignores external links (`http`, `https`, `mailto`, `ftp`), inline code spans, and fenced code blocks.
-- Rejects unsafe link targets (absolute paths, null bytes, excessive traversal, out-of-repo paths).
-- Classifies cross-repo links (for example, `../juniper-data/...`) and handles them via `--cross-repo`.
+If `--cross-repo` is omitted, the default mode is `check`.
 
-Common commands:
+`check` mode requires Juniper repos as siblings under a shared parent directory. The script auto-discovers this parent via `git rev-parse --git-common-dir`, which works for standard checkouts and linked worktrees.
+
+### Troubleshoot Cross-Repo Link Checks
 
 ```bash
-# CI-equivalent behavior (cross-repo links skipped)
-python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
-
-# Full local validation (requires sibling repos on disk)
-python scripts/check_doc_links.py --cross-repo check
-
-# Cross-repo warnings without failing for those links
-python scripts/check_doc_links.py --cross-repo warn
-
-# Scope to specific docs and print every checked link
-python scripts/check_doc_links.py notes/ README.md --verbose
+git rev-parse --git-common-dir
 ```
 
-Cross-repo mode selection:
+If `--cross-repo check` reports "Ecosystem root not found":
 
-| Mode | Use when | Behavior |
-|------|----------|----------|
-| `skip` | CI or single-repo checkout | Skips cross-repo existence checks and reports skipped count |
-| `warn` | Local authoring review | Prints warning lines for cross-repo links, does not fail on missing sibling files |
-| `check` | Full Juniper workspace present | Validates cross-repo targets against discovered ecosystem root |
+1. Verify sibling layout: the parent directory should contain `juniper-ml` and other Juniper repos (for example `juniper-data`, `juniper-cascor`, `juniper-canopy`).
+2. Re-run with CI parity mode to unblock PR checks while keeping local checks clean:
+   `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip`
+3. Use the scheduled full validation workflow for periodic ecosystem checks:
+   `.github/workflows/docs-full-check.yml` (runs weekly and on manual dispatch).
 
-Troubleshooting:
-
-- `WARNING: Ecosystem root not found`: `--cross-repo check` automatically falls back to skip mode; ensure sibling repos are checked out under the same parent directory.
-- `ERROR: --cross-repo must be one of ...`: fix invalid CLI value; valid values are `skip`, `warn`, `check`.
-- `link resolves outside repository boundary`: replace deep traversal links with bounded relative paths.
-- `cross-repo link escapes target repository`: remove `..` segments after the sibling repo segment (for example, avoid `../juniper-data/../../...`).
+> **Docs:** [Cross-Repo Link Resolution Proposal](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) | [docs-full-check.yml](../.github/workflows/docs-full-check.yml)
 
 ---
 
@@ -974,5 +963,5 @@ Three things to update per repo:
 ---
 
 **Last Updated:** March 7, 2026
-**Version:** 1.1.1
+**Version:** 1.2.0
 **Maintainer:** Paul Calnon
