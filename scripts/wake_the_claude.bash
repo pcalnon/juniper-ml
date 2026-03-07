@@ -119,6 +119,30 @@ function is_valid_uuid() {
     fi
 }
 
+# Generate UUID for session-id when one is not provided.
+function generate_uuid() {
+    local generated_uuid=""
+
+    if command -v uuidgen >/dev/null 2>&1; then
+        generated_uuid="$(uuidgen 2>/dev/null || true)"
+    fi
+
+    if [[ "${generated_uuid}" == "" ]] && [[ -r "/proc/sys/kernel/random/uuid" ]]; then
+        generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null || true)"
+    fi
+
+    # Defensive trim for command/file output newlines.
+    generated_uuid="${generated_uuid//$'\n'/}"
+    generated_uuid="${generated_uuid//$'\r'/}"
+
+    if is_valid_uuid "${generated_uuid}"; then
+        echo "${generated_uuid}"
+        return "${TRUE}"
+    fi
+
+    return "${FALSE}"
+}
+
 # Save Session ID to file
 function save_session_id() {
     local session_id_value="$1"
@@ -391,7 +415,10 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
             debug_log "Generated new Session ID: $(redact_uuid "${generated_uuid}"), ${#CLAUDE_CODE_PARAMS[@]} args"
         fi
-        save_session_id "${SESSION_ID_VALUE}"
+        if ! save_session_id "${SESSION_ID_VALUE}"; then
+            echo "Error: Session ID value is invalid. Exiting..."
+            usage "${FALSE}"
+        fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
         debug_log "Parsing worktree flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then

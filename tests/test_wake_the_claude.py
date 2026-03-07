@@ -2,6 +2,7 @@
 """Regression tests for wake_the_claude resume/session-id handling."""
 
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -12,6 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
+UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
