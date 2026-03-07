@@ -327,6 +327,33 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
+    def test_nohup_log_falls_back_to_home_when_cwd_is_not_writable(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["HOME"] = temp_dir
+
+            readonly_dir = Path(temp_dir) / "readonly"
+            readonly_dir.mkdir(parents=True, exist_ok=True)
+            readonly_dir.chmod(0o555)
+
+            try:
+                result = self._run_script(
+                    ["--resume", VALID_UUID, "--prompt", "hello"],
+                    cwd=str(readonly_dir),
+                    env=env,
+                )
+            finally:
+                readonly_dir.chmod(0o755)
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertFalse((readonly_dir / "wake_the_claude.nohup.log").exists())
+            self.assertTrue((Path(temp_dir) / "wake_the_claude.nohup.log").exists())
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
 
 if __name__ == "__main__":
     unittest.main()

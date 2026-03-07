@@ -533,7 +533,23 @@ debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
 echo "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
 
 NOHUP_LOG_FILE="wake_the_claude.nohup.log"
-echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
+if ! ( : >> "${NOHUP_LOG_FILE}" ) 2>/dev/null; then
+    if [[ "${HOME}" != "" ]]; then
+        NOHUP_LOG_FILE="${HOME}/wake_the_claude.nohup.log"
+    fi
+fi
+
+if ! ( : >> "${NOHUP_LOG_FILE}" ) 2>/dev/null; then
+    echo "Error: Unable to open nohup log file for writing: ${NOHUP_LOG_FILE}" >&2
+    exit 1
+fi
+
+if ! command -v claude >/dev/null 2>&1; then
+    echo "Error: Claude CLI command not found in PATH" >&2
+    exit 1
+fi
+
+echo "nohup claude [${#CLAUDE_CODE_PARAMS[@]} args] >> ${NOHUP_LOG_FILE} 2>&1 &"
 nohup claude "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
 echo "Completed Executing Claude Code"
 exit 0
