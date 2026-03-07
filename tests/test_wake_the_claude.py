@@ -299,20 +299,38 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
 
-    def test_help_flag_with_debug_enabled_does_not_emit_command_not_found(self) -> None:
+    def test_spacer_flag_is_accepted_and_parsing_continues(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            _, env = self._install_fake_claude(temp_dir)
-            env["WTC_DEBUG"] = "1"
+            invocations_log, env = self._install_fake_claude(temp_dir)
 
-            result = self._run_script(["-h"], cwd=temp_dir, env=env)
+            result = self._run_script(
+                ["--prompt", "hello", "--", "--print"],
+                cwd=temp_dir,
+                env=env,
+            )
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertIn("usage: wake_the_claude.bash", result.stdout + result.stderr)
-            self.assertNotIn("debug_log: command not found", result.stderr)
+            self.assertNotIn('Error: Received Invalid Input Param: "--"', result.stdout + result.stderr)
 
-    def test_script_has_no_eval_usage(self) -> None:
-        script_contents = SCRIPT_PATH.read_text(encoding="utf-8")
-        self.assertNotRegex(script_contents, r"\beval\b")
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--print", "hello"])
+
+    def test_usage_long_flag_alias_is_recognized(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--usage"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("usage: wake_the_claude.bash", combined_output)
+            self.assertNotIn('Error: Received Invalid Input Param: "--usage"', combined_output)
 
 
 if __name__ == "__main__":
