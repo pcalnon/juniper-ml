@@ -542,12 +542,13 @@ if ! : >> "${NOHUP_LOG_FILE}" 2>/dev/null; then
         exit 1
     fi
 fi
-if ! command -v claude >/dev/null 2>&1; then
+CLAUDE_BIN="$(type -P claude 2>/dev/null || true)"
+if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
     echo "Error: claude command not found in PATH" >&2
     exit 1
 fi
 echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
-nohup claude "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
+nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
 NOHUP_STATUS=$?
 if [[ "${NOHUP_STATUS}" != "0" ]]; then
     echo "Error: Failed to launch claude with nohup" >&2
