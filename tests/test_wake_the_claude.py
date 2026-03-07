@@ -2,6 +2,7 @@
 """Regression tests for wake_the_claude resume/session-id handling."""
 
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -12,6 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
+UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
@@ -99,6 +101,22 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
+    def test_resume_alias_flag_passes_session_id_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume-session", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -174,7 +192,9 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn("path separators", result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
@@ -192,10 +212,75 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn(".txt extension", result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
+
+    def test_resume_with_filename_works_when_debug_logging_enabled(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+            session_file = Path(temp_dir) / "session-id.txt"
+            session_file.write_text(VALID_UUID, encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
+    def test_resume_flag_without_value_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--resume", "--", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_session_id_save_rejects_symlink_target(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            symlink_target = Path(temp_dir) / "sensitive-target.txt"
+            symlink_target.write_text("ORIGINAL", encoding="utf-8")
+            symlink_path = Path(temp_dir) / f"{VALID_UUID}.txt"
+            symlink_path.symlink_to(symlink_target)
+
+            result = self._run_script(
+                ["--id", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertTrue(symlink_path.is_symlink())
+            self.assertEqual(symlink_target.read_text(encoding="utf-8"), "ORIGINAL")
+            self.assertIn("symlink", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "hello"])
 
     def test_prompt_with_shell_tokens_is_passed_as_single_argument(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
