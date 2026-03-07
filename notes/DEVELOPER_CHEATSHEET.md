@@ -72,6 +72,9 @@
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
+- [Claude Automation Scripts](#claude-automation-scripts)
+  - [Resume a Claude Session](#resume-a-claude-session)
+  - [Generate and Save a Session ID File](#generate-and-save-a-session-id-file)
 - [Data Contract](#data-contract)
   - [Add a New Generator](#add-a-new-generator)
   - [Download a Dataset Artifact](#download-a-dataset-artifact)
@@ -772,6 +775,58 @@ git worktree prune
 
 ---
 
+## Claude Automation Scripts
+
+### Resume a Claude Session
+
+Use `scripts/wake_the_claude.bash` with `--resume` to continue an existing Claude session:
+
+```bash
+# Resume directly from a UUID
+./scripts/wake_the_claude.bash --resume 3e160ecb-feb5-4047-8438-171fb13db8e5 --print
+
+# Resume from a saved file in the current directory
+echo "3e160ecb-feb5-4047-8438-171fb13db8e5" > session-id.txt
+./scripts/wake_the_claude.bash --resume session-id.txt --print
+```
+
+`--resume` validation rules:
+
+1. Accepts either a UUID value or a filename.
+2. Filenames must be basename-only (no `/` path separators).
+3. Filenames must end in `.txt`.
+4. File contents must be a valid UUID.
+5. Session ID files are read, not deleted, during resume.
+
+Common failure messages and fixes:
+
+| Error message | Meaning | Fix |
+|---------------|---------|-----|
+| `Session ID filename contains path separators — rejected` | A path like `../file.txt` or `dir/file.txt` was passed | Move or copy the file to the current directory and pass only the basename |
+| `Session ID filename must have .txt extension — rejected` | A non-`.txt` file was passed | Rename to `.txt` or pass the UUID directly |
+| `Session ID file did not contain a valid UUID` | The file content is not a UUID | Replace file contents with a single UUID value |
+| `Session ID is invalid` | Input was neither valid UUID nor valid `.txt` session file | Re-run with a UUID or valid `.txt` file |
+
+### Generate and Save a Session ID File
+
+The same script can generate or persist session IDs via `--id`:
+
+```bash
+# Generate a new UUID and save it to <uuid>.txt
+./scripts/wake_the_claude.bash --id --print
+
+# Save a specific UUID (validated first) to <uuid>.txt
+./scripts/wake_the_claude.bash --id 3e160ecb-feb5-4047-8438-171fb13db8e5 --print
+```
+
+`--id` safety behavior:
+
+1. UUIDs are validated before writing session files.
+2. Invalid UUID values fail fast and no file is written.
+3. Files are written in the current working directory as `<uuid>.txt`.
+
+---
+
 ## Data Contract
 
 ### Add a New Generator
@@ -923,6 +978,6 @@ Three things to update per repo:
 
 ---
 
-**Last Updated:** March 5, 2026
-**Version:** 1.1.0
+**Last Updated:** March 7, 2026
+**Version:** 1.2.0
 **Maintainer:** Paul Calnon
