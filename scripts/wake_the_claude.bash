@@ -82,12 +82,12 @@ function matches_pattern() {
 function is_valid_uuid() {
     # example uuid="7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
     local uuid="$1"
-    echo "Validating UUID: \"${uuid}\"" >&2
+    echo "Validating UUID format" >&2
     if [[ ${uuid//-/} =~ ^[[:xdigit:]]{32}$ ]]; then
-        echo "UUID is valid: \"${uuid}\"" >&2
+        echo "UUID is valid" >&2
         return 0
     else
-        echo "UUID is invalid: \"${uuid}\"" >&2
+        echo "UUID is invalid" >&2
         return 1
     fi
 }

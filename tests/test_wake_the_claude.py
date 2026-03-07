@@ -27,7 +27,13 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             "  echo \"claude-test-version\"\n"
             "  exit 0\n"
             "fi\n"
-            "printf '%s\\n' \"$*\" >> \"$CLAUDE_ARGS_LOG\"\n",
+            "{\n"
+            "  echo \"__CALL__\"\n"
+            "  echo \"ARGC=$#\"\n"
+            "  for arg in \"$@\"; do\n"
+            "    printf 'ARG=%s\\n' \"$arg\"\n"
+            "  done\n"
+            "} >> \"$CLAUDE_ARGS_LOG\"\n",
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -47,15 +53,35 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             check=False,
         )
 
-    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[str]:
+    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
             if invocations_log.exists():
                 content = invocations_log.read_text(encoding="utf-8").strip()
                 if content:
-                    return content.splitlines()
+                    blocks: list[list[str]] = []
+                    current_block: list[str] = []
+                    for line in content.splitlines():
+                        if line == "__CALL__":
+                            if current_block:
+                                blocks.append(current_block)
+                            current_block = []
+                            continue
+                        current_block.append(line)
+                    if current_block:
+                        blocks.append(current_block)
+                    if blocks:
+                        return blocks
             time.sleep(0.05)
         return []
+
+    @staticmethod
+    def _extract_args(invocation_block: list[str]) -> list[str]:
+        args: list[str] = []
+        for line in invocation_block:
+            if line.startswith("ARG="):
+                args.append(line.removeprefix("ARG="))
+        return args
 
     def test_resume_with_uuid_passes_session_id_to_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -70,9 +96,10 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
-            self.assertIn(f"--resume {VALID_UUID}", invocations[-1])
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
-    def test_resume_with_filename_loads_uuid_and_deletes_file(self) -> None:
+    def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             session_file = Path(temp_dir) / "session-id.txt"
@@ -85,11 +112,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertFalse(session_file.exists(), msg="Expected consumed session id file to be removed")
+            self.assertTrue(session_file.exists(), msg="Expected session id file to remain after read-only resume")
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
-            self.assertIn(f"--resume {VALID_UUID}", invocations[-1])
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
     def test_resume_with_invalid_uuid_fails_once_without_invoking_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -109,7 +137,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
-    def test_resume_with_file_containing_invalid_uuid_fails_and_deletes_file(self) -> None:
+    def test_resume_with_file_containing_invalid_uuid_fails_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             session_file = Path(temp_dir) / "session-id.txt"
@@ -122,13 +150,71 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertFalse(session_file.exists(), msg="Expected consumed session id file to be removed")
+            self.assertTrue(session_file.exists(), msg="Expected invalid session id file to remain after rejection")
 
             combined_output = result.stdout + result.stderr
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+            self.assertNotIn("invalid-content", combined_output)
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
+
+    def test_resume_rejects_filename_with_path_separator(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            nested_dir = Path(temp_dir) / "nested"
+            nested_dir.mkdir(parents=True, exist_ok=True)
+            nested_file = nested_dir / "session-id.txt"
+            nested_file.write_text(VALID_UUID, encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", "nested/session-id.txt", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("path separators", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_resume_rejects_non_txt_filename(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            session_file = Path(temp_dir) / "session-id.dat"
+            session_file.write_text(VALID_UUID, encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn(".txt extension", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_prompt_with_shell_tokens_is_passed_as_single_argument(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_text = "hello ; --model injected $(whoami) with spaces"
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", prompt_text],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
+            self.assertNotIn("--model", last_invocation_args)
 
 
 if __name__ == "__main__":
