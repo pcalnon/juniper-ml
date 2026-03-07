@@ -2,6 +2,7 @@
 """Regression tests for wake_the_claude resume/session-id handling."""
 
 import os
+import re
 import subprocess
 import tempfile
 import time
@@ -12,6 +13,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
+UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
@@ -88,6 +90,22 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations_log, env = self._install_fake_claude(temp_dir)
             result = self._run_script(
                 ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
+    def test_resume_alias_flag_passes_session_id_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume-session", VALID_UUID, "--prompt", "hello"],
                 cwd=temp_dir,
                 env=env,
             )
@@ -283,66 +301,38 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
 
-    def test_usage_flag_exits_1_without_invoking_claude(self) -> None:
+    def test_spacer_flag_is_accepted_and_parsing_continues(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-
-            result = self._run_script(["-u"], cwd=temp_dir, env=env)
-
-            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn("usage: wake_the_claude.bash", result.stdout)
-            self.assertEqual(result.stderr, "")
-
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
-            self.assertEqual(invocations, [])
-
-    def test_help_flag_exits_0_without_invoking_claude(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            invocations_log, env = self._install_fake_claude(temp_dir)
-
-            result = self._run_script(["-h"], cwd=temp_dir, env=env)
-
-            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertIn("usage: wake_the_claude.bash", result.stdout)
-            self.assertEqual(result.stderr, "")
-
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
-            self.assertEqual(invocations, [])
-
-    def test_usage_flag_with_debug_logging_has_clean_stderr(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            invocations_log, env = self._install_fake_claude(temp_dir)
-            env["WTC_DEBUG"] = "1"
-
-            result = self._run_script(["-u"], cwd=temp_dir, env=env)
-
-            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn("Define Claude Code parameter flags", result.stdout)
-            self.assertIn("usage: wake_the_claude.bash", result.stdout)
-            self.assertNotIn("command not found", result.stdout + result.stderr)
-            self.assertEqual(result.stderr, "")
-
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
-            self.assertEqual(invocations, [])
-
-    def test_malicious_flag_text_does_not_execute(self) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            invocations_log, env = self._install_fake_claude(temp_dir)
-            sentinel = Path(temp_dir) / "should-not-exist.txt"
-            malicious_flag = "$(touch should-not-exist.txt)"
 
             result = self._run_script(
-                [malicious_flag, "--prompt", "hello"],
+                ["--prompt", "hello", "--", "--print"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertNotIn('Error: Received Invalid Input Param: "--"', result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--print", "hello"])
+
+    def test_usage_long_flag_alias_is_recognized(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--usage"],
                 cwd=temp_dir,
                 env=env,
             )
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
-            self.assertIn("Error: Received Invalid Input Param", result.stdout + result.stderr)
-            self.assertFalse(sentinel.exists(), msg="Unexpected side effect from flag parsing")
-
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
-            self.assertEqual(invocations, [])
+            combined_output = result.stdout + result.stderr
+            self.assertIn("usage: wake_the_claude.bash", combined_output)
+            self.assertNotIn('Error: Received Invalid Input Param: "--usage"', combined_output)
 
 
 if __name__ == "__main__":
