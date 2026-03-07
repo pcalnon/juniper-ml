@@ -94,11 +94,14 @@ function matches_pattern() {
     local ip_value="$1"
     local pattern="$2"
     local candidate
-    while IFS= read -r -d '|' candidate || [[ -n "$candidate" ]]; do
-        candidate="${candidate# }"
-        candidate="${candidate% }"
+    local candidates=()
+
+    IFS='|' read -r -a candidates <<< "$pattern"
+    for candidate in "${candidates[@]}"; do
+        candidate="${candidate#"${candidate%%[![:space:]]*}"}"
+        candidate="${candidate%"${candidate##*[![:space:]]}"}"
         [[ "$ip_value" == "$candidate" ]] && return 0
-    done <<< "$pattern"
+    done
     return 1
 }
 

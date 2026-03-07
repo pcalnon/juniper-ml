@@ -99,6 +99,22 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
+    def test_resume_session_trailing_alias_passes_session_id_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume-session", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
