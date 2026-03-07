@@ -9,6 +9,11 @@
 | **Last Updated:** | March 3, 2026                                                  |
 | **Project:**      | Juniper - Cascade Correlation Neural Network Research Platform |
 
+> **Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve
+> locally when all Juniper repos are checked out as siblings. They are skipped during CI
+> validation. Source code file links use GitHub URLs for durability. See
+> [CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) for details.
+
 ---
 
 ## Table of Contents
@@ -69,6 +74,7 @@
   - [Run Pre-commit Locally](#run-pre-commit-locally)
   - [Publish a Package to PyPI](#publish-a-package-to-pypi)
   - [Add a CI Job](#add-a-ci-job)
+  - [Validate Documentation Links Locally](#validate-documentation-links-locally)
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
@@ -92,7 +98,7 @@ Decrypt the encrypted `.env` to inspect values.
 sops -d --input-type dotenv --output-type dotenv .env.enc
 ```
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Add a New Secret
 
@@ -103,13 +109,13 @@ sops -d --input-type dotenv --output-type dotenv .env.enc
 5. If the variable is consumed by Docker, also add it to `juniper-deploy/.env.example` with a commented-out default
 
 > **Pre-commit guard:** The `no-unencrypted-env` hook blocks committing plaintext `.env` files.
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Change an Existing Secret
 
 Same as [Add a New Secret](#add-a-new-secret) -- decrypt, edit the value, re-encrypt, commit `.env.enc`.
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
 
 ### Remove a Secret
 
@@ -120,7 +126,7 @@ Same as [Add a New Secret](#add-a-new-secret) -- decrypt, edit the value, re-enc
 5. Remove from `juniper-deploy/.env.example` if present
 6. Commit all changes
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
 
 ### Enable API Key Authentication
 
@@ -139,7 +145,7 @@ export CANOPY_API_KEY="your-key"
 
 Clients authenticate via the `X-API-Key` header, configured by `JUNIPER_DATA_API_KEY` or `JUNIPER_CASCOR_API_KEY`.
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [juniper-data Security](../juniper-data/juniper_data/api/security.py) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [juniper-data Security](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/security.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Disable API Key Authentication
 
@@ -149,7 +155,7 @@ Unset or remove the API keys variable. When no keys are configured, authenticati
 unset JUNIPER_DATA_API_KEYS
 ```
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Add SOPS to a New Repo
 
@@ -160,7 +166,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Ensure `.env` is in `.gitignore`
 6. Commit `.env.enc` and `.sops.yaml`
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md) | [SOPS Audit](../juniper-ml/notes/SOPS_AUDIT_2026-03-02.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [SOPS Audit](SOPS_AUDIT_2026-03-02.md)
 
 ### Rotate the SOPS Age Key
 
@@ -171,7 +177,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Update the `SOPS_AGE_KEY` GitHub Actions secret in each repo
 6. Commit updated `.sops.yaml` and `.env.enc` files
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [Secrets Management Analysis](../juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [Secrets Management Analysis](SECRETS_MANAGEMENT_ANALYSIS.md)
 
 ---
 
@@ -186,7 +192,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Add tests in `juniper_data/tests/`
 6. Run: `pytest juniper_data/tests/ -v`
 
-> **Docs:** [juniper-data AGENTS.md](../juniper-data/AGENTS.md) | [juniper-data API Reference](../juniper-data/docs/api/JUNIPER_DATA_API.md) | [API Schemas](../juniper-data/docs/api/API_SCHEMAS.md) | [App Factory](../juniper-data/juniper_data/api/app.py)
+> **Docs:** [juniper-data AGENTS.md](../juniper-data/AGENTS.md) | [juniper-data API Reference](../juniper-data/docs/api/JUNIPER_DATA_API.md) | [API Schemas](../juniper-data/docs/api/API_SCHEMAS.md) | [App Factory](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/app.py)
 
 ### Add an Endpoint to juniper-cascor
 
@@ -202,7 +208,7 @@ juniper-cascor exposes WebSocket endpoints at `/ws/training` (metrics stream) an
 2. Add a corresponding stream class in `juniper-cascor-client/juniper_cascor_client/ws_client.py`
 3. Update juniper-canopy if it consumes the new stream
 
-> **Docs:** [juniper-cascor-client WebSocket](../juniper-cascor-client/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [juniper-canopy CasCor Backend Docs](../juniper-canopy/docs/cascor/CASCOR_BACKEND_MANUAL.md)
+> **Docs:** [juniper-cascor-client WebSocket](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [juniper-canopy CasCor Backend Docs](../juniper-canopy/docs/cascor/CASCOR_BACKEND_MANUAL.md)
 
 ### Change an Existing Endpoint
 
@@ -239,7 +245,7 @@ juniper-data middleware stack (applied in `create_app()`): CORS -> SecurityMiddl
 2. Add to `create_app()` in `app.py` (order matters -- outermost runs first)
 3. Add tests
 
-> **Docs:** [juniper-data Security Middleware](../juniper-data/juniper_data/api/security.py) | [juniper-data Observability Middleware](../juniper-data/juniper_data/api/observability.py) | [App Factory](../juniper-data/juniper_data/api/app.py)
+> **Docs:** [juniper-data Security Middleware](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/security.py) | [juniper-data Observability Middleware](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/observability.py) | [App Factory](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/app.py)
 
 ---
 
@@ -253,13 +259,13 @@ juniper-data middleware stack (applied in `create_app()`): CORS -> SecurityMiddl
 4. Add tests in `tests/`
 5. Run: `pytest tests/ -v`
 
-> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](../juniper-data-client/juniper_data_client/client.py)
+> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](https://github.com/pcalnon/juniper-data-client/blob/main/juniper_data_client/client.py)
 
 ### Add a Method to juniper-cascor-client
 
 Same pattern as juniper-data-client. REST methods in `client.py`, WebSocket in `ws_client.py`.
 
-> **Docs:** [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [REST Client](../juniper-cascor-client/juniper_cascor_client/client.py) | [WebSocket Client](../juniper-cascor-client/juniper_cascor_client/ws_client.py)
+> **Docs:** [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [REST Client](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/client.py) | [WebSocket Client](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/ws_client.py)
 
 ### Add a WebSocket Event Handler
 
@@ -269,7 +275,7 @@ In `juniper-cascor-client`, `CascorTrainingStream` supports callback registratio
 2. Handle the new message type in the async iteration loop
 3. Add tests
 
-> **Docs:** [WebSocket Client](../juniper-cascor-client/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md)
+> **Docs:** [WebSocket Client](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md)
 
 ### Change a Client Method
 
@@ -293,7 +299,7 @@ In `juniper-cascor-client`, `CascorTrainingStream` supports callback registratio
 
 Both clients use `requests.Session` with `urllib3.Retry` (backoff_factor=0.5, status_forcelist=[500,502,503,504]) and `HTTPAdapter` for connection pooling. Modify defaults in the `__init__` method of the client class.
 
-> **Docs:** [Data Client Source](../juniper-data-client/juniper_data_client/client.py) | [CasCor Client Source](../juniper-cascor-client/juniper_cascor_client/client.py)
+> **Docs:** [Data Client Source](https://github.com/pcalnon/juniper-data-client/blob/main/juniper_data_client/client.py) | [CasCor Client Source](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/client.py)
 
 ---
 
@@ -308,7 +314,7 @@ make up    # or: docker compose --profile full up -d
 
 Starts juniper-data (8100) -> juniper-cascor (8200) -> juniper-canopy (8050) with health-check dependencies.
 
-> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](../juniper-deploy/docker-compose.yml) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](https://github.com/pcalnon/juniper-deploy/blob/main/docker-compose.yml) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Start in Demo Mode
 
@@ -341,7 +347,7 @@ Runs canopy in demo mode (no real CasCor backend needed).
 5. Assign to appropriate profile(s): `full`, `demo`, `dev`
 6. Test: `docker compose --profile <profile> config`
 
-> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](../juniper-deploy/docker-compose.yml)
+> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](https://github.com/pcalnon/juniper-deploy/blob/main/docker-compose.yml)
 
 ### Change a Service Port
 
@@ -361,7 +367,7 @@ Runs canopy in demo mode (no real CasCor backend needed).
 3. Add to the `environment:` section in `docker-compose.yml` using `${VAR:-default}` substitution
 4. Document in the service's `AGENTS.md` environment variables table
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example) | [Deploy AGENTS.md Env Vars](../juniper-deploy/AGENTS.md#environment-variables)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example) | [Deploy AGENTS.md Env Vars](../juniper-deploy/AGENTS.md#environment-variables)
 
 ### Run a Service Natively (No Docker)
 
@@ -488,7 +494,7 @@ pytest --run-long                # Include long-running tests (juniper-cascor)
 uv pip compile pyproject.toml --extra all -o requirements.lock
 ```
 
-> **Docs:** [Dependency Update Workflow](../juniper-data/notes/DEPENDENCY_UPDATE_WORKFLOW.md) | [Dependency Management Plan](plan_7.5_7.6_dependency_management.md)
+> **Docs:** [Dependency Update Workflow](../juniper-data/notes/DEPENDENCY_UPDATE_WORKFLOW.md)
 
 ### Add an Optional Dependency Group
 
@@ -497,7 +503,7 @@ uv pip compile pyproject.toml --extra all -o requirements.lock
 3. Update `juniper-ml` meta-package if the group should be installable via `pip install juniper-ml[...]`
 4. Update install instructions in `AGENTS.md` and `README.md`
 
-> **Docs:** [juniper-ml AGENTS.md](../juniper-ml/AGENTS.md)
+> **Docs:** [juniper-ml AGENTS.md](../AGENTS.md)
 
 ---
 
@@ -510,7 +516,7 @@ uv pip compile pyproject.toml --extra all -o requirements.lock
 3. The field is automatically configurable via `JUNIPER_DATA_<FIELD_NAME>` env var (pydantic-settings)
 4. Add to `juniper-deploy/.env.example` if Docker-relevant
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [juniper-data AGENTS.md](../juniper-data/AGENTS.md)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [juniper-data AGENTS.md](../juniper-data/AGENTS.md)
 
 ### Add a Constant to juniper-cascor
 
@@ -530,7 +536,7 @@ juniper-canopy has a 3-level config hierarchy (highest priority first):
 
 Add the config entry at the appropriate level based on how dynamic it needs to be.
 
-> **Docs:** [juniper-canopy AGENTS.md](../juniper-canopy/AGENTS.md) | [App Config YAML](../juniper-canopy/conf/app_config.yaml) | [Constants Guide](../juniper-canopy/docs/cascor/CONSTANTS_GUIDE.md)
+> **Docs:** [juniper-canopy AGENTS.md](../juniper-canopy/AGENTS.md) | [App Config YAML](https://github.com/pcalnon/juniper-canopy/blob/main/conf/app_config.yaml) | [Constants Guide](../juniper-canopy/docs/cascor/CONSTANTS_GUIDE.md)
 
 ---
 
@@ -548,7 +554,7 @@ export JUNIPER_CASCOR_LOG_LEVEL=DEBUG
 # Extended levels (cascor/canopy): TRACE, VERBOSE, DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
 ```
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [juniper-cascor Logging Config](../juniper-cascor/conf/logging_config.yaml) | [juniper-canopy Logging Config](../juniper-canopy/conf/logging_config.yaml) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [juniper-cascor Logging Config](https://github.com/pcalnon/juniper-cascor/blob/main/conf/logging_config.yaml) | [juniper-canopy Logging Config](https://github.com/pcalnon/juniper-canopy/blob/main/conf/logging_config.yaml) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Enable JSON Logging
 
@@ -560,7 +566,7 @@ export JUNIPER_CANOPY_LOG_FORMAT=json     # juniper-canopy
 
 JSON output includes `request_id`, `service`, `timestamp`, `level`, and `message` fields.
 
-> **Docs:** [juniper-data Observability](../juniper-data/juniper_data/api/observability.py) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Observability](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/observability.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Enable Sentry Error Tracking
 
@@ -572,7 +578,7 @@ export JUNIPER_CASCOR_SENTRY_DSN="https://your-dsn@sentry.io/project"
 export JUNIPER_CANOPY_SENTRY_DSN="https://your-dsn@sentry.io/project"
 ```
 
-> **Docs:** [juniper-data Observability](../juniper-data/juniper_data/api/observability.py) | [Observability Plan](STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Observability](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/observability.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Enable Prometheus Metrics
 
@@ -607,8 +613,9 @@ make obs-demo
 ```
 
 Access points:
-- **Grafana**: http://localhost:3000 (admin / admin)
-- **Prometheus**: http://localhost:9090
+
+- **Grafana**: <http://localhost:3000> (admin / admin)
+- **Prometheus**: <http://localhost:9090>
 
 > **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Deploy Makefile](../juniper-deploy/Makefile)
 
@@ -616,12 +623,12 @@ Access points:
 
 Four auto-provisioned dashboards in the "Juniper" folder:
 
-| Dashboard | UID | Purpose |
-|-----------|-----|---------|
+| Dashboard        | UID                | Purpose                                                                    |
+|------------------|--------------------|----------------------------------------------------------------------------|
 | Juniper Overview | `juniper-overview` | Cross-service health, request rates, error rates, latency (home dashboard) |
-| JuniperData | `juniper-data` | Dataset generation metrics, cache status, build info |
-| JuniperCascor | `juniper-cascor` | Training sessions, loss/accuracy, hidden units, inference |
-| JuniperCanopy | `juniper-canopy` | WebSocket connections/messages, demo mode, build info |
+| JuniperData      | `juniper-data`     | Dataset generation metrics, cache status, build info                       |
+| JuniperCascor    | `juniper-cascor`   | Training sessions, loss/accuracy, hidden units, inference                  |
+| JuniperCanopy    | `juniper-canopy`   | WebSocket connections/messages, demo mode, build info                      |
 
 > **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Dashboard JSON](../juniper-deploy/grafana/provisioning/dashboards/)
 
@@ -632,6 +639,7 @@ All metrics use service namespace prefix: `juniper_data_`, `juniper_cascor_`, `j
 Pattern: `<namespace>_<subsystem>_<metric_name>_<unit>`
 
 Examples:
+
 - `juniper_data_dataset_generations_total` — Counter of dataset generations
 - `juniper_cascor_training_loss` — Current training loss gauge
 - `juniper_canopy_websocket_connections_active` — Active WebSocket connections
@@ -665,7 +673,7 @@ Metric types: Counter (monotonic), Gauge (up/down), Histogram (distributions), I
 3. Use template variables `$datasource` and `$interval` for flexibility
 4. Dashboard auto-loads within 30 seconds (configurable in `dashboard-providers.yml`)
 
-> **Docs:** [Dashboard Providers YAML](../juniper-deploy/grafana/provisioning/dashboards/dashboard-providers.yml) | [Grafana Provisioning Docs](https://grafana.com/docs/grafana/latest/administration/provisioning/)
+> **Docs:** [Dashboard Providers YAML](https://github.com/pcalnon/juniper-deploy/blob/main/grafana/provisioning/dashboards/dashboard-providers.yml) | [Grafana Provisioning Docs](https://grafana.com/docs/grafana/latest/administration/provisioning/)
 
 ### Query Prometheus Directly
 
@@ -684,7 +692,7 @@ curl -s 'http://localhost:9090/api/v1/label/__name__/values' | python -m json.to
 
 ### Troubleshoot Missing Metrics
 
-1. **Metrics not in Prometheus?** Verify `*_METRICS_ENABLED=true` is set (check `.env.observability`). Check http://localhost:9090/targets — all should show "UP". Curl the service `/metrics` endpoint directly: `curl http://localhost:8100/metrics`.
+1. **Metrics not in Prometheus?** Verify `*_METRICS_ENABLED=true` is set (check `.env.observability`). Check <http://localhost:9090/targets> — all should show "UP". Curl the service `/metrics` endpoint directly: `curl http://localhost:8100/metrics`.
 
 2. **Grafana shows "No data"?** Check dashboard time range (metrics only exist after stack start). Verify Prometheus datasource (Settings > Data Sources). Check PromQL in panel edit mode.
 
@@ -717,7 +725,7 @@ Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `
 
 Uses OIDC trusted publishing (no API tokens). SHA-pinned actions. `attestations: false`.
 
-> **Docs:** [PyPI Publish Procedure](PYPI_PUBLISH_PROCEDURE.md) | [PyPI Publish Plan](PYPI_PUBLISH_PLAN_3_PACKAGES.md) | [juniper-ml PyPI Procedure](../juniper-ml/notes/pypi-publish-procedure.md)
+> **Docs:** [PyPI Publish Procedure](pypi-publish-procedure.md)
 
 ### Add a CI Job
 
@@ -729,6 +737,16 @@ Uses OIDC trusted publishing (no API tokens). SHA-pinned actions. `attestations:
 CI pipeline: pre-commit -> unit-tests -> integration-tests -> build -> security -> lockfile-check -> docs -> required-checks -> notify.
 
 > **Docs:** [juniper-canopy CI/CD Reference](../juniper-canopy/docs/ci_cd/CICD_REFERENCE.md) | [juniper-canopy CI/CD Manual](../juniper-canopy/docs/ci_cd/CICD_MANUAL.md) | [juniper-cascor CI Reference](../juniper-cascor/docs/ci/reference.md) | [juniper-cascor CI Manual](../juniper-cascor/docs/ci/manual.md)
+
+### Validate Documentation Links Locally
+
+Cross-repo links are skipped during CI. Before submitting a PR that adds or modifies cross-repo links, validate them locally:
+
+```bash
+python scripts/check_doc_links.py --cross-repo check
+```
+
+This requires all Juniper repos to be checked out as siblings under the same parent directory. The script auto-discovers the ecosystem root via git.
 
 ---
 
@@ -752,7 +770,7 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
 
-> **Docs:** Per-repo [WORKTREE_SETUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_SETUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation) | [Worktree Implementation Plan](WORKTREE_IMPLEMENTATION_PLAN.md)
+> **Docs:** Per-repo [WORKTREE_SETUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_SETUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation) | [Worktree Setup Procedure](WORKTREE_SETUP_PROCEDURE.md)
 
 ### Merge and Clean Up a Worktree
 
@@ -805,7 +823,7 @@ X_train, y_train = npz["X_train"], npz["y_train"]
 raw = client.download_artifact_bytes(dataset_id)
 ```
 
-> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](../juniper-data-client/juniper_data_client/client.py) | [Data Contract](../AGENTS.md#data-contract)
+> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](https://github.com/pcalnon/juniper-data-client/blob/main/juniper_data_client/client.py) | [Data Contract](../AGENTS.md#data-contract)
 
 ---
 

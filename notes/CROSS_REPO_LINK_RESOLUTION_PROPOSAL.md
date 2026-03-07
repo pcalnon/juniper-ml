@@ -766,15 +766,18 @@ All copies are byte-for-byte identical (except file headers). Any enhancement to
 **Changes:**
 
 1. **`scripts/check_doc_links.py`:**
+
    - Add `_discover_ecosystem_root()` function (Approach 1B)
    - When `--cross-repo check` is used and ecosystem root is found, resolve cross-repo links against it
    - When not found, fall back to `skip` behavior with a warning
 
 2. **Ecosystem propagation:**
+
    - Copy updated `check_doc_links.py` to all 6 repos
    - Update CI workflows in each repo to use `--cross-repo skip`
 
 3. **Scheduled full validation:**
+
    - Add `.github/workflows/docs-full-check.yml` with weekly cron schedule
    - This workflow checks out all sibling repos locally (within the job, not as separate repo checkouts -- uses `git clone` into the workspace) and runs `--cross-repo check`
    - Non-blocking (runs on schedule, not on PRs)
