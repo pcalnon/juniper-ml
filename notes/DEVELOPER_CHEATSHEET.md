@@ -916,12 +916,43 @@ bash scripts/wake_the_claude.bash \
   --prompt "Continue from previous analysis"
 ```
 
+Resume with the explicit session alias (equivalent to `--resume`):
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous analysis"
+```
+
 Resume by saved session file (basename only, from current directory):
 
 ```bash
 bash scripts/wake_the_claude.bash \
   --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt \
   --prompt "Continue from previous analysis"
+```
+
+### Resume Flag Aliases and Parser Contract
+
+The parser accepts these resume flag aliases:
+
+| Accepted Flag | Internal Handling |
+|---|---|
+| `-r` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume-thread` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume-session` | Normalized to `--resume <uuid>` before `claude` launch |
+
+Constraints:
+
+- The token after any resume alias must be either a UUID or a local `.txt` basename.
+- If the next token is another flag, the script treats resume as missing/invalid and exits non-zero.
+- Alias matching is exact; typo variants are rejected.
+
+Regression check for trailing alias handling:
+
+```bash
+python3 -m unittest -v tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_resume_alias_flag_passes_session_id_to_claude
 ```
 
 ### Session ID Files and Safety Constraints
@@ -948,6 +979,7 @@ Common failure patterns:
 | `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
 | `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
 | Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a local `*.txt` session file in current directory |
+| `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
 
 > **Docs:** [Regression Tests](../juniper-ml/tests/test_wake_the_claude.py) | [Session Validation Bugfix Plan](../juniper-ml/notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [Security Remediation Plan](../juniper-ml/notes/SECURITY_REMEDIATION_PLAN.md)
 
