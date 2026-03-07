@@ -61,6 +61,7 @@
   - [Enable debug mode and verify clean stderr](#enable-debug-mode-and-verify-clean-stderr)
   - [Troubleshoot --resume validation failures](#troubleshoot---resume-validation-failures)
   - [Verify pattern-matching hardening (no eval)](#verify-pattern-matching-hardening-no-eval)
+  - [Run wake_the_claude regression tests](#run-wake_the_claude-regression-tests)
 - [Dependencies](#dependencies)
   - [Add a Dependency](#add-a-dependency)
   - [Remove a Dependency](#remove-a-dependency)
@@ -525,6 +526,19 @@ rg "eval" scripts/wake_the_claude.bash
 Expected: no matches.
 
 The flag pattern parser in `matches_pattern()` now compares candidates in a split loop. Keep flag constant format as `"flag1 | flag2 | flag3"` when adding aliases.
+
+### Run wake_the_claude regression tests
+
+```bash
+python3 -m unittest tests/test_wake_the_claude.py -v
+```
+
+Coverage highlights:
+- `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
+- `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
+- Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
+
+Run this suite whenever `scripts/wake_the_claude.bash` parsing, session validation, or argument construction changes.
 
 ---
 
