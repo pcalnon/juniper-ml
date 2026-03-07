@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Added `wake_the_claude.bash` operational guidance to `notes/DEVELOPER_CHEATSHEET.md`, including `--resume` usage, session file safety constraints, and troubleshooting commands.
+
 ## [0.2.1] - 2026-03-06
 
 ### Added
