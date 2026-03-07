@@ -505,17 +505,19 @@ test ! -s /tmp/wtc_debug.err && echo "stderr clean"
 - A UUID value
 - A `.txt` filename in the current working directory (no `/` path separators)
 
-Quick failure-path check (does not require a successful `claude` launch):
+Quick failure-path checks (do not require a successful `claude` launch):
 
 ```bash
 bash scripts/wake_the_claude.bash --resume ../secret.txt --print; echo "exit=$?"
 WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume ../secret.txt --print >/tmp/wtc_resume_debug.out 2>/tmp/wtc_resume_debug.err
 rg "contains path separators|Session ID is invalid" /tmp/wtc_resume_debug.err /tmp/wtc_resume_debug.out
+bash scripts/test_resume_file_safety.bash
 ```
 
 Expected:
 - Exit code `1`
 - Error output includes path-separator rejection and invalid-session message
+- `scripts/test_resume_file_safety.bash` prints `PASS: invalid resume file is preserved`
 
 ### Verify pattern-matching hardening (no eval)
 
@@ -531,12 +533,14 @@ The flag pattern parser in `matches_pattern()` now compares candidates in a spli
 
 ```bash
 python3 -m unittest tests/test_wake_the_claude.py -v
+bash scripts/test_resume_file_safety.bash
 ```
 
 This suite stubs the `claude` binary in a temp directory, so no local Claude install is required.
 
 Coverage highlights:
 - `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
+- Invalid `--resume <file.txt>` content fails validation without deleting the input file.
 - `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
 - Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
 

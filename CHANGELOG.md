@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `scripts/test_resume_file_safety.bash` — Added a focused regression script that verifies invalid `--resume <file.txt>` input returns non-zero and preserves the source file.
 - `notes/DEVELOPER_CHEATSHEET.md` — Added a `wake_the_claude.bash` quick runbook covering usage/help exit codes, debug-mode behavior, and `--resume` troubleshooting.
 - `notes/DEVELOPER_CHEATSHEET.md` — Added a regression-test command (`python3 -m unittest tests/test_wake_the_claude.py -v`) and coverage notes for resume validation, symlink-write protection, and prompt argument safety.
 - `notes/DEVELOPER_CHEATSHEET.md` — Documented regression-suite execution expectations (fake `claude` shim) and a troubleshooting note for `test_session_id_save_rejects_symlink_target` contract mismatches.
+- `notes/DEVELOPER_CHEATSHEET.md` and `AGENTS.md` — Documented the `test_resume_file_safety.bash` workflow so resume-file preservation checks are part of standard troubleshooting and regression runs.
 
 ### Fixed
 
