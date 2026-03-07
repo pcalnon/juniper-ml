@@ -163,6 +163,58 @@ class ValidateFileBehaviorTests(unittest.TestCase):
             self.assertEqual(len(errors), 1)
             self.assertIn("file not found in juniper-data", errors[0])
 
+    def test_cross_repo_warn_prints_warning_and_counts_links(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "juniper-ml"
+            repo_root.mkdir()
+
+            md_file = repo_root / "README.md"
+            md_file.write_text(
+                "# Title\n[cross](../juniper-data/README.md)\n",
+                encoding="utf-8",
+            )
+
+            buffer = StringIO()
+            with redirect_stdout(buffer):
+                errors, cross_repo_count = check_doc_links._validate_file(
+                    md_file=md_file,
+                    repo_root=repo_root,
+                    cross_repo_mode="warn",
+                    ecosystem_root=None,
+                )
+
+            self.assertEqual(errors, [])
+            self.assertEqual(cross_repo_count, 1)
+            self.assertIn("WARN (cross-repo): README.md:2 -> ../juniper-data/README.md", buffer.getvalue())
+
+    def test_rejects_null_byte_and_out_of_bounds_paths(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "repo"
+            repo_root.mkdir()
+
+            md_file = repo_root / "README.md"
+            md_file.write_text(
+                "\n".join(
+                    [
+                        "# Title",
+                        "[null-byte](bad\x00target.md)",
+                        "[outside](../../outside.md)",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            errors, _ = check_doc_links._validate_file(
+                md_file=md_file,
+                repo_root=repo_root,
+                cross_repo_mode="check",
+                ecosystem_root=repo_root.parent,
+            )
+
+            self.assertEqual(len(errors), 2)
+            self.assertTrue(any("null byte in link target" in error for error in errors))
+            self.assertTrue(any("link resolves outside repository boundary" in error for error in errors))
+
 
 class EcosystemDiscoveryAndCliTests(unittest.TestCase):
     def test_discover_ecosystem_root_uses_git_common_dir_result(self):
@@ -179,6 +231,19 @@ class EcosystemDiscoveryAndCliTests(unittest.TestCase):
 
             self.assertEqual(discovered, ecosystem_root)
 
+    def test_discover_ecosystem_root_falls_back_when_git_unavailable(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ecosystem_root = Path(temp_dir) / "Juniper"
+            repo_root = ecosystem_root / "juniper-ml"
+            repo_root.mkdir(parents=True)
+            (ecosystem_root / "juniper-data").mkdir()
+            (ecosystem_root / "juniper-cascor").mkdir()
+
+            with mock.patch.object(check_doc_links.subprocess, "run", side_effect=FileNotFoundError):
+                discovered = check_doc_links._discover_ecosystem_root(repo_root)
+
+            self.assertEqual(discovered, ecosystem_root)
+
     def test_main_returns_error_on_invalid_cross_repo_mode(self):
         buffer = StringIO()
         with mock.patch.object(check_doc_links.sys, "argv", ["check_doc_links.py", "--cross-repo", "invalid"]):
@@ -187,6 +252,31 @@ class EcosystemDiscoveryAndCliTests(unittest.TestCase):
 
         self.assertEqual(result, 1)
         self.assertIn("--cross-repo must be one of", buffer.getvalue())
+
+    def test_main_falls_back_to_skip_when_ecosystem_root_not_found(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "juniper-ml"
+            scripts_dir = repo_root / "scripts"
+            scripts_dir.mkdir(parents=True)
+            (repo_root / "README.md").write_text(
+                "# Title\n[cross](../juniper-data/README.md)\n",
+                encoding="utf-8",
+            )
+            fake_script = scripts_dir / "check_doc_links.py"
+            fake_script.write_text("# placeholder\n", encoding="utf-8")
+
+            buffer = StringIO()
+            with mock.patch.object(check_doc_links, "__file__", str(fake_script)):
+                with mock.patch.object(check_doc_links, "_discover_ecosystem_root", return_value=None):
+                    with mock.patch.object(check_doc_links.sys, "argv", ["check_doc_links.py"]):
+                        with redirect_stdout(buffer):
+                            result = check_doc_links.main()
+
+            output = buffer.getvalue()
+            self.assertEqual(result, 0)
+            self.assertIn("WARNING: Ecosystem root not found. Cross-repo links will be skipped.", output)
+            self.assertIn("Cross-repo links: skip", output)
+            self.assertIn("Cross-repo links skipped: 1", output)
 
 
 if __name__ == "__main__":
