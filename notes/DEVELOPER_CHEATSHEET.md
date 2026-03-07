@@ -60,6 +60,7 @@
   - [Validate wake_the_claude.bash usage/help flags](#validate-wake_the_claudebash-usagehelp-flags)
   - [Enable debug mode and verify clean stderr](#enable-debug-mode-and-verify-clean-stderr)
   - [Troubleshoot --resume validation failures](#troubleshoot---resume-validation-failures)
+  - [Troubleshoot --id UUID generation fallback](#troubleshoot---id-uuid-generation-fallback)
   - [Verify pattern-matching hardening (no eval)](#verify-pattern-matching-hardening-no-eval)
   - [Run wake_the_claude regression tests](#run-wake_the_claude-regression-tests)
 - [Dependencies](#dependencies)
@@ -517,6 +518,30 @@ Expected:
 - Exit code `1`
 - Error output includes path-separator rejection and invalid-session message
 
+### Troubleshoot --id UUID generation fallback
+
+When `--id` is provided without a value, `wake_the_claude.bash` must generate a session UUID before launching Claude.
+
+Fallback order:
+1. `uuidgen`
+2. `/proc/sys/kernel/random/uuid`
+3. `python3 -c 'import uuid; print(uuid.uuid4())'`
+
+Constraints:
+- Each fallback output is validated as a UUID before use.
+- If all fallback sources fail or produce invalid output, the script exits `1`, prints usage once, and does not invoke `claude`.
+
+Quick verification:
+
+```bash
+rg "command -v uuidgen|/proc/sys/kernel/random/uuid|python3 -c 'import uuid; print\\(uuid.uuid4\\(\\)\\)'" scripts/wake_the_claude.bash
+rg "Failed to generate a valid UUID for Session ID" scripts/wake_the_claude.bash
+```
+
+Expected:
+- `generate_uuid()` includes all three fallback sources in order.
+- The `--id` parser path has an explicit hard failure when no valid UUID can be generated.
+
 ### Verify pattern-matching hardening (no eval)
 
 ```bash
@@ -537,6 +562,7 @@ This suite stubs the `claude` binary in a temp directory, so no local Claude ins
 
 Coverage highlights:
 - `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
+- `--id` without a value generates a session UUID using validated fallbacks (`uuidgen`, `/proc`, then `python3`) and still launches Claude when possible.
 - `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
 - Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
 

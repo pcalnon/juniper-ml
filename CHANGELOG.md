@@ -12,11 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `notes/DEVELOPER_CHEATSHEET.md` — Added a `wake_the_claude.bash` quick runbook covering usage/help exit codes, debug-mode behavior, and `--resume` troubleshooting.
 - `notes/DEVELOPER_CHEATSHEET.md` — Added a regression-test command (`python3 -m unittest tests/test_wake_the_claude.py -v`) and coverage notes for resume validation, symlink-write protection, and prompt argument safety.
 - `notes/DEVELOPER_CHEATSHEET.md` — Documented regression-suite execution expectations (fake `claude` shim) and a troubleshooting note for `test_session_id_save_rejects_symlink_target` contract mismatches.
+- `notes/DEVELOPER_CHEATSHEET.md` — Added an operational runbook for `--id` UUID fallback generation (`uuidgen` -> `/proc/sys/kernel/random/uuid` -> `python3`) and failure-mode expectations.
 
 ### Fixed
 
 - `scripts/wake_the_claude.bash` — Replaced `eval`-based flag matching in `matches_pattern()` with split-and-compare logic.
 - `scripts/wake_the_claude.bash` — Moved `debug_log` and `redact_uuid` definitions before top-level calls to prevent `command not found` stderr noise.
+- `scripts/wake_the_claude.bash` — Hardened `--id` (without value) session generation to validate UUIDs across multiple fallback sources when `uuidgen` is unavailable.
 
 ### Security
 
