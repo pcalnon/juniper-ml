@@ -505,7 +505,7 @@ class WebSocketControlMessage(BaseModel):
 **Implementation**:
 - Track `last_activity_at` per connection in WebSocket manager metadata
 - Periodic cleanup task (runs every 60s) closes connections idle for >5 minutes
-- Configurable via `ws_idle_timeout_sec` setting
+- Configurable via `ws_idle_timeout_sec` settingh
 
 ---
 
