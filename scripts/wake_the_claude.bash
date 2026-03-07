@@ -92,6 +92,33 @@ function is_valid_uuid() {
     fi
 }
 
+# Generate UUID with fallbacks for environments without uuidgen
+function generate_uuid() {
+    local generated_uuid=""
+    if command -v uuidgen >/dev/null 2>&1; then
+        generated_uuid="$(uuidgen 2>/dev/null)"
+        if is_valid_uuid "${generated_uuid}"; then
+            echo "${generated_uuid}"
+            return "${TRUE}"
+        fi
+    fi
+    if [[ -r "/proc/sys/kernel/random/uuid" ]]; then
+        generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null)"
+        if is_valid_uuid "${generated_uuid}"; then
+            echo "${generated_uuid}"
+            return "${TRUE}"
+        fi
+    fi
+    if command -v python3 >/dev/null 2>&1; then
+        generated_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null)"
+        if is_valid_uuid "${generated_uuid}"; then
+            echo "${generated_uuid}"
+            return "${TRUE}"
+        fi
+    fi
+    return "${FALSE}"
+}
+
 # Save Session ID to file
 function save_session_id() {
     local session_id_value="$1"
@@ -376,8 +403,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             echo "Warning: Received Session ID Flag but no Session ID Name."
             echo "Session ID Value not Provided, Assigning a new UUID as Session ID."
             # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} $(uuidgen | tr -d '-')"
-            local generated_uuid
-            generated_uuid="$(uuidgen)"
+            generated_uuid="$(generate_uuid)"
+            if [[ ( "$?" != "${TRUE}" ) || ( "${generated_uuid}" == "" ) ]]; then
+                echo "Error: Failed to generate a valid UUID for Session ID."
+                usage "${FALSE}"
+            fi
             SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
             echo "Continuing with new Session ID value: \"${SESSION_ID_VALUE}\""
             CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")

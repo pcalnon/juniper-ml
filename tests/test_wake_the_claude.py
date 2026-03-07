@@ -15,7 +15,7 @@ VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
-    def _install_fake_claude(self, temp_dir: str) -> tuple[Path, dict[str, str]]:
+    def _install_fake_claude(self, temp_dir: str, *, failing_uuidgen: bool = False) -> tuple[Path, dict[str, str]]:
         bin_dir = Path(temp_dir) / "bin"
         bin_dir.mkdir(parents=True, exist_ok=True)
 
@@ -37,6 +37,15 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
+
+        if failing_uuidgen:
+            fake_uuidgen = bin_dir / "uuidgen"
+            fake_uuidgen.write_text(
+                "#!/usr/bin/env bash\n"
+                "exit 1\n",
+                encoding="utf-8",
+            )
+            fake_uuidgen.chmod(0o755)
 
         env = os.environ.copy()
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
@@ -215,6 +224,32 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
+
+    def test_session_id_without_value_uses_uuid_fallback_when_uuidgen_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir, failing_uuidgen=True)
+
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+
+            self.assertEqual(last_invocation_args[0], "--session-id")
+            self.assertRegex(
+                last_invocation_args[1],
+                r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            )
+            self.assertEqual(last_invocation_args[2], "hello")
+
+            session_id_file = Path(temp_dir) / f"{last_invocation_args[1]}.txt"
+            self.assertTrue(session_id_file.exists(), msg="Expected generated session id to be persisted")
 
 
 if __name__ == "__main__":
