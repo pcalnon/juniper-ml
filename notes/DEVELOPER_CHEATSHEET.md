@@ -51,6 +51,11 @@
   - [Run Tests with Coverage](#run-tests-with-coverage)
   - [Add a Pytest Marker](#add-a-pytest-marker)
   - [Run Specific Marker Subsets](#run-specific-marker-subsets)
+- [Claude Session Automation](#claude-session-automation)
+  - [Resume with a UUID](#resume-with-a-uuid)
+  - [Resume from a Session File](#resume-from-a-session-file)
+  - [Run Resume Regression Tests](#run-resume-regression-tests)
+  - [Troubleshoot Resume Failures](#troubleshoot-resume-failures)
 - [Dependencies](#dependencies)
   - [Add a Dependency](#add-a-dependency)
   - [Remove a Dependency](#remove-a-dependency)
@@ -459,6 +464,76 @@ pytest --run-long                # Include long-running tests (juniper-cascor)
 ```
 
 > **Docs:** Per-repo AGENTS.md files | [juniper-canopy Selective Test Guide](../juniper-canopy/docs/testing/SELECTIVE_TEST_GUIDE.md)
+
+---
+
+## Claude Session Automation
+
+The `scripts/wake_the_claude.bash` helper wraps `claude` CLI invocation and supports session resume, prompt loading, and background execution (`nohup`).
+
+### Resume with a UUID
+
+Use a previously known Claude session UUID directly:
+
+```bash
+cd juniper-ml
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "Continue from this thread."
+```
+
+### Resume from a Session File
+
+Use a local `.txt` file that contains a UUID:
+
+```bash
+cd juniper-ml
+printf '%s\n' "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd" > 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt --prompt "Resume using file input."
+```
+
+Constraints enforced by `validate_session_id` and `retrieve_session_id`:
+
+1. File-based resume values must be in the current directory (no `/` path separators).
+2. Resume filenames must end with `.txt`.
+3. The file content must be a valid UUID.
+4. The session file is read-only for resume; it is not deleted.
+
+Optional debugging:
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "debug run"
+```
+
+### Run Resume Regression Tests
+
+```bash
+cd juniper-ml
+python3 -m unittest tests/test_wake_the_claude.py -v
+```
+
+Coverage in `tests/test_wake_the_claude.py` includes:
+
+1. Resume with direct UUID.
+2. Resume via `.txt` session file.
+3. Invalid UUID rejection.
+4. Invalid file-content rejection.
+5. Filename policy rejection (`/` and non-`.txt`).
+6. Argument safety for shell-like prompt tokens.
+
+### Troubleshoot Resume Failures
+
+If `--resume` fails, check these first:
+
+1. The value is a UUID or a local `.txt` filename only.
+2. The `.txt` file contains only a UUID value (no extra text).
+3. The working directory contains the target session file.
+4. `claude` CLI is available in `PATH`.
+
+Common error output:
+
+1. `Error: Session ID is invalid. Exiting...` means validation failed before `claude` launch.
+2. Usage output after the error is expected for invalid `--resume` input.
+
+> **Docs:** [wake_the_claude.bash](../scripts/wake_the_claude.bash) | [wake_the_claude regression tests](../tests/test_wake_the_claude.py)
 
 ---
 
