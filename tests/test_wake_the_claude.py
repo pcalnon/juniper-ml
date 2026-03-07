@@ -158,6 +158,30 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
+    def test_resume_with_generated_filename_but_invalid_content_preserves_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            session_file = Path(temp_dir) / f"{VALID_UUID}.txt"
+            session_file.write_text("invalid-content", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertTrue(
+                session_file.exists(),
+                msg="Expected generated-style session id file to be preserved when content is invalid",
+            )
+
+            combined_output = result.stdout + result.stderr
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
 
 if __name__ == "__main__":
     unittest.main()
