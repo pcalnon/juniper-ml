@@ -95,8 +95,8 @@ function matches_pattern() {
     local pattern="$2"
     local candidate
     while IFS= read -r -d '|' candidate || [[ -n "$candidate" ]]; do
-        candidate="${candidate# }"
-        candidate="${candidate% }"
+        candidate="${candidate#"${candidate%%[![:space:]]*}"}"
+        candidate="${candidate%"${candidate##*[![:space:]]}"}"
         [[ "$ip_value" == "$candidate" ]] && return 0
     done <<< "$pattern"
     return 1

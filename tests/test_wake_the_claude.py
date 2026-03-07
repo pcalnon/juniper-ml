@@ -99,6 +99,22 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
+    def test_resume_alias_flag_passes_session_id_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume-session", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -282,6 +298,21 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
+
+    def test_help_flag_with_debug_enabled_does_not_emit_command_not_found(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            _, env = self._install_fake_claude(temp_dir)
+            env["WTC_DEBUG"] = "1"
+
+            result = self._run_script(["-h"], cwd=temp_dir, env=env)
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertIn("usage: wake_the_claude.bash", result.stdout + result.stderr)
+            self.assertNotIn("debug_log: command not found", result.stderr)
+
+    def test_script_has_no_eval_usage(self) -> None:
+        script_contents = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertNotRegex(script_contents, r"\beval\b")
 
 
 if __name__ == "__main__":
