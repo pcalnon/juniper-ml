@@ -37,7 +37,7 @@ Test 001 always failed because:
 
 - `notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md` — Investigation plan, root cause analysis, fix details, and execution log
 - `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md` — PR description template (adopted from sibling repos)
-- `notes/pr_descriptions/` — Directory for PR description archives
+- `notes/pull_requests/` — Directory for PR description archives
 
 ---
 
@@ -84,7 +84,7 @@ Test 001 always failed because:
 
 - `notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md` — Root cause analysis, fix plan, and execution log
 - `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md` — PR description template
-- `notes/pr_descriptions/PR_SESSION_ID_VALIDATION_BUGFIX.md` — This PR description
+- `notes/pull_requests/PR_SESSION_ID_VALIDATION_BUGFIX.md` — This PR description
 
 ### Modified Components
 
