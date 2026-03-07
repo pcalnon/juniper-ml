@@ -197,6 +197,44 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
+    def test_resume_with_nonexistent_txt_file_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--resume", "missing-session.txt", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Session ID is invalid", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_resume_without_value_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+
+            result = self._run_script(
+                ["--resume", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("no Valid Session ID", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
     def test_prompt_with_shell_tokens_is_passed_as_single_argument(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
