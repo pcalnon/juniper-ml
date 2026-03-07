@@ -55,6 +55,19 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             check=False,
         )
 
+    def _install_fake_uuidgen(self, temp_dir: str, uuid_value: str, exit_code: int = 0) -> None:
+        bin_dir = Path(temp_dir) / "bin"
+        bin_dir.mkdir(parents=True, exist_ok=True)
+
+        fake_uuidgen = bin_dir / "uuidgen"
+        fake_uuidgen.write_text(
+            "#!/usr/bin/env bash\n"
+            f"echo '{uuid_value}'\n"
+            f"exit {exit_code}\n",
+            encoding="utf-8",
+        )
+        fake_uuidgen.chmod(0o755)
+
     def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
@@ -272,15 +285,58 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
                 env=env,
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
             self.assertTrue(symlink_path.is_symlink())
             self.assertEqual(symlink_target.read_text(encoding="utf-8"), "ORIGINAL")
-            self.assertIn("symlink", result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("symlink", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_session_id_flag_without_value_generates_uuid_and_saves_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            generated_uuid = "6b95d2f3-95d8-4133-8f57-49668f446f8e"
+            self._install_fake_uuidgen(temp_dir, generated_uuid)
+
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertIn("Assigning a new UUID as Session ID.", result.stdout + result.stderr)
+            session_file = Path(temp_dir) / f"{generated_uuid}.txt"
+            self.assertTrue(session_file.exists())
+            self.assertEqual(session_file.read_text(encoding="utf-8").strip(), generated_uuid)
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--session-id", generated_uuid, "hello"])
+
+    def test_session_id_flag_without_value_rejects_invalid_generated_uuid(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            self._install_fake_uuidgen(temp_dir, "invalid-generated-uuid")
+
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID value is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+            self.assertFalse((Path(temp_dir) / "invalid-generated-uuid.txt").exists())
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
 
     def test_prompt_with_shell_tokens_is_passed_as_single_argument(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
