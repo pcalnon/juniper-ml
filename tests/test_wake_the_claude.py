@@ -135,6 +135,50 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
 
+    def test_session_id_trailing_alias_flag_passes_value_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--thread-id", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            saved_session_file = Path(temp_dir) / f"{VALID_UUID}.txt"
+            self.assertTrue(saved_session_file.exists(), msg="Expected session id file to be created")
+            self.assertEqual(saved_session_file.read_text(encoding="utf-8").strip(), VALID_UUID)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "hello"])
+
+    def test_permissions_trailing_alias_flag_is_forwarded_to_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                [
+                    "--resume",
+                    VALID_UUID,
+                    "--dangerously-skip-permissions",
+                    "--prompt",
+                    "hello",
+                ],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(
+                last_invocation_args,
+                ["--resume", VALID_UUID, "--dangerously-skip-permissions", "hello"],
+            )
+
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
