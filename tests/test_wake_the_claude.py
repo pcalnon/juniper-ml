@@ -220,6 +220,30 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
+    def test_resume_with_missing_txt_file_fails_without_invoking_claude(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            missing_session_file = Path(temp_dir) / "missing-session-id.txt"
+
+            result = self._run_script(
+                ["--resume", missing_session_file.name, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertFalse(
+                missing_session_file.exists(),
+                msg="Expected script not to create missing resume source file",
+            )
+
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
     def test_resume_with_filename_works_when_debug_logging_enabled(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -273,15 +297,15 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
                 env=env,
             )
 
-            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
             self.assertTrue(symlink_path.is_symlink())
             self.assertEqual(symlink_target.read_text(encoding="utf-8"), "ORIGINAL")
-            self.assertIn("symlink", result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("symlink", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log)
-            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
-            last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "hello"])
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
 
     def test_prompt_with_shell_tokens_is_passed_as_single_argument(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
