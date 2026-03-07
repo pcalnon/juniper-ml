@@ -533,10 +533,15 @@ The flag pattern parser in `matches_pattern()` now compares candidates in a spli
 python3 -m unittest tests/test_wake_the_claude.py -v
 ```
 
+This suite stubs the `claude` binary in a temp directory, so no local Claude install is required.
+
 Coverage highlights:
 - `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
 - `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
 - Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
+
+Troubleshooting:
+- If `test_session_id_save_rejects_symlink_target` fails with `1 != 0`, current script behavior is to abort after refusing the symlink write. Decide whether that should remain the contract, then align test expectation and script behavior together.
 
 Run this suite whenever `scripts/wake_the_claude.bash` parsing, session validation, or argument construction changes.
 
