@@ -532,13 +532,22 @@ debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
 ########################################################################################################################################################################
 echo "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
 
-# Remove nohup.out file if it exists
-if [[ -f "nohup.out" ]]; then
-    debug_log "Removing existing nohup.out"
-    rm -f "nohup.out"
+NOHUP_LOG_FILE="wake_the_claude.nohup.log"
+if ! : >> "${NOHUP_LOG_FILE}" 2>/dev/null; then
+    if [[ "${HOME}" != "" ]]; then
+        NOHUP_LOG_FILE="${HOME}/wake_the_claude.nohup.log"
+    fi
+    if ! : >> "${NOHUP_LOG_FILE}" 2>/dev/null; then
+        echo "Error: Failed to open nohup log file: \"${NOHUP_LOG_FILE}\"" >&2
+        exit 1
+    fi
 fi
-
-debug_log "nohup claude [${#CLAUDE_CODE_PARAMS[@]} args] &"
-nohup claude "${CLAUDE_CODE_PARAMS[@]}" &
-debug_log "Completed Executing Claude Code"
+echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
+nohup claude "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
+NOHUP_STATUS=$?
+if [[ "${NOHUP_STATUS}" != "0" ]]; then
+    echo "Error: Failed to launch claude with nohup" >&2
+    exit 1
+fi
+echo "Completed Executing Claude Code"
 exit 0

@@ -7,6 +7,42 @@
 
 ---
 
+## 0. Operational Reference (Post-Fix)
+
+Use this section as the quick runbook for `scripts/wake_the_claude.bash --resume` behavior.
+
+### Supported `--resume` inputs
+
+- `--resume <uuid>`: accepts a UUID string (hex + dashes)
+- `--resume <file.txt>`: accepts a basename `.txt` file in the current directory; file content must be a UUID
+
+### Security and validation constraints
+
+- Filenames containing path separators (for example `nested/session-id.txt` or `../session-id.txt`) are rejected
+- Non-`.txt` filenames are rejected
+- Session ID files are read-only in resume flow; they are **not** deleted by `retrieve_session_id`
+- Invalid session values fail with exit code `1` and print usage once
+
+### Examples
+
+```bash
+# Resume directly from a UUID
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "continue prior task"
+
+# Resume from file in current directory
+echo "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd" > session-id.txt
+bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "continue prior task"
+```
+
+### Troubleshooting quick checks
+
+| Symptom | Likely Cause | Check |
+|---|---|---|
+| `path separators — rejected` | Filename included `/` | Use basename only (e.g. `session-id.txt`) |
+| `.txt extension — rejected` | Wrong extension | Rename to `.txt` |
+| `Session ID file did not contain a valid UUID` | File content is malformed | Ensure file contains only a UUID string |
+| Usage printed and script exits | Invalid resume argument | Re-run with valid UUID or valid `.txt` basename |
+
 ## 1. Investigation Summary
 
 ### Symptom
