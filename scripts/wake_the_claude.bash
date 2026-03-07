@@ -119,27 +119,30 @@ function is_valid_uuid() {
     fi
 }
 
-# Generate UUID for session-id when one is not provided.
+# Generate UUID with fallbacks for environments without uuidgen
 function generate_uuid() {
     local generated_uuid=""
-
     if command -v uuidgen >/dev/null 2>&1; then
-        generated_uuid="$(uuidgen 2>/dev/null || true)"
+        generated_uuid="$(uuidgen 2>/dev/null)"
+        if is_valid_uuid "${generated_uuid}"; then
+            echo "${generated_uuid}"
+            return "${TRUE}"
+        fi
     fi
-
-    if [[ "${generated_uuid}" == "" ]] && [[ -r "/proc/sys/kernel/random/uuid" ]]; then
-        generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null || true)"
+    if [[ -r "/proc/sys/kernel/random/uuid" ]]; then
+        generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null)"
+        if is_valid_uuid "${generated_uuid}"; then
+            echo "${generated_uuid}"
+            return "${TRUE}"
+        fi
     fi
-
-    # Defensive trim for command/file output newlines.
-    generated_uuid="${generated_uuid//$'\n'/}"
-    generated_uuid="${generated_uuid//$'\r'/}"
-
-    if is_valid_uuid "${generated_uuid}"; then
-        echo "${generated_uuid}"
-        return "${TRUE}"
+    if command -v python3 >/dev/null 2>&1; then
+        generated_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null)"
+        if is_valid_uuid "${generated_uuid}"; then
+            echo "${generated_uuid}"
+            return "${TRUE}"
+        fi
     fi
-
     return "${FALSE}"
 }
 
@@ -421,9 +424,13 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             debug_log "Received Session ID, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
             echo "Warning: Received Session ID Flag but no Session ID Name."
-            echo "Assigning a new UUID as Session ID."
-            local generated_uuid
-            generated_uuid="$(uuidgen)"
+            echo "Session ID Value not Provided, Assigning a new UUID as Session ID."
+            # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} $(uuidgen | tr -d '-')"
+            generated_uuid="$(generate_uuid)"
+            if [[ ( "$?" != "${TRUE}" ) || ( "${generated_uuid}" == "" ) ]]; then
+                echo "Error: Failed to generate a valid UUID for Session ID."
+                usage "${FALSE}"
+            fi
             SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
             debug_log "Generated new Session ID: $(redact_uuid "${generated_uuid}"), ${#CLAUDE_CODE_PARAMS[@]} args"

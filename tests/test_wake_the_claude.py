@@ -18,7 +18,7 @@ UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA
 
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
-    def _install_fake_claude(self, temp_dir: str) -> tuple[Path, dict[str, str]]:
+    def _install_fake_claude(self, temp_dir: str, *, failing_uuidgen: bool = False) -> tuple[Path, dict[str, str]]:
         bin_dir = Path(temp_dir) / "bin"
         bin_dir.mkdir(parents=True, exist_ok=True)
 
@@ -40,6 +40,15 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
+
+        if failing_uuidgen:
+            fake_uuidgen = bin_dir / "uuidgen"
+            fake_uuidgen.write_text(
+                "#!/usr/bin/env bash\n"
+                "exit 1\n",
+                encoding="utf-8",
+            )
+            fake_uuidgen.chmod(0o755)
 
         env = os.environ.copy()
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
@@ -85,6 +94,14 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             if line.startswith("ARG="):
                 args.append(line.removeprefix("ARG="))
         return args
+
+    @staticmethod
+    def _install_fake_command(temp_dir: str, name: str, script_body: str) -> None:
+        bin_dir = Path(temp_dir) / "bin"
+        bin_dir.mkdir(parents=True, exist_ok=True)
+        fake_command = bin_dir / name
+        fake_command.write_text(script_body, encoding="utf-8")
+        fake_command.chmod(0o755)
 
     def test_resume_with_uuid_passes_session_id_to_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -326,31 +343,104 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, prompt_text])
             self.assertNotIn("--model", last_invocation_args)
 
-    def test_existing_nohup_out_is_not_deleted(self) -> None:
+    def test_session_id_without_value_uses_uuid_fallback_when_uuidgen_fails(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            invocations_log, env = self._install_fake_claude(temp_dir)
-            nohup_file = Path(temp_dir) / "nohup.out"
-            original_nohup_content = "existing process output\n"
-            nohup_file.write_text(original_nohup_content, encoding="utf-8")
+            invocations_log, env = self._install_fake_claude(temp_dir, failing_uuidgen=True)
+            fallback_uuid = "11111111-2222-3333-4444-555555555555"
+            self._install_fake_command(
+                temp_dir,
+                "cat",
+                "#!/usr/bin/env bash\n"
+                f"if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
+                f"  echo \"{fallback_uuid}\"\n"
+                "  exit 0\n"
+                "fi\n"
+                "/usr/bin/cat \"$@\"\n",
+            )
 
             result = self._run_script(
-                ["--resume", VALID_UUID, "--prompt", "hello"],
+                ["--id", "--prompt", "hello"],
                 cwd=temp_dir,
                 env=env,
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertTrue(nohup_file.exists(), msg="Expected existing nohup.out to be preserved")
-            self.assertEqual(
-                nohup_file.read_text(encoding="utf-8"),
-                original_nohup_content,
-                msg="Expected existing nohup.out contents to remain unchanged",
-            )
+
+            saved_session_file = Path(temp_dir) / f"{fallback_uuid}.txt"
+            self.assertTrue(saved_session_file.exists(), msg="Expected generated session id file to be created")
+            self.assertEqual(saved_session_file.read_text(encoding="utf-8").strip(), fallback_uuid)
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--session-id", fallback_uuid, "hello"])
+
+    def test_session_id_without_value_uses_python_fallback_when_uuidgen_and_proc_fail(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir, failing_uuidgen=True)
+            python_fallback_uuid = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+            self._install_fake_command(
+                temp_dir,
+                "cat",
+                "#!/usr/bin/env bash\n"
+                "if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
+                "  echo \"not-a-uuid\"\n"
+                "  exit 0\n"
+                "fi\n"
+                "/usr/bin/cat \"$@\"\n",
+            )
+            self._install_fake_command(
+                temp_dir,
+                "python3",
+                "#!/usr/bin/env bash\n"
+                f"echo \"{python_fallback_uuid}\"\n",
+            )
+
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--session-id", python_fallback_uuid, "hello"])
+
+    def test_session_id_without_value_fails_when_all_uuid_fallbacks_invalid(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir, failing_uuidgen=True)
+            self._install_fake_command(
+                temp_dir,
+                "cat",
+                "#!/usr/bin/env bash\n"
+                "if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
+                "  echo \"still-not-a-uuid\"\n"
+                "  exit 0\n"
+                "fi\n"
+                "/usr/bin/cat \"$@\"\n",
+            )
+            self._install_fake_command(
+                temp_dir,
+                "python3",
+                "#!/usr/bin/env bash\n"
+                "echo \"bad-python-uuid-output\"\n",
+            )
+
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("Error: Failed to generate a valid UUID for Session ID.", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
 
     def test_non_writable_cwd_falls_back_to_home_log_and_still_launches(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
