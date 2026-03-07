@@ -108,9 +108,6 @@ function retrieve_session_id() {
     local session_id
     session_id="$(cat "${session_id_filename}")"
     echo "Completed retrieving saved Session ID: \"${session_id}\" from file: \"${session_id_filename}\"" >&2
-    echo "Removing file: \"${session_id_filename}\"" >&2
-    rm -f "${session_id_filename}"
-    echo "Completed removing file: \"${session_id_filename}\"" >&2
     echo "${session_id}"
 }
 
