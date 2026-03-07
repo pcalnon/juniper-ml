@@ -7,21 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.1] - 2026-03-03
+### Added
+
+- `notes/DEVELOPER_CHEATSHEET.md` — Added a `wake_the_claude.bash` quick runbook covering usage/help exit codes, debug-mode behavior, and `--resume` troubleshooting.
+- `notes/DEVELOPER_CHEATSHEET.md` — Added a regression-test command (`python3 -m unittest tests/test_wake_the_claude.py -v`) and coverage notes for resume validation, symlink-write protection, and prompt argument safety.
+- `notes/DEVELOPER_CHEATSHEET.md` — Documented regression-suite execution expectations (fake `claude` shim) and a troubleshooting note for `test_session_id_save_rejects_symlink_target` contract mismatches.
+
+### Fixed
+
+- `scripts/wake_the_claude.bash` — Replaced `eval`-based flag matching in `matches_pattern()` with split-and-compare logic.
+- `scripts/wake_the_claude.bash` — Moved `debug_log` and `redact_uuid` definitions before top-level calls to prevent `command not found` stderr noise.
 
 ### Security
 
-- Enabled build attestations in publish workflow (`attestations: true`)
+- `scripts/wake_the_claude.bash` — Removed a latent command-injection vector by eliminating `eval` from pattern matching.
+
+## [0.2.1] - 2026-03-06
 
 ### Added
 
-- `.github/workflows/security-scan.yml` — Weekly scheduled security scanning (Bandit, pip-audit)
-- `notes/SECURITY_AUDIT_PLAN.md` — Cross-ecosystem security audit documentation (24 findings, 7 phases, 7 repos)
+- `scripts/wake_the_claude.bash` — Shell script to launch Claude Code sessions with configurable flags, session persistence, and resume support
+- `notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md` — Root cause analysis and fix plan
+- `notes/SECURITY_REMEDIATION_PLAN.md` — Security vulnerability analysis and remediation plan
+- `notes/pull_requests/PR_SESSION_ID_VALIDATION_BUGFIX.md` — PR description archive
+- `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md` — PR description template (adopted from sibling repos)
 
-### Technical Notes
+### Fixed
 
-- **SemVer impact**: PATCH — CI/CD and documentation only; no package changes
-- **Part of**: Cross-ecosystem security audit (7 repos, 24 findings)
+- **Session ID validation**: Redirected diagnostic `echo` statements to stderr (`>&2`) in `is_valid_uuid`, `retrieve_session_id`, and `validate_session_id`, reserving stdout exclusively for return values captured via `$(...)`
+- **Subshell exit status**: Moved `RETURN_VALUE=$?` to a separate line after command substitution so the exit status propagates to the parent scope
+- **Double usage print**: Replaced `usage`/`exit` calls with `return` inside `validate_session_id`, since `exit` inside `$(...)` only terminates the subshell
+- **Ambiguous log message**: Added `session_id_filename` local variable to preserve the original filename for the "from file" log message
+
+### Security
+
+- **Path traversal in `--resume`** (High): Reject filenames containing path separators (`/`) or lacking `.txt` extension; removed destructive `rm -f` from `retrieve_session_id`; suppressed raw file content in error logs
+- **Arbitrary file write in `save_session_id`** (High): Added UUID format validation before any filesystem write; applied `basename` defense-in-depth; scoped `session_id` as `local`
+- **Argument injection via `CLAUDE_CODE_PARAMS`** (Medium): Converted from flat string to bash array; execute with `"${CLAUDE_CODE_PARAMS[@]}"` to prevent word-splitting injection
 
 ## [0.2.0] - 2026-02-27
 

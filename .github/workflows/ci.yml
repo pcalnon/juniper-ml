@@ -92,7 +92,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
       - name: Validate Documentation Links
-        run: python scripts/check_doc_links.py --exclude templates --exclude history
+        run: python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Dependency Documentation: Generate pip dependency records

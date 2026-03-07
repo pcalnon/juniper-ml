@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-This is `juniper-ml`, a **meta-package** (no source code) for the Juniper ML research platform. It exists solely to provide a single `pip install juniper-ml[all]` entry point that pulls in the actual Juniper packages as dependencies.
+This is `juniper-ml`, a **meta-package** for the Juniper ML research platform. It provides a single `pip install juniper-ml[all]` entry point that pulls in the actual Juniper packages as dependencies, and also contains internal automation scripts used for Claude Code workflows.
 
 ## Build & Package Commands
 
@@ -23,9 +23,12 @@ pip install -e .               # base (no deps)
 pip install -e ".[clients]"    # client libraries
 pip install -e ".[worker]"     # distributed worker
 pip install -e ".[all]"        # everything
+
+# Run tooling script regression tests
+python3 -m unittest -v tests/test_wake_the_claude.py
 ```
 
-There are no tests, linters, or application code in this repository.
+There is no importable Python application package in this repository. Functional behavior here is primarily package metadata plus shell tooling in `scripts/`, with regression coverage in `tests/test_wake_the_claude.py`.
 
 ## Publishing
 
@@ -36,6 +39,8 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 - `pyproject.toml` — Package metadata, version, and optional dependency groups (`clients`, `worker`, `all`)
 - `README.md` — PyPI landing page content
 - `.github/workflows/publish.yml` — CI/CD publish pipeline
+- `scripts/wake_the_claude.bash` — Claude Code launcher with flag parsing, session ID persistence, and resume handling
+- `tests/test_wake_the_claude.py` — Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 
 ## Ecosystem Context
 
