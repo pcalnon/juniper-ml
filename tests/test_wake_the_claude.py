@@ -2,6 +2,7 @@
 """Regression tests for wake_the_claude resume/session-id handling."""
 
 import os
+import shutil
 import subprocess
 import tempfile
 import time
@@ -297,6 +298,33 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
             self.assertIn("Failed to open nohup log file", result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+
+    def test_missing_claude_binary_fails_without_silent_success(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log = Path(temp_dir) / "claude_invocations.log"
+            isolated_bin = Path(temp_dir) / "isolated-bin"
+            isolated_bin.mkdir(parents=True, exist_ok=True)
+
+            bash_path = shutil.which("bash")
+            self.assertIsNotNone(bash_path, msg="bash must be discoverable for this test")
+            os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
+
+            env = os.environ.copy()
+            env["PATH"] = str(isolated_bin)
+            env["HOME"] = temp_dir
+            env["CLAUDE_ARGS_LOG"] = str(invocations_log)
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            self.assertIn("claude command not found in PATH", result.stderr)
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
