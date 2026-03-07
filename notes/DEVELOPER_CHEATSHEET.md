@@ -740,13 +740,45 @@ CI pipeline: pre-commit -> unit-tests -> integration-tests -> build -> security 
 
 ### Validate Documentation Links Locally
 
-Cross-repo links are skipped during CI. Before submitting a PR that adds or modifies cross-repo links, validate them locally:
+Use `scripts/check_doc_links.py` before opening a PR that changes markdown links.
+
+Validation behavior:
+
+- Checks relative file links and same-file heading anchors.
+- Ignores external links (`http`, `https`, `mailto`, `ftp`), inline code spans, and fenced code blocks.
+- Rejects unsafe link targets (absolute paths, null bytes, excessive traversal, out-of-repo paths).
+- Classifies cross-repo links (for example, `../juniper-data/...`) and handles them via `--cross-repo`.
+
+Common commands:
 
 ```bash
+# CI-equivalent behavior (cross-repo links skipped)
+python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
+
+# Full local validation (requires sibling repos on disk)
 python scripts/check_doc_links.py --cross-repo check
+
+# Cross-repo warnings without failing for those links
+python scripts/check_doc_links.py --cross-repo warn
+
+# Scope to specific docs and print every checked link
+python scripts/check_doc_links.py notes/ README.md --verbose
 ```
 
-This requires all Juniper repos to be checked out as siblings under the same parent directory. The script auto-discovers the ecosystem root via git.
+Cross-repo mode selection:
+
+| Mode | Use when | Behavior |
+|------|----------|----------|
+| `skip` | CI or single-repo checkout | Skips cross-repo existence checks and reports skipped count |
+| `warn` | Local authoring review | Prints warning lines for cross-repo links, does not fail on missing sibling files |
+| `check` | Full Juniper workspace present | Validates cross-repo targets against discovered ecosystem root |
+
+Troubleshooting:
+
+- `WARNING: Ecosystem root not found`: `--cross-repo check` automatically falls back to skip mode; ensure sibling repos are checked out under the same parent directory.
+- `ERROR: --cross-repo must be one of ...`: fix invalid CLI value; valid values are `skip`, `warn`, `check`.
+- `link resolves outside repository boundary`: replace deep traversal links with bounded relative paths.
+- `cross-repo link escapes target repository`: remove `..` segments after the sibling repo segment (for example, avoid `../juniper-data/../../...`).
 
 ---
 
@@ -941,6 +973,6 @@ Three things to update per repo:
 
 ---
 
-**Last Updated:** March 5, 2026
-**Version:** 1.1.0
+**Last Updated:** March 7, 2026
+**Version:** 1.1.1
 **Maintainer:** Paul Calnon
