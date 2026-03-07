@@ -505,7 +505,7 @@ class WebSocketControlMessage(BaseModel):
 **Implementation**:
 - Track `last_activity_at` per connection in WebSocket manager metadata
 - Periodic cleanup task (runs every 60s) closes connections idle for >5 minutes
-- Configurable via `ws_idle_timeout_sec` setting
+- Configurable via `ws_idle_timeout_sec` settingh
 
 ---
 
@@ -842,7 +842,7 @@ Because `security.py`, `middleware.py`, and `app.py` follow near-identical patte
 7. **Update juniper-deploy** with Docker, env var, and Prometheus changes
 8. **Run integration tests** via juniper-deploy
 
-Each repo gets a `feature/security-hardening` branch in its own worktree per the [Worktree Procedures](../../../CLAUDE.md#worktree-procedures-mandatory--task-isolation).
+Each repo gets a `feature/security-hardening` branch in its own worktree per the [Worktree Procedures](../CLAUDE.md#worktree-procedures-mandatory--task-isolation).
 
 ---
 
