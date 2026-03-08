@@ -745,6 +745,17 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             check=False,
         )
 
+    def _run_default_launcher(self, args: list[str], cwd: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        return subprocess.run(
+            ["bash", str(default_script), *args],
+            cwd=cwd,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
     def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
@@ -957,6 +968,45 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         # Should contain a conditional check for CLAUDE_SKIP_PERMISSIONS
         self.assertIn("CLAUDE_SKIP_PERMISSIONS", content)
 
+    def test_default_launcher_executes_with_expected_default_arguments(self) -> None:
+        """HIGH: Verify default launcher passes safe defaults into wake_the_claude."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+
+            self.assertIn("--session-id", args)
+            sid_idx = args.index("--session-id")
+            generated_uuid = args[sid_idx + 1]
+            self.assertTrue(
+                UUID_REGEX.match(generated_uuid),
+                f"Expected UUID after --session-id, got: {generated_uuid}",
+            )
+            self.assertIn("--worktree", args)
+            self.assertIn("--effort", args)
+            effort_idx = args.index("--effort")
+            self.assertEqual(args[effort_idx + 1], "high")
+            self.assertIn("Hello World, Claude!", args)
+            self.assertNotIn("--dangerously-skip-permissions", args)
+
+    def test_default_launcher_forwards_skip_permissions_when_opted_in(self) -> None:
+        """HIGH: Verify default launcher forwards skip-permissions when enabled by env var."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["CLAUDE_SKIP_PERMISSIONS"] = "1"
+
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("--dangerously-skip-permissions", args)
+
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -973,6 +1023,44 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
             self.assertIn("prompt from file", args)
+
+    def test_path_then_file_flags_resolve_combined_prompt_file(self) -> None:
+        """Verify --path <dir> then --file <name> resolves prompt file."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            (prompt_dir / "prompt.md").write_text("prompt from combined path-then-file", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--path", str(prompt_dir), "--file", "prompt.md"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("prompt from combined path-then-file", args)
+
+    def test_file_then_path_flags_resolve_combined_prompt_file(self) -> None:
+        """Verify --file <name> then --path <dir> resolves prompt file."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            (prompt_dir / "prompt.md").write_text("prompt from combined file-then-path", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--file", "prompt.md", "--path", str(prompt_dir)],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("prompt from combined file-then-path", args)
 
 
 class WakeTheClaudeGitignoreTests(unittest.TestCase):
