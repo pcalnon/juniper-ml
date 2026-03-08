@@ -467,7 +467,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
         debug_log "Parsing effort flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) ) ]]; then
-            # EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
+            EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
             shift
             debug_log "Received Effort Value, ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -479,7 +479,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing model flags"
         if [[ "${1}" != "" ]]; then
             # TODO: Validate Model value
-            # MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
+            MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
             shift
             debug_log "Received Model Value, ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -558,31 +558,21 @@ if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
 fi
 
 if [[ "${HEADLESS_VALUE}" != "" ]]; then
-    NOHUP_LOG_FILE="${LOGS_DIR}/wake_the_claude.nohup.log"
-    if ! : >> "${NOHUP_LOG_FILE}" 2>/dev/null; then
-        if [[ "${HOME}" != "" ]]; then
-            NOHUP_LOG_FILE="${HOME}/wake_the_claude.nohup.log"
-        fi
-        if ! : >> "${NOHUP_LOG_FILE}" 2>/dev/null; then
-            echo "Error: Failed to open nohup log file: \"${NOHUP_LOG_FILE}\"" >&2
-            exit 1
-        fi
-    fi
-    debug_log "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
-    nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
-    NOHUP_STATUS=$?
-    if [[ "${NOHUP_STATUS}" != "0" ]]; then
-        echo "Error: Failed to launch claude with nohup" >&2
-        exit 1
+    if [[ "${NOHUP_LOG_FILE}" != "" ]]; then
+        echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
+        nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
+    else
+        echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} &"
+        nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" &
     fi
 else
-    debug_log "claude ${CLAUDE_CODE_PARAMS[*]}"
+    echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
     "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"
-    CLAUDE_STATUS=$?
-    if [[ "${CLAUDE_STATUS}" != "0" ]]; then
-        echo "Error: claude exited with status ${CLAUDE_STATUS}" >&2
-        exit "${CLAUDE_STATUS}"
-    fi
+fi
+NOHUP_STATUS=$?
+if [[ "${NOHUP_STATUS}" != "0" ]]; then
+    echo "Error: Failed to launch claude with nohup" >&2
+    exit 1
 fi
 echo "Completed Executing Claude Code"
 exit 0
