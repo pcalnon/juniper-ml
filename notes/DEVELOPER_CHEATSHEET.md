@@ -84,10 +84,18 @@
   - [Validate Documentation Links Locally](#validate-documentation-links-locally)
   - [Troubleshoot Cross-Repo Link Checks](#troubleshoot-cross-repo-link-checks)
 - [Claude Code Session Script](#claude-code-session-script)
+<<<<<<< HEAD
   - [Launch Default Interactive Session](#launch-default-interactive-session)
   - [Launch Explicit Interactive or Headless Sessions](#launch-explicit-interactive-or-headless-sessions)
   - [Resume an Existing Session](#resume-an-existing-session)
   - [Runtime Paths and Environment Overrides](#runtime-paths-and-environment-overrides)
+=======
+  - [Entry Points](#entry-points)
+  - [Launch Modes: Interactive vs Headless](#launch-modes-interactive-vs-headless)
+  - [Session ID and Resume Workflow](#session-id-and-resume-workflow)
+  - [Current Argument-Handling Pitfalls (Known)](#current-argument-handling-pitfalls-known)
+  - [Troubleshoot Resume Failures](#troubleshoot-resume-failures)
+>>>>>>> b15214f (docs: refresh Claude launcher runbook and entrypoints)
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
@@ -1018,16 +1026,30 @@ Resume by UUID:
 
 ```bash
 bash scripts/wake_the_claude.bash \
-  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
-  --prompt "Continue from previous analysis"
+  --id \
+  --worktree \
+  --dangerously-skip-permissions \
+  --effort high \
+  --prompt "Review failing tests and suggest root causes" \
+  --print
 ```
 
-Resume with the explicit session alias (equivalent to `--resume`):
+Headless logging behavior:
+
+- Primary log file: `wake_the_claude.nohup.log` in the current working directory.
+- Fallback log file (if CWD is not writable): `${HOME}/wake_the_claude.nohup.log`.
+- If neither location is writable, launch fails with non-zero exit.
+
+### Session ID and Resume Workflow
+
+Session generation:
 
 ```bash
-bash scripts/wake_the_claude.bash \
-  --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
-  --prompt "Continue from previous analysis"
+# Generate and persist a new session ID to <uuid>.txt
+bash scripts/wake_the_claude.bash --id --prompt "hello"
+
+# Persist a provided session ID to <uuid>.txt
+bash scripts/wake_the_claude.bash --id 3e160ecb-feb5-4047-8438-171fb13db8e5 --prompt "hello"
 ```
 
 Resume by saved session file (basename only, from `${WTC_SESSIONS_DIR}`):
@@ -1091,6 +1113,46 @@ python3 -m unittest -v tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_
 - Resume file content must itself be a valid UUID.
 - Resume reads are non-destructive: session files are not deleted.
 - `--id` refuses to write when the target `*.txt` path is a symlink.
+Resume inputs:
+
+- `--resume` accepts either a UUID or a local `.txt` filename.
+- Resume filenames must be basenames only (no `/` path separators).
+- Resume filenames must end in `.txt`.
+- Resume file contents must be a valid UUID.
+
+Resume examples:
+
+```bash
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "Continue previous thread"
+bash scripts/wake_the_claude.bash --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "Continue previous thread"
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt --prompt "Continue previous thread"
+```
+
+Safety constraints:
+
+- `--id` refuses to write if `<uuid>.txt` is a symlink.
+- Invalid resume values fail before launching `claude`.
+- Invalid or missing `.txt` resume files are preserved (not deleted).
+
+### Current Argument-Handling Pitfalls (Known)
+
+Current implementation detail in `scripts/wake_the_claude.bash`:
+
+- `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`.
+- Prompt text is appended as a quoted string literal (`"\"${prompt}\""`), then expanded unquoted.
+
+Practical impact:
+
+- Prompt strings are split on spaces/tokens at launch time instead of being guaranteed single-argument payloads.
+- Some flags with values are assembled as combined strings and rely on shell splitting at invocation.
+
+Verification command:
+
+```bash
+python3 -m unittest -v tests/test_wake_the_claude.py
+```
+
+If prompt/session forwarding regressions appear, prefer prompt files with simple content and verify the emitted launch line before relying on unattended runs.
 
 ### Troubleshoot Resume Failures
 
