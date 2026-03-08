@@ -47,7 +47,7 @@ git commit -m "final changes for <task>"
 git push origin "$BRANCH_NAME"
 ```
 
-### Step 3: Switch to the Main Repo Directory
+### Step 3: Switch to the Current Repo's main Directory
 
 ```bash
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
@@ -55,8 +55,11 @@ cd /home/pcalnon/Development/python/Juniper/juniper-ml
 
 ### Step 4: Update the Merge Target
 
+The merge target for the working branch should be the <PARENT BRANCH> of the worktree.
+The <PARENT BRANCH> of a worktree is the git branch that was active when the worktree was added.
+
 ```bash
-MERGE_TARGET="main"
+MERGE_TARGET="<PARENT_BRANCH>"
 git checkout "$MERGE_TARGET"
 git pull origin "$MERGE_TARGET"
 ```
