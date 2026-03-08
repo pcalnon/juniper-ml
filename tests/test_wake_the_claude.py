@@ -1048,6 +1048,45 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             args = self._extract_args(invocations[-1])
             self.assertNotIn("--dangerously-skip-permissions", args)
 
+    def test_default_launcher_executes_with_expected_default_arguments(self) -> None:
+        """HIGH: Verify default launcher passes safe defaults into wake_the_claude."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+
+            self.assertIn("--session-id", args)
+            sid_idx = args.index("--session-id")
+            generated_uuid = args[sid_idx + 1]
+            self.assertTrue(
+                UUID_REGEX.match(generated_uuid),
+                f"Expected UUID after --session-id, got: {generated_uuid}",
+            )
+            self.assertIn("--worktree", args)
+            self.assertIn("--effort", args)
+            effort_idx = args.index("--effort")
+            self.assertEqual(args[effort_idx + 1], "high")
+            self.assertIn("Hello World, Claude!", args)
+            self.assertNotIn("--dangerously-skip-permissions", args)
+
+    def test_default_launcher_forwards_skip_permissions_when_opted_in(self) -> None:
+        """HIGH: Verify default launcher forwards skip-permissions when enabled by env var."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["CLAUDE_SKIP_PERMISSIONS"] = "1"
+
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("--dangerously-skip-permissions", args)
+
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
         with tempfile.TemporaryDirectory() as temp_dir:
