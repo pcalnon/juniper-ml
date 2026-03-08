@@ -348,7 +348,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         if [[ "${PATH_NAME: -1}" == "/" ]]; then
             PATH_NAME="${PATH_NAME%\/*}"
             debug_log "Removed trailing slash from path"
-        # fi
+        fi
+        if [[ -f "${PATH_NAME}" ]]; then
+            VALID_PATH_PARAM="${TRUE}"
+            PROMPT_FILE="${PATH_NAME}"
+            debug_log "Provided Pathname is a valid file"
         elif [[ -d "${PATH_NAME}" ]]; then
             debug_log "Provided Pathname is a valid directory"
             if [[ ( "${FILE_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
@@ -401,8 +405,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             RETURN_VALUE=$?
             if [[ ( "${RETURN_VALUE}" == "${TRUE}" ) && ( "${SESSION_ID}" != "" ) ]]; then
                 debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
-                # CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
-                CLAUDE_CODE_PARAMS+=("${SESSION_ID}")
+                CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
                 debug_log "Completed parsing resume, ${#CLAUDE_CODE_PARAMS[@]} args"
             else
                 echo "Error: Session ID is invalid. Exiting..."
@@ -429,8 +432,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 usage "${FALSE}"
             fi
             SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
-            # CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
-            CLAUDE_CODE_PARAMS+=("${SESSION_ID_VALUE}")
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
             debug_log "Generated new Session ID: $(redact_uuid "${generated_uuid}"), ${#CLAUDE_CODE_PARAMS[@]} args"
         fi
         if ! save_session_id "${SESSION_ID_VALUE}"; then
@@ -454,8 +456,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing effort flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) ) ]]; then
             EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
-            # CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
-            CLAUDE_CODE_PARAMS+=("${EFFORT_VALUE}")
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
             shift
             debug_log "Received Effort Value, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
@@ -467,8 +468,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         if [[ "${1}" != "" ]]; then
             # TODO: Validate Model value
             MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
-            # CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
-            CLAUDE_CODE_PARAMS+=("${MODEL_VALUE}")
+            CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
             shift
             debug_log "Received Model Value, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
@@ -528,7 +528,7 @@ elif [[ ( "${PROMPT_FILE}" != "" ) && ( ( "${VALID_FILE_PARAM}" == "${TRUE}" ) |
 fi
 
 if [[ "${CLAUDE_CODE_PROMPT}" != "" ]]; then
-    CLAUDE_CODE_PARAMS+=("\"${CLAUDE_CODE_PROMPT}\"")
+    CLAUDE_CODE_PARAMS+=("${CLAUDE_CODE_PROMPT}")
     debug_log "Prompt loaded [${#CLAUDE_CODE_PROMPT} chars]"
 fi
 debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
@@ -560,16 +560,14 @@ fi
 if [[ "${HEADLESS_VALUE}" != "" ]]; then
     if [[ "${NOHUP_LOG_FILE}" != "" ]]; then
         echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
-        # nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
-        nohup "${CLAUDE_BIN}" ${CLAUDE_CODE_PARAMS[@]} >> "${NOHUP_LOG_FILE}" 2>&1 &
+        nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
     else
         echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} &"
-        # nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" &
-        nohup "${CLAUDE_BIN}" ${CLAUDE_CODE_PARAMS[@]} &
+        nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" &
     fi
 else
     echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
-    "${CLAUDE_BIN}" ${CLAUDE_CODE_PARAMS[@]}
+    "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"
 fi
 NOHUP_STATUS=$?
 if [[ "${NOHUP_STATUS}" != "0" ]]; then
