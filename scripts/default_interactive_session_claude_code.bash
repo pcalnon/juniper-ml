@@ -4,14 +4,18 @@ SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
 DEFAULT_PROMPT="Hello World, Claude!"
 
+CLAUDE_ARGS=(--id --worktree --effort high --prompt "${DEFAULT_PROMPT}")
+
+# Opt in to --dangerously-skip-permissions only when explicitly requested
+if [[ "${CLAUDE_SKIP_PERMISSIONS}" == "1" ]]; then
+    CLAUDE_ARGS+=(--dangerously-skip-permissions)
+fi
+
+# Pass through any additional arguments from the caller
+if [[ $# -gt 0 ]]; then
+    CLAUDE_ARGS+=("$@")
+fi
+
 echo "Launching Default Interactive session with Claude Code"
-
-# echo "${SCRIPT_PATH}/wake_the_claude.bash --id --worktree --dangerously-skip-permissions --effort high --prompt \"${DEFAULT_PROMPT}\""
-# "${SCRIPT_PATH}"/wake_the_claude.bash --id --worktree --dangerously-skip-permissions --effort high --prompt "${DEFAULT_PROMPT}"
-
-# SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-# /home/pcalnon/.local/bin/claude --session-id 34ec3d30-1f3a-4289-b401-c85aa97ff8da --worktree --dangerously-skip-permissions --effort high "Hello World, Claude!"
-echo "\"${SCRIPT_PATH}/wake_the_claude.bash\" --id --worktree --dangerously-skip-permissions --effort high --prompt \"${DEFAULT_PROMPT}\""
-"${SCRIPT_PATH}/wake_the_claude.bash" --id --worktree --dangerously-skip-permissions --effort high --prompt "${DEFAULT_PROMPT}"
-
+"${SCRIPT_PATH}/wake_the_claude.bash" "${CLAUDE_ARGS[@]}"
 echo "Closed Default Interactive session with Claude Code"
