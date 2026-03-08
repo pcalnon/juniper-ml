@@ -39,6 +39,10 @@ venv/
 
 # Log files
 *.log
+scripts/nohup.out
+**/nohup.out
+**/nohup*
+**/nohup*
 
 # Temp files
 *.tmp
@@ -65,6 +69,17 @@ Thumbs.db
 
 # Claude Code session files
 __RESUME_CLAUDE_SESSION__
+
+# Claude Code git worktree files and dirs
+**/.claude/worktrees/*
+**/.claude/worktrees/
+**/.claude/worktrees
+./.claude/worktrees/*
+./.claude/worktrees/
+./.claude/worktrees
+.claude/worktrees/*
+.claude/worktrees/
+.claude/worktrees
 
 # Claude Code local settings (contains permissions, not portable)
 .claude/settings.local.json
