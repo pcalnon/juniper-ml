@@ -4,10 +4,15 @@
 
 | Meta Data         | Value                                                          |
 |-------------------|----------------------------------------------------------------|
-| **Version:**      | 1.0.0                                                          |
+| **Version:**      | 1.2.0                                                          |
 | **Status:**       | Active                                                         |
-| **Last Updated:** | March 3, 2026                                                  |
+| **Last Updated:** | March 7, 2026                                                  |
 | **Project:**      | Juniper - Cascade Correlation Neural Network Research Platform |
+
+> **Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve
+> locally when all Juniper repos are checked out as siblings. They are skipped during CI
+> validation. Source code file links use GitHub URLs for durability. See
+> [CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) for details.
 
 ---
 
@@ -51,6 +56,13 @@
   - [Run Tests with Coverage](#run-tests-with-coverage)
   - [Add a Pytest Marker](#add-a-pytest-marker)
   - [Run Specific Marker Subsets](#run-specific-marker-subsets)
+- [Claude Automation Script](#claude-automation-script)
+  - [Validate wake_the_claude.bash usage/help flags](#validate-wake_the_claudebash-usagehelp-flags)
+  - [Enable debug mode and verify clean stderr](#enable-debug-mode-and-verify-clean-stderr)
+  - [Troubleshoot --resume validation failures](#troubleshoot---resume-validation-failures)
+  - [Troubleshoot --id UUID generation fallback](#troubleshoot---id-uuid-generation-fallback)
+  - [Verify pattern-matching hardening (no eval)](#verify-pattern-matching-hardening-no-eval)
+  - [Run wake_the_claude regression tests](#run-wake_the_claude-regression-tests)
 - [Dependencies](#dependencies)
   - [Add a Dependency](#add-a-dependency)
   - [Remove a Dependency](#remove-a-dependency)
@@ -69,9 +81,14 @@
   - [Run Pre-commit Locally](#run-pre-commit-locally)
   - [Publish a Package to PyPI](#publish-a-package-to-pypi)
   - [Add a CI Job](#add-a-ci-job)
+  - [Validate Documentation Links Locally](#validate-documentation-links-locally)
+  - [Troubleshoot Cross-Repo Link Checks](#troubleshoot-cross-repo-link-checks)
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
+- [Claude Automation Scripts](#claude-automation-scripts)
+  - [Resume a Claude Session](#resume-a-claude-session)
+  - [Generate and Save a Session ID File](#generate-and-save-a-session-id-file)
 - [Data Contract](#data-contract)
   - [Add a New Generator](#add-a-new-generator)
   - [Download a Dataset Artifact](#download-a-dataset-artifact)
@@ -92,7 +109,7 @@ Decrypt the encrypted `.env` to inspect values.
 sops -d --input-type dotenv --output-type dotenv .env.enc
 ```
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Add a New Secret
 
@@ -103,13 +120,13 @@ sops -d --input-type dotenv --output-type dotenv .env.enc
 5. If the variable is consumed by Docker, also add it to `juniper-deploy/.env.example` with a commented-out default
 
 > **Pre-commit guard:** The `no-unencrypted-env` hook blocks committing plaintext `.env` files.
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Change an Existing Secret
 
 Same as [Add a New Secret](#add-a-new-secret) -- decrypt, edit the value, re-encrypt, commit `.env.enc`.
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
 
 ### Remove a Secret
 
@@ -120,7 +137,7 @@ Same as [Add a New Secret](#add-a-new-secret) -- decrypt, edit the value, re-enc
 5. Remove from `juniper-deploy/.env.example` if present
 6. Commit all changes
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
 
 ### Enable API Key Authentication
 
@@ -139,7 +156,7 @@ export CANOPY_API_KEY="your-key"
 
 Clients authenticate via the `X-API-Key` header, configured by `JUNIPER_DATA_API_KEY` or `JUNIPER_CASCOR_API_KEY`.
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [juniper-data Security](../juniper-data/juniper_data/api/security.py) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [juniper-data Security](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/security.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Disable API Key Authentication
 
@@ -149,7 +166,7 @@ Unset or remove the API keys variable. When no keys are configured, authenticati
 unset JUNIPER_DATA_API_KEYS
 ```
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Add SOPS to a New Repo
 
@@ -160,7 +177,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Ensure `.env` is in `.gitignore`
 6. Commit `.env.enc` and `.sops.yaml`
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md) | [SOPS Audit](../juniper-ml/notes/SOPS_AUDIT_2026-03-02.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [SOPS Audit](SOPS_AUDIT_2026-03-02.md)
 
 ### Rotate the SOPS Age Key
 
@@ -171,7 +188,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Update the `SOPS_AGE_KEY` GitHub Actions secret in each repo
 6. Commit updated `.sops.yaml` and `.env.enc` files
 
-> **Docs:** [SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md) | [Secrets Management Analysis](../juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md)
+> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [Secrets Management Analysis](SECRETS_MANAGEMENT_ANALYSIS.md)
 
 ---
 
@@ -186,7 +203,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Add tests in `juniper_data/tests/`
 6. Run: `pytest juniper_data/tests/ -v`
 
-> **Docs:** [juniper-data AGENTS.md](../juniper-data/AGENTS.md) | [juniper-data API Reference](../juniper-data/docs/api/JUNIPER_DATA_API.md) | [API Schemas](../juniper-data/docs/api/API_SCHEMAS.md) | [App Factory](../juniper-data/juniper_data/api/app.py)
+> **Docs:** [juniper-data AGENTS.md](../juniper-data/AGENTS.md) | [juniper-data API Reference](../juniper-data/docs/api/JUNIPER_DATA_API.md) | [API Schemas](../juniper-data/docs/api/API_SCHEMAS.md) | [App Factory](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/app.py)
 
 ### Add an Endpoint to juniper-cascor
 
@@ -202,7 +219,7 @@ juniper-cascor exposes WebSocket endpoints at `/ws/training` (metrics stream) an
 2. Add a corresponding stream class in `juniper-cascor-client/juniper_cascor_client/ws_client.py`
 3. Update juniper-canopy if it consumes the new stream
 
-> **Docs:** [juniper-cascor-client WebSocket](../juniper-cascor-client/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [juniper-canopy CasCor Backend Docs](../juniper-canopy/docs/cascor/CASCOR_BACKEND_MANUAL.md)
+> **Docs:** [juniper-cascor-client WebSocket](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [juniper-canopy CasCor Backend Docs](../juniper-canopy/docs/cascor/CASCOR_BACKEND_MANUAL.md)
 
 ### Change an Existing Endpoint
 
@@ -239,7 +256,7 @@ juniper-data middleware stack (applied in `create_app()`): CORS -> SecurityMiddl
 2. Add to `create_app()` in `app.py` (order matters -- outermost runs first)
 3. Add tests
 
-> **Docs:** [juniper-data Security Middleware](../juniper-data/juniper_data/api/security.py) | [juniper-data Observability Middleware](../juniper-data/juniper_data/api/observability.py) | [App Factory](../juniper-data/juniper_data/api/app.py)
+> **Docs:** [juniper-data Security Middleware](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/security.py) | [juniper-data Observability Middleware](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/observability.py) | [App Factory](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/app.py)
 
 ---
 
@@ -253,13 +270,13 @@ juniper-data middleware stack (applied in `create_app()`): CORS -> SecurityMiddl
 4. Add tests in `tests/`
 5. Run: `pytest tests/ -v`
 
-> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](../juniper-data-client/juniper_data_client/client.py)
+> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](https://github.com/pcalnon/juniper-data-client/blob/main/juniper_data_client/client.py)
 
 ### Add a Method to juniper-cascor-client
 
 Same pattern as juniper-data-client. REST methods in `client.py`, WebSocket in `ws_client.py`.
 
-> **Docs:** [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [REST Client](../juniper-cascor-client/juniper_cascor_client/client.py) | [WebSocket Client](../juniper-cascor-client/juniper_cascor_client/ws_client.py)
+> **Docs:** [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md) | [REST Client](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/client.py) | [WebSocket Client](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/ws_client.py)
 
 ### Add a WebSocket Event Handler
 
@@ -269,7 +286,7 @@ In `juniper-cascor-client`, `CascorTrainingStream` supports callback registratio
 2. Handle the new message type in the async iteration loop
 3. Add tests
 
-> **Docs:** [WebSocket Client](../juniper-cascor-client/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md)
+> **Docs:** [WebSocket Client](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/ws_client.py) | [juniper-cascor-client AGENTS.md](../juniper-cascor-client/AGENTS.md)
 
 ### Change a Client Method
 
@@ -293,7 +310,7 @@ In `juniper-cascor-client`, `CascorTrainingStream` supports callback registratio
 
 Both clients use `requests.Session` with `urllib3.Retry` (backoff_factor=0.5, status_forcelist=[500,502,503,504]) and `HTTPAdapter` for connection pooling. Modify defaults in the `__init__` method of the client class.
 
-> **Docs:** [Data Client Source](../juniper-data-client/juniper_data_client/client.py) | [CasCor Client Source](../juniper-cascor-client/juniper_cascor_client/client.py)
+> **Docs:** [Data Client Source](https://github.com/pcalnon/juniper-data-client/blob/main/juniper_data_client/client.py) | [CasCor Client Source](https://github.com/pcalnon/juniper-cascor-client/blob/main/juniper_cascor_client/client.py)
 
 ---
 
@@ -308,7 +325,7 @@ make up    # or: docker compose --profile full up -d
 
 Starts juniper-data (8100) -> juniper-cascor (8200) -> juniper-canopy (8050) with health-check dependencies.
 
-> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](../juniper-deploy/docker-compose.yml) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](https://github.com/pcalnon/juniper-deploy/blob/main/docker-compose.yml) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Start in Demo Mode
 
@@ -341,7 +358,7 @@ Runs canopy in demo mode (no real CasCor backend needed).
 5. Assign to appropriate profile(s): `full`, `demo`, `dev`
 6. Test: `docker compose --profile <profile> config`
 
-> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](../juniper-deploy/docker-compose.yml)
+> **Docs:** [juniper-deploy AGENTS.md](../juniper-deploy/AGENTS.md) | [docker-compose.yml](https://github.com/pcalnon/juniper-deploy/blob/main/docker-compose.yml)
 
 ### Change a Service Port
 
@@ -361,7 +378,7 @@ Runs canopy in demo mode (no real CasCor backend needed).
 3. Add to the `environment:` section in `docker-compose.yml` using `${VAR:-default}` substitution
 4. Document in the service's `AGENTS.md` environment variables table
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example) | [Deploy AGENTS.md Env Vars](../juniper-deploy/AGENTS.md#environment-variables)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [Deploy .env.example](../juniper-deploy/.env.example) | [Deploy AGENTS.md Env Vars](../juniper-deploy/AGENTS.md#environment-variables)
 
 ### Run a Service Natively (No Docker)
 
@@ -462,6 +479,140 @@ pytest --run-long                # Include long-running tests (juniper-cascor)
 
 ---
 
+## Claude Automation Script
+
+### Validate wake_the_claude.bash usage/help flags
+
+```bash
+bash scripts/wake_the_claude.bash -u >/tmp/wtc_usage.out 2>/tmp/wtc_usage.err; echo "exit=$?"
+bash scripts/wake_the_claude.bash -h >/tmp/wtc_help.out 2>/tmp/wtc_help.err; echo "exit=$?"
+```
+
+Expected:
+- `-u` exits `1` and prints usage
+- `-h` exits `0` and prints usage
+- stderr files remain empty (no `command not found` noise)
+
+### Enable debug mode and verify clean stderr
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash -u >/tmp/wtc_debug.out 2>/tmp/wtc_debug.err; echo "exit=$?"
+rg "Define Claude Code parameter flags|usage:" /tmp/wtc_debug.out
+test ! -s /tmp/wtc_debug.err && echo "stderr clean"
+```
+
+`WTC_DEBUG=1` enables parser/flow debug logs. For `-u` and `-h`, debug and usage output are emitted on stdout.
+
+### Troubleshoot --resume validation failures
+
+`--resume` accepts either:
+- A UUID value
+- A `.txt` filename in the current working directory (no `/` path separators)
+
+Quick failure-path checks (do not require a successful `claude` launch):
+
+```bash
+bash scripts/wake_the_claude.bash --resume ../secret.txt --print; echo "exit=$?"
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume ../secret.txt --print >/tmp/wtc_resume_debug.out 2>/tmp/wtc_resume_debug.err
+rg "contains path separators|Session ID is invalid" /tmp/wtc_resume_debug.err /tmp/wtc_resume_debug.out
+bash scripts/test_resume_file_safety.bash
+```
+
+Expected:
+- Exit code `1`
+- Error output includes path-separator rejection and invalid-session message
+- `scripts/test_resume_file_safety.bash` prints `PASS: invalid resume file is preserved`
+
+Edge-case checks for missing and empty `.txt` resume sources:
+
+```bash
+script_path="$(pwd)/scripts/wake_the_claude.bash"
+tmpdir="$(mktemp -d)"
+(
+  cd "$tmpdir" || exit 1
+  : > empty-session-id.txt
+
+  bash "$script_path" --resume missing-session-id.txt --prompt "hello" >/tmp/wtc_missing.out 2>/tmp/wtc_missing.err
+  echo "missing_exit=$?"
+
+  bash "$script_path" --resume empty-session-id.txt --prompt "hello" >/tmp/wtc_empty.out 2>/tmp/wtc_empty.err
+  echo "empty_exit=$?"
+
+  test -f empty-session-id.txt && echo "empty_file_preserved=yes"
+)
+python3 - <<'PY'
+from pathlib import Path
+for name in ("missing", "empty"):
+    content = (Path(f"/tmp/wtc_{name}.out").read_text() + Path(f"/tmp/wtc_{name}.err").read_text())
+    print(f"{name}_usage_count={content.count('usage: wake_the_claude.bash')}")
+    print(f"{name}_executing_claude={'Executing claude' in content}")
+PY
+```
+
+Expected:
+- `missing_exit=1` and `empty_exit=1`
+- `missing_usage_count=1` and `empty_usage_count=1`
+- `missing_executing_claude=False` and `empty_executing_claude=False`
+- `empty_file_preserved=yes`
+
+### Troubleshoot --id UUID generation fallback
+
+When `--id` is provided without a value, `wake_the_claude.bash` must generate a session UUID before launching Claude.
+
+Fallback order:
+1. `uuidgen`
+2. `/proc/sys/kernel/random/uuid`
+3. `python3 -c 'import uuid; print(uuid.uuid4())'`
+
+Constraints:
+- Each fallback output is validated as a UUID before use.
+- If all fallback sources fail or produce invalid output, the script exits `1`, prints usage once, and does not invoke `claude`.
+
+Quick verification:
+
+```bash
+rg "command -v uuidgen|/proc/sys/kernel/random/uuid|python3 -c 'import uuid; print\\(uuid.uuid4\\(\\)\\)'" scripts/wake_the_claude.bash
+rg "Failed to generate a valid UUID for Session ID" scripts/wake_the_claude.bash
+```
+
+Expected:
+- `generate_uuid()` includes all three fallback sources in order.
+- The `--id` parser path has an explicit hard failure when no valid UUID can be generated.
+
+### Verify pattern-matching hardening (no eval)
+
+```bash
+rg "eval" scripts/wake_the_claude.bash
+```
+
+Expected: no matches.
+
+The flag pattern parser in `matches_pattern()` now compares candidates in a split loop. Keep flag constant format as `"flag1 | flag2 | flag3"` when adding aliases.
+
+### Run wake_the_claude regression tests
+
+```bash
+python3 -m unittest tests/test_wake_the_claude.py -v
+bash scripts/test_resume_file_safety.bash
+```
+
+This suite stubs the `claude` binary in a temp directory, so no local Claude install is required.
+
+Coverage highlights:
+- `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
+- Invalid `--resume <file.txt>` content fails validation without deleting the input file.
+- Missing `--resume <file.txt>` sources fail cleanly with one usage print and no Claude launch attempt.
+- Empty `--resume <file.txt>` sources fail the same invalid-session path and preserve the input file.
+- `save_session_id()` refuses symlink targets before writing `<uuid>.txt`.
+- Prompt strings containing shell tokens are passed as a single Claude argument (no flag injection).
+
+Troubleshooting:
+- If `test_session_id_save_rejects_symlink_target` fails with `1 != 0`, current script behavior is to abort after refusing the symlink write. Decide whether that should remain the contract, then align test expectation and script behavior together.
+
+Run this suite whenever `scripts/wake_the_claude.bash` parsing, session validation, or argument construction changes.
+
+---
+
 ## Dependencies
 
 ### Add a Dependency
@@ -488,7 +639,7 @@ pytest --run-long                # Include long-running tests (juniper-cascor)
 uv pip compile pyproject.toml --extra all -o requirements.lock
 ```
 
-> **Docs:** [Dependency Update Workflow](../juniper-data/notes/DEPENDENCY_UPDATE_WORKFLOW.md) | [Dependency Management Plan](plan_7.5_7.6_dependency_management.md)
+> **Docs:** [Dependency Update Workflow](../juniper-data/notes/DEPENDENCY_UPDATE_WORKFLOW.md)
 
 ### Add an Optional Dependency Group
 
@@ -497,7 +648,7 @@ uv pip compile pyproject.toml --extra all -o requirements.lock
 3. Update `juniper-ml` meta-package if the group should be installable via `pip install juniper-ml[...]`
 4. Update install instructions in `AGENTS.md` and `README.md`
 
-> **Docs:** [juniper-ml AGENTS.md](../juniper-ml/AGENTS.md)
+> **Docs:** [juniper-ml AGENTS.md](../AGENTS.md)
 
 ---
 
@@ -510,7 +661,7 @@ uv pip compile pyproject.toml --extra all -o requirements.lock
 3. The field is automatically configurable via `JUNIPER_DATA_<FIELD_NAME>` env var (pydantic-settings)
 4. Add to `juniper-deploy/.env.example` if Docker-relevant
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [juniper-data AGENTS.md](../juniper-data/AGENTS.md)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [juniper-data AGENTS.md](../juniper-data/AGENTS.md)
 
 ### Add a Constant to juniper-cascor
 
@@ -530,7 +681,7 @@ juniper-canopy has a 3-level config hierarchy (highest priority first):
 
 Add the config entry at the appropriate level based on how dynamic it needs to be.
 
-> **Docs:** [juniper-canopy AGENTS.md](../juniper-canopy/AGENTS.md) | [App Config YAML](../juniper-canopy/conf/app_config.yaml) | [Constants Guide](../juniper-canopy/docs/cascor/CONSTANTS_GUIDE.md)
+> **Docs:** [juniper-canopy AGENTS.md](../juniper-canopy/AGENTS.md) | [App Config YAML](https://github.com/pcalnon/juniper-canopy/blob/main/conf/app_config.yaml) | [Constants Guide](../juniper-canopy/docs/cascor/CONSTANTS_GUIDE.md)
 
 ---
 
@@ -548,7 +699,7 @@ export JUNIPER_CASCOR_LOG_LEVEL=DEBUG
 # Extended levels (cascor/canopy): TRACE, VERBOSE, DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
 ```
 
-> **Docs:** [juniper-data Settings](../juniper-data/juniper_data/api/settings.py) | [juniper-cascor Logging Config](../juniper-cascor/conf/logging_config.yaml) | [juniper-canopy Logging Config](../juniper-canopy/conf/logging_config.yaml) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Settings](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/settings.py) | [juniper-cascor Logging Config](https://github.com/pcalnon/juniper-cascor/blob/main/conf/logging_config.yaml) | [juniper-canopy Logging Config](https://github.com/pcalnon/juniper-canopy/blob/main/conf/logging_config.yaml) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Enable JSON Logging
 
@@ -560,7 +711,7 @@ export JUNIPER_CANOPY_LOG_FORMAT=json     # juniper-canopy
 
 JSON output includes `request_id`, `service`, `timestamp`, `level`, and `message` fields.
 
-> **Docs:** [juniper-data Observability](../juniper-data/juniper_data/api/observability.py) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Observability](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/observability.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Enable Sentry Error Tracking
 
@@ -572,7 +723,7 @@ export JUNIPER_CASCOR_SENTRY_DSN="https://your-dsn@sentry.io/project"
 export JUNIPER_CANOPY_SENTRY_DSN="https://your-dsn@sentry.io/project"
 ```
 
-> **Docs:** [juniper-data Observability](../juniper-data/juniper_data/api/observability.py) | [Observability Plan](STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [juniper-data Observability](https://github.com/pcalnon/juniper-data/blob/main/juniper_data/api/observability.py) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Enable Prometheus Metrics
 
@@ -607,8 +758,9 @@ make obs-demo
 ```
 
 Access points:
-- **Grafana**: http://localhost:3000 (admin / admin)
-- **Prometheus**: http://localhost:9090
+
+- **Grafana**: <http://localhost:3000> (admin / admin)
+- **Prometheus**: <http://localhost:9090>
 
 > **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Deploy Makefile](../juniper-deploy/Makefile)
 
@@ -616,12 +768,12 @@ Access points:
 
 Four auto-provisioned dashboards in the "Juniper" folder:
 
-| Dashboard | UID | Purpose |
-|-----------|-----|---------|
+| Dashboard        | UID                | Purpose                                                                    |
+|------------------|--------------------|----------------------------------------------------------------------------|
 | Juniper Overview | `juniper-overview` | Cross-service health, request rates, error rates, latency (home dashboard) |
-| JuniperData | `juniper-data` | Dataset generation metrics, cache status, build info |
-| JuniperCascor | `juniper-cascor` | Training sessions, loss/accuracy, hidden units, inference |
-| JuniperCanopy | `juniper-canopy` | WebSocket connections/messages, demo mode, build info |
+| JuniperData      | `juniper-data`     | Dataset generation metrics, cache status, build info                       |
+| JuniperCascor    | `juniper-cascor`   | Training sessions, loss/accuracy, hidden units, inference                  |
+| JuniperCanopy    | `juniper-canopy`   | WebSocket connections/messages, demo mode, build info                      |
 
 > **Docs:** [Observability Guide](../juniper-deploy/docs/OBSERVABILITY_GUIDE.md) | [Dashboard JSON](../juniper-deploy/grafana/provisioning/dashboards/)
 
@@ -632,6 +784,7 @@ All metrics use service namespace prefix: `juniper_data_`, `juniper_cascor_`, `j
 Pattern: `<namespace>_<subsystem>_<metric_name>_<unit>`
 
 Examples:
+
 - `juniper_data_dataset_generations_total` — Counter of dataset generations
 - `juniper_cascor_training_loss` — Current training loss gauge
 - `juniper_canopy_websocket_connections_active` — Active WebSocket connections
@@ -665,7 +818,7 @@ Metric types: Counter (monotonic), Gauge (up/down), Histogram (distributions), I
 3. Use template variables `$datasource` and `$interval` for flexibility
 4. Dashboard auto-loads within 30 seconds (configurable in `dashboard-providers.yml`)
 
-> **Docs:** [Dashboard Providers YAML](../juniper-deploy/grafana/provisioning/dashboards/dashboard-providers.yml) | [Grafana Provisioning Docs](https://grafana.com/docs/grafana/latest/administration/provisioning/)
+> **Docs:** [Dashboard Providers YAML](https://github.com/pcalnon/juniper-deploy/blob/main/grafana/provisioning/dashboards/dashboard-providers.yml) | [Grafana Provisioning Docs](https://grafana.com/docs/grafana/latest/administration/provisioning/)
 
 ### Query Prometheus Directly
 
@@ -684,7 +837,7 @@ curl -s 'http://localhost:9090/api/v1/label/__name__/values' | python -m json.to
 
 ### Troubleshoot Missing Metrics
 
-1. **Metrics not in Prometheus?** Verify `*_METRICS_ENABLED=true` is set (check `.env.observability`). Check http://localhost:9090/targets — all should show "UP". Curl the service `/metrics` endpoint directly: `curl http://localhost:8100/metrics`.
+1. **Metrics not in Prometheus?** Verify `*_METRICS_ENABLED=true` is set (check `.env.observability`). Check <http://localhost:9090/targets> — all should show "UP". Curl the service `/metrics` endpoint directly: `curl http://localhost:8100/metrics`.
 
 2. **Grafana shows "No data"?** Check dashboard time range (metrics only exist after stack start). Verify Prometheus datasource (Settings > Data Sources). Check PromQL in panel edit mode.
 
@@ -717,7 +870,7 @@ Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `
 
 Uses OIDC trusted publishing (no API tokens). SHA-pinned actions. `attestations: false`.
 
-> **Docs:** [PyPI Publish Procedure](PYPI_PUBLISH_PROCEDURE.md) | [PyPI Publish Plan](PYPI_PUBLISH_PLAN_3_PACKAGES.md) | [juniper-ml PyPI Procedure](../juniper-ml/notes/pypi-publish-procedure.md)
+> **Docs:** [PyPI Publish Procedure](pypi-publish-procedure.md)
 
 ### Add a CI Job
 
@@ -729,6 +882,134 @@ Uses OIDC trusted publishing (no API tokens). SHA-pinned actions. `attestations:
 CI pipeline: pre-commit -> unit-tests -> integration-tests -> build -> security -> lockfile-check -> docs -> required-checks -> notify.
 
 > **Docs:** [juniper-canopy CI/CD Reference](../juniper-canopy/docs/ci_cd/CICD_REFERENCE.md) | [juniper-canopy CI/CD Manual](../juniper-canopy/docs/ci_cd/CICD_MANUAL.md) | [juniper-cascor CI Reference](../juniper-cascor/docs/ci/reference.md) | [juniper-cascor CI Manual](../juniper-cascor/docs/ci/manual.md)
+
+### Validate Documentation Links Locally
+
+Use the mode that matches your goal:
+
+| Goal | Command | Notes |
+|------|---------|-------|
+| Match PR CI behavior | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` | Fast and CI-parity. Cross-repo links are counted as skipped, not errors. |
+| Full local validation | `python scripts/check_doc_links.py --cross-repo check` | Validates cross-repo links against sibling repos on disk. |
+| Audit link growth without failing | `python scripts/check_doc_links.py --cross-repo warn` | Prints cross-repo warnings and exits non-failing unless other links are broken. |
+
+If `--cross-repo` is omitted, the default mode is `check`.
+
+`check` mode requires Juniper repos as siblings under a shared parent directory. The script auto-discovers this parent via `git rev-parse --git-common-dir`, which works for standard checkouts and linked worktrees.
+
+### Troubleshoot Cross-Repo Link Checks
+
+```bash
+git rev-parse --git-common-dir
+```
+
+If `--cross-repo check` reports "Ecosystem root not found":
+
+1. Verify sibling layout: the parent directory should contain `juniper-ml` and other Juniper repos (for example `juniper-data`, `juniper-cascor`, `juniper-canopy`).
+2. Re-run with CI parity mode to unblock PR checks while keeping local checks clean:
+   `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip`
+3. Use the scheduled full validation workflow for periodic ecosystem checks:
+   `.github/workflows/docs-full-check.yml` (runs weekly and on manual dispatch).
+
+> **Docs:** [Cross-Repo Link Resolution Proposal](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) | [docs-full-check.yml](../.github/workflows/docs-full-check.yml)
+
+---
+
+## Claude Code Session Script
+
+### Launch a New Session
+
+Use `scripts/wake_the_claude.bash` to construct and launch `claude` invocations with validated flags:
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --id \
+  --prompt "Review recent test failures and suggest fixes" \
+  -- --effort high --print
+```
+
+Notes:
+- `--id` stores the generated/provided UUID in `<uuid>.txt` in the current working directory.
+- The script launches `claude` via `nohup ... &` and exits after dispatch.
+
+> **Docs:** [Script Source](../juniper-ml/scripts/wake_the_claude.bash)
+
+### Resume an Existing Session
+
+Resume by UUID:
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous analysis"
+```
+
+Resume with the explicit session alias (equivalent to `--resume`):
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
+  --prompt "Continue from previous analysis"
+```
+
+Resume by saved session file (basename only, from current directory):
+
+```bash
+bash scripts/wake_the_claude.bash \
+  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt \
+  --prompt "Continue from previous analysis"
+```
+
+### Resume Flag Aliases and Parser Contract
+
+The parser accepts these resume flag aliases:
+
+| Accepted Flag | Internal Handling |
+|---|---|
+| `-r` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume-thread` | Normalized to `--resume <uuid>` before `claude` launch |
+| `--resume-session` | Normalized to `--resume <uuid>` before `claude` launch |
+
+Constraints:
+
+- The token after any resume alias must be either a UUID or a local `.txt` basename.
+- If the next token is another flag, the script treats resume as missing/invalid and exits non-zero.
+- Alias matching is exact; typo variants are rejected.
+
+Regression check for trailing alias handling:
+
+```bash
+python3 -m unittest -v tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_resume_alias_flag_passes_session_id_to_claude
+```
+
+### Session ID Files and Safety Constraints
+
+- `--resume` accepts either a UUID or a local `.txt` filename.
+- Filenames containing `/` are rejected to block path traversal.
+- Non-`.txt` resume filenames are rejected.
+- Resume file content must itself be a valid UUID.
+- Resume reads are non-destructive: session files are not deleted.
+- `--id` refuses to write when the target `*.txt` path is a symlink.
+
+### Troubleshoot Resume Failures
+
+Enable debug logging for parser/validation traces:
+
+```bash
+WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "hello" 2>&1
+```
+
+Common failure patterns:
+
+| Symptom | Likely Cause | Fix |
+|---|---|---|
+| `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
+| `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
+| Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a local `*.txt` session file in current directory |
+| `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
+
+> **Docs:** [Regression Tests](../juniper-ml/tests/test_wake_the_claude.py) | [Session Validation Bugfix Plan](../juniper-ml/notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [Security Remediation Plan](../juniper-ml/notes/SECURITY_REMEDIATION_PLAN.md)
 
 ---
 
@@ -752,7 +1033,7 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
 
-> **Docs:** Per-repo [WORKTREE_SETUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_SETUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation) | [Worktree Implementation Plan](WORKTREE_IMPLEMENTATION_PLAN.md)
+> **Docs:** Per-repo [WORKTREE_SETUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_SETUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation) | [Worktree Setup Procedure](WORKTREE_SETUP_PROCEDURE.md)
 
 ### Merge and Clean Up a Worktree
 
@@ -769,6 +1050,58 @@ git worktree prune
 ```
 
 > **Docs:** Per-repo [WORKTREE_CLEANUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_CLEANUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation)
+
+---
+
+## Claude Automation Scripts
+
+### Resume a Claude Session
+
+Use `scripts/wake_the_claude.bash` with `--resume` to continue an existing Claude session:
+
+```bash
+# Resume directly from a UUID
+./scripts/wake_the_claude.bash --resume 3e160ecb-feb5-4047-8438-171fb13db8e5 --print
+
+# Resume from a saved file in the current directory
+echo "3e160ecb-feb5-4047-8438-171fb13db8e5" > session-id.txt
+./scripts/wake_the_claude.bash --resume session-id.txt --print
+```
+
+`--resume` validation rules:
+
+1. Accepts either a UUID value or a filename.
+2. Filenames must be basename-only (no `/` path separators).
+3. Filenames must end in `.txt`.
+4. File contents must be a valid UUID.
+5. Session ID files are read, not deleted, during resume.
+
+Common failure messages and fixes:
+
+| Error message | Meaning | Fix |
+|---------------|---------|-----|
+| `Session ID filename contains path separators — rejected` | A path like `../file.txt` or `dir/file.txt` was passed | Move or copy the file to the current directory and pass only the basename |
+| `Session ID filename must have .txt extension — rejected` | A non-`.txt` file was passed | Rename to `.txt` or pass the UUID directly |
+| `Session ID file did not contain a valid UUID` | The file content is not a UUID | Replace file contents with a single UUID value |
+| `Session ID is invalid` | Input was neither valid UUID nor valid `.txt` session file | Re-run with a UUID or valid `.txt` file |
+
+### Generate and Save a Session ID File
+
+The same script can generate or persist session IDs via `--id`:
+
+```bash
+# Generate a new UUID and save it to <uuid>.txt
+./scripts/wake_the_claude.bash --id --print
+
+# Save a specific UUID (validated first) to <uuid>.txt
+./scripts/wake_the_claude.bash --id 3e160ecb-feb5-4047-8438-171fb13db8e5 --print
+```
+
+`--id` safety behavior:
+
+1. UUIDs are validated before writing session files.
+2. Invalid UUID values fail fast and no file is written.
+3. Files are written in the current working directory as `<uuid>.txt`.
 
 ---
 
@@ -805,7 +1138,7 @@ X_train, y_train = npz["X_train"], npz["y_train"]
 raw = client.download_artifact_bytes(dataset_id)
 ```
 
-> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](../juniper-data-client/juniper_data_client/client.py) | [Data Contract](../AGENTS.md#data-contract)
+> **Docs:** [juniper-data-client AGENTS.md](../juniper-data-client/AGENTS.md) | [Client Source](https://github.com/pcalnon/juniper-data-client/blob/main/juniper_data_client/client.py) | [Data Contract](../AGENTS.md#data-contract)
 
 ---
 
@@ -923,6 +1256,6 @@ Three things to update per repo:
 
 ---
 
-**Last Updated:** March 5, 2026
-**Version:** 1.1.0
+**Last Updated:** March 7, 2026
+**Version:** 1.2.0
 **Maintainer:** Paul Calnon
