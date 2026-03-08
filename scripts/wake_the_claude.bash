@@ -348,11 +348,15 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         if [[ "${PATH_NAME: -1}" == "/" ]]; then
             PATH_NAME="${PATH_NAME%\/*}"
             debug_log "Removed trailing slash from path"
-        fi
-        if [[ -f "${PATH_NAME}" ]]; then
-            VALID_PATH_PARAM="${TRUE}"
-            PROMPT_FILE="${PATH_NAME}"
-            debug_log "Provided Pathname is a valid file"
+        fiLaunching Default Interactive session with Claude Code
+/home/pcalnon/Development/python/Juniper/juniper-ml/scripts/wake_the_claude.bash --id --worktree --dangerously-skip-permissions --effort high --prompt "Hello World, Claude!"
+Warning: Received Session ID Flag but no Session ID Name.
+Session ID Value not Provided, Assigning a new UUID as Session ID.
+Warning: Received Worktree Flag but no Worktree Name. Letting Claude Code assign one.
+Executing claude with 5 args
+/home/pcalnon/Development/python/Juniper/juniper-ml/scripts/wake_the_claude.bash: line 573: ${CLAUDE_BIN} "${CLAUDE_CODE_PARAMS[*]0}": bad substitution
+Error: Failed to launch claude with nohup
+Closed Default Interactive session with Claude Code
         elif [[ -d "${PATH_NAME}" ]]; then
             debug_log "Provided Pathname is a valid directory"
             if [[ ( "${FILE_NAME}" != "" ) && ( -f "${PATH_NAME}/${FILE_NAME}" ) ]]; then
@@ -570,7 +574,7 @@ if [[ "${HEADLESS_VALUE}" != "" ]]; then
         nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" &
     fi
 else
-    echo "${CLAUDE_BIN} \"${CLAUDE_CODE_PARAMS[*]0}\""
+    echo "${CLAUDE_BIN} \"${CLAUDE_CODE_PARAMS[*]}\""
     ${CLAUDE_BIN} "${CLAUDE_CODE_PARAMS[@]}"
 fi
 NOHUP_STATUS=$?

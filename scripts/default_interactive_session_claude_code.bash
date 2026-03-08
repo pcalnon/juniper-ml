@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_PATH="$(dirname "$(realpath "${0}")")"
+SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
 DEFAULT_PROMPT="Hello World, Claude!"
 
