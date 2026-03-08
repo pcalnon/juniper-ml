@@ -998,17 +998,21 @@ class WakeTheClaudeGitignoreTests(unittest.TestCase):
 
     def test_no_session_txt_files_committed_in_scripts(self) -> None:
         """LOW: Verify no UUID .txt session files are tracked in scripts/ or scripts/sessions/."""
-        for check_dir in [REPO_ROOT / "scripts", REPO_ROOT / "scripts" / "sessions"]:
-            if check_dir.exists():
-                tracked_txt_files = [
-                    f for f in check_dir.glob("*.txt")
-                    if UUID_REGEX.match(f.stem)
-                ]
-                self.assertEqual(
-                    tracked_txt_files,
-                    [],
-                    f"UUID session files should not be committed: {[f.name for f in tracked_txt_files]}",
-                )
+        result = subprocess.run(
+            ["git", "ls-files", "scripts/*.txt", "scripts/sessions/*.txt"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        )
+        tracked_txt_files = [
+            f for f in result.stdout.strip().splitlines()
+            if f and UUID_REGEX.match(Path(f).stem)
+        ]
+        self.assertEqual(
+            tracked_txt_files,
+            [],
+            f"UUID session files should not be committed: {tracked_txt_files}",
+        )
 
     def test_sessions_dir_exists_with_gitkeep(self) -> None:
         """Verify scripts/sessions/ directory exists and has .gitkeep."""
