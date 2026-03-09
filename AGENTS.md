@@ -40,7 +40,10 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 - `pyproject.toml` — Package metadata, version, and optional dependency groups (`clients`, `worker`, `all`)
 - `README.md` — PyPI landing page content
 - `.github/workflows/publish.yml` — CI/CD publish pipeline
-- `scripts/wake_the_claude.bash` — Claude Code launcher with flag parsing, session ID persistence, and resume handling
+- `scripts/wake_the_claude.bash` — Claude Code launcher with flag parsing, session ID persistence, resume handling, and interactive/headless execution modes
+- `scripts/default_interactive_session_claude_code.bash` — Convenience wrapper for default interactive Claude sessions
+- `cly` — Repo-root shortcut for the default interactive launcher
+- `scripts/test.bash` — Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` — Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 - `tests/test_wake_the_claude.py` — Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 
