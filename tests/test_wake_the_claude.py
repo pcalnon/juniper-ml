@@ -1119,6 +1119,44 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             args = self._extract_args(invocations[-1])
             self.assertIn("prompt from file", args)
 
+    def test_path_then_file_flags_resolve_combined_prompt_file(self) -> None:
+        """Verify --path <dir> then --file <name> resolves prompt file."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            (prompt_dir / "prompt.md").write_text("prompt from combined path-then-file", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--path", str(prompt_dir), "--file", "prompt.md"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("prompt from combined path-then-file", args)
+
+    def test_file_then_path_flags_resolve_combined_prompt_file(self) -> None:
+        """Verify --file <name> then --path <dir> resolves prompt file."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            (prompt_dir / "prompt.md").write_text("prompt from combined file-then-path", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--file", "prompt.md", "--path", str(prompt_dir)],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("prompt from combined file-then-path", args)
+
 
 class WakeTheClaudeGitignoreTests(unittest.TestCase):
     """Tests for .gitignore coverage of sensitive files."""
