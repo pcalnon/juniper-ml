@@ -26,6 +26,7 @@
 |------|----------|----------|
 | **Install Juniper packages** | [QUICK_START.md](QUICK_START.md) | docs/ |
 | **See extras and version info** | [REFERENCE.md](REFERENCE.md) | docs/ |
+| **Run Claude session tooling** | [DEVELOPER_CHEATSHEET.md](../notes/DEVELOPER_CHEATSHEET.md) | notes/ |
 | **Understand the project** | [README.md](../README.md) | Root |
 | **See development conventions** | [AGENTS.md](../AGENTS.md) | Root |
 | **See version history** | [CHANGELOG.md](../CHANGELOG.md) | Root |
@@ -49,6 +50,12 @@
 | **README.md** | ~58 | Overview | PyPI landing page and installation examples |
 | **AGENTS.md** | ~200 | Guide | Development conventions and worktree setup |
 | **CHANGELOG.md** | ~40 | History | Version history and release notes |
+
+### notes/ Directory (Selected Runbooks)
+
+| File | Lines | Type | Purpose |
+|------|-------|------|---------|
+| **DEVELOPER_CHEATSHEET.md** | ~1200 | Runbook | Operational procedures and troubleshooting for scripts/workflows, including `wake_the_claude.bash` |
 
 ---
 

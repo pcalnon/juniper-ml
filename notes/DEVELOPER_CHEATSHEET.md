@@ -947,27 +947,24 @@ Notes:
 - Storage locations are configurable via `WTC_SESSIONS_DIR` and `WTC_LOGS_DIR`.
 - `WTC_DEBUG=1` enables parser and validation debug output.
 
-Use the convenience launcher for common interactive defaults:
+### Use the Default Interactive Wrapper
 
-```bash
-./cly
-```
-
-Current behavior of `./cly`:
-- Calls `scripts/default_interactive_session_claude_code.bash`.
-- Always includes `--id`, `--worktree`, and `--effort high`.
+Wrapper behavior:
+- Invokes `scripts/default_interactive_session_claude_code.bash`.
+- Always includes `--id`, `--worktree`, `--effort high`.
+- Does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set
 - Injects default prompt text (`"Hello World, Claude!"`) unless you pass `--prompt ...`.
-- Enables `--dangerously-skip-permissions`.
-
-For a quick interactive session with default flags:
-
-```bash
-./cly
-```
+- Passes through any extra arguments (for example `./cly --prompt "Investigate failing tests"`).
 
 Wrapper defaults:
 - `--id --worktree --effort high --prompt "Hello World, Claude!"`
-- Does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set
+- Currently opts into `--dangerously-skip-permissions` by default.
+
+Use the repo-root launcher symlink for quick interactive sessions with default flags:
+
+```bash
+./cly
+```
 
 Examples:
 
@@ -978,9 +975,6 @@ Examples:
 # explicitly opt in to skip-permissions mode
 CLAUDE_SKIP_PERMISSIONS=1 ./cly --prompt "Run fully autonomous"
 ```
-
-- Uses `--id --worktree --dangerously-skip-permissions --effort high --prompt "Hello World, Claude!"`.
-- Prints the command it is about to run, then executes `scripts/wake_the_claude.bash`.
 
 ### Launch Modes: Interactive vs Headless
 
@@ -1014,6 +1008,8 @@ Headless logging behavior:
 - If neither location is writable, launch fails with non-zero exit.
 
 ### Session ID and Resume Workflow
+
+Resume by saved session file (basename only, loaded from `${WTC_SESSIONS_DIR:-scripts/sessions}`):
 
 Session generation:
 
