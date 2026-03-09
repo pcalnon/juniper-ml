@@ -962,16 +962,34 @@ bash scripts/wake_the_claude.bash \
   --prompt "Review recent test failures and suggest fixes"
 
 # Headless launch (nohup + background)
-
 bash scripts/wake_the_claude.bash \
   --id \
   --worktree \
   --effort high \
-  --print \
-  --prompt "Review recent test failures and suggest fixes"
+  --prompt "Review recent test failures and suggest fixes" \
+  --print
 ```
 
 Notes:
+
+- `--print` enables headless mode (`nohup ... &`) and writes logs to `logs/wake_the_claude.nohup.log`.
+- Without `--print`, the script runs `claude` directly in the foreground (interactive mode).
+- `--id` stores the generated/provided UUID in `scripts/sessions/<uuid>.txt` by default.
+- Storage locations are configurable via `WTC_SESSIONS_DIR` and `WTC_LOGS_DIR`.
+- `WTC_DEBUG=1` enables parser and validation debug output.
+
+Use the convenience launcher for common interactive defaults:
+
+```bash
+./cly
+```
+
+Current behavior of `./cly`:
+
+- Calls `scripts/default_interactive_session_claude_code.bash`.
+- Always includes `--id`, `--worktree`, and `--effort high`.
+- Injects default prompt text (`"Hello World, Claude!"`) unless you pass `--prompt ...`.
+- Enables `--dangerously-skip-permissions`.
 
 - `--id` stores the generated/provided UUID in `${WTC_SESSIONS_DIR:-scripts/sessions}/<uuid>.txt`.
 - Interactive mode is the default (no `--print`), and runs `claude` in the foreground.
@@ -1015,7 +1033,7 @@ bash scripts/wake_the_claude.bash \
   --prompt "Continue from previous analysis"
 ```
 
-Resume by saved session file (basename only, loaded from `${WTC_SESSIONS_DIR:-scripts/sessions}`):
+Resume by saved session file (basename only, loaded from `${WTC_SESSIONS_DIR:-scripts/sessions}`)
 
 ```bash
 bash scripts/wake_the_claude.bash \
@@ -1058,8 +1076,7 @@ The parser accepts these resume flag aliases:
 
 Constraints:
 
-- The token after any resume alias must be either a UUID or a `.txt` basename.
-- `.txt` basenames are resolved inside `${WTC_SESSIONS_DIR:-scripts/sessions}`.
+- The token after any resume alias must be either a UUID or a `.txt` basename resolved under `WTC_SESSIONS_DIR` (defaults to `scripts/sessions/`).
 - If the next token is another flag, the script treats resume as missing/invalid and exits non-zero.
 - Alias matching is exact; typo variants are rejected.
 
@@ -1088,12 +1105,12 @@ WTC_DEBUG=1 bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "
 
 Common failure patterns:
 
-| Symptom                                                                     | Likely Cause                                                                  | Fix                                                                                                          |
-|-----------------------------------------------------------------------------|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| `Error: Session ID is invalid. Exiting...`                                  | Invalid UUID or file content                                                  | Verify UUID format in value/file                                                                             |
-| `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value                                             | Provide UUID or `.txt` basename after flag                                                                   |
-| Resume by file fails immediately                                            | Filename includes `/`, wrong extension, or file missing in sessions directory | Use basename-only `*.txt` and place it in `scripts/sessions/` (or set `WTC_SESSIONS_DIR`)                    |
-| `--resume-session` or `--resume-thread` not recognized                      | Flag-alias parsing regression                                                 | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
+| Symptom                                                                     | Likely Cause                                                                   | Fix                                                                                                          |
+|-----------------------------------------------------------------------------|--------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| `Error: Session ID is invalid. Exiting...`                                  | Invalid UUID or file content                                                   | Verify UUID format in value/file                                                                             |
+| `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value                                              | Provide UUID or `.txt` basename after flag                                                                   |
+| Resume by file fails immediately                                            | Filename includes `/`, non-`.txt` extension, or file not in `WTC_SESSIONS_DIR` | Use a basename-only `*.txt` file in `scripts/sessions/` (or set `WTC_SESSIONS_DIR`)                          |
+| `--resume-session` or `--resume-thread` not recognized                      | Flag-alias parsing regression                                                  | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
 
 **Docs:** [Regression Tests](../juniper-ml/tests/test_wake_the_claude.py) | [Session Validation Bugfix Plan](../juniper-ml/notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [Security Remediation Plan](../juniper-ml/notes/SECURITY_REMEDIATION_PLAN.md)
 
@@ -1159,7 +1176,7 @@ echo "3e160ecb-feb5-4047-8438-171fb13db8e5" > scripts/sessions/session-id.txt
 1. Accepts either a UUID value or a filename.
 2. Filenames must be basename-only (no `/` path separators).
 3. Filenames must end in `.txt`.
-4. File contents must be a valid UUID.
+4. The filename is resolved under `WTC_SESSIONS_DIR` (default `scripts/sessions/`).
 5. Session ID files are read, not deleted, during resume.
 
 Common failure messages and fixes:
@@ -1187,11 +1204,10 @@ The same script can generate or persist session IDs via `--id`:
 
 1. UUIDs are validated before writing session files.
 2. Invalid UUID values fail fast and no file is written.
-3. Files are written in `${WTC_SESSIONS_DIR:-scripts/sessions}` as `<uuid>.txt`.
+3. Files are written to `WTC_SESSIONS_DIR` (default `scripts/sessions/`) as `<uuid>.txt`.
 
 ---
 
->>>>>>>
 ## Data Contract
 
 ### Add a New Generator
