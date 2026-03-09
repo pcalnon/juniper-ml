@@ -1158,6 +1158,105 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertIn("prompt from combined file-then-path", args)
 
 
+class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
+    """Runtime tests for default interactive launcher argument behavior."""
+
+    def _install_fake_launcher_stack(self, temp_dir: str) -> tuple[Path, Path]:
+        scripts_dir = Path(temp_dir) / "scripts"
+        scripts_dir.mkdir(parents=True, exist_ok=True)
+
+        launcher_src = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        launcher_path = scripts_dir / "default_interactive_session_claude_code.bash"
+        launcher_path.write_text(launcher_src.read_text(encoding="utf-8"), encoding="utf-8")
+        launcher_path.chmod(0o755)
+
+        args_log = Path(temp_dir) / "default_launcher_args.log"
+        fake_wake = scripts_dir / "wake_the_claude.bash"
+        fake_wake.write_text(
+            "#!/usr/bin/env bash\n"
+            "{\n"
+            "  echo \"__CALL__\"\n"
+            "  for arg in \"$@\"; do\n"
+            "    printf 'ARG=%s\\n' \"$arg\"\n"
+            "  done\n"
+            "} >> \"$WTC_WRAPPER_ARGS_LOG\"\n",
+            encoding="utf-8",
+        )
+        fake_wake.chmod(0o755)
+        return launcher_path, args_log
+
+    @staticmethod
+    def _extract_logged_args(args_log: Path) -> list[str]:
+        if not args_log.exists():
+            return []
+        args: list[str] = []
+        for line in args_log.read_text(encoding="utf-8").splitlines():
+            if line.startswith("ARG="):
+                args.append(line.removeprefix("ARG="))
+        return args
+
+    def _run_launcher(
+        self,
+        launcher_path: Path,
+        temp_dir: str,
+        env: dict[str, str],
+        extra_args: list[str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["bash", str(launcher_path), *(extra_args or [])],
+            cwd=temp_dir,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    def test_default_launcher_omits_skip_permissions_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
+            env = os.environ.copy()
+            env.pop("CLAUDE_SKIP_PERMISSIONS", None)
+            env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
+
+            result = self._run_launcher(launcher_path, temp_dir, env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            args = self._extract_logged_args(args_log)
+            self.assertTrue(args, "Expected wrapper to invoke wake_the_claude.bash")
+            self.assertNotIn("--dangerously-skip-permissions", args)
+            self.assertEqual(
+                args[:6],
+                ["--id", "--worktree", "--effort", "high", "--prompt", "Hello World, Claude!"],
+            )
+
+    def test_default_launcher_includes_skip_permissions_only_when_opted_in(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
+            env = os.environ.copy()
+            env["CLAUDE_SKIP_PERMISSIONS"] = "1"
+            env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
+
+            result = self._run_launcher(launcher_path, temp_dir, env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            args = self._extract_logged_args(args_log)
+            self.assertIn("--dangerously-skip-permissions", args)
+
+    def test_default_launcher_forwards_additional_args(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
+            env = os.environ.copy()
+            env.pop("CLAUDE_SKIP_PERMISSIONS", None)
+            env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
+            passthrough_args = ["--model", "claude-sonnet-4-6", "--print"]
+
+            result = self._run_launcher(launcher_path, temp_dir, env, passthrough_args)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            args = self._extract_logged_args(args_log)
+            self.assertEqual(args[-len(passthrough_args):], passthrough_args)
+
+
 class WakeTheClaudeGitignoreTests(unittest.TestCase):
     """Tests for .gitignore coverage of sensitive files."""
 
