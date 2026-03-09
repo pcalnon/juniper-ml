@@ -430,7 +430,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${SESSION_ID_FLAGS}"; then
         debug_log "Parsing session id flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-            # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${1}"
+            SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${1}")
             shift
             debug_log "Received Session ID, ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -443,7 +443,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 echo "Error: Failed to generate a valid UUID for Session ID."
                 usage "${FALSE}"
             fi
-            # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
+            SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_SESSION_ID_FLAGS}" "${generated_uuid}")
             debug_log "Generated new Session ID: $(redact_uuid "${generated_uuid}"), ${#CLAUDE_CODE_PARAMS[@]} args"
         fi

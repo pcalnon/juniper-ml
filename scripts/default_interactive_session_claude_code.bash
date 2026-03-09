@@ -10,6 +10,7 @@ CLAUDE_ARGS=(--id --worktree --effort high --prompt "${DEFAULT_PROMPT}")
 
 # Opt in to --dangerously-skip-permissions only when explicitly requested
 if [[ "${CLAUDE_SKIP_PERMISSIONS}" == "1" ]]; then
+    CLAUDE_ARGS+=(--)
     CLAUDE_ARGS+=(--dangerously-skip-permissions)
 fi
 
