@@ -83,12 +83,15 @@
   - [Add a CI Job](#add-a-ci-job)
   - [Validate Documentation Links Locally](#validate-documentation-links-locally)
   - [Troubleshoot Cross-Repo Link Checks](#troubleshoot-cross-repo-link-checks)
+- [Claude Code Session Script](#claude-code-session-script)
+  - [Entry Points](#entry-points)
+  - [Launch Modes: Interactive vs Headless](#launch-modes-interactive-vs-headless)
+  - [Session ID and Resume Workflow](#session-id-and-resume-workflow)
+  - [Current Argument-Handling Pitfalls (Known)](#current-argument-handling-pitfalls-known)
+  - [Troubleshoot Resume Failures](#troubleshoot-resume-failures)
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
-- [Claude Automation Scripts](#claude-automation-scripts)
-  - [Resume a Claude Session](#resume-a-claude-session)
-  - [Generate and Save a Session ID File](#generate-and-save-a-session-id-file)
 - [Data Contract](#data-contract)
   - [Add a New Generator](#add-a-new-generator)
   - [Download a Dataset Artifact](#download-a-dataset-artifact)
@@ -916,9 +919,9 @@ If `--cross-repo check` reports "Ecosystem root not found":
 
 ## Claude Code Session Script
 
-### Launch a New Session
+### Entry Points
 
-Use `scripts/wake_the_claude.bash` to construct and launch `claude` invocations with validated flags:
+Use one of these launcher entry points:
 
 ```bash
 bash scripts/wake_the_claude.bash \
@@ -954,55 +957,89 @@ Examples:
 CLAUDE_SKIP_PERMISSIONS=1 ./cly --prompt "Run fully autonomous"
 ```
 
-> **Docs:** [Script Source](../juniper-ml/scripts/wake_the_claude.bash)
+- Uses `--id --worktree --dangerously-skip-permissions --effort high --prompt "Hello World, Claude!"`.
+- Prints the command it is about to run, then executes `scripts/wake_the_claude.bash`.
 
-### Resume an Existing Session
+### Launch Modes: Interactive vs Headless
 
-Resume by UUID:
-
-```bash
-bash scripts/wake_the_claude.bash \
-  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
-  --prompt "Continue from previous analysis"
-```
-
-Resume with the explicit session alias (equivalent to `--resume`):
+Interactive mode (default; runs in the foreground):
 
 ```bash
 bash scripts/wake_the_claude.bash \
-  --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd \
-  --prompt "Continue from previous analysis"
+  --id \
+  --worktree \
+  --dangerously-skip-permissions \
+  --effort high \
+  --prompt "Review failing tests and suggest root causes"
 ```
 
-Resume by saved session file (basename only, from `${WTC_SESSIONS_DIR}`):
+Headless mode (adds `--print`; launches with `nohup ... &`):
 
 ```bash
 bash scripts/wake_the_claude.bash \
-  --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt \
-  --prompt "Continue from previous analysis"
+  --id \
+  --worktree \
+  --dangerously-skip-permissions \
+  --effort high \
+  --prompt "Review failing tests and suggest root causes" \
+  --print
 ```
 
-### Resume Flag Aliases and Parser Contract
+Headless logging behavior:
 
-The parser accepts these resume flag aliases:
+- Primary log file: `wake_the_claude.nohup.log` in the current working directory.
+- Fallback log file (if CWD is not writable): `${HOME}/wake_the_claude.nohup.log`.
+- If neither location is writable, launch fails with non-zero exit.
 
-| Accepted Flag | Internal Handling |
-|---|---|
-| `-r` | Normalized to `--resume <uuid>` before `claude` launch |
-| `--resume` | Normalized to `--resume <uuid>` before `claude` launch |
-| `--resume-thread` | Normalized to `--resume <uuid>` before `claude` launch |
-| `--resume-session` | Normalized to `--resume <uuid>` before `claude` launch |
+### Session ID and Resume Workflow
 
-Constraints:
-
-- The token after any resume alias must be either a UUID or a local `.txt` basename.
-- If the next token is another flag, the script treats resume as missing/invalid and exits non-zero.
-- Alias matching is exact; typo variants are rejected.
-
-Regression check for trailing alias handling:
+Session generation:
 
 ```bash
-python3 -m unittest -v tests.test_wake_the_claude.WakeTheClaudeResumeTests.test_resume_alias_flag_passes_session_id_to_claude
+# Generate and persist a new session ID to <uuid>.txt
+bash scripts/wake_the_claude.bash --id --prompt "hello"
+
+# Persist a provided session ID to <uuid>.txt
+bash scripts/wake_the_claude.bash --id 3e160ecb-feb5-4047-8438-171fb13db8e5 --prompt "hello"
+```
+
+Resume inputs:
+
+- `--resume` accepts either a UUID or a local `.txt` filename.
+- Resume filenames must be basenames only (no `/` path separators).
+- Resume filenames must end in `.txt`.
+- Resume file contents must be a valid UUID.
+
+Resume examples:
+
+```bash
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "Continue previous thread"
+bash scripts/wake_the_claude.bash --resume-session 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --prompt "Continue previous thread"
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd.txt --prompt "Continue previous thread"
+```
+
+Safety constraints:
+
+- `--id` refuses to write if `<uuid>.txt` is a symlink.
+- Invalid resume values fail before launching `claude`.
+- Invalid or missing `.txt` resume files are preserved (not deleted).
+
+### Current Argument-Handling Pitfalls (Known)
+
+Current implementation detail in `scripts/wake_the_claude.bash`:
+
+- `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`.
+- Prompt text is appended as a quoted string literal (`"\"${prompt}\""`), then expanded unquoted.
+
+Practical impact:
+
+- Prompt strings are split on spaces/tokens at launch time instead of being guaranteed single-argument payloads.
+- Some flags with values are assembled as combined strings and rely on shell splitting at invocation.
+
+Verification command:
+
+```bash
+python3 -m unittest -v tests/test_wake_the_claude.py
 ```
 
 ### Session ID Files and Safety Constraints
@@ -1031,7 +1068,7 @@ Common failure patterns:
 | Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a basename `*.txt` file located in `${WTC_SESSIONS_DIR}` |
 | `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
 
-> **Docs:** [Regression Tests](../juniper-ml/tests/test_wake_the_claude.py) | [Session Validation Bugfix Plan](../juniper-ml/notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md) | [Security Remediation Plan](../juniper-ml/notes/SECURITY_REMEDIATION_PLAN.md)
+> **Docs:** [Launcher Script](../scripts/wake_the_claude.bash) | [Interactive Wrapper](../scripts/default_interactive_session_claude_code.bash) | [Manual Harness](../scripts/test.bash) | [Regression Tests](../tests/test_wake_the_claude.py)
 
 ---
 

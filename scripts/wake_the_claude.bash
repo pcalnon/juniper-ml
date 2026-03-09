@@ -185,9 +185,13 @@ function retrieve_session_id() {
 }
 
 function maybe_remove_generated_session_id_file() {
+    # shellcheck disable=SC2317
     local session_id_filename="$1"
+    # shellcheck disable=SC2317
     local session_id="$2"
+    # shellcheck disable=SC2317
     local expected_filename="${session_id}.txt"
+    # shellcheck disable=SC2317
     if [[ "${session_id_filename}" == "${expected_filename}" ]]; then
         echo "Removing generated session id file: \"${SESSIONS_DIR}/${session_id_filename}\"" >&2
         rm -f "${SESSIONS_DIR}/${session_id_filename}"
@@ -300,9 +304,9 @@ FILE_NAME=""
 PROMPT_FILE=""
 PROMPT_VALUE=""
 
-MODEL_VALUE=""
-RESUME_VALUE=""
-EFFORT_VALUE=""
+# MODEL_VALUE=""
+# RESUME_VALUE=""
+# EFFORT_VALUE=""
 WORKTREE_VALUE=""
 HEADLESS_VALUE=""
 SESSION_ID_VALUE=""
@@ -450,7 +454,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
         debug_log "Parsing worktree flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-            WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS} ${1}"
+            # WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_WORKTREE_FLAGS}" "${1}")
             shift
             debug_log "Received Worktree Value, ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -463,7 +467,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
         debug_log "Parsing effort flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) ) ]]; then
-            EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
+            # EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
             shift
             debug_log "Received Effort Value, ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -475,7 +479,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing model flags"
         if [[ "${1}" != "" ]]; then
             # TODO: Validate Model value
-            MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
+            # MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
             shift
             debug_log "Received Model Value, ${#CLAUDE_CODE_PARAMS[@]} args"
