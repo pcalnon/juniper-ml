@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export CLAUDE_SKIP_PERMISSIONS="1"
+
 SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 
 DEFAULT_PROMPT="Hello World, Claude!"
@@ -12,7 +14,7 @@ if [[ "${CLAUDE_SKIP_PERMISSIONS}" == "1" ]]; then
 fi
 
 # Pass through any additional arguments from the caller
-if [[ $# -gt 0 ]]; then
+if (( $# > 0 )); then
     CLAUDE_ARGS+=("$@")
 fi
 
