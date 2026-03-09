@@ -22,6 +22,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         bin_dir = Path(temp_dir) / "bin"
         bin_dir.mkdir(parents=True, exist_ok=True)
 
+        sessions_dir = Path(temp_dir) / "sessions"
+        sessions_dir.mkdir(parents=True, exist_ok=True)
+
+        logs_dir = Path(temp_dir) / "logs"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
@@ -53,6 +59,8 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         env = os.environ.copy()
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
         env["CLAUDE_ARGS_LOG"] = str(invocations_log)
+        env["WTC_SESSIONS_DIR"] = str(sessions_dir)
+        env["WTC_LOGS_DIR"] = str(logs_dir)
         return invocations_log, env
 
     def _run_script(self, args: list[str], cwd: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
@@ -145,7 +153,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            saved_session_file = Path(temp_dir) / f"{VALID_UUID}.txt"
+            saved_session_file = Path(temp_dir) / "sessions" / f"{VALID_UUID}.txt"
             self.assertTrue(saved_session_file.exists(), msg="Expected session id file to be created")
             self.assertEqual(saved_session_file.read_text(encoding="utf-8").strip(), VALID_UUID)
 
@@ -182,7 +190,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
     def test_resume_with_filename_loads_uuid_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            session_file = Path(temp_dir) / "session-id.txt"
+            session_file = Path(temp_dir) / "sessions" / "session-id.txt"
             session_file.write_text(VALID_UUID, encoding="utf-8")
 
             result = self._run_script(
@@ -220,7 +228,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
     def test_resume_with_file_containing_invalid_uuid_fails_and_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            session_file = Path(temp_dir) / "session-id.txt"
+            session_file = Path(temp_dir) / "sessions" / "session-id.txt"
             session_file.write_text("invalid-content", encoding="utf-8")
 
             result = self._run_script(
@@ -284,7 +292,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
     def test_resume_with_missing_txt_file_fails_without_invoking_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            missing_session_file = Path(temp_dir) / "missing-session-id.txt"
+            missing_session_file = Path(temp_dir) / "sessions" / "missing-session-id.txt"
 
             result = self._run_script(
                 ["--resume", missing_session_file.name, "--prompt", "hello"],
@@ -308,7 +316,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
     def test_resume_with_empty_txt_file_fails_without_invoking_claude(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            empty_session_file = Path(temp_dir) / "empty-session-id.txt"
+            empty_session_file = Path(temp_dir) / "sessions" / "empty-session-id.txt"
             empty_session_file.write_text("", encoding="utf-8")
 
             result = self._run_script(
@@ -334,7 +342,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             env["WTC_DEBUG"] = "1"
-            session_file = Path(temp_dir) / "session-id.txt"
+            session_file = Path(temp_dir) / "sessions" / "session-id.txt"
             session_file.write_text(VALID_UUID, encoding="utf-8")
 
             result = self._run_script(
@@ -374,7 +382,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations_log, env = self._install_fake_claude(temp_dir)
             symlink_target = Path(temp_dir) / "sensitive-target.txt"
             symlink_target.write_text("ORIGINAL", encoding="utf-8")
-            symlink_path = Path(temp_dir) / f"{VALID_UUID}.txt"
+            symlink_path = Path(temp_dir) / "sessions" / f"{VALID_UUID}.txt"
             symlink_path.symlink_to(symlink_target)
 
             result = self._run_script(
@@ -473,7 +481,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
 
-            saved_session_file = Path(temp_dir) / f"{fallback_uuid}.txt"
+            saved_session_file = Path(temp_dir) / "sessions" / f"{fallback_uuid}.txt"
             self.assertTrue(saved_session_file.exists(), msg="Expected generated session id file to be created")
             self.assertEqual(saved_session_file.read_text(encoding="utf-8").strip(), fallback_uuid)
 
@@ -549,42 +557,71 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
-    def test_non_writable_cwd_falls_back_to_home_log_and_still_launches(self) -> None:
+    def test_custom_session_and_logs_dirs_are_created_when_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            sessions_dir = Path(temp_dir) / "custom-root" / "sessions"
+            logs_dir = Path(temp_dir) / "custom-root" / "logs"
+            env["WTC_SESSIONS_DIR"] = str(sessions_dir)
+            env["WTC_LOGS_DIR"] = str(logs_dir)
+
+            self.assertFalse(sessions_dir.exists())
+            self.assertFalse(logs_dir.exists())
+
+            result = self._run_script(
+                ["--id", VALID_UUID, "--print", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            self.assertTrue(sessions_dir.is_dir())
+            self.assertTrue(logs_dir.is_dir())
+            self.assertTrue((sessions_dir / f"{VALID_UUID}.txt").exists())
+            self.assertTrue((logs_dir / "wake_the_claude.nohup.log").exists())
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "--print", "hello"])
+
+    def test_non_writable_logs_dir_falls_back_to_home_log_and_still_launches(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
             home_dir = Path(temp_dir) / "home"
             home_dir.mkdir(parents=True, exist_ok=True)
             env["HOME"] = str(home_dir)
 
-            read_only_dir = Path(temp_dir) / "read-only"
-            read_only_dir.mkdir(parents=True, exist_ok=True)
-            read_only_dir.chmod(0o555)
+            read_only_logs = Path(temp_dir) / "read-only-logs"
+            read_only_logs.mkdir(parents=True, exist_ok=True)
+            read_only_logs.chmod(0o555)
+            env["WTC_LOGS_DIR"] = str(read_only_logs)
             try:
                 result = self._run_script(
-                    ["--resume", VALID_UUID, "--prompt", "hello"],
-                    cwd=str(read_only_dir),
+                    ["--resume", VALID_UUID, "--print", "--prompt", "hello"],
+                    cwd=temp_dir,
                     env=env,
                 )
             finally:
-                # Restore permissions so TemporaryDirectory cleanup can remove it.
-                read_only_dir.chmod(0o755)
+                read_only_logs.chmod(0o755)
 
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
-            self.assertFalse((read_only_dir / "wake_the_claude.nohup.log").exists())
+            self.assertFalse((read_only_logs / "wake_the_claude.nohup.log").exists())
             self.assertTrue((home_dir / "wake_the_claude.nohup.log").exists())
 
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
-            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "hello"])
+            self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--print", "hello"])
 
     def test_no_writable_log_location_fails_without_silent_success(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
 
-            read_only_dir = Path(temp_dir) / "read-only"
-            read_only_dir.mkdir(parents=True, exist_ok=True)
-            read_only_dir.chmod(0o555)
+            read_only_logs = Path(temp_dir) / "read-only-logs"
+            read_only_logs.mkdir(parents=True, exist_ok=True)
+            read_only_logs.chmod(0o555)
+            env["WTC_LOGS_DIR"] = str(read_only_logs)
 
             read_only_home = Path(temp_dir) / "read-only-home"
             read_only_home.mkdir(parents=True, exist_ok=True)
@@ -593,13 +630,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             try:
                 result = self._run_script(
-                    ["--resume", VALID_UUID, "--prompt", "hello"],
-                    cwd=str(read_only_dir),
+                    ["--resume", VALID_UUID, "--print", "--prompt", "hello"],
+                    cwd=temp_dir,
                     env=env,
                 )
             finally:
-                # Restore permissions so TemporaryDirectory cleanup can remove them.
-                read_only_dir.chmod(0o755)
+                read_only_logs.chmod(0o755)
                 read_only_home.chmod(0o755)
 
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
@@ -666,7 +702,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
     def test_resume_with_generated_filename_but_invalid_content_preserves_file(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
-            session_file = Path(temp_dir) / f"{VALID_UUID}.txt"
+            session_file = Path(temp_dir) / "sessions" / f"{VALID_UUID}.txt"
             session_file.write_text("invalid-content", encoding="utf-8")
 
             result = self._run_script(
@@ -686,6 +722,388 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
+
+
+class WakeTheClaudeSecurityTests(unittest.TestCase):
+    """Security-focused tests for shell argument handling and permission boundaries."""
+
+    def _install_fake_claude(self, temp_dir: str) -> tuple[Path, dict[str, str]]:
+        bin_dir = Path(temp_dir) / "bin"
+        bin_dir.mkdir(parents=True, exist_ok=True)
+
+        sessions_dir = Path(temp_dir) / "sessions"
+        sessions_dir.mkdir(parents=True, exist_ok=True)
+
+        logs_dir = Path(temp_dir) / "logs"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+
+        invocations_log = Path(temp_dir) / "claude_invocations.log"
+        fake_claude = bin_dir / "claude"
+        fake_claude.write_text(
+            "#!/usr/bin/env bash\n"
+            "if [[ \"$1\" == \"--version\" ]]; then\n"
+            "  echo \"claude-test-version\"\n"
+            "  exit 0\n"
+            "fi\n"
+            "{\n"
+            "  echo \"__CALL__\"\n"
+            "  echo \"ARGC=$#\"\n"
+            "  for arg in \"$@\"; do\n"
+            "    printf 'ARG=%s\\n' \"$arg\"\n"
+            "  done\n"
+            "} >> \"$CLAUDE_ARGS_LOG\"\n",
+            encoding="utf-8",
+        )
+        fake_claude.chmod(0o755)
+
+        env = os.environ.copy()
+        env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
+        env["CLAUDE_ARGS_LOG"] = str(invocations_log)
+        env["WTC_SESSIONS_DIR"] = str(sessions_dir)
+        env["WTC_LOGS_DIR"] = str(logs_dir)
+        return invocations_log, env
+
+    def _run_script(self, args: list[str], cwd: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["bash", str(SCRIPT_PATH), *args],
+            cwd=cwd,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    def _run_default_launcher(self, args: list[str], cwd: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        return subprocess.run(
+            ["bash", str(default_script), *args],
+            cwd=cwd,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
+        deadline = time.time() + timeout_seconds
+        while time.time() < deadline:
+            if invocations_log.exists():
+                content = invocations_log.read_text(encoding="utf-8").strip()
+                if content:
+                    blocks: list[list[str]] = []
+                    current_block: list[str] = []
+                    for line in content.splitlines():
+                        if line == "__CALL__":
+                            if current_block:
+                                blocks.append(current_block)
+                            current_block = []
+                            continue
+                        current_block.append(line)
+                    if current_block:
+                        blocks.append(current_block)
+                    if blocks:
+                        return blocks
+            time.sleep(0.05)
+        return []
+
+    @staticmethod
+    def _extract_args(invocation_block: list[str]) -> list[str]:
+        args: list[str] = []
+        for line in invocation_block:
+            if line.startswith("ARG="):
+                args.append(line.removeprefix("ARG="))
+        return args
+
+    def test_effort_flag_and_value_are_separate_arguments(self) -> None:
+        """HIGH: Verify --effort and its value are passed as two separate CLI arguments."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--effort", "high", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            # --effort and high must be separate arguments, not "--effort high"
+            self.assertIn("--effort", args)
+            self.assertIn("high", args)
+            effort_idx = args.index("--effort")
+            self.assertEqual(args[effort_idx + 1], "high")
+            # Verify no single element contains both
+            for arg in args:
+                self.assertNotEqual(arg, "--effort high", "effort flag and value must be separate arguments")
+
+    def test_model_flag_and_value_are_separate_arguments(self) -> None:
+        """HIGH: Verify --model and its value are passed as two separate CLI arguments."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--model", "claude-sonnet-4-6", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("--model", args)
+            self.assertIn("claude-sonnet-4-6", args)
+            model_idx = args.index("--model")
+            self.assertEqual(args[model_idx + 1], "claude-sonnet-4-6")
+            for arg in args:
+                self.assertNotEqual(arg, "--model claude-sonnet-4-6", "model flag and value must be separate arguments")
+
+    def test_prompt_with_glob_characters_is_not_expanded(self) -> None:
+        """HIGH: Verify glob characters in prompt text are not expanded to filenames."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            # Create files that would match glob patterns
+            (Path(temp_dir) / "file1.txt").write_text("a", encoding="utf-8")
+            (Path(temp_dir) / "file2.txt").write_text("b", encoding="utf-8")
+
+            prompt_with_globs = "list all *.txt files and check [a-z]? patterns"
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", prompt_with_globs],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            # The prompt must be passed as a single argument, unexpanded
+            self.assertEqual(args[-1], prompt_with_globs)
+            # Must NOT contain expanded filenames
+            self.assertNotIn("file1.txt", args)
+            self.assertNotIn("file2.txt", args)
+
+    def test_prompt_with_dollar_signs_is_not_evaluated(self) -> None:
+        """HIGH: Verify dollar signs in prompt text are preserved literally."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_with_dollars = "cost is $100 and $(echo injected)"
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", prompt_with_dollars],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertEqual(args[-1], prompt_with_dollars)
+            self.assertNotIn("injected", [a for a in args if a != args[-1]])
+
+    def test_prompt_does_not_have_literal_wrapping_quotes(self) -> None:
+        """HIGH: Verify prompt is not wrapped in literal quote characters."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", "simple prompt"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            # The prompt must not be wrapped in literal quote characters
+            self.assertEqual(args[-1], "simple prompt")
+            self.assertNotEqual(args[-1], '"simple prompt"')
+
+    def test_interactive_mode_invokes_claude_in_foreground(self) -> None:
+        """Verify interactive mode (no --print) runs claude directly, not via nohup."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertEqual(args, ["--resume", VALID_UUID, "hello"])
+            # In interactive mode, no nohup log should be created in the logs dir
+            self.assertFalse((Path(temp_dir) / "logs" / "wake_the_claude.nohup.log").exists())
+
+    def test_headless_mode_invokes_claude_via_nohup(self) -> None:
+        """Verify headless mode (--print) runs claude via nohup with log file."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--print", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--print", "hello"])
+            # In headless mode, nohup log should be created in the logs dir
+            self.assertTrue((Path(temp_dir) / "logs" / "wake_the_claude.nohup.log").exists())
+
+    def test_session_id_autogenerated_flag_and_value_are_separate(self) -> None:
+        """HIGH: Verify auto-generated --session-id and UUID are separate arguments."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--id", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("--session-id", args)
+            sid_idx = args.index("--session-id")
+            generated_uuid = args[sid_idx + 1]
+            self.assertTrue(
+                UUID_REGEX.match(generated_uuid),
+                f"Expected UUID after --session-id, got: {generated_uuid}",
+            )
+            # Must not be a single combined string
+            for arg in args:
+                self.assertFalse(
+                    arg.startswith("--session-id "),
+                    "session-id flag and value must be separate arguments",
+                )
+
+    def test_default_launcher_does_not_skip_permissions(self) -> None:
+        """MEDIUM: Verify default interactive launcher does NOT include --dangerously-skip-permissions."""
+        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        content = default_script.read_text(encoding="utf-8")
+        # The script should not hard-code --dangerously-skip-permissions in the default args
+        lines = [line for line in content.splitlines() if not line.strip().startswith("#")]
+        active_code = "\n".join(lines)
+        # Check that --dangerously-skip-permissions only appears in the conditional opt-in block
+        self.assertNotIn(
+            '"${SCRIPT_PATH}/wake_the_claude.bash" --id --worktree --dangerously-skip-permissions',
+            active_code,
+            "Default launcher must not hard-code --dangerously-skip-permissions",
+        )
+
+    def test_default_launcher_opt_in_skip_permissions(self) -> None:
+        """MEDIUM: Verify default interactive launcher supports explicit opt-in for skip-permissions."""
+        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        content = default_script.read_text(encoding="utf-8")
+        # Should contain a conditional check for CLAUDE_SKIP_PERMISSIONS
+        self.assertIn("CLAUDE_SKIP_PERMISSIONS", content)
+
+    def test_default_launcher_runtime_omits_skip_permissions_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env.pop("CLAUDE_SKIP_PERMISSIONS", None)
+
+            result = self._run_default_launcher(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertNotIn("--dangerously-skip-permissions", args)
+
+    def test_default_launcher_runtime_honors_skip_permissions_opt_in(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["CLAUDE_SKIP_PERMISSIONS"] = "1"
+
+            result = self._run_default_launcher(
+                ["--resume", VALID_UUID, "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("--dangerously-skip-permissions", args)
+
+    def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
+        """Verify --path with a file argument (not directory) sets prompt correctly."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_file = Path(temp_dir) / "my_prompt.md"
+            prompt_file.write_text("prompt from file", encoding="utf-8")
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--path", str(prompt_file)],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("prompt from file", args)
+
+
+class WakeTheClaudeGitignoreTests(unittest.TestCase):
+    """Tests for .gitignore coverage of sensitive files."""
+
+    def test_gitignore_covers_session_files(self) -> None:
+        """LOW: Verify .gitignore includes patterns for session files in scripts/sessions/."""
+        gitignore_path = REPO_ROOT / ".gitignore"
+        content = gitignore_path.read_text(encoding="utf-8")
+        self.assertIn("scripts/sessions/", content)
+
+    def test_gitignore_covers_logs_directory(self) -> None:
+        """Verify .gitignore includes patterns for the logs/ directory."""
+        gitignore_path = REPO_ROOT / ".gitignore"
+        content = gitignore_path.read_text(encoding="utf-8")
+        self.assertIn("logs/", content)
+
+    def test_gitignore_covers_nohup_output(self) -> None:
+        """Verify .gitignore includes patterns for nohup output files."""
+        gitignore_path = REPO_ROOT / ".gitignore"
+        content = gitignore_path.read_text(encoding="utf-8")
+        self.assertIn("nohup", content)
+
+    def test_no_session_txt_files_committed_in_scripts(self) -> None:
+        """LOW: Verify no UUID .txt session files are tracked in scripts/ or scripts/sessions/."""
+        result = subprocess.run(
+            ["git", "ls-files", "scripts/*.txt", "scripts/sessions/*.txt"],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+        )
+        tracked_txt_files = [
+            f for f in result.stdout.strip().splitlines()
+            if f and UUID_REGEX.match(Path(f).stem)
+        ]
+        self.assertEqual(
+            tracked_txt_files,
+            [],
+            f"UUID session files should not be committed: {tracked_txt_files}",
+        )
+
+    def test_sessions_dir_exists_with_gitkeep(self) -> None:
+        """Verify scripts/sessions/ directory exists and has .gitkeep."""
+        sessions_dir = REPO_ROOT / "scripts" / "sessions"
+        self.assertTrue(sessions_dir.is_dir(), "scripts/sessions/ directory must exist")
+        self.assertTrue(
+            (sessions_dir / ".gitkeep").exists(),
+            "scripts/sessions/.gitkeep must exist",
+        )
+
+    def test_logs_dir_exists_with_gitkeep(self) -> None:
+        """Verify logs/ directory exists and has .gitkeep."""
+        logs_dir = REPO_ROOT / "logs"
+        self.assertTrue(logs_dir.is_dir(), "logs/ directory must exist")
+        self.assertTrue(
+            (logs_dir / ".gitkeep").exists(),
+            "logs/.gitkeep must exist",
+        )
 
 
 if __name__ == "__main__":
