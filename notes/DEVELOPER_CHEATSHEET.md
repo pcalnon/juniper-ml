@@ -510,7 +510,7 @@ test ! -s /tmp/wtc_debug.err && echo "stderr clean"
 
 `--resume` accepts either:
 - A UUID value
-- A `.txt` filename in the current working directory (no `/` path separators)
+- A `.txt` basename resolved from `${WTC_SESSIONS_DIR}` (defaults to `scripts/sessions`, no `/` path separators)
 
 Quick failure-path checks (do not require a successful `claude` launch):
 
@@ -530,19 +530,18 @@ Edge-case checks for missing and empty `.txt` resume sources:
 
 ```bash
 script_path="$(pwd)/scripts/wake_the_claude.bash"
-tmpdir="$(mktemp -d)"
-(
-  cd "$tmpdir" || exit 1
-  : > empty-session-id.txt
+session_dir="$(mktemp -d)"
+: > "${session_dir}/empty-session-id.txt"
 
+WTC_SESSIONS_DIR="${session_dir}" \
   bash "$script_path" --resume missing-session-id.txt --prompt "hello" >/tmp/wtc_missing.out 2>/tmp/wtc_missing.err
-  echo "missing_exit=$?"
+echo "missing_exit=$?"
 
+WTC_SESSIONS_DIR="${session_dir}" \
   bash "$script_path" --resume empty-session-id.txt --prompt "hello" >/tmp/wtc_empty.out 2>/tmp/wtc_empty.err
-  echo "empty_exit=$?"
+echo "empty_exit=$?"
 
-  test -f empty-session-id.txt && echo "empty_file_preserved=yes"
-)
+test -f "${session_dir}/empty-session-id.txt" && echo "empty_file_preserved=yes"
 python3 - <<'PY'
 from pathlib import Path
 for name in ("missing", "empty"):
@@ -602,7 +601,7 @@ bash scripts/test_resume_file_safety.bash
 This suite stubs the `claude` binary in a temp directory, so no local Claude install is required.
 
 Coverage highlights:
-- `--resume` accepts UUIDs and local `.txt` session files, and rejects path separators/non-`.txt` names.
+- `--resume` accepts UUIDs and `.txt` basenames resolved from `${WTC_SESSIONS_DIR}`, and rejects path separators/non-`.txt` names.
 - Invalid `--resume <file.txt>` content fails validation without deleting the input file.
 - Missing `--resume <file.txt>` sources fail cleanly with one usage print and no Claude launch attempt.
 - Empty `--resume <file.txt>` sources fail the same invalid-session path and preserve the input file.
@@ -924,13 +923,39 @@ If `--cross-repo check` reports "Ecosystem root not found":
 
 Use one of these launcher entry points:
 
-| Entry Point | Intended Use | Default Mode |
-|---|---|---|
-| `scripts/wake_the_claude.bash` | Full control over flags and prompt source | Interactive (foreground) unless `--print`/`--headless` is passed |
-| `scripts/default_interactive_session_claude_code.bash` | Convenience launcher with default high-effort settings | Interactive (foreground) |
-| `./cly` | Repo-root shortcut for the default interactive launcher | Interactive (foreground) |
+```bash
+bash scripts/wake_the_claude.bash \
+  --id \
+  --prompt "Review recent test failures and suggest fixes" \
+  --effort high
+```
 
-Default wrapper behavior (`scripts/default_interactive_session_claude_code.bash` and `./cly`):
+Notes:
+- `--id` stores the generated/provided UUID in `${WTC_SESSIONS_DIR}/<uuid>.txt` (defaults to `scripts/sessions`).
+- Without `--print`, the script runs `claude` in the foreground (interactive mode).
+- With `--print` (or `--headless` aliases), the script launches via `nohup ... &` and writes logs to `${WTC_LOGS_DIR}/wake_the_claude.nohup.log` (defaults to `logs`).
+
+### Launch Default Interactive Wrapper (`cly`)
+
+For a quick interactive session with default flags:
+
+```bash
+./cly
+```
+
+Wrapper defaults:
+- `--id --worktree --effort high --prompt "Hello World, Claude!"`
+- Does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set
+
+Examples:
+
+```bash
+# add your own prompt
+./cly --prompt "Audit the latest CI failures"
+
+# explicitly opt in to skip-permissions mode
+CLAUDE_SKIP_PERMISSIONS=1 ./cly --prompt "Run fully autonomous"
+```
 
 - Uses `--id --worktree --dangerously-skip-permissions --effort high --prompt "Hello World, Claude!"`.
 - Prints the command it is about to run, then executes `scripts/wake_the_claude.bash`.
@@ -1017,7 +1042,14 @@ Verification command:
 python3 -m unittest -v tests/test_wake_the_claude.py
 ```
 
-If prompt/session forwarding regressions appear, prefer prompt files with simple content and verify the emitted launch line before relying on unattended runs.
+### Session ID Files and Safety Constraints
+
+- `--resume` accepts either a UUID or a `.txt` filename looked up in `${WTC_SESSIONS_DIR}` (default `scripts/sessions`).
+- Filenames containing `/` are rejected to block path traversal.
+- Non-`.txt` resume filenames are rejected.
+- Resume file content must itself be a valid UUID.
+- Resume reads are non-destructive: session files are not deleted.
+- `--id` refuses to write when the target `*.txt` path is a symlink.
 
 ### Troubleshoot Resume Failures
 
@@ -1033,7 +1065,8 @@ Common failure patterns:
 |---|---|---|
 | `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
 | `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
-| Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a local `*.txt` session file in current directory |
+| Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a basename `*.txt` file located in `${WTC_SESSIONS_DIR}` |
+| `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
 
 > **Docs:** [Launcher Script](../scripts/wake_the_claude.bash) | [Interactive Wrapper](../scripts/default_interactive_session_claude_code.bash) | [Manual Harness](../scripts/test.bash) | [Regression Tests](../tests/test_wake_the_claude.py)
 
@@ -1076,6 +1109,59 @@ git worktree prune
 ```
 
 > **Docs:** Per-repo [WORKTREE_CLEANUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_CLEANUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation)
+
+---
+
+## Claude Automation Scripts
+
+### Resume a Claude Session
+
+Use `scripts/wake_the_claude.bash` with `--resume` to continue an existing Claude session:
+
+```bash
+# Resume directly from a UUID (interactive by default)
+./scripts/wake_the_claude.bash --resume 3e160ecb-feb5-4047-8438-171fb13db8e5
+
+# Resume from a saved file in scripts/sessions (default WTC_SESSIONS_DIR)
+echo "3e160ecb-feb5-4047-8438-171fb13db8e5" > scripts/sessions/session-id.txt
+./scripts/wake_the_claude.bash --resume session-id.txt --print
+```
+
+`--resume` validation rules:
+
+1. Accepts either a UUID value or a filename.
+2. Filenames must be basename-only (no `/` path separators).
+3. Filenames must end in `.txt`.
+4. File contents must be a valid UUID.
+5. Filename lookup is scoped to `${WTC_SESSIONS_DIR}` (default `scripts/sessions`).
+6. Session ID files are read, not deleted, during resume.
+
+Common failure messages and fixes:
+
+| Error message | Meaning | Fix |
+|---------------|---------|-----|
+| `Session ID filename contains path separators — rejected` | A path like `../file.txt` or `dir/file.txt` was passed | Place the file in `${WTC_SESSIONS_DIR}` and pass only the basename |
+| `Session ID filename must have .txt extension — rejected` | A non-`.txt` file was passed | Rename to `.txt` or pass the UUID directly |
+| `Session ID file did not contain a valid UUID` | The file content is not a UUID | Replace file contents with a single UUID value |
+| `Session ID is invalid` | Input was neither valid UUID nor valid `.txt` session file | Re-run with a UUID or valid `.txt` file |
+
+### Generate and Save a Session ID File
+
+The same script can generate or persist session IDs via `--id`:
+
+```bash
+# Generate a new UUID and save it to scripts/sessions/<uuid>.txt
+./scripts/wake_the_claude.bash --id --print
+
+# Save a specific UUID (validated first)
+./scripts/wake_the_claude.bash --id 3e160ecb-feb5-4047-8438-171fb13db8e5 --print
+```
+
+`--id` safety behavior:
+
+1. UUIDs are validated before writing session files.
+2. Invalid UUID values fail fast and no file is written.
+3. Files are written to `${WTC_SESSIONS_DIR}` (default `scripts/sessions`) as `<uuid>.txt`.
 
 ---
 
