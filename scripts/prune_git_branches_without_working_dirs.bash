@@ -6,7 +6,7 @@
 ############################################################################################################################################################
 # Read input param
 ############################################################################################################################################################
-PARAM="${@}"
+PARAM="${*}"
 echo "Param: ${PARAM}"
 
 ############################################################################################################################################################
@@ -53,16 +53,16 @@ for i in $(git branch | grep -v -e "^(\*\+)\ .*$" | grep "${BRANCH_TYPE}"); do
     echo "Tree Dir: ${TREE_DIR}"
     if [[ -d "${TREE_DIR}" ]]; then
         echo "Valid Dir: ${TREE_DIR}"
-        cd ${TREE_DIR}
+        cd "${TREE_DIR}" || continue
         git status
     else
         echo "Not Found: ${TREE_DIR} -- closing branch"
-        if [[ ( "${PARAM}" != "" ) && ( ( "${PARAM}" == "-D" ) || ( "${PARAM}" == "-F" ) ) ]]; then 
+        if [[ ( "${PARAM}" != "" ) && ( ( "${PARAM}" == "-D" ) || ( "${PARAM}" == "-F" ) ) ]]; then
             echo "Deleting Branch with --Force"
-            git branch -D ${i}
+            git branch -D "${i}"
         else
             echo "Performing Standard Branch Delete"
-            git branch -d ${i}
+            git branch -d "${i}"
         fi
     fi
 done
