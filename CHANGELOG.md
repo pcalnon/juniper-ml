@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `notes/DEVELOPER_CHEATSHEET.md` and `AGENTS.md` — Documented the `test_resume_file_safety.bash` workflow so resume-file preservation checks are part of standard troubleshooting and regression runs.
 - `notes/DEVELOPER_CHEATSHEET.md` — Added explicit `--resume` missing/empty `.txt` validation checks, including expected single-usage failure behavior and no Claude launch on rejection.
 - `notes/DEVELOPER_CHEATSHEET.md` — Documented `--resume` alias handling (`-r`, `--resume`, `--resume-thread`, `--resume-session`), canonical forwarding to `--resume <uuid>`, and a targeted regression command for trailing alias matching.
+- `notes/DEVELOPER_CHEATSHEET.md` and `AGENTS.md` — Updated Claude launcher documentation for interactive vs headless mode, `cly`/wrapper entry points, nohup log fallback behavior, and current argument-handling caveats.
 
 ### Fixed
 
