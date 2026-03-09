@@ -23,13 +23,13 @@ Additionally, the script always launched Claude via `nohup ... &` (headless mode
 
 ## Priority & Work Status
 
-| Priority | Work Item | Owner | Status |
-| -------- | --------- | ----- | ------ |
-| P1 | Fix CLI argument passing for flag+value pairs | Paul Calnon | Complete |
-| P1 | Fix prompt string character escaping | Paul Calnon | Complete |
-| P2 | Add interactive (foreground) launch mode | Paul Calnon | Complete |
-| P2 | Add convenience wrapper for default interactive sessions | Paul Calnon | Complete |
-| P3 | Update .gitignore for nohup and worktree artifacts | Paul Calnon | Complete |
+| Priority | Work Item                                                | Owner       | Status   |
+|----------|----------------------------------------------------------|-------------|----------|
+| P1       | Fix CLI argument passing for flag+value pairs            | Paul Calnon | Complete |
+| P1       | Fix prompt string character escaping                     | Paul Calnon | Complete |
+| P2       | Add interactive (foreground) launch mode                 | Paul Calnon | Complete |
+| P2       | Add convenience wrapper for default interactive sessions | Paul Calnon | Complete |
+| P3       | Update .gitignore for nohup and worktree artifacts       | Paul Calnon | Complete |
 
 ---
 
@@ -73,10 +73,10 @@ Additionally, the script always launched Claude via `nohup ... &` (headless mode
 
 ### Test Summary
 
-| Test Type | Passed | Failed | Skipped | Notes |
-| --------- | ------ | ------ | ------- | ----- |
-| Manual | 2 | 0 | 0 | Interactive launch and headless launch verified |
-| E2E | N/A | N/A | 3 | `test.bash` requires active `claude` CLI; test prompts included for manual runs |
+| Test Type | Passed | Failed | Skipped | Notes                                                                           |
+|-----------|--------|--------|---------|---------------------------------------------------------------------------------|
+| Manual    | 2      | 0      | 0       | Interactive launch and headless launch verified                                 |
+| E2E       | N/A    | N/A    | 3       | `test.bash` requires active `claude` CLI; test prompts included for manual runs |
 
 ### Environments Tested
 
@@ -137,12 +137,12 @@ Additionally, the script always launched Claude via `nohup ... &` (headless mode
 
 ### Remaining Items
 
-| Feature | Status | Priority |
-| ------- | ------ | -------- |
-| Clean up committed session ID `.txt` files (3 files in `scripts/`) | Not Started | P1 |
-| Remove commented-out code blocks in `wake_the_claude.bash` | Not Started | P2 |
-| Add `.txt` session files to `.gitignore` | Not Started | P2 |
-| Formalize interactive vs. headless mode documentation | Not Started | P3 |
+| Feature                                                            | Status      | Priority |
+|--------------------------------------------------------------------|-------------|----------|
+| Clean up committed session ID `.txt` files (3 files in `scripts/`) | Not Started | P1       |
+| Remove commented-out code blocks in `wake_the_claude.bash`         | Not Started | P2       |
+| Add `.txt` session files to `.gitignore`                           | Not Started | P2       |
+| Formalize interactive vs. headless mode documentation              | Not Started | P3       |
 
 ---
 
@@ -151,3 +151,5 @@ Additionally, the script always launched Claude via `nohup ... &` (headless mode
 1. Three session ID `.txt` files (`scripts/21c5f66d-*.txt`, `scripts/38c3bb49-*.txt`, `scripts/9196be9d-*.txt`) are committed — these are test artifacts that should be removed before merge.
 2. Several blocks of commented-out code remain in `wake_the_claude.bash` and `default_interactive_session_claude_code.bash` from the debugging process. Consider cleaning these up.
 3. The shift from quoted `"${CLAUDE_CODE_PARAMS[@]}"` to unquoted `${CLAUDE_CODE_PARAMS[@]}` is intentional — flag+value pairs are stored as single strings like `"--resume <uuid>"` and need shell word-splitting at invocation time. This is a pragmatic workaround but diverges from bash best practices for array expansion.
+
+---
