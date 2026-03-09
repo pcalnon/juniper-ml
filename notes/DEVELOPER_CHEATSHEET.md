@@ -87,7 +87,7 @@
 <<<<<<< HEAD
   - [Launch Default Interactive Session](#launch-default-interactive-session)
   - [Launch Explicit Interactive or Headless Sessions](#launch-explicit-interactive-or-headless-sessions)
-  - [Resume an Existing Session](#resume-an-existing-session)
+  - [Resume an Existing Session](#resume-a-claude-session)
   - [Runtime Paths and Environment Overrides](#runtime-paths-and-environment-overrides)
 =======
   - [Entry Points](#entry-points)
