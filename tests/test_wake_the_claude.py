@@ -937,25 +937,77 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
                 )
 
     def test_default_launcher_does_not_skip_permissions(self) -> None:
-        """MEDIUM: Verify default interactive launcher does NOT include --dangerously-skip-permissions."""
-        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
-        content = default_script.read_text(encoding="utf-8")
-        # The script should not hard-code --dangerously-skip-permissions in the default args
-        lines = [line for line in content.splitlines() if not line.strip().startswith("#")]
-        active_code = "\n".join(lines)
-        # Check that --dangerously-skip-permissions only appears in the conditional opt-in block
-        self.assertNotIn(
-            '"${SCRIPT_PATH}/wake_the_claude.bash" --id --worktree --dangerously-skip-permissions',
-            active_code,
-            "Default launcher must not hard-code --dangerously-skip-permissions",
-        )
+        """HIGH: Verify default interactive launcher does not bypass permissions."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            scripts_dir = temp_path / "scripts"
+            scripts_dir.mkdir(parents=True, exist_ok=True)
+            args_log = temp_path / "wake_args.log"
+
+            source_launcher = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+            launcher = scripts_dir / "default_interactive_session_claude_code.bash"
+            launcher.write_text(source_launcher.read_text(encoding="utf-8"), encoding="utf-8")
+            launcher.chmod(0o755)
+
+            fake_wake = scripts_dir / "wake_the_claude.bash"
+            fake_wake.write_text(
+                "#!/usr/bin/env bash\n"
+                "printf '%s\\n' \"$@\" > \"$FAKE_WAKE_ARGS_LOG\"\n",
+                encoding="utf-8",
+            )
+            fake_wake.chmod(0o755)
+
+            env = os.environ.copy()
+            env["FAKE_WAKE_ARGS_LOG"] = str(args_log)
+            result = subprocess.run(
+                ["bash", str(launcher)],
+                cwd=temp_dir,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            forwarded_args = args_log.read_text(encoding="utf-8").splitlines()
+            self.assertNotIn("--dangerously-skip-permissions", forwarded_args)
 
     def test_default_launcher_opt_in_skip_permissions(self) -> None:
-        """MEDIUM: Verify default interactive launcher supports explicit opt-in for skip-permissions."""
-        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
-        content = default_script.read_text(encoding="utf-8")
-        # Should contain a conditional check for CLAUDE_SKIP_PERMISSIONS
-        self.assertIn("CLAUDE_SKIP_PERMISSIONS", content)
+        """HIGH: Verify launcher only bypasses permissions when explicitly opted in."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir)
+            scripts_dir = temp_path / "scripts"
+            scripts_dir.mkdir(parents=True, exist_ok=True)
+            args_log = temp_path / "wake_args.log"
+
+            source_launcher = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+            launcher = scripts_dir / "default_interactive_session_claude_code.bash"
+            launcher.write_text(source_launcher.read_text(encoding="utf-8"), encoding="utf-8")
+            launcher.chmod(0o755)
+
+            fake_wake = scripts_dir / "wake_the_claude.bash"
+            fake_wake.write_text(
+                "#!/usr/bin/env bash\n"
+                "printf '%s\\n' \"$@\" > \"$FAKE_WAKE_ARGS_LOG\"\n",
+                encoding="utf-8",
+            )
+            fake_wake.chmod(0o755)
+
+            env = os.environ.copy()
+            env["FAKE_WAKE_ARGS_LOG"] = str(args_log)
+            env["CLAUDE_SKIP_PERMISSIONS"] = "1"
+            result = subprocess.run(
+                ["bash", str(launcher)],
+                cwd=temp_dir,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            forwarded_args = args_log.read_text(encoding="utf-8").splitlines()
+            self.assertIn("--dangerously-skip-permissions", forwarded_args)
 
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
