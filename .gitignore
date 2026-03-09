@@ -37,8 +37,33 @@ venv/
 .env.staging
 .env.test
 
+# Logging
+logs
+logs/
+logs/*
+
+**/logs
+**/logs/
+**/logs/*
+
 # Log files
 *.log
+
+nohup
+nohup.*
+nohup.out
+
+**/noup
+**/noup.*
+**/noup.out
+
+logs/nohup
+logs/nohup.*
+logs/nohup.out
+
+**/logs/nohup
+**/logs/nohup.*
+**/logs/nohup.out
 
 # Temp files
 *.tmp
@@ -66,8 +91,50 @@ Thumbs.db
 # Claude Code session files
 __RESUME_CLAUDE_SESSION__
 
+sessions
+sessions/
+sessions/*
+
+**/sessions
+**/sessions/
+**/sessions/*
+
+sessions/nohup
+sessions/nohup.*
+sessions/nohup.out
+
+**/sessions/nohup
+**/sessions/nohup.*
+**/sessions/nohup.out
+
+scripts/sessions/nohup
+scripts/sessions/nohup.*
+scripts/sessions/nohup.out
+
+**/scripts/sessions/nohup
+**/scripts/sessions/nohup.*
+**/scripts/sessions/nohup.out
+
+# Claude Code Worktree directories
+.claude
+.claude/
+.claude/*
+
+**/.claude
+**/.claude/
+**/.claude/*
+
+.claude/worktrees
+.claude/worktrees/
+.claude/worktrees/*
+
+**/.claude/worktrees
+**/.claude/worktrees/
+**/.claude/worktrees/*
+
 # Claude Code local settings (contains permissions, not portable)
 .claude/settings.local.json
+**/.claude/settings.local.json
 
 # MCP server config (contains API tokens)
 .mcp.json
