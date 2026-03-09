@@ -17,24 +17,25 @@ Add MCP server configurations to `Juniper/juniper/` to match the tooling availab
 
 ### Existing Configuration
 
-| File | Contents |
-|------|----------|
+| File                          | Contents                                                                                     |
+|-------------------------------|----------------------------------------------------------------------------------------------|
 | `.claude/settings.local.json` | Minimal permissions (git add/push/commit, claude mcp, WebSearch, WebFetch for a few domains) |
-| `.mcp.json` | Does not exist |
-| `.serena/` | Does not exist |
+| `.mcp.json`                   | Does not exist                                                                               |
+| `.serena/`                    | Does not exist                                                                               |
 
 ### Reference Configurations (Sibling Projects)
 
-| Project | MCP Servers | Config Location |
-|---------|-------------|-----------------|
-| `JuniperCascor/juniper_cascor/` | Serena (via `.claude/settings.local.json` permissions) | `.claude/settings.local.json` (126 rules) |
+| Project                         | MCP Servers                                                   | Config Location                                         |
+|---------------------------------|---------------------------------------------------------------|---------------------------------------------------------|
+| `JuniperCascor/juniper_cascor/` | Serena (via `.claude/settings.local.json` permissions)        | `.claude/settings.local.json` (126 rules)               |
 | `JuniperCanopy/juniper_canopy/` | Exa (via `.mcp.json`), Serena + HuggingFace (via permissions) | `.mcp.json` + `.claude/settings.local.json` (116 rules) |
-| `JuniperData/juniper_data/` | Serena (via permissions) | `.claude/settings.local.json` (62 rules) |
-| `juniper-cascor/` | Serena (via `.serena/project.yml`) | `.serena/project.yml` |
+| `JuniperData/juniper_data/`     | Serena (via permissions)                                      | `.claude/settings.local.json` (62 rules)                |
+| `juniper-cascor/`               | Serena (via `.serena/project.yml`)                            | `.serena/project.yml`                                   |
 
 ### Globally Available MCP Servers (VS Code)
 
 Already installed but not project-configured:
+
 - **microsoft/markitdown** (stdio, no auth)
 - **upstash/context7** (HTTP, optional API key)
 - **oraios/serena** (stdio, no auth)
@@ -46,26 +47,26 @@ Already installed but not project-configured:
 
 ### Tier 1: Core (must have)
 
-| # | Server | Transport | Auth | Rationale |
-|---|--------|-----------|------|-----------|
-| 1 | **Serena** | stdio | None | Code intelligence, symbol navigation, refactoring — used across all other Juniper projects |
-| 2 | **HuggingFace** | HTTP | HF Bearer token | Model/dataset/paper search — relevant for ML research platform |
-| 3 | **DeepWiki** | HTTP | None (public repos) | Repository documentation access — already available in this session |
+| # | Server          | Transport | Auth                | Rationale                                                                                  |
+|---|-----------------|-----------|---------------------|--------------------------------------------------------------------------------------------|
+| 1 | **Serena**      | stdio     | None                | Code intelligence, symbol navigation, refactoring — used across all other Juniper projects |
+| 2 | **HuggingFace** | HTTP      | HF Bearer token     | Model/dataset/paper search — relevant for ML research platform                             |
+| 3 | **DeepWiki**    | HTTP      | None (public repos) | Repository documentation access — already available in this session                        |
 
 ### Tier 2: Recommended
 
-| # | Server | Transport | Auth | Rationale |
-|---|--------|-----------|------|-----------|
-| 4 | **Kaggle** | stdio | Kaggle API key (`~/.kaggle/kaggle.json`) | Dataset search/download — relevant for ML research |
-| 5 | **Context7** | stdio | None (optional API key) | Up-to-date library documentation — useful for dependency management |
+| # | Server       | Transport | Auth                                     | Rationale                                                           |
+|---|--------------|-----------|------------------------------------------|---------------------------------------------------------------------|
+| 4 | **Kaggle**   | stdio     | Kaggle API key (`~/.kaggle/kaggle.json`) | Dataset search/download — relevant for ML research                  |
+| 5 | **Context7** | stdio     | None (optional API key)                  | Up-to-date library documentation — useful for dependency management |
 
 ### Tier 3: Optional (user decision needed)
 
-| # | Server | Transport | Auth | Rationale |
-|---|--------|-----------|------|-----------|
-| 6 | **Exa** | HTTP | API key (already in JuniperCanopy) | Web/paper search — used in JuniperCanopy |
-| 7 | **arXiv** | stdio | None | Academic paper search — high value for CasCor research |
-| 8 | **W&B (Weights & Biases)** | HTTP | W&B API key | Experiment tracking — useful if W&B is used for training |
+| # | Server                     | Transport | Auth                               | Rationale                                                |
+|---|----------------------------|-----------|------------------------------------|----------------------------------------------------------|
+| 6 | **Exa**                    | HTTP      | API key (already in JuniperCanopy) | Web/paper search — used in JuniperCanopy                 |
+| 7 | **arXiv**                  | stdio     | None                               | Academic paper search — high value for CasCor research   |
+| 8 | **W&B (Weights & Biases)** | HTTP      | W&B API key                        | Experiment tracking — useful if W&B is used for training |
 
 ---
 
@@ -190,13 +191,15 @@ symbol_info_budget:
 ```
 
 Also create `.serena/.gitignore`:
-```
+
+```bash
 memories/
 ```
 
 ### Phase 4: Update `.claude/settings.local.json` Permissions
 
 Update the existing permissions file to:
+
 1. Enable all project MCP servers (`enableAllProjectMcpServers: true`)
 2. Whitelist MCP server tools for pre-approval
 3. Add the `.mcp.json` servers to `enabledMcpjsonServers`
@@ -273,37 +276,37 @@ Before execution, the following decisions are needed:
 
 ## File Summary
 
-| Action | File | Description |
-|--------|------|-------------|
-| **Create** | `.mcp.json` | HTTP MCP server definitions (HuggingFace, DeepWiki) |
-| **Create** | `.serena/project.yml` | Serena project configuration |
-| **Create** | `.serena/.gitignore` | Ignore Serena memories from git |
-| **Update** | `.claude/settings.local.json` | Permissions + MCP enablement flags |
-| **Run** | `claude mcp add` (x3-5) | Register stdio MCP servers (Serena, Context7, Kaggle, optionally arXiv) |
-| **Verify** | `claude mcp list` | Confirm all servers registered |
+| Action     | File                          | Description                                                             |
+|------------|-------------------------------|-------------------------------------------------------------------------|
+| **Create** | `.mcp.json`                   | HTTP MCP server definitions (HuggingFace, DeepWiki)                     |
+| **Create** | `.serena/project.yml`         | Serena project configuration                                            |
+| **Create** | `.serena/.gitignore`          | Ignore Serena memories from git                                         |
+| **Update** | `.claude/settings.local.json` | Permissions + MCP enablement flags                                      |
+| **Run**    | `claude mcp add` (x3-5)       | Register stdio MCP servers (Serena, Context7, Kaggle, optionally arXiv) |
+| **Verify** | `claude mcp list`             | Confirm all servers registered                                          |
 
 ---
 
 ## Risk Assessment
 
-| Risk | Mitigation |
-|------|------------|
-| HuggingFace token in `.mcp.json` committed to git | Ensure `.mcp.json` is in `.gitignore` |
-| Kaggle credentials missing | Check for `~/.kaggle/kaggle.json` before adding |
-| `kaggle-mcp` community packages have broken packaging | Using `arrismo/kaggle-mcp` cloned to `~/.local/share/mcp-servers/kaggle-mcp/`, invoked directly via `python src/server.py` |
-| Too many MCP servers slow down Claude Code startup | Start with Tier 1+2, add Tier 3 only if needed |
-| `.claude/settings.local.json` is local-only, not portable | This is by design — local settings shouldn't be committed |
+| Risk                                                      | Mitigation                                                                                                                 |
+|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| HuggingFace token in `.mcp.json` committed to git         | Ensure `.mcp.json` is in `.gitignore`                                                                                      |
+| Kaggle credentials missing                                | Check for `~/.kaggle/kaggle.json` before adding                                                                            |
+| `kaggle-mcp` community packages have broken packaging     | Using `arrismo/kaggle-mcp` cloned to `~/.local/share/mcp-servers/kaggle-mcp/`, invoked directly via `python src/server.py` |
+| Too many MCP servers slow down Claude Code startup        | Start with Tier 1+2, add Tier 3 only if needed                                                                             |
+| `.claude/settings.local.json` is local-only, not portable | This is by design — local settings shouldn't be committed                                                                  |
 
 ---
 
 ## References
 
-- Serena docs: https://oraios.github.io/serena/02-usage/030_clients.html
-- HuggingFace MCP: https://huggingface.co/docs/hub/en/hf-mcp-server
-- Kaggle MCP (used): https://github.com/arrismo/kaggle-mcp
-- Kaggle MCP (broken packaging, not used): https://github.com/54yyyu/kaggle-mcp
-- DeepWiki MCP: https://mcp.deepwiki.com/
-- Context7 MCP: https://github.com/upstash/context7
+- Serena docs: <https://oraios.github.io/serena/02-usage/030_clients.html>
+- HuggingFace MCP: <https://huggingface.co/docs/hub/en/hf-mcp-server>
+- Kaggle MCP (used): <https://github.com/arrismo/kaggle-mcp>
+- Kaggle MCP (broken packaging, not used): <https://github.com/54yyyu/kaggle-mcp>
+- DeepWiki MCP: <https://mcp.deepwiki.com/>
+- Context7 MCP: <https://github.com/upstash/context7>
 - JuniperCanopy reference: `/home/pcalnon/Development/python/Juniper/JuniperCanopy/juniper_canopy/.mcp.json`
 - JuniperCascor reference: `/home/pcalnon/Development/python/Juniper/JuniperCascor/juniper_cascor/.claude/settings.local.json`
 - juniper-cascor Serena reference: `/home/pcalnon/Development/python/Juniper/juniper-cascor/.serena/project.yml`
