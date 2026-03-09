@@ -10,7 +10,6 @@ import time
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
@@ -31,18 +30,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n"
-            "if [[ \"$1\" == \"--version\" ]]; then\n"
-            "  echo \"claude-test-version\"\n"
-            "  exit 0\n"
-            "fi\n"
-            "{\n"
-            "  echo \"__CALL__\"\n"
-            "  echo \"ARGC=$#\"\n"
-            "  for arg in \"$@\"; do\n"
-            "    printf 'ARG=%s\\n' \"$arg\"\n"
-            "  done\n"
-            "} >> \"$CLAUDE_ARGS_LOG\"\n",
+            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -50,8 +38,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         if failing_uuidgen:
             fake_uuidgen = bin_dir / "uuidgen"
             fake_uuidgen.write_text(
-                "#!/usr/bin/env bash\n"
-                "exit 1\n",
+                "#!/usr/bin/env bash\n" "exit 1\n",
                 encoding="utf-8",
             )
             fake_uuidgen.chmod(0o755)
@@ -465,12 +452,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n"
-                f"if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
-                f"  echo \"{fallback_uuid}\"\n"
-                "  exit 0\n"
-                "fi\n"
-                "/usr/bin/cat \"$@\"\n",
+                "#!/usr/bin/env bash\n" f'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' f'  echo "{fallback_uuid}"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
             )
 
             result = self._run_script(
@@ -497,18 +479,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n"
-                "if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
-                "  echo \"not-a-uuid\"\n"
-                "  exit 0\n"
-                "fi\n"
-                "/usr/bin/cat \"$@\"\n",
+                "#!/usr/bin/env bash\n" 'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' '  echo "not-a-uuid"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
             )
             self._install_fake_command(
                 temp_dir,
                 "python3",
-                "#!/usr/bin/env bash\n"
-                f"echo \"{python_fallback_uuid}\"\n",
+                "#!/usr/bin/env bash\n" f'echo "{python_fallback_uuid}"\n',
             )
 
             result = self._run_script(
@@ -529,18 +505,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n"
-                "if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
-                "  echo \"still-not-a-uuid\"\n"
-                "  exit 0\n"
-                "fi\n"
-                "/usr/bin/cat \"$@\"\n",
+                "#!/usr/bin/env bash\n" 'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' '  echo "still-not-a-uuid"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
             )
             self._install_fake_command(
                 temp_dir,
                 "python3",
-                "#!/usr/bin/env bash\n"
-                "echo \"bad-python-uuid-output\"\n",
+                "#!/usr/bin/env bash\n" 'echo "bad-python-uuid-output"\n',
             )
 
             result = self._run_script(
@@ -740,18 +710,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n"
-            "if [[ \"$1\" == \"--version\" ]]; then\n"
-            "  echo \"claude-test-version\"\n"
-            "  exit 0\n"
-            "fi\n"
-            "{\n"
-            "  echo \"__CALL__\"\n"
-            "  echo \"ARGC=$#\"\n"
-            "  for arg in \"$@\"; do\n"
-            "    printf 'ARG=%s\\n' \"$arg\"\n"
-            "  done\n"
-            "} >> \"$CLAUDE_ARGS_LOG\"\n",
+            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -774,9 +733,9 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         )
 
     def _run_default_launcher(self, args: list[str], cwd: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
-        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        default_launcher_path = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
         return subprocess.run(
-            ["bash", str(default_script), *args],
+            ["bash", str(default_launcher_path), *args],
             cwd=cwd,
             env=env,
             text=True,
@@ -990,8 +949,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
 
             fake_wake = scripts_dir / "wake_the_claude.bash"
             fake_wake.write_text(
-                "#!/usr/bin/env bash\n"
-                "printf '%s\\n' \"$@\" > \"$FAKE_WAKE_ARGS_LOG\"\n",
+                "#!/usr/bin/env bash\n" 'printf \'%s\\n\' "$@" > "$FAKE_WAKE_ARGS_LOG"\n',
                 encoding="utf-8",
             )
             fake_wake.chmod(0o755)
@@ -1026,8 +984,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
 
             fake_wake = scripts_dir / "wake_the_claude.bash"
             fake_wake.write_text(
-                "#!/usr/bin/env bash\n"
-                "printf '%s\\n' \"$@\" > \"$FAKE_WAKE_ARGS_LOG\"\n",
+                "#!/usr/bin/env bash\n" 'printf \'%s\\n\' "$@" > "$FAKE_WAKE_ARGS_LOG"\n',
                 encoding="utf-8",
             )
             fake_wake.chmod(0o755)
@@ -1075,12 +1032,21 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
                 cwd=temp_dir,
                 env=env,
             )
-
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
             self.assertIn("--dangerously-skip-permissions", args)
+
+        """HIGH: Verify default launcher never injects dangerous skip-permissions."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertNotIn("--dangerously-skip-permissions", args)
 
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
@@ -1129,10 +1095,7 @@ class WakeTheClaudeGitignoreTests(unittest.TestCase):
             text=True,
             cwd=str(REPO_ROOT),
         )
-        tracked_txt_files = [
-            f for f in result.stdout.strip().splitlines()
-            if f and UUID_REGEX.match(Path(f).stem)
-        ]
+        tracked_txt_files = [f for f in result.stdout.strip().splitlines() if f and UUID_REGEX.match(Path(f).stem)]
         self.assertEqual(
             tracked_txt_files,
             [],
