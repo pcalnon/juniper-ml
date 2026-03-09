@@ -924,18 +924,40 @@ If `--cross-repo check` reports "Ecosystem root not found":
 Use one of these launcher entry points:
 
 ```bash
+# Interactive (foreground) session; blocks until Claude exits
 bash scripts/wake_the_claude.bash \
   --id \
+  --worktree \
+  --effort high \
+  --prompt "Review recent test failures and suggest fixes"
+
+# Headless/background mode (nohup) by adding --print
+bash scripts/wake_the_claude.bash \
+  --id \
+  --worktree \
+  --effort high \
   --prompt "Review recent test failures and suggest fixes" \
-  --effort high
+  --print
 ```
 
 Notes:
-- `--id` stores the generated/provided UUID in `${WTC_SESSIONS_DIR}/<uuid>.txt` (defaults to `scripts/sessions`).
-- Without `--print`, the script runs `claude` in the foreground (interactive mode).
-- With `--print` (or `--headless` aliases), the script launches via `nohup ... &` and writes logs to `${WTC_LOGS_DIR}/wake_the_claude.nohup.log` (defaults to `logs`).
+- `--print` enables headless mode (`nohup ... &`) and writes logs to `logs/wake_the_claude.nohup.log`.
+- Without `--print`, the script runs `claude` directly in the foreground (interactive mode).
+- `--id` stores the generated/provided UUID in `scripts/sessions/<uuid>.txt` by default.
+- Storage locations are configurable via `WTC_SESSIONS_DIR` and `WTC_LOGS_DIR`.
+- `WTC_DEBUG=1` enables parser and validation debug output.
 
-### Launch Default Interactive Wrapper (`cly`)
+Use the convenience launcher for common interactive defaults:
+
+```bash
+./cly
+```
+
+Current behavior of `./cly`:
+- Calls `scripts/default_interactive_session_claude_code.bash`.
+- Always includes `--id`, `--worktree`, and `--effort high`.
+- Injects default prompt text (`"Hello World, Claude!"`) unless you pass `--prompt ...`.
+- Enables `--dangerously-skip-permissions`.
 
 For a quick interactive session with default flags:
 
@@ -998,17 +1020,19 @@ Session generation:
 ```bash
 # Generate and persist a new session ID to <uuid>.txt
 bash scripts/wake_the_claude.bash --id --prompt "hello"
-
 # Persist a provided session ID to <uuid>.txt
 bash scripts/wake_the_claude.bash --id 3e160ecb-feb5-4047-8438-171fb13db8e5 --prompt "hello"
 ```
 
 Resume inputs:
 
-- `--resume` accepts either a UUID or a local `.txt` filename.
-- Resume filenames must be basenames only (no `/` path separators).
-- Resume filenames must end in `.txt`.
-- Resume file contents must be a valid UUID.
+- The token after any resume alias must be either a UUID or a `.txt` basename resolved under `WTC_SESSIONS_DIR` (defaults to `scripts/sessions/`).
+  - `--resume` accepts either a UUID or a local `.txt` filename.
+  - Resume filenames must be basenames only (no `/` path separators).
+  - Resume filenames must end in `.txt`.
+  - Resume file contents must be a valid UUID.
+- If the next token is another flag, the script treats resume as missing/invalid and exits non-zero.
+- Alias matching is exact; typo variants are rejected.
 
 Resume examples:
 
@@ -1065,7 +1089,7 @@ Common failure patterns:
 |---|---|---|
 | `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
 | `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
-| Resume by file fails immediately | Filename includes `/` or non-`.txt` extension | Use a basename `*.txt` file located in `${WTC_SESSIONS_DIR}` |
+| Resume by file fails immediately | Filename includes `/`, non-`.txt` extension, or file not in `WTC_SESSIONS_DIR` | Use a basename-only `*.txt` file in `scripts/sessions/` (or set `WTC_SESSIONS_DIR`) |
 | `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
 
 > **Docs:** [Launcher Script](../scripts/wake_the_claude.bash) | [Interactive Wrapper](../scripts/default_interactive_session_claude_code.bash) | [Manual Harness](../scripts/test.bash) | [Regression Tests](../tests/test_wake_the_claude.py)
