@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export CLAUDE_SKIP_PERMISSIONS="1"
+CLAUDE_SKIP_PERMISSIONS="${CLAUDE_SKIP_PERMISSIONS:-0}"
 
 SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 

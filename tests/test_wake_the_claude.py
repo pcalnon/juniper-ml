@@ -745,6 +745,17 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             check=False,
         )
 
+    def _run_default_launcher(self, args: list[str], cwd: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+        default_launcher_path = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
+        return subprocess.run(
+            ["bash", str(default_launcher_path), *args],
+            cwd=cwd,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
     def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
@@ -937,25 +948,27 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
                 )
 
     def test_default_launcher_does_not_skip_permissions(self) -> None:
-        """MEDIUM: Verify default interactive launcher does NOT include --dangerously-skip-permissions."""
-        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
-        content = default_script.read_text(encoding="utf-8")
-        # The script should not hard-code --dangerously-skip-permissions in the default args
-        lines = [line for line in content.splitlines() if not line.strip().startswith("#")]
-        active_code = "\n".join(lines)
-        # Check that --dangerously-skip-permissions only appears in the conditional opt-in block
-        self.assertNotIn(
-            '"${SCRIPT_PATH}/wake_the_claude.bash" --id --worktree --dangerously-skip-permissions',
-            active_code,
-            "Default launcher must not hard-code --dangerously-skip-permissions",
-        )
+        """HIGH: Verify default launcher never injects dangerous skip-permissions."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertNotIn("--dangerously-skip-permissions", args)
 
     def test_default_launcher_opt_in_skip_permissions(self) -> None:
-        """MEDIUM: Verify default interactive launcher supports explicit opt-in for skip-permissions."""
-        default_script = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
-        content = default_script.read_text(encoding="utf-8")
-        # Should contain a conditional check for CLAUDE_SKIP_PERMISSIONS
-        self.assertIn("CLAUDE_SKIP_PERMISSIONS", content)
+        """HIGH: Verify default launcher supports explicit opt-in to skip-permissions."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            env["CLAUDE_SKIP_PERMISSIONS"] = "1"
+            result = self._run_default_launcher([], cwd=temp_dir, env=env)
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("--dangerously-skip-permissions", args)
 
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
