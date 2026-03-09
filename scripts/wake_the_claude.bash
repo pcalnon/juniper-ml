@@ -437,7 +437,6 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         else
             echo "Warning: Received Session ID Flag but no Session ID Name."
             echo "Session ID Value not Provided, Assigning a new UUID as Session ID."
-            # SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} $(uuidgen | tr -d '-')"
             generated_uuid="$(generate_uuid)"
             if [[ ( "$?" != "${TRUE}" ) || ( "${generated_uuid}" == "" ) ]]; then
                 echo "Error: Failed to generate a valid UUID for Session ID."
