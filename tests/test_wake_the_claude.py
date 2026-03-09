@@ -1119,6 +1119,26 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             args = self._extract_args(invocations[-1])
             self.assertIn("prompt from file", args)
 
+    def test_path_directory_and_filename_resolve_prompt_when_path_precedes_file(self) -> None:
+        """Verify --path <dir> + --file <name> works when path is parsed first."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompts_dir = Path(temp_dir) / "prompts"
+            prompts_dir.mkdir(parents=True, exist_ok=True)
+            prompt_file = prompts_dir / "my_prompt.md"
+            prompt_file.write_text("prompt from path+file", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--path", str(prompts_dir), "--file", "my_prompt.md"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from path+file"])
+               
     def test_path_then_file_flags_resolve_combined_prompt_file(self) -> None:
         """Verify --path <dir> then --file <name> resolves prompt file."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1136,6 +1156,26 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
+            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from path+file"])
+
+    def test_path_directory_and_filename_resolve_prompt_when_file_precedes_path(self) -> None:
+        """Verify --file <name> + --path <dir> works when file is parsed first."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompts_dir = Path(temp_dir) / "prompts"
+            prompts_dir.mkdir(parents=True, exist_ok=True)
+            prompt_file = prompts_dir / "my_prompt.md"
+            prompt_file.write_text("prompt from file+path", encoding="utf-8")
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--file", "my_prompt.md", "--path", str(prompts_dir)],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])              
             self.assertIn("prompt from combined path-then-file", args)
 
     def test_file_then_path_flags_resolve_combined_prompt_file(self) -> None:
@@ -1155,8 +1195,28 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertIn("prompt from combined file-then-path", args)
+            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from file+path"])
 
+    def test_path_directory_and_missing_filename_fail_without_invoking_claude(self) -> None:
+        """Verify invalid --path/--file combination fails early and never launches claude."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompts_dir = Path(temp_dir) / "prompts"
+            prompts_dir.mkdir(parents=True, exist_ok=True)
+
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--path", str(prompts_dir), "--file", "missing.md"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
+            combined_output = result.stdout + result.stderr
+            self.assertIn("invalid Prompt File", combined_output)
+            self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
+
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            self.assertEqual(invocations, [])
+            self.assertIn("prompt from combined file-then-path", args)
 
 class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     """Runtime tests for default interactive launcher argument behavior."""
