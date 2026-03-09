@@ -13,6 +13,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
+DEFAULT_INTERACTIVE_SCRIPT_PATH = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
 UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
@@ -557,6 +558,42 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
+    def test_prompt_file_path_then_file_name_loads_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            prompt_file = prompt_dir / "prompt.md"
+            prompt_file.write_text("from-prompt-file", encoding="utf-8")
+
+            result = self._run_script(
+                ["--id", VALID_UUID, "--path", str(prompt_dir), "--file", prompt_file.name],
+                cwd=temp_dir,
+                env=env,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args[0:2], ["--session-id", VALID_UUID])
+            self.assertEqual(last_invocation_args[-1].strip('"'), "from-prompt-file")
+
+    def test_prompt_file_name_then_path_loads_prompt(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            prompt_dir = Path(temp_dir) / "prompts"
+            prompt_dir.mkdir(parents=True, exist_ok=True)
+            prompt_file = prompt_dir / "prompt.md"
+            prompt_file.write_text("from-prompt-file", encoding="utf-8")
+
+            result = self._run_script(
+                ["--id", VALID_UUID, "--file", prompt_file.name, "--path", str(prompt_dir)],
+                cwd=temp_dir,
+                env=env,
+            )
+
     def test_custom_session_and_logs_dirs_are_created_when_missing(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -583,6 +620,41 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
+            self.assertEqual(last_invocation_args[0:2], ["--session-id", VALID_UUID])
+            self.assertEqual(last_invocation_args[-1].strip('"'), "from-prompt-file")
+
+    def test_default_interactive_script_forwards_expected_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            self.assertTrue(DEFAULT_INTERACTIVE_SCRIPT_PATH.exists())
+
+            result = subprocess.run(
+                ["bash", str(DEFAULT_INTERACTIVE_SCRIPT_PATH)],
+                cwd=temp_dir,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations, msg="Expected default launcher to invoke claude at least once")
+            last_invocation_args = self._extract_args(invocations[-1])
+
+            self.assertIn("--session-id", last_invocation_args)
+            session_id_index = last_invocation_args.index("--session-id")
+            self.assertLess(session_id_index + 1, len(last_invocation_args))
+            self.assertRegex(last_invocation_args[session_id_index + 1], UUID_REGEX)
+            self.assertIn("--worktree", last_invocation_args)
+            self.assertIn("--dangerously-skip-permissions", last_invocation_args)
+            self.assertIn("--effort", last_invocation_args)
+            effort_index = last_invocation_args.index("--effort")
+            self.assertLess(effort_index + 1, len(last_invocation_args))
+            self.assertEqual(last_invocation_args[effort_index + 1], "high")
+            prompt_tokens = [token.strip('"') for token in last_invocation_args[effort_index + 2:]]
+            self.assertEqual(" ".join(prompt_tokens), "Hello World, Claude!")
             self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "--print", "hello"])
 
     def test_non_writable_logs_dir_falls_back_to_home_log_and_still_launches(self) -> None:
