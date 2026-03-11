@@ -588,7 +588,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             prompt_file = prompt_dir / "prompt.md"
             prompt_file.write_text("from-prompt-file", encoding="utf-8")
 
-            result = self._run_script(
+            self._run_script(
                 ["--id", VALID_UUID, "--file", prompt_file.name, "--path", str(prompt_dir)],
                 cwd=temp_dir,
                 env=env,
@@ -1140,7 +1140,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
             self.assertEqual(args, ["--resume", VALID_UUID, "prompt from path+file"])
-               
+
     def test_path_then_file_flags_resolve_combined_prompt_file(self) -> None:
         """Verify --path <dir> then --file <name> resolves prompt file."""
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -1177,7 +1177,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
-            args = self._extract_args(invocations[-1])              
+            args = self._extract_args(invocations[-1])
             self.assertIn("prompt from combined path-then-file", args)
 
     def test_file_then_path_flags_resolve_combined_prompt_file(self) -> None:
@@ -1218,7 +1218,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
-            self.assertIn("prompt from combined file-then-path", args)
+
 
 class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     """Runtime tests for default interactive launcher argument behavior."""
