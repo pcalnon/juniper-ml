@@ -62,7 +62,6 @@
   - [Troubleshoot --resume validation failures](#troubleshoot---resume-validation-failures)
   - [Troubleshoot --id UUID generation fallback](#troubleshoot---id-uuid-generation-fallback)
   - [Verify pattern-matching hardening (no eval)](#verify-pattern-matching-hardening-no-eval)
-  - [Run wake_the_claude regression tests](#run-wake_the_claude-regression-tests)
 - [Dependencies](#dependencies)
   - [Add a Dependency](#add-a-dependency)
   - [Remove a Dependency](#remove-a-dependency)
