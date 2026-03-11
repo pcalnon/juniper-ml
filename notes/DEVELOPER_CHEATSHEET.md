@@ -84,18 +84,11 @@
   - [Validate Documentation Links Locally](#validate-documentation-links-locally)
   - [Troubleshoot Cross-Repo Link Checks](#troubleshoot-cross-repo-link-checks)
 - [Claude Code Session Script](#claude-code-session-script)
-<<<<<<< cursor/documentation-automation-system-1a2b
-  - [Launch Default Interactive Session](#launch-default-interactive-session)
-  - [Launch Explicit Interactive or Headless Sessions](#launch-explicit-interactive-or-headless-sessions)
-  - [Resume an Existing Session](#resume-a-claude-session)
-  - [Runtime Paths and Environment Overrides](#runtime-paths-and-environment-overrides)
-=======
   - [Entry Points](#entry-points)
   - [Launch Modes: Interactive vs Headless](#launch-modes-interactive-vs-headless)
   - [Session ID and Resume Workflow](#session-id-and-resume-workflow)
   - [Current Argument-Handling Pitfalls (Known)](#current-argument-handling-pitfalls-known)
   - [Troubleshoot Resume Failures](#troubleshoot-resume-failures)
->>>>>>> main
 - [Git Worktrees](#git-worktrees)
   - [Create a Worktree for a New Task](#create-a-worktree-for-a-new-task)
   - [Merge and Clean Up a Worktree](#merge-and-clean-up-a-worktree)
@@ -517,11 +510,7 @@ test ! -s /tmp/wtc_debug.err && echo "stderr clean"
 
 `--resume` accepts either:
 - A UUID value
-<<<<<<< cursor/documentation-automation-system-1a2b
-- A `.txt` basename in the configured sessions directory (default `scripts/sessions`, no `/` path separators)
-=======
 - A `.txt` basename resolved from `${WTC_SESSIONS_DIR}` (defaults to `scripts/sessions`, no `/` path separators)
->>>>>>> main
 
 Quick failure-path checks (do not require a successful `claude` launch):
 
@@ -541,23 +530,6 @@ Edge-case checks for missing and empty `.txt` resume sources:
 
 ```bash
 script_path="$(pwd)/scripts/wake_the_claude.bash"
-<<<<<<< cursor/documentation-automation-system-1a2b
-tmpdir="$(mktemp -d)"
-sessions_dir="${tmpdir}/sessions"
-mkdir -p "${sessions_dir}"
-(
-  cd "$tmpdir" || exit 1
-  : > "${sessions_dir}/empty-session-id.txt"
-
-  WTC_SESSIONS_DIR="${sessions_dir}" bash "$script_path" --resume missing-session-id.txt --prompt "hello" >/tmp/wtc_missing.out 2>/tmp/wtc_missing.err
-  echo "missing_exit=$?"
-
-  WTC_SESSIONS_DIR="${sessions_dir}" bash "$script_path" --resume empty-session-id.txt --prompt "hello" >/tmp/wtc_empty.out 2>/tmp/wtc_empty.err
-  echo "empty_exit=$?"
-
-  test -f "${sessions_dir}/empty-session-id.txt" && echo "empty_file_preserved=yes"
-)
-=======
 session_dir="$(mktemp -d)"
 : > "${session_dir}/empty-session-id.txt"
 
@@ -570,7 +542,6 @@ WTC_SESSIONS_DIR="${session_dir}" \
 echo "empty_exit=$?"
 
 test -f "${session_dir}/empty-session-id.txt" && echo "empty_file_preserved=yes"
->>>>>>> main
 python3 - <<'PY'
 from pathlib import Path
 for name in ("missing", "empty"):
@@ -948,32 +919,9 @@ If `--cross-repo check` reports "Ecosystem root not found":
 
 ## Claude Code Session Script
 
-<<<<<<< cursor/documentation-automation-system-1a2b
-### Launch Default Interactive Session
-
-Use the repo-root `cly` wrapper for a fast interactive start:
-
-```bash
-./cly
-```
-
-Default wrapper behavior:
-- Calls `scripts/default_interactive_session_claude_code.bash`, which delegates to `scripts/wake_the_claude.bash`.
-- Passes `--id --worktree --effort high --prompt "Hello World, Claude!"`.
-- Adds `--dangerously-skip-permissions` by default.
-- Runs in interactive mode (foreground) because `--print` is not provided.
-- Writes session ID files to `scripts/sessions/<uuid>.txt`.
-
-> **Docs:** [Script Source](../juniper-ml/scripts/wake_the_claude.bash)
-
-### Launch Explicit Interactive or Headless Sessions
-
-Interactive (foreground):
-=======
 ### Entry Points
 
 Use one of these launcher entry points:
->>>>>>> main
 
 ```bash
 # Interactive (foreground) session; blocks until Claude exits
@@ -988,25 +936,6 @@ bash scripts/wake_the_claude.bash \
   --id \
   --worktree \
   --effort high \
-<<<<<<< cursor/documentation-automation-system-1a2b
-  --prompt "Review recent test failures and suggest fixes"
-```
-
-Headless (background, via `nohup`):
-
-```bash
-bash scripts/wake_the_claude.bash \
-  --id \
-  --worktree \
-  --effort high \
-  --print \
-  --prompt "Review recent test failures and suggest fixes"
-```
-
-Headless log path:
-- Primary: `logs/wake_the_claude.nohup.log`
-- Fallback if `logs/` is not writable: `$HOME/wake_the_claude.nohup.log`
-=======
   --prompt "Review recent test failures and suggest fixes" \
   --print
 ```
@@ -1019,7 +948,6 @@ Notes:
 - `WTC_DEBUG=1` enables parser and validation debug output.
 
 ### Use the Default Interactive Wrapper
->>>>>>> main
 
 Wrapper behavior:
 - Invokes `scripts/default_interactive_session_claude_code.bash`.
@@ -1061,38 +989,6 @@ bash scripts/wake_the_claude.bash \
   --prompt "Review failing tests and suggest root causes"
 ```
 
-<<<<<<< cursor/documentation-automation-system-1a2b
-Resume by saved session file (basename only):
-
-```bash
-bash scripts/wake_the_claude.bash \
-  --resume session-id.txt \
-  --prompt "Continue from previous analysis"
-```
-
-Notes:
-- Resume filename lookups occur in `scripts/sessions/` by default (or `WTC_SESSIONS_DIR` if overridden).
-- Pass only the filename basename for `--resume`; path separators are rejected.
-
-### Runtime Paths and Environment Overrides
-
-`wake_the_claude.bash` creates/uses these defaults:
-
-| Purpose | Default path | Override |
-|---|---|---|
-| Session ID storage | `scripts/sessions/` | `WTC_SESSIONS_DIR` |
-| Headless logs | `logs/` | `WTC_LOGS_DIR` |
-
-Use overrides when testing in temp directories:
-
-```bash
-WTC_SESSIONS_DIR=/tmp/wtc-sessions \
-WTC_LOGS_DIR=/tmp/wtc-logs \
-bash scripts/wake_the_claude.bash --id --print --prompt "hello"
-```
-
-### Resume Flag Aliases and Parser Contract
-=======
 Headless mode (adds `--print`; launches with `nohup ... &`):
 
 ```bash
@@ -1106,7 +1002,6 @@ bash scripts/wake_the_claude.bash \
 ```
 
 Headless logging behavior:
->>>>>>> main
 
 - Primary log file: `wake_the_claude.nohup.log` in the current working directory.
 - Fallback log file (if CWD is not writable): `${HOME}/wake_the_claude.nohup.log`.
@@ -1190,11 +1085,7 @@ Common failure patterns:
 |---|---|---|
 | `Error: Session ID is invalid. Exiting...` | Invalid UUID or file content | Verify UUID format in value/file |
 | `Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...` | `--resume` provided without value | Provide UUID or `.txt` basename after flag |
-<<<<<<< cursor/documentation-automation-system-1a2b
-| Resume by file fails immediately | Filename includes `/`, wrong extension, or file missing in sessions directory | Use basename-only `*.txt` and place it in `scripts/sessions/` (or set `WTC_SESSIONS_DIR`) |
-=======
 | Resume by file fails immediately | Filename includes `/`, non-`.txt` extension, or file not in `WTC_SESSIONS_DIR` | Use a basename-only `*.txt` file in `scripts/sessions/` (or set `WTC_SESSIONS_DIR`) |
->>>>>>> main
 | `--resume-session` or `--resume-thread` not recognized | Flag-alias parsing regression | Run `test_resume_alias_flag_passes_session_id_to_claude` and inspect `matches_pattern()` alias list handling |
 
 > **Docs:** [Launcher Script](../scripts/wake_the_claude.bash) | [Interactive Wrapper](../scripts/default_interactive_session_claude_code.bash) | [Manual Harness](../scripts/test.bash) | [Regression Tests](../tests/test_wake_the_claude.py)
@@ -1237,12 +1128,10 @@ git push origin --delete "$BRANCH_NAME"
 git worktree prune
 ```
 
-> **Docs:** Per-repo [WORKTREE_CLEANUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_CLEANUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation)
+> **Docs:** Per-repo [WORKTREE_CLEANUP_PROCEDURE_V2.md](WORKTREE_CLEANUP_PROCEDURE_V2.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation)
 
 ---
 
-<<<<<<< cursor/documentation-automation-system-1a2b
-=======
 ## Claude Automation Scripts
 
 ### Resume a Claude Session
@@ -1296,7 +1185,6 @@ The same script can generate or persist session IDs via `--id`:
 
 ---
 
->>>>>>> main
 ## Data Contract
 
 ### Add a New Generator
@@ -1448,10 +1336,6 @@ Three things to update per repo:
 
 ---
 
-<<<<<<< cursor/documentation-automation-system-1a2b
-**Last Updated:** March 9, 2026
-=======
-**Last Updated:** March 8, 2026
->>>>>>> main
+**Last Updated:** March 11, 2026
 **Version:** 1.3.0
 **Maintainer:** Paul Calnon
