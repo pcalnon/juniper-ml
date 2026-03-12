@@ -695,6 +695,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             bash_path = shutil.which("bash")
             self.assertIsNotNone(bash_path, msg="bash must be discoverable for this test")
+            assert bash_path is not None
             os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
 
             env = os.environ.copy()
@@ -722,6 +723,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
 
             bash_path = shutil.which("bash")
             self.assertIsNotNone(bash_path, msg="bash must be discoverable for this test")
+            assert bash_path is not None
             os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
 
             env = os.environ.copy()
