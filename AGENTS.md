@@ -46,6 +46,7 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 - `scripts/test.bash` — Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` — Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 - `tests/test_wake_the_claude.py` — Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
+- `scripts/worktree_cleanup.bash` — Automated worktree cleanup with CWD-safe session continuity (V2 procedure)
 
 ## Ecosystem Context
 
@@ -79,7 +80,7 @@ Git worktrees allow multiple branches of a repository to be checked out simultan
 The full setup and cleanup procedures are defined in:
 
 - **`notes/WORKTREE_SETUP_PROCEDURE.md`** — Creating a worktree for a new task
-- **`notes/WORKTREE_CLEANUP_PROCEDURE.md`** — Merging, removing, and pushing after task completion
+- **`notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`** — Merging, removing, and pushing after task completion (V2 — fixes CWD-trap bug)
 
 Read the appropriate file when starting or completing a task.
 
@@ -118,18 +119,28 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
 
-**Cleanup** (full procedure in `notes/WORKTREE_CLEANUP_PROCEDURE.md`):
-
+**Cleanup** (full procedure in `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`):
 ```bash
-cd "$WORKTREE_DIR" && git push origin "$BRANCH_NAME"
-cd /home/pcalnon/Development/python/Juniper/juniper-ml
-git checkout main && git pull origin main
-git merge "$BRANCH_NAME"
-git push origin main
-git worktree remove "$WORKTREE_DIR"
-git branch -d "$BRANCH_NAME"
-git push origin --delete "$BRANCH_NAME"
+# Phase 1: Push current work
+cd "$OLD_WORKTREE_DIR" && git push origin "$OLD_BRANCH"
+# Phase 2: Create new worktree BEFORE removing old (prevents CWD-trap)
+git fetch origin
+git worktree add "$NEW_WORKTREE_DIR" -b "$NEW_BRANCH" origin/main
+cd "$NEW_WORKTREE_DIR"
+# Phase 3: Create PR (do NOT merge directly to main)
+gh pr create --base main --head "$OLD_BRANCH" --title "<title>" --body "<body>"
+# Phase 4: Cleanup
+git worktree remove "$OLD_WORKTREE_DIR"
+git branch -d "$OLD_BRANCH"
 git worktree prune
+```
+
+**Automated cleanup** (via script):
+```bash
+scripts/worktree_cleanup.bash \
+  --old-worktree "$OLD_WORKTREE_DIR" \
+  --old-branch "$OLD_BRANCH" \
+  --parent-branch main
 ```
 
 ### Rules
