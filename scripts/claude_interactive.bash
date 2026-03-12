@@ -59,7 +59,9 @@ fi
 ########################################################################################################################################################################################################
 # Call Wake The Claude script with params
 echo "Launching Default Interactive session with Claude Code"
+echo "\"${SCRIPT_PATH}/wake_the_claude.bash\" ${CLAUDE_ARGS[*]}"
 "${SCRIPT_PATH}/wake_the_claude.bash" "${CLAUDE_ARGS[@]}"
+# "${SCRIPT_PATH}/wake_the_claude.bash" "${CLAUDE_ARGS[*]}"
 echo "Closed Default Interactive session with Claude Code"
 
 exit 0
