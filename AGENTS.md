@@ -120,6 +120,7 @@ cd "$WORKTREE_DIR"
 ```
 
 **Cleanup** (full procedure in `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`):
+
 ```bash
 # Phase 1: Push current work
 cd "$OLD_WORKTREE_DIR" && git push origin "$OLD_BRANCH"
@@ -136,6 +137,7 @@ git worktree prune
 ```
 
 **Automated cleanup** (via script):
+
 ```bash
 scripts/worktree_cleanup.bash \
   --old-worktree "$OLD_WORKTREE_DIR" \

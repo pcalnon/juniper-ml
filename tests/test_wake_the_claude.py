@@ -10,7 +10,6 @@ import time
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 DEFAULT_INTERACTIVE_SCRIPT_PATH = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
@@ -32,18 +31,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n"
-            "if [[ \"$1\" == \"--version\" ]]; then\n"
-            "  echo \"claude-test-version\"\n"
-            "  exit 0\n"
-            "fi\n"
-            "{\n"
-            "  echo \"__CALL__\"\n"
-            "  echo \"ARGC=$#\"\n"
-            "  for arg in \"$@\"; do\n"
-            "    printf 'ARG=%s\\n' \"$arg\"\n"
-            "  done\n"
-            "} >> \"$CLAUDE_ARGS_LOG\"\n",
+            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -51,8 +39,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
         if failing_uuidgen:
             fake_uuidgen = bin_dir / "uuidgen"
             fake_uuidgen.write_text(
-                "#!/usr/bin/env bash\n"
-                "exit 1\n",
+                "#!/usr/bin/env bash\n" "exit 1\n",
                 encoding="utf-8",
             )
             fake_uuidgen.chmod(0o755)
@@ -469,12 +456,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n"
-                f"if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
-                f"  echo \"{fallback_uuid}\"\n"
-                "  exit 0\n"
-                "fi\n"
-                "/usr/bin/cat \"$@\"\n",
+                "#!/usr/bin/env bash\n" f'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' f'  echo "{fallback_uuid}"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
             )
 
             result = self._run_script(
@@ -501,18 +483,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n"
-                "if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
-                "  echo \"not-a-uuid\"\n"
-                "  exit 0\n"
-                "fi\n"
-                "/usr/bin/cat \"$@\"\n",
+                "#!/usr/bin/env bash\n" 'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' '  echo "not-a-uuid"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
             )
             self._install_fake_command(
                 temp_dir,
                 "python3",
-                "#!/usr/bin/env bash\n"
-                f"echo \"{python_fallback_uuid}\"\n",
+                "#!/usr/bin/env bash\n" f'echo "{python_fallback_uuid}"\n',
             )
 
             result = self._run_script(
@@ -533,18 +509,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self._install_fake_command(
                 temp_dir,
                 "cat",
-                "#!/usr/bin/env bash\n"
-                "if [[ \"$1\" == \"/proc/sys/kernel/random/uuid\" ]]; then\n"
-                "  echo \"still-not-a-uuid\"\n"
-                "  exit 0\n"
-                "fi\n"
-                "/usr/bin/cat \"$@\"\n",
+                "#!/usr/bin/env bash\n" 'if [[ "$1" == "/proc/sys/kernel/random/uuid" ]]; then\n' '  echo "still-not-a-uuid"\n' "  exit 0\n" "fi\n" '/usr/bin/cat "$@"\n',
             )
             self._install_fake_command(
                 temp_dir,
                 "python3",
-                "#!/usr/bin/env bash\n"
-                "echo \"bad-python-uuid-output\"\n",
+                "#!/usr/bin/env bash\n" 'echo "bad-python-uuid-output"\n',
             )
 
             result = self._run_script(
@@ -813,18 +783,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         invocations_log = Path(temp_dir) / "claude_invocations.log"
         fake_claude = bin_dir / "claude"
         fake_claude.write_text(
-            "#!/usr/bin/env bash\n"
-            "if [[ \"$1\" == \"--version\" ]]; then\n"
-            "  echo \"claude-test-version\"\n"
-            "  exit 0\n"
-            "fi\n"
-            "{\n"
-            "  echo \"__CALL__\"\n"
-            "  echo \"ARGC=$#\"\n"
-            "  for arg in \"$@\"; do\n"
-            "    printf 'ARG=%s\\n' \"$arg\"\n"
-            "  done\n"
-            "} >> \"$CLAUDE_ARGS_LOG\"\n",
+            "#!/usr/bin/env bash\n" 'if [[ "$1" == "--version" ]]; then\n' '  echo "claude-test-version"\n' "  exit 0\n" "fi\n" "{\n" '  echo "__CALL__"\n' '  echo "ARGC=$#"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$CLAUDE_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_claude.chmod(0o755)
@@ -1223,6 +1182,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
 
+
 class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     """Runtime tests for default interactive launcher argument behavior."""
 
@@ -1238,13 +1198,7 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
         args_log = Path(temp_dir) / "default_launcher_args.log"
         fake_wake = scripts_dir / "wake_the_claude.bash"
         fake_wake.write_text(
-            "#!/usr/bin/env bash\n"
-            "{\n"
-            "  echo \"__CALL__\"\n"
-            "  for arg in \"$@\"; do\n"
-            "    printf 'ARG=%s\\n' \"$arg\"\n"
-            "  done\n"
-            "} >> \"$WTC_WRAPPER_ARGS_LOG\"\n",
+            "#!/usr/bin/env bash\n" "{\n" '  echo "__CALL__"\n' '  for arg in "$@"; do\n' "    printf 'ARG=%s\\n' \"$arg\"\n" "  done\n" '} >> "$WTC_WRAPPER_ARGS_LOG"\n',
             encoding="utf-8",
         )
         fake_wake.chmod(0o755)
@@ -1323,7 +1277,7 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
 
             args = self._extract_logged_args(args_log)
-            self.assertEqual(args[-len(passthrough_args):], passthrough_args)
+            self.assertEqual(args[-len(passthrough_args) :], passthrough_args)
 
 
 class WakeTheClaudeGitignoreTests(unittest.TestCase):
@@ -1355,10 +1309,7 @@ class WakeTheClaudeGitignoreTests(unittest.TestCase):
             text=True,
             cwd=str(REPO_ROOT),
         )
-        tracked_txt_files = [
-            f for f in result.stdout.strip().splitlines()
-            if f and UUID_REGEX.match(Path(f).stem)
-        ]
+        tracked_txt_files = [f for f in result.stdout.strip().splitlines() if f and UUID_REGEX.match(Path(f).stem)]
         self.assertEqual(
             tracked_txt_files,
             [],
