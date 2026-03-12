@@ -78,6 +78,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 Git worktrees allow multiple branches of a repository to be checked out simultaneously in separate directories. For the Juniper ecosystem, all worktrees are centralized in **`/home/pcalnon/Development/python/Juniper/worktrees/`** using a standardized naming convention.
 
 The full setup and cleanup procedures are defined in:
+
 - **`notes/WORKTREE_SETUP_PROCEDURE.md`** — Creating a worktree for a new task
 - **`notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`** — Merging, removing, and pushing after task completion (V2 — fixes CWD-trap bug)
 
@@ -105,6 +106,7 @@ Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 ### Quick Reference
 
 **Setup** (full procedure in `notes/WORKTREE_SETUP_PROCEDURE.md`):
+
 ```bash
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
 git fetch origin && git checkout main && git pull origin main
@@ -177,6 +179,7 @@ would normally be triggered. This means the handoff fires when you are within
 compaction would occur.
 
 Concretely:
+
 - If compaction would trigger at N% context utilization, begin handoff at
   (N − 5)% to (N − 1)%.
 - **Self-assessment rule**: At each turn where you are performing multi-step work,
@@ -197,6 +200,7 @@ Concretely:
 | **User request**            | User says "hand off", "new thread", or similar       |
 
 **Do NOT handoff** when:
+
 - Task is nearly complete (< 2 remaining steps)
 - Current thread is still sharp and producing correct output
 - Work is tightly coupled and splitting would lose in-flight state

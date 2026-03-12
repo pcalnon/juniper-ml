@@ -4,45 +4,131 @@
 # Application:   juniper-ml
 # File Name:     ci.yml
 # Author:        Paul Calnon
-# Version:       0.3.0
+# Version:       0.4.0
 #
 # Date Created:  2026-02-23
-# Last Modified: 2026-02-25
+# Last Modified: 2026-03-11
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Description:
 #    GitHub Actions CI/CD Pipeline for juniper-ml meta-package.
+#    - Pre-commit hooks for code quality (flake8, bandit, shellcheck, yamllint, markdownlint)
+#    - Regression tests (Python unittest + bash scripts)
 #    - Build and validate (twine check)
 #    - Documentation link validation
+#    - Security scanning (pip-audit)
 #    - Dependency documentation generation
 #
 #####################################################################################################################################################################################################
 
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - develop
+      - feature/**
+      - fix/**
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - develop
   workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
   PYTHON_TEST_VERSION: "3.12"
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Pre-commit: Code Quality Checks
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  pre-commit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+          cache: pip
+
+      - name: Install pre-commit
+        run: |
+          python -m pip install --upgrade pip
+          pip install pre-commit
+
+      - name: Cache pre-commit hooks
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684  # v4.2.3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ env.PYTHON_TEST_VERSION }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-${{ env.PYTHON_TEST_VERSION }}-
+
+      - name: Run pre-commit hooks
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Pre-commit Checks                      ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          pre-commit run --all-files --show-diff-on-failure
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Tests: Run regression tests for scripts and tooling
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  tests:
+    name: Regression Tests
+    runs-on: ubuntu-latest
+    needs: [pre-commit]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Run Python regression tests
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Python Regression Tests                ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          python3 -m unittest -v tests/test_wake_the_claude.py
+          python3 -m unittest -v tests/test_check_doc_links.py
+
+      - name: Run bash regression tests
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Bash Regression Tests                  ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          bash scripts/test_resume_file_safety.bash
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Build: Build the package and validate with twine
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   build:
     name: Build and Validate Package
     runs-on: ubuntu-latest
+    needs: [pre-commit]
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
@@ -50,7 +136,11 @@ jobs:
         run: pip install build twine
 
       - name: Build package
-        run: python -m build
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Build Package                          ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          python -m build
 
       - name: Validate package
         run: twine check dist/*
@@ -59,8 +149,6 @@ jobs:
         run: pip install -e .
 
       - name: Verify extras metadata is declared
-        # Sub-packages (juniper-data-client etc.) are not yet on PyPI, so
-        # extras can't be installed. Verify the extras are declared in metadata.
         run: |
           python -c "
           import importlib.metadata
@@ -87,12 +175,44 @@ jobs:
     name: Documentation Links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
         with:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
+
       - name: Validate Documentation Links
-        run: python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Documentation Link Validation          ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Security: pip-audit for dependency vulnerabilities
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Run pip-audit
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - pip-audit Security Scan                ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          pip install pip-audit
+          pip install -e .
+          pip-audit --strict --desc on
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Dependency Documentation: Generate pip dependency records
@@ -119,7 +239,7 @@ jobs:
       - name: Generate Dependency Documentation
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Dependency Documentation                ║"
+          echo "║       juniper-ml - Dependency Documentation               ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           bash scripts/generate_dep_docs.sh
 
@@ -140,21 +260,51 @@ jobs:
     name: Quality Gate
     runs-on: ubuntu-latest
     if: always()
-    needs: [build, docs, dependency-docs]
+    needs: [pre-commit, tests, build, docs, security, dependency-docs]
     steps:
       - name: Check Quality Gate Status
         run: |
-          echo "Build:            ${{ needs.build.result }}"
-          echo "Docs:             ${{ needs.docs.result }}"
-          echo "Dependency Docs:  ${{ needs.dependency-docs.result }}"
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Quality Gate Status                    ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "Pre-commit:        ${{ needs.pre-commit.result }}"
+          echo "Tests:             ${{ needs.tests.result }}"
+          echo "Build:             ${{ needs.build.result }}"
+          echo "Docs:              ${{ needs.docs.result }}"
+          echo "Security:          ${{ needs.security.result }}"
+          echo "Dependency Docs:   ${{ needs.dependency-docs.result }}"
+          echo ""
+
+          if [[ "${{ needs.pre-commit.result }}" != "success" ]]; then
+            echo "::error::Pre-commit checks failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.tests.result }}" != "success" ]]; then
+            echo "::error::Regression tests failed"
+            exit 1
+          fi
 
           if [[ "${{ needs.build.result }}" != "success" ]]; then
             echo "::error::Package build/validation failed"
             exit 1
           fi
+
           if [[ "${{ needs.docs.result }}" != "success" ]]; then
             echo "::error::Documentation link validation failed"
             exit 1
           fi
 
-          echo "::notice::Quality Gate PASSED ✓"
+          # Security: failure = error, skipped = OK
+          if [[ "${{ needs.security.result }}" == "failure" ]]; then
+            echo "::error::Security scan failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.dependency-docs.result }}" != "success" ]]; then
+            echo "::error::Dependency documentation generation failed"
+            exit 1
+          fi
+
+          echo "::notice::Quality Gate PASSED"
