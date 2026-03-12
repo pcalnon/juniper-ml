@@ -19,6 +19,3 @@ for i in $(grep --exclude-dir logs --exclude-dir reports  -rnI "${PASCAL_CASE_TE
 done
 
 IFS="${OLD_IFS}"
-
-
-

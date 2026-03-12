@@ -46,6 +46,7 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 - `scripts/test.bash` — Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` — Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 - `tests/test_wake_the_claude.py` — Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
+- `scripts/worktree_cleanup.bash` — Automated worktree cleanup with CWD-safe session continuity (V2 procedure)
 
 ## Ecosystem Context
 
@@ -77,8 +78,9 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 Git worktrees allow multiple branches of a repository to be checked out simultaneously in separate directories. For the Juniper ecosystem, all worktrees are centralized in **`/home/pcalnon/Development/python/Juniper/worktrees/`** using a standardized naming convention.
 
 The full setup and cleanup procedures are defined in:
+
 - **`notes/WORKTREE_SETUP_PROCEDURE.md`** — Creating a worktree for a new task
-- **`notes/WORKTREE_CLEANUP_PROCEDURE.md`** — Merging, removing, and pushing after task completion
+- **`notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`** — Merging, removing, and pushing after task completion (V2 — fixes CWD-trap bug)
 
 Read the appropriate file when starting or completing a task.
 
@@ -104,6 +106,7 @@ Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 ### Quick Reference
 
 **Setup** (full procedure in `notes/WORKTREE_SETUP_PROCEDURE.md`):
+
 ```bash
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
 git fetch origin && git checkout main && git pull origin main
@@ -116,17 +119,30 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
 
-**Cleanup** (full procedure in `notes/WORKTREE_CLEANUP_PROCEDURE.md`):
+**Cleanup** (full procedure in `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`):
+
 ```bash
-cd "$WORKTREE_DIR" && git push origin "$BRANCH_NAME"
-cd /home/pcalnon/Development/python/Juniper/juniper-ml
-git checkout main && git pull origin main
-git merge "$BRANCH_NAME"
-git push origin main
-git worktree remove "$WORKTREE_DIR"
-git branch -d "$BRANCH_NAME"
-git push origin --delete "$BRANCH_NAME"
+# Phase 1: Push current work
+cd "$OLD_WORKTREE_DIR" && git push origin "$OLD_BRANCH"
+# Phase 2: Create new worktree BEFORE removing old (prevents CWD-trap)
+git fetch origin
+git worktree add "$NEW_WORKTREE_DIR" -b "$NEW_BRANCH" origin/main
+cd "$NEW_WORKTREE_DIR"
+# Phase 3: Create PR (do NOT merge directly to main)
+gh pr create --base main --head "$OLD_BRANCH" --title "<title>" --body "<body>"
+# Phase 4: Cleanup
+git worktree remove "$OLD_WORKTREE_DIR"
+git branch -d "$OLD_BRANCH"
 git worktree prune
+```
+
+**Automated cleanup** (via script):
+
+```bash
+scripts/worktree_cleanup.bash \
+  --old-worktree "$OLD_WORKTREE_DIR" \
+  --old-branch "$OLD_BRANCH" \
+  --parent-branch main
 ```
 
 ### Rules
@@ -165,6 +181,7 @@ would normally be triggered. This means the handoff fires when you are within
 compaction would occur.
 
 Concretely:
+
 - If compaction would trigger at N% context utilization, begin handoff at
   (N − 5)% to (N − 1)%.
 - **Self-assessment rule**: At each turn where you are performing multi-step work,
@@ -185,6 +202,7 @@ Concretely:
 | **User request**            | User says "hand off", "new thread", or similar       |
 
 **Do NOT handoff** when:
+
 - Task is nearly complete (< 2 remaining steps)
 - Current thread is still sharp and producing correct output
 - Work is tightly coupled and splitting would lose in-flight state
