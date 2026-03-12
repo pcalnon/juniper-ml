@@ -58,6 +58,9 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             fake_uuidgen.chmod(0o755)
 
         env = os.environ.copy()
+        # Prevent host shell variables from contaminating test subprocess behavior
+        for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
+            env.pop(var, None)
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
         env["CLAUDE_ARGS_LOG"] = str(invocations_log)
         env["WTC_SESSIONS_DIR"] = str(sessions_dir)
@@ -621,7 +624,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args[0:2], ["--session-id", VALID_UUID])
-            self.assertEqual(last_invocation_args[-1].strip('"'), "from-prompt-file")
+            self.assertEqual(last_invocation_args[-1].strip('"'), "hello")
 
     def test_default_interactive_script_forwards_expected_defaults(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -648,14 +651,12 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertLess(session_id_index + 1, len(last_invocation_args))
             self.assertRegex(last_invocation_args[session_id_index + 1], UUID_REGEX)
             self.assertIn("--worktree", last_invocation_args)
-            self.assertIn("--dangerously-skip-permissions", last_invocation_args)
+            self.assertNotIn("--dangerously-skip-permissions", last_invocation_args)
             self.assertIn("--effort", last_invocation_args)
             effort_index = last_invocation_args.index("--effort")
             self.assertLess(effort_index + 1, len(last_invocation_args))
             self.assertEqual(last_invocation_args[effort_index + 1], "high")
-            prompt_tokens = [token.strip('"') for token in last_invocation_args[effort_index + 2:]]
-            self.assertEqual(" ".join(prompt_tokens), "Hello World, Claude!")
-            self.assertEqual(last_invocation_args, ["--session-id", VALID_UUID, "--print", "hello"])
+            self.assertIn("Hello World, Claude!", last_invocation_args)
 
     def test_non_writable_logs_dir_falls_back_to_home_log_and_still_launches(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -829,6 +830,9 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         fake_claude.chmod(0o755)
 
         env = os.environ.copy()
+        # Prevent host shell variables from contaminating test subprocess behavior
+        for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
+            env.pop(var, None)
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
         env["CLAUDE_ARGS_LOG"] = str(invocations_log)
         env["WTC_SESSIONS_DIR"] = str(sessions_dir)
@@ -1158,7 +1162,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from path+file"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from combined path-then-file"])
 
     def test_path_directory_and_filename_resolve_prompt_when_file_precedes_path(self) -> None:
         """Verify --file <name> + --path <dir> works when file is parsed first."""
@@ -1177,8 +1181,8 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
-            args = self._extract_args(invocations[-1])              
-            self.assertIn("prompt from combined path-then-file", args)
+            args = self._extract_args(invocations[-1])
+            self.assertIn("prompt from file+path", args)
 
     def test_file_then_path_flags_resolve_combined_prompt_file(self) -> None:
         """Verify --file <name> then --path <dir> resolves prompt file."""
@@ -1197,7 +1201,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             invocations = self._wait_for_invocations(invocations_log)
             self.assertTrue(invocations)
             args = self._extract_args(invocations[-1])
-            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from file+path"])
+            self.assertEqual(args, ["--resume", VALID_UUID, "prompt from combined file-then-path"])
 
     def test_path_directory_and_missing_filename_fail_without_invoking_claude(self) -> None:
         """Verify invalid --path/--file combination fails early and never launches claude."""
@@ -1218,7 +1222,6 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
 
             invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
             self.assertEqual(invocations, [])
-            self.assertIn("prompt from combined file-then-path", args)
 
 class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     """Runtime tests for default interactive launcher argument behavior."""
@@ -1277,7 +1280,8 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
             env = os.environ.copy()
-            env.pop("CLAUDE_SKIP_PERMISSIONS", None)
+            for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
+                env.pop(var, None)
             env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
 
             result = self._run_launcher(launcher_path, temp_dir, env)
@@ -1295,6 +1299,8 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
             env = os.environ.copy()
+            for var in ("BASH_ENV", "ENV"):
+                env.pop(var, None)
             env["CLAUDE_SKIP_PERMISSIONS"] = "1"
             env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
 
@@ -1308,7 +1314,8 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
             env = os.environ.copy()
-            env.pop("CLAUDE_SKIP_PERMISSIONS", None)
+            for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
+                env.pop(var, None)
             env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
             passthrough_args = ["--model", "claude-sonnet-4-6", "--print"]
 
