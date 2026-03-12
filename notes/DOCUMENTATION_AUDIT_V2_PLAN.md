@@ -43,20 +43,24 @@ A project-wide search-and-replace converted PascalCase repo names (e.g., `Junipe
 ### Steps
 
 1. For each repo:
+
    ```bash
    cd /home/pcalnon/Development/python/Juniper/<repo>
    git checkout -- .
    ```
 
 2. Verify symlinks restored:
+
    ```bash
    for repo in juniper-cascor juniper-data juniper-data-client juniper-cascor-client juniper-cascor-worker juniper-ml juniper-canopy juniper-deploy; do
      ls -la /home/pcalnon/Development/python/Juniper/$repo/CLAUDE.md
    done
    ```
+
    Each should show `CLAUDE.md -> AGENTS.md`.
 
 3. Verify Python code integrity:
+
    ```bash
    cd /home/pcalnon/Development/python/Juniper/juniper-data-client
    python -c "from juniper_data_client import JuniperDataClient; print('OK')"
@@ -75,20 +79,20 @@ A project-wide search-and-replace converted PascalCase repo names (e.g., `Junipe
 
 ### Files to Audit and Fix
 
-| File | Issues |
-|------|--------|
-| `README.md` | `conda activate juniper-cascor` -> `JuniperCascor`; annotate juniper-deploy clone URL as private |
-| `docs/install/quick-start.md` | `conda activate juniper-cascor` -> `JuniperCascor` |
-| `docs/install/environment-setup.md` | Same conda env fix |
-| `docs/testing/environment-setup.md` | Same conda env fix |
-| `docs/ci/environment-setup.md` | Same conda env fix |
-| `notes/setup_config_guides/forkserver_fix.md` | 8 instances of conda env name fix |
-| `docs/DOCUMENTATION_OVERVIEW.md` | Verify directory tree, GitHub URLs |
-| `docs/index.md` | Verify GitHub URLs (underscore vs hyphen) |
-| `docs/ci/reference.md` | Verify badge URLs (R-20 committed) |
-| `.conf` files | Check `CONDA_ENV_NAME` correctness |
-| All docs/ | Verify `JuniperDataClient` class names correct after revert |
-| AGENTS.md | Verify all paths in Key Entry Points / Documentation Files tables |
+| File                                          | Issues                                                                                           |
+|-----------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `README.md`                                   | `conda activate juniper-cascor` -> `JuniperCascor`; annotate juniper-deploy clone URL as private |
+| `docs/install/quick-start.md`                 | `conda activate juniper-cascor` -> `JuniperCascor`                                               |
+| `docs/install/environment-setup.md`           | Same conda env fix                                                                               |
+| `docs/testing/environment-setup.md`           | Same conda env fix                                                                               |
+| `docs/ci/environment-setup.md`                | Same conda env fix                                                                               |
+| `notes/setup_config_guides/forkserver_fix.md` | 8 instances of conda env name fix                                                                |
+| `docs/DOCUMENTATION_OVERVIEW.md`              | Verify directory tree, GitHub URLs                                                               |
+| `docs/index.md`                               | Verify GitHub URLs (underscore vs hyphen)                                                        |
+| `docs/ci/reference.md`                        | Verify badge URLs (R-20 committed)                                                               |
+| `.conf` files                                 | Check `CONDA_ENV_NAME` correctness                                                               |
+| All docs/                                     | Verify `JuniperDataClient` class names correct after revert                                      |
+| AGENTS.md                                     | Verify all paths in Key Entry Points / Documentation Files tables                                |
 
 ### Verification
 
@@ -104,21 +108,21 @@ grep -rn "juniper-dataClient\|juniper-cascorClient" docs/ --include="*.md"
 **Worktree branch**: `docs/audit-v2`
 **Conda env**: `JuniperPython`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 2
 
-| File | Issues |
-|------|--------|
-| `README.md` | `conda activate juniper-canopy` -> `conda activate JuniperPython`; annotate deploy URL; R-21: version 0.25.0 -> 0.3.0 |
-| `.github/instructions/copilot-instructions.md` | `JuniperCanopy` -> `JuniperPython` (3 instances) |
-| `notes/CONDA_DEPENDENCY_FILE_HEADER.md` | `name: juniper-canopy` -> `name: JuniperPython` |
-| `docs/ci_cd/CICD_ENVIRONMENT_SETUP.md` | `name: juniper-canopy` conda ref |
-| AGENTS.md | R-16: `docs/CONSTANTS_GUIDE.md` -> `docs/cascor/CONSTANTS_GUIDE.md` |
-| AGENTS.md | R-17: `src/constants.py` -> `src/canopy_constants.py` |
-| AGENTS.md | R-18: `notes/DEVELOPMENT_ROADMAP.md` -> `notes/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP.md` |
-| `notes/templates/TEMPLATE_SECURITY_RELEASE_NOTES.md` | R-35: `../CHANGELOG.md` -> `../../CHANGELOG.md` |
-| `.conf` files | Check conda env name correctness in conf/init.conf, setup scripts |
+| File                                                 | Issues                                                                                                                |
+|------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `README.md`                                          | `conda activate juniper-canopy` -> `conda activate JuniperPython`; annotate deploy URL; R-21: version 0.25.0 -> 0.3.0 |
+| `.github/instructions/copilot-instructions.md`       | `JuniperCanopy` -> `JuniperPython` (3 instances)                                                                      |
+| `notes/CONDA_DEPENDENCY_FILE_HEADER.md`              | `name: juniper-canopy` -> `name: JuniperPython`                                                                       |
+| `docs/ci_cd/CICD_ENVIRONMENT_SETUP.md`               | `name: juniper-canopy` conda ref                                                                                      |
+| AGENTS.md                                            | R-16: `docs/CONSTANTS_GUIDE.md` -> `docs/cascor/CONSTANTS_GUIDE.md`                                                   |
+| AGENTS.md                                            | R-17: `src/constants.py` -> `src/canopy_constants.py`                                                                 |
+| AGENTS.md                                            | R-18: `notes/DEVELOPMENT_ROADMAP.md` -> `notes/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP.md`                    |
+| `notes/templates/TEMPLATE_SECURITY_RELEASE_NOTES.md` | R-35: `../CHANGELOG.md` -> `../../CHANGELOG.md`                                                                       |
+| `.conf` files                                        | Check conda env name correctness in conf/init.conf, setup scripts                                                     |
 
-### Verification
+### Verification, Phase 2
 
 ```bash
 grep -rn "conda activate juniper-" README.md docs/ notes/ --include="*.md"
@@ -132,25 +136,26 @@ grep -rn "JuniperCanopy" .github/ notes/ docs/ --include="*.md"
 **Worktree branch**: `docs/audit-v2`
 **Conda env**: `JuniperData`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 3
 
-| File | Issues |
-|------|--------|
-| `docs/QUICK_START.md` | `conda activate juniper-data` -> `JuniperData`; version 0.4.0 -> 0.4.2; clone URL fix |
-| `README.md` | R-23: verify ruff vs black/isort docs; annotate deploy URL |
-| `docs/CONSTANTS_GUIDE.md` | R-07: Fix port 8050 -> 8100 (or flag as canopy artifact for removal) |
-| `docs/api/API_REFERENCE.md` | R-07: Fix port 8050 -> 8100 (or flag as canopy artifact) |
-| `docs/` directory broadly | R-01: Audit for canopy documentation that doesn't belong (MAJOR - flag/annotate/remove) |
-| `.conf` files | Check conda env name correctness |
+| File                        | Issues                                                                                  |
+|-----------------------------|-----------------------------------------------------------------------------------------|
+| `docs/QUICK_START.md`       | `conda activate juniper-data` -> `JuniperData`; version 0.4.0 -> 0.4.2; clone URL fix   |
+| `README.md`                 | R-23: verify ruff vs black/isort docs; annotate deploy URL                              |
+| `docs/CONSTANTS_GUIDE.md`   | R-07: Fix port 8050 -> 8100 (or flag as canopy artifact for removal)                    |
+| `docs/api/API_REFERENCE.md` | R-07: Fix port 8050 -> 8100 (or flag as canopy artifact)                                |
+| `docs/` directory broadly   | R-01: Audit for canopy documentation that doesn't belong (MAJOR - flag/annotate/remove) |
+| `.conf` files               | Check conda env name correctness                                                        |
 
-### R-01 Assessment
+### R-01 Assessment, Phase 3
 
 The entire `docs/` directory (~30 files) in juniper-data contains documentation written for juniper-canopy. Only `docs/api/JUNIPER_DATA_API.md`, `docs/QUICK_START.md`, and `docs/api/API_SCHEMAS.md` are genuine juniper-data content. Strategy:
+
 - Keep genuine juniper-data docs
 - Add a `docs/README.md` noting which files are placeholder/canopy-era and pending rewrite
 - Do NOT delete files in this pass (too destructive for a docs audit)
 
-### Verification
+### Verification, Phase 3
 
 ```bash
 grep -rn "conda activate juniper-" docs/ README.md --include="*.md"
@@ -163,15 +168,15 @@ grep -rn "8050\|Canopy\|canopy" docs/ --include="*.md" | head -20
 
 **Worktree branch**: `docs/audit-v2`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 4
 
-| File | Issues |
-|------|--------|
+| File          | Issues                                                                                  |
+|---------------|-----------------------------------------------------------------------------------------|
 | All .md files | Verify `JuniperDataClient`/`JuniperDataError` class names restored after Phase 0 revert |
-| README.md | R-24: Python version >=3.11 -> >=3.12 (verify if already committed) |
-| AGENTS.md | R-25: Version 0.3.0 -> 0.3.1 (verify if already committed) |
+| README.md     | R-24: Python version >=3.11 -> >=3.12 (verify if already committed)                     |
+| AGENTS.md     | R-25: Version 0.3.0 -> 0.3.1 (verify if already committed)                              |
 
-### Verification
+### Verification, Phase 4
 
 ```bash
 grep -rn "juniper-dataClient\|juniper-dataError" --include="*.md"
@@ -183,15 +188,15 @@ grep -rn "juniper-dataClient\|juniper-dataError" --include="*.md"
 
 **Worktree branch**: `docs/audit-v2`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 5
 
-| File | Issues |
-|------|--------|
-| AGENTS.md | R-03: Verify `training_stream.py`/`control_stream.py` -> `ws_client.py` fix (committed) |
-| All .md files | Verify `JuniperCascorClient`/`JuniperCascorClientError` class names |
-| CHANGELOG.md | R-27: Verify exists (committed) |
+| File          | Issues                                                                                  |
+|---------------|-----------------------------------------------------------------------------------------|
+| AGENTS.md     | R-03: Verify `training_stream.py`/`control_stream.py` -> `ws_client.py` fix (committed) |
+| All .md files | Verify `JuniperCascorClient`/`JuniperCascorClientError` class names                     |
+| CHANGELOG.md  | R-27: Verify exists (committed)                                                         |
 
-### Verification
+### Verification, Phase 5
 
 ```bash
 grep -rn "juniper-cascorClient\|juniper-cascorError\|training_stream\|control_stream" --include="*.md"
@@ -203,13 +208,13 @@ grep -rn "juniper-cascorClient\|juniper-cascorError\|training_stream\|control_st
 
 **Worktree branch**: `docs/audit-v2`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 6
 
-| File | Issues |
-|------|--------|
-| AGENTS.md | R-26: Verify env var defaults fix (committed) |
-| CHANGELOG.md | R-27: Verify exists |
-| All .md files | Check for PascalCase class name corruption |
+| File          | Issues                                        |
+|---------------|-----------------------------------------------|
+| AGENTS.md     | R-26: Verify env var defaults fix (committed) |
+| CHANGELOG.md  | R-27: Verify exists                           |
+| All .md files | Check for PascalCase class name corruption    |
 
 ---
 
@@ -217,15 +222,15 @@ grep -rn "juniper-cascorClient\|juniper-cascorError\|training_stream\|control_st
 
 **Worktree branch**: `docs/audit-v2`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 7
 
-| File | Issues |
-|------|--------|
+| File                                                      | Issues                                                                                |
+|-----------------------------------------------------------|---------------------------------------------------------------------------------------|
 | `notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` | ~30 `juniper-dataClient`/`juniper-cascorClient` instances (verify revert fixes these) |
-| `notes/CANOPY_REPO_RENAME_MIGRATION_PLAN.md` | Leave as-is (this doc analyzes the rename; kebab examples are intentional) |
-| README.md | R-39 deploy link fix (verify committed); annotate deploy URL as private |
+| `notes/CANOPY_REPO_RENAME_MIGRATION_PLAN.md`              | Leave as-is (this doc analyzes the rename; kebab examples are intentional)            |
+| README.md                                                 | R-39 deploy link fix (verify committed); annotate deploy URL as private               |
 
-### Verification
+### Verification, Phase 7
 
 ```bash
 grep -rn "juniper-dataClient\|juniper-cascorClient" --include="*.md"
@@ -237,14 +242,14 @@ grep -rn "juniper-dataClient\|juniper-cascorClient" --include="*.md"
 
 **Worktree branch**: `docs/audit-v2`
 
-### Files to Audit and Fix
+### Files to Audit and Fix, Phase 8
 
-| File | Issues |
-|------|--------|
-| README.md | Env var documentation completeness |
-| AGENTS.md | Verify env vars match docker-compose.yml |
-| CHANGELOG.md | R-27: Verify exists |
-| All docs | 8 undocumented env vars found in code - add to AGENTS.md |
+| File         | Issues                                                   |
+|--------------|----------------------------------------------------------|
+| README.md    | Env var documentation completeness                       |
+| AGENTS.md    | Verify env vars match docker-compose.yml                 |
+| CHANGELOG.md | R-27: Verify exists                                      |
+| All docs     | 8 undocumented env vars found in code - add to AGENTS.md |
 
 ---
 
@@ -252,15 +257,15 @@ grep -rn "juniper-dataClient\|juniper-cascorClient" --include="*.md"
 
 **No worktree** — parent is not a git repo; edit files directly.
 
-### Files to Audit and Fix
+### Files to Audit and F1x, Phase 9
 
-| File | Issues |
-|------|--------|
-| `AGENTS.md`/`CLAUDE.md` | Verify conda env table, legacy directory table, directory structure tree |
-| `AGENTS.md` | R-37: Add architectural dependency note for cascor-worker |
-| `AGENTS.md` | R-38: Add JUNIPER_DATA_URL context-dependent default note |
-| `notes/WORKTREE_IMPLEMENTATION_PLAN.md` | R-44: Update repo count 7 -> 8 |
-| `notes/STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md` | R-45: Update status |
+| File                                              | Issues                                                                   |
+|---------------------------------------------------|--------------------------------------------------------------------------|
+| `AGENTS.md`/`CLAUDE.md`                           | Verify conda env table, legacy directory table, directory structure tree |
+| `AGENTS.md`                                       | R-37: Add architectural dependency note for cascor-worker                |
+| `AGENTS.md`                                       | R-38: Add JUNIPER_DATA_URL context-dependent default note                |
+| `notes/WORKTREE_IMPLEMENTATION_PLAN.md`           | R-44: Update repo count 7 -> 8                                           |
+| `notes/STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md` | R-45: Update status                                                      |
 
 ---
 
@@ -269,50 +274,57 @@ grep -rn "juniper-dataClient\|juniper-cascorClient" --include="*.md"
 Run global checks after all per-repo work:
 
 ### 10.1 Conda Environment Names
+
 ```bash
 grep -rn "conda activate" juniper-*/README.md juniper-*/docs/**/*.md juniper-*/notes/WORKTREE_SETUP_PROCEDURE.md
 ```
 
 Expected correct mappings:
 
-| Repo | Env Name |
-|------|----------|
+| Repo           | Env Name        |
+|----------------|-----------------|
 | juniper-cascor | `JuniperCascor` |
-| juniper-data | `JuniperData` |
+| juniper-data   | `JuniperData`   |
 | juniper-canopy | `JuniperPython` |
 
 ### 10.2 PascalCase Class Names
+
 ```bash
 grep -rn "juniper-[a-zA-Z]*Client\|juniper-[a-zA-Z]*Error" juniper-*/ --include="*.md" | grep -v legacy | grep -v audit_data | grep -v history
 ```
+
 Expected: zero matches.
 
 ### 10.3 GitHub URL Underscore Check
+
 ```bash
 grep -rn "github.com/pcalnon/juniper_" juniper-*/ --include="*.md" | grep -v legacy | grep -v audit_data
 ```
+
 Expected: zero matches.
 
 ### 10.4 Deploy URL Annotation
+
 Verify all `github.com/pcalnon/juniper-deploy` references are annotated as private.
 
 ### 10.5 Version Consistency
+
 For each repo, verify AGENTS.md/README.md version matches `pyproject.toml`.
 
 ---
 
 ## Execution Summary
 
-| Phase | Repo | Priority | Dependencies |
-|-------|------|----------|-------------|
-| 0 | All 8 repos | BLOCKER | None |
-| 1 | juniper-cascor | Critical | Phase 0 |
-| 2 | juniper-canopy | Critical | Phase 0 |
-| 3 | juniper-data | High | Phase 0 |
-| 4 | juniper-data-client | High | Phase 0 |
-| 5 | juniper-cascor-client | Medium | Phase 0 |
-| 6 | juniper-cascor-worker | Medium | Phase 0 |
-| 7 | juniper-ml | Medium | Phase 0 |
-| 8 | juniper-deploy | Medium | Phase 0 |
-| 9 | Parent directory | Low | Phases 1-8 |
-| 10 | Cross-repo verification | Required | Phases 1-9 |
+| Phase | Repo                    | Priority | Dependencies |
+|-------|-------------------------|----------|--------------|
+| 0     | All 8 repos             | BLOCKER  | None         |
+| 1     | juniper-cascor          | Critical | Phase 0      |
+| 2     | juniper-canopy          | Critical | Phase 0      |
+| 3     | juniper-data            | High     | Phase 0      |
+| 4     | juniper-data-client     | High     | Phase 0      |
+| 5     | juniper-cascor-client   | Medium   | Phase 0      |
+| 6     | juniper-cascor-worker   | Medium   | Phase 0      |
+| 7     | juniper-ml              | Medium   | Phase 0      |
+| 8     | juniper-deploy          | Medium   | Phase 0      |
+| 9     | Parent directory        | Low      | Phases 1-8   |
+| 10    | Cross-repo verification | Required | Phases 1-9   |

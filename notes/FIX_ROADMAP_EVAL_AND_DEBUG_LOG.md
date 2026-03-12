@@ -42,17 +42,17 @@ This eliminates `eval` entirely while preserving the exact same matching behavio
 
 ## Issue 2: `debug_log` Called Before Definition (Lines 21, 32, 41, 62, 66)
 
-### Root Cause
+### Root Cause, Issue 2
 
 `debug_log()` is defined on line 73, but called on lines 21, 32, 41, 62, and 66 — all in the constants/flags section above the function definitions block. When bash encounters an undefined function, it emits `debug_log: command not found` to stderr. This noise breaks tests that assert on stderr content (e.g., `test_session_id_save_rejects_symlink_target` asserts `"symlink" in result.stderr`).
 
-### Fix Approach
+### Fix Approach, Issue 2
 
 Move `debug_log()` and `redact_uuid()` definitions to immediately after the globals section (after line 15), before the first `debug_log` call on line 21. `redact_uuid()` is moved alongside because `debug_log` doesn't depend on it but they form a logical pair, and `redact_uuid` is also called from multiple functions that come later.
 
 The `matches_pattern()`, `is_valid_uuid()`, `save_session_id()`, `retrieve_session_id()`, `validate_session_id()`, and `usage()` functions remain in the existing function definitions block (currently starting at line 72), since they are not called until after that block.
 
-### Validation
+### Validation, Issue 2
 
 - Lines 21, 32, 41, 62, 66: all call `debug_log` — will now find it defined above
 - `redact_uuid` first called inside `save_session_id` (line 126) and `validate_session_id` (line 142) — both after the definitions block, no ordering issue currently, but moving it early is harmless and consistent

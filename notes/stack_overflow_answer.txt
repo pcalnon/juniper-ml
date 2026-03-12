@@ -1,0 +1,75 @@
+First off, the project environment described in the question feels like it would benefit from some extra time and thought.
+
+That said, one answer to the specifics of your question could be using the fact that conda environments can be activated and deactivated programmatically.  The "myscript" script can be modified by adding the following two lines.  First, run the conda install's activation script.  Then use the conda deactivate command to return your environment to its vanilla, Ubuntu state.
+
+# /opt/miniforge3/etc/profile.d/conda.sh for example
+/path/to/conda/activation/script/conda.sh
+conda deactivate
+
+After the compilations are complete, the "myscript" script could then reactivate the original conda environment before continuing to execute the remainder of its code.
+
+# as above:
+/path/to/conda/activation/script/conda.sh
+conda activate myproject
+
+I'll add a sample script since I ended up writing one to check this answer.
+
+#!/usr/bin/env bash
+
+# conda_install_dir="/path/to/conda/install/dir"
+conda_install_dir="/opt/miniforge3"
+conda_activate_dir="${conda_install_dir}/etc/profile.d"
+conda_activate_script="${conda_activate_dir}/conda.sh"
+
+# Define function to list currently active conda env
+function get_active_conda_env() {
+    # List active conda env name (indicated by "*") after ignoring commented lines and parsing env name using awk
+    conda env list | grep -v -e "^\ *#.*$" | grep "\*" | awk -F " " '{print $1;}'
+}
+
+# Get and Display original conda env
+active_conda_env="$(get_active_conda_env)"
+echo "Initially Active Conda Env: \"${active_conda_env}\""
+
+
+####################################################################
+#
+# Run script code, as needed, BEFORE source code compilation
+#
+####################################################################
+
+
+source "${conda_activate_script}"
+conda deactivate
+echo "Deactivated Conda Env: \"$(get_active_conda_env)\""
+
+####################################################################
+#
+# run source code compilation here, using default Ubuntu env
+#
+####################################################################
+
+source "${conda_activate_script}"
+conda activate "${active_conda_env}"
+
+# Display New conda env
+echo "Final Active Conda Env: \"$(get_active_conda_env)\""
+
+
+####################################################################
+#
+# Run script code, as needed, AFTER source code compilation
+#
+####################################################################
+
+I'm not completely certain that I've understood your question correctly, so I'm going to list the assumptions I made interpreting the details of your situation here.
+
+Your project, "myproject", requires a conda environment called "myproject".
+
+A part of your "myproject" project is a script that I'll call "myscript.bash".
+
+Since the script language wasn't specified but the OS was listed as Unbutu 24.04, I'm assuming that it's a bash shell script.
+
+The "myscript" script, as part of the "myproject" project, requires the "myproject" conda environment  to run the non-compilation parts of its code.
+
+

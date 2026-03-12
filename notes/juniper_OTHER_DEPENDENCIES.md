@@ -16,30 +16,30 @@ For conda/mamba-managed dependencies, see `conf/conda_environment_ci.yaml`.
 
 ## Build & Packaging Tools
 
-| Dependency | Version | Management Method | Purpose |
-|------------|---------|-------------------|---------|
-| build | >=1.0.0 | pip | Python package builder (`python -m build`) |
-| twine | >=4.0.0 | pip | Package upload/validation for PyPI |
-| setuptools | >=61.0 | pip | Build backend (declared in pyproject.toml) |
-| wheel | latest | pip | Wheel format support |
+| Dependency | Version | Management Method | Purpose                                    |
+|------------|---------|-------------------|--------------------------------------------|
+| build      | >=1.0.0 | pip               | Python package builder (`python -m build`) |
+| twine      | >=4.0.0 | pip               | Package upload/validation for PyPI         |
+| setuptools | >=61.0  | pip               | Build backend (declared in pyproject.toml) |
+| wheel      | latest  | pip               | Wheel format support                       |
 
 ## CI/CD Dependencies
 
-| Dependency | Version | Management Method | Purpose |
-|------------|---------|-------------------|---------|
-| GitHub Actions | N/A | github | CI/CD platform |
-| actions/checkout | v4 | github-action | Repository checkout |
-| actions/setup-python | v5 | github-action | Python environment setup |
-| actions/upload-artifact | v4 | github-action | CI artifact storage |
-| conda-incubator/setup-miniconda | v3 | github-action | Conda/Miniforge setup in CI |
-| pypa/gh-action-pypi-publish | release/v1 | github-action | PyPI trusted publishing |
+| Dependency                      | Version    | Management Method | Purpose                     |
+|---------------------------------|------------|-------------------|-----------------------------|
+| GitHub Actions                  | N/A        | github            | CI/CD platform              |
+| actions/checkout                | v4         | github-action     | Repository checkout         |
+| actions/setup-python            | v5         | github-action     | Python environment setup    |
+| actions/upload-artifact         | v4         | github-action     | CI artifact storage         |
+| conda-incubator/setup-miniconda | v3         | github-action     | Conda/Miniforge setup in CI |
+| pypa/gh-action-pypi-publish     | release/v1 | github-action     | PyPI trusted publishing     |
 
 ## Development Tools
 
-| Dependency | Version | Management Method | Purpose |
-|------------|---------|-------------------|---------|
-| git | >=2.30 | apt / system | Version control |
-| conda / mamba | latest | miniforge3 | Environment management |
+| Dependency    | Version | Management Method | Purpose                |
+|---------------|---------|-------------------|------------------------|
+| git           | >=2.30  | apt / system      | Version control        |
+| conda / mamba | latest  | miniforge3        | Environment management |
 
 ## Notes
 
