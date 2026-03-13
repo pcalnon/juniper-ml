@@ -59,9 +59,9 @@ function redact_uuid() {
     local value="$1"
     # if [[ ${#value} -ge 12 ]]; then
     if (( ${#value} >= 12 )); then
-        echo "wake_the_claude: ${value:0:8}...${value: -4}"
+        echo "${value:0:8}...${value: -4}"
     else
-        echo "wake_the_claude: [redacted]"
+        echo "[redacted]"
     fi
 }
 
