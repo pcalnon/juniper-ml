@@ -49,9 +49,12 @@ mkdir -p "${SESSIONS_DIR}" "${LOGS_DIR}"
 ########################################################################################################################################################################
 # Early function definitions (must precede top-level calls below)
 ########################################################################################################################################################################
+
+# TODO: this isn't going to stderr?????
+
 function debug_log() {
     if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
-        echo "wake_the_claude: ${*}"
+        echo "wake_the_claude: ${*}" 1>&2
     fi
 }
 
@@ -135,9 +138,9 @@ function matches_pattern() {
     for candidate in "${candidates[@]}"; do
         candidate="${candidate#"${candidate%%[![:space:]]*}"}"
         candidate="${candidate%"${candidate##*[![:space:]]}"}"
-        [[ "${ip_value}" == "${candidate}" ]] && return 0
+        [[ "${ip_value}" == "${candidate}" ]] && return "${TRUE}"
     done
-    return 1
+    return "${FALSE}"
 }
 
 
@@ -145,13 +148,13 @@ function matches_pattern() {
 function is_valid_uuid() {
     # example uuid="7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
     local uuid="$1"
-    debug_log "Validating UUID format" >&2
+    debug_log "Validating UUID format"
     if [[ ${uuid//-/} =~ ^[[:xdigit:]]{32}$ ]]; then
-        debug_log "UUID is valid: $(redact_uuid "${uuid}")" >&2
-        return 0
+        debug_log "UUID is valid: $(redact_uuid "${uuid}")"
+        return "${TRUE}"
     else
-        debug_log "UUID is invalid" >&2
-        return 1
+        debug_log "UUID is invalid"
+        return "${FALSE}"
     fi
 }
 
@@ -159,28 +162,42 @@ function is_valid_uuid() {
 # Generate UUID with fallbacks for environments without uuidgen
 function generate_uuid() {
     local generated_uuid=""
-    if command -v uuidgen >/dev/null 2>&1; then
+    # if command -v uuidgen >/dev/null 2>&1; then
+    if [[ ( "${generated_uuid}" == "" ) && ( -x "$(command -v uuidgen)" ) ]]; then
+        # generated_uuid="$(uuidgen 2>/dev/null)"
         generated_uuid="$(uuidgen 2>/dev/null)"
-        if is_valid_uuid "${generated_uuid}"; then
-            debug_log "Generated UUID: ${generated_uuid}"
-            return "${TRUE}"
-        fi
+        # if is_valid_uuid "${generated_uuid}"; then
+        #     debug_log "Generated UUID: ${generated_uuid}"
+        #     # echo "${generated_uuid}"
+        #     # return "${TRUE}"
+        # fi
     fi
-    if [[ -r "/proc/sys/kernel/random/uuid" ]]; then
+    if [[ ( "${generated_uuid}" == "" ) && ( -r "/proc/sys/kernel/random/uuid" ) ]]; then
         generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null)"
-        if is_valid_uuid "${generated_uuid}"; then
-            debug_log "Generated UUID: ${generated_uuid}"
-            return "${TRUE}"
-        fi
+        # if is_valid_uuid "${generated_uuid}"; then
+        #     debug_log "Generated UUID: ${generated_uuid}"
+        #     # echo "${generated_uuid}"
+        #     # return "${TRUE}"
+        # fi
     fi
-    if command -v python3 >/dev/null 2>&1; then
+    if [[ ( "${generated_uuid}" == "" ) && ( -x "$(command -v python3)" ) ]]; then
         generated_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null)"
-        if is_valid_uuid "${generated_uuid}"; then
-            debug_log "Generated UUID: ${generated_uuid}"
-            return "${TRUE}"
-        fi
+        # if is_valid_uuid "${generated_uuid}"; then
+        #     debug_log "Generated UUID: ${generated_uuid}"
+        #     # echo "${generated_uuid}"
+        #     # return "${TRUE}"
+        # fi
     fi
-    return "${FALSE}"
+    if [[ "${generated_uuid}" == "" ]]; then
+        debug_log "Error: No valid UUID generated"
+        return "${FALSE}"
+    elif [[ "$(is_valid_uuid "${generated_uuid}")" == "${FALSE}" ]]; then
+        debug_log "Error: Generated UUID is not a valid UUID"
+        return "${FALSE}"
+    fi
+    debug_log "Generated UUID: ${generated_uuid}"
+    echo "${generated_uuid}"
+    return "${TRUE}"
 }
 
 
@@ -191,29 +208,35 @@ function save_session_id() {
     local session_id
     session_id="$(echo "${session_id_value}" | awk -F " " '{print $2;}')"
     if ! is_valid_uuid "${session_id}"; then
-        echo "Error: Session ID is not a valid UUID — refusing to write file" >&2
+        echo "Error: Session ID is not a valid UUID — refusing to write file"
         return "${FALSE}"
     fi
     local safe_filename
     safe_filename="$(basename "${session_id}").txt"
     local target_path="${SESSIONS_DIR}/${safe_filename}"
     if [[ -L "${target_path}" ]]; then
-        echo "Error: target file is a symlink — refusing to write" >&2
+        echo "Error: target file is a symlink — refusing to write"
         return "${FALSE}"
     fi
     echo "${session_id}" > "${target_path}"
     debug_log "Saved Session ID $(redact_uuid "${session_id}") to file: ${target_path}"
+    return "${TRUE}"
 }
 
 
 # retrieve_session_id(): Read session ID from a file in SESSIONS_DIR
 function retrieve_session_id() {
-    local session_id_filename="$1"
-    debug_log "Retrieving Session ID from file: ${SESSIONS_DIR}/${session_id_filename}" >&2
+    # local session_id_filename="$1"
+    local session_id_file="$1"
+    # debug_log "Retrieving Session ID from file: ${SESSIONS_DIR}/${session_id_filename}"
+    debug_log "Retrieving Session ID from file: ${session_id_file}"
     local session_id
-    session_id="$(cat "${SESSIONS_DIR}/${session_id_filename}")"
-    debug_log "Completed retrieving Session ID from file: \"${session_id_filename}\"" >&2
+    # session_id="$(cat "${SESSIONS_DIR}/${session_id_filename}")"
+    session_id="$(cat "${session_id_file}")"
+    # debug_log "Completed retrieving Session ID from file: \"${session_id_filename}\""
+    debug_log "Completed retrieving Session ID from file: \"${session_id_file}\""
     echo "${session_id}"
+    return "${TRUE}"
 }
 
 
@@ -226,11 +249,11 @@ function maybe_remove_generated_session_id_file() {
     local expected_filename="${session_id}.txt"
     # shellcheck disable=SC2317
     if [[ "${session_id_filename}" == "${expected_filename}" ]]; then
-        debug_log "Removing generated session id file: \"${SESSIONS_DIR}/${session_id_filename}\"" >&2
+        debug_log "Removing generated session id file: \"${SESSIONS_DIR}/${session_id_filename}\""
         rm -f "${SESSIONS_DIR}/${session_id_filename}"
-        debug_log "Completed removing generated session id file: \"${session_id_filename}\"" >&2
+        debug_log "Completed removing generated session id file: \"${session_id_filename}\""
     else
-        debug_log "Preserving session id file because filename is not generated by this script: \"${session_id_filename}\"" >&2
+        debug_log "Preserving session id file because filename is not generated by this script: \"${session_id_filename}\""
     fi
 }
 
@@ -238,35 +261,42 @@ function maybe_remove_generated_session_id_file() {
 # validate_session_id(): Validate session ID as UUID or resolve from session file
 function validate_session_id() {
     local session_id="$1"
-    local session_id_filename=""
-    debug_log "Validating Session ID: $(redact_uuid "${session_id}")" >&2
+    local session_id_filename="${session_id}"
+    local session_id_file="${SESSIONS_DIR}/${session_id_filename}"
+
+    # 1st Pass: Check if the session id is empty or invalid
+    debug_log "Validating Session ID, 1st Pass: \"$(redact_uuid "${session_id}")\""
     if [[ "${session_id}" == "" ]]; then
-        debug_log "Session ID is empty" >&2
+        debug_log "Session ID validation, 1st Pass: Failed for empty session id"
         return "${FALSE}"
-    elif is_valid_uuid "${session_id}"; then
-        debug_log "Session ID is valid: $(redact_uuid "${session_id}")" >&2
-    elif [[ "${session_id}" == */* ]]; then
-        debug_log "Session ID filename contains path separators — rejected" >&2
+    elif [[ "${session_id_filename}" == */* ]]; then
+        debug_log "Session ID validation, 1st Pass: Failed for session id filename containing path separators"
         return "${FALSE}"
-    elif [[ "${session_id}" != *.txt ]]; then
-        debug_log "Session ID filename must have .txt extension — rejected" >&2
+    elif [[ "${session_id_filename}" != *.txt ]]; then
+        debug_log "Session ID validation, 1st Pass: Failed for session id filename not having .txt extension"
         return "${FALSE}"
-    elif [[ -f "${SESSIONS_DIR}/${session_id}" ]]; then
-        session_id_filename="${session_id}"
-        debug_log "Session ID is a file: \"${SESSIONS_DIR}/${session_id_filename}\"" >&2
-        session_id="$(retrieve_session_id "${session_id_filename}")"
-        debug_log "Completed retrieving Session ID from file: \"${session_id_filename}\"" >&2
-        if is_valid_uuid "${session_id}"; then
-            debug_log "Session ID is valid: $(redact_uuid "${session_id}")" >&2
-        else
-            debug_log "Session ID file did not contain a valid UUID" >&2
-            return "${FALSE}"
-        fi
     else
-        debug_log "Session ID is invalid" >&2
+        debug_log "Session ID vaidation, 1st Pass: Succeeded for \"$(redact_uuid "${session_id}")\""
+    fi
+    # 2nd Pass: Step 1: Check if the session id is a file and retrieve the session id from the file
+    if [[ -f "${session_id_file}" ]]; then
+        debug_log "Session ID is a file: \"${session_id_file}\""
+        session_id="$(retrieve_session_id "${session_id_file}")"
+        debug_log "Completed retrieving Session ID from file: \"$(redact_uuid "${session_id}")\""
+    else
+        debug_log "Verified Session ID is not a file, Checking for valid UUID: \"$(redact_uuid "${session_id}")\""
+    fi
+    # 2nd Pass: Step 2: Check if the session id is a valid uuid
+    if is_valid_uuid "${session_id}"; then
+        debug_log "Session ID is valid: \"$(redact_uuid "${session_id}")\""
+    else
+        debug_log "Session ID file did not contain a valid UUID"
         return "${FALSE}"
     fi
+    # Return the validated session id
+    debug_log "Session ID validation, 2nd Pass: Succeeded for \"$(redact_uuid "${session_id}")\""
     echo "${session_id}"
+    return "${TRUE}"
 }
 
 
@@ -483,6 +513,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             debug_log "Generated new Session ID: $(redact_uuid "${generated_uuid}"), ${#CLAUDE_CODE_PARAMS[@]} args"
         fi
         if ! save_session_id "${SESSION_ID_VALUE}"; then
+
             debug_log "Error: Session ID value is invalid. Exiting..."
             usage "${FALSE}"
         fi
@@ -588,7 +619,7 @@ debug_log "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
 
 CLAUDE_BIN="$(type -P claude 2>/dev/null || true)"
 if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
-    debug_log "Error: claude command not found in PATH" >&2
+    debug_log "Error: claude command not found in PATH"
     exit 1
 fi
 
@@ -602,7 +633,7 @@ if [[ "${HEADLESS_VALUE}" != "" ]]; then
         if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
             NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
         else
-            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
+            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}"
             exit 1
         fi
     fi
@@ -615,7 +646,7 @@ else
 fi
 NOHUP_STATUS=$?
 if [[ "${NOHUP_STATUS}" != "0" ]]; then
-    debug_log "Error: Failed to launch claude with nohup" >&2
+    debug_log "Error: Failed to launch claude with nohup"
     exit 1
 fi
 debug_log "Completed Executing Claude Code"
