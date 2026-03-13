@@ -234,75 +234,6 @@ function validate_session_id() {
     echo "${session_id}"
 }
 
-function matches_pattern() {
-    # shellcheck disable=SC2034
-    local ip_value="$1"
-    local pattern="$2"
-    eval "case \"\${ip_value}\" in ${pattern}) return 0;; *) return 1;; esac"
-}
-
-# Validate UUID
-function is_valid_uuid() {
-    # example uuid="7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
-    local uuid="$1"
-    echo "Validating UUID: \"${uuid}\""
-    if [[ ${uuid//-/} =~ ^[[:xdigit:]]{32}$ ]]; then
-        echo "UUID is valid: \"${uuid}\""
-        return 0
-    else
-        echo "UUID is invalid: \"${uuid}\""
-        return 1
-    fi
-}
-
-# Save Session ID to file
-function save_session_id() {
-    local session_id_value="$1"
-    echo "Extract Session ID from Session ID Value: \"${session_id_value}\" and save to file"
-    session_id="$(echo "${session_id_value}" | awk -F " " '{print $2;}')"
-    echo "${session_id}" > "${session_id}.txt"
-    echo "Completed extracting Session ID: \"${session_id}\" from Session ID Value: \"${session_id_value}\""
-}
-
-# Retrieve Session ID from file
-function retrieve_session_id() {
-    local session_id_filename="$1"
-    echo "Retrieve saved Session ID from file: ${session_id_filename}"
-    session_id="$(cat "${session_id_filename}")"
-    echo "Completed retrieving saved Session ID: \"${session_id}\" from file: \"${session_id_filename}\""
-    echo "Removing file: \"${session_id_filename}\""
-    rm -f "${session_id_filename}"
-    echo "Completed removing file: \"${session_id_filename}\""
-    echo "${session_id}"
-}
-
-function validate_session_id() {
-    local session_id="$1"
-    echo "Validating Session ID: \"${session_id}\""
-    if [[ "${session_id}" == "" ]]; then
-        echo "Session ID is empty: \"${session_id}\""
-        echo "Error: Session ID is empty. Exiting..."
-        usage "${FALSE}"
-    elif is_valid_uuid "${session_id}"; then
-        echo "Session ID is valid: \"${session_id}\""
-    elif [[ -f "./${session_id}" ]]; then
-        echo "Session ID is a file: \"${session_id}\""
-        session_id="$(retrieve_session_id "${session_id}")"
-        echo "Completed retrieving Session ID: \"${session_id}\" from file: \"${session_id}\""
-        if is_valid_uuid "${session_id}"; then
-            echo "Session ID is valid: \"${session_id}\""
-        else
-            echo "Session ID is invalid: \"${session_id}\""
-            echo "Error: Session ID is invalid. Exiting..."
-            usage "${FALSE}"
-        fi
-    else
-        echo "Session ID is invalid: \"${session_id}\""
-        return "${FALSE}"
-    fi
-    echo "${session_id}"
-}
-
 function usage() {
     INPUT_PARAM="$1"
     SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
@@ -626,13 +557,22 @@ if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
 fi
 
 if [[ "${HEADLESS_VALUE}" != "" ]]; then
-    if [[ "${NOHUP_LOG_FILE}" != "" ]]; then
-        echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
-        nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
+    NOHUP_LOG_FILE=""
+    NOHUP_LOG_CANDIDATE="${LOGS_DIR}/wake_the_claude.nohup.log"
+    if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
+        NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
     else
-        echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} &"
-        nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" &
+        NOHUP_LOG_CANDIDATE="${HOME}/wake_the_claude.nohup.log"
+        if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
+            NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
+        else
+            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
+            exit 1
+        fi
     fi
+    debug_log "Nohup log file: ${NOHUP_LOG_FILE}"
+    echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
+    nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
 else
     echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
     "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"

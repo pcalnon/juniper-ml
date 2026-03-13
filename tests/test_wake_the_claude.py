@@ -587,7 +587,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertTrue(invocations, msg="Expected wake_the_claude to invoke claude at least once")
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args[0:2], ["--session-id", VALID_UUID])
-            self.assertEqual(last_invocation_args[-1].strip('"'), "hello")
+            self.assertEqual(last_invocation_args[-1].strip('"'), "from-prompt-file")
 
     # def test_default_interactive_script_forwards_expected_defaults(self) -> None:
     #     with tempfile.TemporaryDirectory() as temp_dir:
@@ -668,7 +668,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertLess(session_id_index + 1, len(last_invocation_args))
             self.assertRegex(last_invocation_args[session_id_index + 1], UUID_REGEX)
             self.assertIn("--worktree", last_invocation_args)
-            self.assertIn("--dangerously-skip-permissions", last_invocation_args)
+            self.assertNotIn("--dangerously-skip-permissions", last_invocation_args)
             self.assertIn("--effort", last_invocation_args)
             effort_index = last_invocation_args.index("--effort")
             self.assertLess(effort_index + 1, len(last_invocation_args))
