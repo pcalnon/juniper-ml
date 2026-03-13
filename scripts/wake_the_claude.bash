@@ -1,9 +1,29 @@
 #!/usr/bin/env bash
 ########################################################################################################################################################################
+# Author: Paul Calnon
+# Date: 2026-03-12
+# Version: 1.0.0
+# Status: Development
+# License: MIT
+# Copyright: 2026 Paul Calnon
+# Repository: https://github.com/paulcalnon/juniper-ml
+#
 # Description:
-#    this script performs the actual call to launch the claude code agent.
+#    this script is a wrapper for the claude code agent.
 #    this script is not intended to be used directly.
+#    this script performs the actual call to launch the claude code agent.
+#    it is used to launch the claude code agent with the appropriate parameters.
+#    it is also used to validate the session id and resume the session.
+#    it is also used to save the session id to a file.
+#    it is also used to retrieve the session id from a file.
 ########################################################################################################################################################################
+# Notes:
+#
+########################################################################################################################################################################
+# References:
+#
+########################################################################################################################################################################
+
 
 ########################################################################################################################################################################
 # Define global Variables
@@ -11,8 +31,12 @@
 
 TRUE="0"
 FALSE="1"
+
+# DEBUG="${FALSE}"
+DEBUG="${TRUE}"
+
+WTC_DEBUG="${WTC_DEBUG:-${DEBUG}}"
 EXIT_AFTER_USAGE_DEFAULT="${TRUE}"
-WTC_DEBUG="${WTC_DEBUG:-0}"
 
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -25,16 +49,16 @@ mkdir -p "${SESSIONS_DIR}" "${LOGS_DIR}"
 ########################################################################################################################################################################
 # Early function definitions (must precede top-level calls below)
 ########################################################################################################################################################################
-
 function debug_log() {
-    if [[ "${WTC_DEBUG}" == "1" ]]; then
-        echo "$@"
+    if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
+        echo "wake_the_claude: ${*}"
     fi
 }
 
 function redact_uuid() {
     local value="$1"
-    if [[ ${#value} -ge 12 ]]; then
+    # if [[ ${#value} -ge 12 ]]; then
+    if (( ${#value} >= 12 )); then
         echo "${value:0:8}...${value: -4}"
     else
         echo "[redacted]"
@@ -97,6 +121,10 @@ debug_log "Default Testing Input parameters: \"${PARAMS_TEST}\""
 # Define functions for wake_the_claude.bash script
 ########################################################################################################################################################################
 
+
+
+
+# matches_pattern(): Match a value against a pipe-delimited pattern string
 function matches_pattern() {
     local ip_value="$1"
     local pattern="$2"
@@ -107,18 +135,19 @@ function matches_pattern() {
     for candidate in "${candidates[@]}"; do
         candidate="${candidate#"${candidate%%[![:space:]]*}"}"
         candidate="${candidate%"${candidate##*[![:space:]]}"}"
-        [[ "$ip_value" == "$candidate" ]] && return 0
+        [[ "${ip_value}" == "${candidate}" ]] && return 0
     done
     return 1
 }
 
-# Validate UUID
+
+# is_valid_uuid(): Validate UUID format (32 hex digits with optional hyphens)
 function is_valid_uuid() {
     # example uuid="7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
     local uuid="$1"
     debug_log "Validating UUID format" >&2
     if [[ ${uuid//-/} =~ ^[[:xdigit:]]{32}$ ]]; then
-        debug_log "UUID is valid" >&2
+        debug_log "UUID is valid: $(redact_uuid "${uuid}")" >&2
         return 0
     else
         debug_log "UUID is invalid" >&2
@@ -126,34 +155,36 @@ function is_valid_uuid() {
     fi
 }
 
+
 # Generate UUID with fallbacks for environments without uuidgen
 function generate_uuid() {
     local generated_uuid=""
     if command -v uuidgen >/dev/null 2>&1; then
         generated_uuid="$(uuidgen 2>/dev/null)"
         if is_valid_uuid "${generated_uuid}"; then
-            echo "${generated_uuid}"
+            debug_log "Generated UUID: ${generated_uuid}"
             return "${TRUE}"
         fi
     fi
     if [[ -r "/proc/sys/kernel/random/uuid" ]]; then
         generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null)"
         if is_valid_uuid "${generated_uuid}"; then
-            echo "${generated_uuid}"
+            debug_log "Generated UUID: ${generated_uuid}"
             return "${TRUE}"
         fi
     fi
     if command -v python3 >/dev/null 2>&1; then
         generated_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null)"
         if is_valid_uuid "${generated_uuid}"; then
-            echo "${generated_uuid}"
+            debug_log "Generated UUID: ${generated_uuid}"
             return "${TRUE}"
         fi
     fi
     return "${FALSE}"
 }
 
-# Save Session ID to file
+
+# save_session_id(): Extract session ID from value string and persist to file
 function save_session_id() {
     local session_id_value="$1"
     debug_log "Extracting Session ID and saving to file"
@@ -174,7 +205,8 @@ function save_session_id() {
     debug_log "Saved Session ID $(redact_uuid "${session_id}") to file: ${target_path}"
 }
 
-# Retrieve Session ID from file
+
+# retrieve_session_id(): Read session ID from a file in SESSIONS_DIR
 function retrieve_session_id() {
     local session_id_filename="$1"
     debug_log "Retrieving Session ID from file: ${SESSIONS_DIR}/${session_id_filename}" >&2
@@ -183,6 +215,7 @@ function retrieve_session_id() {
     debug_log "Completed retrieving Session ID from file: \"${session_id_filename}\"" >&2
     echo "${session_id}"
 }
+
 
 function maybe_remove_generated_session_id_file() {
     # shellcheck disable=SC2317
@@ -193,14 +226,16 @@ function maybe_remove_generated_session_id_file() {
     local expected_filename="${session_id}.txt"
     # shellcheck disable=SC2317
     if [[ "${session_id_filename}" == "${expected_filename}" ]]; then
-        echo "Removing generated session id file: \"${SESSIONS_DIR}/${session_id_filename}\"" >&2
+        debug_log "Removing generated session id file: \"${SESSIONS_DIR}/${session_id_filename}\"" >&2
         rm -f "${SESSIONS_DIR}/${session_id_filename}"
-        echo "Completed removing generated session id file: \"${session_id_filename}\"" >&2
+        debug_log "Completed removing generated session id file: \"${session_id_filename}\"" >&2
     else
-        echo "Preserving session id file because filename is not generated by this script: \"${session_id_filename}\"" >&2
+        debug_log "Preserving session id file because filename is not generated by this script: \"${session_id_filename}\"" >&2
     fi
 }
 
+
+# validate_session_id(): Validate session ID as UUID or resolve from session file
 function validate_session_id() {
     local session_id="$1"
     local session_id_filename=""
@@ -233,6 +268,7 @@ function validate_session_id() {
     fi
     echo "${session_id}"
 }
+
 
 function usage() {
     INPUT_PARAM="$1"
@@ -329,9 +365,9 @@ debug_log "Verify that input parameters have been provided"
 if [[ "${*}" != "" ]]; then
     debug_log "Input Params: [${#} args]"
 else
-    echo "No input params provided."
-    echo "Next time try these:"
-    echo -ne "\t${PARAMS_TEST}\n"
+    debug_log "No input params provided."
+    debug_log "Next time try these:"
+    debug_log "${PARAMS_TEST}"
     usage "${FALSE}"
 fi
 debug_log "Completed verifying that input parameters have been provided"
@@ -353,7 +389,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             PATH_NAME="${1}"
             shift
         else
-            echo "Error: Received Path Flag but no Path Value. Exiting..."
+            debug_log "Error: Received Path Flag but no Path Value. Exiting..."
             usage "${FALSE}"
         fi
         debug_log "Completed Parsing path value"
@@ -375,11 +411,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 debug_log "Filename has not yet been parsed"
                 continue
             else
-                echo "Error: Prompt file is invalid when Pathname is combined with Filename. Exiting..."
+                debug_log "Error: Prompt file is invalid when Pathname is combined with Filename. Exiting..."
                 usage "${FALSE}"
             fi
         else
-            echo "Error: received an invalid Prompt File Path. Exiting..."
+            debug_log "Error: received an invalid Prompt File Path. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${FILE_FLAGS}"; then
@@ -388,7 +424,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             FILE_NAME="${1}"
             shift
         else
-            echo "Error: Received File Flag but no File Value. Exiting..."
+            debug_log "Error: Received File Flag but no File Value. Exiting..."
             usage "${FALSE}"
         fi
 
@@ -404,7 +440,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             debug_log "Filename not yet valid, Pathname has not yet been parsed"
             continue
         else
-            echo "Error: received an invalid Prompt File. Exiting..."
+            debug_log "Error: received an invalid Prompt File. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${RESUME_FLAGS}"; then
@@ -420,11 +456,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 CLAUDE_CODE_PARAMS+=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
                 debug_log "Completed parsing resume, ${#CLAUDE_CODE_PARAMS[@]} args"
             else
-                echo "Error: Session ID is invalid. Exiting..."
+                debug_log "Error: Session ID is invalid. Exiting..."
                 usage "${FALSE}"
             fi
         else
-            echo "Error: Received Resume Flag but no Valid Session ID to Resume. Exiting..."
+            debug_log "Error: Received Resume Flag but no Valid Session ID to Resume. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${SESSION_ID_FLAGS}"; then
@@ -435,11 +471,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             shift
             debug_log "Received Session ID, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
-            echo "Warning: Received Session ID Flag but no Session ID Name."
-            echo "Session ID Value not Provided, Assigning a new UUID as Session ID."
+            debug_log "Warning: Received Session ID Flag but no Session ID Name."
+            debug_log "Session ID Value not Provided, Assigning a new UUID as Session ID."
             generated_uuid="$(generate_uuid)"
             if [[ ( "$?" != "${TRUE}" ) || ( "${generated_uuid}" == "" ) ]]; then
-                echo "Error: Failed to generate a valid UUID for Session ID."
+                debug_log "Error: Failed to generate a valid UUID for Session ID."
                 usage "${FALSE}"
             fi
             SESSION_ID_VALUE="${CLAUDE_SESSION_ID_FLAGS} ${generated_uuid}"
@@ -447,7 +483,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             debug_log "Generated new Session ID: $(redact_uuid "${generated_uuid}"), ${#CLAUDE_CODE_PARAMS[@]} args"
         fi
         if ! save_session_id "${SESSION_ID_VALUE}"; then
-            echo "Error: Session ID value is invalid. Exiting..."
+            debug_log "Error: Session ID value is invalid. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
@@ -458,7 +494,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             shift
             debug_log "Received Worktree Value, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
-            echo "Warning: Received Worktree Flag but no Worktree Name. Letting Claude Code assign one."
+            debug_log "Warning: Received Worktree Flag but no Worktree Name. Letting Claude Code assign one."
             WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS}"
             CLAUDE_CODE_PARAMS+=("${WORKTREE_VALUE}")
             debug_log "Received Worktree Flag (no value), ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -466,24 +502,24 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
         debug_log "Parsing effort flags"
         if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) ) ]]; then
-            EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
+            # EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
             shift
             debug_log "Received Effort Value, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
-            echo "Error: Received Effort Flag but no valid Effort Value. Exiting..."
+            debug_log "Error: Received Effort Flag but no valid Effort Value. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${MODEL_FLAGS}"; then
         debug_log "Parsing model flags"
         if [[ "${1}" != "" ]]; then
             # TODO: Validate Model value
-            MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
+            # MODEL_VALUE="${CLAUDE_MODEL_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
             shift
             debug_log "Received Model Value, ${#CLAUDE_CODE_PARAMS[@]} args"
         else
-            echo "Error: Received Model Flag but no Model Name. Exiting..."
+            debug_log "Error: Received Model Flag but no Model Name. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${PROMPT_FLAGS}"; then
@@ -494,7 +530,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             VALID_PROMPT_PARAM="${TRUE}"
             debug_log "Received prompt [${#PROMPT_VALUE} chars]"
         else
-            echo "Error: Did not receive a valid prompt string. Exiting..."
+            debug_log "Error: Did not receive a valid prompt string. Exiting..."
             usage "${FALSE}"
         fi
     elif matches_pattern "${CURRENT_ELEMENT}" "${VERSION_FLAGS}"; then
@@ -519,7 +555,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${HELP_FLAGS}"; then
         usage "${TRUE}"
     else
-        echo "Error: Received Invalid Input Param: \"${CURRENT_ELEMENT}\""
+        debug_log "Error: Received Invalid Input Param: \"${CURRENT_ELEMENT}\""
         usage "${FALSE}"
     fi
     debug_log "Completed Parsing: \"${CURRENT_ELEMENT}\", ${#CLAUDE_CODE_PARAMS[@]} args"
@@ -548,11 +584,11 @@ debug_log "Completed building prompt, ${#CLAUDE_CODE_PARAMS[@]} total args"
 ########################################################################################################################################################################
 # Execute Claude Code
 ########################################################################################################################################################################
-echo "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
+debug_log "Executing claude with ${#CLAUDE_CODE_PARAMS[@]} args"
 
 CLAUDE_BIN="$(type -P claude 2>/dev/null || true)"
 if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
-    echo "Error: claude command not found in PATH" >&2
+    debug_log "Error: claude command not found in PATH" >&2
     exit 1
 fi
 
@@ -574,13 +610,13 @@ if [[ "${HEADLESS_VALUE}" != "" ]]; then
     echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
     nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
 else
-    echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
+    debug_log "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
     "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"
 fi
 NOHUP_STATUS=$?
 if [[ "${NOHUP_STATUS}" != "0" ]]; then
-    echo "Error: Failed to launch claude with nohup" >&2
+    debug_log "Error: Failed to launch claude with nohup" >&2
     exit 1
 fi
-echo "Completed Executing Claude Code"
+debug_log "Completed Executing Claude Code"
 exit 0
