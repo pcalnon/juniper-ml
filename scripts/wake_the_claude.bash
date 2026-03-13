@@ -191,7 +191,7 @@ function generate_uuid() {
     if [[ "${generated_uuid}" == "" ]]; then
         debug_log "Error: No valid UUID generated"
         return "${FALSE}"
-    elif [[ $(is_valid_uuid "${generated_uuid}") != "${TRUE}" ]]; then
+    elif [[ "$(is_valid_uuid "${generated_uuid}")" == "${FALSE}" ]]; then
         debug_log "Error: Generated UUID is not a valid UUID"
         return "${FALSE}"
     fi
