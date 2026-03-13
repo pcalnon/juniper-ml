@@ -162,21 +162,24 @@ function generate_uuid() {
     if command -v uuidgen >/dev/null 2>&1; then
         generated_uuid="$(uuidgen 2>/dev/null)"
         if is_valid_uuid "${generated_uuid}"; then
-            debug_log "Generated UUID: ${generated_uuid}"
+            debug_log "Generated UUID: ${generated_uuid}" >&2
+            echo "${generated_uuid}"
             return "${TRUE}"
         fi
     fi
     if [[ -r "/proc/sys/kernel/random/uuid" ]]; then
         generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null)"
         if is_valid_uuid "${generated_uuid}"; then
-            debug_log "Generated UUID: ${generated_uuid}"
+            debug_log "Generated UUID: ${generated_uuid}" >&2
+            echo "${generated_uuid}"
             return "${TRUE}"
         fi
     fi
     if command -v python3 >/dev/null 2>&1; then
         generated_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null)"
         if is_valid_uuid "${generated_uuid}"; then
-            debug_log "Generated UUID: ${generated_uuid}"
+            debug_log "Generated UUID: ${generated_uuid}" >&2
+            echo "${generated_uuid}"
             return "${TRUE}"
         fi
     fi

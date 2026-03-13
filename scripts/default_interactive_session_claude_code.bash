@@ -41,6 +41,7 @@ fi
 # Call Wake The Claude script with params
 echo "Launching Default Interactive session with Claude Code"
 "${SCRIPT_PATH}/wake_the_claude.bash" "${CLAUDE_ARGS[@]}"
+EXIT_CODE=$?
 echo "Closed Default Interactive session with Claude Code"
 
-exit 0
+exit "${EXIT_CODE}"
