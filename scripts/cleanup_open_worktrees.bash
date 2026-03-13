@@ -35,5 +35,3 @@ for i in $(git branch | grep -e "^\+ worktree-"); do
     fi
     echo -ne "\n"
 done
-
-
