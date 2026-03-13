@@ -54,7 +54,7 @@ mkdir -p "${SESSIONS_DIR}" "${LOGS_DIR}"
 
 function debug_log() {
     if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
-        echo "wake_the_claude: ${*}" >&2
+        echo "wake_the_claude: ${*}" 1>&2
     fi
 }
 
