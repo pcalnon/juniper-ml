@@ -23,6 +23,7 @@ echo "Initially Active Conda Env: \"${active_conda_env}\""
 ####################################################################
 
 
+# shellcheck source=/dev/null
 source "${conda_activate_script}"
 conda deactivate
 echo "Deactivated Conda Env: \"$(get_active_conda_env)\""
@@ -33,6 +34,7 @@ echo "Deactivated Conda Env: \"$(get_active_conda_env)\""
 #
 ####################################################################
 
+# shellcheck source=/dev/null
 source "${conda_activate_script}"
 conda activate "${active_conda_env}"
 
