@@ -71,5 +71,3 @@ A part of your "myproject" project is a script that I'll call "myscript.bash".
 Since the script language wasn't specified but the OS was listed as Unbutu 24.04, I'm assuming that it's a bash shell script.
 
 The "myscript" script, as part of the "myproject" project, requires the "myproject" conda environment  to run the non-compilation parts of its code.
-
-

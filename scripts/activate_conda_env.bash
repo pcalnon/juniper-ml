@@ -18,7 +18,7 @@ echo "Initially Active Conda Env: \"${active_conda_env}\""
 
 ####################################################################
 #
-# Run script code, as needed, BEFORE source code compilation 
+# Run script code, as needed, BEFORE source code compilation
 #
 ####################################################################
 
@@ -42,7 +42,6 @@ echo "Final Active Conda Env: \"$(get_active_conda_env)\""
 
 ####################################################################
 #
-# Run script code, as needed, AFTER source code compilation 
+# Run script code, as needed, AFTER source code compilation
 #
 ####################################################################
-

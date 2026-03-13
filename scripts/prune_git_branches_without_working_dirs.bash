@@ -66,4 +66,3 @@ for i in $(git branch | grep -v -e "^(\*\+)\ .*$" | grep "${BRANCH_TYPE}"); do
         fi
     fi
 done
-
