@@ -10,7 +10,7 @@ for i in $(git branch | grep -e "^\+ worktree-"); do
     COUNTER="$(( COUNTER + 1 ))"
     echo "Updating branch: ${i} (${COUNTER} of ${NUMBER})"
     echo "ORIGINAL_PWD: ${ORIGINAL_PWD}"
-    cd "${ORIGINAL_PWD}"
+    cd "${ORIGINAL_PWD}" || exit
     echo "PWD: \"${PWD}\""
     echo "i: \"${i}\""
     WORK_DIRISH="${i/-/s\/}"
@@ -19,7 +19,7 @@ for i in $(git branch | grep -e "^\+ worktree-"); do
     echo "WORK_DIR: \"${WORK_DIR}\""
     if [[ -d "${WORK_DIR}" ]]; then
         echo "Found Valid Work Dir: \"${WORK_DIR}\""
-        cd "${WORK_DIR}"
+        cd "${WORK_DIR}" || continue
         echo "git status"
         git status 2>/dev/null
         echo "git add --all"
@@ -35,3 +35,4 @@ for i in $(git branch | grep -e "^\+ worktree-"); do
     fi
     echo -ne "\n"
 done
+IFS="${OLD_IFS}"
