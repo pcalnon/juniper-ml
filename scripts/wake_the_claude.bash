@@ -162,36 +162,28 @@ function is_valid_uuid() {
 # Generate UUID with fallbacks for environments without uuidgen
 function generate_uuid() {
     local generated_uuid=""
-    # if command -v uuidgen >/dev/null 2>&1; then
     if [[ ( "${generated_uuid}" == "" ) && ( -x "$(command -v uuidgen)" ) ]]; then
-        # generated_uuid="$(uuidgen 2>/dev/null)"
         generated_uuid="$(uuidgen 2>/dev/null)"
-        # if is_valid_uuid "${generated_uuid}"; then
-        #     debug_log "Generated UUID: ${generated_uuid}"
-        #     # echo "${generated_uuid}"
-        #     # return "${TRUE}"
-        # fi
+        if ! is_valid_uuid "${generated_uuid}"; then
+            generated_uuid=""
+        fi
     fi
     if [[ ( "${generated_uuid}" == "" ) && ( -r "/proc/sys/kernel/random/uuid" ) ]]; then
         generated_uuid="$(cat "/proc/sys/kernel/random/uuid" 2>/dev/null)"
-        # if is_valid_uuid "${generated_uuid}"; then
-        #     debug_log "Generated UUID: ${generated_uuid}"
-        #     # echo "${generated_uuid}"
-        #     # return "${TRUE}"
-        # fi
+        if ! is_valid_uuid "${generated_uuid}"; then
+            generated_uuid=""
+        fi
     fi
     if [[ ( "${generated_uuid}" == "" ) && ( -x "$(command -v python3)" ) ]]; then
         generated_uuid="$(python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null)"
-        # if is_valid_uuid "${generated_uuid}"; then
-        #     debug_log "Generated UUID: ${generated_uuid}"
-        #     # echo "${generated_uuid}"
-        #     # return "${TRUE}"
-        # fi
+        if ! is_valid_uuid "${generated_uuid}"; then
+            generated_uuid=""
+        fi
     fi
     if [[ "${generated_uuid}" == "" ]]; then
         debug_log "Error: No valid UUID generated"
         return "${FALSE}"
-    elif [[ "$(is_valid_uuid "${generated_uuid}")" == "${FALSE}" ]]; then
+    elif ! is_valid_uuid "${generated_uuid}"; then
         debug_log "Error: Generated UUID is not a valid UUID"
         return "${FALSE}"
     fi
@@ -269,6 +261,10 @@ function validate_session_id() {
     if [[ "${session_id}" == "" ]]; then
         debug_log "Session ID validation, 1st Pass: Failed for empty session id"
         return "${FALSE}"
+    elif is_valid_uuid "${session_id}"; then
+        debug_log "Session ID validation, 1st Pass: Input is a valid UUID"
+        echo "${session_id}"
+        return "${TRUE}"
     elif [[ "${session_id_filename}" == */* ]]; then
         debug_log "Session ID validation, 1st Pass: Failed for session id filename containing path separators"
         return "${FALSE}"
@@ -276,7 +272,7 @@ function validate_session_id() {
         debug_log "Session ID validation, 1st Pass: Failed for session id filename not having .txt extension"
         return "${FALSE}"
     else
-        debug_log "Session ID vaidation, 1st Pass: Succeeded for \"$(redact_uuid "${session_id}")\""
+        debug_log "Session ID validation, 1st Pass: Succeeded for \"$(redact_uuid "${session_id}")\""
     fi
     # 2nd Pass: Step 1: Check if the session id is a file and retrieve the session id from the file
     if [[ -f "${session_id_file}" ]]; then
@@ -633,7 +629,7 @@ if [[ "${HEADLESS_VALUE}" != "" ]]; then
         if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
             NOHUP_LOG_FILE="${NOHUP_LOG_CANDIDATE}"
         else
-            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}"
+            echo "Error: Failed to open nohup log file at ${LOGS_DIR} or ${HOME}" >&2
             exit 1
         fi
     fi
