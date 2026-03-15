@@ -103,11 +103,7 @@ Phase 2 may begin once **all** of the following are true:
 - DEFERRED items have been assessed to confirm they do not conflict with Phases 2–5 of this plan
 - If DEFERRED items would cause Phase 2–5 work to be overwritten or invalidated, they must be completed first
 
-### 1.2 Establish Documentation Standards
-
-**Objective**: Define the canonical structure, naming conventions, and content standards that all project documentation must follow.
-
-#### Tasks
+### 1.2 Establish Documentation Standards400 W 23RD ST
 
 | ID    | Task                                    | Details                                                                                                                                                                                                                                 |
 |-------|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

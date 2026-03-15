@@ -107,6 +107,23 @@ Both upload steps use trusted publishing (OIDC) with `attestations: false`.
 
 ---
 
+## Environment Variables
+
+These variables are used by consumer applications when juniper-ml extras are installed:
+
+| Variable | Used By | Default | Description |
+|----------|---------|---------|-------------|
+| `JUNIPER_DATA_URL` | juniper-data-client | `http://localhost:8100` | juniper-data service URL |
+| `JUNIPER_DATA_API_KEY` | juniper-data-client | *(none)* | API key for juniper-data authentication |
+| `CASCOR_SERVICE_URL` | juniper-cascor-client | `http://localhost:8200` | juniper-cascor service URL |
+| `JUNIPER_CASCOR_API_KEY` | juniper-cascor-client | *(none)* | API key for juniper-cascor authentication |
+| `CASCOR_MANAGER_HOST` | juniper-cascor-worker | `127.0.0.1` | Worker manager host |
+| `CASCOR_MANAGER_PORT` | juniper-cascor-worker | `50000` | Worker manager port |
+
+> These are not set by juniper-ml itself — they are consumed by the installed sub-packages.
+
+---
+
 **Last Updated:** March 3, 2026
 **Version:** 0.2.0
 **Maintainer:** Paul Calnon
