@@ -1,5 +1,21 @@
 # Juniper Developer Cheatsheet
 
+> **DEPRECATED (2026-03-15)**: This monolithic cheatsheet has been decomposed into
+> per-project files. Use the project-specific cheatsheets instead:
+>
+> | Project | Location |
+> |---------|----------|
+> | juniper-ml | `juniper-ml/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-cascor | `juniper-cascor/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-data | `juniper-data/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-canopy | `juniper-canopy/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-data-client | `juniper-data-client/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-cascor-client | `juniper-cascor-client/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-cascor-worker | `juniper-cascor-worker/docs/DEVELOPER_CHEATSHEET.md` |
+> | juniper-deploy | `juniper-deploy/docs/DEVELOPER_CHEATSHEET.md` |
+>
+> This file is retained for reference and will be moved to `notes/history/` after validation.
+
 ## Quick-Reference Procedures for Common Developer Tasks
 
 | Meta Data         | Value                                                          |
