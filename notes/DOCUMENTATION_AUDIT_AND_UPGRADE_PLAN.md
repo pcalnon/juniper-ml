@@ -280,7 +280,7 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 **Priority**: HIGH — Ecosystem-wide quality
 **Estimated Scope**: All 8 projects' `docs/` and `notes/` directories
 **Dependencies**: Phase 1 (standards), Phase 2 (cheatsheets provide additional context)
-**Status**: **MOSTLY COMPLETE** (2026-03-15) — 3.1 done (3.1.2 deferred), 3.2.1 done, 3.3.1-3.3.2/3.3.5 done, 3.4 done. Remaining: 3.2.2-3.2.8 (content structure audits), 3.3.3-3.3.4/3.3.6-3.3.7 (stale notes classification, history org, PR docs, MCP guides)
+**Status**: **MOSTLY COMPLETE** (2026-03-15) — 3.1 done, 3.2.1 done, 3.3.1-3.3.2/3.3.5 done, 3.4 done. Remaining: 3.2.2-3.2.8 (content structure audits), 3.3.3-3.3.4/3.3.6-3.3.7 (stale notes classification, history org, PR docs, MCP guides)
 
 ### 3.1 Standardize docs/ Directory Structures
 
@@ -291,7 +291,7 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 | ID | Task | Details |
 |----|------|---------|
 | 3.1.1 | Rename juniper-cascor `ci/` → `ci_cd/` | **COMPLETE.** Renamed 5 files, updated 16 references across 5 files. Committed `3086ea0`. |
-| 3.1.2 | Rename juniper-cascor lowercase files to UPPER_SNAKE_CASE | **DEFERRED — DECISION REQUIRED.** Investigation found 21 files to rename, 174 references across 12 files. The lowercase-kebab-case convention was a **deliberate architectural decision** documented in juniper-cascor's DOCUMENTATION_OVERVIEW.md. Existing `DOCUMENTATION_TEMPLATE_STANDARD.md` (v1.0.0) grandfathered this convention. High effort, low net benefit given internal consistency. Recommend deferring unless ecosystem uniformity is prioritized over per-project conventions. |
+| 3.1.2 | Rename juniper-cascor lowercase files to UPPER_SNAKE_CASE | **COMPLETE.** Renamed 22 files across 6 subdirectories. Updated 187 references across 14 files. Updated naming convention docs in DOCUMENTATION_OVERVIEW.md. Committed `aad820b`. |
 | 3.1.3 | Resolve juniper-canopy duplicate ADR | **COMPLETE.** Deleted redirect stub `docs/ADR_001_VALID_TEST_SKIPS.md`, fixed broken reference in `TEST_DIRECTORY_STRUCTURE.md`. Committed `6955d40`. |
 | 3.1.4 | Populate juniper-deploy `docs/testing/` | **RESOLVED.** Directory already contains `TESTING_QUICK_START.md` (115 lines). Not empty as originally assumed. |
 | 3.1.5 | Add ENVIRONMENT_SETUP.md to juniper-cascor | **COMPLETE.** Created redirect stub pointing to `install/environment-setup.md`. Committed `3086ea0`. |
