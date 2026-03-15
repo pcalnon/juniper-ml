@@ -109,13 +109,13 @@ Phase 2 may begin once **all** of the following are true:
 
 #### Tasks
 
-| ID | Task | Details |
-|----|------|---------|
-| 1.2.1 | Define documentation tier model | **COMPLETE.** Four tiers defined: Service, Orchestration, Library, Meta-Package. See `Juniper/notes/DOCUMENTATION_STANDARDS.md`. |
-| 1.2.2 | Define mandatory docs per tier | **COMPLETE.** Full mandatory file matrix defined in standards document. |
-| 1.2.3 | Standardize naming conventions | **COMPLETE.** UPPER_SNAKE_CASE for files, snake_case for subdirs. **Note:** juniper-cascor kebab-case migration flagged as DECISION REQUIRED — existing `DOCUMENTATION_TEMPLATE_STANDARD.md` (v1.0.0) grandfathered the old convention. |
-| 1.2.4 | Define DEVELOPER_CHEATSHEET.md template | **COMPLETE.** Template defined in standards document with header block, required sections, and rules. |
-| 1.2.5 | Document standards in ecosystem guide | **COMPLETE.** Written to `Juniper/notes/DOCUMENTATION_STANDARDS.md`. References existing `DOCUMENTATION_TEMPLATE_STANDARD.md` for formatting/content standards. |
+| ID    | Task                                    | Details                                                                                                                                                                                                                                 |
+|-------|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1.2.1 | Define documentation tier model         | **COMPLETE.** Four tiers defined: Service, Orchestration, Library, Meta-Package. See `Juniper/notes/DOCUMENTATION_STANDARDS.md`.                                                                                                        |
+| 1.2.2 | Define mandatory docs per tier          | **COMPLETE.** Full mandatory file matrix defined in standards document.                                                                                                                                                                 |
+| 1.2.3 | Standardize naming conventions          | **COMPLETE.** UPPER_SNAKE_CASE for files, snake_case for subdirs. **Note:** juniper-cascor kebab-case migration flagged as DECISION REQUIRED — existing `DOCUMENTATION_TEMPLATE_STANDARD.md` (v1.0.0) grandfathered the old convention. |
+| 1.2.4 | Define DEVELOPER_CHEATSHEET.md template | **COMPLETE.** Template defined in standards document with header block, required sections, and rules.                                                                                                                                   |
+| 1.2.5 | Document standards in ecosystem guide   | **COMPLETE.** Written to `Juniper/notes/DOCUMENTATION_STANDARDS.md`. References existing `DOCUMENTATION_TEMPLATE_STANDARD.md` for formatting/content standards.                                                                         |
 
 ### 1.3 Validate Working Environment
 
@@ -280,7 +280,7 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 **Priority**: HIGH — Ecosystem-wide quality
 **Estimated Scope**: All 8 projects' `docs/` and `notes/` directories
 **Dependencies**: Phase 1 (standards), Phase 2 (cheatsheets provide additional context)
-**Status**: **IN PROGRESS** (2026-03-15)
+**Status**: **MOSTLY COMPLETE** (2026-03-15) — 3.1 done (3.1.2 deferred), 3.2.1 done, 3.3.1-3.3.2/3.3.5 done, 3.4 done. Remaining: 3.2.2-3.2.8 (content structure audits), 3.3.3-3.3.4/3.3.6-3.3.7 (stale notes classification, history org, PR docs, MCP guides)
 
 ### 3.1 Standardize docs/ Directory Structures
 
