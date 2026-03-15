@@ -51,13 +51,13 @@ Separately, planning and reference documents accumulated inconsistent table form
 - `tests/test_wake_the_claude.py` — Reorganized test execution order; updated permission-skip expectations; added comprehensive assertions for default launcher behavior
 - `.github/workflows/ci.yml` — Standardized comment spacing for action version tags (cosmetic, from dependabot version bumps)
 - `CHANGELOG.md` — Added version identifiers to section headers (e.g., `### Added` → `### Added, 0.2.1`)
-- `notes/CONDA_DEPENDENCY_FILE_HEADER.yaml` — Renamed from `.md` to `.yaml` (correct file extension for YAML content)
+- `notes/CONDA_DEPENDENCY_FILE_HEADER.md` — Renamed back from `.yaml` to `.md` (matching all other repos' naming convention)
 - `notes/DEVELOPER_CHEATSHEET.md` — Added session ID workflow documentation, expanded troubleshooting section, converted informal text into formatted tables
 - `notes/CANOPY_REPO_RENAME_MIGRATION_PLAN.md` — Reformatted tables to consistent Markdown alignment; added `bash` language tags to code blocks
 - `notes/DOCUMENTATION_AUDIT_V2_PLAN.md` — Table formatting improvements with consistent column spacing
 - `notes/MCP_SERVER_SETUP_PLAN.md` — Table formatting; URLs converted to Markdown link syntax; explicit language tags on code blocks
 - `notes/FIX_ROADMAP_EVAL_AND_DEBUG_LOG.md` — Appended "Issue 2" to section headers for disambiguation
-- `notes/juniper_OTHER_DEPENDENCIES.md` — Table alignment formatting
+- `notes/juniper-ml_OTHER_DEPENDENCIES.md` — Table alignment formatting (renamed from `juniper_OTHER_DEPENDENCIES.md`)
 
 ---
 
@@ -127,13 +127,13 @@ Separately, planning and reference documents accumulated inconsistent table form
 **Documentation:**
 
 - `CHANGELOG.md` — Version identifiers in section headers
-- `notes/CONDA_DEPENDENCY_FILE_HEADER.yaml` — Renamed from `.md`
+- `notes/CONDA_DEPENDENCY_FILE_HEADER.md` — Renamed back from `.yaml` to `.md`
 - `notes/DEVELOPER_CHEATSHEET.md` — Session ID workflows, troubleshooting expansion
 - `notes/CANOPY_REPO_RENAME_MIGRATION_PLAN.md` — Table formatting
 - `notes/DOCUMENTATION_AUDIT_V2_PLAN.md` — Table formatting
 - `notes/FIX_ROADMAP_EVAL_AND_DEBUG_LOG.md` — Header disambiguation
 - `notes/MCP_SERVER_SETUP_PLAN.md` — Table formatting, URL links
-- `notes/juniper_OTHER_DEPENDENCIES.md` — Table alignment
+- `notes/juniper-ml_OTHER_DEPENDENCIES.md` — Table alignment
 
 ---
 

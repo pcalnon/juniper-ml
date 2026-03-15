@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `scripts/wake_the_claude.bash` — Uncommented `EFFORT_VALUE` and `MODEL_VALUE` assignments; refactored nohup logging to handle missing log files; changed debug output to standard echo; consolidated exit status checks
 - `.github/workflows/ci.yml` — Standardized comment spacing for action version tags (dependabot version bumps)
-- `notes/CONDA_DEPENDENCY_FILE_HEADER.yaml` — Renamed from `.md` to `.yaml` (correct file extension for YAML content)
+- `notes/CONDA_DEPENDENCY_FILE_HEADER.md` — Renamed back from `.yaml` to `.md` (matching all other repos' naming convention)
 - `CHANGELOG.md` — Added version identifiers to section headers for released versions
 - Documentation formatting pass across `notes/` planning documents — standardized Markdown table alignment, added `bash` language tags to code blocks, converted URLs to Markdown link syntax
 
