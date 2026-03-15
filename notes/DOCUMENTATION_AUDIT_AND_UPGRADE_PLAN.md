@@ -280,6 +280,7 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 **Priority**: HIGH — Ecosystem-wide quality
 **Estimated Scope**: All 8 projects' `docs/` and `notes/` directories
 **Dependencies**: Phase 1 (standards), Phase 2 (cheatsheets provide additional context)
+**Status**: **IN PROGRESS** (2026-03-15)
 
 ### 3.1 Standardize docs/ Directory Structures
 
@@ -289,12 +290,12 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 
 | ID | Task | Details |
 |----|------|---------|
-| 3.1.1 | Rename juniper-cascor `ci/` → `ci_cd/` | Standardize subdirectory name to match juniper-data and juniper-canopy. Update all internal cross-references. |
-| 3.1.2 | Rename juniper-cascor lowercase files to UPPER_SNAKE_CASE | `api-reference.md` → `API_REFERENCE.md`, `api-schemas.md` → `API_SCHEMAS.md`, `quick-start.md` → `QUICK_START.md`, `environment-setup.md` → `ENVIRONMENT_SETUP.md`, `manual.md` → `MANUAL.md`, `reference.md` → `REFERENCE.md`, `branch-protection.md` → `BRANCH_PROTECTION.md`, `selective-testing-guide.md` → `SELECTIVE_TESTING_GUIDE.md`, `constants-guide.md` → `CONSTANTS_GUIDE.md`, `index.md` → `INDEX.md`. |
-| 3.1.3 | Resolve juniper-canopy duplicate ADR | `docs/ADR_001_VALID_TEST_SKIPS.md` and `docs/testing/ADR_001_VALID_TEST_SKIPS.md` — keep the one in `docs/testing/`, add redirect or remove the root copy. |
-| 3.1.4 | Populate juniper-deploy `docs/testing/` | Create `TESTING_QUICK_START.md` (or verify if content exists and was missed). |
-| 3.1.5 | Add ENVIRONMENT_SETUP.md to juniper-cascor | Extract environment setup content from `docs/install/ENVIRONMENT_SETUP.md` (subdirectory) to `docs/ENVIRONMENT_SETUP.md` (root level) for consistency with other service-tier projects. |
-| 3.1.6 | Add USER_MANUAL.md to juniper-cascor | Extract/consolidate user manual content from `docs/install/USER_MANUAL.md` (subdirectory) to `docs/USER_MANUAL.md` (root level) for consistency. |
+| 3.1.1 | Rename juniper-cascor `ci/` → `ci_cd/` | **COMPLETE.** Renamed 5 files, updated 16 references across 5 files. Committed `3086ea0`. |
+| 3.1.2 | Rename juniper-cascor lowercase files to UPPER_SNAKE_CASE | **DEFERRED — DECISION REQUIRED.** Investigation found 21 files to rename, 174 references across 12 files. The lowercase-kebab-case convention was a **deliberate architectural decision** documented in juniper-cascor's DOCUMENTATION_OVERVIEW.md. Existing `DOCUMENTATION_TEMPLATE_STANDARD.md` (v1.0.0) grandfathered this convention. High effort, low net benefit given internal consistency. Recommend deferring unless ecosystem uniformity is prioritized over per-project conventions. |
+| 3.1.3 | Resolve juniper-canopy duplicate ADR | **COMPLETE.** Deleted redirect stub `docs/ADR_001_VALID_TEST_SKIPS.md`, fixed broken reference in `TEST_DIRECTORY_STRUCTURE.md`. Committed `6955d40`. |
+| 3.1.4 | Populate juniper-deploy `docs/testing/` | **RESOLVED.** Directory already contains `TESTING_QUICK_START.md` (115 lines). Not empty as originally assumed. |
+| 3.1.5 | Add ENVIRONMENT_SETUP.md to juniper-cascor | **COMPLETE.** Created redirect stub pointing to `install/environment-setup.md`. Committed `3086ea0`. |
+| 3.1.6 | Add USER_MANUAL.md to juniper-cascor | **COMPLETE.** Created redirect stub pointing to `install/user-manual.md`. Committed `3086ea0`. |
 
 ### 3.2 Audit docs/ File Content
 
