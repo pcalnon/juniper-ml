@@ -1,34 +1,33 @@
 # Juniper Developer Cheatsheet
 
-> **DEPRECATED (2026-03-15)**: This monolithic cheatsheet has been decomposed into
-> per-project files. Use the project-specific cheatsheets instead:
->
-> | Project | Location |
-> |---------|----------|
-> | juniper-ml | `juniper-ml/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-cascor | `juniper-cascor/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-data | `juniper-data/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-canopy | `juniper-canopy/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-data-client | `juniper-data-client/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-cascor-client | `juniper-cascor-client/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-cascor-worker | `juniper-cascor-worker/docs/DEVELOPER_CHEATSHEET.md` |
-> | juniper-deploy | `juniper-deploy/docs/DEVELOPER_CHEATSHEET.md` |
+**DEPRECATED (2026-03-15)**: This monolithic cheatsheet has been decomposed into per-project files.
+
+Use the project-specific cheatsheets instead:
+
+| Project               | Location                                             |
+|-----------------------|------------------------------------------------------|
+| juniper-ml            | `juniper-ml/docs/DEVELOPER_CHEATSHEET.md`            |
+| juniper-cascor        | `juniper-cascor/docs/DEVELOPER_CHEATSHEET.md`        |
+| juniper-data          | `juniper-data/docs/DEVELOPER_CHEATSHEET.md`          |
+| juniper-canopy        | `juniper-canopy/docs/DEVELOPER_CHEATSHEET.md`        |
+| juniper-data-client   | `juniper-data-client/docs/DEVELOPER_CHEATSHEET.md`   |
+| juniper-cascor-client | `juniper-cascor-client/docs/DEVELOPER_CHEATSHEET.md` |
+| juniper-cascor-worker | `juniper-cascor-worker/docs/DEVELOPER_CHEATSHEET.md` |
+| juniper-deploy        | `juniper-deploy/docs/DEVELOPER_CHEATSHEET.md`        |
 >
 > This file is retained for reference and will be moved to `notes/history/` after validation.
 
 ## Quick-Reference Procedures for Common Developer Tasks
 
-| Meta Data         | Value                                                          |
 |-------------------|----------------------------------------------------------------|
 | **Version:**      | 1.3.0                                                          |
 | **Status:**       | Active                                                         |
 | **Last Updated:** | March 8, 2026                                                  |
 | **Project:**      | Juniper - Cascade Correlation Neural Network Research Platform |
 
-> **Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve
-> locally when all Juniper repos are checked out as siblings. They are skipped during CI
-> validation. Source code file links use GitHub URLs for durability. See
-> [CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) for details.
+**Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve locally when all Juniper repos are checked out as siblings.
+They are skipped during CI validation. Source code file links use GitHub URLs for durability.
+See [CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) for details.
 
 ---
 
