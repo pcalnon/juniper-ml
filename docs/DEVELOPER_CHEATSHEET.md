@@ -8,15 +8,15 @@
 
 ## Common Commands
 
-| Command | Description |
-|---------|-------------|
-| `pip install -e ".[all]"` | Install meta-package with all extras (editable) |
-| `python -m build && twine check dist/*` | Build and validate package |
-| `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests |
-| `bash scripts/test_resume_file_safety.bash` | Run resume file safety regression |
-| `pre-commit run --all-files` | Run all pre-commit hooks |
-| `python scripts/check_doc_links.py --cross-repo skip` | Validate doc links (CI-parity mode) |
-| `./cly` | Launch default interactive Claude session |
+| Command                                                | Description                                     |
+|--------------------------------------------------------|-------------------------------------------------|
+| `pip install -e ".[all]"`                              | Install meta-package with all extras (editable) |
+| `python -m build && twine check dist/*`                | Build and validate package                      |
+| `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
+| `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
+| `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
+| `python scripts/check_doc_links.py --cross-repo skip`  | Validate doc links (CI-parity mode)             |
+| `./cly`                                                | Launch default interactive Claude session       |
 
 ---
 
@@ -24,11 +24,11 @@
 
 > See: `notes/SOPS_USAGE_GUIDE.md`
 
-| Task | Command |
-|------|---------|
-| View secrets | `sops -d --input-type dotenv --output-type dotenv .env.enc` |
+| Task            | Command                                                            |
+|-----------------|--------------------------------------------------------------------|
+| View secrets    | `sops -d --input-type dotenv --output-type dotenv .env.enc`        |
 | Decrypt to file | `sops -d --input-type dotenv --output-type dotenv .env.enc > .env` |
-| Re-encrypt | `sops -e --input-type dotenv --output-type dotenv .env > .env.enc` |
+| Re-encrypt      | `sops -e --input-type dotenv --output-type dotenv .env > .env.enc` |
 
 **Add/change:** Decrypt, edit `.env`, re-encrypt, commit `.env.enc`. If Docker-consumed, also update `juniper-deploy/.env.example`.
 
@@ -44,12 +44,12 @@
 
 > See: `scripts/wake_the_claude.bash` | `scripts/default_interactive_session_claude_code.bash`
 
-| Entry Point | Behavior |
-|-------------|----------|
-| `./cly` | Default interactive session (`--id --worktree --effort high`) |
-| `./cly --prompt "..."` | Custom prompt, default flags |
-| `CLAUDE_SKIP_PERMISSIONS=1 ./cly` | Adds `--dangerously-skip-permissions` |
-| `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control |
+| Entry Point                             | Behavior                                                      |
+|-----------------------------------------|---------------------------------------------------------------|
+| `./cly`                                 | Default interactive session (`--id --worktree --effort high`) |
+| `./cly --prompt "..."`                  | Custom prompt, default flags                                  |
+| `CLAUDE_SKIP_PERMISSIONS=1 ./cly`       | Adds `--dangerously-skip-permissions`                         |
+| `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control                        |
 
 The wrapper does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set.
 
@@ -67,12 +67,12 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
 
-| Resume Symptom | Cause | Fix |
-|----------------|-------|-----|
-| `Session ID is invalid` | Bad UUID or file content | Verify UUID format |
-| `no Valid Session ID to Resume` | Missing value after `--resume` | Provide UUID or `.txt` basename |
-| File resume fails immediately | Path separator, wrong ext, wrong dir | Use basename `*.txt` in `scripts/sessions/` |
-| Alias not recognized | Parsing regression | Run `test_wake_the_claude.py`, check `matches_pattern()` |
+| Resume Symptom                  | Cause                                | Fix                                                      |
+|---------------------------------|--------------------------------------|----------------------------------------------------------|
+| `Session ID is invalid`         | Bad UUID or file content             | Verify UUID format                                       |
+| `no Valid Session ID to Resume` | Missing value after `--resume`       | Provide UUID or `.txt` basename                          |
+| File resume fails immediately   | Path separator, wrong ext, wrong dir | Use basename `*.txt` in `scripts/sessions/`              |
+| Alias not recognized            | Parsing regression                   | Run `test_wake_the_claude.py`, check `matches_pattern()` |
 
 ---
 
@@ -138,12 +138,12 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 
 ## CI/CD
 
-| Task | Command / Procedure |
-|------|---------------------|
-| Pre-commit | `pre-commit run --all-files` |
-| Publish to PyPI | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing) |
-| Doc links (CI parity) | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
-| Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check` |
+| Task                   | Command / Procedure                                                                         |
+|------------------------|---------------------------------------------------------------------------------------------|
+| Pre-commit             | `pre-commit run --all-files`                                                                |
+| Publish to PyPI        | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
+| Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
 
@@ -153,20 +153,20 @@ Pipeline: pre-commit, unit-tests, integration-tests, build, security, lockfile-c
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `WTC_SESSIONS_DIR` | `scripts/sessions` | Session ID file storage directory |
-| `WTC_LOGS_DIR` | `logs/` | Headless mode log directory |
-| `WTC_DEBUG` | `0` | Enable launcher debug output |
-| `CLAUDE_SKIP_PERMISSIONS` | `0` | Add `--dangerously-skip-permissions` to default wrapper |
+| Variable                  | Default            | Description                                             |
+|---------------------------|--------------------|---------------------------------------------------------|
+| `WTC_SESSIONS_DIR`        | `scripts/sessions` | Session ID file storage directory                       |
+| `WTC_LOGS_DIR`            | `logs/`            | Headless mode log directory                             |
+| `WTC_DEBUG`               | `0`                | Enable launcher debug output                            |
+| `CLAUDE_SKIP_PERMISSIONS` | `0`                | Add `--dangerously-skip-permissions` to default wrapper |
 
 ## Quick Reference Tables
 
-| Service | Port | Health | Conda Env | Python |
-|---------|------|--------|-----------|--------|
-| juniper-data | 8100 | `GET /v1/health` | JuniperData | 3.14 |
-| juniper-cascor | 8200 | `GET /v1/health` | JuniperCascor | 3.14 |
-| juniper-canopy | 8050 | `GET /v1/health` | JuniperPython | 3.14 |
+| Service        | Port | Health           | Conda Env     | Python |
+|----------------|------|------------------|---------------|--------|
+| juniper-data   | 8100 | `GET /v1/health` | JuniperData   | 3.14   |
+| juniper-cascor | 8200 | `GET /v1/health` | JuniperCascor | 3.14   |
+| juniper-canopy | 8050 | `GET /v1/health` | JuniperPython | 3.14   |
 
 Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `juniper_data_*`, `juniper_cascor_*`, `juniper_canopy_*`
 
