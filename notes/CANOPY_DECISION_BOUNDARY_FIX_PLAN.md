@@ -565,10 +565,10 @@ Tests:
 
 ## Document History
 
-| Date       | Author                        | Change                                                                                     |
-|------------|-------------------------------|--------------------------------------------------------------------------------------------|
-| 2026-03-16 | Paul Calnon (via Claude Code) | Initial creation — service mode root causes (RC-1 through RC-5)                            |
-| 2026-03-17 | Paul Calnon (via Claude Code) | Phase 1 marked complete. Added demo mode root causes (RC-6 through RC-9). Updated plan.    |
+| Date       | Author                        | Change                                                                                      |
+|------------|-------------------------------|---------------------------------------------------------------------------------------------|
+| 2026-03-16 | Paul Calnon (via Claude Code) | Initial creation — service mode root causes (RC-1 through RC-5)                             |
+| 2026-03-17 | Paul Calnon (via Claude Code) | Phase 1 marked complete. Added demo mode root causes (RC-6 through RC-9). Updated plan.     |
 | 2026-03-17 | Paul Calnon (via Claude Code) | Added reference implementation comparison, troubleshooting log, Phase 2 implementation plan |
 
 ---
