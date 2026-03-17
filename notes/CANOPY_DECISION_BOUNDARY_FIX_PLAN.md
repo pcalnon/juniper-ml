@@ -33,24 +33,24 @@ The juniper-canopy application displays a decision boundary plot that illustrate
 
 The decision boundary visualization follows a three-layer architecture:
 
-```
-Frontend (Dash)                    Backend (FastAPI)               CasCor Service
-┌──────────────────┐     GET      ┌──────────────────┐   REST    ┌──────────────────┐
-│ DecisionBoundary │ ←─────────── │ /api/decision_   │ ←──────── │ /v1/decision-    │
-│ component        │  every 5s    │   boundary       │           │   boundary       │
-│                  │  (slow-      │                  │           │                  │
-│ dashboard_       │   update-    │ ServiceBackend   │   via     │ TrainingLifecycle │
-│   manager.py     │   interval)  │   .get_decision_ │  cascor-  │   Manager        │
-│                  │              │    boundary()    │  client   │                  │
-└──────────────────┘              └──────────────────┘           └──────────────────┘
+```bash
+Frontend (Dash)                    Backend (FastAPI)                 CasCor Service
+┌──────────────────┐     GET      ┌──────────────────┐   REST     ┌───────────────────┐
+│ DecisionBoundary │ ←─────────── │ /api/decision_   │ ←───────── │  /v1/decision-    │
+│ component        │  every 5s    │   boundary       │            │    boundary       │
+│                  │  (slow-      │                  │            │                   │
+│ dashboard_       │   update-    │ ServiceBackend   │   via      │ TrainingLifecycle │
+│   manager.py     │   interval)  │   .get_decision_ │  cascor-   │    Manager        │
+│                  │              │    boundary()    │  client    │                   │
+└──────────────────┘              └──────────────────┘            └───────────────────┘
 ```
 
 ### Current Behavior by Backend Mode
 
-| Mode | Backend Class | Behavior | Result |
-|------|--------------|----------|--------|
-| **Demo** | `DemoBackend` | Computes boundary in-process via `network.forward()` | Works — updated every 5 seconds |
-| **Service** | `ServiceBackend` | Returns `None` (hardcoded) | **Broken** — always returns 503 |
+| Mode        | Backend Class    | Behavior                                             | Result                          |
+|-------------|------------------|------------------------------------------------------|---------------------------------|
+| **Demo**    | `DemoBackend`    | Computes boundary in-process via `network.forward()` | Works — updated every 5 seconds |
+| **Service** | `ServiceBackend` | Returns `None` (hardcoded)                           | **Broken** — always returns 503 |
 
 ### Key Discovery
 
@@ -90,13 +90,13 @@ def get_decision_boundary(self, resolution: int = 50) -> Optional[Dict[str, Any]
 
 The CasCor service returns a different data format than what the frontend expects:
 
-| Field | CasCor Service | Frontend Expected |
-|-------|---------------|-------------------|
-| X coordinates | `x_grid` (1D array, length=resolution) | `xx` (2D meshgrid, resolution × resolution) |
-| Y coordinates | `y_grid` (1D array, length=resolution) | `yy` (2D meshgrid, resolution × resolution) |
-| Predictions | `predictions` (1D flattened, length=resolution²) | `Z` (2D array, resolution × resolution) |
-| X bounds | `x_range` ([min, max]) | `x_min`, `x_max` (separate keys) |
-| Y bounds | `y_range` ([min, max]) | `y_min`, `y_max` (separate keys) |
+| Field         | CasCor Service                                   | Frontend Expected                           |
+|---------------|--------------------------------------------------|---------------------------------------------|
+| X coordinates | `x_grid` (1D array, length=resolution)           | `xx` (2D meshgrid, resolution × resolution) |
+| Y coordinates | `y_grid` (1D array, length=resolution)           | `yy` (2D meshgrid, resolution × resolution) |
+| Predictions   | `predictions` (1D flattened, length=resolution²) | `Z` (2D array, resolution × resolution)     |
+| X bounds      | `x_range` ([min, max])                           | `x_min`, `x_max` (separate keys)            |
+| Y bounds      | `y_range` ([min, max])                           | `y_min`, `y_max` (separate keys)            |
 
 The ServiceBackend must transform the CasCor response into the frontend format.
 
@@ -206,6 +206,7 @@ result = {
 **File**: `juniper-canopy/src/backend/cascor_service_adapter.py`
 
 Add a new method that:
+
 1. Calls `self._client.get_decision_boundary(resolution)`
 2. Transforms the CasCor response format to the frontend format (1D → 2D meshgrid)
 3. Handles errors gracefully (returns `None` on failure)
@@ -249,6 +250,7 @@ Remove the orphaned `dcc.Interval` component. Updates are managed by `dashboard_
 **File**: New test or extend existing adapter tests
 
 Tests:
+
 - `test_get_decision_boundary_transforms_response`: Verify 1D CasCor format → 2D frontend format
 - `test_get_decision_boundary_returns_none_on_client_error`: Verify graceful error handling
 - `test_get_decision_boundary_passes_resolution_to_client`: Verify resolution parameter forwarded
@@ -261,6 +263,7 @@ Tests:
 **File**: Extend existing service backend tests
 
 Tests:
+
 - `test_get_decision_boundary_delegates_to_adapter`: Verify delegation instead of `None`
 - `test_get_decision_boundary_with_custom_resolution`: Verify resolution passed through
 - `test_get_decision_boundary_returns_none_on_adapter_failure`: Verify None propagation
@@ -270,6 +273,7 @@ Tests:
 **File**: Extend existing endpoint tests
 
 Tests:
+
 - `test_decision_boundary_default_resolution`: Verify default resolution=100
 - `test_decision_boundary_custom_resolution`: Verify custom resolution accepted
 - `test_decision_boundary_resolution_out_of_range`: Verify validation (5-200)
@@ -279,6 +283,7 @@ Tests:
 #### T-4: End-to-End Decision Boundary Flow (Service Mode)
 
 Tests:
+
 - `test_decision_boundary_service_mode_returns_data`: Full flow with FakeCascorClient
 - `test_decision_boundary_data_contract_service_mode`: Verify response matches frontend expectations
 - `test_decision_boundary_periodic_refresh`: Verify data changes with network state changes
@@ -290,6 +295,7 @@ Tests:
 **File**: Extend `test_topology_boundary_data_contract.py`
 
 Tests:
+
 - `test_service_backend_boundary_uses_xx_key`: Verify transformed response uses `xx` not `x_grid`
 - `test_service_backend_boundary_uses_yy_key`: Verify `yy` not `y_grid`
 - `test_service_backend_boundary_uses_uppercase_Z_key`: Verify `Z` not `predictions`
@@ -318,29 +324,29 @@ Tests:
 
 ### juniper-canopy (primary changes)
 
-| File | Change | Root Cause |
-|------|--------|------------|
-| `src/backend/cascor_service_adapter.py` | Add `get_decision_boundary()` with format transformation | RC-2, RC-3 |
-| `src/backend/service_backend.py` | Delegate to adapter instead of returning None | RC-1 |
-| `src/main.py` | Add resolution query parameter to `/api/decision_boundary` | RC-4 |
-| `src/frontend/components/decision_boundary.py` | Remove orphaned `dcc.Interval` | RC-5 |
-| `src/frontend/dashboard_manager.py` | Pass resolution to API request | RC-4 |
-| `src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | New: adapter transformation tests | T-1 |
-| `src/tests/unit/backend/test_service_backend_boundary.py` | New: delegation tests | T-2 |
-| `src/tests/integration/test_decision_boundary_service_mode.py` | New: end-to-end service mode tests | T-4 |
-| `src/tests/regression/test_topology_boundary_data_contract.py` | Extend: service mode contract tests | T-5 |
+| File                                                             | Change                                                     | Root Cause |
+|------------------------------------------------------------------|------------------------------------------------------------|------------|
+| `src/backend/cascor_service_adapter.py`                          | Add `get_decision_boundary()` with format transformation   | RC-2, RC-3 |
+| `src/backend/service_backend.py`                                 | Delegate to adapter instead of returning None              | RC-1       |
+| `src/main.py`                                                    | Add resolution query parameter to `/api/decision_boundary` | RC-4       |
+| `src/frontend/components/decision_boundary.py`                   | Remove orphaned `dcc.Interval`                             | RC-5       |
+| `src/frontend/dashboard_manager.py`                              | Pass resolution to API request                             | RC-4       |
+| `src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | New: adapter transformation tests                          | T-1        |
+| `src/tests/unit/backend/test_service_backend_boundary.py`        | New: delegation tests                                      | T-2        |
+| `src/tests/integration/test_decision_boundary_service_mode.py`   | New: end-to-end service mode tests                         | T-4        |
+| `src/tests/regression/test_topology_boundary_data_contract.py`   | Extend: service mode contract tests                        | T-5        |
 
 ### No changes required
 
-| Repository | Reason |
-|------------|--------|
-| juniper-cascor | `/v1/decision-boundary` endpoint already exists and works |
-| juniper-cascor-client | `get_decision_boundary()` method already exists |
+| Repository            | Reason                                                    |
+|-----------------------|-----------------------------------------------------------|
+| juniper-cascor        | `/v1/decision-boundary` endpoint already exists and works |
+| juniper-cascor-client | `get_decision_boundary()` method already exists           |
 
 ---
 
 ## Document History
 
-| Date | Author | Change |
-|------|--------|--------|
+| Date       | Author                        | Change           |
+|------------|-------------------------------|------------------|
 | 2026-03-16 | Paul Calnon (via Claude Code) | Initial creation |
