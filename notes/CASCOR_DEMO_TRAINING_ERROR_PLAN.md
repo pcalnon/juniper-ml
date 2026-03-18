@@ -3,7 +3,7 @@
 **Project**: Juniper Ecosystem (juniper-canopy + juniper-cascor)
 **Created**: 2026-03-17
 **Author**: Paul Calnon (via Claude Code)
-**Status**: Active — Phase 1 & 2 Implementation Complete, All Tests Passing (167/167)
+**Status**: Active — Phase 1-4 Implementation Complete (3544/3546 tests passing, 2 pre-existing WS failures)
 **Scope**: Cross-repo (juniper-canopy primary, juniper-cascor reference, juniper-ml coordination)
 **Supersedes**: `CANOPY_DECISION_BOUNDARY_FIX_PLAN.md` (V1), `CANOPY_DECISION_BOUNDARY_FIX_PLAN_V2.md` (V2)
 
@@ -14,9 +14,10 @@
 - [Problem Statement](#problem-statement)
 - [Troubleshooting Summary](#troubleshooting-summary)
 - [Root Cause Analysis](#root-cause-analysis)
-- [Comparative Analysis: Demo Mode vs Cascor](#comparative-analysis-demo-mode-vs-cascor)
+- [Phase 3 Investigation: Post-Implementation Plateau](#phase-3-investigation-post-implementation-plateau)
 - [Architecture Review](#architecture-review)
 - [Implementation Plan](#implementation-plan)
+- [Remediation Options: Phase 4](#remediation-options-phase-4)
 - [Testing Plan](#testing-plan)
 - [Validation & Audit Results](#validation--audit-results)
 
@@ -187,26 +188,399 @@ Adding a hidden unit before the output has converged wastes the current training
 
 ---
 
-## Comparative Analysis: Demo Mode vs Cascor
+## Phase 3 Investigation: Post-Implementation Plateau
 
-### Architecture Comparison
+### Current Symptom (2026-03-17, after Phase 1 & 2 fixes)
 
-| Aspect                      | Demo Mode (`MockCascorNetwork`)           | Cascor (`CascadeCorrelationNetwork`)      |
-|-----------------------------|-------------------------------------------|-------------------------------------------|
-| **Hidden activation**       | `torch.sigmoid` [0, 1]                    | `nn.Tanh` [-1, 1]                         |
-| **Output activation**       | `sigmoid(matmul + bias)`                  | Raw linear: `matmul + bias`               |
-| **Loss function**           | BCE (analytical gradient)                 | MSE (`nn.MSELoss`)                        |
-| **Output training**         | 1 mini-batch step/epoch + 50 post-install | 1000 full-batch epochs post-install       |
-| **Output optimizer**        | Manual SGD (lr=0.01)                      | `torch.optim` (configurable)              |
-| **Candidate pool**          | 1 candidate                               | 16 candidates (parallel)                  |
-| **Candidate training**      | 80 steps, lr=0.1, manual gradient         | Configurable epochs, autograd             |
-| **Candidate selection**     | None (single candidate)                   | Max absolute correlation                  |
-| **Hidden unit addition**    | Fixed schedule (every 30 epochs)          | Convergence-based + correlation threshold |
-| **Input normalization**     | None                                      | None (but uses smaller-range data)        |
-| **Weight initialization**   | `randn * 0.1`                             | `randn * 0.1` (similar)                   |
-| **Output weight expansion** | Random new column, copy old               | Random new row, copy old (equivalent)     |
-| **Data format**             | Tensor (N, 2), targets (N, 1)             | Tensor (N, 2), targets (N, 1)             |
-| **Thread safety**           | `threading.Lock`                          | Not thread-safe (process-based)           |
+Despite implementing all Phase 1 & 2 fixes (tanh activation, MSE loss, 200-step full-batch retrain, 8-candidate pool, tanh derivative, reset bug fix), the demo training **still plateaus** after the first hidden node:
+
+- **Loss**: Drops from ~0.5 to ~0.27 during initial output training (epochs 0–30), then flatlines at ~0.24 after +Unit #1
+- **Accuracy**: Jumps from ~40% to ~56% at +Unit #1, then flatlines
+- **Decision boundary**: Shows initial improvement (non-linear curve visible), then maintains roughly the same shape
+- **Hidden units**: Units #2, #3, etc. are added but produce no further improvement
+
+The Phase 1 & 2 fixes resolved the **mechanical bugs** (wrong activation, wrong loss, insufficient retrain, no candidate pool) but did not resolve the **training dynamics and algorithmic fidelity** issues that remain.
+
+### Mathematical Audit Results
+
+A full mathematical audit of the MSE gradient computation confirmed:
+
+| Item                        | Status      | Details                                                       |
+|-----------------------------|-------------|---------------------------------------------------------------|
+| Weight gradient formula     | **Correct** | `2.0 * error.T @ features / N` matches dL/dW for standard MSE |
+| Factor of 2.0               | **Correct** | Consistent with non-halved MSE: L = (1/N)*sum(e^2)            |
+| Bias gradient formula       | **Correct** | `2.0 * error.mean(dim=0)` = `2.0 * error.sum(dim=0) / N`      |
+| Weight/bias consistency     | **Correct** | Both use the same 2/N scaling                                 |
+| Tanh derivative             | **Correct** | `1 - tanh(z)^2` is the standard formula                       |
+| Divergence risk             | **Low**     | MSE on linear output is convex; tanh features bounded         |
+| Hidden unit weight freezing | **Correct** | No subsequent code path modifies frozen weights               |
+| 0.5 decision threshold      | **Correct** | Appropriate for {0,1} targets with raw output                 |
+
+**The gradient math is not the problem.** The remaining issues are training dynamics and algorithmic fidelity.
+
+### New Root Causes Identified
+
+#### RC-9 (CRITICAL): Vanilla SGD vs Adam Optimizer for Output Training
+
+**Demo**: Manual vanilla SGD with fixed lr=0.01, no momentum, no adaptive rates
+**Cascor**: `torch.optim.Adam` (default) with lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, applied to `nn.Linear` layer with `loss.backward()` + `optimizer.step()`
+
+**Why this matters for post-hidden-unit training**:
+
+Adam maintains per-parameter first and second moment estimates (m and v). When a new hidden unit is installed, the output weight column for that unit has a different gradient scale than existing columns (hidden outputs are in [-1,1] while inputs are in [-10,10]). Adam adapts the effective learning rate for each parameter independently:
+
+- New hidden unit column: gradient magnitude ~0.6, Adam effective lr ~0.01/√(0.6²) ≈ 0.017
+- Old input columns: gradient magnitude ~3.2, Adam effective lr ~0.01/√(3.2²) ≈ 0.003
+
+With vanilla SGD, all parameters share the same lr=0.01. The new hidden unit output weight changes at the same rate as the dominant input weights, preventing it from converging to a useful value.
+
+Additionally, cascor creates a **fresh optimizer** for each output retraining phase (no stale momentum from the pre-unit-addition landscape). The demo has no optimizer state at all — neither an advantage nor disadvantage, but without momentum the convergence is significantly slower.
+
+**Files**: `demo_mode.py:272-324` vs `cascade_correlation.py:1297`, `cascade_correlation_config.py:94`
+
+#### RC-10 (CRITICAL): Mini-Batch Training Between Cascade Additions Undoes Full-Batch Retrain
+
+**Mechanism**:
+
+1. `add_hidden_unit()` performs 200 **full-batch** (N=200) retrain steps, converging output weights to a good configuration
+2. On the very next training loop iteration, `_simulate_training_step()` calls `train_output_step(batch_size=32)` — a single **mini-batch** step with only 16% of the data
+3. The mini-batch gradient has extremely high variance (measured signal-to-noise ratios):
+   - Input column x1: SNR = 0.08
+   - Input column x2: SNR = 0.001
+   - Hidden unit column: SNR = 0.17
+4. With SNR << 1, the mini-batch gradient is dominated by noise. The output weights perform a **random walk** rather than converging
+5. Over 30 epochs of mini-batch training before the next cascade addition, the carefully retrained weights are perturbed away from their optimum
+
+**Quantification**: Between cascade additions, the network gets 30 mini-batch steps × 32 samples = 960 sample evaluations (~4.8 full passes). The retrain provides 200 full-batch steps × 200 samples = 40,000 sample evaluations (~200 full passes). The inter-cascade training is **~40× weaker** than the retrain.
+
+**Files**: `demo_mode.py:654` (calls `train_output_step()` with default `batch_size=32`), `demo_mode.py:160-161` (retrain uses `batch_size=n_samples`)
+
+#### RC-11 (SIGNIFICANT): Un-Normalized Covariance vs Pearson Correlation in Candidate Training
+
+**Demo** (`demo_mode.py:217`): Computes raw un-normalized covariance:
+
+```python
+correlation = (v_centered.unsqueeze(1) * e_centered).sum(dim=0)
+```
+
+No division by standard deviations. The tracked "correlation" value scales with residual magnitude.
+
+**Cascor** (`candidate_unit.py:1053-1079`): Computes **Pearson correlation coefficient**, normalized by standard deviations:
+
+```python
+correlation = |sum(norm_output * norm_error)| / sqrt(sum(norm_output^2) * sum(norm_error^2) + eps)
+```
+
+This produces a value in [0, 1] regardless of residual scale. The gradient via autograd flows through the normalization.
+
+**Why this matters after the first hidden unit**:
+
+After the first hidden unit is installed and output weights retrained, the residual error `(y - prediction)` shrinks (because the network improved). With un-normalized covariance, the gradient signal for candidate training shrinks proportionally — subsequent candidates receive weaker training signals and produce lower-quality features. With Pearson correlation, the gradient is scale-invariant and candidates train equally well regardless of residual magnitude.
+
+**Measured impact**: Candidate correlation decays from ~2.5 (first unit) to ~0.3 (seventh unit), a ~8× reduction. With Pearson normalization, the correlation would remain in [0, 1] for all candidates.
+
+#### RC-12 (SIGNIFICANT): Spiral Dataset Complexity vs Hidden Unit Capacity
+
+**Observation**: The spiral dataset from JuniperData uses default parameters that produce a **3-rotation spiral** with radius 10. This creates approximately **6 decision boundary crossings** between the two classes.
+
+**Why this limits training**:
+
+Each tanh hidden unit contributes roughly one nonlinear decision boundary (a sigmoid-like step along a hyperplane in the input space). To fully classify a 3-rotation spiral, the network needs approximately 10–15 hidden units, each positioned at a different angle/radius to carve out the spiral arms.
+
+**Measured improvement per unit** (with current hyperparameters):
+
+| Hidden Units | MSE Loss | Improvement |
+|--------------|----------|-------------|
+| 0            | 0.2457   | —           |
+| 1            | 0.2430   | 0.003       |
+| 3            | 0.2410   | 0.002       |
+| 7            | 0.2398   | 0.001       |
+| 12           | 0.2392   | 0.0005      |
+
+Even with **optimal least-squares** output weights (analytically computed), 7 hidden units only reach MSE = 0.233. The improvement per unit (~0.001–0.003) is too small to be visually distinguishable in the dashboard charts, creating the appearance of a plateau even when the algorithm is functioning correctly.
+
+A **1-rotation spiral** has only ~2 boundary crossings and would be solvable by 3–5 hidden units, producing a visually compelling training curve.
+
+### RC-6 Revisited: Input Normalization Impact (MODERATE, elevated from original assessment)
+
+The [-10, 10] input range has three compounding effects:
+
+1. **Feature scale mismatch in output layer**: Input feature columns have abs_mean = 3.2 while hidden unit output columns have abs_mean = 0.63. The effective learning rate for hidden-connected weights is ~5× slower than for input-connected weights with vanilla SGD.
+
+2. **Accelerated tanh saturation in candidate training**: With candidate weights growing during training (|w| ~ 0.22 by step 40), pre-activation values |z| = |w*x| reach ~2.2 for extreme inputs, where tanh'(z) = 0.03. By step 100, ~13% of samples are saturated.
+
+3. **Weight initialization mismatch**: Standard `randn * 0.1` initialization with inputs in [-10, 10] produces initial outputs in [-1.8, 1.3], already overshooting the [0, 1] target range. With normalized [-1, 1] inputs, initial outputs would be in [-0.18, 0.13], a much better starting point.
+
+### Confirmed Non-Issues
+
+| Item                                 | Status            | Details                                |
+|--------------------------------------|-------------------|----------------------------------------|
+| MSE gradient math                    | **Correct**       | All formulas verified                  |
+| Tanh derivative                      | **Correct**       | `1 - v*v` is standard                  |
+| Hidden weight freezing               | **Working**       | No code path modifies frozen weights   |
+| Output divergence                    | **Not occurring** | MSE on linear output is convex         |
+| 0.5 decision threshold               | **Appropriate**   | Correct for {0,1} targets              |
+| Weight/bias gradient consistency     | **Matched**       | Both use 2/N scaling                   |
+| Artificial loss inflation (line 816) | **Harmless**      | Overwritten by real MSE next iteration |
+| `target_loss` variable               | **Dead code**     | Written but never read; cosmetic only  |
+
+---
+
+## Remediation Options: Phase 4
+
+### Overview
+
+Four remediation approaches are presented, from minimal change to comprehensive refactor. All address the newly identified root causes (RC-9 through RC-12 and elevated RC-6). Approaches can be combined.
+
+### Option 4A: Targeted Hyperparameter Fixes (Minimal Code Change)
+
+Fix the training dynamics issues within the existing manual gradient framework.
+
+**Changes**:
+
+1. **Use full-batch for ALL output training** (RC-10): Change `_simulate_training_step()` to call `train_output_step(batch_size=n_samples)` instead of the default 32
+2. **Increase output retraining to 500 steps** (RC-3/RC-10): Change from 200 to 500 in `add_hidden_unit()`
+3. **Normalize inputs to [-1, 1]** (RC-6): Apply min-max normalization in `_generate_spiral_dataset_from_juniper_data()` after loading data
+4. **Reduce spiral complexity** (RC-12): Pass `n_rotations=1` to JuniperData or reduce the radius
+5. **Increase candidate training steps** to 200 with lr=0.03 and pool size 16 (RC-11 mitigation)
+
+```python
+# In _simulate_training_step():
+n_samples = self.network.train_x.shape[0]
+self.network.train_output_step(batch_size=n_samples)  # full-batch
+
+# In _generate_spiral_dataset_from_juniper_data(), after loading:
+inputs_min = inputs.min(axis=0)
+inputs_max = inputs.max(axis=0)
+inputs = 2.0 * (inputs - inputs_min) / (inputs_max - inputs_min + 1e-8) - 1.0
+```
+
+**Pros**: Minimal code change (~20 lines), no new dependencies, preserves existing test structure
+**Cons**: Does not fix RC-9 (SGD vs Adam) or RC-11 (un-normalized correlation). May require further tuning.
+
+**Estimated impact**: Moderate improvement. Full-batch training eliminates the gradient noise problem. Input normalization fixes the scale mismatch. Simpler spiral makes progress visible. But without Adam, convergence will remain slow.
+
+### Option 4B: Replace Manual SGD with PyTorch Autograd + Adam (Recommended)
+
+Replace the manual gradient computation in both `train_output_step()` and `_train_candidate()` with PyTorch autograd and Adam optimizer.
+
+**Changes**:
+
+1. **Output layer**: Replace manual weight tensors with `nn.Linear` + `torch.optim.Adam`
+2. **Output retraining**: Create a fresh Adam optimizer after each hidden unit installation
+3. **Candidate training**: Use `nn.Parameter` + `torch.optim.Adam` for candidate weight optimization
+4. **Candidate correlation**: Normalize to Pearson correlation (divide by std product)
+5. **Input normalization**: Apply min-max normalization
+6. **Full-batch training**: Use full dataset for all gradient steps
+
+```python
+class MockCascorNetwork:
+    def __init__(self, input_size=2, output_size=1):
+        # ...
+        self.output_layer = torch.nn.Linear(input_size, output_size)
+        self.output_optimizer = torch.optim.Adam(self.output_layer.parameters(), lr=0.01)
+        self.loss_fn = torch.nn.MSELoss()
+
+    def forward(self, x):
+        # Cascade through hidden units (unchanged)
+        # ...
+        return self.output_layer(features)
+
+    def train_output_step(self, batch_size=None):
+        # Use full batch by default
+        x = self.train_x if batch_size is None else self.train_x[indices]
+        y = self.train_y if batch_size is None else self.train_y[indices]
+
+        self.output_optimizer.zero_grad()
+        predictions = self.forward(x)
+        loss = self.loss_fn(predictions, y)
+        loss.backward()
+        self.output_optimizer.step()
+
+    def add_hidden_unit(self):
+        # ... train candidate pool (unchanged) ...
+        # Install best candidate
+        self.hidden_units.append(best_unit)
+
+        # Create new output layer with expanded input dimension
+        old_layer = self.output_layer
+        new_dim = self.input_size + len(self.hidden_units)
+        self.output_layer = torch.nn.Linear(new_dim, self.output_size)
+        with torch.no_grad():
+            self.output_layer.weight[:, :old_layer.in_features] = old_layer.weight
+            self.output_layer.bias[:] = old_layer.bias
+            # New column initialized by nn.Linear default (small random)
+
+        # Fresh optimizer for retraining (no stale momentum)
+        self.output_optimizer = torch.optim.Adam(self.output_layer.parameters(), lr=0.01)
+
+        # Retrain output with full batch
+        for _ in range(500):
+            self.train_output_step()
+
+    def _train_candidate(self, unit, steps=200, lr=0.01):
+        # ... (build candidate_input as before) ...
+        weights = torch.nn.Parameter(unit["weights"].clone())
+        bias = torch.nn.Parameter(unit["bias"].clone())
+        optimizer = torch.optim.Adam([weights, bias], lr=lr)
+
+        for _ in range(steps):
+            optimizer.zero_grad()
+            z = candidate_input @ weights + bias
+            v = torch.tanh(z)
+            v_centered = v - v.mean()
+            e_centered = residual - residual.mean(dim=0)
+            # Pearson correlation (normalized)
+            cov = (v_centered.unsqueeze(1) * e_centered).sum(dim=0)
+            std_v = torch.sqrt((v_centered ** 2).sum() + 1e-8)
+            std_e = torch.sqrt((e_centered ** 2).sum(dim=0) + 1e-8)
+            correlation = (cov / (std_v * std_e)).abs().sum()
+            (-correlation).backward()  # maximize
+            optimizer.step()
+            optimizer.zero_grad()
+
+        unit["weights"] = weights.detach()
+        unit["bias"] = bias.detach()
+        return float(correlation.detach())
+```
+
+**Pros**:
+
+- Addresses RC-9 (Adam), RC-10 (full-batch), RC-11 (Pearson correlation), RC-6 (normalization)
+- Eliminates all manual gradient code — no more derivative bugs possible
+- Matches cascor's optimizer and correlation strategy
+- Fresh optimizer state after each hidden unit installation (matches cascor behavior)
+- More maintainable — less custom math code
+
+**Cons**:
+
+- Requires `torch.no_grad()` / `requires_grad` management in the training loop (since forward() is used both for training and inference)
+- Changes to `forward()` need to work both with and without gradient tracking
+- More extensive test updates needed (output weights now in `nn.Linear` instead of raw tensors)
+- ~150 lines of code change
+
+**Estimated impact**: High. Adam + Pearson correlation + full-batch addresses all critical root causes. The network should show continuous improvement across hidden unit additions.
+
+### Option 4C: Reduce Spiral Complexity for Demo (Complementary)
+
+Independently of Options 4A/4B, reduce the spiral dataset complexity to produce more visually compelling demo results.
+
+**Changes**:
+
+1. **Reduce spiral rotations**: Pass `n_rotations=1` or `turns=1.0` to JuniperData when generating the demo dataset. A 1-rotation spiral has ~2 boundary crossings, solvable by 3–5 hidden units.
+2. **Reduce radius or normalize**: Either pass `radius=1.0` to JuniperData, or normalize the returned data to [-1, 1]
+3. **Optionally reduce sample count**: 100–150 samples (from 200) for faster training steps
+
+```python
+# In _generate_spiral_dataset_from_juniper_data():
+params = {
+    "n_points_per_spiral": n_samples // 2,
+    "n_spirals": 2,
+    "noise": 0.1,
+    "seed": 42,
+    "turns": 1.0,       # 1 rotation instead of default 3
+    "radius": 1.0,      # normalized range
+}
+```
+
+**Pros**: Single-line parameter change. Dramatic improvement in visual training progression. No changes to the network code.
+**Cons**: Doesn't fix the underlying algorithm issues (they just matter less for a simpler problem). If users change dataset parameters in the UI, the plateau would return for complex datasets.
+
+**Estimated impact**: High for demo visual quality. A 1-rotation spiral with normalized inputs would show clear accuracy improvement from ~50% to 90%+ over 5 hidden units, even with the current SGD-based training.
+
+### Option 4D: Convergence-Based Hidden Unit Addition (Enhancement)
+
+Replace the fixed-schedule cascade addition (`cascade_every=30`) with convergence-based addition, matching the real CasCor algorithm.
+
+**Changes**:
+
+1. Track loss over a sliding window (e.g., last 10 epochs)
+2. Add hidden unit when loss improvement falls below threshold (e.g., < 0.001 over 10 epochs)
+3. Keep the fixed schedule as a fallback maximum interval
+4. Don't add unit if loss is still improving rapidly
+
+```python
+def _should_add_cascade_unit(self) -> bool:
+    with self._lock:
+        max_units = self.max_hidden_units
+        current_units = len(self.network.hidden_units)
+
+    if current_units >= max_units:
+        return False
+
+    # Convergence-based: check if loss has stopped improving
+    if len(self.network.history["train_loss"]) >= 10:
+        recent = list(self.network.history["train_loss"])[-10:]
+        improvement = recent[0] - recent[-1]
+        if improvement < 0.001:
+            return True
+
+    # Fallback: fixed schedule as maximum interval
+    return self.current_epoch > 0 and self.current_epoch % self.cascade_every == 0
+```
+
+**Pros**: Adds units at algorithmically appropriate times. Prevents adding units while output is still converging. Matches cascor behavior.
+**Cons**: Small code change but introduces a new hyperparameter (improvement threshold). May add units too early if loss oscillates (mini-batch noise).
+
+**Estimated impact**: Low to moderate alone. Most effective when combined with Option 4B (where full-batch training eliminates the noise that could trigger false convergence).
+
+### Recommended Approach: Option 4B + 4D Combined ★★ SELECTED AND IMPLEMENTED
+
+**Note**: Option 4C (reduce spiral complexity) was explicitly **excluded** per user direction. The spiral dataset retains its default complexity; the algorithmic fixes must handle it.
+
+**Phase 4 Implementation (Complete)**:
+
+1. **Step 4.1**: Apply input normalization to [-1, 1] ✅ — `_generate_spiral_dataset_from_juniper_data()` normalizes after loading; normalization params stored on network for decision boundary use
+2. **Step 4.2**: Replace manual SGD with `nn.Linear` + `torch.optim.Adam` for output training ✅ — fresh optimizer created after each hidden unit installation (matches CasCor's fresh-optimizer-per-phase approach)
+3. **Step 4.3**: Replace manual candidate gradient with autograd + Adam + Pearson correlation ✅ — candidate weights wrapped as `nn.Parameter`, Pearson normalized by std product, Adam optimizer per candidate
+4. **Step 4.4**: Add convergence-based cascade addition ✅ — checks loss improvement over 10-epoch sliding window (threshold < 0.001), with fixed schedule as fallback
+5. **Step 4.5**: Full-batch training for all output steps ✅ — `train_output_step()` defaults to `batch_size=None` (full batch)
+6. **Step 4.6**: Output retraining increased to 500 steps ✅ — up from 200, with fresh Adam optimizer
+7. **Step 4.7**: Candidate training increased to 200 steps with lr=0.01 ✅ — up from 100/lr=0.05
+8. **Step 4.8**: Update affected tests ✅ — variance threshold, convergence thresholds, Adam-converged weight assertion
+9. **Step 4.9**: Decision boundary normalization ✅ — `demo_backend.py` normalizes grid points via `network.normalize_inputs()` before forward pass
+
+### Files Modified (Phase 4)
+
+| File                                | Changes                                                                                                                                                                      |
+|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `demo_mode.py`                      | `MockCascorNetwork.__init__()`: `nn.Linear` + Adam replaces manual weights; `normalize_inputs()` method added; backward-compatible `output_weights`/`output_bias` properties |
+| `demo_mode.py`                      | `forward()`: refactored to use `_cascade_features()` + `self.output_layer(features)`                                                                                         |
+| `demo_mode.py`                      | `train_output_step()`: autograd + Adam replaces manual gradient; full-batch default                                                                                          |
+| `demo_mode.py`                      | `_train_candidate()`: autograd + Adam + Pearson correlation replaces manual gradient                                                                                         |
+| `demo_mode.py`                      | `add_hidden_unit()`: expands `nn.Linear` with warm-start; fresh optimizer; 500 retrain steps                                                                                 |
+| `demo_mode.py`                      | `_simulate_training_step()`: uses `output_layer.eval()`/`.train()` for metrics                                                                                               |
+| `demo_mode.py`                      | `_should_add_cascade_unit()`: convergence-based with 10-epoch sliding window                                                                                                 |
+| `demo_mode.py`                      | `_reset_state_and_history()`: reinitializes `nn.Linear` + fresh optimizer                                                                                                    |
+| `demo_mode.py`                      | `_generate_spiral_dataset_from_juniper_data()`: normalizes inputs to [-1, 1]                                                                                                 |
+| `demo_backend.py`                   | `get_network_topology()`: reads from `network.output_layer.weight.data`                                                                                                      |
+| `demo_backend.py`                   | `get_decision_boundary()`: normalizes grid points via `network.normalize_inputs()`                                                                                           |
+| `test_demo_weight_training.py`      | `test_works_with_hidden_units`: resets optimizer to test after convergence                                                                                                   |
+| `test_demo_training_convergence.py` | `test_hidden_unit_output_is_not_constant`: uses `_cascade_features()`, relaxed threshold for normalized inputs                                                               |
+| `test_demo_training_convergence.py` | `test_initial_training_reduces_loss`: wrapped with `torch.no_grad()`                                                                                                         |
+
+---
+
+### Architecture Comparison (Post-Phase 4)
+
+| Aspect                        | Demo Mode (`MockCascorNetwork`)      | Cascor (`CascadeCorrelationNetwork`)         | Match? |
+|-------------------------------|--------------------------------------|----------------------------------------------|--------|
+| **Hidden activation**         | `torch.tanh` [-1, 1]                 | `nn.Tanh` [-1, 1]                            | ✅     |
+| **Output activation**         | Raw linear: `nn.Linear`              | Raw linear: `nn.Linear`                      | ✅     |
+| **Loss function**             | MSE (`nn.MSELoss`) + autograd        | MSE (`nn.MSELoss`)                           | ✅     |
+| **Output training**           | Full-batch + 500 post-install        | Full-batch + 1000 post-install               | ≈      |
+| **Output optimizer**          | `torch.optim.Adam` (lr=0.01)         | `torch.optim.Adam` (lr=0.01)                 | ✅     |
+| **Fresh optimizer per phase** | Yes (new Adam after each install)    | Yes (new optimizer per `train_output_layer`) | ✅     |
+| **Candidate pool**            | 8 candidates                         | 16 candidates (parallel)                     | ≈      |
+| **Candidate training**        | 200 steps, Adam, autograd            | Configurable epochs, autograd                | ✅     |
+| **Candidate correlation**     | Pearson (normalized)                 | Pearson (normalized)                         | ✅     |
+| **Candidate selection**       | Max absolute Pearson correlation     | Max absolute correlation                     | ✅     |
+| **Hidden unit addition**      | Convergence-based + fixed fallback   | Convergence-based + correlation threshold    | ✅     |
+| **Input normalization**       | Min-max to [-1, 1]                   | None (uses smaller-range data)               | ✅     |
+| **Weight initialization**     | `nn.init.normal_(std=0.1)`           | `randn * 0.1`                                | ✅     |
+| **Output weight expansion**   | Warm-start: copy old, random new col | Warm-start: copy old, random new row         | ✅     |
+| **Data format**               | Tensor (N, 2), targets (N, 1)        | Tensor (N, 2), targets (N, 1)                | ✅     |
+| **Thread safety**             | `threading.Lock`                     | Not thread-safe (process-based)              | N/A    |
 
 ### Code Structure Comparison
 
@@ -229,15 +603,14 @@ Adding a hidden unit before the output has converged wastes the current training
 4. **Residual computation**: `y - forward(x)` — same formula
 5. **Correlation maximization**: Both maximize |correlation| between candidate output and residual — same objective
 
-### What's Different (Root Causes)
+### Remaining Differences (Post-Phase 4)
 
-1. **Activation function**: Sigmoid (demo) vs Tanh (cascor) — changes saturation behavior
-2. **Loss function**: BCE+sigmoid (demo) vs MSE (cascor) — changes gradient dynamics
-3. **Output retraining**: 50 mini-batch steps (demo) vs 1000 full-batch epochs (cascor) — 125× difference
-4. **Candidate pool**: 1 candidate (demo) vs 16 candidates (cascor) — quality vs speed
-5. **Candidate training backend**: Manual gradient (demo) vs autograd (cascor)
-6. **Hidden unit scheduling**: Fixed interval (demo) vs convergence-based (cascor)
-7. **Optimizer**: Manual SGD (demo) vs configurable torch.optim (cascor)
+1. **Output retraining epochs**: 500 (demo) vs 1000 (cascor) — acceptable for demo speed
+2. **Candidate pool size**: 8 (demo) vs 16 (cascor) — acceptable tradeoff
+3. **Candidate training epochs**: 200 (demo) vs configurable/longer (cascor) — acceptable for demo
+4. **Parallelism**: Single-threaded candidates (demo) vs multiprocess pool (cascor)
+
+All critical algorithmic mismatches (activation, loss, optimizer, correlation, normalization, scheduling) have been resolved.
 
 ### Implementation Mechanism Differences
 
@@ -687,10 +1060,12 @@ self.network.output_bias = torch.randn(self.network.output_size) * 0.1
 
 ## Document History
 
-| Date       | Author                        | Change                                                                                                                                                                                                                   |
-|------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 2026-03-17 | Paul Calnon (via Claude Code) | Initial creation — comprehensive analysis of 8 root causes, comparative analysis, architecture review, phased implementation plan                                                                                        |
-| 2026-03-17 | Paul Calnon (via Claude Code) | Validation complete — 5 sub-agents confirmed all root causes. RC-3 ratio corrected (1,250×). New bug found (reset dimension mismatch). Step 1.5 added. Test update inventory added. Target encoding decision documented. |
-| 2026-03-17 | Paul Calnon (via Claude Code) | Implementation complete — Phase 1 & 2 all steps done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues.                |
+| Date       | Author      | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-03-17 | Paul Calnon | Initial creation — comprehensive analysis of 8 root causes, comparative analysis, architecture review, phased implementation plan                                                                                                                                                                                                                                                                                                                                                       |
+| 2026-03-17 | Paul Calnon | Validation complete — 5 sub-agents confirmed all root causes. RC-3 ratio corrected (1,250×). New bug found (reset dimension mismatch). Step 1.5 added. Test update inventory added. Target encoding decision documented.                                                                                                                                                                                                                                                                |
+| 2026-03-17 | Paul Calnon | Implementation complete — Phase 1 & 2 all steps done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues.                                                                                                                                                                                                                                                                               |
+| 2026-03-17 | Paul Calnon | Phase 3 complete — 5 parallel sub-agents (math audit, training dynamics, cascor comparison, numerical stability, algorithm research). MSE gradient math correct. 4 new root causes identified: RC-9 (SGD vs Adam), RC-10 (mini-batch noise undoes retrain), RC-11 (un-normalized correlation), RC-12 (spiral complexity). RC-6 elevated. 4 remediation options documented (4A–4D). Recommended approach: 4B+4C+4D combined (autograd+Adam, simpler spiral, convergence-based addition). |
+| 2026-03-18 | Paul Calnon | Phase 4 complete (Options 4B+4D, 4C excluded). Replaced manual SGD with `nn.Linear` + Adam optimizer. Replaced manual candidate gradient with autograd + Adam + Pearson correlation. Added input normalization to [-1, 1]. Full-batch training for all output steps. Convergence-based cascade addition. 500-step output retrain with fresh optimizer. Backward-compatible `output_weights`/`output_bias` properties. 3544/3546 tests passing (2 pre-existing WS failures).             |
 
 ---
