@@ -36,15 +36,15 @@ Neural network training in juniper-canopy demo mode stops improving after the fi
 
 V1 and V2 plans identified and fixed several fundamental issues:
 
-| Issue (V1/V2) | Status | What Was Fixed |
-|----------------|--------|----------------|
-| RC-6 (V1): `forward()` ignored hidden units | **FIXED** | Forward pass now cascades correctly |
-| RC-7 (V1): Weights never trained | **FIXED** | `train_output_step()` performs real gradient descent |
-| RC-8 (V1): No thread safety in boundary computation | **FIXED** | Lock acquired before `forward()` |
-| RC-D1 (V2): Hidden unit weights random | **FIXED** | Candidate training via `_train_candidate()` added |
-| RC-D2 (V2): Deferred training lost steps | **FIXED** | Training is now inline |
-| RC-D3 (V2): Synthetic metrics disconnected from network | **FIXED** | Metrics computed from actual predictions |
-| RC-D4 (V2): Missing argmax | **FIXED** | `(predictions > 0.5).int()` applied |
+| Issue (V1/V2)                                           | Status    | What Was Fixed                                       |
+|---------------------------------------------------------|-----------|------------------------------------------------------|
+| RC-6 (V1): `forward()` ignored hidden units             | **FIXED** | Forward pass now cascades correctly                  |
+| RC-7 (V1): Weights never trained                        | **FIXED** | `train_output_step()` performs real gradient descent |
+| RC-8 (V1): No thread safety in boundary computation     | **FIXED** | Lock acquired before `forward()`                     |
+| RC-D1 (V2): Hidden unit weights random                  | **FIXED** | Candidate training via `_train_candidate()` added    |
+| RC-D2 (V2): Deferred training lost steps                | **FIXED** | Training is now inline                               |
+| RC-D3 (V2): Synthetic metrics disconnected from network | **FIXED** | Metrics computed from actual predictions             |
+| RC-D4 (V2): Missing argmax                              | **FIXED** | `(predictions > 0.5).int()` applied                  |
 
 **These fixes resolved the mechanical bugs but not the algorithmic issues.** The current code correctly cascades through hidden units, trains weights with real gradients, and computes accurate metrics — but the training still stalls because of deeper algorithm-level mismatches with the CasCor specification.
 
@@ -191,35 +191,35 @@ Adding a hidden unit before the output has converged wastes the current training
 
 ### Architecture Comparison
 
-| Aspect | Demo Mode (`MockCascorNetwork`) | Cascor (`CascadeCorrelationNetwork`) |
-|--------|-------------------------------|--------------------------------------|
-| **Hidden activation** | `torch.sigmoid` [0, 1] | `nn.Tanh` [-1, 1] |
-| **Output activation** | `sigmoid(matmul + bias)` | Raw linear: `matmul + bias` |
-| **Loss function** | BCE (analytical gradient) | MSE (`nn.MSELoss`) |
-| **Output training** | 1 mini-batch step/epoch + 50 post-install | 1000 full-batch epochs post-install |
-| **Output optimizer** | Manual SGD (lr=0.01) | `torch.optim` (configurable) |
-| **Candidate pool** | 1 candidate | 16 candidates (parallel) |
-| **Candidate training** | 80 steps, lr=0.1, manual gradient | Configurable epochs, autograd |
-| **Candidate selection** | None (single candidate) | Max absolute correlation |
-| **Hidden unit addition** | Fixed schedule (every 30 epochs) | Convergence-based + correlation threshold |
-| **Input normalization** | None | None (but uses smaller-range data) |
-| **Weight initialization** | `randn * 0.1` | `randn * 0.1` (similar) |
-| **Output weight expansion** | Random new column, copy old | Random new row, copy old (equivalent) |
-| **Data format** | Tensor (N, 2), targets (N, 1) | Tensor (N, 2), targets (N, 1) |
-| **Thread safety** | `threading.Lock` | Not thread-safe (process-based) |
+| Aspect                      | Demo Mode (`MockCascorNetwork`)           | Cascor (`CascadeCorrelationNetwork`)      |
+|-----------------------------|-------------------------------------------|-------------------------------------------|
+| **Hidden activation**       | `torch.sigmoid` [0, 1]                    | `nn.Tanh` [-1, 1]                         |
+| **Output activation**       | `sigmoid(matmul + bias)`                  | Raw linear: `matmul + bias`               |
+| **Loss function**           | BCE (analytical gradient)                 | MSE (`nn.MSELoss`)                        |
+| **Output training**         | 1 mini-batch step/epoch + 50 post-install | 1000 full-batch epochs post-install       |
+| **Output optimizer**        | Manual SGD (lr=0.01)                      | `torch.optim` (configurable)              |
+| **Candidate pool**          | 1 candidate                               | 16 candidates (parallel)                  |
+| **Candidate training**      | 80 steps, lr=0.1, manual gradient         | Configurable epochs, autograd             |
+| **Candidate selection**     | None (single candidate)                   | Max absolute correlation                  |
+| **Hidden unit addition**    | Fixed schedule (every 30 epochs)          | Convergence-based + correlation threshold |
+| **Input normalization**     | None                                      | None (but uses smaller-range data)        |
+| **Weight initialization**   | `randn * 0.1`                             | `randn * 0.1` (similar)                   |
+| **Output weight expansion** | Random new column, copy old               | Random new row, copy old (equivalent)     |
+| **Data format**             | Tensor (N, 2), targets (N, 1)             | Tensor (N, 2), targets (N, 1)             |
+| **Thread safety**           | `threading.Lock`                          | Not thread-safe (process-based)           |
 
 ### Code Structure Comparison
 
-| Component | Demo Mode File | Demo Lines | Cascor File | Cascor Lines |
-|-----------|----------------|------------|-------------|--------------|
-| Forward pass | `demo_mode.py` | 210-241 | `cascade_correlation.py` | 1202-1243 |
-| Output training | `demo_mode.py` | 243-296 | `cascade_correlation.py` | 1247-1346 |
-| Add hidden unit | `demo_mode.py` | 113-146 | `cascade_correlation.py` | 2756-2851 |
-| Candidate training | `demo_mode.py` | 148-208 | `candidate_unit.py` | 616-762 |
-| Correlation calc | `demo_mode.py` | 190-196 | `candidate_unit.py` | 996-1087 |
-| Weight update | `demo_mode.py` | 203-208 | `candidate_unit.py` | 1095-1208 |
-| Training loop | `demo_mode.py` | 701-801 | `cascade_correlation.py` | 2909-3048 |
-| Residual error | `demo_mode.py` | 166-167 | `cascade_correlation.py` | 2709-2752 |
+| Component          | Demo Mode File | Demo Lines | Cascor File              | Cascor Lines |
+|--------------------|----------------|------------|--------------------------|--------------|
+| Forward pass       | `demo_mode.py` | 210-241    | `cascade_correlation.py` | 1202-1243    |
+| Output training    | `demo_mode.py` | 243-296    | `cascade_correlation.py` | 1247-1346    |
+| Add hidden unit    | `demo_mode.py` | 113-146    | `cascade_correlation.py` | 2756-2851    |
+| Candidate training | `demo_mode.py` | 148-208    | `candidate_unit.py`      | 616-762      |
+| Correlation calc   | `demo_mode.py` | 190-196    | `candidate_unit.py`      | 996-1087     |
+| Weight update      | `demo_mode.py` | 203-208    | `candidate_unit.py`      | 1095-1208    |
+| Training loop      | `demo_mode.py` | 701-801    | `cascade_correlation.py` | 2909-3048    |
+| Residual error     | `demo_mode.py` | 166-167    | `cascade_correlation.py` | 2709-2752    |
 
 ### What's Similar (Correct in Both)
 
@@ -241,15 +241,15 @@ Adding a hidden unit before the output has converged wastes the current training
 
 ### Implementation Mechanism Differences
 
-| Mechanism | Demo Mode | Cascor |
-|-----------|-----------|--------|
-| **Gradient computation** | Analytical (hand-coded derivatives) | PyTorch autograd (`loss.backward()`) |
-| **Optimizer** | Manual `weights -= lr * grad` | `torch.optim.Adam` / `torch.optim.SGD` |
-| **Parallelism** | Single thread (daemon) | Multiprocessing (process pool) |
-| **State management** | `threading.Lock`, `threading.Event` | Single-process, not thread-safe |
-| **Weight storage** | Dict with tensors | Dict with tensors (similar) |
-| **Metrics** | Computed inline after each step | Computed after output retraining |
-| **Visualization** | WebSocket broadcast | REST API endpoints |
+| Mechanism                | Demo Mode                           | Cascor                                 |
+|--------------------------|-------------------------------------|----------------------------------------|
+| **Gradient computation** | Analytical (hand-coded derivatives) | PyTorch autograd (`loss.backward()`)   |
+| **Optimizer**            | Manual `weights -= lr * grad`       | `torch.optim.Adam` / `torch.optim.SGD` |
+| **Parallelism**          | Single thread (daemon)              | Multiprocessing (process pool)         |
+| **State management**     | `threading.Lock`, `threading.Event` | Single-process, not thread-safe        |
+| **Weight storage**       | Dict with tensors                   | Dict with tensors (similar)            |
+| **Metrics**              | Computed inline after each step     | Computed after output retraining       |
+| **Visualization**        | WebSocket broadcast                 | REST API endpoints                     |
 
 ---
 
@@ -271,6 +271,7 @@ The demo mode implements a complete but simplified CasCor algorithm in `MockCasc
 #### Option A: Fix MockCascorNetwork (Minimal Change)
 
 Fix all 8 root causes in the existing `MockCascorNetwork`:
+
 - Change sigmoid to tanh
 - Change BCE to MSE
 - Increase output retraining epochs
@@ -300,6 +301,7 @@ Extract the core CasCor algorithm into a shared library (`juniper-cascor-core`) 
 Replace `MockCascorNetwork` with a lightweight local instance of the cascor service that the demo drives via `juniper-cascor-client`. The demo becomes a curated configuration of the real system.
 
 **Pros**:
+
 - Zero algorithm duplication
 - Demo exercises the same code paths as production
 - Demo serves as integration test for the full stack
@@ -307,6 +309,7 @@ Replace `MockCascorNetwork` with a lightweight local instance of the cascor serv
 - juniper-canopy already depends on `juniper-cascor-client`
 
 **Cons**:
+
 - Requires juniper-cascor to support in-process or local operation
 - More complex demo startup (must start cascor service)
 - Network overhead for local HTTP calls (negligible for demo)
@@ -316,6 +319,7 @@ Replace `MockCascorNetwork` with a lightweight local instance of the cascor serv
 Immediately fix the critical algorithmic bugs (RC-1, RC-2, RC-3) in `MockCascorNetwork` to make the demo functional. Then, in a subsequent phase, migrate to Option D (service-based architecture) for long-term sustainability.
 
 **Rationale**:
+
 - Fixes the immediate training failure quickly
 - Doesn't require cross-repo refactoring for the immediate fix
 - Sets up the architectural migration as a well-planned second phase
@@ -341,7 +345,7 @@ Changes required:
 
 1. In `add_hidden_unit()` (line 129): change `"activation_fn": torch.sigmoid` to `"activation_fn": torch.tanh`
 2. In `_train_candidate()` (line 199): change sigmoid derivative `f' = v * (1 - v)` to tanh derivative `f' = 1 - v²`
-3. Update any tests that assert sigmoid activation
+3. Update any tests that assert sigmoid activation/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fluffy-brewing-rocket
 
 **Impact**: Hidden units will produce outputs in [-1, 1], providing discriminative features even when saturated.
 
@@ -385,7 +389,7 @@ Changes required:
    - Before: `for _ in range(50): self.train_output_step()`
    - After: `for _ in range(200): self.train_output_step()`
 
-2. Use full-batch training during retraining (not mini-batch):
+2. Use full-batch training during retraining (not mini-batch):/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/fluffy-brewing-rocket
    - Pass `batch_size=None` or use full dataset size
    - This matches cascor's full-batch output retraining
 
@@ -503,18 +507,18 @@ Investigate whether `CascadeCorrelationNetwork` can be instantiated directly wit
 
 Create a curated set of parameters for the demo that produces a successful, meaningful demonstration:
 
-| Parameter | Demo Value | Rationale |
-|-----------|------------|-----------|
-| Dataset | 2-class spiral, 200 samples, noise=0.1 | Classic CasCor benchmark |
-| Input normalization | Scale to [-1, 1] | Prevents activation saturation |
-| Activation | Tanh | CasCor specification |
-| Output loss | MSE | CasCor specification |
-| Learning rate | 0.01 | Reasonable for SGD |
-| Output retraining epochs | 200 | Sufficient for convergence |
-| Candidate pool size | 8 | Good quality/speed tradeoff |
-| Candidate training steps | 100 | Sufficient for correlation maximization |
-| Max hidden units | 20 | Enough for spiral classification |
-| Max epochs | 500 | Sufficient for convergence |
+| Parameter                | Demo Value                             | Rationale                               |
+|--------------------------|----------------------------------------|-----------------------------------------|
+| Dataset                  | 2-class spiral, 200 samples, noise=0.1 | Classic CasCor benchmark                |
+| Input normalization      | Scale to [-1, 1]                       | Prevents activation saturation          |
+| Activation               | Tanh                                   | CasCor specification                    |
+| Output loss              | MSE                                    | CasCor specification                    |
+| Learning rate            | 0.01                                   | Reasonable for SGD                      |
+| Output retraining epochs | 200                                    | Sufficient for convergence              |
+| Candidate pool size      | 8                                      | Good quality/speed tradeoff             |
+| Candidate training steps | 100                                    | Sufficient for correlation maximization |
+| Max hidden units         | 20                                     | Enough for spiral classification        |
+| Max epochs               | 500                                    | Sufficient for convergence              |
 
 #### Step 4.3: Create Integration Bridge
 
@@ -605,13 +609,13 @@ If all applicable tests pass, the following must be true:
 
 ### Sub-Agent Validation Summary
 
-| Agent | Focus Area | Verdict | Key Findings |
-|-------|------------|---------|--------------|
-| Agent 1 | RC-1 Activation Analysis | **CONFIRMED** | Sigmoid at `demo_mode.py:129`, tanh at `constants_activation.py:56`. Data range [-10, 10] confirmed (JuniperData default `radius=10.0`). Sigmoid derivative vanishes at extremes (`f' ≈ 4.5e-5` at `sigmoid(±10)`). |
-| Agent 2 | RC-2 Loss Function Analysis | **CONFIRMED** | `forward()` applies sigmoid (line 241). `train_output_step()` uses BCE gradient `p - y` (line 288). Cascor uses `nn.MSELoss()` (line 1278) on raw output (line 1240). BCE residuals bounded [-1,1] vs unbounded MSE residuals. |
-| Agent 3 | RC-3 Retraining Analysis | **PARTIALLY CONFIRMED** | Core claim correct. Ratio corrected: **~1,250×** in sample evaluations (not 125×). Demo: 50 × 32 = 1,600. Cascor: 1,000 × 2,000 = 2,000,000. |
-| Agent 4 | Implementation Plan Review | **FEASIBLE with additions** | All 4 fixes verified at exact lines. **Critical additional finding**: `_reset_state_and_history()` does not reset `output_weights`/`output_bias` — dimension mismatch crash after reset. Target encoding ({0,1} vs {-1,1}) must be specified. Decision threshold must update. 6 test files need updates. |
-| Agent 5 | Test Plan Completeness | **ADEQUATE with 6 gaps** | 10 specific tests will break (exact lines identified). 6 gaps: no convergence quality test, no non-linear boundary test, no confidence mode test, no HTTP 503 test, `activation_fn` display string contradiction, no candidate training fallback test. |
+| Agent   | Focus Area                  | Verdict                     | Key Findings                                                                                                                                                                                                                                                                                             |
+|---------|-----------------------------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Agent 1 | RC-1 Activation Analysis    | **CONFIRMED**               | Sigmoid at `demo_mode.py:129`, tanh at `constants_activation.py:56`. Data range [-10, 10] confirmed (JuniperData default `radius=10.0`). Sigmoid derivative vanishes at extremes (`f' ≈ 4.5e-5` at `sigmoid(±10)`).                                                                                      |
+| Agent 2 | RC-2 Loss Function Analysis | **CONFIRMED**               | `forward()` applies sigmoid (line 241). `train_output_step()` uses BCE gradient `p - y` (line 288). Cascor uses `nn.MSELoss()` (line 1278) on raw output (line 1240). BCE residuals bounded [-1,1] vs unbounded MSE residuals.                                                                           |
+| Agent 3 | RC-3 Retraining Analysis    | **PARTIALLY CONFIRMED**     | Core claim correct. Ratio corrected: **~1,250×** in sample evaluations (not 125×). Demo: 50 × 32 = 1,600. Cascor: 1,000 × 2,000 = 2,000,000.                                                                                                                                                             |
+| Agent 4 | Implementation Plan Review  | **FEASIBLE with additions** | All 4 fixes verified at exact lines. **Critical additional finding**: `_reset_state_and_history()` does not reset `output_weights`/`output_bias` — dimension mismatch crash after reset. Target encoding ({0,1} vs {-1,1}) must be specified. Decision threshold must update. 6 test files need updates. |
+| Agent 5 | Test Plan Completeness      | **ADEQUATE with 6 gaps**    | 10 specific tests will break (exact lines identified). 6 gaps: no convergence quality test, no non-linear boundary test, no confidence mode test, no HTTP 503 test, `activation_fn` display string contradiction, no candidate training fallback test.                                                   |
 
 ### Critical Finding from Implementation Feasibility Agent
 
@@ -620,6 +624,7 @@ If all applicable tests pass, the following must be true:
 **File**: `juniper-canopy/src/demo_mode.py`, lines 896-908
 
 When the user clicks "Reset Training", `_reset_state_and_history()` clears `hidden_units` (list reset to []) but does NOT reinitialize `output_weights` or `output_bias`. After reset:
+
 - `output_weights` shape: `(1, input_size + N_hidden)` (from previous run with N hidden units)
 - `features` shape in `forward()`: `(batch, input_size)` (no hidden units)
 - `torch.matmul(features, output_weights.T)` → **dimension mismatch crash**
@@ -637,17 +642,17 @@ When the user clicks "Reset Training", `_reset_state_and_history()` clears `hidd
 
 ### Tests Requiring Updates (from Validation)
 
-| File | Lines | Issue |
-|------|-------|-------|
-| `test_demo_mode_comprehensive.py` | 48 | `assert output >= 0 and output <= 1` — breaks with raw output |
-| `test_demo_mode_comprehensive.py` | 88 | `assert unit["activation_fn"] == torch.sigmoid` — must change to `torch.tanh` |
-| `test_mock_cascor_forward.py` | 35-39 | `test_output_is_sigmoid` — output range assertion breaks |
-| `test_mock_cascor_forward.py` | 114-120 | `test_output_in_sigmoid_range_with_many_hidden_units` — breaks |
-| `test_demo_boundary_fixes.py` | 68, 71, 78 | Random unit uses `torch.sigmoid` — must use `torch.tanh` |
-| `test_demo_boundary_fixes.py` | 305, 312, 324, 335 | `(pred > 0.5)` threshold — keep for {0,1} targets with raw output |
-| `test_demo_weight_training.py` | 66, 73 | `binary_cross_entropy()` — must change to MSE |
-| `test_main_api_coverage.py` | 870 | `"activation_fn": "sigmoid"` — must change to `"tanh"` |
-| `demo_backend.py` | 222 | `(predictions > 0.5).int()` — keep for {0,1} targets |
+| File                              | Lines              | Issue                                                                         |
+|-----------------------------------|--------------------|-------------------------------------------------------------------------------|
+| `test_demo_mode_comprehensive.py` | 48                 | `assert output >= 0 and output <= 1` — breaks with raw output                 |
+| `test_demo_mode_comprehensive.py` | 88                 | `assert unit["activation_fn"] == torch.sigmoid` — must change to `torch.tanh` |
+| `test_mock_cascor_forward.py`     | 35-39              | `test_output_is_sigmoid` — output range assertion breaks                      |
+| `test_mock_cascor_forward.py`     | 114-120            | `test_output_in_sigmoid_range_with_many_hidden_units` — breaks                |
+| `test_demo_boundary_fixes.py`     | 68, 71, 78         | Random unit uses `torch.sigmoid` — must use `torch.tanh`                      |
+| `test_demo_boundary_fixes.py`     | 305, 312, 324, 335 | `(pred > 0.5)` threshold — keep for {0,1} targets with raw output             |
+| `test_demo_weight_training.py`    | 66, 73             | `binary_cross_entropy()` — must change to MSE                                 |
+| `test_main_api_coverage.py`       | 870                | `"activation_fn": "sigmoid"` — must change to `"tanh"`                        |
+| `demo_backend.py`                 | 222                | `(predictions > 0.5).int()` — keep for {0,1} targets                          |
 
 ---
 
@@ -671,6 +676,7 @@ self.network.output_bias = torch.randn(self.network.output_size) * 0.1
 **Decision**: Keep targets as {0, 1}. Do NOT remap to {-1, 1}.
 
 **Rationale**:
+
 - The dataset from JuniperData uses `np.argmax(one_hot)` which produces {0, 1}
 - MSE with {0, 1} targets and raw output works correctly — the network learns to output values near 0 and 1
 - The decision threshold stays at 0.5 for both accuracy computation and decision boundary
@@ -681,10 +687,10 @@ self.network.output_bias = torch.randn(self.network.output_size) * 0.1
 
 ## Document History
 
-| Date | Author | Change |
-|------|--------|--------|
-| 2026-03-17 | Paul Calnon (via Claude Code) | Initial creation — comprehensive analysis of 8 root causes, comparative analysis, architecture review, phased implementation plan |
+| Date       | Author                        | Change                                                                                                                                                                                                                   |
+|------------|-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 2026-03-17 | Paul Calnon (via Claude Code) | Initial creation — comprehensive analysis of 8 root causes, comparative analysis, architecture review, phased implementation plan                                                                                        |
 | 2026-03-17 | Paul Calnon (via Claude Code) | Validation complete — 5 sub-agents confirmed all root causes. RC-3 ratio corrected (1,250×). New bug found (reset dimension mismatch). Step 1.5 added. Test update inventory added. Target encoding decision documented. |
-| 2026-03-17 | Paul Calnon (via Claude Code) | Implementation complete — Phase 1 & 2 all steps done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues. |
+| 2026-03-17 | Paul Calnon (via Claude Code) | Implementation complete — Phase 1 & 2 all steps done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues.                |
 
 ---
