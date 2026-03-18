@@ -1058,6 +1058,246 @@ self.network.output_bias = torch.randn(self.network.output_size) * 0.1
 
 ---
 
+## Phase 5: Convergence Window UI Controls Enhancement
+
+### Overview
+
+Add user-facing controls to the Training Metrics panel to allow toggling and tuning the convergence-based cascade unit addition feature introduced in Phase 4. Currently, the convergence detection (10-epoch sliding window with threshold 0.001) is always enabled with hardcoded parameters. This enhancement makes it configurable at runtime.
+
+### Requirements
+
+1. **Checkbox**: Enable/disable the "Convergence-Based Sliding Window" feature
+   - Default: **enabled** (checked)
+   - When disabled, cascade units are added only on the fixed schedule (`cascade_every` epochs)
+   - When enabled, convergence detection can trigger early cascade addition
+
+2. **Numeric input field**: Adjust the convergence threshold
+   - Default: **0.001** (current hardcoded value)
+   - Range: 0.0001 to 0.1 (step 0.0001)
+   - Pre-populated with the current default value
+   - Only active when the checkbox is enabled (visually disabled otherwise)
+
+3. Both controls must integrate with the existing "Apply Parameters" workflow (change detection → button enable → POST /api/set_params → DemoMode.apply_params())
+
+### Implementation Plan
+
+#### Step 5.1: Add Constants
+
+**File**: `canopy_constants.py`
+
+Add to `TrainingConstants`:
+
+```python
+DEFAULT_CONVERGENCE_ENABLED: Final[bool] = True
+DEFAULT_CONVERGENCE_THRESHOLD: Final[float] = 0.001
+MIN_CONVERGENCE_THRESHOLD: Final[float] = 0.0001
+MAX_CONVERGENCE_THRESHOLD: Final[float] = 0.1
+```
+
+#### Step 5.2: Add Instance Attributes to DemoMode
+
+**File**: `demo_mode.py` — `DemoMode.__init__()`
+
+Add after `self.cascade_every`:
+
+```python
+self.convergence_enabled = TrainingConstants.DEFAULT_CONVERGENCE_ENABLED
+self.convergence_threshold = TrainingConstants.DEFAULT_CONVERGENCE_THRESHOLD
+```
+
+#### Step 5.3: Update `_should_add_cascade_unit()` to Use Instance Attributes
+
+**File**: `demo_mode.py`
+
+Replace hardcoded `10` and `0.001` with `self.convergence_enabled` guard and `self.convergence_threshold`:
+
+```python
+if self.convergence_enabled and len(self.network.history["train_loss"]) >= 10:
+    recent = list(self.network.history["train_loss"])[-10:]
+    improvement = recent[0] - recent[-1]
+    if improvement < self.convergence_threshold:
+        return True
+```
+
+#### Step 5.4: Extend `DemoMode.apply_params()`
+
+**File**: `demo_mode.py`
+
+Add parameters:
+
+```python
+def apply_params(
+    self,
+    learning_rate=None,
+    max_hidden_units=None,
+    max_epochs=None,
+    convergence_enabled=None,
+    convergence_threshold=None,
+):
+```
+
+In the `with self._lock:` block:
+
+```python
+if convergence_enabled is not None:
+    self.convergence_enabled = bool(convergence_enabled)
+if convergence_threshold is not None:
+    self.convergence_threshold = float(convergence_threshold)
+```
+
+#### Step 5.5: Update `DemoBackend.apply_params()`
+
+**File**: `backend/demo_backend.py`
+
+Forward new params:
+
+```python
+self._demo.apply_params(
+    ...
+    convergence_enabled=params.get("convergence_enabled"),
+    convergence_threshold=params.get("convergence_threshold"),
+)
+```
+
+#### Step 5.6: Update FastAPI Endpoint
+
+**File**: `main.py` — `api_set_params()`
+
+Extract and forward:
+
+```python
+convergence_enabled = params.get("convergence_enabled")
+convergence_threshold = params.get("convergence_threshold")
+```
+
+#### Step 5.7: Add UI Controls to Dashboard
+
+**File**: `frontend/dashboard_manager.py` — `_build_layout()`
+
+Insert between "Maximum Epochs" input and the `html.Hr()` before "Apply Parameters":
+
+```python
+html.Hr(),
+html.P("Convergence Detection:", className="mb-1 fw-bold"),
+dcc.Checklist(
+    id="convergence-enabled-checkbox",
+    options=[{"label": " Enable sliding window", "value": "enabled"}],
+    value=["enabled"],
+    className="mb-2",
+),
+html.P("Convergence Threshold:", className="mb-1 fw-bold"),
+dbc.Input(
+    id="convergence-threshold-input",
+    type="number",
+    value=TrainingConstants.DEFAULT_CONVERGENCE_THRESHOLD,
+    step=0.0001,
+    min=TrainingConstants.MIN_CONVERGENCE_THRESHOLD,
+    max=TrainingConstants.MAX_CONVERGENCE_THRESHOLD,
+    className="mb-2",
+    debounce=True,
+),
+```
+
+#### Step 5.8: Wire Callbacks in Dashboard Manager
+
+**File**: `frontend/dashboard_manager.py`
+
+1. **Change detection** (`_track_param_changes_handler`): Add `convergence-enabled-checkbox.value` and `convergence-threshold-input.value` as inputs
+2. **Apply handler** (`_apply_parameters_handler`): Include `convergence_enabled` and `convergence_threshold` in POST body. **Note**: `dcc.Checklist` returns `["enabled"]` or `[]` — convert to boolean: `convergence_enabled = "enabled" in checklist_value`
+3. **Backend sync** (`_sync_input_values_from_backend_handler`): Expand return tuple to 5 values (add convergence checkbox value and threshold)
+4. **Init handler** (`_init_applied_params_handler`): Include convergence defaults in applied-params-store
+5. **Backend params store** (`backend-params-state`): Update initial data dict to include `convergence_enabled` and `convergence_threshold`
+
+#### Step 5.9: Update `_reset_state_and_history()` (from validation)
+
+**File**: `demo_mode.py`
+
+Reset convergence params to defaults on training reset:
+
+```python
+self.convergence_enabled = TrainingConstants.DEFAULT_CONVERGENCE_ENABLED
+self.convergence_threshold = TrainingConstants.DEFAULT_CONVERGENCE_THRESHOLD
+```
+
+#### Step 5.10: Update `get_current_state()` (from validation)
+
+**File**: `demo_mode.py`
+
+Include convergence params in state dict so `/api/state` exposes them for frontend sync.
+
+#### Step 5.11: Update existing `_make_demo()` helper (from validation)
+
+**File**: `tests/unit/test_phase4_implementation.py`
+
+The `_make_demo()` helper uses `DemoMode.__new__()` (bypasses `__init__`). Must add:
+
+```python
+demo.convergence_enabled = True
+demo.convergence_threshold = 0.001
+```
+
+Without this, 5 existing Phase 4 tests will fail with `AttributeError`.
+
+### Validation Agent Findings
+
+| Agent       | Verdict                         | Critical Findings                                         |
+|-------------|---------------------------------|-----------------------------------------------------------|
+| Feasibility | **FEASIBLE WITH MODIFICATIONS** | 8 additional steps/considerations identified              |
+| Test Plan   | **ADEQUATE with 11 gaps**       | 5 must-have test additions, 4 should-have, 2 nice-to-have |
+
+**Must-fix items incorporated**: Steps 5.9, 5.10, 5.11 added. Checklist-to-boolean conversion noted in Step 5.8. `backend-params-state` store update noted.
+
+### Testing Plan (Phase 5)
+
+#### T-5.1: Unit Tests — Convergence Toggle
+
+**File**: `tests/unit/test_convergence_ui_controls.py` (new)
+
+| Test                                                 | Description                                                                                            |
+|------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `test_convergence_enabled_by_default`                | `DemoMode` initializes with `convergence_enabled=True`                                                 |
+| `test_convergence_threshold_default_value`           | `DemoMode` initializes with `convergence_threshold=0.001`                                              |
+| `test_apply_params_sets_convergence_enabled`         | `apply_params(convergence_enabled=False)` disables convergence                                         |
+| `test_apply_params_sets_convergence_threshold`       | `apply_params(convergence_threshold=0.01)` updates threshold                                           |
+| `test_disabled_convergence_uses_fixed_schedule_only` | With `convergence_enabled=False`, `_should_add_cascade_unit()` only fires on `cascade_every` intervals |
+| `test_enabled_convergence_fires_on_plateau`          | With `convergence_enabled=True` and loss plateau, unit is added before `cascade_every`                 |
+| `test_threshold_affects_sensitivity`                 | Higher threshold (0.01) triggers earlier than lower threshold (0.0001)                                 |
+| `test_apply_params_threshold_bounds`                 | Values outside [0.0001, 0.1] are clamped or rejected                                                   |
+
+#### T-5.2: Integration Tests — API Endpoint
+
+**File**: `tests/integration/test_convergence_params_api.py` (new)
+
+| Test                                         | Description                                                                |
+|----------------------------------------------|----------------------------------------------------------------------------|
+| `test_set_params_convergence_enabled`        | POST `/api/set_params` with `convergence_enabled=false` persists           |
+| `test_set_params_convergence_threshold`      | POST `/api/set_params` with `convergence_threshold=0.01` persists          |
+| `test_get_state_includes_convergence_params` | GET `/api/state` returns `convergence_enabled` and `convergence_threshold` |
+| `test_params_survive_pause_resume`           | Convergence params persist through pause/resume cycle                      |
+
+#### T-5.3: Regression Tests
+
+| Test                                         | Description                                                          | File                                |
+|----------------------------------------------|----------------------------------------------------------------------|-------------------------------------|
+| `test_existing_params_still_work`            | `learning_rate`, `max_hidden_units`, `max_epochs` unchanged          | `test_apply_button_parameters.py`   |
+| `test_training_convergence_unchanged`        | Training convergence behavior with default params matches Phase 4    | `test_demo_training_convergence.py` |
+| `test_apply_params_button_enables_on_change` | Button enables when convergence params change                        | `test_parameter_persistence.py`     |
+| `test_reset_restores_convergence_defaults`   | Reset training restores convergence_enabled=True and threshold=0.001 | new test                            |
+
+### Files to Modify (Phase 5)
+
+| File                                                     | Changes                                                                                                               |
+|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `canopy_constants.py`                                    | Add convergence constants to `TrainingConstants`                                                                      |
+| `demo_mode.py`                                           | Add instance attrs, update `_should_add_cascade_unit()`, extend `apply_params()`, update `_reset_state_and_history()` |
+| `backend/demo_backend.py`                                | Forward convergence params in `apply_params()`                                                                        |
+| `main.py`                                                | Extract convergence params in `api_set_params()`                                                                      |
+| `frontend/dashboard_manager.py`                          | Add checkbox + threshold input, wire callbacks                                                                        |
+| `tests/unit/test_convergence_ui_controls.py` (new)       | Unit tests for convergence toggle and threshold                                                                       |
+| `tests/integration/test_convergence_params_api.py` (new) | API integration tests                                                                                                 |
+
+---
+
 ## Document History
 
 | Date       | Author      | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -1067,5 +1307,6 @@ self.network.output_bias = torch.randn(self.network.output_size) * 0.1
 | 2026-03-17 | Paul Calnon | Implementation complete — Phase 1 & 2 all steps done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues.                                                                                                                                                                                                                                                                               |
 | 2026-03-17 | Paul Calnon | Phase 3 complete — 5 parallel sub-agents (math audit, training dynamics, cascor comparison, numerical stability, algorithm research). MSE gradient math correct. 4 new root causes identified: RC-9 (SGD vs Adam), RC-10 (mini-batch noise undoes retrain), RC-11 (un-normalized correlation), RC-12 (spiral complexity). RC-6 elevated. 4 remediation options documented (4A–4D). Recommended approach: 4B+4C+4D combined (autograd+Adam, simpler spiral, convergence-based addition). |
 | 2026-03-18 | Paul Calnon | Phase 4 complete (Options 4B+4D, 4C excluded). Replaced manual SGD with `nn.Linear` + Adam optimizer. Replaced manual candidate gradient with autograd + Adam + Pearson correlation. Added input normalization to [-1, 1]. Full-batch training for all output steps. Convergence-based cascade addition. 500-step output retrain with fresh optimizer. Backward-compatible `output_weights`/`output_bias` properties. 3544/3546 tests passing (2 pre-existing WS failures).             |
+| 2026-03-18 | Paul Calnon | Phase 5 complete — Convergence Window UI Controls. Checkbox + numeric threshold input added to Training Controls. Full param flow: UI → callbacks → POST /api/set_params → DemoBackend → DemoMode.apply_params. Convergence params in get_current_state(), reset restores defaults, threshold clamped to [0.0001, 0.1]. 18 new unit tests + 52 test updates. Audit: 20/22 pass (2 low-severity fixed: backend-params-state initial data, integration test file deferred). 3598/3598 tests passing. |
 
 ---
