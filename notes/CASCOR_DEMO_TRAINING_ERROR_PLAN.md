@@ -3,7 +3,7 @@
 **Project**: Juniper Ecosystem (juniper-canopy + juniper-cascor)
 **Created**: 2026-03-17
 **Author**: Paul Calnon (via Claude Code)
-**Status**: Active — Phase 1-4 Implementation Complete (3579/3580 tests passing, 1 pre-existing WS failure)
+**Status**: Active — Phase 1-5.2 Implementation Complete (19 skipped)
 **Scope**: Cross-repo (juniper-canopy primary, juniper-cascor reference, juniper-ml coordination)
 **Supersedes**: `CANOPY_DECISION_BOUNDARY_FIX_PLAN.md` (V1), `CANOPY_DECISION_BOUNDARY_FIX_PLAN_V2.md` (V2)
 
@@ -20,6 +20,8 @@
 - [Remediation Options: Phase 4](#remediation-options-phase-4)
 - [Testing Plan](#testing-plan)
 - [Validation & Audit Results](#validation--audit-results)
+- [Phase 5.1: Convergence UI Controls Bugfix](#phase-51-convergence-ui-controls-bugfix)
+- [Phase 5.2: Convergence UI Controls — Residual Bugfix](#phase-52-convergence-ui-controls--residual-bugfix)
 
 ---
 
@@ -1300,6 +1302,127 @@ Without this, 5 existing Phase 4 tests will fail with `AttributeError`.
 
 ---
 
+## Phase 5.1: Convergence UI Controls Bugfix
+
+### Overview
+
+Fixes four bugs in the Phase 5 convergence UI controls implementation that prevented user interaction from working correctly.
+
+### Bugs Fixed
+
+| Bug | Symptom | Root Cause | Fix |
+|-----|---------|------------|-----|
+| **B-5.1**: Checkbox reverts on uncheck | Unchecking convergence checkbox and clicking Apply restores it to checked | `sync_input_values_from_backend` callback overwrites all inputs from `backend-params-state` every 5 seconds via `slow-update-interval` | Removed the continuous sync callback chain |
+| **B-5.2**: Threshold value reverts | Editing convergence threshold and clicking Apply resets to default | Same root cause as B-5.1 — periodic sync overwrites user edits before Apply can be clicked | Same fix as B-5.1 |
+| **B-5.3**: Meta-parameter values refresh constantly | Input fields (learning rate, hidden units, epochs, convergence controls) are overwritten every 5 seconds | `sync_backend_params` polls `/api/state` every 5s → updates `backend-params-state` → triggers `sync_input_values_from_backend` → overwrites all inputs | Replaced continuous polling with one-time initialization on first load |
+| **B-5.4**: Missing section heading | Meta-parameter inputs had no visual section heading like Training Controls and Network Information | All parameters were inside the Training Controls card without separation | Split into separate "Training Controls" (buttons) and "Training Parameters" (inputs) cards |
+
+### Implementation
+
+#### Step 5.1.1: Remove Continuous Backend Sync (B-5.1, B-5.2, B-5.3)
+
+**File**: `frontend/dashboard_manager.py`
+
+**Removed:**
+- `sync_input_values_from_backend` callback and `_sync_input_values_from_backend_handler` — continuously overwrote inputs from backend state
+- `sync_backend_params` callback and `_sync_backend_params_handler` — polled `/api/state` every 5 seconds to update `backend-params-state`
+- `init_applied_params` callback and `_init_applied_params_handler` — replaced by combined handler
+- `backend-params-state` dcc.Store — no longer needed (was only consumed by removed callbacks)
+- `pending-params-store` dcc.Store — dead code, never referenced by any callback
+
+**Added:**
+- `init_params_from_backend` callback and `_init_params_from_backend_handler` — fires once on first `slow-update-interval` tick, initializes both input fields AND `applied-params-store` from backend state. Returns `no_update` on all subsequent ticks (gated by `current_applied` truthiness).
+
+**Data flow (corrected):**
+```
+1. Dashboard loads → inputs show defaults from constants
+2. First slow-update-interval tick → init_params_from_backend fires
+3. Fetches /api/state → populates inputs + applied-params-store
+4. Never fires again (applied-params-store now truthy)
+5. User edits inputs freely — no periodic overwrites
+6. track_param_changes detects diff → Apply button enables
+7. User clicks Apply → apply_parameters POSTs to backend + updates applied-params-store
+```
+
+#### Step 5.1.2: Split Training Controls Card (B-5.4)
+
+**File**: `frontend/dashboard_manager.py`
+
+Split the single "Training Controls" card into two separate cards:
+- **"Training Controls"** — Start, Pause, Resume, Stop, Reset buttons only
+- **"Training Parameters"** — Learning Rate, Max Hidden Units, Maximum Epochs inputs, Convergence Detection controls, and Apply Parameters button
+
+### Testing
+
+Tests updated across 5 test files:
+
+| File | Changes |
+|------|---------|
+| `test_dashboard_manager_handlers.py` | Removed 7 tests for deleted handlers (`_sync_backend_params_handler`, `_sync_input_values_from_backend_handler`, `_init_applied_params_handler`). Added 5 replacement tests for `_init_params_from_backend_handler`. |
+| `test_dashboard_manager.py` | Removed 5 tests for deleted handlers. Added 3 replacement tests. |
+| `test_dashboard_manager_95.py` | Removed 6 tests for deleted handlers. Added 4 replacement tests. Updated registered callback list assertion. |
+| `test_apply_button_parameters.py` | Updated 1 test from `_init_applied_params_handler` to `_init_params_from_backend_handler`. |
+| `test_max_epochs_parameter.py` | Updated 3 tests: replaced `backend-params-state` assertions with `applied-params-store`, updated section name from "Training Controls" to "Training Parameters". |
+
+**Test results**: 3585 passed, 0 failed, 19 skipped.
+
+---
+
+## Phase 5.2: Convergence UI Controls — Residual Bugfix
+
+### Overview
+
+Phase 5.1 removed the continuous 5-second backend sync callbacks, but three residual bugs remained because the replacement `init_params_from_backend` callback still had structural issues. Phase 5.2 addresses the root causes with targeted fixes.
+
+### Bugs Fixed
+
+| Bug | Symptom | Root Cause | Fix |
+|-----|---------|------------|-----|
+| **B-5.5**: `/api/state` missing convergence params | `init_params_from_backend` always defaults convergence to `enabled=True`, `threshold=0.001` | `TrainingState.get_state()` does not include `convergence_enabled` or `convergence_threshold` (these live on `DemoMode`). The `/api/state` endpoint returned TrainingState directly without merging DemoMode convergence fields. | Merge `DemoMode.convergence_enabled` and `DemoMode.convergence_threshold` into `/api/state` response |
+| **B-5.6**: Init callback fires every 5 seconds | `init_params_from_backend` uses `slow-update-interval` as trigger, firing every 5s indefinitely. Only gated by `if current_applied:`, which depends on store remaining truthy. | No `max_intervals` on `slow-update-interval`. If the store ever resets (Dash re-render, edge case), the init re-fires and overwrites user edits with defaults from `/api/state`. | Add dedicated `params-init-interval` with `max_intervals=1` (fires exactly once, 1s after load). Change `init_params_from_backend` to use this interval instead of `slow-update-interval`. |
+| **B-5.7**: "✓ Parameters applied" message immediately disappears | After clicking Apply, the success status is overwritten to `""` | `track_param_changes` outputs to `params-status` children. When `applied-params-store` updates, it triggers `track_param_changes`, which sets status to `""` (no changes detected), overwriting the `"✓ Parameters applied"` message from `apply_parameters`. | Return `dash.no_update` for `params-status` when no changes detected (preserves existing status message). |
+
+### Implementation
+
+#### Step 5.2.1: Include convergence params in `/api/state` (B-5.5)
+
+**File**: `main.py`
+
+Modified the `/api/state` endpoint to merge `convergence_enabled` and `convergence_threshold` from the `DemoMode` instance into the response. Uses `getattr()` with defaults for safety.
+
+**Before**: Returned `training_state.get_state()` which lacks convergence fields.
+**After**: Merges `demo.convergence_enabled` and `demo.convergence_threshold` into the state dict before returning.
+
+**Scope note**: Convergence params are only merged for demo backend mode. Service backend (CasCor) has its own parameter management and does not use the convergence UI controls. This is consistent with the Phase 5 design where convergence controls are demo-mode-only.
+
+#### Step 5.2.2: One-shot parameter initialization (B-5.6)
+
+**File**: `frontend/dashboard_manager.py`
+
+1. Added `dcc.Interval(id="params-init-interval", interval=1000, max_intervals=1, n_intervals=0)` — fires exactly once, 1 second after page load.
+2. Changed `init_params_from_backend` callback Input from `slow-update-interval` to `params-init-interval`.
+3. Retained the `if current_applied:` guard as a safety measure, but `max_intervals=1` is the primary one-shot guarantee.
+
+#### Step 5.2.3: Preserve status message on no-change (B-5.7)
+
+**File**: `frontend/dashboard_manager.py`
+
+Changed `_track_param_changes_handler` to return `dash.no_update` for `params-status` when no changes are detected, instead of `""`. This preserves the existing status message (e.g., `"✓ Parameters applied"`) until the user makes a new change.
+
+### Testing
+
+Tests updated across 6 test files:
+
+| File | Changes |
+|------|---------|
+| `test_apply_button_parameters.py` | Updated 2 assertions (`status == ""` → `status is dash.no_update`). Added 9 new tests: 4 for `/api/state` convergence params, 5 for convergence apply round-trip scenarios. |
+| `test_dashboard_manager.py` | Updated 2 assertions for no-change status (`""` → `dash.no_update`). |
+| `test_dashboard_manager_95.py` | Updated 1 assertion for float precision edge case. |
+| `test_dashboard_manager_handlers.py` | Updated 1 assertion for no-change handler result. |
+| `test_dashboard_helpers_coverage.py` | Updated 1 assertion for no-change tracking. |
+
+---
+
 ## Document History
 
 | Date       | Author      | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -1312,5 +1435,7 @@ Without this, 5 existing Phase 4 tests will fail with `AttributeError`.
 | 2026-03-18 | Paul Calnon | **Full audit** — 5 sub-agents verified the codebase against the plan. Phase 1-2 fixes confirmed. Phase 4 items all missing. Architecture table and line numbers corrected. Test status: 3548 passed, 3 failed (2 pre-existing WS + 1 convergence regression).                                                                                                                                                                                                                           |
 | 2026-03-18 | Paul Calnon | **Phase 4 implemented** — All 9 Phase 4 steps applied to codebase. `nn.Linear` + Adam, autograd + Pearson correlation, input normalization, convergence-based cascade, full-batch default, 500-step retrain, backward-compatible properties. 29 new Phase 4 tests. 3579/3580 tests passing (1 pre-existing WS failure).                                                                                                                                                                   |
 | 2026-03-18 | Paul Calnon | Phase 5 complete — Convergence Window UI Controls. Checkbox + numeric threshold input added to Training Controls. Full param flow: UI → callbacks → POST /api/set_params → DemoBackend → DemoMode.apply_params. Convergence params in get_current_state(), reset restores defaults, threshold clamped to [0.0001, 0.1]. 18 new unit tests + 52 test updates. Audit: 20/22 pass. 3598/3598 tests passing.                                                                                   |
+| 2026-03-18 | Paul Calnon | Phase 5.1 complete — Bugfix for convergence UI controls. Fixed 4 bugs: checkbox reverting (B-5.1), threshold resetting (B-5.2), constant meta-parameter refresh (B-5.3), missing section heading (B-5.4). Replaced continuous 5s backend sync with one-time init. Split Training Controls card into "Training Controls" (buttons) and "Training Parameters" (inputs). 3585/3585 tests passing (19 skipped). |
+| 2026-03-19 | Paul Calnon | Phase 5.2 complete — Residual bugfix for convergence UI controls. Fixed 3 remaining bugs: `/api/state` missing convergence params (B-5.5), init callback firing every 5s instead of once (B-5.6), status message immediately disappearing after Apply (B-5.7). Added `params-init-interval` with `max_intervals=1`, merged DemoMode convergence params into `/api/state`, preserved status on no-change. 9 new tests added. |
 
 ---
