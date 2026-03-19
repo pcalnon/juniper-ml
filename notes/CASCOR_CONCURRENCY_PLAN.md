@@ -48,11 +48,11 @@ This plan analyzes the current state, evaluates three architectural approaches, 
 
 The juniper-cascor application uses three distinct concurrency models that work together:
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
+| Layer                         | Technology                                 | Purpose                          |
+|-------------------------------|--------------------------------------------|----------------------------------|
 | **Process-based parallelism** | `multiprocessing` (persistent worker pool) | CPU-intensive candidate training |
-| **Thread-based parallelism** | `threading` + `ThreadPoolExecutor` | Training lifecycle coordination |
-| **Async I/O** | `asyncio` + FastAPI/Uvicorn | HTTP/WebSocket API serving |
+| **Thread-based parallelism**  | `threading` + `ThreadPoolExecutor`         | Training lifecycle coordination  |
+| **Async I/O**                 | `asyncio` + FastAPI/Uvicorn                | HTTP/WebSocket API serving       |
 
 ### 2.2 Process-Based Parallelism (Candidate Training)
 
@@ -82,6 +82,7 @@ The `_ensure_worker_pool()` static method manages a reusable pool of worker proc
 - **Worker naming**: `CandidateWorker-{i}` for debugging
 
 Shutdown uses a three-phase escalation strategy:
+
 1. Send `None` sentinels for graceful shutdown
 2. `terminate()` with 1-5 second timeout
 3. `SIGKILL` as final resort
@@ -99,6 +100,7 @@ The `_worker_loop()` static method runs in each worker process:
 #### Execution Flow
 
 `_execute_parallel_training()` orchestrates the training round:
+
 1. Get/create persistent worker pool via `_ensure_worker_pool()`
 2. Send task tuples to `task_queue`
 3. Collect results from `result_queue` with timeout and worker liveness checks
@@ -118,13 +120,14 @@ The `_worker_loop()` static method runs in each worker process:
 Wraps `CascadeCorrelationNetwork` training in a background thread via `ThreadPoolExecutor`:
 
 **Synchronization primitives**:
-| Primitive | Purpose |
-|-----------|---------|
-| `_training_lock` (Lock) | Serializes network access |
-| `_metrics_lock` (Lock) | Protects metrics history |
-| `_topology_lock` (Lock) | Protects network topology |
-| `_stop_requested` (Event) | Graceful stop signal |
-| `_pause_event` (Event) | Pause/resume control |
+
+| Primitive                 | Purpose                   |
+|---------------------------|---------------------------|
+| `_training_lock` (Lock)   | Serializes network access |
+| `_metrics_lock` (Lock)    | Protects metrics history  |
+| `_topology_lock` (Lock)   | Protects network topology |
+| `_stop_requested` (Event) | Graceful stop signal      |
+| `_pause_event` (Event)    | Pause/resume control      |
 
 **Key design**: Training runs in a background thread (`cascor-train`), while the FastAPI event loop handles HTTP/WebSocket requests. The `_pause_event` and `_stop_requested` events bridge the two contexts.
 
@@ -197,13 +200,14 @@ Standalone PyPI package providing CLI-based distributed worker:
 
 Hybrid sync/async client library:
 
-| Component | Pattern | Technology | Thread-Safe? |
-|-----------|---------|------------|-------------|
-| `JuniperCascorClient` | Synchronous | `requests` + `urllib3` | No (`Session` not thread-safe) |
-| `CascorTrainingStream` | Async | `websockets` | Yes (pure async) |
-| `CascorControlStream` | Async | `websockets` | Yes (pure async) |
+| Component              | Pattern     | Technology             | Thread-Safe?                   |
+|------------------------|-------------|------------------------|--------------------------------|
+| `JuniperCascorClient`  | Synchronous | `requests` + `urllib3` | No (`Session` not thread-safe) |
+| `CascorTrainingStream` | Async       | `websockets`           | Yes (pure async)               |
+| `CascorControlStream`  | Async       | `websockets`           | Yes (pure async)               |
 
 **Key features**:
+
 - HTTP retry strategy (3 attempts, 0.5 backoff, retry on 502/504)
 - Connection pooling (pool_maxsize=10)
 - Callback-based WebSocket message dispatch
@@ -345,16 +349,19 @@ Replace `BaseManager` protocol with WebSocket Secure (WSS) for all remote worker
 #### Server-Side Design
 
 **WorkerRegistry**: Thread-safe registry tracking connected workers with:
+
 - Worker ID, capabilities (CPU cores, GPU, memory, Python/PyTorch versions)
 - Connection timestamp, last heartbeat, health score
 - Active task tracking
 
 **TaskDistributor**: Assigns tasks to workers based on:
+
 - Round-robin among idle workers (weighted by capacity)
 - Health score priority (healthier workers get tasks first)
 - Capability matching (future: GPU-aware routing)
 
 **ResultCollector**: Validates and aggregates results:
+
 - Schema validation (type, bounds, task correlation)
 - Server-side correlation cross-verification for top candidates
 - Timeout-based task reassignment
@@ -522,6 +529,7 @@ Two-tier architecture: Python 3.14 free-threading (no-GIL) for local workers (ze
 #### Local Tier: Free-Threading
 
 **GIL detection**:
+
 ```python
 def detect_free_threading() -> bool:
     if not hasattr(sys, '_is_gil_enabled'):
@@ -530,11 +538,13 @@ def detect_free_threading() -> bool:
 ```
 
 **Thread pool**: Replaces `multiprocessing.Process` pool with `threading.Thread` pool:
+
 - Threads share memory directly -- no serialization overhead
 - `queue.Queue` for task/result communication (internally synchronized)
 - Training inputs passed by reference (zero-copy)
 
 **Thread safety without GIL**:
+
 - Each candidate task creates its own `CandidateUnit` -- no shared mutable state during training
 - Shared training inputs are read-only during candidate training -- safe without locks
 - `queue.Queue` is thread-safe by design
@@ -646,6 +656,7 @@ Same as Approach A's remote worker design. Workers connect via WSS, receive seri
 #### Layer 3: Input Validation
 
 **Restricted Unpickler** for multiprocessing path:
+
 ```python
 ALLOWED_CLASSES = {
     ('candidate_unit.candidate_unit', 'CandidateTrainingResult'),
@@ -668,6 +679,7 @@ class RestrictedUnpickler(pickle.Unpickler):
 #### Layer 4: Monitoring and Audit
 
 Security event logging integrated with Juniper's extended logging system:
+
 - `SECURITY_CONNECT/DISCONNECT`: Worker lifecycle events
 - `SECURITY_AUTH_FAIL`: Failed authentication attempts
 - `SECURITY_VALIDATION_FAIL`: Result validation failures
@@ -730,6 +742,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 ### 7.2 Decision Factors
 
 **Strongest case for Approach A (WebSocket)**:
+
 - Security (eliminates pickle vector entirely if using structured serialization)
 - Cross-platform compatibility (WebSocket is universal)
 - Dynamic worker management (natural fit for WebSocket lifecycle)
@@ -737,12 +750,14 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 - Existing infrastructure (FastAPI already has WebSocket patterns)
 
 **Strongest case for Approach B (Enhanced MP)**:
+
 - Minimal disruption (local path unchanged, small delta)
 - Lowest migration effort (extends existing code)
 - Python stdlib foundation (only adds cloudpickle)
 - Proven technology (BaseManager is well-understood)
 
 **Strongest case for Approach C (Hybrid)**:
+
 - Best local performance (zero-copy, zero-serialization)
 - Memory efficiency (~1.5GB savings for 8-worker pool)
 - Future-forward (positions for Python 3.14+ ecosystem)
@@ -784,6 +799,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 **Scope**: Fix critical security vulnerabilities in the existing multiprocessing path.
 
 **Deliverables**:
+
 - Replace hardcoded authkey with runtime-generated secrets
 - Add restricted unpickler for result queue deserialization (empirically validated allowlist)
 - Add result validation in `_collect_training_results()` (type, bounds, NaN/Inf, shape, magnitude)
@@ -795,6 +811,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 **Scope**: Implement Approach A's WebSocket remote worker system.
 
 **Deliverables**:
+
 - Implement `/ws/v1/workers` WebSocket endpoint on cascor server
 - Implement `WorkerRegistry`, `WorkerCoordinator`
 - Implement structured serialization protocol (JSON + binary tensor frames, no pickle)
@@ -809,6 +826,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 **Scope**: Rewrite `juniper-cascor-worker` as a WebSocket-based worker.
 
 **Deliverables**:
+
 - `CascorWorkerAgent` class using WebSocket (no cascor imports for connection)
 - Built-in `CandidateUnit` training function (shipped with package, not serialized)
 - WebSocket connection management with exponential backoff reconnection
@@ -822,6 +840,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 **Scope**: Integrate local multiprocessing and remote WebSocket workers through a unified interface.
 
 **Deliverables**:
+
 - `TaskDistributor` abstracting local/remote execution
 - Local-first scheduling (local workers get priority, remote gets overflow)
 - Task timeout and reassignment (failed remote tasks fall back to local)
@@ -835,6 +854,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 **Scope**: Production security and operational readiness.
 
 **Deliverables**:
+
 - JWT token lifecycle (issuance CLI, rotation, in-band refresh, revocation)
 - Mutual TLS with per-worker certificates (optional enhancement)
 - Certificate generation tooling (ED25519, 365-day worker certs)
@@ -849,6 +869,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 **Scope**: When PyTorch officially supports free-threaded Python.
 
 **Deliverables**:
+
 - `detect_free_threading()` utility
 - `LocalThreadPool` class
 - Thread safety audit of cascor codebase
@@ -875,10 +896,12 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 #### 9.1.1 Security Fixes (juniper-cascor)
 
 **File**: `src/cascor_constants/constants_model/constants_model.py`
+
 - Remove hardcoded `_PROJECT_MODEL_AUTHKEY` default
 - Add validation requiring explicit authkey configuration
 
 **File**: `src/cascade_correlation/cascade_correlation.py`
+
 - Add `RestrictedUnpickler` for result queue deserialization
 - Add `_validate_result()` method for `CandidateTrainingResult` verification
 - Add `maxsize` parameter to queue creation factories
@@ -887,32 +910,38 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 #### 9.1.2 WebSocket Worker Endpoint (juniper-cascor)
 
 **New file**: `src/api/websocket/worker_stream.py`
+
 - WebSocket handler for `/ws/v1/workers`
 - JWT authentication on connection
 - Binary message frame handling
 - Task assignment and result collection
 
 **New file**: `src/api/workers/registry.py`
+
 - `WorkerRegistry` class: thread-safe worker tracking
 - `WorkerRegistration` dataclass: ID, capabilities, heartbeat, health score
 - Registration/deregistration with lifecycle events
 
 **New file**: `src/api/workers/coordinator.py`
+
 - `WorkerCoordinator` class: task distribution and result aggregation
 - Health monitoring thread
 - Task timeout and reassignment logic
 
 **New file**: `src/api/workers/protocol.py`
+
 - Message format definitions (task assignment, result submission, heartbeat)
 - Tensor serialization/deserialization helpers (numpy arrays to/from bytes)
 - Protocol version negotiation
 
 **Modified file**: `src/cascade_correlation/cascade_correlation.py`
+
 - Add `_init_remote_workers()` method
 - Modify `_execute_parallel_training()` to support dual-path dispatch (local + remote)
 - Add `_collect_from_both_sources()` method for unified result collection
 
 **Modified file**: `src/cascade_correlation/cascade_correlation_config/cascade_correlation_config.py`
+
 - Add remote worker configuration fields:
   - `enable_remote_workers: bool = False`
   - `ws_worker_port: int = 8200` (reuses existing FastAPI port)
@@ -923,6 +952,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 #### 9.1.3 Remote Worker Agent (juniper-cascor-worker)
 
 **Rewritten file**: `juniper_cascor_worker/worker.py`
+
 - `CascorWorkerAgent` class using WebSocket
 - No cascor imports required
 - Automatic reconnection with exponential backoff
@@ -930,16 +960,19 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 - Task execution via deserialized training function
 
 **New file**: `juniper_cascor_worker/ws_connection.py`
+
 - WebSocket connection management
 - TLS configuration
 - Reconnection logic
 
 **New file**: `juniper_cascor_worker/task_executor.py`
+
 - Generic task execution engine
 - Tensor deserialization
 - Result serialization
 
 **Modified file**: `juniper_cascor_worker/config.py`
+
 - Add WebSocket configuration fields:
   - `server_url: str` (replaces `manager_host`/`manager_port`)
   - `auth_token: str`
@@ -951,6 +984,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
   - `reconnect_backoff_max: float = 60.0`
 
 **Modified file**: `juniper_cascor_worker/cli.py`
+
 - Add `--server-url`, `--auth-token`, `--tls-cert`, `--tls-key`, `--tls-ca` arguments
 - Keep `--legacy` flag for backward compatibility with BaseManager path
 
@@ -959,10 +993,12 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 #### 9.2.1 Free-Threading Detection (juniper-cascor)
 
 **New file**: `src/parallelism/__init__.py`
+
 - `detect_free_threading()` function
 - `FREE_THREADING_AVAILABLE` module constant
 
 **New file**: `src/parallelism/local_thread_pool.py`
+
 - `LocalThreadPool` class
 - Thread-based worker loop (mirrors `_worker_loop` but with shared memory)
 - Shutdown via `threading.Event` + sentinels
@@ -970,6 +1006,7 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 #### 9.2.2 Integration (juniper-cascor)
 
 **Modified file**: `src/cascade_correlation/cascade_correlation.py`
+
 - Refactor `_init_multiprocessing()` to `_init_parallelism()`
 - Add `_init_thread_pool()` method
 - Add `_ensure_thread_pool()` method
@@ -978,11 +1015,13 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 #### 9.2.3 Thread Safety Audit (juniper-cascor)
 
 **Files to audit**:
+
 - `src/cascade_correlation/cascade_correlation.py` -- module-level mutable globals
 - `src/candidate_unit/candidate_unit.py` -- `shared_object_dict`, global RNG usage
 - `src/cascade_correlation/activation_with_derivative.py` -- `ACTIVATION_MAP` (read-only, safe)
 
 **Required changes**:
+
 - Replace `random.randint()` with per-task seed generation in main thread
 - Replace `torch.manual_seed()` in `CandidateUnit` with `torch.Generator` instances
 - Protect or eliminate `shared_object_dict` mutable global
@@ -991,12 +1030,14 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 ### 9.3 Phase 3: Unified Task Distribution
 
 **New file**: `src/parallelism/task_distributor.py`
+
 - `TaskDistributor` class
 - Local-first scheduling
 - Cross-tier result collection
 - Task timeout and reassignment
 
 **Modified file**: `src/cascade_correlation/cascade_correlation.py`
+
 - Replace direct pool usage with `TaskDistributor` interface
 - Add capacity-aware task distribution
 - Add mixed-tier result collection
@@ -1004,16 +1045,19 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 ### 9.4 Phase 4: Security Hardening
 
 **New directory**: `scripts/tls/`
+
 - Certificate generation scripts
 - CA management tooling
 
 **New file**: `src/api/workers/security.py`
+
 - mTLS integration
 - Token rotation
 - Connection rate limiting
 - Anomaly detection
 
 **New file**: `src/api/workers/audit.py`
+
 - Security event logging
 - Per-worker metrics tracking
 
@@ -1270,6 +1314,7 @@ This section documents findings from independent validation of the plan by three
 **Source**: Architecture validation
 
 The installed Python 3.14.3 (conda-forge) is a **standard GIL-enabled build**, not a free-threaded build:
+
 - `sysconfig.get_config_var('Py_GIL_DISABLED')` returns `0`
 - `sys._is_gil_enabled()` returns `True`
 - `sys.flags.nogil` attribute is not present
@@ -1277,6 +1322,7 @@ The installed Python 3.14.3 (conda-forge) is a **standard GIL-enabled build**, n
 Furthermore, **PyTorch has no official support for free-threaded Python**. PyTorch's C++ extensions use thread-local state and assume GIL protection. Running PyTorch under a no-GIL interpreter would produce crashes or data corruption.
 
 **REVISION**: Approach C's free-threading local tier is **deferred** to a future plan iteration. The recommended approach is revised to:
+
 - **Phase 1-3**: Implement Approach A (WebSocket remote workers) with existing multiprocessing for local workers
 - **Phase 4 (future)**: Re-evaluate free-threading when PyTorch and numpy officially support it
 
@@ -1297,6 +1343,7 @@ The RC-2 fix replaced `BaseManager`-proxied queues with direct `multiprocessing.
 **Source**: Security validation
 
 The plan simultaneously states:
+
 - "No pickle dependency for remote path -- eliminates arbitrary code execution vector" (Section 5.1)
 - "Candidate training function: Serialized via cloudpickle" (Section 5.1)
 
@@ -1358,6 +1405,7 @@ JWT in query parameters exposes tokens in server access logs, proxy logs, browse
 The plan does not specify token issuance, rotation, expiry-during-connection, or revocation.
 
 **REVISION**: JWT lifecycle defined as:
+
 - **Issuance**: CLI command generates time-limited tokens (24h dev, 1h prod) signed with `ws_worker_token_secret`
 - **Claims**: `worker_id`, `iat`, `exp`, `jti` (unique ID for revocation)
 - **Refresh**: Server sends `token_refresh` message at 80% lifetime. Worker must acknowledge.
@@ -1405,6 +1453,7 @@ The plan says workers can "join mid-training" but doesn't explain the signaling 
 Security fixes (restricted unpickler, result validation, authkey fix) are simpler and higher-priority than the full WebSocket implementation.
 
 **REVISION**: Phase 1 split into:
+
 - **Phase 1a**: Security fixes for existing multiprocessing path (days of work)
 - **Phase 1b**: WebSocket remote worker system (weeks of work)
 
@@ -1413,6 +1462,7 @@ Security fixes (restricted unpickler, result validation, authkey fix) are simple
 The current `api_key in self._api_keys` uses Python's `in` operator on a `set`, which is NOT constant-time.
 
 **REVISION**: Fix API key validation to use `hmac.compare_digest()`:
+
 ```python
 import hmac
 def validate(self, api_key: str | None) -> bool:
@@ -1445,11 +1495,13 @@ def validate(self, api_key: str | None) -> bool:
 **Primary Recommendation: Approach A (WebSocket-Based Distributed Workers) with phased rollout.**
 
 The original recommendation of Approach C (Hybrid) is revised because:
+
 1. Free-threading is not feasible with current Python 3.14 builds and PyTorch
 2. The multiprocessing local path (RC-4 persistent pool) is already well-optimized
 3. The primary value of this plan is enabling **remote workers**, not improving local performance
 
 The revised approach:
+
 - **Local workers**: Keep existing multiprocessing persistent pool (RC-4), unchanged
 - **Remote workers**: New WebSocket-based system (Approach A)
 - **Future**: Free-threading local tier when PyTorch supports it (Approach C, Phase 2)
@@ -1472,6 +1524,7 @@ The WebSocket wire protocol uses JSON control messages and binary WebSocket fram
 #### Message Types (JSON)
 
 **Server -> Worker: Task Assignment**
+
 ```json
 {
     "type": "task_assign",
@@ -1499,9 +1552,11 @@ The WebSocket wire protocol uses JSON control messages and binary WebSocket fram
     }
 }
 ```
+
 Followed by binary frames (one per tensor in manifest order).
 
 **Worker -> Server: Task Result**
+
 ```json
 {
     "type": "task_result",
@@ -1525,14 +1580,17 @@ Followed by binary frames (one per tensor in manifest order).
     }
 }
 ```
+
 Followed by binary frames (one per tensor in manifest order).
 
 **Heartbeat** (bidirectional)
+
 ```json
 {"type": "heartbeat", "worker_id": "uuid", "timestamp": 1711000000.0}
 ```
 
 **Worker Registration** (worker -> server, first message after connect)
+
 ```json
 {
     "type": "register",
@@ -1551,6 +1609,7 @@ Followed by binary frames (one per tensor in manifest order).
 #### Binary Frame Format
 
 Each binary frame is a raw numpy array in C-contiguous byte order:
+
 ```
 [4 bytes: shape dimension count (uint32)]
 [N * 4 bytes: shape values (uint32 each)]
