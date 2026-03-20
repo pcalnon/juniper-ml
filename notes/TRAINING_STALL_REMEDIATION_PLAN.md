@@ -66,11 +66,11 @@ Ranked by **likelihood of being the actual root cause** (algorithmic expert asse
 
 ### Cluster Analysis
 
-| Cluster                  | Proposals       | Description                                                                                                                         | Fix Strategy                                                  |
-|--------------------------|-----------------|-------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
-| A: Phantom Phase         | P1, P2, P3      | Structural mismatch: inter-cascade single-step training + convergence detection on converged surface + fresh optimizer perturbation | Loop restructure OR quick-win mitigations                     |
-| B: Candidate Degradation | P5, P6, P9      | Candidate quality degrades: gradient clipping + early stop threshold + missing correlation guard + variance collapse + saturation   | Quick wins: remove clipping, add threshold guard, Xavier init |
-| C: Visualization/UX      | P4, P7, P8, P10 | User perceives stall: sub-pixel improvements + UI freeze + missing metrics + param desync                                           | Spiral complexity + lock refactoring                          |
+| Cluster                  | Proposals       | Description                                                                                                      | Fix Strategy                                                  |
+|--------------------------|-----------------|------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|
+| A: Phantom Phase         | P1, P2, P3      | Structural mismatch: inter-cascade single-step training + conv detect on conv surface + new Adam perturbation    | Loop restructure OR quick-win fixes                           |
+| B: Candidate Degradation | P5, P6, P9      | Candidates degrade: grad clipping + early stop threshold + no correlation guard + variance collapse + saturation | Quick wins: remove clipping, add threshold guard, Xavier init |
+| C: Visualization/UX      | P4, P7, P8, P10 | User perceives stall: sub-pixel improvements + UI freeze + no metrics + param desync                             | Spiral complexity + lock refactoring                          |
 
 ---
 
@@ -466,5 +466,5 @@ The plan is **highly accurate**. All proposed changes target the correct lines w
 | Date       | Author      | Change                                                                                                |
 |------------|-------------|-------------------------------------------------------------------------------------------------------|
 | 2026-03-19 | Paul Calnon | Initial creation — comprehensive 10-proposal analysis, 3-evaluator synthesis, phased remediation plan |
-| 2026-03-19 | Paul Calnon | Audit complete — all line references verified; Step 6A.4 lock context integration updated |
-| 2026-03-19 | Paul Calnon | Phase 6A implemented — 5 code changes + 6 new tests + 3 test updates. 3617/3617 passing (19 skipped) |
+| 2026-03-19 | Paul Calnon | Audit complete — all line references verified; Step 6A.4 lock context integration updated             |
+| 2026-03-19 | Paul Calnon | Phase 6A implemented — 5 code changes + 6 new tests + 3 test updates. 3617/3617 passing (19 skipped)  |

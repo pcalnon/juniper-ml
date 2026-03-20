@@ -1466,13 +1466,13 @@ Split the single "Training Controls" card into two separate cards:
 
 Tests updated across 5 test files:
 
-| File                                 | Changes                                                                                                                                                                                                              |
-|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `test_dashboard_manager_handlers.py` | Removed 7 tests for deleted handlers (`_sync_backend_params_handler`, `_sync_input_values_from_backend_handler`, `_init_applied_params_handler`). Added 5 replacement tests for `_init_params_from_backend_handler`. |
-| `test_dashboard_manager.py`          | Removed 5 tests for deleted handlers. Added 3 replacement tests.                                                                                                                                                     |
-| `test_dashboard_manager_95.py`       | Removed 6 tests for deleted handlers. Added 4 replacement tests. Updated registered callback list assertion.                                                                                                         |
-| `test_apply_button_parameters.py`    | Updated 1 test from `_init_applied_params_handler` to `_init_params_from_backend_handler`.                                                                                                                           |
-| `test_max_epochs_parameter.py`       | Updated 3 tests: replaced `backend-params-state` assertions with `applied-params-store`, updated section name from "Training Controls" to "Training Parameters".                                                     |
+| File                                 | Changes                                                                                                                                                                               |
+|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `test_dashboard_manager_handlers.py` | Del 7 tests for handlers (`_sync_backend_params_handler`, `_sync_input_values_from_backend_handler`, `_init_applied_params_handler`). Add 5 `_init_params_from_backend_handler` tests |
+| `test_dashboard_manager.py`          | Removed 5 tests for deleted handlers. Added 3 replacement tests.                                                                                                                      |
+| `test_dashboard_manager_95.py`       | Removed 6 tests for deleted handlers. Added 4 replacement tests. Updated registered callback list assertion.                                                                          |
+| `test_apply_button_parameters.py`    | Updated 1 test from `_init_applied_params_handler` to `_init_params_from_backend_handler`.                                                                                            |
+| `test_max_epochs_parameter.py`       | update assertons `applied-params-store` vs `backend-params-state`, section name updated from "Training Controls" to "Training Parameters".                                            |
 
 **Test results**: 3585 passed, 0 failed, 19 skipped.
 
