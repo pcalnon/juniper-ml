@@ -47,15 +47,15 @@ Six independent audit sub-agents analyzed the decision boundary pipeline. Their 
 
 The CascorServiceAdapter was written and tested against the `FakeCascorClient`, which uses different key names and data formats than the real cascor API. Seven specific mismatches were identified:
 
-| # | Field | Real API (manager.py) | FakeCascorClient (scenarios.py) | Adapter Expects |
-|---|-------|----------------------|--------------------------------|-----------------|
-| 1 | Grid X key | `grid_x` | `x_grid` | `x_grid` |
-| 2 | Grid Y key | `grid_y` | `y_grid` | `y_grid` |
-| 3 | Grid shape | 2D meshgrid `(res, res)` | 1D linspace `(res,)` | 1D (re-meshgrids) |
-| 4 | Predictions shape | 2D `(res, res)` | 1D flat `(res²,)` | 1D (reshapes) |
-| 5 | Prediction values | Integer class indices (argmax) | Continuous sigmoid (0-1) | Numeric |
-| 6 | Envelope status | `"success"` | `"ok"` | Not checked |
-| 7 | Envelope meta | Present | Absent | Not consumed |
+| # | Field             | Real API (manager.py)          | FakeCascorClient (scenarios.py) | Adapter Expects   |
+|---|-------------------|--------------------------------|---------------------------------|-------------------|
+| 1 | Grid X key        | `grid_x`                       | `x_grid`                        | `x_grid`          |
+| 2 | Grid Y key        | `grid_y`                       | `y_grid`                        | `y_grid`          |
+| 3 | Grid shape        | 2D meshgrid `(res, res)`       | 1D linspace `(res,)`            | 1D (re-meshgrids) |
+| 4 | Predictions shape | 2D `(res, res)`                | 1D flat `(res²,)`               | 1D (reshapes)     |
+| 5 | Prediction values | Integer class indices (argmax) | Continuous sigmoid (0-1)        | Numeric           |
+| 6 | Envelope status   | `"success"`                    | `"ok"`                          | Not checked       |
+| 7 | Envelope meta     | Present                        | Absent                          | Not consumed      |
 
 ### Audit 2: Demo Mode Forward Pass and Training
 
