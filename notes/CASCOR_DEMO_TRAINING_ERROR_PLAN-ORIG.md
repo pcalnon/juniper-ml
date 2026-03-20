@@ -1043,116 +1043,10 @@ When the user clicks "Reset Training", `_reset_state_and_history()` clears `hidd
 Add output weight reinitialization when hidden units are cleared:
 
 ```python
-# In _reset_state_and_history() or a network reset method:# Juniper Cascor Concurrency
-
-develop a detailed plan to perform an in-depth investigation and analysis of the juniper-cascor application's concurrent programming implementation
-
-## Detailed analysis
-
-utilize multiple sub-agents to perform the following analysis:
-
-- include all aspects of the cascor app's codebase that are utilizing parallelism of any kind
-- pay particular attention to the code used to implement concurrency for the cascor worker objects, the juniper-cascor-worker and juniper-cascor-client applications, and the code infrastructure that supports them
-- the codebase originally used process based parallelism using the multiprocessing library and implementing the thread-server object to manage a long-lived worker process pool
-- some work has been done to add thread-based parallelism since python 3.14 allows the GIL to be disabled
-- analyze the current code base concurrency implementation
-- consider previous solutions (or partial solutions)
-- take into account a critical requirement of the Juniper Project:
-  - the juniper cascor worker pool needs to be able to easily manage remote workers
-  - these remote workers will need to be able to connect before or after processing has started
-  - the remote workers will be running on a diverse set of hardware and/or VMs
-  - remote workers will be running heterogeneous operating systems
-  - connections might be intermittent
-  - remote worker code should be lightweight
-    - but not to the detriment of flexibility, functionality, or performance
-  - remote worker code should be implemented in python avoiding non-standard libraries unless they are needed
-    - this requirement should not be used to justify limiting worker flexibility, functionality, or performance
-- consider best practices with respect to:
-  - performance
-  - flexibility
-  - security
-  - maintainability
-- analysis should be performed with the following assumptions:
-  - high performance is critical
-  - all remote worker machines will have access to python 3.14+
-  - security solution should consider both:
-    - the security of the distributed worker network wrt external risks
-    - the security of the individual remote workers wrt other potentially malicious workers
-    - the security of the primary workstation wrt all remote workers
-    - the security of the primary workstation wrt external risks
-
-## Present multiple approaches
-
-use multiple sug-agents to utilize the analysis to generate multiple proposals:
-
-- for how to implement concurrency
-- and how to manage concurrency
-  - on the local workstation
-  - and on the heterogeneous set of remote workers
-- types of concurrency
-  - how they are used
-  - where in the code-base they are utilized
-- the overall architectural choices for concurrency
-- guardrails to maintain stability and performance
-
-## Plan Document
-
-when the plan has been developed, write it into a markdown file in the notes/ directory
-update as necessary to include the following:
-
-- include all analysis and investigation performed during this process in the plan document, from all sub-agents
-- include all potential approaches and proposals, from all sub-agents
-- include all considerations regarding various aspects of this plan, from all sub-agents
-- include analysis of approaches with respect to project requirements
-  - requirements should include, but not be limited to, those defined above
-- include strengths and weakness of proposals and approaches
-- include discussions of risks and guardrails for proposals and approaches
-- include supporting code and infrastructure needed for proposals
-- include detailed design elements for proposed approaches
-- develop recommendations among the various proposals
-- list the reasoning behind selections
-
-## Testing Updates
-
-- add additional tests as needed
-  - document tests needed to validate the correctness and accuracy of this enahancement
-  - document tests to ensure no regressions are introduced while adding this feature
-
-## Pre-Work Validation
-
-when the plan has been developed, utilize multiple sub-agents to evaluate and validate all aspects of this plan
-synthesize and integrate input from sub-agents
-update the plan as needed to reflect results of sub-agent validation
-
-commit all changes made so far
-
-## Implementation
-
-once validation is complete and plan has been updated accordingly, begin implementing the plan
-
-## Thread Handoff
-
-A key requirement for this work is to avoid thread compaction
-
-if, at any time during this work, the context utilization exceeds 80%, perform a thread handoff in accordance with the procedure documented in the notes/ directory
-when the thread handoff prompt is complete, pass it to the wake_the_claude.bash script to create a new thread that will continue performing this work
-
-## Post work validation
-
-when all work is complete for this enhancement, use multiple sub-agents to perform an in depth audit of the juniper-cascor code with respect to the development plan
-synthesize and validate this information and make any necessary additions or modifications to the plan document
-
-## Cleanup
-
-when validation is complete, commit all changes, and push
-
-- then create pull requests for all of the committed changes
-
-- once the pull requests have been merged, perform the worktree cleanup v2 procedure as documented in the notes/ directory
-  - use particular care to avoid the bash invalid CWD trap as documented in the procedure
-
----
-
+# In _reset_state_and_history() or a network reset method:
+self.network.output_weights = torch.randn(self.network.output_size, self.network.input_size) * 0.1
+self.network.output_bias = torch.randn(self.network.output_size) * 0.1
+```
 
 ### Design Decision: Target Encoding
 
@@ -1416,12 +1310,12 @@ Fixes four bugs in the Phase 5 convergence UI controls implementation that preve
 
 ### Bugs Fixed
 
-| Bug                                 | Symptom                                                                   | Root Cause                                                                                                                                          | Fix                                                                                        |
-|-------------------------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| **B-5.1**: Checkbox uncheck reverts | Unchecking convergence checkbox and clicking Apply restores it to checked | `sync_input_values_from_backend` Callbk writes `backend-params-state` IP / 5s via `slow-update-interval`                                            | Removed the continuous sync callback chain                                                 |
-| **B-5.2**: Threshold value reverts  | Editing convergence threshold and clicking Apply resets to default        | Same root cause as B-5.1 — periodic sync overwrites user edits before Apply can be clicked                                                          | Same fix as B-5.1                                                                          |
-| **B-5.3**: Meta-param vals refresh  | param fields (lr, hidden units, epochs, conv ctrls) overwritten/5 sec     | `sync_backend_params` polls `/api/state` per 5s → writes `backend-params-state` → triggers `sync_input_values_from_backend` → overwrites all inputs | Replaced continuous polling with one-time initialization on first load                     |
-| **B-5.4**: Missing section heading  | Meta-params missing section heading (e.g., Train Ctrl, Network Info)      | All parameters were inside the Training Controls card without separation                                                                            | Split into separate "Training Controls" (buttons) and "Training Parameters" (inputs) cards |
+| Bug | Symptom | Root Cause | Fix |
+|-----|---------|------------|-----|
+| **B-5.1**: Checkbox reverts on uncheck | Unchecking convergence checkbox and clicking Apply restores it to checked | `sync_input_values_from_backend` callback overwrites all inputs from `backend-params-state` every 5 seconds via `slow-update-interval` | Removed the continuous sync callback chain |
+| **B-5.2**: Threshold value reverts | Editing convergence threshold and clicking Apply resets to default | Same root cause as B-5.1 — periodic sync overwrites user edits before Apply can be clicked | Same fix as B-5.1 |
+| **B-5.3**: Meta-parameter values refresh constantly | Input fields (learning rate, hidden units, epochs, convergence controls) are overwritten every 5 seconds | `sync_backend_params` polls `/api/state` every 5s → updates `backend-params-state` → triggers `sync_input_values_from_backend` → overwrites all inputs | Replaced continuous polling with one-time initialization on first load |
+| **B-5.4**: Missing section heading | Meta-parameter inputs had no visual section heading like Training Controls and Network Information | All parameters were inside the Training Controls card without separation | Split into separate "Training Controls" (buttons) and "Training Parameters" (inputs) cards |
 
 ### Implementation
 
@@ -1443,7 +1337,7 @@ Fixes four bugs in the Phase 5 convergence UI controls implementation that preve
 
 **Data flow (corrected):**
 
-```bash
+```
 1. Dashboard loads → inputs show defaults from constants
 2. First slow-update-interval tick → init_params_from_backend fires
 3. Fetches /api/state → populates inputs + applied-params-store
@@ -1466,13 +1360,13 @@ Split the single "Training Controls" card into two separate cards:
 
 Tests updated across 5 test files:
 
-| File                                 | Changes                                                                                                                                                                               |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `test_dashboard_manager_handlers.py` | Del 7 tests for handlers (`_sync_backend_params_handler`, `_sync_input_values_from_backend_handler`, `_init_applied_params_handler`). Add 5 `_init_params_from_backend_handler` tests |
-| `test_dashboard_manager.py`          | Removed 5 tests for deleted handlers. Added 3 replacement tests.                                                                                                                      |
-| `test_dashboard_manager_95.py`       | Removed 6 tests for deleted handlers. Added 4 replacement tests. Updated registered callback list assertion.                                                                          |
-| `test_apply_button_parameters.py`    | Updated 1 test from `_init_applied_params_handler` to `_init_params_from_backend_handler`.                                                                                            |
-| `test_max_epochs_parameter.py`       | update assertons `applied-params-store` vs `backend-params-state`, section name updated from "Training Controls" to "Training Parameters".                                            |
+| File | Changes |
+|------|---------|
+| `test_dashboard_manager_handlers.py` | Removed 7 tests for deleted handlers (`_sync_backend_params_handler`, `_sync_input_values_from_backend_handler`, `_init_applied_params_handler`). Added 5 replacement tests for `_init_params_from_backend_handler`. |
+| `test_dashboard_manager.py` | Removed 5 tests for deleted handlers. Added 3 replacement tests. |
+| `test_dashboard_manager_95.py` | Removed 6 tests for deleted handlers. Added 4 replacement tests. Updated registered callback list assertion. |
+| `test_apply_button_parameters.py` | Updated 1 test from `_init_applied_params_handler` to `_init_params_from_backend_handler`. |
+| `test_max_epochs_parameter.py` | Updated 3 tests: replaced `backend-params-state` assertions with `applied-params-store`, updated section name from "Training Controls" to "Training Parameters". |
 
 **Test results**: 3585 passed, 0 failed, 19 skipped.
 
@@ -1486,11 +1380,11 @@ Phase 5.1 removed the continuous 5-second backend sync callbacks, but three resi
 
 ### Bugs Fixed
 
-| Bug                                                | Symptom                                                                                                                                                                        | Root Cause                                                                                                                                                                                                                                                    | Fix                                                                                                                                             |
-|----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| **B-5.5**: `/api/state` missing convergence params | `init_params_from_backend` always defaults convergence to `enabled=True`, `threshold=0.001`                                                                                    | `TrainingState.get_state()` not include `convergence_enabled` or `convergence_threshold` (in `DemoMode`). `/api/state` endpoint -> TrainingState w/o merging DemoMode cnvergence fields.                              | Merge `DemoMode.convergence_enabled` and `DemoMode.convergence_threshold` into `/api/state` response                                            |
-| **B-5.6**: Init callback fires every 5 seconds     | `init_params_from_backend` uses `slow-update-interval` as trigger, firing every 5s indefinitely. Only gated by `if current_applied:`, which depends on store remaining truthy. | No `max_intervals` on `slow-update-interval`. If the store ever resets (Dash re-render, edge case), the init re-fires and overwrites user edits with defaults from `/api/state`.                                                                              | Add `params-init-interval`, `max_intervals=1` (single fire, 1s after load). Use intvl for `init_params_from_backend` not `slow-update-interval` |
-| **B-5.7**: "✓ Parameters applied" msg disappears   | After clicking Apply, the success status is overwritten to `""`                                                                                                                | `track_param_changes` outputs to `params-status` children. When `applied-params-store` updates, it triggers `track_param_changes`, which sets status to `""` (no changes detected), overwriting the `"✓ Parameters applied"` message from `apply_parameters`. | Return `dash.no_update` for `params-status` when no changes detected (preserves existing status message).                                       |
+| Bug | Symptom | Root Cause | Fix |
+|-----|---------|------------|-----|
+| **B-5.5**: `/api/state` missing convergence params | `init_params_from_backend` always defaults convergence to `enabled=True`, `threshold=0.001` | `TrainingState.get_state()` does not include `convergence_enabled` or `convergence_threshold` (these live on `DemoMode`). The `/api/state` endpoint returned TrainingState directly without merging DemoMode convergence fields. | Merge `DemoMode.convergence_enabled` and `DemoMode.convergence_threshold` into `/api/state` response |
+| **B-5.6**: Init callback fires every 5 seconds | `init_params_from_backend` uses `slow-update-interval` as trigger, firing every 5s indefinitely. Only gated by `if current_applied:`, which depends on store remaining truthy. | No `max_intervals` on `slow-update-interval`. If the store ever resets (Dash re-render, edge case), the init re-fires and overwrites user edits with defaults from `/api/state`. | Add dedicated `params-init-interval` with `max_intervals=1` (fires exactly once, 1s after load). Change `init_params_from_backend` to use this interval instead of `slow-update-interval`. |
+| **B-5.7**: "✓ Parameters applied" message immediately disappears | After clicking Apply, the success status is overwritten to `""` | `track_param_changes` outputs to `params-status` children. When `applied-params-store` updates, it triggers `track_param_changes`, which sets status to `""` (no changes detected), overwriting the `"✓ Parameters applied"` message from `apply_parameters`. | Return `dash.no_update` for `params-status` when no changes detected (preserves existing status message). |
 
 ### Implementation
 
@@ -1523,13 +1417,13 @@ Changed `_track_param_changes_handler` to return `dash.no_update` for `params-st
 
 Tests updated across 6 test files:
 
-| File                                 | Changes                                                                                                                                                                     |
-|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `test_apply_button_parameters.py`    | Updated 2 assertions (`status == ""` → `status is dash.no_update`). Added 9 new tests: 4 for `/api/state` convergence params, 5 for convergence apply round-trip scenarios. |
-| `test_dashboard_manager.py`          | Updated 2 assertions for no-change status (`""` → `dash.no_update`).                                                                                                        |
-| `test_dashboard_manager_95.py`       | Updated 1 assertion for float precision edge case.                                                                                                                          |
-| `test_dashboard_manager_handlers.py` | Updated 1 assertion for no-change handler result.                                                                                                                           |
-| `test_dashboard_helpers_coverage.py` | Updated 1 assertion for no-change tracking.                                                                                                                                 |
+| File | Changes |
+|------|---------|
+| `test_apply_button_parameters.py` | Updated 2 assertions (`status == ""` → `status is dash.no_update`). Added 9 new tests: 4 for `/api/state` convergence params, 5 for convergence apply round-trip scenarios. |
+| `test_dashboard_manager.py` | Updated 2 assertions for no-change status (`""` → `dash.no_update`). |
+| `test_dashboard_manager_95.py` | Updated 1 assertion for float precision edge case. |
+| `test_dashboard_manager_handlers.py` | Updated 1 assertion for no-change handler result. |
+| `test_dashboard_helpers_coverage.py` | Updated 1 assertion for no-change tracking. |
 
 ---
 
@@ -1538,14 +1432,14 @@ Tests updated across 6 test files:
 | Date       | Author      | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 2026-03-17 | Paul Calnon | Initial creation — comprehensive analysis of 8 root causes, comparative analysis, architecture review, phased implementation plan                                                                                                                                                                                                                                                                                                                                                       |
-| 2026-03-17 | Paul Calnon | 5 sub-agents validated root causes. RC-3 ratio corrected (1,250×). New bug (reset dimension mismatch). Add Step 1.5. Add Test update Inventory. Target encoding documented.                                                                                                                                                                                                                                                                                                             |
-| 2026-03-17 | Paul Calnon | Done w/ Impl — Phase 1 & 2 done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues.                                                                                                                                                                                                                                                                                                    |
+| 2026-03-17 | Paul Calnon | Validation complete — 5 sub-agents confirmed all root causes. RC-3 ratio corrected (1,250×). New bug found (reset dimension mismatch). Step 1.5 added. Test update inventory added. Target encoding decision documented.                                                                                                                                                                                                                                                                |
+| 2026-03-17 | Paul Calnon | Implementation complete — Phase 1 & 2 all steps done. 167/167 tests passing. Final audit by 2 sub-agents: code audit passed all 8 checks (gradients mathematically verified), test audit found no issues.                                                                                                                                                                                                                                                                               |
 | 2026-03-17 | Paul Calnon | Phase 3 complete — 5 parallel sub-agents (math audit, training dynamics, cascor comparison, numerical stability, algorithm research). MSE gradient math correct. 4 new root causes identified: RC-9 (SGD vs Adam), RC-10 (mini-batch noise undoes retrain), RC-11 (un-normalized correlation), RC-12 (spiral complexity). RC-6 elevated. 4 remediation options documented (4A–4D). Recommended approach: 4B+4C+4D combined (autograd+Adam, simpler spiral, convergence-based addition). |
 | 2026-03-18 | Paul Calnon | ~~Phase 4 complete~~ **RETRACTED** — Phase 4 was documented as complete but NOT implemented in the codebase. All 9 steps (4.1–4.9) were marked ✅ but none exist in the actual source code.                                                                                                                                                                                                                                                                                             |
 | 2026-03-18 | Paul Calnon | **Full audit** — 5 sub-agents verified the codebase against the plan. Phase 1-2 fixes confirmed. Phase 4 items all missing. Architecture table and line numbers corrected. Test status: 3548 passed, 3 failed (2 pre-existing WS + 1 convergence regression).                                                                                                                                                                                                                           |
-| 2026-03-18 | Paul Calnon | **Phase 4 implemented** — All 9 Phase 4 steps applied to codebase. `nn.Linear` + Adam, autograd + Pearson correlation, input normalization, convergence-based cascade, full-batch default, 500-step retrain, backward-compatible properties. 29 new Phase 4 tests. 3579/3580 tests passing (1 pre-existing WS failure).                                                                                                                                                                 |
-| 2026-03-18 | Paul Calnon | Phase 5 complete — Convergence Window UI Controls. Checkbox + numeric threshold input added to Training Controls. Full param flow: UI → callbacks → POST /api/set_params → DemoBackend → DemoMode.apply_params. Convergence params in get_current_state(), reset restores defaults, threshold clamped to [0.0001, 0.1]. 18 new unit tests + 52 test updates. Audit: 20/22 pass. 3598/3598 tests passing.                                                                                |
-| 2026-03-18 | Paul Calnon | Phase 5.1 complete — Bugfix for convergence UI controls. Fixed 4 bugs: checkbox reverting (B-5.1), threshold resetting (B-5.2), constant meta-parameter refresh (B-5.3), missing section heading (B-5.4). Replaced continuous 5s backend sync with one-time init. Split Training Controls card into "Training Controls" (buttons) and "Training Parameters" (inputs). 3585/3585 tests passing (19 skipped).                                                                             |
-| 2026-03-19 | Paul Calnon | Phase 5.2 complete — Residual bugfix for convergence UI controls. Fixed 3 remaining bugs: `/api/state` missing convergence params (B-5.5), init callback firing every 5s instead of once (B-5.6), status message immediately disappearing after Apply (B-5.7). Added `params-init-interval` with `max_intervals=1`, merged DemoMode convergence params into `/api/state`, preserved status on no-change. 9 new tests added.                                                             |
+| 2026-03-18 | Paul Calnon | **Phase 4 implemented** — All 9 Phase 4 steps applied to codebase. `nn.Linear` + Adam, autograd + Pearson correlation, input normalization, convergence-based cascade, full-batch default, 500-step retrain, backward-compatible properties. 29 new Phase 4 tests. 3579/3580 tests passing (1 pre-existing WS failure).                                                                                                                                                                   |
+| 2026-03-18 | Paul Calnon | Phase 5 complete — Convergence Window UI Controls. Checkbox + numeric threshold input added to Training Controls. Full param flow: UI → callbacks → POST /api/set_params → DemoBackend → DemoMode.apply_params. Convergence params in get_current_state(), reset restores defaults, threshold clamped to [0.0001, 0.1]. 18 new unit tests + 52 test updates. Audit: 20/22 pass. 3598/3598 tests passing.                                                                                   |
+| 2026-03-18 | Paul Calnon | Phase 5.1 complete — Bugfix for convergence UI controls. Fixed 4 bugs: checkbox reverting (B-5.1), threshold resetting (B-5.2), constant meta-parameter refresh (B-5.3), missing section heading (B-5.4). Replaced continuous 5s backend sync with one-time init. Split Training Controls card into "Training Controls" (buttons) and "Training Parameters" (inputs). 3585/3585 tests passing (19 skipped). |
+| 2026-03-19 | Paul Calnon | Phase 5.2 complete — Residual bugfix for convergence UI controls. Fixed 3 remaining bugs: `/api/state` missing convergence params (B-5.5), init callback firing every 5s instead of once (B-5.6), status message immediately disappearing after Apply (B-5.7). Added `params-init-interval` with `max_intervals=1`, merged DemoMode convergence params into `/api/state`, preserved status on no-change. 9 new tests added. |
 
 ---

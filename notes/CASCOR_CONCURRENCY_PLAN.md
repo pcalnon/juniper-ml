@@ -249,12 +249,12 @@ The legacy implementation used the same `BaseManager` pattern but with key diffe
 
 ### 3.2 Evolution Through RC Fixes
 
-| Phase | Fix | Problem Solved |
-|-------|-----|---------------|
-| RC-1 | PyTorch thread pinning | CPU oversubscription from uncontrolled BLAS thread pools |
-| RC-2 | Direct `mp.Queue` (bypass BaseManager proxies) | Queue proxy overhead and serialization bottleneck |
-| RC-3 | Shared training inputs via process args | Redundant serialization of identical training data |
-| RC-4 | Persistent worker pool | Per-round process creation overhead |
+| Phase | Fix                                            | Problem Solved                                           |
+|-------|------------------------------------------------|----------------------------------------------------------|
+| RC-1  | PyTorch thread pinning                         | CPU oversubscription from uncontrolled BLAS thread pools |
+| RC-2  | Direct `mp.Queue` (bypass BaseManager proxies) | Queue proxy overhead and serialization bottleneck        |
+| RC-3  | Shared training inputs via process args        | Redundant serialization of identical training data       |
+| RC-4  | Persistent worker pool                         | Per-round process creation overhead                      |
 
 ### 3.3 Legacy Threaded Plot
 
@@ -268,43 +268,43 @@ Producer-consumer pattern with thread queues for matplotlib thread safety. Uses 
 
 ### 4.1 Functional Requirements
 
-| ID | Requirement | Priority |
-|----|------------|----------|
-| FR-1 | Remote workers connect before OR after training starts | Must |
-| FR-2 | Support heterogeneous hardware and OS environments | Must |
-| FR-3 | Tolerate intermittent worker connections | Must |
-| FR-4 | Lightweight remote worker code | Should |
-| FR-5 | Python-based, avoid non-standard libraries unless needed | Should |
-| FR-6 | Dynamic worker joining/leaving during training rounds | Must |
-| FR-7 | Automatic task redistribution on worker failure | Must |
-| FR-8 | Preserve existing local parallelism performance | Must |
+| ID   | Requirement                                              | Priority |
+|------|----------------------------------------------------------|----------|
+| FR-1 | Remote workers connect before OR after training starts   | Must     |
+| FR-2 | Support heterogeneous hardware and OS environments       | Must     |
+| FR-3 | Tolerate intermittent worker connections                 | Must     |
+| FR-4 | Lightweight remote worker code                           | Should   |
+| FR-5 | Python-based, avoid non-standard libraries unless needed | Should   |
+| FR-6 | Dynamic worker joining/leaving during training rounds    | Must     |
+| FR-7 | Automatic task redistribution on worker failure          | Must     |
+| FR-8 | Preserve existing local parallelism performance          | Must     |
 
 ### 4.2 Performance Requirements
 
-| ID | Requirement | Priority |
-|----|------------|----------|
-| PR-1 | High performance is critical | Must |
-| PR-2 | Zero regression in local-only training throughput | Must |
-| PR-3 | Remote worker overhead < 5% of task execution time | Should |
-| PR-4 | Support 1-50+ concurrent remote workers | Should |
+| ID   | Requirement                                        | Priority |
+|------|----------------------------------------------------|----------|
+| PR-1 | High performance is critical                       | Must     |
+| PR-2 | Zero regression in local-only training throughput  | Must     |
+| PR-3 | Remote worker overhead < 5% of task execution time | Should   |
+| PR-4 | Support 1-50+ concurrent remote workers            | Should   |
 
 ### 4.3 Security Requirements
 
-| ID | Requirement | Priority |
-|----|------------|----------|
-| SR-1 | Protect distributed network from external threats | Must |
-| SR-2 | Protect individual workers from malicious workers | Must |
-| SR-3 | Protect primary workstation from all remote workers | Must |
-| SR-4 | Protect primary workstation from external threats | Must |
-| SR-5 | Encrypt all data in transit | Must |
-| SR-6 | Authenticate all worker connections | Must |
-| SR-7 | Validate all data received from workers | Must |
+| ID   | Requirement                                         | Priority |
+|------|-----------------------------------------------------|----------|
+| SR-1 | Protect distributed network from external threats   | Must     |
+| SR-2 | Protect individual workers from malicious workers   | Must     |
+| SR-3 | Protect primary workstation from all remote workers | Must     |
+| SR-4 | Protect primary workstation from external threats   | Must     |
+| SR-5 | Encrypt all data in transit                         | Must     |
+| SR-6 | Authenticate all worker connections                 | Must     |
+| SR-7 | Validate all data received from workers             | Must     |
 
 ### 4.4 Platform Requirements
 
-| ID | Requirement |
-|----|------------|
-| PLAT-1 | All machines run Python 3.14+ |
+| ID     | Requirement                               |
+|--------|-------------------------------------------|
+| PLAT-1 | All machines run Python 3.14+             |
 | PLAT-2 | Worker code should be installable via pip |
 | PLAT-3 | Support Linux, macOS, and Windows workers |
 
@@ -320,27 +320,27 @@ Replace `BaseManager` protocol with WebSocket Secure (WSS) for all remote worker
 
 #### Architecture
 
-```
+```bash
                     JUNIPER CASCOR SERVER (Primary Workstation)
- ┌──────────────────────────────────────────────────────────────────┐
- │  FastAPI Application                                             │
+ ┌─────────────────────────────────────────────────────────────────┐
+ │  FastAPI Application                                            │
  │  ┌────────────────┐   ┌──────────────────────────────────────┐  │
  │  │ /ws/training   │   │ /ws/v1/workers                       │  │
  │  │ /ws/control    │   │  - JWT authentication                │  │
  │  └────────────────┘   │  - Binary frame dispatch             │  │
- │                        │  - Heartbeat management              │  │
- │                        └────────┬─────────────────────────────┘  │
- │                                 │                                 │
- │  ┌──────────────────────────────┴──────────────────────────────┐ │
- │  │              WorkerCoordinator                               │ │
+ │                       │  - Heartbeat management              │  │
+ │                       └────────┬─────────────────────────────┘  │
+ │                                │                                │
+ │  ┌─────────────────────────────┴──────────────────────────────┐ │
+ │  │              WorkerCoordinator                             │ │
  │  │  ┌──────────────┐  ┌────────────────┐  ┌───────────────┐   │ │
  │  │  │WorkerRegistry│  │TaskDistributor │  │ResultCollector│   │ │
  │  │  └──────────────┘  └────────────────┘  └───────────────┘   │ │
- │  └─────────────────────────────────────────────────────────────┘ │
- └──────────────────────────────────────────────────────────────────┘
+ │  └────────────────────────────────────────────────────────────┘ │
+ └─────────────────────────────────────────────────────────────────┘
                         │ WSS (TLS 1.3)
           ┌─────────────┼─────────────┐
-     ┌────┴────┐   ┌────┴────┐   ┌───┴─────┐
+     ┌────┴────┐   ┌────┴────┐   ┌────┴─────┐
      │Worker A │   │Worker B │   │Worker C  │
      │(Linux)  │   │(macOS)  │   │(Windows) │
      └─────────┘   └─────────┘   └──────────┘
@@ -429,27 +429,27 @@ Evolve the existing `BaseManager` approach to address remote limitations while p
 
 #### Architecture
 
-```
- ┌──────────────────────────────────────────────────────┐
- │  CascadeCorrelationNetwork                           │
- │    │                                                  │
- │    +── LOCAL PATH (unchanged): _ensure_worker_pool()  │
- │    │   direct mp.Queue + persistent mp.Process pool   │
- │    │                                                  │
- │    +── REMOTE PATH: EnhancedTrainingManager           │
- │          +── TLS-wrapped BaseManager server            │
- │          +── WorkerRegistry (heartbeats, health)       │
- │          +── TaskRedistributor (failure recovery)      │
- │          +── Self-contained task payloads (cloudpickle)│
- └──────────────────────────────────────────────────────┘
+```bash
+ ┌─────────────────────────────────────────────────────────┐
+ │  CascadeCorrelationNetwork                              │
+ │    │                                                    │
+ │    +── LOCAL PATH (unchanged): _ensure_worker_pool()    │
+ │    │   direct mp.Queue + persistent mp.Process pool     │
+ │    │                                                    │
+ │    +── REMOTE PATH: EnhancedTrainingManager             │
+ │          +── TLS-wrapped BaseManager server             │
+ │          +── WorkerRegistry (heartbeats, health)        │
+ │          +── TaskRedistributor (failure recovery)       │
+ │          +── Self-contained task payloads (cloudpickle) │
+ └─────────────────────────────────────────────────────────┘
             │ TLS + Certificate Auth
             v
  ┌──────────────────────────────────────────────────────┐
  │  REMOTE WORKER (Python 3.14+, numpy, torch)          │
- │  DecoupledWorkerAgent                                 │
- │    +── ResilientConnection (exponential backoff)      │
- │    +── GenericTaskRunner (no cascor imports)           │
- │    +── HeartbeatThread (background liveness)           │
+ │  DecoupledWorkerAgent                                │
+ │    +── ResilientConnection (exponential backoff)     │
+ │    +── GenericTaskRunner (no cascor imports)         │
+ │    +── HeartbeatThread (background liveness)         │
  └──────────────────────────────────────────────────────┘
 ```
 
@@ -509,21 +509,21 @@ Two-tier architecture: Python 3.14 free-threading (no-GIL) for local workers (ze
 
 #### Architecture
 
-```
-                    ┌───────────────────────────────────┐
-                    │      TaskDistributor (unified)     │
+```bash
+                    ┌─────────────────────────────────────┐
+                    │       TaskDistributor (unified)     │
                     │              │                      │
-                    │    ┌────────┴────────┐             │
-                    │    │                 │              │
-                    │  LOCAL TIER      REMOTE TIER        │
+                    │     ┌────────┴────────┐             │
+                    │     │                 │             │
+                    │   LOCAL TIER      REMOTE TIER       │
                     │  (free-threaded)  (WebSocket)       │
                     │                                     │
-                    │  ThreadPool ───┐  WSS Server ──┐   │
-                    │  Thread 0      │  Worker A     │   │
-                    │  Thread 1      │  Worker B     │   │
-                    │  ...           │  Worker C     │   │
-                    │  (shared mem)  │  (serialized) │   │
-                    └───────────────────────────────────┘
+                    │   ThreadPool ───┐  WSS Server ──┐   │
+                    │   Thread 0      │  Worker A     │   │
+                    │   Thread 1      │  Worker B     │   │
+                    │   ...           │  Worker C     │   │
+                    │   (shared mem)  │  (serialized) │   │
+                    └─────────────────────────────────────┘
 ```
 
 #### Local Tier: Free-Threading
@@ -555,13 +555,13 @@ def detect_free_threading() -> bool:
 
 #### Performance Expectations (Local Tier)
 
-| Metric | Multiprocessing (Current) | Free-Threading (Proposed) |
-|--------|--------------------------|--------------------------|
-| Worker creation | ~200-500ms per process | ~0.1ms per thread |
-| Task serialization | Pickle per task (~50-100us/tensor) | Zero-copy reference |
-| Result serialization | Pickle per result (~200-500us) | Zero-copy reference |
-| Memory per worker | 100-300MB (full process) | ~1MB stack per thread |
-| Communication latency | OS pipe IPC per message | In-process mutex (~1-5us) |
+| Metric                | Multiprocessing (Current)          | Free-Threading (Proposed) |
+|-----------------------|------------------------------------|---------------------------|
+| Worker creation       | ~200-500ms per process             | ~0.1ms per thread         |
+| Task serialization    | Pickle per task (~50-100us/tensor) | Zero-copy reference       |
+| Result serialization  | Pickle per result (~200-500us)     | Zero-copy reference       |
+| Memory per worker     | 100-300MB (full process)           | ~1MB stack per thread     |
+| Communication latency | OS pipe IPC per message            | In-process mutex (~1-5us) |
 
 **Estimated savings**: ~500-1000ms per full training run + ~1.5GB memory reduction for 8-worker pool.
 
@@ -594,50 +594,50 @@ Same as Approach A's remote worker design. Workers connect via WSS, receive seri
 
 ### 6.1 Current Vulnerabilities
 
-| ID | Vulnerability | Severity | Location |
-|----|--------------|----------|----------|
-| V-1 | Hardcoded authkey in source code | CRITICAL | `constants_model.py:47` |
-| V-2 | No transport encryption | HIGH | `BaseManager` uses raw TCP |
+| ID  | Vulnerability                                     | Severity | Location                                              |
+|-----|---------------------------------------------------|----------|-------------------------------------------------------|
+| V-1 | Hardcoded authkey in source code                  | CRITICAL | `constants_model.py:47`                               |
+| V-2 | No transport encryption                           | HIGH     | `BaseManager` uses raw TCP                            |
 | V-3 | Pickle deserialization = arbitrary code execution | CRITICAL | `result_queue.get()` at `cascade_correlation.py:1720` |
-| V-4 | No result validation | HIGH | Results directly appended without checks |
-| V-5 | Shared queue namespace | MEDIUM | All workers access same task/result queues |
-| V-6 | No connection tracking | MEDIUM | `CandidateTrainingManager` has no worker registry |
+| V-4 | No result validation                              | HIGH     | Results directly appended without checks              |
+| V-5 | Shared queue namespace                            | MEDIUM   | All workers access same task/result queues            |
+| V-6 | No connection tracking                            | MEDIUM   | `CandidateTrainingManager` has no worker registry     |
 
 ### 6.2 Threat Model
 
 #### External Network Threats
 
-| Threat | Risk | Mitigation |
-|--------|------|-----------|
-| Unauthorized connection (using hardcoded authkey) | HIGH | Generate random authkey at deployment; never use default |
-| Man-in-the-middle on training data | HIGH | Mandatory TLS (WSS or TLS-wrapped sockets) |
-| DoS against primary workstation | MEDIUM | Connection rate limiting, queue size limits |
-| Port scanning / fingerprinting | LOW | Non-standard ports, TLS wrapping |
+| Threat                                            | Risk   | Mitigation                                               |
+|---------------------------------------------------|--------|----------------------------------------------------------|
+| Unauthorized connection (using hardcoded authkey) | HIGH   | Generate random authkey at deployment; never use default |
+| Man-in-the-middle on training data                | HIGH   | Mandatory TLS (WSS or TLS-wrapped sockets)               |
+| DoS against primary workstation                   | MEDIUM | Connection rate limiting, queue size limits              |
+| Port scanning / fingerprinting                    | LOW    | Non-standard ports, TLS wrapping                         |
 
 #### Malicious Worker Threats
 
-| Threat | Risk | Mitigation |
-|--------|------|-----------|
+| Threat                                 | Risk     | Mitigation                                               |
+|----------------------------------------|----------|----------------------------------------------------------|
 | Training poisoning via crafted results | CRITICAL | Result schema validation, correlation cross-verification |
-| Arbitrary code execution via pickle | CRITICAL | Restricted unpickler or structured serialization |
-| Task theft / cross-worker interference | MEDIUM | Per-worker task assignment, task tracking |
-| Training data exfiltration | HIGH | Network egress control, worker machine hardening |
-| Resource exhaustion | MEDIUM | Queue size limits, payload size limits, rate limiting |
+| Arbitrary code execution via pickle    | CRITICAL | Restricted unpickler or structured serialization         |
+| Task theft / cross-worker interference | MEDIUM   | Per-worker task assignment, task tracking                |
+| Training data exfiltration             | HIGH     | Network egress control, worker machine hardening         |
+| Resource exhaustion                    | MEDIUM   | Queue size limits, payload size limits, rate limiting    |
 
 #### Primary Workstation Protection
 
-| Threat | Risk | Mitigation |
-|--------|------|-----------|
-| Server compromise via deserialization | CRITICAL | Restricted unpickler, process isolation, sandboxed deserialization |
-| Worker-originated filesystem access | MEDIUM | Workers never access cascor codebase directly (with decoupled workers) |
-| Model state exfiltration | MEDIUM | Training data necessarily shared; use trusted infrastructure |
+| Threat                                | Risk     | Mitigation                                                             |
+|---------------------------------------|----------|------------------------------------------------------------------------|
+| Server compromise via deserialization | CRITICAL | Restricted unpickler, process isolation, sandboxed deserialization     |
+| Worker-originated filesystem access   | MEDIUM   | Workers never access cascor codebase directly (with decoupled workers) |
+| Model state exfiltration              | MEDIUM   | Training data necessarily shared; use trusted infrastructure           |
 
 #### Worker-to-Worker Isolation
 
-| Threat | Risk | Mitigation |
-|--------|------|-----------|
-| Direct worker communication | LOW | Network segmentation, host-based firewalls |
-| Worker impersonation | MEDIUM | Mutual TLS with per-worker certificates |
+| Threat                         | Risk   | Mitigation                                      |
+|--------------------------------|--------|-------------------------------------------------|
+| Direct worker communication    | LOW    | Network segmentation, host-based firewalls      |
+| Worker impersonation           | MEDIUM | Mutual TLS with per-worker certificates         |
 | Cross-worker task interference | MEDIUM | Per-worker task assignment with server tracking |
 
 ### 6.3 Recommended Security Architecture
@@ -711,12 +711,12 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 
 ### 6.5 Security Implementation Priority
 
-| Phase | Items |
-|-------|-------|
-| **Phase 1 (Critical)** | Replace hardcoded authkey, add restricted unpickler, add result validation, add queue size limits |
-| **Phase 2 (High)** | Add TLS transport, mTLS client certificates, connection rate limiting, audit logging |
-| **Phase 3 (Defense in Depth)** | Task assignment tracking, correlation cross-verification, per-worker metrics, cert rotation |
-| **Phase 4 (Architecture)** | WebSocket-based transport (eliminates pickle), safetensors serialization, sandboxed deserialization |
+| Phase                          | Items                                                                                               |
+|--------------------------------|-----------------------------------------------------------------------------------------------------|
+| **Phase 1 (Critical)**         | Replace hardcoded authkey, add restricted unpickler, add result validation, add queue size limits   |
+| **Phase 2 (High)**             | Add TLS transport, mTLS client certificates, connection rate limiting, audit logging                |
+| **Phase 3 (Defense in Depth)** | Task assignment tracking, correlation cross-verification, per-worker metrics, cert rotation         |
+| **Phase 4 (Architecture)**     | WebSocket-based transport (eliminates pickle), safetensors serialization, sandboxed deserialization |
 
 ---
 
@@ -724,20 +724,20 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 
 ### 7.1 Approach Comparison Matrix
 
-| Criterion | A: WebSocket | B: Enhanced MP | C: Hybrid FT+WS |
-|-----------|-------------|---------------|-----------------|
-| **Local performance** | No change (keep MP) | No change (keep MP) | Better (zero-copy threads) |
-| **Remote performance** | Good (WS overhead ~1-5ms/msg) | Good (MP proxy overhead ~0.1ms) | Good (same as A for remote) |
-| **Memory efficiency** | Same as current | Same as current | Much better (~1.5GB savings) |
-| **Security** | Excellent (native TLS, no pickle) | Moderate (TLS wrapping complex) | Excellent (same as A for remote) |
-| **Complexity** | Moderate (new WS endpoint) | Low (evolves existing code) | High (two tiers + fallback) |
-| **Dynamic workers** | Excellent (WS connect/disconnect) | Good (via control queue) | Excellent (same as A for remote) |
-| **Intermittent connections** | Excellent (WS reconnect natural) | Moderate (MP reconnect complex) | Excellent (same as A for remote) |
-| **Worker code weight** | Lightweight (websockets + numpy + torch) | Moderate (cloudpickle + numpy + torch) | Lightweight (same as A) |
-| **Maturity risk** | Low (WebSocket is stable) | Low (BaseManager is stable) | HIGH (free-threading experimental) |
-| **Migration effort** | Medium (new endpoint + protocol) | Low (extends existing) | High (thread safety audit + WS) |
-| **Scalability** | High (async WS can handle many conns) | Moderate (BaseManager single-threaded) | High (same as A for remote) |
-| **Cross-platform** | Excellent (WebSocket is universal) | Good (MP context varies by OS) | Excellent for remote, Good for local |
+| Criterion                    | A: WebSocket                             | B: Enhanced MP                         | C: Hybrid FT+WS                      |
+|------------------------------|------------------------------------------|----------------------------------------|--------------------------------------|
+| **Local performance**        | No change (keep MP)                      | No change (keep MP)                    | Better (zero-copy threads)           |
+| **Remote performance**       | Good (WS overhead ~1-5ms/msg)            | Good (MP proxy overhead ~0.1ms)        | Good (same as A for remote)          |
+| **Memory efficiency**        | Same as current                          | Same as current                        | Much better (~1.5GB savings)         |
+| **Security**                 | Excellent (native TLS, no pickle)        | Moderate (TLS wrapping complex)        | Excellent (same as A for remote)     |
+| **Complexity**               | Moderate (new WS endpoint)               | Low (evolves existing code)            | High (two tiers + fallback)          |
+| **Dynamic workers**          | Excellent (WS connect/disconnect)        | Good (via control queue)               | Excellent (same as A for remote)     |
+| **Intermittent connections** | Excellent (WS reconnect natural)         | Moderate (MP reconnect complex)        | Excellent (same as A for remote)     |
+| **Worker code weight**       | Lightweight (websockets + numpy + torch) | Moderate (cloudpickle + numpy + torch) | Lightweight (same as A)              |
+| **Maturity risk**            | Low (WebSocket is stable)                | Low (BaseManager is stable)            | HIGH (free-threading experimental)   |
+| **Migration effort**         | Medium (new endpoint + protocol)         | Low (extends existing)                 | High (thread safety audit + WS)      |
+| **Scalability**              | High (async WS can handle many conns)    | Moderate (BaseManager single-threaded) | High (same as A for remote)          |
+| **Cross-platform**           | Excellent (WebSocket is universal)       | Good (MP context varies by OS)         | Excellent for remote, Good for local |
 
 ### 7.2 Decision Factors
 
@@ -765,14 +765,14 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 
 ### 7.3 Risk Assessment
 
-| Risk | A | B | C |
-|------|---|---|---|
-| Free-threading instability | N/A | N/A | HIGH |
-| PyTorch compatibility | N/A | N/A | HIGH |
-| Pickle code execution | LOW (can avoid pickle) | HIGH (cloudpickle required) | LOW (can avoid pickle) |
-| BaseManager scalability | N/A | MEDIUM | N/A |
-| TLS implementation complexity | LOW (native WSS) | HIGH (socket wrapping) | LOW (native WSS for remote) |
-| Test matrix size | MODERATE | LOW | HIGH (2x2 matrix) |
+| Risk                          | A                      | B                           | C                           |
+|-------------------------------|------------------------|-----------------------------|-----------------------------|
+| Free-threading instability    | N/A                    | N/A                         | HIGH                        |
+| PyTorch compatibility         | N/A                    | N/A                         | HIGH                        |
+| Pickle code execution         | LOW (can avoid pickle) | HIGH (cloudpickle required) | LOW (can avoid pickle)      |
+| BaseManager scalability       | N/A                    | MEDIUM                      | N/A                         |
+| TLS implementation complexity | LOW (native WSS)       | HIGH (socket wrapping)      | LOW (native WSS for remote) |
+| Test matrix size              | MODERATE               | LOW                         | HIGH (2x2 matrix)           |
 
 ---
 
@@ -1069,89 +1069,89 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 
 #### Phase 1 Tests
 
-| Test | Description |
-|------|------------|
-| `test_restricted_unpickler` | Verify allowed classes pass, blocked classes raise |
-| `test_result_validation` | Verify bounds checking, type checking, task tracking |
-| `test_worker_registry` | Register, heartbeat, unregister, stale detection |
-| `test_worker_coordinator` | Task assignment, timeout, reassignment |
-| `test_ws_protocol` | Message encoding/decoding, binary frames |
-| `test_ws_worker_agent` | Connection, task execution, result submission |
-| `test_reconnection` | Exponential backoff, max retries, successful reconnect |
-| `test_heartbeat` | Regular heartbeat, missed heartbeat detection |
+| Test                        | Description                                            |
+|-----------------------------|--------------------------------------------------------|
+| `test_restricted_unpickler` | Verify allowed classes pass, blocked classes raise     |
+| `test_result_validation`    | Verify bounds checking, type checking, task tracking   |
+| `test_worker_registry`      | Register, heartbeat, unregister, stale detection       |
+| `test_worker_coordinator`   | Task assignment, timeout, reassignment                 |
+| `test_ws_protocol`          | Message encoding/decoding, binary frames               |
+| `test_ws_worker_agent`      | Connection, task execution, result submission          |
+| `test_reconnection`         | Exponential backoff, max retries, successful reconnect |
+| `test_heartbeat`            | Regular heartbeat, missed heartbeat detection          |
 
 #### Phase 2 Tests
 
-| Test | Description |
-|------|------------|
-| `test_detect_free_threading` | GIL detection on various Python builds |
-| `test_local_thread_pool` | Pool creation, task submission, result collection, shutdown |
-| `test_thread_safety_queue` | Concurrent put/get from multiple threads |
-| `test_thread_pool_fallback` | Automatic fallback to multiprocessing when GIL enabled |
-| `test_torch_generator_isolation` | Per-thread RNG produces different sequences |
-| `test_shared_tensor_read_only` | Multiple threads reading same tensor concurrently |
+| Test                             | Description                                                 |
+|----------------------------------|-------------------------------------------------------------|
+| `test_detect_free_threading`     | GIL detection on various Python builds                      |
+| `test_local_thread_pool`         | Pool creation, task submission, result collection, shutdown |
+| `test_thread_safety_queue`       | Concurrent put/get from multiple threads                    |
+| `test_thread_pool_fallback`      | Automatic fallback to multiprocessing when GIL enabled      |
+| `test_torch_generator_isolation` | Per-thread RNG produces different sequences                 |
+| `test_shared_tensor_read_only`   | Multiple threads reading same tensor concurrently           |
 
 #### Phase 3 Tests
 
-| Test | Description |
-|------|------------|
-| `test_task_distributor_local_only` | All tasks to local pool when no remote workers |
-| `test_task_distributor_mixed` | Tasks split between local and remote |
-| `test_task_redistribution` | Tasks from failed remote workers reassigned to local |
-| `test_local_first_scheduling` | Local workers always get priority |
-| `test_unified_result_collection` | Results from both tiers collected correctly |
+| Test                               | Description                                          |
+|------------------------------------|------------------------------------------------------|
+| `test_task_distributor_local_only` | All tasks to local pool when no remote workers       |
+| `test_task_distributor_mixed`      | Tasks split between local and remote                 |
+| `test_task_redistribution`         | Tasks from failed remote workers reassigned to local |
+| `test_local_first_scheduling`      | Local workers always get priority                    |
+| `test_unified_result_collection`   | Results from both tiers collected correctly          |
 
 #### Phase 4 Tests
 
-| Test | Description |
-|------|------------|
-| `test_mtls_authentication` | Valid certs accepted, invalid rejected |
-| `test_token_rotation` | Expired tokens rejected, renewed tokens accepted |
-| `test_rate_limiting` | Connection flood rejected |
-| `test_anomaly_detection` | Suspicious correlation patterns flagged |
-| `test_audit_logging` | Security events properly logged |
+| Test                       | Description                                      |
+|----------------------------|--------------------------------------------------|
+| `test_mtls_authentication` | Valid certs accepted, invalid rejected           |
+| `test_token_rotation`      | Expired tokens rejected, renewed tokens accepted |
+| `test_rate_limiting`       | Connection flood rejected                        |
+| `test_anomaly_detection`   | Suspicious correlation patterns flagged          |
+| `test_audit_logging`       | Security events properly logged                  |
 
 ### 10.2 Integration Tests
 
-| Test | Description | Scope |
-|------|------------|-------|
-| `test_local_training_unchanged` | Existing local training produces identical results | Regression |
-| `test_remote_worker_training` | Remote worker completes candidate training via WebSocket | Phase 1 |
-| `test_mixed_local_remote` | Tasks distributed across local and remote workers | Phase 3 |
-| `test_worker_join_mid_training` | Worker joins during active training round | Phase 1 |
-| `test_worker_disconnect_mid_task` | Worker disconnects; task reassigned and completed | Phase 1 |
-| `test_intermittent_connection` | Worker reconnects after network disruption | Phase 1 |
-| `test_free_threaded_training_correctness` | Thread pool produces same results as multiprocessing | Phase 2 |
-| `test_cross_platform_worker` | Workers on different OS produce valid results | Phase 1 |
+| Test                                      | Description                                              | Scope      |
+|-------------------------------------------|----------------------------------------------------------|------------|
+| `test_local_training_unchanged`           | Existing local training produces identical results       | Regression |
+| `test_remote_worker_training`             | Remote worker completes candidate training via WebSocket | Phase 1    |
+| `test_mixed_local_remote`                 | Tasks distributed across local and remote workers        | Phase 3    |
+| `test_worker_join_mid_training`           | Worker joins during active training round                | Phase 1    |
+| `test_worker_disconnect_mid_task`         | Worker disconnects; task reassigned and completed        | Phase 1    |
+| `test_intermittent_connection`            | Worker reconnects after network disruption               | Phase 1    |
+| `test_free_threaded_training_correctness` | Thread pool produces same results as multiprocessing     | Phase 2    |
+| `test_cross_platform_worker`              | Workers on different OS produce valid results            | Phase 1    |
 
 ### 10.3 Performance Tests
 
-| Test | Description | Metric |
-|------|------------|--------|
-| `benchmark_local_mp_vs_threads` | Compare multiprocessing vs thread pool throughput | Tasks/second |
-| `benchmark_serialization_overhead` | Measure WebSocket serialization cost | ms/task |
-| `benchmark_memory_usage` | Compare memory usage: MP vs threads | MB |
-| `benchmark_worker_scalability` | Throughput vs number of remote workers | Tasks/second/worker |
-| `benchmark_reconnection_latency` | Time from disconnect to reconnect | ms |
+| Test                               | Description                                       | Metric              |
+|------------------------------------|---------------------------------------------------|---------------------|
+| `benchmark_local_mp_vs_threads`    | Compare multiprocessing vs thread pool throughput | Tasks/second        |
+| `benchmark_serialization_overhead` | Measure WebSocket serialization cost              | ms/task             |
+| `benchmark_memory_usage`           | Compare memory usage: MP vs threads               | MB                  |
+| `benchmark_worker_scalability`     | Throughput vs number of remote workers            | Tasks/second/worker |
+| `benchmark_reconnection_latency`   | Time from disconnect to reconnect                 | ms                  |
 
 ### 10.4 Security Tests
 
-| Test | Description |
-|------|------------|
-| `test_unauthorized_connection_rejected` | Connection without valid token/cert rejected |
-| `test_malformed_result_rejected` | Crafted results with invalid schema rejected |
-| `test_oversized_payload_rejected` | Payloads exceeding size limit rejected |
-| `test_replay_attack_prevented` | Replayed authentication tokens rejected |
-| `test_restricted_unpickler_blocks_os_system` | Pickle payload with `os.system` blocked |
+| Test                                         | Description                                  |
+|----------------------------------------------|----------------------------------------------|
+| `test_unauthorized_connection_rejected`      | Connection without valid token/cert rejected |
+| `test_malformed_result_rejected`             | Crafted results with invalid schema rejected |
+| `test_oversized_payload_rejected`            | Payloads exceeding size limit rejected       |
+| `test_replay_attack_prevented`               | Replayed authentication tokens rejected      |
+| `test_restricted_unpickler_blocks_os_system` | Pickle payload with `os.system` blocked      |
 
 ### 10.5 Regression Tests
 
-| Test | Description |
-|------|------------|
-| `test_existing_local_training_path` | All existing tests pass with no modification |
-| `test_sequential_fallback` | Sequential training still works when parallel disabled |
-| `test_cascor_worker_legacy_mode` | Legacy `--cascor-path` mode still works |
-| `test_client_library_unchanged` | juniper-cascor-client tests pass without modification |
+| Test                                | Description                                            |
+|-------------------------------------|--------------------------------------------------------|
+| `test_existing_local_training_path` | All existing tests pass with no modification           |
+| `test_sequential_fallback`          | Sequential training still works when parallel disabled |
+| `test_cascor_worker_legacy_mode`    | Legacy `--cascor-path` mode still works                |
+| `test_client_library_unchanged`     | juniper-cascor-client tests pass without modification  |
 
 ---
 
@@ -1159,21 +1159,21 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 
 ### 11.1 Technical Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|-----------|
-| Free-threading causes subtle data corruption | Medium | Critical | Automatic fallback to MP; extensive correctness testing |
-| PyTorch not stable on free-threaded Python | High | High | Runtime detection; `CASCOR_FORCE_MULTIPROCESSING` override |
-| WebSocket overhead reduces training throughput | Low | Medium | Measure overhead vs task time; only use remote for overflow |
-| BaseManager TLS wrapping breaks on Python updates | Medium | Medium | Use WSS instead of wrapping MP sockets |
-| cloudpickle version mismatch across machines | Medium | High | Standardize Python version; use structured serialization for WS path |
+| Risk                                              | Probability | Impact   | Mitigation                                                           |
+|---------------------------------------------------|-------------|----------|----------------------------------------------------------------------|
+| Free-threading causes subtle data corruption      | Medium      | Critical | Automatic fallback to MP; extensive correctness testing              |
+| PyTorch not stable on free-threaded Python        | High        | High     | Runtime detection; `CASCOR_FORCE_MULTIPROCESSING` override           |
+| WebSocket overhead reduces training throughput    | Low         | Medium   | Measure overhead vs task time; only use remote for overflow          |
+| BaseManager TLS wrapping breaks on Python updates | Medium      | Medium   | Use WSS instead of wrapping MP sockets                               |
+| cloudpickle version mismatch across machines      | Medium      | High     | Standardize Python version; use structured serialization for WS path |
 
 ### 11.2 Operational Risks
 
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|-----------|
-| Certificate management complexity | Medium | Medium | Automated cert generation scripts; 365-day worker certs |
-| Remote worker deployment complexity | Medium | Medium | pip-installable worker package; single CLI command to start |
-| Increased monitoring burden | Low | Low | Structured audit logging; dashboard integration |
+| Risk                                | Probability | Impact | Mitigation                                                  |
+|-------------------------------------|-------------|--------|-------------------------------------------------------------|
+| Certificate management complexity   | Medium      | Medium | Automated cert generation scripts; 365-day worker certs     |
+| Remote worker deployment complexity | Medium      | Medium | pip-installable worker package; single CLI command to start |
+| Increased monitoring burden         | Low         | Low    | Structured audit logging; dashboard integration             |
 
 ### 11.3 Guardrails
 
@@ -1202,49 +1202,49 @@ openssl x509 -req -in worker-alpha.csr -CA ca.crt -CAkey ca.key \
 
 ### juniper-cascor (Modified Files)
 
-| File | Changes |
-|------|---------|
-| `src/cascade_correlation/cascade_correlation.py` | Dual-path dispatch, result validation, restricted unpickler |
-| `src/cascade_correlation/cascade_correlation_config/cascade_correlation_config.py` | Remote worker config fields |
-| `src/cascor_constants/constants_model/constants_model.py` | Remove hardcoded authkey |
-| `src/api/app.py` | Mount worker WebSocket endpoint |
-| `src/candidate_unit/candidate_unit.py` | Thread-safe RNG (Phase 2) |
+| File                                                                               | Changes                                                     |
+|------------------------------------------------------------------------------------|-------------------------------------------------------------|
+| `src/cascade_correlation/cascade_correlation.py`                                   | Dual-path dispatch, result validation, restricted unpickler |
+| `src/cascade_correlation/cascade_correlation_config/cascade_correlation_config.py` | Remote worker config fields                                 |
+| `src/cascor_constants/constants_model/constants_model.py`                          | Remove hardcoded authkey                                    |
+| `src/api/app.py`                                                                   | Mount worker WebSocket endpoint                             |
+| `src/candidate_unit/candidate_unit.py`                                             | Thread-safe RNG (Phase 2)                                   |
 
 ### juniper-cascor (New Files)
 
-| File | Purpose |
-|------|---------|
-| `src/api/websocket/worker_stream.py` | Worker WebSocket handler |
-| `src/api/workers/__init__.py` | Workers package |
-| `src/api/workers/registry.py` | Worker registry |
-| `src/api/workers/coordinator.py` | Task distribution and lifecycle |
-| `src/api/workers/protocol.py` | Message format and serialization |
-| `src/api/workers/security.py` | Authentication, validation (Phase 4) |
-| `src/api/workers/audit.py` | Security audit logging (Phase 4) |
-| `src/parallelism/__init__.py` | Free-threading detection (Phase 2) |
-| `src/parallelism/local_thread_pool.py` | Thread pool (Phase 2) |
-| `src/parallelism/task_distributor.py` | Unified distribution (Phase 3) |
+| File                                   | Purpose                              |
+|----------------------------------------|--------------------------------------|
+| `src/api/websocket/worker_stream.py`   | Worker WebSocket handler             |
+| `src/api/workers/__init__.py`          | Workers package                      |
+| `src/api/workers/registry.py`          | Worker registry                      |
+| `src/api/workers/coordinator.py`       | Task distribution and lifecycle      |
+| `src/api/workers/protocol.py`          | Message format and serialization     |
+| `src/api/workers/security.py`          | Authentication, validation (Phase 4) |
+| `src/api/workers/audit.py`             | Security audit logging (Phase 4)     |
+| `src/parallelism/__init__.py`          | Free-threading detection (Phase 2)   |
+| `src/parallelism/local_thread_pool.py` | Thread pool (Phase 2)                |
+| `src/parallelism/task_distributor.py`  | Unified distribution (Phase 3)       |
 
 ### juniper-cascor-worker (Modified Files)
 
-| File | Changes |
-|------|---------|
+| File                              | Changes                           |
+|-----------------------------------|-----------------------------------|
 | `juniper_cascor_worker/worker.py` | Rewrite as WebSocket worker agent |
-| `juniper_cascor_worker/config.py` | WebSocket config fields |
-| `juniper_cascor_worker/cli.py` | New CLI arguments, legacy mode |
-| `pyproject.toml` | Add `websockets` dependency |
+| `juniper_cascor_worker/config.py` | WebSocket config fields           |
+| `juniper_cascor_worker/cli.py`    | New CLI arguments, legacy mode    |
+| `pyproject.toml`                  | Add `websockets` dependency       |
 
 ### juniper-cascor-worker (New Files)
 
-| File | Purpose |
-|------|---------|
+| File                                     | Purpose                         |
+|------------------------------------------|---------------------------------|
 | `juniper_cascor_worker/ws_connection.py` | WebSocket connection management |
-| `juniper_cascor_worker/task_executor.py` | Generic task execution engine |
+| `juniper_cascor_worker/task_executor.py` | Generic task execution engine   |
 
 ### juniper-ml (This Repository)
 
-| File | Purpose |
-|------|---------|
+| File                               | Purpose            |
+|------------------------------------|--------------------|
 | `notes/CASCOR_CONCURRENCY_PLAN.md` | This plan document |
 
 ---
@@ -1278,28 +1278,28 @@ Note: `cloudpickle` is NOT required in the recommended approach (Approach C). Th
 
 ### Server-Side (juniper-cascor)
 
-| Setting | Type | Default | Description |
-|---------|------|---------|-------------|
-| `enable_remote_workers` | bool | `False` | Enable WebSocket worker endpoint |
-| `ws_worker_token_secret` | str | *required* | JWT signing secret (must be set if remote workers enabled) |
-| `heartbeat_timeout` | float | `30.0` | Seconds before marking worker stale |
-| `task_reassignment_timeout` | float | `120.0` | Seconds before reassigning unfinished remote task |
-| `max_remote_workers` | int | `50` | Maximum simultaneous remote worker connections |
-| `parallelism_mode` | str | `"auto"` | `"auto"`, `"multiprocessing"`, `"threading"` |
+| Setting                     | Type  | Default    | Description                                                |
+|-----------------------------|-------|------------|------------------------------------------------------------|
+| `enable_remote_workers`     | bool  | `False`    | Enable WebSocket worker endpoint                           |
+| `ws_worker_token_secret`    | str   | *required* | JWT signing secret (must be set if remote workers enabled) |
+| `heartbeat_timeout`         | float | `30.0`     | Seconds before marking worker stale                        |
+| `task_reassignment_timeout` | float | `120.0`    | Seconds before reassigning unfinished remote task          |
+| `max_remote_workers`        | int   | `50`       | Maximum simultaneous remote worker connections             |
+| `parallelism_mode`          | str   | `"auto"`   | `"auto"`, `"multiprocessing"`, `"threading"`               |
 
 ### Worker-Side (juniper-cascor-worker)
 
-| Setting | Type | Default | Description |
-|---------|------|---------|-------------|
-| `server_url` | str | *required* | WSS URL (e.g., `wss://host:8200/ws/v1/workers`) |
-| `auth_token` | str | *required* | JWT authentication token |
-| `num_workers` | int | `1` | Number of local worker threads/processes |
-| `heartbeat_interval` | float | `10.0` | Seconds between heartbeat messages |
-| `reconnect_backoff_base` | float | `1.0` | Initial reconnection delay |
-| `reconnect_backoff_max` | float | `60.0` | Maximum reconnection delay |
-| `tls_cert` | str | `None` | Client certificate path (for mTLS) |
-| `tls_key` | str | `None` | Client key path |
-| `tls_ca` | str | `None` | CA certificate path |
+| Setting                  | Type  | Default    | Description                                     |
+|--------------------------|-------|------------|-------------------------------------------------|
+| `server_url`             | str   | *required* | WSS URL (e.g., `wss://host:8200/ws/v1/workers`) |
+| `auth_token`             | str   | *required* | JWT authentication token                        |
+| `num_workers`            | int   | `1`        | Number of local worker threads/processes        |
+| `heartbeat_interval`     | float | `10.0`     | Seconds between heartbeat messages              |
+| `reconnect_backoff_base` | float | `1.0`      | Initial reconnection delay                      |
+| `reconnect_backoff_max`  | float | `60.0`     | Maximum reconnection delay                      |
+| `tls_cert`               | str   | `None`     | Client certificate path (for mTLS)              |
+| `tls_key`                | str   | `None`     | Client key path                                 |
+| `tls_ca`                 | str   | `None`     | CA certificate path                             |
 
 ---
 
@@ -1475,20 +1475,20 @@ def validate(self, api_key: str | None) -> bool:
 
 ### 12.3 Medium-Severity Findings
 
-| Finding | Resolution |
-|---------|-----------|
-| `signal.pause()` crashes on Windows | Worker CLI rewrite uses `threading.Event.wait()` instead |
-| Missing msgpack/zstd from dependency lists | Removed from protocol; use raw numpy `.tobytes()` + JSON envelope |
-| Python version contradiction (3.11 vs 3.14) | Worker `requires-python` updated to `>=3.14` |
-| No memory exhaustion protection for binary frames | Add 100MB max WebSocket frame size; validate tensor shapes against expected dimensions |
-| No worker connection deduplication | One active WebSocket per `worker_id`; new connections close older ones |
-| No per-worker result rate limiting | Max 1 result per dispatched task; reject undispatched task IDs |
-| No Origin header validation on worker endpoint | Reject connections carrying `Origin` header (workers are machine-to-machine) |
-| No Host header validation | Validate `Host` against configured allowlist |
-| Missing `sequential` option in `parallelism_mode` | Added to config options |
-| No graceful degradation test (remote enabled, no workers) | Added to test strategy |
-| No cross-platform CI description | Added note for CI matrix (Linux, macOS, Windows) |
-| Missing backward compatibility strategy for `remote_client.py` | Deprecated in favor of WebSocket path; retained with deprecation warning |
+| Finding                                                        | Resolution                                                                             |
+|----------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `signal.pause()` crashes on Windows                            | Worker CLI rewrite uses `threading.Event.wait()` instead                               |
+| Missing msgpack/zstd from dependency lists                     | Removed from protocol; use raw numpy `.tobytes()` + JSON envelope                      |
+| Python version contradiction (3.11 vs 3.14)                    | Worker `requires-python` updated to `>=3.14`                                           |
+| No memory exhaustion protection for binary frames              | Add 100MB max WebSocket frame size; validate tensor shapes against expected dimensions |
+| No worker connection deduplication                             | One active WebSocket per `worker_id`; new connections close older ones                 |
+| No per-worker result rate limiting                             | Max 1 result per dispatched task; reject undispatched task IDs                         |
+| No Origin header validation on worker endpoint                 | Reject connections carrying `Origin` header (workers are machine-to-machine)           |
+| No Host header validation                                      | Validate `Host` against configured allowlist                                           |
+| Missing `sequential` option in `parallelism_mode`              | Added to config options                                                                |
+| No graceful degradation test (remote enabled, no workers)      | Added to test strategy                                                                 |
+| No cross-platform CI description                               | Added note for CI matrix (Linux, macOS, Windows)                                       |
+| Missing backward compatibility strategy for `remote_client.py` | Deprecated in favor of WebSocket path; retained with deprecation warning               |
 
 ### 12.4 Revised Recommendation
 
@@ -1508,14 +1508,14 @@ The revised approach:
 
 ### 12.5 Revised Phase Structure
 
-| Phase | Scope | Effort |
-|-------|-------|--------|
-| **1a** | Security fixes for existing MP path (restricted unpickler, result validation, authkey, timing-safe API key comparison) | Days |
-| **1b** | WebSocket worker endpoint, registry, coordinator, protocol | Weeks |
-| **2** | Remote worker agent (juniper-cascor-worker rewrite with WebSocket) | Weeks |
-| **3** | Unified TaskDistributor (local MP + remote WS), testing, benchmarking | Weeks |
-| **4** | Security hardening (mTLS, cert management, audit logging, anomaly detection) | Weeks |
-| **Future** | Free-threading local tier (when PyTorch supports it) | TBD |
+| Phase      | Scope                                                                                                                  | Effort |
+|------------|------------------------------------------------------------------------------------------------------------------------|--------|
+| **1a**     | Security fixes for existing MP path (restricted unpickler, result validation, authkey, timing-safe API key comparison) | Days   |
+| **1b**     | WebSocket worker endpoint, registry, coordinator, protocol                                                             | Weeks  |
+| **2**      | Remote worker agent (juniper-cascor-worker rewrite with WebSocket)                                                     | Weeks  |
+| **3**      | Unified TaskDistributor (local MP + remote WS), testing, benchmarking                                                  | Weeks  |
+| **4**      | Security hardening (mTLS, cert management, audit logging, anomaly detection)                                           | Weeks  |
+| **Future** | Free-threading local tier (when PyTorch supports it)                                                                   | TBD    |
 
 ### 12.6 Serialization Protocol Specification
 
@@ -1523,7 +1523,7 @@ The WebSocket wire protocol uses JSON control messages and binary WebSocket fram
 
 #### Message Types (JSON)
 
-**Server -> Worker: Task Assignment**
+**Server -> Worker: Task Assignment:**
 
 ```json
 {
@@ -1555,7 +1555,7 @@ The WebSocket wire protocol uses JSON control messages and binary WebSocket fram
 
 Followed by binary frames (one per tensor in manifest order).
 
-**Worker -> Server: Task Result**
+**Worker -> Server: Task Result:**
 
 ```json
 {
@@ -1610,7 +1610,7 @@ Followed by binary frames (one per tensor in manifest order).
 
 Each binary frame is a raw numpy array in C-contiguous byte order:
 
-```
+```bash
 [4 bytes: shape dimension count (uint32)]
 [N * 4 bytes: shape values (uint32 each)]
 [4 bytes: dtype string length (uint32)]

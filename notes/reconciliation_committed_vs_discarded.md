@@ -116,7 +116,7 @@
 | **Message format drift**    | Both implementations duplicate frame encoding in the worker. The committed version's `BinaryFrame` is at least a named class that can be referenced. |
 | **Overly permissive dicts** | Tests (`test_worker_protocol.py`) cover all builders and validators, providing regression protection.                                                |
 
-**Recommendation**: The committed approach is adequate. If type safety becomes a concern, typed message dataclasses could be added later as wrappers around the dict builders without breaking the wire format.
+**[ ] Recommendation**: The committed approach is adequate. If type safety becomes a concern, typed message dataclasses could be added later as wrappers around the dict builders without breaking the wire format.
 
 ---
 
