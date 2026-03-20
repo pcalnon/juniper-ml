@@ -40,7 +40,7 @@ Continue implementing the Juniper CasCor Concurrency Architecture Plan starting 
 - `juniper-cascor/src/api/workers/coordinator.py` — WorkerCoordinator, PendingTask, TaskResult
 - `juniper-cascor/src/api/websocket/worker_stream.py` — worker_stream_handler
 - `juniper-cascor/src/api/settings.py` — remote_workers_enabled, etc.
-- `juniper-cascor/src/cascade_correlation/cascade_correlation.py` — RestrictedUnpickler, _validate_training_result, _QUEUE_MAXSIZE
+- `juniper-cascor/src/cascade_correlation/cascade_correlation.py` — RestrictedUnpickler, _validate_training_result,_QUEUE_MAXSIZE
 - Tests in: `src/tests/unit/api/test_worker_*.py`, `src/tests/unit/test_cascade_correlation_security.py`
 
 ## Verification commands
