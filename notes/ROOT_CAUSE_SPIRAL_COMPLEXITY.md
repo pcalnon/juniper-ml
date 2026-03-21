@@ -85,17 +85,17 @@ A 2-class spiral with N rotations creates approximately **2N decision boundary c
 For a 2-class problem with balanced classes and sigmoid/tanh output, the theoretical MSE progression is:
 
 | Hidden Units | Expected MSE | Accuracy | MSE Drop From Previous |
-|-------------|-------------|----------|----------------------|
-| 0 (linear) | ~0.250 | ~50% | -- |
-| 1 | ~0.248 | ~52% | 0.002 |
-| 2 | ~0.245 | ~54% | 0.003 |
-| 3 | ~0.242 | ~56% | 0.003 |
-| 4 | ~0.238 | ~58% | 0.004 |
-| 5 | ~0.235 | ~60% | 0.003 |
-| 7 | ~0.233 | ~62% | -- (reference) |
-| 10 | ~0.220 | ~68% | -- |
-| 15 | ~0.180 | ~78% | -- |
-| 20 | ~0.150 | ~85% | -- |
+|--------------|--------------|----------|------------------------|
+| 0 (linear)   | ~0.250       | ~50%     | --                     |
+| 1            | ~0.248       | ~52%     | 0.002                  |
+| 2            | ~0.245       | ~54%     | 0.003                  |
+| 3            | ~0.242       | ~56%     | 0.003                  |
+| 4            | ~0.238       | ~58%     | 0.004                  |
+| 5            | ~0.235       | ~60%     | 0.003                  |
+| 7            | ~0.233       | ~62%     | -- (reference)         |
+| 10           | ~0.220       | ~68%     | --                     |
+| 15           | ~0.180       | ~78%     | --                     |
+| 20           | ~0.150       | ~85%     | --                     |
 
 The reference value of MSE = 0.233 at 7 hidden units comes from CasCor literature on spiral classification with optimal (least-squares) output weight computation. With Adam optimizer and limited steps, actual performance will be **worse** than these theoretical values.
 
@@ -128,29 +128,29 @@ The convergence threshold is 0.001 (`TrainingConstants.DEFAULT_CONVERGENCE_THRES
 
 ## 4. Predicted Symptoms (Match Against Observed Behavior)
 
-| Symptom | Expected? | Explanation |
-|---------|-----------|-------------|
-| Loss drops rapidly in first 30 epochs | Yes | Linear output weights converging on best linear separator |
-| Loss flattens around 0.245-0.250 | Yes | Linear model ceiling for 3-rotation spiral |
-| First hidden unit shows brief dip then flat | Yes | 500-step retrain captures most benefit; subsequent epochs add nothing |
-| Subsequent units produce no visible change | Yes | 0.001-0.003 improvement per unit is sub-pixel on full-scale chart |
-| Accuracy hovers around 50-55% | Yes | Too few units to resolve spiral crossings |
-| Training "feels stuck" despite units being added | Yes | The invisible-improvement illusion |
-| Convergence detector fires rapidly after each unit | Yes | Threshold (0.001) ~ per-unit improvement |
+| Symptom                                            | Expected? | Explanation                                                           |
+|----------------------------------------------------|-----------|-----------------------------------------------------------------------|
+| Loss drops rapidly in first 30 epochs              | Yes       | Linear output weights converging on best linear separator             |
+| Loss flattens around 0.245-0.250                   | Yes       | Linear model ceiling for 3-rotation spiral                            |
+| First hidden unit shows brief dip then flat        | Yes       | 500-step retrain captures most benefit; subsequent epochs add nothing |
+| Subsequent units produce no visible change         | Yes       | 0.001-0.003 improvement per unit is sub-pixel on full-scale chart     |
+| Accuracy hovers around 50-55%                      | Yes       | Too few units to resolve spiral crossings                             |
+| Training "feels stuck" despite units being added   | Yes       | The invisible-improvement illusion                                    |
+| Convergence detector fires rapidly after each unit | Yes       | Threshold (0.001) ~ per-unit improvement                              |
 
 ---
 
 ## 5. Specific Code Locations
 
-| File | Lines | Issue |
-|------|-------|-------|
-| `juniper-canopy/src/demo_mode.py` | 578-583 | `n_rotations` not specified in params dict; inherits default 3.0 |
-| `juniper-data/.../spiral/defaults.py` | 10 | `SPIRAL_DEFAULT_N_ROTATIONS = 3.0` -- too complex for demo |
-| `juniper-canopy/src/demo_mode.py` | 210 | Candidate training: only 200 steps per candidate |
-| `juniper-canopy/src/demo_mode.py` | 236 | Output retraining: 500 steps inline after unit addition |
-| `juniper-canopy/src/canopy_constants.py` | 58 | `DEFAULT_CONVERGENCE_THRESHOLD = 0.001` -- matches per-unit improvement |
-| `juniper-canopy/src/settings.py` | 124 | `demo_cascade_every = 30` -- fallback schedule |
-| `juniper-canopy/.../metrics_panel.py` | 1452-1465 | Loss chart: no y-axis range constraint (autorange from 0 to initial loss) |
+| File                                     | Lines     | Issue                                                                     |
+|------------------------------------------|-----------|---------------------------------------------------------------------------|
+| `juniper-canopy/src/demo_mode.py`        | 578-583   | `n_rotations` not specified in params dict; inherits default 3.0          |
+| `juniper-data/.../spiral/defaults.py`    | 10        | `SPIRAL_DEFAULT_N_ROTATIONS = 3.0` -- too complex for demo                |
+| `juniper-canopy/src/demo_mode.py`        | 210       | Candidate training: only 200 steps per candidate                          |
+| `juniper-canopy/src/demo_mode.py`        | 236       | Output retraining: 500 steps inline after unit addition                   |
+| `juniper-canopy/src/canopy_constants.py` | 58        | `DEFAULT_CONVERGENCE_THRESHOLD = 0.001` -- matches per-unit improvement   |
+| `juniper-canopy/src/settings.py`         | 124       | `demo_cascade_every = 30` -- fallback schedule                            |
+| `juniper-canopy/.../metrics_panel.py`    | 1452-1465 | Loss chart: no y-axis range constraint (autorange from 0 to initial loss) |
 
 ---
 
@@ -171,6 +171,7 @@ params = {
 ```
 
 **Why 1 rotation works**:
+
 - 2 decision boundary crossings (vs. 6 for 3 rotations)
 - Requires only ~3-5 hidden units for good classification
 - Each hidden unit contributes **0.01-0.03 MSE improvement** (10x larger than 3-rotation case)
@@ -198,16 +199,16 @@ This gives candidates more time to find meaningful correlations in the residual,
 
 ### With 1-Rotation Spiral
 
-| Metric | 3 Rotations (Current) | 1 Rotation (Proposed) |
-|--------|----------------------|----------------------|
-| Decision boundary crossings | 6 | 2 |
-| Hidden units needed for >90% acc | ~15-20 | 3-5 |
-| MSE improvement per hidden unit | 0.001-0.003 | 0.01-0.03 |
-| Visible improvement on chart | No (sub-pixel) | Yes (10-30 pixels) |
-| Final MSE at 10 hidden units | ~0.220 | ~0.05 |
-| Final accuracy at 10 hidden units | ~68% | >92% |
-| Training curve appearance | Flat line with unit markers | Clear staircase descent |
-| Demo impression | "Network is broken/stuck" | "Network is learning progressively" |
+| Metric                            | 3 Rotations (Current)       | 1 Rotation (Proposed)               |
+|-----------------------------------|-----------------------------|-------------------------------------|
+| Decision boundary crossings       | 6                           | 2                                   |
+| Hidden units needed for >90% acc  | ~15-20                      | 3-5                                 |
+| MSE improvement per hidden unit   | 0.001-0.003                 | 0.01-0.03                           |
+| Visible improvement on chart      | No (sub-pixel)              | Yes (10-30 pixels)                  |
+| Final MSE at 10 hidden units      | ~0.220                      | ~0.05                               |
+| Final accuracy at 10 hidden units | ~68%                        | >92%                                |
+| Training curve appearance         | Flat line with unit markers | Clear staircase descent             |
+| Demo impression                   | "Network is broken/stuck"   | "Network is learning progressively" |
 
 ### Risk Assessment
 

@@ -30,7 +30,7 @@ Demo training stalls after the first hidden unit because the candidate training 
 
 CasCor trains **50 candidates** in parallel and selects the best. The demo trains **8 sequentially**. The candidate pool serves as a random-restart mechanism: each candidate starts from a different random initialization and may converge to a different local optimum on the correlation surface. The probability that at least one candidate finds a high-correlation feature is:
 
-```
+```bash
 P(at_least_one_good) = 1 - (1 - p)^N
 ```
 
@@ -61,11 +61,13 @@ Second and third hidden units will have **lower best-candidate correlations** th
 The CasCor reference uses **600 epochs with early stopping (patience=30)**. This means it runs up to 600 steps but will terminate earlier if correlation plateaus for 30 consecutive epochs -- an adaptive budget. The demo uses a **hard-coded 200 steps with no convergence check at all**.
 
 For the first hidden unit (2 inputs, `tanh` candidate), 200 Adam steps at lr=0.01 is often sufficient because:
+
 - The input dimension is small (2 features).
 - The residual is large and has clear directional structure.
 - Adam's adaptive learning rate finds the gradient quickly.
 
 For the second hidden unit (3 inputs: 2 original + 1 hidden output), the problem is harder:
+
 - The input dimension has grown.
 - The residual landscape is more complex (the "easy" correlations were already captured).
 - The correlation surface may have shallow gradients and require more steps to navigate.
@@ -74,7 +76,7 @@ At 200 steps, the candidate may still be on a rising trajectory when training te
 
 **Mathematical estimate of convergence speed**: For Adam with lr=0.01 on a Pearson objective through a `tanh` nonlinearity, the effective gradient magnitude scales as:
 
-```
+```bash
 ||grad_corr|| ~ (1/N) * ||d_tanh/dz|| * ||x|| * ||e_centered|| / (std_v * std_e)
 ```
 
@@ -100,17 +102,18 @@ The Pearson correlation coefficient is theoretically **scale-invariant**: multip
 
 The full gradient chain is:
 
-```
+```python
 d(corr)/d(weights) = d(corr)/d(v) * d(v)/d(z) * d(z)/d(weights)
 ```
 
 where:
+
 - `v = tanh(z)`, `z = x @ weights + bias`
 - `d(corr)/d(v)` involves the mean-centered error `e_centered`
 
 Expanding `d(corr)/d(v)` for the Pearson formula:
 
-```
+```python
 d(corr)/d(v_i) = (1/denom) * [e_centered_i - corr * v_centered_i * (sum(e_centered^2) / sum(v_centered^2))]
                   * sign(corr)
 ```
@@ -126,6 +129,7 @@ Additionally, the demo computes correlation via autograd through `(-correlation)
 ### The Demo vs. CasCor Reference Difference
 
 The demo (`demo_mode.py` lines 279-285):
+
 ```python
 v_centered = v - v.mean()
 e_centered = residual - residual.mean(dim=0)
@@ -136,6 +140,7 @@ correlation = (cov / (std_v * std_e)).abs().sum()
 ```
 
 The CasCor reference (`candidate_unit.py` lines 1053-1079):
+
 ```python
 numerator = torch.sum(norm_output * norm_error)
 sum_output_sq = torch.sum(norm_output**2)
@@ -147,19 +152,25 @@ correlation = np.abs(correlation_raw)
 
 **Key difference**: The CasCor reference computes the denominator as `sqrt(sum_out^2 * sum_err^2 + eps)`, applying epsilon *inside* the product before the square root. The demo computes it as `sqrt(sum_out^2 + eps) * sqrt(sum_err^2 + eps)`, applying epsilon to each factor separately. These are mathematically different:
 
-```
+```bash
 sqrt(A * B + eps)  !=  sqrt(A + eps) * sqrt(B + eps)
 ```
 
-When `A` and `B` are both large (first hidden unit, large residual), the difference is negligible. When `B` (`sum_err^2`) is small (later hidden units, small residual), the demo's formulation `sqrt(B + eps)` floors at `sqrt(eps) = 1e-4`, while the CasCor reference's `sqrt(A * B + eps)` can produce a larger denominator (since `A * B` may still be above `eps`). This means the demo's correlation values for later units are **slightly inflated** compared to the reference, and more critically, the **gradient through the separate-sqrt formulation differs**.
+When `A` and `B` are both large (first hidden unit, large residual), the difference is negligible.
+When `B` (`sum_err^2`) is small (later hidden units, small residual), the demo's formulation `sqrt(B + eps)` floors at `sqrt(eps) = 1e-4`, while the CasCor reference's `sqrt(A * B + eps)` can produce a larger denominator (since `A * B` may still be above `eps`).
+This means the demo's correlation values for later units are **slightly inflated** compared to the reference, and more critically, the **gradient through the separate-sqrt formulation differs**.
 
-Additionally, the CasCor reference detaches the correlation to a Python float (`numerator_val / denominator_val` using `.item()`) and uses `np.abs()` -- the correlation value itself does *not* carry autograd history. The gradient computation happens in a separate `_update_weights_and_bias` method that recomputes the correlation from scratch with `requires_grad=True` parameters (lines 1123-1184). This **recomputation pattern** ensures clean gradient graphs each epoch.
+Additionally, the CasCor reference detaches the correlation to a Python float (`numerator_val / denominator_val` using `.item()`) and uses `np.abs()` -- the correlation value itself does *not* carry autograd history.
+The gradient computation happens in a separate `_update_weights_and_bias` method that recomputes the correlation from scratch with `requires_grad=True` parameters (lines 1123-1184).
+This **recomputation pattern** ensures clean gradient graphs each epoch.
 
-The demo, by contrast, computes correlation once in the forward pass and calls `.backward()` on it directly, accumulating autograd history across the entire 200-step loop. While `optimizer.zero_grad()` clears the parameter gradients, the intermediate tensors in the computation graph are recreated each step (so this is not a graph-accumulation bug), but the single-pass approach means any numerical issues in the correlation computation directly pollute the gradient.
+The demo, by contrast, computes correlation once in the forward pass and calls `.backward()` on it directly, accumulating autograd history across the entire 200-step loop.
+While `optimizer.zero_grad()` clears the parameter gradients, the intermediate tensors in the computation graph are recreated each step (so this is not a graph-accumulation bug), but the single-pass approach means any numerical issues in the correlation computation directly pollute the gradient.
 
 ### Predicted Symptom
 
-Gradient norms for candidate weight updates will be **5-10x smaller** for the second hidden unit compared to the first, even though the theoretical correlation signal may be equally strong. Training will appear to make very slow progress.
+Gradient norms for candidate weight updates will be **5-10x smaller** for the second hidden unit compared to the first, even though the theoretical correlation signal may be equally strong.
+Training will appear to make very slow progress.
 
 ---
 
@@ -174,7 +185,7 @@ Gradient norms for candidate weight updates will be **5-10x smaller** for the se
 
 Both implementations use `randn * 0.1`. For the first hidden unit, `input_dim = 2`, so the pre-activation is:
 
-```
+```bash
 z = x @ w + b,  where w ~ N(0, 0.01),  x in [-1, 1]
 ```
 
@@ -334,13 +345,13 @@ Replace Adam with manual SGD to match the CasCor reference exactly. This removes
 
 ## Expected Impact
 
-| Fix | Expected Effect | Confidence |
-|-----|----------------|------------|
-| Pool size 8 -> 16+ | 2nd/3rd hidden units find better features; correlation scores for installed units increase by 20-50% | High |
-| Steps 200 -> 400 + early stopping | Candidates allowed to converge; no wasted computation when they converge early | High |
-| Epsilon placement fix | Marginal improvement in gradient quality for small residuals; prevents potential NaN edge cases | Medium |
-| Xavier initialization | Later candidates start in a regime where `tanh` nonlinearity is useful, not redundant with linear output | Medium |
-| Switch to manual SGD | Eliminates Adam momentum pathology; matches reference behavior exactly | Medium-Low (may need lr tuning) |
+| Fix                               | Expected Effect                                                                                          | Confidence                      |
+|-----------------------------------|----------------------------------------------------------------------------------------------------------|---------------------------------|
+| Pool size 8 -> 16+                | 2nd/3rd hidden units find better features; correlation scores for installed units increase by 20-50%     | High                            |
+| Steps 200 -> 400 + early stopping | Candidates allowed to converge; no wasted computation when they converge early                           | High                            |
+| Epsilon placement fix             | Marginal improvement in gradient quality for small residuals; prevents potential NaN edge cases          | Medium                          |
+| Xavier initialization             | Later candidates start in a regime where `tanh` nonlinearity is useful, not redundant with linear output | Medium                          |
+| Switch to manual SGD              | Eliminates Adam momentum pathology; matches reference behavior exactly                                   | Medium-Low (may need lr tuning) |
 
 **Combined effect**: Phases 1-3 alone should eliminate the stall after the first hidden unit. The demo should be able to productively install 3-5 hidden units with monotonically decreasing loss, matching the behavior expected from the CasCor algorithm.
 
