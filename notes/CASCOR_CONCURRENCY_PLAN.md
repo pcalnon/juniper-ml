@@ -510,20 +510,20 @@ Two-tier architecture: Python 3.14 free-threading (no-GIL) for local workers (ze
 #### Architecture
 
 ```bash
-                    ┌────────────────────────────────────┐
-                    │      TaskDistributor (unified)     │
-                    │              │                     │
-                    │    ┌────────┴────────┐             │
-                    │    │                 │             │
-                    │  LOCAL TIER      REMOTE TIER       │
-                    │  (free-threaded)  (WebSocket)      │
-                    │                                    │
-                    │  ThreadPool ───┐  WSS Server ──┐   │
-                    │  Thread 0      │  Worker A     │   │
-                    │  Thread 1      │  Worker B     │   │
-                    │  ...           │  Worker C     │   │
-                    │  (shared mem)  │  (serialized) │   │
-                    └────────────────────────────────────┘
+                    ┌─────────────────────────────────────┐
+                    │       TaskDistributor (unified)     │
+                    │              │                      │
+                    │     ┌────────┴────────┐             │
+                    │     │                 │             │
+                    │   LOCAL TIER      REMOTE TIER       │
+                    │  (free-threaded)  (WebSocket)       │
+                    │                                     │
+                    │   ThreadPool ───┐  WSS Server ──┐   │
+                    │   Thread 0      │  Worker A     │   │
+                    │   Thread 1      │  Worker B     │   │
+                    │   ...           │  Worker C     │   │
+                    │   (shared mem)  │  (serialized) │   │
+                    └─────────────────────────────────────┘
 ```
 
 #### Local Tier: Free-Threading
