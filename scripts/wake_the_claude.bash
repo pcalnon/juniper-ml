@@ -76,6 +76,7 @@ debug_log "Define Claude Code parameter flags"
 
 CLAUDE_PERMISSIONS_FLAGS="--dangerously-skip-permissions"
 CLAUDE_SESSION_ID_FLAGS="--session-id"
+CLAUDE_FORK_SESSION="--fork-session"
 CLAUDE_WORKTREE_FLAGS="--worktree"
 CLAUDE_VERSION_FLAGS="--version"
 CLAUDE_HEADLESS_FLAGS="--print"
@@ -108,6 +109,7 @@ PERMISSIONS_FLAGS="-s | --slient | --skip | --skip-permissions | ${CLAUDE_PERMIS
 SESSION_ID_FLAGS="-i | --id | --session | ${CLAUDE_SESSION_ID_FLAGS} | --session-name | -t | --thread | --thread-name | --thread-id"
 MODEL_FLAGS="-m | ${CLAUDE_MODEL_FLAGS} | --llm-model | --ai-model | --model-type"
 RESUME_FLAGS="-r | ${CLAUDE_RESUME_FLAGS} | --resume-thread | --resume-session"
+FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION} | --resume-fork | --resume-fork_session"
 
 
 ########################################################################################################################################################################
@@ -325,6 +327,8 @@ function usage() {
     echo -ne "\t ${RESUME_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a previously created session to be resumed for use by the Claude Code model.\n"
     echo -ne "\t\tNOTE: Session value must be a valid session id.  If no session id is provided, operation will not continue.\n"
+    echo -ne "\t ${FORK_SESSION_FLAGS}:\n"
+    echo -ne "\t\tFlags that allow a previously forked session to be resumed for use by the Claude Code model.\n"
     echo -ne "\t ${PROMPT_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a prompt string to be specified for use by the Claude Code model.\n"
     echo -ne "\t\tNOTE: Prompt string can be provided either as a string of text or as a file name or pathname to a file containing the prompt string.\n"
@@ -569,6 +573,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         HEADLESS_VALUE="${CLAUDE_HEADLESS_FLAGS}"
         CLAUDE_CODE_PARAMS+=("${HEADLESS_VALUE}")
         debug_log "Received Headless Flag, ${#CLAUDE_CODE_PARAMS[@]} args"
+    elif matches_pattern "${CURRENT_ELEMENT}" "${FORK_SESSION_FLAGS}"; then
+        debug_log "Parsing fork session flags"
+        FORK_SESSION_VALUE="${FORK_SESSION_FLAGS}"
+        CLAUDE_CODE_PARAMS+=("${FORK_SESSION_VALUE}")
+        debug_log "Received Fork Session FLag, ${#CLAUDE_CODE_PARAMS[@]} args"
     elif matches_pattern "${CURRENT_ELEMENT}" "${PERMISSIONS_FLAGS}"; then
         debug_log "Parsing permissions flags"
         PERMISSIONS_VALUE="${CLAUDE_PERMISSIONS_FLAGS}"

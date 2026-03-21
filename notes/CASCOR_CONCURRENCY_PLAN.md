@@ -321,23 +321,23 @@ Replace `BaseManager` protocol with WebSocket Secure (WSS) for all remote worker
 #### Architecture
 
 ```bash
-                    JUNIPER CASCOR SERVER (Primary Workstation)
- ┌─────────────────────────────────────────────────────────────────┐
- │  FastAPI Application                                            │
- │  ┌────────────────┐   ┌──────────────────────────────────────┐  │
- │  │ /ws/training   │   │ /ws/v1/workers                       │  │
- │  │ /ws/control    │   │  - JWT authentication                │  │
- │  └────────────────┘   │  - Binary frame dispatch             │  │
- │                       │  - Heartbeat management              │  │
- │                       └────────┬─────────────────────────────┘  │
- │                                │                                │
- │  ┌─────────────────────────────┴──────────────────────────────┐ │
- │  │              WorkerCoordinator                             │ │
- │  │  ┌──────────────┐  ┌────────────────┐  ┌───────────────┐   │ │
- │  │  │WorkerRegistry│  │TaskDistributor │  │ResultCollector│   │ │
- │  │  └──────────────┘  └────────────────┘  └───────────────┘   │ │
- │  └────────────────────────────────────────────────────────────┘ │
- └─────────────────────────────────────────────────────────────────┘
+                    JUNIPER CASCOR SERVER (Pbashrimary Workstation)
+ ┌──────────────────────────────────────────────────────────────────┐
+ │  FastAPI Application                                             │
+ │  ┌────────────────┐    ┌──────────────────────────────────────┐  │
+ │  │ /ws/training   │    │ /ws/v1/workers                       │  │
+ │  │ /ws/control    │    │  - JWT authentication                │  │
+ │  └────────────────┘    │  - Binary frame dispatch             │  │
+ │                        │  - Heartbeat management              │  │
+ │                        └────────┬─────────────────────────────┘  │
+ │                                 │                                │
+ │  ┌──────────────────────────────┴──────────────────────────────┐ │
+ │  │                    WorkerCoordinator                        │ │
+ │  │   ┌──────────────┐  ┌────────────────┐  ┌───────────────┐   │ │
+ │  │   │WorkerRegistry│  │TaskDistributor │  │ResultCollector│   │ │
+ │  │   └──────────────┘  └────────────────┘  └───────────────┘   │ │
+ │  └─────────────────────────────────────────────────────────────┘ │
+ └──────────────────────────────────────────────────────────────────┘
                         │ WSS (TLS 1.3)
           ┌─────────────┼─────────────┐
      ┌────┴────┐   ┌────┴────┐   ┌────┴─────┐
@@ -430,27 +430,27 @@ Evolve the existing `BaseManager` approach to address remote limitations while p
 #### Architecture
 
 ```bash
- ┌─────────────────────────────────────────────────────────┐
- │  CascadeCorrelationNetwork                              │
- │    │                                                    │
- │    +── LOCAL PATH (unchanged): _ensure_worker_pool()    │
- │    │   direct mp.Queue + persistent mp.Process pool     │
- │    │                                                    │
- │    +── REMOTE PATH: EnhancedTrainingManager             │
- │          +── TLS-wrapped BaseManager server             │
- │          +── WorkerRegistry (heartbeats, health)        │
- │          +── TaskRedistributor (failure recovery)       │
- │          +── Self-contained task payloads (cloudpickle) │
- └─────────────────────────────────────────────────────────┘
+ ┌──────────────────────────────────────────────────────────┐
+ │  CascadeCorrelationNetwork                               │
+ │    │                                                     │
+ │    +── LOCAL PATH (unchanged): _ensure_worker_pool()     │
+ │    │   direct mp.Queue + persistent mp.Process pool      │
+ │    │                                                     │
+ │    +── REMOTE PATH: EnhancedTrainingManager              │
+ │          +── TLS-wrapped BaseManager server              │
+ │          +── WorkerRegistry (heartbeats, health)         │
+ │          +── TaskRedistributor (failure recovery)        │
+ │          +── Self-contained task payloads (cloudpickle)  │
+ └──────────────────────────────────────────────────────────┘
             │ TLS + Certificate Auth
             v
- ┌──────────────────────────────────────────────────────┐
- │  REMOTE WORKER (Python 3.14+, numpy, torch)          │
- │  DecoupledWorkerAgent                                │
- │    +── ResilientConnection (exponential backoff)     │
- │    +── GenericTaskRunner (no cascor imports)         │
- │    +── HeartbeatThread (background liveness)         │
- └──────────────────────────────────────────────────────┘
+ ┌──────────────────────────────────────────────────────────┐
+ │  REMOTE WORKER (Python 3.14+, numpy, torch)              │
+ │  DecoupledWorkerAgent                                    │
+ │    +── ResilientConnection (exponential backoff)         │
+ │    +── GenericTaskRunner (no cascor imports)             │
+ │    +── HeartbeatThread (background liveness)             │
+ └──────────────────────────────────────────────────────────┘
 ```
 
 #### Key Innovation: Self-Contained Task Payloads

@@ -1,0 +1,57 @@
+---
+  Handoff Goal
+
+  Continue implementing the CasCor Demo Training Stall Remediation for juniper-canopy. Phase 6C (Structural Refactor) is next.
+
+  Working Directory
+
+  /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/dazzling-soaring-parnas/
+
+  Completed So Far
+
+  - Analysis: 10 independent root cause proposals generated, evaluated by 3 expert sub-agents, synthesized into a prioritized plan
+    - Plan file: notes/TRAINING_STALL_REMEDIATION_PLAN.md
+    - Analysis file: notes/TRAINING_STALL_ANALYSIS.md
+    - 10 proposal files: notes/proposals/PROPOSAL_01_*.md through PROPOSAL_10_*.md
+  - Phase 6A (Quick Wins) — COMPLETE: 5 code changes in juniper-canopy/src/demo_mode.py + canopy_constants.py:
+    a. Deleted second fresh Adam optimizer after retrain (line 241) — retains warm optimizer
+    b. Removed gradient clipping from candidate training (line 298)
+    c. Removed early stopping 1e-6 minimum delta (line 303) — now resets on ANY improvement
+    d. Added correlation threshold guard (MIN_CANDIDATE_CORRELATION=0.01) — add_hidden_unit() returns None if no candidate is good enough
+    e. Xavier-scaled candidate weight init (1/sqrt(input_dim) instead of fixed 0.1)
+  - Phase 6B (Evaluation) — COMPLETE: Tested on both 1-rotation and 3-rotation spirals:
+    - 1-rotation: 92% accuracy after 4 units, clear staircase descent — algorithm works correctly
+    - 3-rotation: Per-unit improvement is 0.0003-0.003 — correct but visually invisible on charts (expected for 6-crossing spiral)
+  - Spiral Rotations Parameter — COMPLETE: n_rotations exposed as configurable demo parameter:
+    - UI input in Training Parameters card (range 0.5-5.0, step 0.5, default 3.0)
+    - Full callback flow: track changes → apply → POST /api/set_params → DemoMode.apply_params() → regenerate dataset + reset training
+    - Files modified: canopy_constants.py, demo_mode.py, dashboard_manager.py, demo_backend.py, main.py, + 7 test files
+  - Test Results: 3617 passed, 0 failed, 19 skipped (all skips are pre-existing server infrastructure tests)
+
+  Remaining Work — Phase 6C
+
+  Per notes/TRAINING_STALL_REMEDIATION_PLAN.md, Phase 6C restructures the training loop:
+
+  1. Step 6C.1: Restructure _training_loop() to match CasCor two-phase spec — eliminate the "phantom" 1-step-per-epoch outer loop between cascade additions. Each visual iteration should run a complete cascade cycle (candidate train → install → retrain)
+  2. Step 6C.2: Replace convergence-based cascade detection with correlation threshold check (already partially done via 6A.4)
+  3. Step 6C.3: Break lock granularity in add_hidden_unit() — currently holds lock for ~20,000 gradient steps (5-20 second UI freeze)
+  4. Step 6C.4: Emit retrain progress during the 1000-step retrain so dashboard shows real-time convergence
+  5. Step 6C.5: Add cascade event markers to loss chart
+  6. Step 6C.6: Add the critical missing test: test_end_to_end_training_loop_with_cascade_progression
+
+  Key Context
+
+  - The "phantom phase" is the primary root cause: the demo's training loop does 1 gradient step per epoch between cascade additions. Production CasCor has NO inter-cascade training — it goes directly from retrain → residual → candidate training → install
+  - The convergence UI controls (Phase 5) may need to be repurposed or removed if convergence detection is replaced by correlation threshold
+  - The dashboard expects ~1 update/second — the restructured loop should emit progress during retrain phases
+
+  Verification Commands
+
+  cd /home/pcalnon/Development/python/Juniper/juniper-canopy
+  conda run -n JuniperPython python -m pytest src/tests/ --tb=no -q  # Should show 3617 passed
+  git status  # Check uncommitted changes
+
+  Git Status
+
+  Branch: main (worktree: dazzling-soaring-parnas)
+  All changes are uncommitted (juniper-canopy is a separate repo; changes are in juniper-canopy/src/)
