@@ -23,59 +23,59 @@ new architecture.
 
 ## Requirements Traceability
 
-| # | Requirement | Status | Gaps |
-|---|------------|--------|------|
-| 1 | Auto-detect running cascor on startup | ✅ Built | Discovery → backend selection has env var mismatch |
-| 2 | Connect to discovered cascor | ✅ Built | `attach_to_existing()` is non-destructive |
-| 3 | Connection must not reset cascor params | ✅ Built | Attach only calls `get_network()` (read-only) |
-| 4 | Retrieve metrics from cascor | ✅ Built | Metrics relay streams via WebSocket |
-| 5 | Display retrieved metrics | ⚠️ Partial | Initial metrics history not hydrated on connect |
-| 6 | Retrieve training parameters | ⚠️ Partial | `CascorStateSync` exists but is never called |
-| 7 | Display retrieved parameters | ⚠️ Partial | `/api/state` returns defaults in service mode |
-| 8 | Apply param changes to running cascor | ⚠️ Partial | Parameter map incomplete (4 of ~7 params mapped) |
-| 9 | Monitoring/visualization reflects live state | ⚠️ Partial | No topology fetch on cascade_add events |
-| 10 | Training controls functional | ✅ Built | All controls delegate to cascor REST API |
-| 11 | Canopy shutdown doesn't affect cascor | ✅ Built | `shutdown()` only closes HTTP session |
-| 12 | Canopy can start/stop multiple times | ✅ Built | Each process creates fresh client/backend |
+| #  | Requirement                                  | Status     | Gaps                                               |
+|----|----------------------------------------------|------------|----------------------------------------------------|
+| 1  | Auto-detect running cascor on startup        | ✅ Built   | Discovery → backend selection has env var mismatch |
+| 2  | Connect to discovered cascor                 | ✅ Built   | `attach_to_existing()` is non-destructive          |
+| 3  | Connection must not reset cascor params      | ✅ Built   | Attach only calls `get_network()` (read-only)      |
+| 4  | Retrieve metrics from cascor                 | ✅ Built   | Metrics relay streams via WebSocket                |
+| 5  | Display retrieved metrics                    | ⚠️ Partial | Initial metrics history not hydrated on connect    |
+| 6  | Retrieve training parameters                 | ⚠️ Partial | `CascorStateSync` exists but is never called       |
+| 7  | Display retrieved parameters                 | ⚠️ Partial | `/api/state` returns defaults in service mode      |
+| 8  | Apply param changes to running cascor        | ⚠️ Partial | Parameter map incomplete (4 of ~7 params mapped)   |
+| 9  | Monitoring/visualization reflects live state | ⚠️ Partial | No topology fetch on cascade_add events            |
+| 10 | Training controls functional                 | ✅ Built   | All controls delegate to cascor REST API           |
+| 11 | Canopy shutdown doesn't affect cascor        | ✅ Built   | `shutdown()` only closes HTTP session              |
+| 12 | Canopy can start/stop multiple times         | ✅ Built   | Each process creates fresh client/backend          |
 
 ---
 
 ## Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────┐
+```bash
+┌──────────────────────────────────────────────────────────┐
 │                    juniper-canopy                        │
-│                                                         │
-│  main.py (lifespan)                                     │
+│                                                          │
+│  main.py (lifespan)                                      │
 │    ├── discover_cascor()  ← probes localhost:8200        │
-│    ├── create_backend()   ← selects ServiceBackend      │
+│    ├── create_backend()   ← selects ServiceBackend       │
 │    └── backend.initialize()                              │
 │          ├── adapter.connect()        ← health check     │
 │          ├── adapter.attach_to_existing() ← non-destruct │
 │          ├── CascorStateSync.sync()   ← [NEW] hydrate    │
 │          └── adapter.start_metrics_relay() ← WS stream   │
-│                                                         │
-│  ServiceBackend ──→ CascorServiceAdapter                │
+│                                                          │
+│  ServiceBackend ──→ CascorServiceAdapter                 │
 │                       ├── JuniperCascorClient (REST)     │
 │                       └── CascorTrainingStream (WS)      │
-└─────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────┘
            │ REST/WS │
            ▼         ▼
-┌─────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────┐
 │                   juniper-cascor                         │
-│                                                         │
+│                                                          │
 │  FastAPI API Server (port 8200)                          │
 │    ├── /v1/training/* — training control                 │
 │    ├── /v1/metrics/* — metrics retrieval                 │
 │    ├── /v1/network/* — network topology/stats            │
 │    ├── /v1/dataset — dataset metadata                    │
 │    ├── /v1/decision-boundary — visualization data        │
-│    ├── /ws/training — real-time metrics stream            │
-│    └── /ws/control — bidirectional control                │
-│                                                         │
+│    ├── /ws/training — real-time metrics stream           │
+│    └── /ws/control — bidirectional control               │
+│                                                          │
 │  TrainingLifecycleManager                                │
 │    └── CascadeCorrelationNetwork (running independently) │
-└─────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -85,6 +85,7 @@ new architecture.
 ### Priority 1 — Critical (blocks core requirements)
 
 #### Gap 1: Backend factory ignores new settings system
+
 **File**: `canopy/src/backend/__init__.py`
 **Issue**: `create_backend()` reads raw `CASCOR_DEMO_MODE` and `CASCOR_SERVICE_URL`
 env vars, but the application uses `JUNIPER_CANOPY_*` prefixed settings via Pydantic.
@@ -92,6 +93,7 @@ If the user configures via the new env prefix, the factory may select the wrong 
 **Fix**: Make `create_backend()` accept settings or use `get_settings()` internally.
 
 #### Gap 2: State not hydrated on service connect
+
 **File**: `canopy/src/backend/service_backend.py`
 **Issue**: `ServiceBackend.initialize()` attaches to cascor but never calls
 `CascorStateSync.sync()`. The dashboard starts with blank/default values instead
@@ -100,6 +102,7 @@ of the actual cascor state.
 dashboard with initial metrics/topology.
 
 #### Gap 3: `/api/state` returns defaults in service mode
+
 **File**: `canopy/src/main.py` (line ~569)
 **Issue**: The `/api/state` endpoint has detailed nn_*/cn_* param extraction for
 demo mode but falls through to bare `training_state.get_state()` for service mode,
@@ -108,6 +111,7 @@ which only has the basic fields.
 canopy's nn_*/cn_* namespace.
 
 #### Gap 4: Auto-discovery env var mutation doesn't update settings
+
 **File**: `canopy/src/main.py` (line ~147)
 **Issue**: After discovery, the code sets `os.environ["CASCOR_SERVICE_URL"]` but
 `settings` was already loaded (and cached via `@lru_cache`). Later references to
@@ -118,6 +122,7 @@ settings cache after discovery.
 ### Priority 2 — Important (affects user experience)
 
 #### Gap 5: Parameter mapping incomplete
+
 **File**: `canopy/src/backend/cascor_service_adapter.py`
 **Issue**: `_CANOPY_TO_CASCOR_PARAM_MAP` only maps 4 params:
 `nn_learning_rate`, `nn_max_hidden_units`, `cn_pool_size`, `cn_correlation_threshold`.
@@ -126,6 +131,7 @@ Missing: `nn_max_total_epochs` → `epochs_max`, `nn_growth_convergence_threshol
 **Fix**: Complete the mapping and add reverse mapping for state sync.
 
 #### Gap 6: No topology refresh on cascade events
+
 **File**: `canopy/src/backend/cascor_service_adapter.py`
 **Issue**: The metrics relay forwards messages but doesn't trigger a topology
 refresh when a `cascade_add` event arrives. The network visualizer shows stale
@@ -134,6 +140,7 @@ topology until the page is refreshed.
 as a `topology` message.
 
 #### Gap 7: Response normalization inconsistent
+
 **File**: `canopy/src/backend/cascor_service_adapter.py`
 **Issue**: Some methods unwrap `response["data"]` (e.g., `get_decision_boundary`),
 others return raw responses (e.g., `get_training_status`, `get_dataset_info`).
@@ -143,6 +150,7 @@ This causes inconsistent data shapes in the UI.
 ### Priority 3 — Minor (polish and robustness)
 
 #### Gap 8: Local training_state drifts from cascor reality
+
 **File**: `canopy/src/main.py`
 **Issue**: In service mode, `training_state` is only updated when canopy
 itself calls control operations. If cascor's state changes externally (e.g.,
@@ -151,6 +159,7 @@ training completes), canopy's local state doesn't update until next poll.
 the metrics relay.
 
 #### Gap 9: Auth env var potentially miswired
+
 **File**: `canopy/src/backend/__init__.py` (line 59)
 **Issue**: `api_key = os.getenv("JUNIPER_DATA_API_KEY")` is used for cascor
 service connection. CasCor and JuniperData may use different API keys.
@@ -161,6 +170,7 @@ service connection. CasCor and JuniperData may use different API keys.
 ## Phased Implementation Plan
 
 ### Phase 1: Backend Selection & Discovery Fix
+
 **Priority**: Critical
 **Scope**: canopy only
 **Estimated time**: 30 min
@@ -178,12 +188,14 @@ service connection. CasCor and JuniperData may use different API keys.
    - Store discovered URL on settings or app state for later reference
 
 #### Tests
+
 - `test_backend_factory.py` — verify factory respects settings-based config
 - `test_cascor_discovery.py` — verify discovery URL flows to backend creation
 
 ---
 
 ### Phase 2: State Hydration on Connect
+
 **Priority**: Critical
 **Scope**: canopy only
 **Estimated time**: 1 hour
@@ -205,6 +217,7 @@ service connection. CasCor and JuniperData may use different API keys.
    - Add param name normalization (cascor names → canopy nn_*/cn_* names)
 
 #### Tests
+
 - `test_state_sync.py` — verify sync fetches all state components
 - `test_service_backend.py` — verify initialize calls sync
 - New: `test_state_hydration_integration.py` — verify full startup populates state
@@ -212,6 +225,7 @@ service connection. CasCor and JuniperData may use different API keys.
 ---
 
 ### Phase 3: Service-Mode `/api/state` Endpoint
+
 **Priority**: Critical
 **Scope**: canopy only
 **Estimated time**: 45 min
@@ -228,12 +242,14 @@ service connection. CasCor and JuniperData may use different API keys.
    - Add `get_canopy_params()` method that returns params in canopy namespace
 
 #### Tests
+
 - `test_api_state_endpoint.py` — verify service mode returns nn_*/cn_* params
 - `test_cascor_api_compatibility.py` — verify param format consistency
 
 ---
 
 ### Phase 4: Complete Parameter Mapping
+
 **Priority**: Important
 **Scope**: canopy only
 **Estimated time**: 30 min
@@ -254,12 +270,14 @@ service connection. CasCor and JuniperData may use different API keys.
      - `patience` → `cn_training_convergence_threshold`
 
 #### Tests
+
 - `test_service_controls.py` — verify all params round-trip correctly
 - New param mapping unit tests
 
 ---
 
 ### Phase 5: Topology Refresh & Response Normalization
+
 **Priority**: Important
 **Scope**: canopy only
 **Estimated time**: 1 hour
@@ -278,12 +296,14 @@ service connection. CasCor and JuniperData may use different API keys.
    - `get_dataset_info()` — unwrap `data` key
 
 #### Tests
+
 - `test_non_destructive_connection.py` — verify topology refresh on cascade event
 - `test_service_backend.py` — verify normalized response shapes
 
 ---
 
 ### Phase 6: Live State Synchronization
+
 **Priority**: Important
 **Scope**: canopy only
 **Estimated time**: 45 min
@@ -302,12 +322,14 @@ service connection. CasCor and JuniperData may use different API keys.
    - Pass `training_state.update_state` as callback to service backend
 
 #### Tests
+
 - `test_websocket_state.py` — verify state updates propagate
 - New: `test_live_state_sync.py` — verify training_state updates from relay
 
 ---
 
 ### Phase 7: Regression Testing & Validation
+
 **Priority**: Critical
 **Scope**: Both canopy and cascor
 **Estimated time**: 1.5 hours
@@ -335,6 +357,7 @@ service connection. CasCor and JuniperData may use different API keys.
    - Verify canopy state stays aligned
 
 #### Existing Test Validation
+
 - Run full canopy test suite: `cd src && pytest tests/ -v`
 - Run full cascor test suite: `cd src/tests && bash scripts/run_tests.bash`
 - Ensure no regressions in demo mode
@@ -343,7 +366,7 @@ service connection. CasCor and JuniperData may use different API keys.
 
 ## Dependency Order
 
-```
+```bash
 Phase 1 (backend selection)
     └──→ Phase 2 (state hydration)
               ├──→ Phase 3 (/api/state fix)
@@ -362,21 +385,21 @@ Phases 5 and 6 can be done in parallel after Phase 4.
 
 ### juniper-canopy
 
-| File | Changes |
-|------|---------|
-| `src/backend/__init__.py` | Accept settings, fix auth env var |
-| `src/backend/service_backend.py` | Add state sync on initialize, state callback |
-| `src/backend/cascor_service_adapter.py` | Complete param maps, response normalization, topology refresh, state callback |
-| `src/backend/state_sync.py` | Param name normalization, response unwrapping |
-| `src/main.py` | Discovery flow fix, state hydration, /api/state service mode |
-| `src/tests/unit/test_backend_factory.py` | Settings-based backend selection |
-| `src/tests/unit/test_state_sync.py` | Verify sync completeness |
-| `src/tests/unit/test_service_backend.py` | Initialize calls sync |
-| `src/tests/integration/test_api_state_endpoint.py` | Service mode params |
-| `src/tests/integration/test_external_cascor_attach.py` | **NEW** |
-| `src/tests/integration/test_canopy_restart_during_training.py` | **NEW** |
-| `src/tests/integration/test_param_apply_roundtrip.py` | **NEW** |
-| `src/tests/integration/test_training_controls_service_mode.py` | **NEW** |
+| File                                                           | Changes                                                                       |
+|----------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `src/backend/__init__.py`                                      | Accept settings, fix auth env var                                             |
+| `src/backend/service_backend.py`                               | Add state sync on initialize, state callback                                  |
+| `src/backend/cascor_service_adapter.py`                        | Complete param maps, response normalization, topology refresh, state callback |
+| `src/backend/state_sync.py`                                    | Param name normalization, response unwrapping                                 |
+| `src/main.py`                                                  | Discovery flow fix, state hydration, /api/state service mode                  |
+| `src/tests/unit/test_backend_factory.py`                       | Settings-based backend selection                                              |
+| `src/tests/unit/test_state_sync.py`                            | Verify sync completeness                                                      |
+| `src/tests/unit/test_service_backend.py`                       | Initialize calls sync                                                         |
+| `src/tests/integration/test_api_state_endpoint.py`             | Service mode params                                                           |
+| `src/tests/integration/test_external_cascor_attach.py`         | **NEW**                                                                       |
+| `src/tests/integration/test_canopy_restart_during_training.py` | **NEW**                                                                       |
+| `src/tests/integration/test_param_apply_roundtrip.py`          | **NEW**                                                                       |
+| `src/tests/integration/test_training_controls_service_mode.py` | **NEW**                                                                       |
 
 ### juniper-cascor
 
@@ -422,13 +445,13 @@ uvicorn main:app --host 0.0.0.0 --port 8050
 
 ## Risk Mitigation
 
-| Risk | Impact | Mitigation |
-|------|--------|-----------|
-| State sync response format mismatch | Dashboard shows wrong data | Add response normalization + comprehensive fixtures |
-| Parameter mapping misalignment | Params don't apply correctly | Validate via round-trip integration tests |
-| WebSocket relay message loss | Missing metrics in dashboard | Existing exponential backoff reconnection handles this |
+| Risk                                | Impact                            | Mitigation                                                                      |
+|-------------------------------------|-----------------------------------|---------------------------------------------------------------------------------|
+| State sync response format mismatch | Dashboard shows wrong data        | Add response normalization + comprehensive fixtures                             |
+| Parameter mapping misalignment      | Params don't apply correctly      | Validate via round-trip integration tests                                       |
+| WebSocket relay message loss        | Missing metrics in dashboard      | Existing exponential backoff reconnection handles this                          |
 | Cascor treats WS disconnect as stop | Training stops on canopy shutdown | Verify cascor server behavior in test — current code shows cascor does not stop |
-| Demo mode regression | Existing tests break | Run full test suite with `CASCOR_DEMO_MODE=1` before and after |
+| Demo mode regression                | Existing tests break              | Run full test suite with `CASCOR_DEMO_MODE=1` before and after                  |
 
 ---
 
