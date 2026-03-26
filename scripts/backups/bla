@@ -1,0 +1,9 @@
+#!/usr/bin/env -S bash -i
+
+DIR="$1"
+
+pwd
+cd "${DIR}"
+pwd
+
+echo "${SHLVL}"
