@@ -1165,6 +1165,22 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             args = self._extract_args(invocations[-1])
             self.assertIn("--dangerously-skip-permissions", args)
 
+    def test_fork_session_alias_forwards_canonical_flag(self) -> None:
+        """HIGH: Verify --fork alias forwards as canonical --fork-session."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invocations_log, env = self._install_fake_claude(temp_dir)
+            result = self._run_script(
+                ["--resume", VALID_UUID, "--fork", "--prompt", "hello"],
+                cwd=temp_dir,
+                env=env,
+            )
+            self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+            invocations = self._wait_for_invocations(invocations_log)
+            self.assertTrue(invocations)
+            args = self._extract_args(invocations[-1])
+            self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "hello"])
+
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
         with tempfile.TemporaryDirectory() as temp_dir:

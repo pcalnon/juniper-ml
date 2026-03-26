@@ -575,7 +575,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Received Headless Flag, ${#CLAUDE_CODE_PARAMS[@]} args"
     elif matches_pattern "${CURRENT_ELEMENT}" "${FORK_SESSION_FLAGS}"; then
         debug_log "Parsing fork session flags"
-        FORK_SESSION_VALUE="${FORK_SESSION_FLAGS}"
+        FORK_SESSION_VALUE="${CLAUDE_FORK_SESSION}"
         CLAUDE_CODE_PARAMS+=("${FORK_SESSION_VALUE}")
         debug_log "Received Fork Session FLag, ${#CLAUDE_CODE_PARAMS[@]} args"
     elif matches_pattern "${CURRENT_ELEMENT}" "${PERMISSIONS_FLAGS}"; then
