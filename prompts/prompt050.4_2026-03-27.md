@@ -122,15 +122,6 @@ perform a detailed evaluation of both Phase 5 error investigation proposals
 evaluate the Phase 4, Phase 3, Phase 2, Phase 1, and Phase 0 proposals and analysis documents as needed
 analyse the Juniper Project code base as appropriate
 
-instruct the oracle to perform the tasks listed below, using the following, additional inputs:
-
-- prefer clarity, detail, and completeness over conciseness
-- ensure the final proposal does not exclude any element from either of the two phase 5 proposals.
-- Treat the Uppercase status normalization gap in relay path as a "latent" bug that should be corrected.
-  - This issue should not be ignored even though the cascor backend doesn't trigger the problem.
-  - Additional backend objects, other than the current cascor backend, will be attached to the canopy object in the near future.
-  - These new backend objects might pass uppercase values to the canopy application.
-
 consult the oracle to perform the following:
 
 - ensure that any and all issues identified in these 2, Phase 5 proposals are captured in a final comprehensive analysis document
@@ -140,6 +131,15 @@ consult the oracle to perform the following:
 - include fix description and reccomendations synthesized from all applicable proposals.
 - using multiple, appropriately specialized sub-agents, perform a full validation of all aspects of the final analysis document
 - make any changes, updates, or corrections needed to the final analysis document based on the validation results.
+
+instruct the oracle to perform the tasks listed below, using the following, additional inputs:
+
+- prefer clarity, detail, and completeness over conciseness
+- ensure the final proposal does not exclude any element from either of the two phase 5 proposals.
+- Treat the Uppercase status normalization gap in relay path as a "latent" bug that should be corrected.
+  - This issue should not be ignored even though the cascor backend doesn't trigger the problem.
+  - Additional backend objects, other than the current cascor backend, will be attached to the canopy object in the near future.
+  - These new backend objects might pass uppercase values to the canopy application.
 
 ### Deliverables
 

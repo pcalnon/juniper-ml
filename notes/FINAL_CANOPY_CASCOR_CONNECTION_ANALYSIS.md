@@ -68,24 +68,24 @@ This final synthesis tracks **20 entries total**:
 
 Severity distribution:
 
-| Category | Count |
-|---|---|
-| **CRITICAL** (display blockers) | 2 |
-| **HIGH** (latent compatibility) | 1 |
-| **MODERATE** | 8 |
-| **LOW** | 5 |
-| **INFO** | 1 |
-| **SYSTEMIC** | 1 |
-| Known Limitation | 1 |
-| Supplemental sub-issue | 1 |
-| False positives retracted | 3 |
+| Category                        | Count |
+|---------------------------------|-------|
+| **CRITICAL** (display blockers) | 2     |
+| **HIGH** (latent compatibility) | 1     |
+| **MODERATE**                    | 8     |
+| **LOW**                         | 5     |
+| **INFO**                        | 1     |
+| **SYSTEMIC**                    | 1     |
+| Known Limitation                | 1     |
+| Supplemental sub-issue          | 1     |
+| False positives retracted       | 3     |
 
 ### 1.3 Two Critical Display Blockers
 
-| ID | Severity | Summary | Display Blocker |
-|---|---|---|---|
-| **P5-RC-01** | **CRITICAL** | Metrics format mismatch: flat service metrics vs nested dashboard contract | **Yes** |
-| **P5-RC-02** | **CRITICAL** | Network topology mismatch: weight-oriented CasCor topology vs graph-oriented visualizer contract | **Yes** |
+| ID           | Severity     | Summary                                                                                          | Display Blocker |
+|--------------|--------------|--------------------------------------------------------------------------------------------------|-----------------|
+| **P5-RC-01** | **CRITICAL** | Metrics format mismatch: flat service metrics vs nested dashboard contract                       | **Yes**         |
+| **P5-RC-02** | **CRITICAL** | Network topology mismatch: weight-oriented CasCor topology vs graph-oriented visualizer contract | **Yes**         |
 
 **Practical bottom line**:
 
@@ -143,23 +143,23 @@ The final document uses Proposal B's numbering:
 
 In tables throughout this document:
 
-| Symbol | Meaning |
-|---|---|
-| ✓ | Correctly identified with materially correct classification |
-| P | Partially correct (identified symptom/evidence, not final classification) |
-| S | Subsumed into another issue, not separated |
-| — | Not identified separately |
+| Symbol | Meaning                                                                   |
+|--------|---------------------------------------------------------------------------|
+| ✓      | Correctly identified with materially correct classification               |
+| P      | Partially correct (identified symptom/evidence, not final classification) |
+| S      | Subsumed into another issue, not separated                                |
+| —      | Not identified separately                                                 |
 
 - **Proposal A** = `7f73219c-1557-4135-ab44-ef053d4c4097`
 - **Proposal B** = `8b7d1ee8-a24d-4e2a-bfd6-8df44d7ed326`
 
 ### 2.4 Repositories Examined
 
-| Repository | Key Files Analyzed |
-|---|---|
-| juniper-canopy | `cascor_service_adapter.py`, `service_backend.py`, `state_sync.py`, `main.py`, `metrics_panel.py`, `network_visualizer.py`, `dashboard_manager.py`, `demo_mode.py`, `demo_backend.py`, `protocol.py`, `data_adapter.py`, `dataset_plotter.py`, `training_monitor.py` |
-| juniper-cascor | `api/lifecycle/manager.py`, `api/lifecycle/monitor.py`, `api/lifecycle/state_machine.py`, `api/models/training.py`, `api/models/network.py`, `cascade_correlation_config.py` |
-| juniper-cascor-client | `client.py`, `ws_client.py`, `testing/fake_client.py`, `testing/scenarios.py` |
+| Repository            | Key Files Analyzed                                                                                                                                                                                                                                                   |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| juniper-canopy        | `cascor_service_adapter.py`, `service_backend.py`, `state_sync.py`, `main.py`, `metrics_panel.py`, `network_visualizer.py`, `dashboard_manager.py`, `demo_mode.py`, `demo_backend.py`, `protocol.py`, `data_adapter.py`, `dataset_plotter.py`, `training_monitor.py` |
+| juniper-cascor        | `api/lifecycle/manager.py`, `api/lifecycle/monitor.py`, `api/lifecycle/state_machine.py`, `api/models/training.py`, `api/models/network.py`, `cascade_correlation_config.py`                                                                                         |
+| juniper-cascor-client | `client.py`, `ws_client.py`, `testing/fake_client.py`, `testing/scenarios.py`                                                                                                                                                                                        |
 
 ---
 
@@ -197,11 +197,11 @@ The status bar worked because it reads flat keys, creating false confidence that
 
 Both proposals agree Phase 2 correctly identified:
 
-| Phase 2 Finding | Status |
-|---|---|
-| RC-1: Metrics format mismatch | **Correct** — primary blocker |
+| Phase 2 Finding                   | Status                                         |
+|-----------------------------------|------------------------------------------------|
+| RC-1: Metrics format mismatch     | **Correct** — primary blocker                  |
 | RC-2: Relay callback omits fields | **Correct** — impact overstated for status bar |
-| RC-3: Dashboard ignores WebSocket | **Correct** — low priority |
+| RC-3: Dashboard ignores WebSocket | **Correct** — low priority                     |
 
 **Phase 2 gaps**: Did not examine topology path, parameter mapping, state sync normalization, deployment portability, cross-repo bugs, or architectural contract enforcement. These gaps account for 12+ additional root causes discovered in Phase 3.
 
@@ -223,28 +223,28 @@ Both Phase 5 proposals unanimously agree, and this final document adopts without
 
 ### 4.1 Final Registry
 
-| ID | Severity | Status | Summary | Proposal A | Proposal B |
-|---|---|---|---|:---:|:---:|
-| **P5-RC-01** | **CRITICAL** | Active | Metrics format mismatch: flat service output vs nested dashboard contract | ✓ | ✓ |
-| **P5-RC-02** | **CRITICAL** | Active | Topology format mismatch: weight-oriented vs graph-oriented | ✓ | ✓ |
-| **P5-RC-03** | **HIGH** | Latent | Uppercase status normalization gap in relay path | P | ✓ |
-| **P5-RC-04** | MODERATE | Active | WebSocket relay state callback only forwards `status` + `phase` | ✓ | ✓ |
-| **P5-RC-05** | LOW | Architectural choice | Dashboard ignores WebSocket relay, polls via HTTP only | ✓ | ✓ |
-| **P5-RC-06** | MODERATE | Active | CasCor `TrainingMonitor.current_phase` never updated after initialization | ✓ | ✓ |
-| **P5-RC-07** | MODERATE | Latent (low current impact) | State sync stores metrics history without normalization | ✓ | ✓ |
-| **P5-RC-08** | MODERATE | Structural | State sync bypasses adapter normalization by using raw client | — | ✓ |
-| **P5-RC-09** | MODERATE | Active (second code path) | `/api/metrics` current snapshot path also produces flat format | S | ✓ |
-| **P5-RC-10** | MODERATE | Structural (low current impact) | State sync params stored in raw CasCor namespace, not mapped to Canopy | — | ✓ |
-| **P5-RC-11** | MODERATE | Active | Hardcoded `localhost:8050` URLs in MetricsPanel (6 instances) | ✓ | ✓ |
-| **P5-RC-12** | LOW | Active | `cn_training_iterations` → `candidate_epochs` mapping is non-functional at runtime | ✓ | ✓ |
-| **P5-RC-12b** | LOW | Active (semantic mismatch) | `patience` mapped to `nn_growth_convergence_threshold` is semantically misleading | P | ✓ |
-| **P5-RC-13** | LOW | Active | `candidate_learning_rate` is updatable in CasCor but unmapped in Canopy | ✓ | ✓ |
-| **P5-RC-14** | LOW | Latent | WebSocket relay broadcasts unnormalized metric payloads | ✓ | ✓ |
-| **P5-RC-15** | LOW | Active | Double initialization on fallback-to-demo path | ✓ | ✓ |
-| **P5-RC-16** | LOW | Preventive | Phase 1 tests validate flat output, not dashboard compatibility | ✓ | ✓ |
-| **P5-RC-17** | INFO | Observation | Dual status normalization paths produce inconsistent representations | ✓ | ✓ |
-| **P5-RC-18** | **SYSTEMIC** | Structural | No canonical backend contract across demo and service modes | ✓ | ✓ |
-| **KL-1** | Known Limitation | Structural limitation | Dataset scatter plot empty in service mode — CasCor returns metadata only | P | ✓ |
+| ID            | Severity         | Status                          | Summary                                                                            | Proposal A | Proposal B |
+|---------------|------------------|---------------------------------|------------------------------------------------------------------------------------|:----------:|:----------:|
+| **P5-RC-01**  | **CRITICAL**     | Active                          | Metrics format mismatch: flat service output vs nested dashboard contract          |     ✓      |     ✓      |
+| **P5-RC-02**  | **CRITICAL**     | Active                          | Topology format mismatch: weight-oriented vs graph-oriented                        |     ✓      |     ✓      |
+| **P5-RC-03**  | **HIGH**         | Latent                          | Uppercase status normalization gap in relay path                                   |     P      |     ✓      |
+| **P5-RC-04**  | MODERATE         | Active                          | WebSocket relay state callback only forwards `status` + `phase`                    |     ✓      |     ✓      |
+| **P5-RC-05**  | LOW              | Architectural choice            | Dashboard ignores WebSocket relay, polls via HTTP only                             |     ✓      |     ✓      |
+| **P5-RC-06**  | MODERATE         | Active                          | CasCor `TrainingMonitor.current_phase` never updated after initialization          |     ✓      |     ✓      |
+| **P5-RC-07**  | MODERATE         | Latent (low current impact)     | State sync stores metrics history without normalization                            |     ✓      |     ✓      |
+| **P5-RC-08**  | MODERATE         | Structural                      | State sync bypasses adapter normalization by using raw client                      |     —      |     ✓      |
+| **P5-RC-09**  | MODERATE         | Active (second code path)       | `/api/metrics` current snapshot path also produces flat format                     |     S      |     ✓      |
+| **P5-RC-10**  | MODERATE         | Structural (low current impact) | State sync params stored in raw CasCor namespace, not mapped to Canopy             |     —      |     ✓      |
+| **P5-RC-11**  | MODERATE         | Active                          | Hardcoded `localhost:8050` URLs in MetricsPanel (6 instances)                      |     ✓      |     ✓      |
+| **P5-RC-12**  | LOW              | Active                          | `cn_training_iterations` → `candidate_epochs` mapping is non-functional at runtime |     ✓      |     ✓      |
+| **P5-RC-12b** | LOW              | Active (semantic mismatch)      | `patience` mapped to `nn_growth_convergence_threshold` is semantically misleading  |     P      |     ✓      |
+| **P5-RC-13**  | LOW              | Active                          | `candidate_learning_rate` is updatable in CasCor but unmapped in Canopy            |     ✓      |     ✓      |
+| **P5-RC-14**  | LOW              | Latent                          | WebSocket relay broadcasts unnormalized metric payloads                            |     ✓      |     ✓      |
+| **P5-RC-15**  | LOW              | Active                          | Double initialization on fallback-to-demo path                                     |     ✓      |     ✓      |
+| **P5-RC-16**  | LOW              | Preventive                      | Phase 1 tests validate flat output, not dashboard compatibility                    |     ✓      |     ✓      |
+| **P5-RC-17**  | INFO             | Observation                     | Dual status normalization paths produce inconsistent representations               |     ✓      |     ✓      |
+| **P5-RC-18**  | **SYSTEMIC**     | Structural                      | No canonical backend contract across demo and service modes                        |     ✓      |     ✓      |
+| **KL-1**      | Known Limitation | Structural limitation           | Dataset scatter plot empty in service mode — CasCor returns metadata only          |     P      |     ✓      |
 
 ### 4.2 Final Classification Notes
 
@@ -299,28 +299,28 @@ Step 8: MetricsPanel reads:
 
 #### Dashboard Nested-Key Access Locations (verified)
 
-| Line(s) | Access Pattern | Affected Display |
-|---|---|---|
-| 1091 | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden unit count display |
-| 1120 | `.get("metrics", {}).get("loss", 0)` | Current loss display |
-| 1121 | `.get("metrics", {}).get("accuracy", 0)` | Current accuracy display |
-| 1122 | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden units display |
-| 1330 | `.get("metrics", {}).get("loss", 0)` | Loss chart data series |
-| 1449-1450 | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden unit markers (loss) |
-| 1499 | `.get("metrics", {}).get("accuracy", 0)` | Accuracy chart data series |
+| Line(s)   | Access Pattern                                        | Affected Display               |
+|-----------|-------------------------------------------------------|--------------------------------|
+| 1091      | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden unit count display      |
+| 1120      | `.get("metrics", {}).get("loss", 0)`                  | Current loss display           |
+| 1121      | `.get("metrics", {}).get("accuracy", 0)`              | Current accuracy display       |
+| 1122      | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden units display           |
+| 1330      | `.get("metrics", {}).get("loss", 0)`                  | Loss chart data series         |
+| 1449-1450 | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden unit markers (loss)     |
+| 1499      | `.get("metrics", {}).get("accuracy", 0)`              | Accuracy chart data series     |
 | 1561-1562 | `.get("network_topology", {}).get("hidden_units", 0)` | Hidden unit markers (accuracy) |
 
 #### Field Name Mapping (Non-Trivial)
 
 The `train_` prefix must be stripped when nesting — `train_loss` becomes `metrics.loss`, not `metrics.train_loss`:
 
-| Flat Key (from `_normalize_metric`) | Required Nested Path (dashboard) | Notes |
-|---|---|---|
-| `train_loss` | `metrics.loss` | Strip `train_` prefix |
-| `train_accuracy` | `metrics.accuracy` | Strip `train_` prefix |
-| `val_loss` | `metrics.val_loss` | Same name |
-| `val_accuracy` | `metrics.val_accuracy` | Same name |
-| `hidden_units` | `network_topology.hidden_units` | Move into nested dict |
+| Flat Key (from `_normalize_metric`) | Required Nested Path (dashboard) | Notes                 |
+|-------------------------------------|----------------------------------|-----------------------|
+| `train_loss`                        | `metrics.loss`                   | Strip `train_` prefix |
+| `train_accuracy`                    | `metrics.accuracy`               | Strip `train_` prefix |
+| `val_loss`                          | `metrics.val_loss`               | Same name             |
+| `val_accuracy`                      | `metrics.val_accuracy`           | Same name             |
+| `hidden_units`                      | `network_topology.hidden_units`  | Move into nested dict |
 
 #### Impact
 
@@ -392,14 +392,14 @@ CasCor's `get_topology()` endpoint (`lifecycle/manager.py:563-585`) returns a **
 
 #### Six Structural Mismatches (verified)
 
-| Aspect | CasCor Returns | NetworkVisualizer Expects | Match |
-|---|---|---|---|
-| Input count key | `input_size` | `input_units` | **No** |
-| Output count key | `output_size` | `output_units` | **No** |
-| Hidden units type | Array of `{weights, bias, activation}` objects | Integer count | **No** |
-| Connection list | Not present (implicit in weight arrays) | Required: `[{from, to, weight}]` | **No** |
-| Node list | Not present | Optional: `[{id, type, label}]` | **No** |
-| Weight data | In `hidden_units[].weights` and `output_weights` | Inside `connections[].weight` | **No** |
+| Aspect            | CasCor Returns                                   | NetworkVisualizer Expects        | Match  |
+|-------------------|--------------------------------------------------|----------------------------------|--------|
+| Input count key   | `input_size`                                     | `input_units`                    | **No** |
+| Output count key  | `output_size`                                    | `output_units`                   | **No** |
+| Hidden units type | Array of `{weights, bias, activation}` objects   | Integer count                    | **No** |
+| Connection list   | Not present (implicit in weight arrays)          | Required: `[{from, to, weight}]` | **No** |
+| Node list         | Not present                                      | Optional: `[{id, type, label}]`  | **No** |
+| Weight data       | In `hidden_units[].weights` and `output_weights` | Inside `connections[].weight`    | **No** |
 
 #### Evidence
 
@@ -541,10 +541,10 @@ CasCor's `TrainingStatus` enum (`state_machine.py:21-28`) uses uppercase `.name`
 
 #### Path-Specific Behavior (verified)
 
-| Path | `.lower()` Applied? | Status |
-|---|---|---|
-| Initial sync (`state_sync.py:70`) | **Yes** | Protected |
-| Relay callback (`cascor_service_adapter.py:222`) | **No** | **Vulnerable** |
+| Path                                             | `.lower()` Applied? | Status         |
+|--------------------------------------------------|---------------------|----------------|
+| Initial sync (`state_sync.py:70`)                | **Yes**             | Protected      |
+| Relay callback (`cascor_service_adapter.py:222`) | **No**              | **Vulnerable** |
 
 #### Reconciled Evidence from Both Proposals
 
@@ -812,13 +812,13 @@ During sync, map params through the reverse mapping so synced state uses Canopy 
 
 `MetricsPanel` contains 6 hardcoded `http://localhost:8050` URLs (all verified):
 
-| Line | URL Path | Purpose |
-|---|---|---|
-| 1000 | `/api/network/stats` | Network statistics |
-| 1021 | `/api/state` | Training state |
-| 1155 | `/api/v1/metrics/layouts` | Layout list (GET) |
-| 1187 | `/api/v1/metrics/layouts` | Layout save (POST) |
-| 1231 | `/api/v1/metrics/layouts/{name}` | Layout load (GET) |
+| Line | URL Path                         | Purpose                |
+|------|----------------------------------|------------------------|
+| 1000 | `/api/network/stats`             | Network statistics     |
+| 1021 | `/api/state`                     | Training state         |
+| 1155 | `/api/v1/metrics/layouts`        | Layout list (GET)      |
+| 1187 | `/api/v1/metrics/layouts`        | Layout save (POST)     |
+| 1231 | `/api/v1/metrics/layouts/{name}` | Layout load (GET)      |
 | 1274 | `/api/v1/metrics/layouts/{name}` | Layout delete (DELETE) |
 
 #### Impact
@@ -971,15 +971,15 @@ Not a functional blocker. Both paths produce values the dashboard can consume co
 
 This is the deepest root cause underlying P5-RC-01, P5-RC-02, P5-RC-07, P5-RC-09, and P5-RC-14. Without enforced contracts, demo and service modes silently diverge in output format.
 
-| Data Path | Demo Mode | Service Mode | Match |
-|---|---|---|---|
-| Metrics history | Nested (`metrics.loss`) | Flat (`train_loss`) | **No** |
-| Current metrics | Nested | Flat | **No** |
-| Status | Flat (`is_running`) | Flat (`is_running`) | Yes |
-| Topology | Graph-oriented | Weight-oriented (passthrough) | **No** |
-| State sync metrics | N/A | Raw CasCor | **No** |
-| Relay broadcast | N/A | Raw CasCor | **No** |
-| Dataset | Includes data arrays | Metadata only | Partial |
+| Data Path          | Demo Mode               | Service Mode                  | Match   |
+|--------------------|-------------------------|-------------------------------|---------|
+| Metrics history    | Nested (`metrics.loss`) | Flat (`train_loss`)           | **No**  |
+| Current metrics    | Nested                  | Flat                          | **No**  |
+| Status             | Flat (`is_running`)     | Flat (`is_running`)           | Yes     |
+| Topology           | Graph-oriented          | Weight-oriented (passthrough) | **No**  |
+| State sync metrics | N/A                     | Raw CasCor                    | **No**  |
+| Relay broadcast    | N/A                     | Raw CasCor                    | **No**  |
+| Dataset            | Includes data arrays    | Metadata only                 | Partial |
 
 #### Recommended Fix
 
@@ -1017,78 +1017,78 @@ Not a bug — it is an architectural limitation of CasCor's API. Requires either
 
 ### 6.1 Phase 5 Proposal Agreement Matrix
 
-| Final Issue | Proposal A (7f73219c) | Proposal B (8b7d1ee8) | Resolution |
-|---|:---:|:---:|---|
-| P5-RC-01 | ✓ | ✓ | Unanimous |
-| P5-RC-02 | ✓ | ✓ | Unanimous |
-| P5-RC-03 | Retracted (title-case evidence) | ✓ (HIGH latent) | Retained per directive; A's evidence preserved |
-| P5-RC-04 | ✓ | ✓ | Unanimous |
-| P5-RC-05 | ✓ | ✓ | Unanimous |
-| P5-RC-06 | ✓ | ✓ | Unanimous |
-| P5-RC-07 | ✓ | ✓ | Unanimous |
-| P5-RC-08 | — | ✓ | Retained (B's structural finding) |
-| P5-RC-09 | S (subsumed by RC-01) | ✓ | Retained as separate implementation target |
-| P5-RC-10 | — | ✓ | Retained (B's unique finding) |
-| P5-RC-11 | ✓ | ✓ | Unanimous |
-| P5-RC-12 | ✓ | ✓ | Unanimous |
-| P5-RC-12b | P | ✓ | Retained (B's separation) |
-| P5-RC-13 | ✓ | ✓ | Unanimous |
-| P5-RC-14 | ✓ | ✓ | Unanimous |
-| P5-RC-15 | ✓ | ✓ | Unanimous |
-| P5-RC-16 | ✓ | ✓ | Unanimous |
-| P5-RC-17 | ✓ | ✓ | Unanimous |
-| P5-RC-18 | ✓ | ✓ | Unanimous |
-| KL-1 | P (as active issue) | ✓ (as known limitation) | Classified as limitation |
+| Final Issue |      Proposal A (7f73219c)      |  Proposal B (8b7d1ee8)  | Resolution                                     |
+|-------------|:-------------------------------:|:-----------------------:|------------------------------------------------|
+| P5-RC-01    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-02    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-03    | Retracted (title-case evidence) |     ✓ (HIGH latent)     | Retained per directive; A's evidence preserved |
+| P5-RC-04    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-05    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-06    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-07    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-08    |                —                |            ✓            | Retained (B's structural finding)              |
+| P5-RC-09    |      S (subsumed by RC-01)      |            ✓            | Retained as separate implementation target     |
+| P5-RC-10    |                —                |            ✓            | Retained (B's unique finding)                  |
+| P5-RC-11    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-12    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-12b   |                P                |            ✓            | Retained (B's separation)                      |
+| P5-RC-13    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-14    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-15    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-16    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-17    |                ✓                |            ✓            | Unanimous                                      |
+| P5-RC-18    |                ✓                |            ✓            | Unanimous                                      |
+| KL-1        |       P (as active issue)       | ✓ (as known limitation) | Classified as limitation                       |
 
 ### 6.2 Phase 4 Proposal Agreement Matrix
 
-| Final Issue | P4-A (002192f3) | P4-B (66a019dc) | P4-C (cd8254d3) | P4-D (d7dcbd5a) | Agreement |
-|---|:---:|:---:|:---:|:---:|---|
-| P5-RC-01 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-02 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-03 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-04 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-05 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-06 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-07 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-08 | — | ✓ | — | ✓ | 2/4 |
-| P5-RC-09 | — | ✓ | S | ✓ | 2/4 + 1 subsumed |
-| P5-RC-10 | — | — | — | ✓ | 1/4 |
-| P5-RC-11 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-12 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-12b | P | ✓ | P (part of RC-9) | ✓ | 4/4 underlying |
-| P5-RC-13 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-14 | — | ✓ | ✓ | ✓ | 3/4 |
-| P5-RC-15 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| P5-RC-16 | ✓ | — | ✓ | ✓ | 3/4 |
-| P5-RC-17 | — | — | ✓ | ✓ | 2/4 |
-| P5-RC-18 | ✓ | ✓ | ✓ | ✓ | 4/4 |
-| KL-1 | ✓ | ✓ | ✓ | ✓ | 4/4 |
+| Final Issue | P4-A (002192f3) | P4-B (66a019dc) | P4-C (cd8254d3)  | P4-D (d7dcbd5a) | Agreement        |
+|-------------|:---------------:|:---------------:|:----------------:|:---------------:|------------------|
+| P5-RC-01    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-02    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-03    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-04    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-05    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-06    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-07    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-08    |        —        |        ✓        |        —         |        ✓        | 2/4              |
+| P5-RC-09    |        —        |        ✓        |        S         |        ✓        | 2/4 + 1 subsumed |
+| P5-RC-10    |        —        |        —        |        —         |        ✓        | 1/4              |
+| P5-RC-11    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-12    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-12b   |        P        |        ✓        | P (part of RC-9) |        ✓        | 4/4 underlying   |
+| P5-RC-13    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-14    |        —        |        ✓        |        ✓         |        ✓        | 3/4              |
+| P5-RC-15    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| P5-RC-16    |        ✓        |        —        |        ✓         |        ✓        | 3/4              |
+| P5-RC-17    |        —        |        —        |        ✓         |        ✓        | 2/4              |
+| P5-RC-18    |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
+| KL-1        |        ✓        |        ✓        |        ✓         |        ✓        | 4/4              |
 
 ### 6.3 Phase 3 Proposal Agreement Matrix
 
 | Final Issue | v1 | v2 | v3 | v4 | v5 | v6 | v7 | Consensus |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|
-| P5-RC-01 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | 7/7 |
-| P5-RC-02 | — | ✓ | — | ✓ | — | — | — | 2/7 |
-| P5-RC-03 | — | — | — | ✓ | — | — | ✓ | 2/7 |
-| P5-RC-04 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | 7/7 |
-| P5-RC-05 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | 7/7 |
-| P5-RC-06 | — | — | — | — | ✓ | — | — | 1/7 |
-| P5-RC-07 | ✓ | — | ✓ | — | ✓ | ✓ | ✓ | 5/7 |
-| P5-RC-08 | — | — | — | — | — | — | ✓ | 1/7 |
-| P5-RC-09 | — | — | — | — | — | ✓ | — | 1/7 |
-| P5-RC-10 | — | — | — | — | — | — | ✓ | 1/7 |
-| P5-RC-11 | — | — | — | ✓ | — | — | — | 1/7 |
-| P5-RC-12 | — | ✓ | — | ✓ | — | — | — | 2/7 |
-| P5-RC-12b | — | ✓ | — | — | — | — | — | 1/7 |
-| P5-RC-13 | — | — | — | ✓ | — | — | — | 1/7 |
-| P5-RC-14 | — | — | — | ✓ | — | — | ✓ | 2/7 |
-| P5-RC-15 | — | — | — | — | ✓ | ✓ | — | 2/7 |
-| P5-RC-16 | — | — | — | — | ✓ | — | ✓ | 2/7 |
-| P5-RC-17 | — | — | — | ✓ | — | — | — | 1/7 |
-| P5-RC-18 | — | — | — | ✓ | — | ✓ | ✓ | 3/7 |
-| KL-1 | — | — | — | ✓ | — | — | — | 1/7 |
+|-------------|:--:|:--:|:--:|:--:|:--:|:--:|:--:|-----------|
+| P5-RC-01    | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | 7/7       |
+| P5-RC-02    | —  | ✓  | —  | ✓  | —  | —  | —  | 2/7       |
+| P5-RC-03    | —  | —  | —  | ✓  | —  | —  | ✓  | 2/7       |
+| P5-RC-04    | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | 7/7       |
+| P5-RC-05    | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | ✓  | 7/7       |
+| P5-RC-06    | —  | —  | —  | —  | ✓  | —  | —  | 1/7       |
+| P5-RC-07    | ✓  | —  | ✓  | —  | ✓  | ✓  | ✓  | 5/7       |
+| P5-RC-08    | —  | —  | —  | —  | —  | —  | ✓  | 1/7       |
+| P5-RC-09    | —  | —  | —  | —  | —  | ✓  | —  | 1/7       |
+| P5-RC-10    | —  | —  | —  | —  | —  | —  | ✓  | 1/7       |
+| P5-RC-11    | —  | —  | —  | ✓  | —  | —  | —  | 1/7       |
+| P5-RC-12    | —  | ✓  | —  | ✓  | —  | —  | —  | 2/7       |
+| P5-RC-12b   | —  | ✓  | —  | —  | —  | —  | —  | 1/7       |
+| P5-RC-13    | —  | —  | —  | ✓  | —  | —  | —  | 1/7       |
+| P5-RC-14    | —  | —  | —  | ✓  | —  | —  | ✓  | 2/7       |
+| P5-RC-15    | —  | —  | —  | —  | ✓  | ✓  | —  | 2/7       |
+| P5-RC-16    | —  | —  | —  | —  | ✓  | —  | ✓  | 2/7       |
+| P5-RC-17    | —  | —  | —  | ✓  | —  | —  | —  | 1/7       |
+| P5-RC-18    | —  | —  | —  | ✓  | —  | ✓  | ✓  | 3/7       |
+| KL-1        | —  | —  | —  | ✓  | —  | —  | —  | 1/7       |
 
 **Analysis**: 7/7 consensus on P5-RC-01, P5-RC-04, P5-RC-05 (the original Phase 2 findings). 12 issues found by only 1-2 of the 7 proposals, underscoring the value of the multi-proposal approach. Most comprehensive Phase 3 proposals: v4 (widest scope), v5 (unique cross-repo discovery), v6/v7 (systemic architectural analysis).
 
@@ -1098,10 +1098,10 @@ Not a bug — it is an architectural limitation of CasCor's API. Requires either
 
 ### 7.1 Uppercase Status Gap: Removed vs Retained
 
-| Position | Source |
-|---|---|
+| Position                            | Source     |
+|-------------------------------------|------------|
 | Removed after title-case validation | Proposal A |
-| Retained as HIGH latent | Proposal B |
+| Retained as HIGH latent             | Proposal B |
 
 **Final resolution**: Retain as `P5-RC-03 HIGH (latent)`.
 
@@ -1109,74 +1109,74 @@ Not a bug — it is an architectural limitation of CasCor's API. Requires either
 
 ### 7.2 Topology Severity: CRITICAL vs MODERATE
 
-| Proposal | Rating |
-|---|---|
+| Proposal                                 | Rating   |
+|------------------------------------------|----------|
 | P4-A, P4-B, P4-D, Proposal A, Proposal B | CRITICAL |
-| P4-C | MODERATE |
+| P4-C                                     | MODERATE |
 
 **Final resolution**: **CRITICAL**. The network topology visualization is completely non-functional in service mode — the validation guard (`network_visualizer.py:351`) always triggers because `input_units` is never present in CasCor's response. This makes it a display blocker equivalent to the metrics mismatch. P4-C's MODERATE rating does not account for the fact that the visualization is entirely blank, not merely degraded.
 
 ### 7.3 CasCor Phase Bug Severity
 
-| Proposal | Rating |
-|---|---|
+| Proposal   | Rating   |
+|------------|----------|
 | P4-A, P4-D | MODERATE |
-| P4-B | HIGH |
-| P4-C | LOW |
+| P4-B       | HIGH     |
+| P4-C       | LOW      |
 
 **Final resolution**: **MODERATE**. This is a real cross-repo bug confirmed by validation (only one assignment to `current_phase` exists). It affects phase labels in metrics but does not prevent data from displaying. P4-B's HIGH rating overestimates impact (phase labels are cosmetic, not functional). P4-C's LOW rating underestimates impact (phase-based visualizations are non-functional, not merely imprecise).
 
 ### 7.4 Hardcoded URL Count: 2 vs 6
 
-| Proposal | Count |
-|---|---|
-| P4-C (initial) | 2 |
-| P4-A, P4-B, P4-C (corrected), P4-D, both Phase 5 | 6 |
+| Proposal                                         | Count |
+|--------------------------------------------------|-------|
+| P4-C (initial)                                   | 2     |
+| P4-A, P4-B, P4-C (corrected), P4-D, both Phase 5 | 6     |
 
 **Final resolution**: **6 confirmed** at lines 1000, 1021, 1155, 1187, 1231, 1274.
 
 ### 7.5 Hardcoded URLs Severity: MODERATE vs LOW
 
-| Proposal | Rating |
-|---|---|
+| Proposal         | Rating   |
+|------------------|----------|
 | P4-A, P4-B, P4-D | MODERATE |
-| P4-C | LOW |
+| P4-C             | LOW      |
 
 **Final resolution**: **MODERATE**. This issue affects deployment portability in Docker, reverse proxy, and non-standard port scenarios — all of which are active use cases for the Juniper ecosystem (juniper-deploy uses Docker Compose).
 
 ### 7.6 `/api/metrics` Snapshot: Separate Issue vs Subsumed
 
-| Proposal | Treatment |
-|---|---|
-| Proposal A, P4-C | Subsumed by P5-RC-01 |
-| Proposal B, P4-B, P4-D | Separate issue |
+| Proposal               | Treatment            |
+|------------------------|----------------------|
+| Proposal A, P4-C       | Subsumed by P5-RC-01 |
+| Proposal B, P4-B, P4-D | Separate issue       |
 
 **Final resolution**: Listed separately as `P5-RC-09` to ensure both code paths are addressed during implementation, but recognized as same root cause as P5-RC-01.
 
 ### 7.7 Dataset Scatter: Active Bug vs Known Limitation
 
-| Proposal | Classification |
-|---|---|
+| Proposal                     | Classification          |
+|------------------------------|-------------------------|
 | Proposal A, P4-A, P4-B, P4-D | Active issue (MODERATE) |
-| Proposal B, P4-C | Known limitation |
+| Proposal B, P4-C             | Known limitation        |
 
 **Final resolution**: **Known limitation**. This is not a bug — it is an architectural limitation of CasCor's API. Requires CasCor API extension or direct juniper-data integration to resolve.
 
 ### 7.8 `candidate_epochs` Mapping Classification
 
-| Proposal | Classification |
-|---|---|
-| P4-A, P4-B, P4-D | "Dead code" |
-| Proposal A | Reclassified to "non-functional mapping" |
+| Proposal         | Classification                           |
+|------------------|------------------------------------------|
+| P4-A, P4-B, P4-D | "Dead code"                              |
+| Proposal A       | Reclassified to "non-functional mapping" |
 
 **Final resolution**: **Non-functional runtime mapping**. Not dead code — the mapping executes successfully — but `candidate_epochs` is not in CasCor's `updatable_keys`, so the update is silently dropped.
 
 ### 7.9 Relay Raw Metrics Severity: MODERATE vs LOW
 
-| Proposal | Rating |
-|---|---|
-| P4-B | MODERATE |
-| P4-C, P4-D | LOW |
+| Proposal   | Rating   |
+|------------|----------|
+| P4-B       | MODERATE |
+| P4-C, P4-D | LOW      |
 
 **Final resolution**: **LOW (latent)**. The bug is currently inactive because the dashboard doesn't consume WebSocket data (P5-RC-05). The issue becomes relevant only if P5-RC-05 is addressed.
 
@@ -1192,16 +1192,16 @@ Not a bug — it is an architectural limitation of CasCor's API. Requires either
 
 The Juniper Canopy system has **multiple distinct ingress paths** for data into the dashboard, each independently determining its output format. No shared function, TypedDict, or contract enforces structural compatibility between these paths:
 
-| Ingress Path | Current Format | Dashboard Expects | Works? |
-|---|---|---|---|
-| Demo mode metrics | Nested (`metrics.loss`) | Nested | **Yes** |
-| REST metrics history (polling) | Flat (`train_loss`) | Nested | **No** |
-| REST current metrics (polling) | Flat (`train_loss`) | Nested | **No** |
-| State sync on connect | Raw CasCor (`loss`) | Nested | **No** |
-| WebSocket relay (broadcast) | Raw CasCor (`loss`) | Nested | **No** (unused) |
-| Demo mode topology | Graph-oriented | Graph-oriented | **Yes** |
-| REST topology (polling) | Weight-oriented (passthrough) | Graph-oriented | **No** |
-| Status bar | Flat (`is_running`) | Flat | **Yes** |
+| Ingress Path                   | Current Format                | Dashboard Expects | Works?          |
+|--------------------------------|-------------------------------|-------------------|-----------------|
+| Demo mode metrics              | Nested (`metrics.loss`)       | Nested            | **Yes**         |
+| REST metrics history (polling) | Flat (`train_loss`)           | Nested            | **No**          |
+| REST current metrics (polling) | Flat (`train_loss`)           | Nested            | **No**          |
+| State sync on connect          | Raw CasCor (`loss`)           | Nested            | **No**          |
+| WebSocket relay (broadcast)    | Raw CasCor (`loss`)           | Nested            | **No** (unused) |
+| Demo mode topology             | Graph-oriented                | Graph-oriented    | **Yes**         |
+| REST topology (polling)        | Weight-oriented (passthrough) | Graph-oriented    | **No**          |
+| Status bar                     | Flat (`is_running`)           | Flat              | **Yes**         |
 
 ### 8.2 Why the Status Bar Works (All Proposals Agree)
 
@@ -1291,16 +1291,16 @@ Three false positives were identified and retracted across Phase 3 and Phase 4 a
 
 The following subsystems function correctly in service mode (confirmed by all proposals):
 
-| Subsystem | Mechanism | Verified |
-|---|---|---|
+| Subsystem                                           | Mechanism                                                                 | Verified        |
+|-----------------------------------------------------|---------------------------------------------------------------------------|-----------------|
 | Status bar (is_running, phase, epoch, hidden units) | `/api/status` → fresh REST calls → flat keys → status bar reads flat keys | ✓ All proposals |
-| Decision boundary visualization | `get_decision_boundary()` transforms `grid_x`/`grid_y` → `xx`/`yy`/`Z` | ✓ P4-B, P4-D |
-| Dataset metadata display | `get_dataset()` maps `train_samples` → `num_samples` | ✓ P4-B, P4-D |
-| Training controls (start/stop/pause/resume/reset) | REST forwarding with proper error handling | ✓ All proposals |
-| Parameter updates (apply_params write path) | `_CANOPY_TO_CASCOR_PARAM_MAP` correctly maps canopy → cascor names | ✓ All proposals |
-| WebSocket relay connection/broadcast | Messages correctly relayed to browser clients | ✓ All proposals |
-| ResponseEnvelope unwrapping | All 14 Phase 1 fixes correctly implemented | ✓ All proposals |
-| Non-destructive attach to running CasCor | Attach endpoint handles non-destructive mode | ✓ P4-A, P4-B |
+| Decision boundary visualization                     | `get_decision_boundary()` transforms `grid_x`/`grid_y` → `xx`/`yy`/`Z`    | ✓ P4-B, P4-D    |
+| Dataset metadata display                            | `get_dataset()` maps `train_samples` → `num_samples`                      | ✓ P4-B, P4-D    |
+| Training controls (start/stop/pause/resume/reset)   | REST forwarding with proper error handling                                | ✓ All proposals |
+| Parameter updates (apply_params write path)         | `_CANOPY_TO_CASCOR_PARAM_MAP` correctly maps canopy → cascor names        | ✓ All proposals |
+| WebSocket relay connection/broadcast                | Messages correctly relayed to browser clients                             | ✓ All proposals |
+| ResponseEnvelope unwrapping                         | All 14 Phase 1 fixes correctly implemented                                | ✓ All proposals |
+| Non-destructive attach to running CasCor            | Attach endpoint handles non-destructive mode                              | ✓ P4-A, P4-B    |
 
 ---
 
@@ -1410,10 +1410,10 @@ Add tests comparing demo and service output shapes. Update existing tests to ver
 
 ### Tier 0: Restore Core Functionality (CRITICAL)
 
-| Order | Fix | Issues | Effort | Risk | Repo |
-|---|---|---|---|---|---|
-| 1 | FIX-A | P5-RC-01, P5-RC-09 | Small (1-2 hrs) | Low | juniper-canopy |
-| 2 | FIX-B | P5-RC-02 | Medium (2-3 hrs) | Medium | juniper-canopy |
+| Order | Fix   | Issues             | Effort           | Risk   | Repo           |
+|-------|-------|--------------------|------------------|--------|----------------|
+| 1     | FIX-A | P5-RC-01, P5-RC-09 | Small (1-2 hrs)  | Low    | juniper-canopy |
+| 2     | FIX-B | P5-RC-02           | Medium (2-3 hrs) | Medium | juniper-canopy |
 
 **After Tier 0**: Metrics charts display live data. Topology renders. Dashboard is functionally usable.
 
@@ -1421,35 +1421,35 @@ FIX-A and FIX-B can be implemented in parallel. FIX-A alone will restore metrics
 
 ### Tier 1: Harden Integration Contract (HIGH + MODERATE)
 
-| Order | Fix | Issues | Effort | Risk | Repo | Dependencies |
-|---|---|---|---|---|---|---|
-| 3 | FIX-C | P5-RC-03 | Small (<1 hr) | Low | juniper-canopy | None |
-| 4 | FIX-D | P5-RC-04 | Small (30 min) | Low | juniper-canopy | None |
-| 5 | FIX-E | P5-RC-07, P5-RC-08, P5-RC-10 | Small-Med (1-2 hrs) | Low | juniper-canopy | FIX-A |
-| 6 | FIX-F | P5-RC-11 | Trivial (15 min) | None | juniper-canopy | None |
-| 7 | FIX-K | P5-RC-16, P5-RC-18 | Medium (2-3 hrs) | None | juniper-canopy | FIX-A, FIX-B |
+| Order | Fix   | Issues                       | Effort              | Risk | Repo           | Dependencies |
+|-------|-------|------------------------------|---------------------|------|----------------|--------------|
+| 3     | FIX-C | P5-RC-03                     | Small (<1 hr)       | Low  | juniper-canopy | None         |
+| 4     | FIX-D | P5-RC-04                     | Small (30 min)      | Low  | juniper-canopy | None         |
+| 5     | FIX-E | P5-RC-07, P5-RC-08, P5-RC-10 | Small-Med (1-2 hrs) | Low  | juniper-canopy | FIX-A        |
+| 6     | FIX-F | P5-RC-11                     | Trivial (15 min)    | None | juniper-canopy | None         |
+| 7     | FIX-K | P5-RC-16, P5-RC-18           | Medium (2-3 hrs)    | None | juniper-canopy | FIX-A, FIX-B |
 
 ### Tier 2: Cross-Repo and UX Consistency
 
-| Order | Fix | Issues | Effort | Risk | Repo | Dependencies |
-|---|---|---|---|---|---|---|
-| 8 | FIX-G | P5-RC-06 | Small (1 hr) | Low | juniper-cascor | None |
-| 9 | FIX-H | P5-RC-12, P5-RC-12b, P5-RC-13 | Small (1 hr) | Low | juniper-canopy | None |
+| Order | Fix   | Issues                        | Effort       | Risk | Repo           | Dependencies |
+|-------|-------|-------------------------------|--------------|------|----------------|--------------|
+| 8     | FIX-G | P5-RC-06                      | Small (1 hr) | Low  | juniper-cascor | None         |
+| 9     | FIX-H | P5-RC-12, P5-RC-12b, P5-RC-13 | Small (1 hr) | Low  | juniper-canopy | None         |
 
 ### Tier 3: Deferred / Optional
 
-| Order | Fix | Issues | Effort | Risk | Repo | Dependencies |
-|---|---|---|---|---|---|---|
-| 10 | FIX-J | P5-RC-15 | Trivial (15 min) | None | juniper-canopy | None |
-| 11 | FIX-I | P5-RC-14 | Small (<1 hr) | Low | juniper-canopy | P5-RC-05 resolution |
-| — | Future | P5-RC-05 | Medium-Large | Medium | juniper-canopy | FIX-I |
-| — | Future | KL-1 | Large-XL | Medium | cross-repo | CasCor API extension |
+| Order | Fix    | Issues   | Effort           | Risk   | Repo           | Dependencies         |
+|-------|--------|----------|------------------|--------|----------------|----------------------|
+| 10    | FIX-J  | P5-RC-15 | Trivial (15 min) | None   | juniper-canopy | None                 |
+| 11    | FIX-I  | P5-RC-14 | Small (<1 hr)    | Low    | juniper-canopy | P5-RC-05 resolution  |
+| —     | Future | P5-RC-05 | Medium-Large     | Medium | juniper-canopy | FIX-I                |
+| —     | Future | KL-1     | Large-XL         | Medium | cross-repo     | CasCor API extension |
 
 ### Fix Dependency Graph
 
 ```text
 FIX-A (P5-RC-01, RC-09) ──┐
-                           ├── FIX-E (P5-RC-07, RC-08, RC-10) ── FIX-K (P5-RC-16, RC-18)
+                          ├── FIX-E (P5-RC-07, RC-08, RC-10) ── FIX-K (P5-RC-16, RC-18)
 FIX-B (P5-RC-02) ─────────┘
                                ↑ parallel with ↓
 FIX-C (P5-RC-03) ── FIX-D (P5-RC-04) ── FIX-F (P5-RC-11)
@@ -1464,20 +1464,20 @@ FIX-C (P5-RC-03) ── FIX-D (P5-RC-04) ── FIX-F (P5-RC-11)
 
 ## 13. Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| `_to_dashboard_metric()` misses a field used by frontend | Low | High | Compare against demo payload shape; contract tests (FIX-K) |
-| `_to_dashboard_metric()` breaks demo mode | Low | High | Only applied in service path; demo path untouched |
-| Topology weight ordering assumption incorrect for cascade architecture | Medium | Medium | Verify against actual CasCor response; add integration test |
-| Status normalization fix changes existing title-case behavior | Low | Low | Case-insensitive normalization preserves current outputs |
-| Falsy values (epoch=0, loss=0.0) treated as missing | Medium | Medium | Use `_first_defined()` helper (already exists); `is not None` checks |
-| FakeCascorClient divergence masks new issues | High | Medium | Add contract tests comparing fake and real response shapes |
-| Multiple simultaneous fixes introduce regressions | Medium | Medium | Fix and test one tier at a time; run full suite between |
-| Demo mode regresses from shared code changes | Low | High | Demo path untouched by all fixes; add regression test |
-| CasCor cross-repo fix (RC-06) requires coordination | Medium | Low | Canopy fixes are independent; phase labels degrade gracefully |
-| Phase 1 test assertions need updating for nested format | High | Low | Expected; update assertions as part of FIX-A |
-| State sync refactor introduces startup regressions | Medium | Medium | Keep changes minimal; reuse adapter helpers; test attach/startup |
-| Relative URL cleanup breaks non-browser/test assumptions | Low | Medium | Use same-origin relative URLs and run UI tests |
+| Risk                                                                   | Likelihood | Impact | Mitigation                                                           |
+|------------------------------------------------------------------------|------------|--------|----------------------------------------------------------------------|
+| `_to_dashboard_metric()` misses a field used by frontend               | Low        | High   | Compare against demo payload shape; contract tests (FIX-K)           |
+| `_to_dashboard_metric()` breaks demo mode                              | Low        | High   | Only applied in service path; demo path untouched                    |
+| Topology weight ordering assumption incorrect for cascade architecture | Medium     | Medium | Verify against actual CasCor response; add integration test          |
+| Status normalization fix changes existing title-case behavior          | Low        | Low    | Case-insensitive normalization preserves current outputs             |
+| Falsy values (epoch=0, loss=0.0) treated as missing                    | Medium     | Medium | Use `_first_defined()` helper (already exists); `is not None` checks |
+| FakeCascorClient divergence masks new issues                           | High       | Medium | Add contract tests comparing fake and real response shapes           |
+| Multiple simultaneous fixes introduce regressions                      | Medium     | Medium | Fix and test one tier at a time; run full suite between              |
+| Demo mode regresses from shared code changes                           | Low        | High   | Demo path untouched by all fixes; add regression test                |
+| CasCor cross-repo fix (RC-06) requires coordination                    | Medium     | Low    | Canopy fixes are independent; phase labels degrade gracefully        |
+| Phase 1 test assertions need updating for nested format                | High       | Low    | Expected; update assertions as part of FIX-A                         |
+| State sync refactor introduces startup regressions                     | Medium     | Medium | Keep changes minimal; reuse adapter helpers; test attach/startup     |
+| Relative URL cleanup breaks non-browser/test assumptions               | Low        | Medium | Use same-origin relative URLs and run UI tests                       |
 
 ---
 
@@ -1617,27 +1617,27 @@ curl -s http://localhost:8050/api/status | python3 -m json.tool
 
 ### 15.1 juniper-canopy — Required
 
-| File | Issues Addressed | Changes |
-|---|---|---|
-| `src/backend/cascor_service_adapter.py` | P5-RC-01, -02, -03, -04, -09, -12, -12b, -13, -14 | Add `_to_dashboard_metric()`, apply in `get_recent_metrics()` and `get_current_metrics()`; add `_transform_topology()`, apply in `extract_network_topology()`; expand relay callback; fix param maps |
-| `src/backend/state_sync.py` | P5-RC-03, -07, -10 | Make `_normalize_status()` case-insensitive; normalize synced metrics history; map params to Canopy namespace |
-| `src/backend/service_backend.py` | P5-RC-08 | Route sync through adapter/adapter helpers instead of raw client |
-| `src/frontend/components/metrics_panel.py` | P5-RC-11 | Replace 6 hardcoded `localhost:8050` URLs with relative paths |
-| `src/main.py` | P5-RC-15 | Guard double initialization on fallback path |
-| `src/tests/unit/test_response_normalization.py` | P5-RC-16 | Add nested format contract tests; add uppercase status tests; update flat-format assertions |
+| File                                            | Issues Addressed                          | Changes                                                                                                                                                                             |
+|-------------------------------------------------|-------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `src/backend/cascor_service_adapter.py`         | P5-RC-01,-02,-03,-04,-09,-12,-12b,-13,-14 | Add `_to_dashboard_metric()` in `get_recent_metrics()`, `get_current_metrics()`; add `_transform_topology()` in `extract_network_topology()`; expand relay callback; fix param maps |
+| `src/backend/state_sync.py`                     | P5-RC-03,-07,-10                          | Make `_normalize_status()` case-insensitive; normalize synced metrics history; map params to Canopy namespace                                                                       |
+| `src/backend/service_backend.py`                | P5-RC-08                                  | Route sync through adapter/adapter helpers instead of raw client                                                                                                                    |
+| `src/frontend/components/metrics_panel.py`      | P5-RC-11                                  | Replace 6 hardcoded `localhost:8050` URLs with relative paths                                                                                                                       |
+| `src/main.py`                                   | P5-RC-15                                  | Guard double initialization on fallback path                                                                                                                                        |
+| `src/tests/unit/test_response_normalization.py` | P5-RC-16                                  | Add nested format contract tests; add uppercase status tests; update flat-format assertions                                                                                         |
 
 ### 15.2 juniper-cascor — Required (cross-repo)
 
-| File | Issues Addressed | Changes |
-|---|---|---|
-| `src/api/lifecycle/monitor.py` | P5-RC-06 | Add `set_phase()` method or support `current_phase` updates |
-| `src/api/lifecycle/manager.py` | P5-RC-06 | Call `monitor.set_phase()` on phase transitions |
+| File                           | Issues Addressed | Changes                                                     |
+|--------------------------------|------------------|-------------------------------------------------------------|
+| `src/api/lifecycle/monitor.py` | P5-RC-06         | Add `set_phase()` method or support `current_phase` updates |
+| `src/api/lifecycle/manager.py` | P5-RC-06         | Call `monitor.set_phase()` on phase transitions             |
 
 ### 15.3 Optional / Recommended Cleanup
 
-| File | Reason |
-|---|---|
-| `src/backend/protocol.py` | Formalize backend contract with TypedDict/dataclass (P5-RC-18, long-term) |
+| File                                                                     | Reason                                                                        |
+|--------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `src/backend/protocol.py`                                                | Formalize backend contract with TypedDict/dataclass (P5-RC-18, long-term)     |
 | `juniper-cascor-client/testing/fake_client.py` or `testing/scenarios.py` | Align fake responses/status values with real CasCor once contract tests exist |
 
 ### 15.4 Files NOT Requiring Modification
@@ -1657,19 +1657,19 @@ curl -s http://localhost:8050/api/status | python3 -m json.tool
 
 All line numbers and code patterns in this document were independently verified against the current codebase HEAD:
 
-| Validation Area | Result | Notes |
-|---|---|---|
-| `_normalize_metric()` flat output (lines 431-460) | **CONFIRMED** | Exact match |
-| Nested metric access in dashboard (10 locations) | **CONFIRMED** | All line numbers verified |
-| `extract_network_topology()` passthrough (lines 480-484) | **CONFIRMED** | Exact match |
-| Relay callback forwards status+phase (lines 218-225) | **CONFIRMED** | Also handles `event` type at 228-235 |
-| `_normalize_status()` mapping (lines 134-154) | **CONFIRMED** | Off by 1 on method start (134 vs 135) |
-| `.lower()` at sync path (line 70) | **CONFIRMED** | Exact match |
-| Double initialization (lines 177, 180) | **CONFIRMED** | Exact match |
-| 6 hardcoded localhost URLs | **CONFIRMED** | Lines 1000, 1021, 1155, 1187, 1231, 1274 |
-| CasCor `current_phase` never updated (line 111) | **CONFIRMED** | Only one assignment in entire codebase |
-| Demo mode nested format (lines 1162-1177) | **CONFIRMED** | File lives in `src/demo_mode.py` |
-| Raw client passed to state sync (line 189) | **CONFIRMED** | Exact match |
+| Validation Area                                          | Result        | Notes                                    |
+|----------------------------------------------------------|---------------|------------------------------------------|
+| `_normalize_metric()` flat output (lines 431-460)        | **CONFIRMED** | Exact match                              |
+| Nested metric access in dashboard (10 locations)         | **CONFIRMED** | All line numbers verified                |
+| `extract_network_topology()` passthrough (lines 480-484) | **CONFIRMED** | Exact match                              |
+| Relay callback forwards status+phase (lines 218-225)     | **CONFIRMED** | Also handles `event` type at 228-235     |
+| `_normalize_status()` mapping (lines 134-154)            | **CONFIRMED** | Off by 1 on method start (134 vs 135)    |
+| `.lower()` at sync path (line 70)                        | **CONFIRMED** | Exact match                              |
+| Double initialization (lines 177, 180)                   | **CONFIRMED** | Exact match                              |
+| 6 hardcoded localhost URLs                               | **CONFIRMED** | Lines 1000, 1021, 1155, 1187, 1231, 1274 |
+| CasCor `current_phase` never updated (line 111)          | **CONFIRMED** | Only one assignment in entire codebase   |
+| Demo mode nested format (lines 1162-1177)                | **CONFIRMED** | File lives in `src/demo_mode.py`         |
+| Raw client passed to state sync (line 189)               | **CONFIRMED** | Exact match                              |
 
 ### 16.2 Key Reconciliation Decisions
 
@@ -1690,63 +1690,63 @@ Given the depth of analysis (7 Phase 3 proposals → 4 Phase 4 proposals → 2 P
 
 ### Per-Proposal Summary
 
-| Aspect | P4-A (002192f3) | P4-B (66a019dc) | P4-C (cd8254d3) | P4-D (d7dcbd5a) |
-|---|---|---|---|---|
-| **Author** | Amp | Claude (Opus 4.6) | Amp | Claude (Opus 4.6) |
-| **Issues found** | 13 | 16 | 15 + 1 KL | 19 |
-| **False positives** | 2 | 2 | 3 | 3 |
-| **Unique contributions** | Clean priority matrix | Upstream relay root cause | Latent severity nuance | ISS-12, ISS-13 state sync gaps |
-| **Strengths** | Concise, actionable, explicit retractions | Most comprehensive dependency graph | Strongest self-validation, most honest | Deepest architecture, best evidence inventory |
-| **Gaps** | Missed /api/metrics, sync bypass | Missed sync params, dual status | Topology severity underrated, initial URL undercount | Most verbose/granular |
-| **Accuracy** | ~95% | ~95% | ~90% | ~95% |
+| Aspect                   | P4-A (002192f3)                           | P4-B (66a019dc)                     | P4-C (cd8254d3)                                      | P4-D (d7dcbd5a)                               |
+|--------------------------|-------------------------------------------|-------------------------------------|------------------------------------------------------|-----------------------------------------------|
+| **Author**               | Amp                                       | Claude (Opus 4.6)                   | Amp                                                  | Claude (Opus 4.6)                             |
+| **Issues found**         | 13                                        | 16                                  | 15 + 1 KL                                            | 19                                            |
+| **False positives**      | 2                                         | 2                                   | 3                                                    | 3                                             |
+| **Unique contributions** | Clean priority matrix                     | Upstream relay root cause           | Latent severity nuance                               | ISS-12, ISS-13 state sync gaps                |
+| **Strengths**            | Concise, actionable, explicit retractions | Most comprehensive dependency graph | Strongest self-validation, most honest               | Deepest architecture, best evidence inventory |
+| **Gaps**                 | Missed /api/metrics, sync bypass          | Missed sync params, dual status     | Topology severity underrated, initial URL undercount | Most verbose/granular                         |
+| **Accuracy**             | ~95%                                      | ~95%                                | ~90%                                                 | ~95%                                          |
 
 ### Underlying Phase 3 Proposal Attribution
 
 Most valuable unique findings traced back to:
 
-| Finding | Phase 3 Source | Unique Contribution |
-|---|---|---|
-| Topology format mismatch (P5-RC-02) | v2 | Only proposal with complete 6-point structural analysis and transformation code |
-| CasCor phase bug (P5-RC-06) | v5 | Only proposal to identify a cross-repo bug |
-| Broadest scope (11 issues) | v4 | Identified deployment, parameter, and dataset issues |
-| Systemic contract concern (P5-RC-18) | v6, v7 | Elevated individual symptoms to architectural root cause |
-| State sync bypass (P5-RC-08) | v7 | Deepest analysis of state sync architectural gaps |
+| Finding                              | Phase 3 Source | Unique Contribution                                                             |
+|--------------------------------------|----------------|---------------------------------------------------------------------------------|
+| Topology format mismatch (P5-RC-02)  | v2             | Only proposal with complete 6-point structural analysis and transformation code |
+| CasCor phase bug (P5-RC-06)          | v5             | Only proposal to identify a cross-repo bug                                      |
+| Broadest scope (11 issues)           | v4             | Identified deployment, parameter, and dataset issues                            |
+| Systemic contract concern (P5-RC-18) | v6, v7         | Elevated individual symptoms to architectural root cause                        |
+| State sync bypass (P5-RC-08)         | v7             | Deepest analysis of state sync architectural gaps                               |
 
 ### Phase 5 Proposal Assessment
 
-| Aspect | Proposal A (7f73219c) | Proposal B (8b7d1ee8) |
-|---|---|---|
-| **Issue count** | 14 active + RC-SYS + KL-1 | 18 active + P5-RC-18 + KL-1 |
-| **Most valuable contribution** | Accurate title-case evidence for P5-RC-03 | More complete issue coverage and structural edge cases |
-| **Key strength** | Rigorous code-level validation with retraction evidence | Comprehensive numbering and granular separation of issues |
-| **Key limitation** | Retracted P5-RC-03 (overcorrected based on current behavior) | Retained issues that Proposal A validly subsumed |
+| Aspect                         | Proposal A (7f73219c)                                        | Proposal B (8b7d1ee8)                                     |
+|--------------------------------|--------------------------------------------------------------|-----------------------------------------------------------|
+| **Issue count**                | 14 active + RC-SYS + KL-1                                    | 18 active + P5-RC-18 + KL-1                               |
+| **Most valuable contribution** | Accurate title-case evidence for P5-RC-03                    | More complete issue coverage and structural edge cases    |
+| **Key strength**               | Rigorous code-level validation with retraction evidence      | Comprehensive numbering and granular separation of issues |
+| **Key limitation**             | Retracted P5-RC-03 (overcorrected based on current behavior) | Retained issues that Proposal A validly subsumed          |
 
 ---
 
 ## Appendix B: Complete Phase 3 → Phase 5 → Final Issue Lineage
 
-| Final ID | Phase 3 Source(s) | P4-A | P4-B | P4-C | P4-D | Phase 5 A | Phase 5 B | Final |
-|---|---|---|---|---|---|---|---|---|
-| P5-RC-01 | v1-v7 | ISSUE-1 | P4-RC-01 | RC-1 | ISS-01 | RC-01 | P5-RC-01 | Retained |
-| P5-RC-02 | v2, v4 | ISSUE-4 | P4-RC-02 | RC-4 | ISS-04 | RC-02 | P5-RC-02 | Retained |
-| P5-RC-03 | v4, v7 | ISSUE-5 | P4-RC-03 | RC-5 | ISS-06 | Retracted | P5-RC-03 | Retained (latent) |
-| P5-RC-04 | v1-v7 | ISSUE-2 | P4-RC-05 | RC-2 | ISS-02 | RC-03 | P5-RC-04 | Retained |
-| P5-RC-05 | v1-v7 | ISSUE-3 | P4-RC-15 | RC-3 | ISS-03 | RC-12 | P5-RC-05 | Retained |
-| P5-RC-06 | v5 | ISSUE-10 | P4-RC-04 | RC-12 | ISS-08 | RC-04 | P5-RC-06 | Retained |
-| P5-RC-07 | v1, v3, v5, v6, v7 | ISSUE-6 | P4-RC-06 | RC-6 | ISS-05 | RC-05 | P5-RC-07 | Retained |
-| P5-RC-08 | v7 | — | P4-RC-06 (part) | — | ISS-13 | — | P5-RC-08 | Retained |
-| P5-RC-09 | v6 | — | P4-RC-09 | (subsumed) | ISS-07 | S | P5-RC-09 | Retained (2nd path) |
-| P5-RC-10 | v7 | — | — | — | ISS-12 | — | P5-RC-10 | Retained |
-| P5-RC-11 | v4 | ISSUE-7 | P4-RC-07 | RC-7 | ISS-10 | RC-06 | P5-RC-11 | Retained |
-| P5-RC-12 | v2, v4 | ISSUE-8 | P4-RC-11 | RC-9 | ISS-15 | RC-09 | P5-RC-12 | Retained |
-| P5-RC-12b | v2 | ISSUE-8 | P4-RC-13 | RC-9 (part) | ISS-15b | P | P5-RC-12b | Retained |
-| P5-RC-13 | v4 | ISSUE-8 | P4-RC-12 | RC-10 | ISS-16 | RC-10 | P5-RC-13 | Retained |
-| P5-RC-14 | v4, v7 | — | P4-RC-10 | RC-8 | ISS-11 | RC-08 | P5-RC-14 | Retained |
-| P5-RC-15 | v5, v6 | ISSUE-11 | P4-RC-14 | RC-11 | ISS-18 | RC-11 | P5-RC-15 | Retained |
-| P5-RC-16 | v5, v7 | ISSUE-13 | — | RC-13 | ISS-19 | RC-13 | P5-RC-16 | Retained |
-| P5-RC-17 | v4 | — | — | RC-14 | ISS-14 | RC-14 | P5-RC-17 | Retained |
-| P5-RC-18 | v4, v6, v7 | ISSUE-12 | P4-RC-16 | RC-15 | ISS-17 | RC-SYS | P5-RC-18 | Retained |
-| KL-1 | v4 | ISSUE-9 | P4-RC-08 | KL-1 | ISS-09 | P (active) | KL-1 | Known Limitation |
+| Final ID  | Phase 3 Source(s)  | P4-A     | P4-B            | P4-C        | P4-D    | Phase 5 A  | Phase 5 B | Final               |
+|-----------|--------------------|----------|-----------------|-------------|---------|------------|-----------|---------------------|
+| P5-RC-01  | v1-v7              | ISSUE-1  | P4-RC-01        | RC-1        | ISS-01  | RC-01      | P5-RC-01  | Retained            |
+| P5-RC-02  | v2, v4             | ISSUE-4  | P4-RC-02        | RC-4        | ISS-04  | RC-02      | P5-RC-02  | Retained            |
+| P5-RC-03  | v4, v7             | ISSUE-5  | P4-RC-03        | RC-5        | ISS-06  | Retracted  | P5-RC-03  | Retained (latent)   |
+| P5-RC-04  | v1-v7              | ISSUE-2  | P4-RC-05        | RC-2        | ISS-02  | RC-03      | P5-RC-04  | Retained            |
+| P5-RC-05  | v1-v7              | ISSUE-3  | P4-RC-15        | RC-3        | ISS-03  | RC-12      | P5-RC-05  | Retained            |
+| P5-RC-06  | v5                 | ISSUE-10 | P4-RC-04        | RC-12       | ISS-08  | RC-04      | P5-RC-06  | Retained            |
+| P5-RC-07  | v1, v3, v5, v6, v7 | ISSUE-6  | P4-RC-06        | RC-6        | ISS-05  | RC-05      | P5-RC-07  | Retained            |
+| P5-RC-08  | v7                 | —        | P4-RC-06 (part) | —           | ISS-13  | —          | P5-RC-08  | Retained            |
+| P5-RC-09  | v6                 | —        | P4-RC-09        | (subsumed)  | ISS-07  | S          | P5-RC-09  | Retained (2nd path) |
+| P5-RC-10  | v7                 | —        | —               | —           | ISS-12  | —          | P5-RC-10  | Retained            |
+| P5-RC-11  | v4                 | ISSUE-7  | P4-RC-07        | RC-7        | ISS-10  | RC-06      | P5-RC-11  | Retained            |
+| P5-RC-12  | v2, v4             | ISSUE-8  | P4-RC-11        | RC-9        | ISS-15  | RC-09      | P5-RC-12  | Retained            |
+| P5-RC-12b | v2                 | ISSUE-8  | P4-RC-13        | RC-9 (part) | ISS-15b | P          | P5-RC-12b | Retained            |
+| P5-RC-13  | v4                 | ISSUE-8  | P4-RC-12        | RC-10       | ISS-16  | RC-10      | P5-RC-13  | Retained            |
+| P5-RC-14  | v4, v7             | —        | P4-RC-10        | RC-8        | ISS-11  | RC-08      | P5-RC-14  | Retained            |
+| P5-RC-15  | v5, v6             | ISSUE-11 | P4-RC-14        | RC-11       | ISS-18  | RC-11      | P5-RC-15  | Retained            |
+| P5-RC-16  | v5, v7             | ISSUE-13 | —               | RC-13       | ISS-19  | RC-13      | P5-RC-16  | Retained            |
+| P5-RC-17  | v4                 | —        | —               | RC-14       | ISS-14  | RC-14      | P5-RC-17  | Retained            |
+| P5-RC-18  | v4, v6, v7         | ISSUE-12 | P4-RC-16        | RC-15       | ISS-17  | RC-SYS     | P5-RC-18  | Retained            |
+| KL-1      | v4                 | ISSUE-9  | P4-RC-08        | KL-1        | ISS-09  | P (active) | KL-1      | Known Limitation    |
 
 ---
 
@@ -1754,59 +1754,59 @@ Most valuable unique findings traced back to:
 
 ### C.1 Primary Evidence Files
 
-| File | Repository | Issues |
-|---|---|---|
-| `src/backend/cascor_service_adapter.py` | juniper-canopy | P5-RC-01, -02, -03, -04, -09, -12, -13, -14 |
-| `src/backend/service_backend.py` | juniper-canopy | P5-RC-08, KL-1 |
-| `src/backend/state_sync.py` | juniper-canopy | P5-RC-03, -07, -10 |
-| `src/frontend/components/metrics_panel.py` | juniper-canopy | P5-RC-01, -09, -11 |
-| `src/frontend/network_visualizer.py` | juniper-canopy | P5-RC-02 |
-| `src/demo_mode.py` | juniper-canopy | P5-RC-01, -02 (reference format) |
-| `src/backend/demo_backend.py` | juniper-canopy | P5-RC-02 (reference format) |
-| `src/frontend/dashboard_manager.py` | juniper-canopy | P5-RC-05 |
-| `src/main.py` | juniper-canopy | P5-RC-15 |
-| `src/backend/protocol.py` | juniper-canopy | P5-RC-18 |
-| `src/backend/data_adapter.py` | juniper-canopy | P5-RC-18 (dead abstractions) |
-| `src/api/lifecycle/manager.py` | juniper-cascor | P5-RC-02, -04, -06 |
-| `src/api/lifecycle/monitor.py` | juniper-cascor | P5-RC-06 |
-| `src/api/lifecycle/state_machine.py` | juniper-cascor | P5-RC-03 |
-| `src/api/models/training.py` | juniper-cascor | P5-RC-12, -13 |
-| `testing/fake_client.py` | juniper-cascor-client | P5-RC-03 |
-| `testing/scenarios.py` | juniper-cascor-client | P5-RC-02 (third format) |
-| `src/tests/unit/test_response_normalization.py` | juniper-canopy | P5-RC-16 |
+| File                                            | Repository            | Issues                                      |
+|-------------------------------------------------|-----------------------|---------------------------------------------|
+| `src/backend/cascor_service_adapter.py`         | juniper-canopy        | P5-RC-01, -02, -03, -04, -09, -12, -13, -14 |
+| `src/backend/service_backend.py`                | juniper-canopy        | P5-RC-08, KL-1                              |
+| `src/backend/state_sync.py`                     | juniper-canopy        | P5-RC-03, -07, -10                          |
+| `src/frontend/components/metrics_panel.py`      | juniper-canopy        | P5-RC-01, -09, -11                          |
+| `src/frontend/network_visualizer.py`            | juniper-canopy        | P5-RC-02                                    |
+| `src/demo_mode.py`                              | juniper-canopy        | P5-RC-01, -02 (reference format)            |
+| `src/backend/demo_backend.py`                   | juniper-canopy        | P5-RC-02 (reference format)                 |
+| `src/frontend/dashboard_manager.py`             | juniper-canopy        | P5-RC-05                                    |
+| `src/main.py`                                   | juniper-canopy        | P5-RC-15                                    |
+| `src/backend/protocol.py`                       | juniper-canopy        | P5-RC-18                                    |
+| `src/backend/data_adapter.py`                   | juniper-canopy        | P5-RC-18 (dead abstractions)                |
+| `src/api/lifecycle/manager.py`                  | juniper-cascor        | P5-RC-02, -04, -06                          |
+| `src/api/lifecycle/monitor.py`                  | juniper-cascor        | P5-RC-06                                    |
+| `src/api/lifecycle/state_machine.py`            | juniper-cascor        | P5-RC-03                                    |
+| `src/api/models/training.py`                    | juniper-cascor        | P5-RC-12, -13                               |
+| `testing/fake_client.py`                        | juniper-cascor-client | P5-RC-03                                    |
+| `testing/scenarios.py`                          | juniper-cascor-client | P5-RC-02 (third format)                     |
+| `src/tests/unit/test_response_normalization.py` | juniper-canopy        | P5-RC-16                                    |
 
 ### C.2 Key Line Numbers (all verified)
 
-| Evidence | File | Line(s) |
-|---|---|---|
-| `_normalize_metric()` flat output | `cascor_service_adapter.py` | 431-460 |
-| `get_current_metrics()` flat path | `cascor_service_adapter.py` | 86-94 |
-| Nested metric access in dashboard | `metrics_panel.py` | 1091, 1120-1122, 1330, 1449-1450, 1499, 1561-1562 |
-| Demo nested format production | `demo_mode.py` | 1162-1177 |
-| Relay callback (status+phase only) | `cascor_service_adapter.py` | 218-225 |
-| Relay event handler | `cascor_service_adapter.py` | 228-235 |
-| Relay raw metrics broadcast | `cascor_service_adapter.py` | 203-206 |
-| WebSocket data div (unused) | `dashboard_manager.py` | 876 |
-| Topology passthrough (no transform) | `cascor_service_adapter.py` | 480-484 |
-| CasCor topology endpoint | `lifecycle/manager.py` | 563-585 |
-| Demo topology format | `demo_backend.py` | 129-169 |
-| Topology validation guard | `network_visualizer.py` | 351 |
-| `_normalize_status()` mapping | `state_sync.py` | 134-154 |
-| Sync path `.lower()` | `state_sync.py` | 70 |
-| Relay path (no `.lower()`) | `cascor_service_adapter.py` | 222 |
-| CasCor enum `.name` uppercase | `state_machine.py` | 21-28 |
-| CasCor WS broadcast title-case | `lifecycle/manager.py` | 111 |
-| State sync raw client usage | `service_backend.py` | 189 |
-| State sync metrics storage | `state_sync.py` | 115-129 |
-| Hardcoded localhost URLs | `metrics_panel.py` | 1000, 1021, 1155, 1187, 1231, 1274 |
-| `current_phase` initialization | `monitor.py` | 111 |
-| `current_phase` used in metrics | `monitor.py` | 171, 211 |
-| Double init in fallback | `main.py` | 177, 180 |
-| Decision boundary transform (reference) | `cascor_service_adapter.py` | 495-543 |
-| CasCor runtime PATCH updatable keys | `manager.py` | 545-553 |
-| `TrainingParamUpdateRequest` fields | `api/models/training.py` | 45-54 |
-| FakeCascorClient topology shape | `testing/scenarios.py` | 248-257 |
-| `BackendProtocol` returns | `protocol.py` | 59-140 |
+| Evidence                                | File                        | Line(s)                                           |
+|-----------------------------------------|-----------------------------|---------------------------------------------------|
+| `_normalize_metric()` flat output       | `cascor_service_adapter.py` | 431-460                                           |
+| `get_current_metrics()` flat path       | `cascor_service_adapter.py` | 86-94                                             |
+| Nested metric access in dashboard       | `metrics_panel.py`          | 1091, 1120-1122, 1330, 1449-1450, 1499, 1561-1562 |
+| Demo nested format production           | `demo_mode.py`              | 1162-1177                                         |
+| Relay callback (status+phase only)      | `cascor_service_adapter.py` | 218-225                                           |
+| Relay event handler                     | `cascor_service_adapter.py` | 228-235                                           |
+| Relay raw metrics broadcast             | `cascor_service_adapter.py` | 203-206                                           |
+| WebSocket data div (unused)             | `dashboard_manager.py`      | 876                                               |
+| Topology passthrough (no transform)     | `cascor_service_adapter.py` | 480-484                                           |
+| CasCor topology endpoint                | `lifecycle/manager.py`      | 563-585                                           |
+| Demo topology format                    | `demo_backend.py`           | 129-169                                           |
+| Topology validation guard               | `network_visualizer.py`     | 351                                               |
+| `_normalize_status()` mapping           | `state_sync.py`             | 134-154                                           |
+| Sync path `.lower()`                    | `state_sync.py`             | 70                                                |
+| Relay path (no `.lower()`)              | `cascor_service_adapter.py` | 222                                               |
+| CasCor enum `.name` uppercase           | `state_machine.py`          | 21-28                                             |
+| CasCor WS broadcast title-case          | `lifecycle/manager.py`      | 111                                               |
+| State sync raw client usage             | `service_backend.py`        | 189                                               |
+| State sync metrics storage              | `state_sync.py`             | 115-129                                           |
+| Hardcoded localhost URLs                | `metrics_panel.py`          | 1000, 1021, 1155, 1187, 1231, 1274                |
+| `current_phase` initialization          | `monitor.py`                | 111                                               |
+| `current_phase` used in metrics         | `monitor.py`                | 171, 211                                          |
+| Double init in fallback                 | `main.py`                   | 177, 180                                          |
+| Decision boundary transform (reference) | `cascor_service_adapter.py` | 495-543                                           |
+| CasCor runtime PATCH updatable keys     | `manager.py`                | 545-553                                           |
+| `TrainingParamUpdateRequest` fields     | `api/models/training.py`    | 45-54                                             |
+| FakeCascorClient topology shape         | `testing/scenarios.py`      | 248-257                                           |
+| `BackendProtocol` returns               | `protocol.py`               | 59-140                                            |
 
 ---
 
@@ -1853,4 +1853,4 @@ Final Synthesis (This Document):
 
 ---
 
-*End of Final Canopy–CasCor Connection Analysis*
+*End of Final Canopy–CasCor Connection Analysis:*
