@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.0
-**Date**: 2026-03-15
+**Version**: 1.0.1
+**Date**: 2026-03-29
 **Project**: juniper-ml
 
 ---
@@ -67,12 +67,32 @@ bash scripts/wake_the_claude.bash --resume session-id.txt --prompt "..."        
 
 **Known pitfall:** `claude` is invoked with unquoted `${CLAUDE_CODE_PARAMS[@]}`; prompt strings may split on spaces. Run regression tests after changes.
 
+### Resume And Fork Alias Forwarding
+
+`scripts/wake_the_claude.bash` accepts multiple alias flags, but always forwards canonical Claude CLI flags:
+
+| Input Alias Family | Accepted Aliases | Forwarded Canonical Flag |
+|--------------------|------------------|--------------------------|
+| Resume             | `-r`, `--resume`, `--resume-thread`, `--resume-session` | `--resume` |
+| Fork session       | `--fork`, `--fork-session`, `--resume-fork`, `--resume-fork_session` | `--fork-session` |
+
+Example (alias input to canonical output):
+
+```bash
+bash scripts/wake_the_claude.bash --resume 7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd --fork --prompt "hello"
+# Forwards args to claude as: --resume <uuid> --fork-session "hello"
+```
+
+This behavior is regression-tested in `tests/test_wake_the_claude.py`:
+- `test_resume_alias_flag_passes_session_id_to_claude`
+- `test_fork_session_alias_forwards_canonical_flag`
+
 | Resume Symptom                  | Cause                                | Fix                                                      |
 |---------------------------------|--------------------------------------|----------------------------------------------------------|
 | `Session ID is invalid`         | Bad UUID or file content             | Verify UUID format                                       |
 | `no Valid Session ID to Resume` | Missing value after `--resume`       | Provide UUID or `.txt` basename                          |
 | File resume fails immediately   | Path separator, wrong ext, wrong dir | Use basename `*.txt` in `scripts/sessions/`              |
-| Alias not recognized            | Parsing regression                   | Run `test_wake_the_claude.py`, check `matches_pattern()` |
+| Alias not recognized            | Parsing regression                   | Run `python3 -m unittest -v tests/test_wake_the_claude.py`, verify alias lists and canonical forwarding |
 
 ---
 
@@ -182,6 +202,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-03-15
-**Version:** 1.0.0
+**Last Updated:** 2026-03-29
+**Version:** 1.0.1
 **Maintainer:** Paul Calnon
