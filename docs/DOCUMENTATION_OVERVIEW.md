@@ -2,7 +2,7 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **Status:** Active
 **Last Updated:** March 3, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -26,7 +26,7 @@
 |------|----------|----------|
 | **Install Juniper packages** | [QUICK_START.md](QUICK_START.md) | docs/ |
 | **See extras and version info** | [REFERENCE.md](REFERENCE.md) | docs/ |
-| **Quick-reference dev tasks** | [DEVELOPER_CHEATSHEET.md](DEVELOPER_CHEATSHEET.md) | docs/ |
+| **Quick-reference dev tasks** | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/ |
 | **Understand the project** | [README.md](../README.md) | Root |
 | **See development conventions** | [AGENTS.md](../AGENTS.md) | Root |
 | **See version history** | [CHANGELOG.md](../CHANGELOG.md) | Root |
@@ -42,7 +42,8 @@
 | **DOCUMENTATION_OVERVIEW.md** | ~80 | Overview | This file -- navigation index |
 | **QUICK_START.md** | ~70 | Tutorial | Install Juniper packages in under a minute |
 | **REFERENCE.md** | ~90 | Reference | Complete extras, compatibility, and version reference |
-| **DEVELOPER_CHEATSHEET.md** | ~187 | Cheatsheet | Quick-reference card for common development tasks |
+| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~187 | Cheatsheet | Quick-reference card for common development tasks |
+| **DEVELOPER_CHEATSHEET-ORIGINAL.md** | ~1400 | Archive | Deprecated monolithic cheatsheet retained for reference |
 
 ### Root Directory
 
@@ -56,7 +57,8 @@
 
 | File | Lines | Type | Purpose |
 |------|-------|------|---------|
-| **DEVELOPER_CHEATSHEET.md** | ~1200 | Runbook | *(Deprecated)* Master cheatsheet — see `docs/DEVELOPER_CHEATSHEET.md` for per-project version |
+| **CANOPY_EXTERNAL_CASCOR_PLAN.md** | ~470 | Integration Plan | Cross-repo plan for connecting juniper-canopy to an externally running juniper-cascor service |
+| **DOCUMENTATION_AUDIT_SUMMARY_2026-03-15.md** | ~100 | Summary | Status and outcomes of ecosystem-wide documentation audit/upgrade work |
 
 ---
 
@@ -95,6 +97,6 @@ juniper-ml[all]     ──installs──> all three packages above
 
 ---
 
-**Last Updated:** March 3, 2026
-**Version:** 0.2.0
+**Last Updated:** March 26, 2026
+**Version:** 0.2.1
 **Maintainer:** Paul Calnon
