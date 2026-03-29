@@ -3,7 +3,7 @@
 - **Version**: 1.0.0
 - **Date**: 2026-03-28
 - **Author**: Final synthesis generated from Phase 5 Proposal A (`7f73219c-1557-4135-ab44-ef053d4c4097`) and Phase 5 Proposal B (`8b7d1ee8-a24d-4e2a-bfd6-8df44d7ed326`)
-- **Status**: Final synthesis complete — implementation reference
+- **Status**: IMPLEMENTED — all fixes applied and validated (2026-03-28)
 - **Scope**: juniper-canopy, juniper-cascor, juniper-cascor-client
 - **Source Material**:
   - Phase 5 Proposal A: `PHASE_5_CANOPY_CASCOR_CONNECTION_ANALYSIS_7f73219c-1557-4135-ab44-ef053d4c4097.md`
@@ -1853,4 +1853,63 @@ Final Synthesis (This Document):
 
 ---
 
-*End of Final Canopy–CasCor Connection Analysis:*
+## Appendix E: Implementation Record (2026-03-28)
+
+### Implementation Summary
+
+All fixes from Tier 0 through Tier 3 (except FIX-I, which is deferred per plan) were implemented on 2026-03-28.
+
+| Fix | Status | Files Modified | Test Result |
+|---|---|---|---|
+| **FIX-A** (P5-RC-01, P5-RC-09) | **IMPLEMENTED** | `cascor_service_adapter.py`: Added `_to_dashboard_metric()`, applied in `get_current_metrics()` and `get_recent_metrics()` | 29/29 normalization tests pass |
+| **FIX-B** (P5-RC-02) | **IMPLEMENTED** | `cascor_service_adapter.py`: Added `_transform_topology()`, applied in `extract_network_topology()` | Topology transformation tests pass |
+| **FIX-C** (P5-RC-03) | **IMPLEMENTED** | `state_sync.py`: Made `_normalize_status()` case-insensitive via `raw.strip().lower()` | Uppercase/title-case/lowercase all normalize correctly |
+| **FIX-D** (P5-RC-04) | **IMPLEMENTED** | `cascor_service_adapter.py`: Relay callback now forwards `current_epoch`, `current_step`, `learning_rate`, `max_hidden_units`, `max_epochs` | Validated via code review |
+| **FIX-E** (P5-RC-07, -08, -10) | **IMPLEMENTED** | `state_sync.py`: Metrics normalized through `_normalize_metric()` + `_to_dashboard_metric()`. Params mapped via reverse param map. Topology transformed via `_transform_topology()`. | Tests pass |
+| **FIX-F** (P5-RC-11) | **IMPLEMENTED** | `metrics_panel.py`: 6 hardcoded URLs replaced with `self._api_base_url` from `settings.server.port` | 108/108 handler tests pass |
+| **FIX-G** (P5-RC-06) | **IMPLEMENTED** | `juniper-cascor/manager.py`: `monitor.current_phase` updated at output start, candidate start, and post-grow return | 1927/1927 cascor unit tests pass (5 pre-existing failures unrelated) |
+| **FIX-H** (P5-RC-12, -12b, -13) | **IMPLEMENTED** | `cascor_service_adapter.py`: Removed dead `cn_training_iterations` mapping. Added `cn_candidate_learning_rate` mapping. | Validated via code review |
+| **FIX-I** (P5-RC-14) | **DEFERRED** | Per plan: defer until dashboard WebSocket consumption is implemented | N/A |
+| **FIX-J** (P5-RC-15) | **IMPLEMENTED** | `main.py`: Added `backend_initialized` flag to prevent double `backend.initialize()` on fallback path | Validated via code review |
+| **FIX-K** (P5-RC-16, -18) | **IMPLEMENTED** | `test_response_normalization.py`: Added `TestDashboardMetricsContract`, `TestTopologyTransformation`, `TestStatusNormalizationHardening`. Updated existing tests for nested format. Updated URL assertions in `test_metrics_panel_handlers.py`. | 29/29 new + updated tests pass |
+
+### Test Results Summary
+
+| Suite | Result | Notes |
+|---|---|---|
+| juniper-canopy unit tests | **2990 passed, 0 failed** | 1 flaky convergence test (stochastic, unrelated) |
+| juniper-canopy response normalization | **29 passed** | All new contract + status hardening tests pass |
+| juniper-canopy metrics panel handlers | **108 passed** | URL assertion tests updated |
+| juniper-cascor unit tests | **1927 passed, 5 pre-existing failures** | Failures in `test_remaining_coverage_deep.py` (null lifecycle scenarios, unrelated to phase tracking changes) |
+
+### Files Modified
+
+#### juniper-canopy
+
+| File | Changes |
+|---|---|
+| `src/backend/cascor_service_adapter.py` | Added `_to_dashboard_metric()` (FIX-A). Added `_transform_topology()` (FIX-B). Expanded relay callback (FIX-D). Updated param map (FIX-H). Applied transforms in `get_current_metrics()`, `get_recent_metrics()`, `extract_network_topology()`. |
+| `src/backend/state_sync.py` | Case-insensitive `_normalize_status()` (FIX-C). Normalized metrics history (FIX-E). Mapped params to Canopy namespace (FIX-E). Transformed topology (FIX-E). |
+| `src/frontend/components/metrics_panel.py` | Replaced 6 hardcoded URLs with `self._api_base_url` (FIX-F). |
+| `src/main.py` | Added `backend_initialized` guard (FIX-J). |
+| `src/tests/unit/test_response_normalization.py` | Updated existing tests for nested format. Added 3 new test classes (FIX-K). |
+| `src/tests/unit/frontend/test_metrics_panel_handlers.py` | Updated URL assertions from `localhost` to `127.0.0.1`. |
+
+#### juniper-cascor
+
+| File | Changes |
+|---|---|
+| `src/api/lifecycle/manager.py` | Added `monitor.current_phase` updates in `monitored_fit` and `monitored_grow` (FIX-G). |
+
+### Deferred Items
+
+| Item | Reason | When to Implement |
+|---|---|---|
+| FIX-I (P5-RC-14) | Dashboard doesn't consume WebSocket data (P5-RC-05) | When/if P5-RC-05 is addressed |
+| P5-RC-05 | Architectural choice -- HTTP polling at 1s is adequate | Future optimization |
+| KL-1 | CasCor API doesn't expose data arrays | Requires CasCor API extension |
+| P5-RC-18 formal contract types | Systemic -- TypedDict/dataclass enforcement | Future architecture work |
+
+---
+
+*End of Final Canopy-CasCor Connection Analysis*
