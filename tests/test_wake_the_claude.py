@@ -1181,6 +1181,23 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             args = self._extract_args(invocations[-1])
             self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "hello"])
 
+    def test_all_fork_session_flag_variants_forward_canonical_flag(self) -> None:
+        """HIGH: Verify legacy and canonical fork flags normalize to --fork-session."""
+        for fork_flag in ("--fork-session", "--resume-fork", "--resume-fork_session"):
+            with self.subTest(fork_flag=fork_flag), tempfile.TemporaryDirectory() as temp_dir:
+                invocations_log, env = self._install_fake_claude(temp_dir)
+                result = self._run_script(
+                    ["--resume", VALID_UUID, fork_flag, "--prompt", "hello"],
+                    cwd=temp_dir,
+                    env=env,
+                )
+                self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+
+                invocations = self._wait_for_invocations(invocations_log)
+                self.assertTrue(invocations)
+                args = self._extract_args(invocations[-1])
+                self.assertEqual(args, ["--resume", VALID_UUID, "--fork-session", "hello"])
+
     def test_path_flag_with_file_argument_resolves_correctly(self) -> None:
         """Verify --path with a file argument (not directory) sets prompt correctly."""
         with tempfile.TemporaryDirectory() as temp_dir:
