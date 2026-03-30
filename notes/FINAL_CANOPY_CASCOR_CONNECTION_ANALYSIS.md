@@ -1859,57 +1859,548 @@ Final Synthesis (This Document):
 
 All fixes from Tier 0 through Tier 3 (except FIX-I, which is deferred per plan) were implemented on 2026-03-28.
 
-| Fix | Status | Files Modified | Test Result |
-|---|---|---|---|
-| **FIX-A** (P5-RC-01, P5-RC-09) | **IMPLEMENTED** | `cascor_service_adapter.py`: Added `_to_dashboard_metric()`, applied in `get_current_metrics()` and `get_recent_metrics()` | 29/29 normalization tests pass |
-| **FIX-B** (P5-RC-02) | **IMPLEMENTED** | `cascor_service_adapter.py`: Added `_transform_topology()`, applied in `extract_network_topology()` | Topology transformation tests pass |
-| **FIX-C** (P5-RC-03) | **IMPLEMENTED** | `state_sync.py`: Made `_normalize_status()` case-insensitive via `raw.strip().lower()` | Uppercase/title-case/lowercase all normalize correctly |
-| **FIX-D** (P5-RC-04) | **IMPLEMENTED** | `cascor_service_adapter.py`: Relay callback now forwards `current_epoch`, `current_step`, `learning_rate`, `max_hidden_units`, `max_epochs` | Validated via code review |
-| **FIX-E** (P5-RC-07, -08, -10) | **IMPLEMENTED** | `state_sync.py`: Metrics normalized through `_normalize_metric()` + `_to_dashboard_metric()`. Params mapped via reverse param map. Topology transformed via `_transform_topology()`. | Tests pass |
-| **FIX-F** (P5-RC-11) | **IMPLEMENTED** | `metrics_panel.py`: 6 hardcoded URLs replaced with `self._api_base_url` from `settings.server.port` | 108/108 handler tests pass |
-| **FIX-G** (P5-RC-06) | **IMPLEMENTED** | `juniper-cascor/manager.py`: `monitor.current_phase` updated at output start, candidate start, and post-grow return | 1927/1927 cascor unit tests pass (5 pre-existing failures unrelated) |
-| **FIX-H** (P5-RC-12, -12b, -13) | **IMPLEMENTED** | `cascor_service_adapter.py`: Removed dead `cn_training_iterations` mapping. Added `cn_candidate_learning_rate` mapping. | Validated via code review |
-| **FIX-I** (P5-RC-14) | **DEFERRED** | Per plan: defer until dashboard WebSocket consumption is implemented | N/A |
-| **FIX-J** (P5-RC-15) | **IMPLEMENTED** | `main.py`: Added `backend_initialized` flag to prevent double `backend.initialize()` on fallback path | Validated via code review |
-| **FIX-K** (P5-RC-16, -18) | **IMPLEMENTED** | `test_response_normalization.py`: Added `TestDashboardMetricsContract`, `TestTopologyTransformation`, `TestStatusNormalizationHardening`. Updated existing tests for nested format. Updated URL assertions in `test_metrics_panel_handlers.py`. | 29/29 new + updated tests pass |
+| Fix                             | Status          | Files Modified                                                                                                                                                                                 | Test Result                               |
+|---------------------------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| **FIX-A** (P5-RC-01, P5-RC-09)  | **IMPLEMENTED** | `cascor_service_adapter.py`: Added `_to_dashboard_metric()`, applied in `get_current_metrics()` and `get_recent_metrics()`                                                                     | 29/29 normalization tests pass            |
+| **FIX-B** (P5-RC-02)            | **IMPLEMENTED** | `cascor_service_adapter.py`: Added `_transform_topology()`, applied in `extract_network_topology()`                                                                                            | Topology transformation tests pass        |
+| **FIX-C** (P5-RC-03)            | **IMPLEMENTED** | `state_sync.py`: Made `_normalize_status()` case-insensitive via `raw.strip().lower()`                                                                                                         | Fixed: Uppercase/title-case/lowercase all |
+| **FIX-D** (P5-RC-04)            | **IMPLEMENTED** | `cascor_service_adapter.py`: Relay callback now forwards `current_epoch`, `current_step`, `learning_rate`, `max_hidden_units`, `max_epochs`                                                    | Validated via code review                 |
+| **FIX-E** (P5-RC-07, -08, -10)  | **IMPLEMENTED** | `state_sync.py`: Metrics normalized through `_normalize_metric()` + `_to_dashboard_metric()`. Params mapped via reverse param map. Topology transformed via `_transform_topology()`.           | Tests pass                                |
+| **FIX-F** (P5-RC-11)            | **IMPLEMENTED** | `metrics_panel.py`: 6 hardcoded URLs replaced with `self._api_base_url` from `settings.server.port`                                                                                            | 108/108 handler tests pass                |
+| **FIX-G** (P5-RC-06)            | **IMPLEMENTED** | `juniper-cascor/manager.py`: `monitor.current_phase` updated at output start, candidate start, and post-grow return                                                                            | cascor 1927/1927 pass (5 old fails)       |
+| **FIX-H** (P5-RC-12, -12b, -13) | **IMPLEMENTED** | `cascor_service_adapter.py`: Removed dead `cn_training_iterations` mapping. Added `cn_candidate_learning_rate` mapping.                                                                        | Validated via code review                 |
+| **FIX-I** (P5-RC-14)            | **DEFERRED**    | Per plan: defer until dashboard WebSocket consumption is implemented                                                                                                                           | N/A                                       |
+| **FIX-J** (P5-RC-15)            | **IMPLEMENTED** | `main.py`: Added `backend_initialized` flag to prevent double `backend.initialize()` on fallback path                                                                                          | Validated via code review                 |
+| **FIX-K** (P5-RC-16, -18)       | **IMPLEMENTED** | `test_response_normalization.py`: `TestDashboardMetricsContract`, `TestTopologyTransformation`, `TestStatusNormalizationHardening`. Test nested msg. Asserts `test_metrics_panel_handlers.py`. | 29/29 tests pass                          |
 
 ### Test Results Summary
 
-| Suite | Result | Notes |
-|---|---|---|
-| juniper-canopy unit tests | **2990 passed, 0 failed** | 1 flaky convergence test (stochastic, unrelated) |
-| juniper-canopy response normalization | **29 passed** | All new contract + status hardening tests pass |
-| juniper-canopy metrics panel handlers | **108 passed** | URL assertion tests updated |
-| juniper-cascor unit tests | **1927 passed, 5 pre-existing failures** | Failures in `test_remaining_coverage_deep.py` (null lifecycle scenarios, unrelated to phase tracking changes) |
+| Suite                                 | Result                                   | Notes                                                                                                         |
+|---------------------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| juniper-canopy unit tests             | **2990 passed, 0 failed**                | 1 flaky convergence test (stochastic, unrelated)                                                              |
+| juniper-canopy response normalization | **29 passed**                            | All new contract + status hardening tests pass                                                                |
+| juniper-canopy metrics panel handlers | **108 passed**                           | URL assertion tests updated                                                                                   |
+| juniper-cascor unit tests             | **1927 passed, 5 pre-existing failures** | Failures in `test_remaining_coverage_deep.py` (null lifecycle scenarios, unrelated to phase tracking changes) |
 
 ### Files Modified
 
 #### juniper-canopy
 
-| File | Changes |
-|---|---|
-| `src/backend/cascor_service_adapter.py` | Added `_to_dashboard_metric()` (FIX-A). Added `_transform_topology()` (FIX-B). Expanded relay callback (FIX-D). Updated param map (FIX-H). Applied transforms in `get_current_metrics()`, `get_recent_metrics()`, `extract_network_topology()`. |
-| `src/backend/state_sync.py` | Case-insensitive `_normalize_status()` (FIX-C). Normalized metrics history (FIX-E). Mapped params to Canopy namespace (FIX-E). Transformed topology (FIX-E). |
-| `src/frontend/components/metrics_panel.py` | Replaced 6 hardcoded URLs with `self._api_base_url` (FIX-F). |
-| `src/main.py` | Added `backend_initialized` guard (FIX-J). |
-| `src/tests/unit/test_response_normalization.py` | Updated existing tests for nested format. Added 3 new test classes (FIX-K). |
-| `src/tests/unit/frontend/test_metrics_panel_handlers.py` | Updated URL assertions from `localhost` to `127.0.0.1`. |
+| File                                                     | Changes                                                                                                                                                                                                          |
+|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `src/backend/cascor_service_adapter.py`                  | Added `_to_dashboard_metric()` (FIX-A), `_transform_topology()` (FIX-B). Relay callback (FIX-D). Param map (FIX-H). Transforms in `get_current_metrics()`, `get_recent_metrics()`, `extract_network_topology()`. |
+| `src/backend/state_sync.py`                              | Case-insensitive `_normalize_status()` (FIX-C). Normalized metrics history (FIX-E). Mapped params to Canopy namespace (FIX-E). Transformed topology (FIX-E).                                                     |
+| `src/frontend/components/metrics_panel.py`               | Replaced 6 hardcoded URLs with `self._api_base_url` (FIX-F).                                                                                                                                                     |
+| `src/main.py`                                            | Added `backend_initialized` guard (FIX-J).                                                                                                                                                                       |
+| `src/tests/unit/test_response_normalization.py`          | Updated existing tests for nested format. Added 3 new test classes (FIX-K).                                                                                                                                      |
+| `src/tests/unit/frontend/test_metrics_panel_handlers.py` | Updated URL assertions from `localhost` to `127.0.0.1`.                                                                                                                                                          |
 
 #### juniper-cascor
 
-| File | Changes |
-|---|---|
+| File                           | Changes                                                                                |
+|--------------------------------|----------------------------------------------------------------------------------------|
 | `src/api/lifecycle/manager.py` | Added `monitor.current_phase` updates in `monitored_fit` and `monitored_grow` (FIX-G). |
 
 ### Deferred Items
 
-| Item | Reason | When to Implement |
-|---|---|---|
-| FIX-I (P5-RC-14) | Dashboard doesn't consume WebSocket data (P5-RC-05) | When/if P5-RC-05 is addressed |
-| P5-RC-05 | Architectural choice -- HTTP polling at 1s is adequate | Future optimization |
-| KL-1 | CasCor API doesn't expose data arrays | Requires CasCor API extension |
-| P5-RC-18 formal contract types | Systemic -- TypedDict/dataclass enforcement | Future architecture work |
+| Item                           | Reason                                                 | When to Implement             |
+|--------------------------------|--------------------------------------------------------|-------------------------------|
+| FIX-I (P5-RC-14)               | Dashboard doesn't consume WebSocket data (P5-RC-05)    | When/if P5-RC-05 is addressed |
+| P5-RC-05                       | Architectural choice -- HTTP polling at 1s is adequate | Future optimization           |
+| KL-1                           | CasCor API doesn't expose data arrays                  | Requires CasCor API extension |
+| P5-RC-18 formal contract types | Systemic -- TypedDict/dataclass enforcement            | Future architecture work      |
 
 ---
 
-*End of Final Canopy-CasCor Connection Analysis*
+## Appendix F: Critical Gap Identified — CasCor Metrics Emission Granularity (2026-03-29)
+
+> **STATUS: INVESTIGATED — Phase display bug fixed; metrics granularity documented as architectural limitation**
+
+### F.1 Problem Statement
+
+After implementing all fixes from the development plan (Appendix E), live testing against a
+running cascor instance demonstrates that **the canopy dashboard still shows frozen training
+metrics**. The connection works, the format transformations work, but cascor provides
+insufficient metrics data for meaningful real-time monitoring.
+
+### F.2 Evidence (Live System Probe, 2026-03-29 03:33–03:35 UTC)
+
+```bash
+Dashboard screenshot at 03:35:52 (2m14s after startup):
+  - Status bar: Running | Phase: Output Training | Epoch: 1 | Hidden Units: 0
+  - Current Epoch: 1, Loss: 0.2430, Accuracy: 55.48%, Hidden Units: 0
+  - Loss chart: 1 data point at epoch 1
+  - No chart updates despite training being active
+Canopy log at startup:
+  - "State sync complete: status=Started, epoch=1, metrics=1 entries"
+```
+
+### F.3 Root Cause Analysis
+
+**Two distinct issues were identified:**
+
+#### F.3.1 CasCor Metrics Emission Granularity (Architectural — PRIMARY)
+
+CasCor's `_extract_and_record_metrics()` (manager.py:305-352) only fires at two points:
+
+1. **After initial `train_output_layer()`** → produces 1 metric entry
+2. **Inside `monitored_validate()` hook** → called only after a hidden unit is added and output is retrained
+
+**During the candidate training phase** (training `candidate_pool_size=50` candidates for
+`candidate_epochs=600` iterations each, via multiprocessing forkserver), `_extract_and_record_metrics()`
+is NEVER called. The metrics history stays at 1 entry for the entire duration of the first
+growth cycle, which can take many minutes.
+
+This is a **juniper-cascor architectural issue**, not a juniper-canopy issue. The canopy display
+pipeline is working correctly — it faithfully renders whatever data cascor provides.
+
+#### F.3.2 State Machine Phase Not Synchronized in `monitored_grow()` (Bug — FIXED)
+
+The `monitored_grow()` wrapper in `manager.py` updated `monitor.current_phase` and
+`training_state.phase` when entering/exiting candidate training, but did **NOT** call
+`state_machine.set_phase()`. Since Canopy's `ServiceBackend.get_status()` reads the
+state machine phase first (`sm.get("phase") or ts.get("phase", "idle")`), the stale
+`OUTPUT` phase from the state machine always took precedence over the truthful
+`Candidate` phase in `training_state`.
+
+**Result**: The dashboard showed "Phase: Output Training" while CasCor was actually in
+candidate training, making the training appear stalled rather than in a long-running
+candidate search operation.
+
+### F.4 Fix Applied — State Machine Phase Synchronization (2026-03-29)
+
+**File**: `juniper-cascor/src/api/lifecycle/manager.py`
+
+**Changes**:
+
+- Added `TrainingPhase` to imports from `api.lifecycle.state_machine`
+- Added `sm.set_phase(TrainingPhase.CANDIDATE)` in `monitored_grow()` before `original_grow()` call
+- Added `sm.set_phase(TrainingPhase.OUTPUT)` in `monitored_grow()` after `original_grow()` returns
+
+**Test Result**: 424/424 CasCor API unit tests pass.
+
+**Effect**: The dashboard now correctly shows "Phase: Candidate Pool" during candidate
+training, making it clear that training is actively progressing through the candidate
+search phase rather than appearing frozen.
+
+### F.5 Why the Development Plan Did Not Catch These Issues
+
+The plan's 5-phase analysis focused on **data format mismatches** between demo mode and service
+mode (flat vs nested metrics, weight-oriented vs graph-oriented topology, status case
+sensitivity). These were legitimate issues — without the format fixes, even the 1 metric entry
+would not display correctly. However:
+
+1. The analysis assumed that cascor provides a continuous stream of metrics, just in the wrong
+   format. In reality, cascor provides metrics at macro-epoch granularity only (once per hidden
+   unit addition cycle).
+2. The FIX-G phase tracking fix (P5-RC-06) updated `monitor.current_phase` but not
+   `state_machine._phase`, and no analysis tested the full phase display pipeline from the
+   state machine through Canopy's `get_status()` to the dashboard's status bar.
+
+### F.6 CasCor Training Flow (Where Metrics Are Absent)
+
+```bash
+fit()
+  └─ train_output_layer() → appends to network.history → 1 metric emitted
+  └─ grow_network() [enters monitored_grow]
+       └─ for epoch in range(max_epochs):     ← MAIN LOOP
+            ├─ calculate residual error
+            ├─ train_candidates()              ← LONG, NO METRICS EMITTED
+            │    └─ multiprocessing forkserver workers
+            │       training 50 candidates × 600 epochs each at high CPU
+            ├─ _add_best_candidate()
+            ├─ _retrain_output_layer()         → appends to network.history
+            └─ validate_training()             → monitored_validate → extract metrics
+                                                  ↑ ONLY HERE do new metrics appear
+```
+
+The gap between "1 metric emitted" and "first validate_training()" call can be **minutes**
+for the default configuration (50 candidates × 600 epochs).
+
+### F.7 Development Plan: Metrics Emission Granularity Improvements
+
+> **STATUS**: Superseded by Appendix G (see G.2–G.5 for refined analysis and implementation plan)
+>
+> Key corrections from Appendix G:
+>
+> - **Option B (polling timer): REJECTED** — `network.history` is never updated during the two
+>   longest training phases, making periodic polling architecturally ineffective (see G.2)
+> - **Option C approach changed**: Callback injection with throttling (every 25 epochs) instead
+>   of per-epoch history appends (see G.5 Item 2)
+> - **New items added**: Grow-state exposure, TrainingState progress fields, canopy progress
+>   indicators, dead metrics_queue cleanup (see G.4, G.5)
+
+### F.8 Impact Assessment (Pre-G.5 Implementation)
+
+| What Works Now (Appendices E + F.4)                      | What Doesn't (Addressed by Appendix G)                 |
+|----------------------------------------------------------|--------------------------------------------------------|
+| Connection to cascor                                     | Real-time metrics streaming during candidate training  |
+| Initial sync (1 metric entry displayed)                  | Continuous metrics accumulation during output training |
+| Format transformation (nested dashboard format)          | Dashboard progress beyond initial output training      |
+| Status normalization (all case variants)                 | Any visible activity during candidate phase (metrics)  |
+| Topology transformation (graph format)                   | Grow loop iteration/progress visibility                |
+| Parameter mapping (Canopy ↔ CasCor namespace)            | Phase sub-state detail (training_candidates, etc.)     |
+| **Phase display (now correctly shows "Candidate Pool")** | Elapsed time / progress indicators                     |
+
+### F.9 Files Modified (2026-03-29)
+
+| File                                          | Changes                                                                                                                                                                                                              |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `juniper-cascor/src/api/lifecycle/manager.py` | Added `TrainingPhase` import. Added `sm.set_phase(TrainingPhase.CANDIDATE)` and `sm.set_phase(TrainingPhase.OUTPUT)` calls in `monitored_grow()` to synchronize state machine phase with monitor and training state. |
+
+---
+
+## Appendix G: Metrics Granularity — Detailed Analysis and Implementation Plan (2026-03-29)
+
+### G.1 Analysis Summary
+
+A detailed investigation of the three proposed solutions (Appendix F.7) was performed, including
+deep analysis of the CasCor multiprocessing architecture, the `network.history` update patterns,
+the existing WebSocket broadcast pipeline, and the `TrainingState` / `TrainingMonitor` instrumentation.
+
+### G.2 Option Assessment
+
+#### Option B — Polling Timer: **REJECTED**
+
+Investigation reveals Option B is **architecturally ineffective**. The proposed polling timer would
+call `_extract_and_record_metrics()` periodically, but this method reads from `self.network.history`,
+which is **never updated during the two longest training phases**:
+
+1. **`train_output_layer()`** (1000 gradient descent steps): Does NOT touch `self.history`.
+   Returns only a final scalar loss. The caller appends to history afterward.
+2. **`train_candidates()`** (50 candidates × 600 epochs via multiprocessing): Trains candidate units
+   in isolated worker processes. Zero updates to `self.network.history`.
+
+A polling timer would repeatedly call `_extract_and_record_metrics()`, find `current_len <= last_emitted`,
+and return immediately — producing zero useful metrics during exactly the phases where visibility is needed.
+
+All locations where `self.history` is updated:
+
+| Location                            | Key                  | When                                                  |
+|-------------------------------------|----------------------|-------------------------------------------------------|
+| `fit()` L1361                       | `train_loss`         | After initial `train_output_layer()` completes (once) |
+| `fit()` L1366                       | `value_loss`         | After initial output training (once)                  |
+| `fit()` L1373                       | `train_accuracy`     | After initial output training (once)                  |
+| `fit()` L1376                       | `value_accuracy`     | After initial output training (once)                  |
+| `_retrain_output_layer()` L3581     | `train_loss`         | After each candidate is added, output retrained       |
+| `_calculate_train_accuracy()` L3551 | `train_accuracy`     | After each candidate retrain                          |
+| `validate_training()` L4021         | `value_loss`         | End of each `grow_network` iteration                  |
+| `validate_training()` L4025         | `value_accuracy`     | End of each `grow_network` iteration                  |
+| `add_unit()` L3168                  | `hidden_units_added` | When a candidate is structurally added                |
+
+#### Option C — Per-Iteration Output Training Metrics: **IMPLEMENT FIRST**
+
+**Smallest change, highest immediate ROI.** `train_output_layer()` runs a standard gradient descent
+loop for `output_epochs=1000` iterations, computing `loss.item()` each step, but never emitting
+anything. A callback injection (`on_epoch_callback`) would be ~5 lines in the network class and
+~15 lines in the manager hook.
+
+This covers:
+
+- The **initial** `train_output_layer()` dark period (1000 epochs with zero visibility)
+- Every subsequent `_retrain_output_layer()` after hidden unit addition (1000 epochs each)
+- These phases likely represent the **majority of wall-clock time** in sequential execution
+
+**Recommended cadence**: Emit every 10–25 epochs (not every epoch) to avoid flooding, plus always
+on the final epoch. At 25-epoch intervals, a 1000-epoch training produces 40 status updates — one
+roughly every few hundred milliseconds, ideal for 1Hz dashboard polling.
+
+#### Option A — Candidate Progress Metrics: **IMPLEMENT SECOND**
+
+**Complementary to C, not redundant.** Option A covers the candidate training blind spot that
+Option C cannot address.
+
+The multiprocessing architecture uses a persistent forkserver worker pool with `task_queue` and
+`result_queue` (both `multiprocessing.Queue`). Workers communicate **only at completion** — no
+intermediate IPC during the 600-epoch training loop inside `CandidateUnit.train_detailed()`.
+
+**Implementation approach**: Add a `progress_queue` alongside the existing queues. Workers would
+periodically `put_nowait()` lightweight progress events (candidate_id, epoch, correlation float).
+A drain thread in the main process aggregates these into `TrainingState` updates.
+
+**Implement this after Option C** Add after Option C and coarse grow-state exposure ship.
+Because candidate training still shows as "frozen" after those improvements, Option A needs to be implemented.
+
+### G.3 Complementarity Assessment
+
+| Option                             | Covers                                                            | Complementary With |
+|------------------------------------|-------------------------------------------------------------------|--------------------|
+| **B** (Polling timer)              | Nothing — architecturally ineffective                             | N/A — **REJECTED** |
+| **C** (Output training metrics)    | Initial output training (1000 epochs), all retraining phases      | A                  |
+| **A** (Candidate progress metrics) | Candidate training phase (50 × 600 epochs, multiprocessing)       | A, C               |
+| **Grow-state exposure** (NEW)      | Grow loop iteration progress, best correlation, phase transitions | A, C               |
+
+Options A and C are **complementary** — they cover non-overlapping blind spots. Together with
+grow-state exposure, they would provide end-to-end training visibility. Option B is redundant.
+
+### G.4 Additional Findings and Quick Wins
+
+#### G.4.1 Grow-Network Progress via TrainingState (NEW — Quick Win)
+
+`grow_network()` has rich intermediate data that is computed but **never exposed** to the status
+endpoint or dashboard:
+
+| Data                               | Source                             | Currently Exposed?             |
+|------------------------------------|------------------------------------|--------------------------------|
+| `best_correlation`                 | `TrainingResults.best_correlation` | ❌                             |
+| `success_count` / total candidates | `TrainingResults.success_count`    | ❌                             |
+| Grow epoch `i / max_epochs`        | `grow_network()` loop variable     | ❌                             |
+| `candidate_pool_size`              | `self.candidate_pool_size`         | Via `/v1/training/params` only |
+| `candidate_epochs`                 | `self.candidate_epochs`            | ❌                             |
+
+**Recommendation**: Hook `grow_network()` to update `TrainingState` at each iteration boundary
+with coarse progress data. This requires adding fields to `TrainingState._STATE_FIELDS` and
+updating state at these points:
+
+1. Entering candidate training
+2. Candidate training finished (with best_correlation, success_count)
+3. Adding best candidate
+4. Entering output retraining
+5. Entering validation
+6. Next grow iteration
+
+This is low-cost, high-value, and should be implemented alongside Option C.
+
+#### G.4.2 Dead `metrics_queue` in TrainingMonitor
+
+`TrainingMonitor.metrics_queue` (monitor.py:122) is initialized and populated on every
+`on_epoch_end()` call (monitor.py:180), but `poll_metrics_queue()` (monitor.py:220-223) is
+**never called anywhere in the codebase**. The queue grows unbounded during training.
+
+**Recommendation**: Repurpose it as a normalized event channel for current and future SSE/streaming endpoints.
+
+#### G.4.3 WebSocket Relay Not Consumed (P5-RC-05 + P5-RC-14)
+
+CasCor already broadcasts training metrics via WebSocket. Canopy's relay loop receives and
+re-broadcasts them to browser clients. But the browser-side Dash app **never reads** the
+`websocket-data` div — all data fetching uses `dcc.Interval` + REST polling.
+
+Additionally, the relay broadcasts raw CasCor field names without normalization (P5-RC-14).
+
+**Recommendation**: Sub-second responsiveness supplied by websocket relay is a requirement due to nature of additional backend applications (beyond cascor) that will be added in the near term.
+Apply fix P5-RC-14 (normalize relay payloads) and wire the WebSocket buffer into Dash via a clientside_callback.
+
+#### G.4.4 Canopy-Side Progress Indicators
+
+The dashboard currently shows no progress indicator for long-running phases. When the status
+shows "Phase: Candidate Pool" but no new metrics arrive for minutes, users interpret this as
+a system failure.
+
+**Quick wins**:
+
+- Show `hidden_units / max_hidden_units` progress (data already in status response)
+- Show elapsed time in current phase
+- Add an indeterminate progress animation when phase == "Candidate" with no new metrics
+- Show the last-known best correlation when available
+
+### G.5 Implementation Plan
+
+#### Tier 0: Immediate — Coarse Progress and Output Training Visibility
+
+| Order | Item                                          | Scope                                                                                                                                     | Effort               | Repo           |
+|-------|-----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|----------------------|----------------|
+| 1     | **Define progress fields in `TrainingState`** | Add `phase_detail`, `grow_iteration`, `grow_max`, `best_correlation`, `candidates_trained`, `candidates_total`, `phase_started_at` fields | Small (1 hr)         | juniper-cascor |
+| 2     | **Option C: Output training callback**        | Add `on_epoch_callback` to `train_output_layer()`, hook in lifecycle manager, emit throttled metrics (every 25 epochs)                    | Small (1–2 hrs)      | juniper-cascor |
+| 3     | **Grow-network state updates**                | Hook `grow_network()` iterations to update `TrainingState` with grow_iteration, best_correlation, phase sub-state                         | Small (1–2 hrs)      | juniper-cascor |
+| 4     | **Canopy progress indicators**                | Show grow progress, elapsed time, phase-appropriate animations in dashboard                                                               | Small–Medium (2 hrs) | juniper-canopy |
+
+**After Tier 0**: Dashboard shows per-epoch output training progress, grow loop iteration count,
+best correlation after each candidate cycle, and phase sub-states. The initial "dark" period is
+eliminated for output training phases.
+
+#### Tier 1: Candidate Training Visibility
+
+| Order | Item                                                | Scope                                                                                                         | Effort               | Repo           |
+|-------|-----------------------------------------------------|---------------------------------------------------------------------------------------------------------------|----------------------|----------------|
+| 5     | **Option A: Progress queue in worker pool**         | Add `progress_queue` to persistent forkserver pool, drain thread, throttled emissions from `train_detailed()` | Medium (2–3 days)    | juniper-cascor |
+| 6     | **Aggregate candidate progress in `TrainingState`** | Parent-side aggregation of worker progress into normalized state updates                                      | Small (1–2 hrs)      | juniper-cascor |
+| 7     | **Canopy candidate progress display**               | Determinate progress bar, per-candidate metrics in dashboard                                                  | Small–Medium (2 hrs) | juniper-canopy |
+
+#### Tier 2: Future — Plumbing Optimization
+
+| Order | Item                                    | Scope                                                                 | Effort           | Repo           |
+|-------|-----------------------------------------|-----------------------------------------------------------------------|------------------|----------------|
+| 8     | **Normalize relay payloads (P5-RC-14)** | Apply `_normalize_metric()` + `_to_dashboard_metric()` in relay loop  | Small (<1 hr)    | juniper-canopy |
+| 9     | **Wire WebSocket into Dash (P5-RC-05)** | Replace or supplement REST polling with WebSocket consumption         | Medium (2–3 hrs) | juniper-canopy |
+| 10    | **Clean up dead `metrics_queue`**       | Repurpose `TrainingMonitor.metrics_queue` as normalized event channel | Trivial (15 min) | juniper-cascor |
+
+### G.6 Risk Assessment
+
+| Risk                                                     | Likelihood | Impact | Mitigation                                                                |
+|----------------------------------------------------------|------------|--------|---------------------------------------------------------------------------|
+| Callback overhead in `train_output_layer()` hot loop     | Low        | Low    | Throttle to every 25 epochs; callback is a no-op when not hooked          |
+| Queue contention from 50 concurrent workers (Option A)   | Medium     | Medium | Throttle to every 10–50 epochs; use `put_nowait()` with silent drop       |
+| `TrainingState` field proliferation                      | Low        | Low    | Group progress fields in a sub-dict; only populate during active training |
+| Dashboard showing stale correlation values as "live"     | Medium     | Low    | Label as "last known"; only update when recomputed                        |
+| Multiple telemetry paths diverging (queue, callback, WS) | Medium     | Medium | Standardize on `TrainingState` as canonical source; all paths write there |
+
+### G.7 Alternative Approach: Augmented Option C + Reinstated Option B [CONSIDERED AND DEFERRED]
+
+> **Status**: Considered and deferred. This approach is architecturally sound with the sub-key
+> redesign but represents a larger refactor than the callback approach (Option C). It may be
+> revisited if the `self.history` data model is redesigned for other reasons.
+
+#### G.7.1 Concept
+
+Instead of injecting a callback into `train_output_layer()`, modify it to append per-epoch
+metrics directly to a **separate history sub-key** (e.g., `self.history["output_training_detail"]`).
+This makes `_extract_and_record_metrics()` capable of discovering new data during output training
+phases, which reinstates Option B — a background polling timer that periodically calls
+`_extract_and_record_metrics()`.
+
+The approach reuses the entire existing extraction pipeline (`_extract_and_record_metrics()` →
+`monitor.on_epoch_end()` → `metrics_buffer` → REST API → dashboard) without introducing a new
+data path, callback parameter, or hook installation.
+
+#### G.7.2 Why a Separate Sub-Key Is Required
+
+The naive approach — appending directly to `self.history["train_loss"]` — is structurally unsound
+because the four primary history lists are **alignment-critical**:
+
+```python
+# _extract_and_record_metrics() assumes index alignment:
+for i in range(last_emitted, current_len):
+    loss=train_loss_list[i],
+    accuracy=train_accuracy_list[i] if i < len(train_accuracy_list) else 0.0,
+    validation_loss=val_loss_list[i] if i < len(val_loss_list) else None,
+    validation_accuracy=val_accuracy_list[i] if i < len(val_accuracy_list) else None,
+```
+
+Currently, all four lists stay aligned because they are appended in lockstep at grow_network
+boundaries:
+
+| Step                          | `train_loss` | `train_accuracy` | `value_loss` | `value_accuracy` |
+|-------------------------------|--------------|------------------|--------------|------------------|
+| `_retrain_output_layer()`     | ✅ append    | —                | —            | —                |
+| `_calculate_train_accuracy()` | —            | ✅ append        | —            | —                |
+| `validate_training()`         | —            | —                | ✅ append    | ✅ append        |
+
+If `train_output_layer()` appends 40 intermediate entries to `train_loss` without corresponding
+entries in the other three lists, the extraction method would emit metrics with `accuracy=0.0`
+and `validation_loss=None` for all intermediate entries. Additionally, callers (`fit()` line 1361,
+`_retrain_output_layer()` line 3581) append to `train_loss` after `train_output_layer()` returns,
+creating duplicate final-epoch entries.
+
+A separate sub-key avoids these problems entirely.
+
+#### G.7.3 Design Sketch
+
+**History structure**:
+
+```python
+self.history = {
+    # Primary lists — one entry per cascade epoch, alignment-critical
+    "train_loss": [],
+    "value_loss": [],
+    "train_accuracy": [],
+    "value_accuracy": [],
+    "hidden_units_added": [],
+    # Detail sub-key — per-epoch output training metrics, independent
+    "output_training_detail": [],
+}
+```
+
+**`train_output_layer()` modification** (lines 1506–1529):
+
+```python
+for epoch in range(epochs):
+    # ... existing forward/backward pass ...
+    loss = criterion(output, y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    # Append to detail sub-key (throttled)
+    if epoch % 25 == 0 or epoch == epochs - 1:
+        self.history["output_training_detail"].append({
+            "output_epoch": epoch + 1,
+            "output_epochs_total": epochs,
+            "loss": loss.item(),
+            "hidden_units": len(self.hidden_units),
+            "phase": "output",
+            "timestamp": datetime.now().isoformat(),
+        })
+```
+
+**`_extract_and_record_metrics()` modification**:
+
+Add a second extraction loop that reads `output_training_detail` using its own high-water mark
+(`_last_emitted_detail_len`), emitting entries through `monitor.on_epoch_end()` with a
+distinguishing flag or separate event type. The primary extraction loop remains unchanged.
+
+**Polling timer** (~10 lines in `TrainingLifecycleManager`):
+
+```python
+def _start_metrics_poll_timer(self, interval: float = 2.0):
+    def poll():
+        while self._monitoring_active:
+            self._extract_and_record_metrics()
+            time.sleep(interval)
+    self._poll_thread = threading.Thread(target=poll, daemon=True)
+    self._poll_thread.start()
+```
+
+#### G.7.4 Strengths
+
+| # | Strength                                                                                                              |
+|---|-----------------------------------------------------------------------------------------------------------------------|
+| 1 | **Zero new plumbing** — reuses `_extract_and_record_metrics()` → `monitor` → `metrics_buffer` → REST pipeline         |
+| 2 | **Inherently thread-safe** — `_extract_and_record_metrics()` already uses `_metrics_lock`; timer calls are idempotent |
+| 3 | **No signature changes** — `train_output_layer()` retains its return type and calling convention                      |
+| 4 | **Automatic coverage** — both initial `fit()` and every `_retrain_output_layer()` emit detail entries                 |
+| 5 | **Self-documenting data model** — the sub-key name makes the semantic distinction explicit in the history dict        |
+| 6 | **Timer approach is simpler to reason about** — no monkey-patching, no closure state, just periodic polling           |
+
+#### G.7.5 Weaknesses
+
+| # | Weakness                                                                                                                                                                                                                                              | Severity |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| 1 | **Larger refactor** — requires modifying `train_output_layer()` internals, `_extract_and_record_metrics()`, history initialization, HDF5 serialization, and potentially test assertions that inspect `self.history`                                   | Medium   |
+| 2 | **History schema change** — any code that iterates or serializes `self.history` must handle the new key (HDF5 save/restore at line 4610, test fixtures, logging at line 3377)                                                                         | Medium   |
+| 3 | **Still blind during candidate training** — candidate training runs in separate processes with their own memory; `self.history` on the main process is untouched; the timer finds nothing new during candidate phases                                 | High     |
+| 4 | **Accuracy not available per output epoch** — `train_output_layer()` only computes loss; computing accuracy per epoch requires a full `calculate_accuracy()` forward pass on the entire training set, which would significantly slow training         | Low      |
+| 5 | **Timer thread lifecycle management** — must start/stop with training, handle edge cases (training completes between timer ticks, fallback-to-demo, reset)                                                                                            | Low      |
+| 6 | **Dashboard must distinguish detail entries from cascade entries** — entries with `accuracy=0.0` & `validation_loss=None`; dashboard renders differently (e.g., running loss without accuracy markers) or extraction method emits distinct event type | Medium   |
+
+#### G.7.6 Comparison: Sub-Key Approach vs Callback Approach
+
+| Criterion                                    | Sub-key + Timer (this approach)                              | Callback (original Option C)         |
+|----------------------------------------------|--------------------------------------------------------------|--------------------------------------|
+| Lines changed in `CascadeCorrelationNetwork` | ~10 (history append in loop)                                 | ~5 (callback param + invocation)     |
+| Lines changed in `TrainingLifecycleManager`  | ~30 (second extraction loop + timer)                         | ~15 (hook installation + callback)   |
+| Other files affected                         | HDF5 serialization, history init, tests                      | None                                 |
+| History data model                           | Modified (new sub-key)                                       | Unchanged                            |
+| `train_output_layer()` contract              | Side-effect added (history writes)                           | Signature extended (optional param)  |
+| Candidate training visibility                | ❌ Still blind                                               | ❌ Still blind                       |
+| Reuse for future detail keys                 | ✅ Pattern extensible to `candidate_training_detail`         | ❌ Each phase needs its own callback |
+| Total blast radius                           | Medium — touches network internals + manager + serialization | Low — manager hooks only             |
+
+#### G.7.7 Deferral Rationale
+
+The sub-key approach is **the better long-term architecture** if the history data model is being
+redesigned — the pattern naturally extends to `candidate_training_detail`, `validation_detail`,
+etc., and the timer-based extraction is simpler to maintain than per-phase callback wiring.
+
+However, it is deferred because:
+
+1. **The callback approach (original Option C) solves the same output training visibility problem
+   with lower blast radius** — no history schema change, no serialization impact, no test churn
+2. **Neither approach solves candidate training visibility** — Option A is still required for that
+3. **The history redesign should be a deliberate architectural decision**, not a side-effect of a
+   monitoring fix. If `self.history` is redesigned (e.g., to support richer training analytics,
+   multi-resolution data, or structured event logging), the sub-key + timer approach should be
+   adopted as part of that effort
+
+#### G.7.8 Conditions for Reconsideration
+
+Revisit this approach if any of the following occur:
+
+- `self.history` is redesigned for other reasons (e.g., structured analytics, multi-resolution data)
+- Multiple phases need detail-level visibility (output + candidate + validation), making the
+  extensible sub-key pattern more valuable than per-phase callbacks
+- The callback approach proves difficult to maintain across `train_output_layer()` refactors
+- HDF5 serialization is being overhauled and can absorb the schema change
+
+---
+
+*End of Final Canopy-CasCor Connection Analysis:*
