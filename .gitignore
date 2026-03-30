@@ -99,6 +99,15 @@ logs/*
 **/nohup.out
 **/nohup*
 
+# backup directories, contents
+backup
+*/backup
+**/backup
+
+backup/*
+*/backup/*
+**/backup/*
+
 # Claude Code git worktree files and dirs
 .claude/worktrees/
 
