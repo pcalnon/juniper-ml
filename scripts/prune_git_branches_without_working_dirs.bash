@@ -18,7 +18,8 @@ echo "Param: ${PARAM}"
 # BRANCH_TYPE="feature"
 # BRANCH_TYPE="docs"
 # BRANCH_TYPE="cursor"
-BRANCH_TYPE="tooling"
+BRANCH_TYPE="fix"
+# BRANCH_TYPE="tooling"
 echo "Branch Type: \"${BRANCH_TYPE}\""
 
 
