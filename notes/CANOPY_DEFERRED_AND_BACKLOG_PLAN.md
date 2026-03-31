@@ -232,11 +232,11 @@ UI Enhancements — Core — ✅ COMPLETE (2026-03-31)
 |----------------------------------|----------|--------------------------------------------------------------------------------------------|---------|
 | Layout save/load to localStorage | CAN-016a | Active tab persisted via two `clientside_callback`s (save on change, restore on page load)  | ✅ Done |
 
-### Step 5.4: Dataset Management (P3)
+### Step 5.4: Dataset Management (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                        | Source   | Details                                                                                   | Effort |
-|-----------------------------|----------|-------------------------------------------------------------------------------------------|--------|
-| Import/generate new dataset | CAN-016b | "New Dataset" button: import from file, URL, or JuniperData; generate spirals/XOR locally | 3-5 hr |
+| Task                        | Source   | Details                                                                                   | Status  |
+|-----------------------------|----------|-------------------------------------------------------------------------------------------|---------|
+| Generate new dataset        | CAN-016b | "Generate Dataset" button + modal with samples/spirals/rotations/noise params; `POST /api/dataset/generate` endpoint; `DemoMode.regenerate_dataset()` + `DemoBackend.regenerate_dataset()` | ✅ Done |
 
 ---
 
