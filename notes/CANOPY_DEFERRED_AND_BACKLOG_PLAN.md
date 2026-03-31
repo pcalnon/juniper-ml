@@ -153,14 +153,14 @@ Foundation Hardening — ✅ COMPLETE (2026-03-31)
 | Convert remaining skipped tests | CAN-HIGH-007 | Already properly gated: `test_candidate_visibility` (`RUN_SERVER_TESTS=1` + `@pytest.mark.requires_server`), `test_mvp_functionality` (skip on connection error), `test_parameter_persistence`/`test_demo_endpoints` (server-gated) | ✅ Already gated |
 | E2E JuniperData path tests      | CAN-MED-010  | Full import → train → retrieve path, gated behind env vars                                                                                                                                                           | Not started   |
 
-### Step 3.4: Code Quality (P2)
+### Step 3.4: Code Quality (P2) — ⏳ IN PROGRESS
 
-| Task                               | Source        | Details                                                                     | Effort |
-|------------------------------------|---------------|-----------------------------------------------------------------------------|--------|
-| Type annotation gaps               | CAN-MED-007   | Add type hints to modules with incomplete annotations; focus on public APIs | 2-3 hr |
-| Test docstrings                    | CAN-MED-014   | Add descriptive docstrings to tests lacking them (bulk operation)           | 1-2 hr |
-| Enable MyPy `warn_return_any=true` | Audit Backlog | Fix resulting type errors (~100+); do incrementally per module              | 3-4 hr |
-| Enable MyPy `strict_optional=true` | Audit Backlog | Fix resulting Optional-related errors (~100+); do incrementally             | 3-4 hr |
+| Task                               | Source        | Details                                                                                                                         | Status           |
+|------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
+| Type annotation gaps               | CAN-MED-007   | `demo_mode.py`: all mypy errors resolved (8→0). Remaining: `service_backend.py`, `demo_backend.py` TypedDict return mismatches | ✅ Partial        |
+| Test docstrings                    | CAN-MED-014   | Add descriptive docstrings to tests lacking them (bulk operation)                                                                | Not started      |
+| Enable MyPy `warn_return_any=true` | Audit Backlog | Fix resulting type errors (~100+); do incrementally per module                                                                   | Not started      |
+| Enable MyPy `strict_optional=true` | Audit Backlog | Fix resulting Optional-related errors (~100+); do incrementally                                                                  | Not started      |
 
 ---
 
