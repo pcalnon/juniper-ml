@@ -1,8 +1,8 @@
 # Juniper-Canopy: Comprehensive Requirements Audit & Test Plan
 
 **Created**: 2026-03-30
-**Status**: IN PROGRESS — Full Audit Phase
-**Last Updated**: 2026-03-30
+**Status**: AUDIT COMPLETE — Implementation In Progress
+**Last Updated**: 2026-03-30 (Actions 1-6 implemented; 9 partial items remain)
 
 ---
 
@@ -304,7 +304,7 @@ This document consolidates all documented requirements for juniper-canopy across
 | `_normalize_status()`                   | ✅ COMPLETE | `state_sync.py:143-163` — `raw.strip().lower()` with lookup dict                                                                                        |
 | WebSocket relay expansion               | ✅ COMPLETE | `cascor_service_adapter.py:238-253` — All progress fields forwarded                                                                                     |
 | State sync normalization                | ✅ COMPLETE | `state_sync.py:136` — Full normalize+transform pipeline                                                                                                 |
-| Hardcoded URL removal                   | ⚠️ PARTIAL  | `metrics_panel.py` clean; BUT `hdf5_snapshots_panel.py` (3 occurrences L53/L419/L445), `redis_panel.py` (1 fallback L98), `main.py` (1 JS comment L338) |
+| Hardcoded URL removal                   | ✅ COMPLETE | All production code now uses settings-based URLs; only docstring/JS comment references remain |
 | Double init guard                       | ✅ COMPLETE | `main.py:166,179,182` — `backend_initialized` flag                                                                                                      |
 | Contract tests                          | ✅ COMPLETE | 29 tests across 3 files; demo vs service shape comparison                                                                                               |
 | WebSocket relay normalization (REQ-059) | ✅ COMPLETE | `cascor_service_adapter.py:217-219` — No longer DEFERRED                                                                                                |
@@ -316,8 +316,8 @@ This document consolidates all documented requirements for juniper-canopy across
 | Exception broadening in adapter     | ✅ COMPLETE    | `cascor_service_adapter.py:668-669` hasattr guard + L694 `except Exception`  |
 | FakeCascorClient.get_dataset_data() | ✅ COMPLETE    | `juniper_cascor_client/testing/fake_client.py:642`                           |
 | response.ok guards (6 handlers)     | ✅ COMPLETE    | All 6 handlers in `dashboard_manager.py` have `if not response.ok:`          |
-| Interface conformance test          | ❌ NOT STARTED | No test compares FakeCascorClient method set vs JuniperCascorClient          |
-| Data generator functions            | ❌ NOT STARTED | No `generate_dataset_inputs`/`generate_dataset_targets` in tests             |
+| Interface conformance test          | ✅ COMPLETE    | `test_fake_client_conformance.py` — 2 tests (method set + signature match)   |
+| Data generator functions            | ✅ COMPLETE    | `tests/data/generators.py` — 3 functions (inputs, targets, two_spiral)       |
 | Version consistency (cascor-client) | ✅ COMPLETE    | Both `__init__.py` and `pyproject.toml` report `0.3.0`                       |
 
 #### 1.3 Demo Training Correctness (HIGH)
@@ -391,10 +391,10 @@ This document consolidates all documented requirements for juniper-canopy across
 |----------------------------------|----------------|-------------------------------------------------------------------------------------------------------------|
 | BackendProtocol formalization    | ✅ COMPLETE    | `protocol.py:47-140` — @runtime_checkable Protocol; returns still `Dict[str,Any]`                           |
 | Pydantic BaseSettings migration  | ✅ COMPLETE    | `settings.py:43-324` — Full pydantic_settings with nested models                                            |
-| Circuit breaker pattern          | ❌ NOT STARTED | No failure counting or circuit breaker logic anywhere                                                       |
+| Circuit breaker pattern          | ✅ COMPLETE    | `circuit_breaker.py` — CLOSED/OPEN/HALF_OPEN; integrated in adapter via `_cb` property; 13 tests           |
 | Error handling standardization   | ⚠️ PARTIAL     | `JSONResponse({"error": "..."})` consistent but no shared model; WS uses different shape                    |
-| Training monitor race conditions | ⚠️ PARTIAL     | `_trigger_callbacks` called outside lock; `current_hidden_units` read outside lock                          |
-| Dark mode table fix              | ⚠️ PARTIAL     | 3 hardcoded `#f8f9fa` remain: `metrics_panel.py:349`, `dataset_plotter.py:147`, `network_visualizer.py:182` |
+| Training monitor race conditions | ✅ COMPLETE    | All shared state reads/writes under lock; callbacks snapshot under lock before iteration                    |
+| Dark mode table fix              | ✅ COMPLETE    | All 3 hardcoded `#f8f9fa` replaced with `is_dark` conditionals                                              |
 | Pre-commit test scoping          | N/A            | No pytest pre-commit hook exists                                                                            |
 | Logs symlink resilience          | ✅ COMPLETE    | `logger.py:236-242` — resolves symlinks + mkdir                                                             |
 | reports/.gitkeep                 | ✅ COMPLETE    | File exists                                                                                                 |
@@ -407,45 +407,38 @@ This document consolidates all documented requirements for juniper-canopy across
 
 | Category                   | Complete | Partial | Not Started | N/A   |
 |----------------------------|----------|---------|-------------|-------|
-| Phase 1.1: Service Adapter | 8        | 1       | 0           | 0     |
-| Phase 1.2: Dataset Display | 4        | 0       | 2           | 0     |
+| Phase 1.1: Service Adapter | 9        | 0       | 0           | 0     |
+| Phase 1.2: Dataset Display | 6        | 0       | 0           | 0     |
 | Phase 1.3: Demo Training   | 12       | 2       | 0           | 0     |
 | Phase 2-3: UI/Dashboard    | 15       | 2       | 0           | 0     |
 | Phase 4: Testing/Quality   | 7        | 4       | 0           | 0     |
-| Phase 5: Architecture      | 5        | 4       | 1           | 1     |
-| **TOTALS**                 | **51**   | **13**  | **3**       | **1** |
+| Phase 5: Architecture      | 8        | 1       | 0           | 1     |
+| **TOTALS**                 | **57**   | **9**   | **0**       | **1** |
+
+_Updated 2026-03-30 after implementing Actions 1–6._
 
 ### Items Requiring Action (Prioritized)
 
-#### 🔴 NOT STARTED (3 items)
+#### 🔴 NOT STARTED — ✅ ALL RESOLVED
 
-1. **FakeCascorClient interface conformance test** — No test verifies the fake client implements all methods of the real client. Risk: method drift causes silent test failures.
-2. **Data generator functions** — No `generate_dataset_inputs`/`generate_dataset_targets` in test scenarios. Risk: tests can't generate realistic array data.
-3. **Circuit breaker pattern** — No failure counting or circuit state for CasCor/JuniperData service calls. Risk: cascading failure under service degradation.
+1. ~~FakeCascorClient interface conformance test~~ → ✅ `test_fake_client_conformance.py` (2 tests)
+2. ~~Data generator functions~~ → ✅ `tests/data/generators.py` (3 functions)
+3. ~~Circuit breaker pattern~~ → ✅ `circuit_breaker.py` + adapter integration (13 tests)
 
-#### 🟡 PARTIAL — Needs Completion (13 items)
+#### 🟡 PARTIAL — Needs Completion (9 remaining)
 
-**Priority 1 (Functional Impact):**
+**Priority 1 (Functional Impact) — ✅ ALL RESOLVED:**
 
-4. **Hardcoded URLs** (P1.1) — 3 occurrences in `hdf5_snapshots_panel.py`, 1 in `redis_panel.py`
-   - **Fix**: Replace `"http://localhost:8050"` with `f"http://127.0.0.1:{get_settings().server.port}"` or relative paths
-   - **Files**: `src/frontend/components/hdf5_snapshots_panel.py` L53/L419/L445, `src/frontend/components/redis_panel.py` L98
-
-5. **Dark mode table backgrounds** (P5) — 3 hardcoded `#f8f9fa` backgrounds
-   - **Fix**: Change to `"#2d2d2d" if is_dark else "#f8f9fa"` pattern (already used elsewhere)
-   - **Files**: `metrics_panel.py:349`, `dataset_plotter.py:147`, `network_visualizer.py:182`
-
-6. **Training monitor race conditions** (P5) — Callbacks triggered outside lock
-   - **Fix**: Either make `_trigger_callbacks` threadsafe (copy callback list under lock) or document lock ordering
-   - **File**: `src/backend/training_monitor.py`
+4. ~~Hardcoded URLs~~ → ✅ All replaced with settings-based URLs
+5. ~~Dark mode table backgrounds~~ → ✅ All 3 replaced with `is_dark` conditionals
+6. ~~Training monitor race conditions~~ → ✅ All shared state access under lock
 
 **Priority 2 (Test/Quality Gaps):**
 
 7. **Async/sync boundary tests** — Missing dedicated boundary tests
    - **Fix**: Add tests for `run_in_executor`, `nest_asyncio` interaction, sync→async boundaries
 
-8. **FakeCascorClient conformance** — Missing cross-comparison test
-   - **Fix**: Add parametrized test comparing `dir(FakeCascorClient)` public methods vs `dir(JuniperCascorClient)`
+8. ~~FakeCascorClient conformance~~ → ✅ `test_fake_client_conformance.py`
 
 9. **MyPy relaxed config** — Blanket ignores reduce value
    - **Fix**: Enable `strict_optional`, remove `ignore_missing_imports` (use per-module overrides), enable `warn_return_any`
@@ -527,18 +520,21 @@ def generate_dataset_targets(num_samples=100, num_classes=2):
 
 ### Near-Term Actions (Next Sprint)
 
-#### Action 5: Training Monitor Thread Safety Audit
+#### Action 5: Training Monitor Thread Safety Audit — ✅ DONE (2026-03-30)
 
-- Review lock ordering in `training_monitor.py`
-- Ensure `_trigger_callbacks` copies callback list under lock
-- Document lock acquisition order
+- `_trigger_callbacks` now snapshots callback list under lock before iteration
+- `register_callback` now acquires lock before modifying callback dict
+- `on_cascade_add` captures `current_hidden_units` under lock (no read-after-release)
+- `on_epoch_end` snapshots `current_hidden_units` and `current_phase` under lock
+- All 127 related tests pass
 
-#### Action 6: Circuit Breaker Implementation
+#### Action 6: Circuit Breaker Implementation — ✅ DONE (2026-03-30)
 
-- Add `CircuitBreaker` class to `src/backend/`
-- Track consecutive failures per service (CasCor, JuniperData)
-- States: CLOSED → OPEN → HALF_OPEN
-- Configure: `failure_threshold=5`, `recovery_timeout=60s`
+- Created `src/backend/circuit_breaker.py` with `CircuitBreaker` class
+- States: CLOSED → OPEN → HALF_OPEN with configurable threshold (5) and timeout (60s)
+- Integrated into `CascorServiceAdapter` via lazy `_cb` property
+- Wrapped 4 key REST methods with fallbacks returning safe defaults
+- 13 unit tests in `test_circuit_breaker.py` — all passing
 
 #### Action 7: MyPy Strictness Improvement
 
