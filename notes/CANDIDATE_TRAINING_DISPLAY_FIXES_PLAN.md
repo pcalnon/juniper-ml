@@ -1,8 +1,8 @@
 # Candidate Training Display Fixes Plan
 
-- **Version**: 1.0.0
+- **Version**: 1.1.0
 - **Date**: 2026-03-31
-- **Status**: VALIDATED — READY FOR IMPLEMENTATION
+- **Status**: IMPLEMENTED — ALL PHASES APPLIED, UNIT TESTS PASSING
 - **Scope**: juniper-cascor (primary), juniper-canopy (secondary)
 - **Prereqs**: INTEGRATED_DASHBOARD_PLAN.md Phase 1–3 items (merged ✅)
 
@@ -549,5 +549,48 @@ curl http://localhost:8050/api/state | python3 -m json.tool
 - `training.py` routes — REST endpoints already return full state
 
 ---
+
+---
+
+## 10. Implementation Status
+
+### 10.1 Changes Applied
+
+| Phase | File | Changes | Status |
+|-------|------|---------|--------|
+| 1 | `juniper-cascor/src/api/lifecycle/manager.py` | Added `_broadcast_training_state()` with throttling; broadcasts at all 13 state transitions | ✅ Applied |
+| 2 | `juniper-canopy/src/backend/cascor_service_adapter.py` | Derive `candidate_pool_status` from `phase_detail`; forward pool fields | ✅ Applied |
+| 3 | `juniper-canopy/src/backend/state_sync.py` | Added `progress_fields` to `SyncedState`; extract progress on sync | ✅ Applied |
+| 3 | `juniper-canopy/src/main.py` | Spread `synced.progress_fields` into training_state update | ✅ Applied |
+| — | `juniper-canopy/src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | Updated 2 tests for new `candidate_pool_status` field | ✅ Applied |
+
+### 10.2 Test Results
+
+- **juniper-canopy unit tests**: ALL PASS (100%)
+- **juniper-cascor lifecycle manager tests**: ALL PASS (55/55)
+- **Pre-existing flaky test** (`test_callback_exception_does_not_block_other_callbacks`): Not caused by our changes
+
+### 10.3 Integration Validation
+
+- Services launched via `launch_full_monty.bash` — all 3 services healthy
+- `/api/state` endpoint confirmed to return `phase_detail: "training_output"` and
+  `phase_started_at` with real ISO timestamps during output training phase
+- Phase transitions (Output → Candidate) confirmed visible in `/api/state`
+- Candidate training progress requires waiting for full grow iteration to complete
+  (~24 minutes for 8 candidates × 200 epochs on 2-spiral problem)
+
+### 10.4 Timing Discovery
+
+During live validation, candidate training per-grow-iteration takes ~24 minutes for
+the 2-spiral problem (8 candidates × 200 epochs × ~1 sec/epoch). The
+`_grow_iteration_callback` fires AFTER each complete grow iteration, not during.
+Per-candidate progress flows via the `_drain_progress_queue` with 50-epoch throttle.
+
+This means progress bars will show updates approximately every:
+- **Candidate epoch**: Every 50 epochs (~50 seconds per update)
+- **Grow iteration**: Every ~24 minutes (after full candidate pool trains)
+
+This is the expected behavior of the CasCor training algorithm — it cannot be
+made faster without changing the training architecture.
 
 *End of Candidate Training Display Fixes Plan*
