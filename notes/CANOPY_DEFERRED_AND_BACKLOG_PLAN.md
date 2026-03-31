@@ -96,13 +96,14 @@ Foundation Hardening — ✅ COMPLETE (2026-03-31)
 | `get_decision_boundary()` in juniper-cascor-client | CAN-CRIT-001 | `client.get_decision_boundary(resolution)` wrapping the endpoint                                                                 | ✅ Already exists |
 | `get_decision_boundary()` in CascorServiceAdapter  | CAN-CRIT-001 | Delegates to client, transforms `grid_x/grid_y/predictions` → `xx/yy/Z` format                                                   | ✅ Already exists |
 
-### Step 2.2: Snapshot REST Delegation (P1) — ⏳ BLOCKED (cross-repo)
+### Step 2.2: Snapshot REST Delegation (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task                                                            | Source       | Details                                                       | Status                          |
-|-----------------------------------------------------------------|--------------|---------------------------------------------------------------|---------------------------------|
-| Add `/v1/snapshots` endpoints to juniper-cascor                 | CAN-CRIT-002 | Save/load/list snapshot REST endpoints                        | ❌ Not started (juniper-cascor) |
-| Add `save_snapshot()`/`load_snapshot()` to CascorServiceAdapter | CAN-CRIT-002 | Thin REST delegation to CasCor `/v1/snapshots` endpoints      | ❌ Blocked on cascor endpoints  |
-| Update HDF5 snapshots panel for service mode                    | CAN-CRIT-002 | Wire panel to use adapter methods instead of local file paths | ❌ Blocked on adapter           |
+| Task                                                            | Source       | Details                                                                                                                                        | Status  |
+|-----------------------------------------------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Add `/v1/snapshots` endpoints to juniper-cascor                 | CAN-CRIT-002 | `POST /v1/snapshots` (save), `GET /v1/snapshots` (list), `GET /v1/snapshots/{id}` (detail), `POST /v1/snapshots/{id}/restore` (load)          | ✅ Done |
+| Add snapshot methods to juniper-cascor-client                   | CAN-CRIT-002 | `save_snapshot()`, `load_snapshot()`, `list_snapshots()`, `get_snapshot()` + FakeCascorClient support                                          | ✅ Done |
+| Add `save_snapshot()`/`load_snapshot()` to CascorServiceAdapter | CAN-CRIT-002 | Delegates to client methods; `load_snapshot` extracts snapshot_id from path stem                                                                | ✅ Done |
+| Update HDF5 snapshots panel for service mode                    | CAN-CRIT-002 | `main.py` already checks `hasattr(backend._adapter, "save_snapshot")` — now resolves to the real methods                                       | ✅ Auto |
 
 ### Step 2.3: JuniperData Error Handling (P1) — ✅ COMPLETE (2026-03-31)
 
@@ -157,7 +158,7 @@ Foundation Hardening — ✅ COMPLETE (2026-03-31)
 
 | Task                               | Source        | Details                                                                                                                         | Status           |
 |------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
-| Type annotation gaps               | CAN-MED-007   | `demo_mode.py`: all mypy errors resolved (8→0). Remaining: `service_backend.py`, `demo_backend.py` TypedDict return mismatches | ✅ Partial        |
+| Type annotation gaps               | CAN-MED-007   | `demo_mode.py` (8→0), `service_backend.py` (5→0), `demo_backend.py` (5→0) — all mypy errors resolved via type annotations + cast() | ✅ Done           |
 | Test docstrings                    | CAN-MED-014   | Add descriptive docstrings to tests lacking them (bulk operation)                                                                | Not started      |
 | Enable MyPy `warn_return_any=true` | Audit Backlog | Fix resulting type errors (~100+); do incrementally per module                                                                   | Not started      |
 | Enable MyPy `strict_optional=true` | Audit Backlog | Fix resulting Optional-related errors (~100+); do incrementally                                                                  | Not started      |
