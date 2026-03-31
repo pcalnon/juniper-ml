@@ -169,37 +169,39 @@ Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
 
 ## Sprint 4: DevOps & Deployment
 
+DevOps & Deployment — ✅ COMPLETE (2026-03-31)
+
 **Goal**: Production-ready deployment infrastructure.
-**Estimated Effort**: 3-5 days
+**Estimated Effort**: 3-5 days | **Actual**: Most items pre-existing; new items ~1 hour
 
-### Step 4.1: Docker Compose Modernization (P2)
+### Step 4.1: Docker Compose Modernization (P2) — ✅ COMPLETE (pre-existing)
 
-| Task                              | Source                | Details                                                                                                                     | Effort |
-|-----------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------|--------|
-| Create Makefile in juniper-deploy | Microservices Phase 1 | Wrap Docker Compose: `up`, `down`, `restart`, `logs`, `status`, `build`, `clean`, `health`, `ps`, `shell-*`                 | 2-3 hr |
-| Create health check script        | Microservices Phase 1 | `scripts/health_check.sh` hitting `/v1/health/ready` for all 3 services                                                     | 30 min |
-| Add Docker Compose profiles       | Microservices Phase 3 | `dev`, `demo`, `full`, `test`, `monitor` profiles; `juniper-canopy-dev` (demo) and `juniper-canopy-demo` (service) variants | 2-3 hr |
-| Docker Compose demo profile       | Microservices Phase 7 | Real CasCor with auto-start (`CASCOR_AUTO_TRAIN=true`, `CASCOR_DEMO_DATASET=two_spiral`)                                    | 1-2 hr |
+| Task                              | Source                | Details                                                                                                                     | Status            |
+|-----------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Create Makefile in juniper-deploy | Microservices Phase 1 | Wrap Docker Compose: `up`, `down`, `restart`, `logs`, `status`, `build`, `clean`, `health`, `ps`, `shell-*`, `demo`, `dev`, `obs` | ✅ Already exists |
+| Create health check script        | Microservices Phase 1 | `scripts/health_check.sh` hitting `/v1/health/ready` for all 3 services with formatted report                                | ✅ Already exists |
+| Add Docker Compose profiles       | Microservices Phase 3 | `full`, `demo`, `dev`, `observability` profiles with network segmentation (frontend/backend/data)                            | ✅ Already exists |
+| Docker Compose demo profile       | Microservices Phase 7 | `juniper-cascor-demo` with auto-start, `demo-seed` init container, `juniper-canopy-demo` dashboard                           | ✅ Already exists |
 
-### Step 4.2: Health Check Consolidation (P2)
+### Step 4.2: Health Check Consolidation (P2) — ✅ COMPLETE (2026-03-31)
 
-| Task                      | Source                | Details                                                                                                                                                                  | Effort |
-|---------------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
-| Consolidate health routes | Microservices Phase 8 | Consolidate 5 health routes (`/health`, `/api/health`, `/v1/health`, `/v1/health/ready`, `/v1/health/live`) to 3 canonical routes; deprecate legacy routes with warnings | 1-2 hr |
+| Task                      | Source                | Details                                                                                                                                                                  | Status  |
+|---------------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Consolidate health routes | Microservices Phase 8 | 3 canonical routes: `/v1/health`, `/v1/health/live`, `/v1/health/ready`. Legacy `/health` and `/api/health` marked `deprecated=True` with runtime deprecation warning log | ✅ Done |
 
-### Step 4.3: Configuration Standardization (P2)
+### Step 4.3: Configuration Standardization (P2) — ✅ COMPLETE (pre-existing + 2026-03-31)
 
-| Task                                               | Source                | Details                                                                                                                                              | Effort |
-|----------------------------------------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
-| Migrate env prefix `CASCOR_*` → `JUNIPER_CANOPY_*` | Microservices Phase 9 | Add `JUNIPER_CANOPY_*` as primary with `CASCOR_*` backward compat and deprecation warnings; already partially done in `settings.py` field validators | 2-3 hr |
-| Add `.env` file support                            | Microservices Phase 9 | `.env.example`, `.env.dev`, `.env.prod` with documentation                                                                                           | 1 hr   |
+| Task                                               | Source                | Details                                                                                                                                              | Status            |
+|----------------------------------------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Migrate env prefix `CASCOR_*` → `JUNIPER_CANOPY_*` | Microservices Phase 9 | `JUNIPER_CANOPY_*` primary via Pydantic BaseSettings; `CASCOR_*` fallback with `DeprecationWarning` in field validators for 6 legacy env vars       | ✅ Already done   |
+| Add `.env` file support                            | Microservices Phase 9 | `.env.example` (reference), `.env.dev` (demo mode, debug logging), `.env.prod` (service mode, production defaults)                                   | ✅ Done           |
 
-### Step 4.4: Systemd Service Units (P3)
+### Step 4.4: Systemd Service Units (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                                           | Source                | Details                                                                                    | Effort |
-|------------------------------------------------|-----------------------|--------------------------------------------------------------------------------------------|--------|
-| Define systemd user service for juniper-canopy | Microservices Phase 2 | Unit file with dependency ordering, resource limits (2G RAM, 200% CPU), security hardening | 1-2 hr |
-| Create `juniper-ctl` management CLI            | Microservices Phase 2 | start/stop/restart/status/logs/health/resources commands                                   | 3-4 hr |
+| Task                                           | Source                | Details                                                                                    | Status  |
+|------------------------------------------------|-----------------------|--------------------------------------------------------------------------------------------|---------|
+| Define systemd user service for juniper-canopy | Microservices Phase 2 | `scripts/juniper-canopy.service` — user unit with MemoryMax=2G, CPUQuota=200%, security hardening (NoNewPrivileges, ProtectSystem=strict, PrivateTmp) | ✅ Done |
+| Create `juniper-ctl` management CLI            | Microservices Phase 2 | `scripts/juniper-ctl` — start/stop/restart/status/logs/health/resources commands wrapping systemctl | ✅ Done |
 
 ---
 
