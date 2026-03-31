@@ -86,42 +86,43 @@ Items are organized into **6 sprints** by priority and dependency order, followe
 **Goal**: Complete all backend integration gaps for service mode.
 **Estimated Effort**: 2-3 days
 
-### Step 2.1: Decision Boundary for Service Mode (P0)
+### Step 2.1: Decision Boundary for Service Mode (P0) — ✅ COMPLETE (pre-existing)
 
-| Task | Source | Details | Effort |
+| Task | Source | Details | Status |
 |------|--------|---------|--------|
-| Add grid prediction endpoint to juniper-cascor | CAN-CRIT-001 | `POST /v1/predict/grid` accepting `xx`, `yy` meshgrid arrays, returning `Z` predictions | Cross-repo: 2-3 hr |
-| Add `predict_grid()` to juniper-cascor-client | CAN-CRIT-001 | Client method wrapping the new endpoint | 30 min |
-| Wire `get_decision_boundary()` in CascorServiceAdapter | CAN-CRIT-001 | Replace demo-only path with real client call; keep demo fallback | 1 hr |
+| Decision boundary endpoint in juniper-cascor | CAN-CRIT-001 | `GET /v1/decision-boundary` with server-side grid prediction (in `api/routes/decision_boundary.py` + `api/lifecycle/manager.py`) | ✅ Already exists |
+| `get_decision_boundary()` in juniper-cascor-client | CAN-CRIT-001 | `client.get_decision_boundary(resolution)` wrapping the endpoint | ✅ Already exists |
+| `get_decision_boundary()` in CascorServiceAdapter | CAN-CRIT-001 | Delegates to client, transforms `grid_x/grid_y/predictions` → `xx/yy/Z` format | ✅ Already exists |
 
-### Step 2.2: Snapshot REST Delegation (P1)
+### Step 2.2: Snapshot REST Delegation (P1) — ⏳ BLOCKED (cross-repo)
 
-| Task | Source | Details | Effort |
+| Task | Source | Details | Status |
 |------|--------|---------|--------|
-| Add `save_snapshot()`/`load_snapshot()` to CascorServiceAdapter | CAN-CRIT-002 | Thin REST delegation to CasCor `/v1/snapshots` endpoints | 1 hr |
-| Update HDF5 snapshots panel for service mode | CAN-CRIT-002 | Wire panel to use adapter methods instead of local file paths | 1 hr |
+| Add `/v1/snapshots` endpoints to juniper-cascor | CAN-CRIT-002 | Save/load/list snapshot REST endpoints | ❌ Not started (juniper-cascor) |
+| Add `save_snapshot()`/`load_snapshot()` to CascorServiceAdapter | CAN-CRIT-002 | Thin REST delegation to CasCor `/v1/snapshots` endpoints | ❌ Blocked on cascor endpoints |
+| Update HDF5 snapshots panel for service mode | CAN-CRIT-002 | Wire panel to use adapter methods instead of local file paths | ❌ Blocked on adapter |
 
-### Step 2.3: JuniperData Error Handling (P1)
+### Step 2.3: JuniperData Error Handling (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task | Source | Details | Effort |
+| Task | Source | Details | Status |
 |------|--------|---------|--------|
-| Map JuniperData client exceptions to user-friendly messages | CAN-HIGH-006 | Create exception mapping in data adapter; display meaningful errors in dashboard | 1-2 hr |
-| Add JuniperData circuit breaker | CAN-MED-008 | Extend existing `CircuitBreaker` pattern to JuniperData client calls (already have the class) | 30 min |
-| Add structured logging for JuniperData API interactions | CAN-MED-009 | Log request count, latency, error rate with structured fields | 30 min |
+| Map JuniperData client exceptions to user-friendly messages | CAN-HIGH-006 | `_user_friendly_data_error()` maps 6 exception types to actionable messages | ✅ Done |
+| Add JuniperData circuit breaker | CAN-MED-008 | N/A — JuniperData calls are one-shot (init-time dataset generation), not periodic polling; circuit breaker pattern not applicable | ✅ Not needed |
+| Add structured logging for JuniperData API interactions | CAN-MED-009 | `create_dataset` and `download_artifact_npz` log latency_ms, url, dataset_id via `extra={}` | ✅ Done |
 
-### Step 2.4: NPZ Validation (P1)
+### Step 2.4: NPZ Validation (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task | Source | Details | Effort |
+| Task | Source | Details | Status |
 |------|--------|---------|--------|
-| Add dtype and shape validation for NPZ datasets | CAN-HIGH-002 | Validate `float32` dtype, 2D shape for X arrays, matching sample counts | 30 min |
+| Add dtype and shape validation for NPZ datasets | CAN-HIGH-002 | `_validate_npz_arrays()`: float32 dtype, 2D shape for X arrays, matching sample counts, numpy type check | ✅ Done |
 
-### Step 2.5: UI Lock & Training Pipeline (P0 — UX Critical)
+### Step 2.5: UI Lock & Training Pipeline (P0 — UX Critical) — ✅ COMPLETE (2026-03-31)
 
-| Task | Source | Details | Effort |
+| Task | Source | Details | Status |
 |------|--------|---------|--------|
-| Break lock granularity during candidate training | P08-FIX-1 | Release lock during candidate training (candidate-local state); acquire briefly for install/expand/retrain. Eliminates 5-20s UI freeze | 2-3 hr |
-| Emit progress during retrain | P08-FIX-2 | Broadcast intermediate metrics during 1000-step retrain (already partially done via `_emit_training_metrics`) — verify and enhance | 1 hr |
-| Fix history deque `maxlen=1000` silent eviction | P08-BUG-2 | Either increase maxlen or implement ring-buffer with pagination | 30 min |
+| Break lock granularity during candidate training | P08-FIX-1 | Already implemented: `_training_loop()` runs candidate training lock-free, brief lock for install, retrain per-step lock-free | ✅ Already done |
+| Emit progress during retrain | P08-FIX-2 | Already implemented: `OUTPUT_RETRAIN_EMIT_EVERY=50` step-based emission with time-based fallback | ✅ Already done |
+| Fix history deque `maxlen=1000` silent eviction | P08-BUG-2 | Increased maxlen from 1000→10000 via `TrainingConstants.METRICS_HISTORY_MAXLEN`, matching `DashboardConstants.MAX_DATA_POINTS` | ✅ Fixed |
 
 ---
 
