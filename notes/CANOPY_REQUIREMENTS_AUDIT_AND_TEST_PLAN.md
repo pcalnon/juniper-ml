@@ -297,17 +297,17 @@ This document consolidates all documented requirements for juniper-canopy across
 
 #### 1.1 CasCor Service Adapter (CRITICAL)
 
-| Requirement                             | Status      | Evidence                                                                                                                                                |
-|-----------------------------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `_to_dashboard_metric()`                | ✅ COMPLETE | `cascor_service_adapter.py:518-540` — Static method, used in 4 call sites                                                                               |
-| `_transform_topology()`                 | ✅ COMPLETE | `cascor_service_adapter.py:560-632` — Full graph conversion with passthrough guard                                                                      |
-| `_normalize_status()`                   | ✅ COMPLETE | `state_sync.py:143-163` — `raw.strip().lower()` with lookup dict                                                                                        |
-| WebSocket relay expansion               | ✅ COMPLETE | `cascor_service_adapter.py:238-253` — All progress fields forwarded                                                                                     |
-| State sync normalization                | ✅ COMPLETE | `state_sync.py:136` — Full normalize+transform pipeline                                                                                                 |
+| Requirement                             | Status      | Evidence                                                                                      |
+|-----------------------------------------|-------------|-----------------------------------------------------------------------------------------------|
+| `_to_dashboard_metric()`                | ✅ COMPLETE | `cascor_service_adapter.py:518-540` — Static method, used in 4 call sites                     |
+| `_transform_topology()`                 | ✅ COMPLETE | `cascor_service_adapter.py:560-632` — Full graph conversion with passthrough guard            |
+| `_normalize_status()`                   | ✅ COMPLETE | `state_sync.py:143-163` — `raw.strip().lower()` with lookup dict                              |
+| WebSocket relay expansion               | ✅ COMPLETE | `cascor_service_adapter.py:238-253` — All progress fields forwarded                           |
+| State sync normalization                | ✅ COMPLETE | `state_sync.py:136` — Full normalize+transform pipeline                                       |
 | Hardcoded URL removal                   | ✅ COMPLETE | All production code now uses settings-based URLs; only docstring/JS comment references remain |
-| Double init guard                       | ✅ COMPLETE | `main.py:166,179,182` — `backend_initialized` flag                                                                                                      |
-| Contract tests                          | ✅ COMPLETE | 29 tests across 3 files; demo vs service shape comparison                                                                                               |
-| WebSocket relay normalization (REQ-059) | ✅ COMPLETE | `cascor_service_adapter.py:217-219` — No longer DEFERRED                                                                                                |
+| Double init guard                       | ✅ COMPLETE | `main.py:166,179,182` — `backend_initialized` flag                                            |
+| Contract tests                          | ✅ COMPLETE | 29 tests across 3 files; demo vs service shape comparison                                     |
+| WebSocket relay normalization (REQ-059) | ✅ COMPLETE | `cascor_service_adapter.py:217-219` — No longer DEFERRED                                      |
 
 #### 1.2 Dataset Display Bug (CRITICAL)
 
@@ -391,7 +391,7 @@ This document consolidates all documented requirements for juniper-canopy across
 |----------------------------------|----------------|-------------------------------------------------------------------------------------------------------------|
 | BackendProtocol formalization    | ✅ COMPLETE    | `protocol.py:47-140` — @runtime_checkable Protocol; returns still `Dict[str,Any]`                           |
 | Pydantic BaseSettings migration  | ✅ COMPLETE    | `settings.py:43-324` — Full pydantic_settings with nested models                                            |
-| Circuit breaker pattern          | ✅ COMPLETE    | `circuit_breaker.py` — CLOSED/OPEN/HALF_OPEN; integrated in adapter via `_cb` property; 13 tests           |
+| Circuit breaker pattern          | ✅ COMPLETE    | `circuit_breaker.py` — CLOSED/OPEN/HALF_OPEN; integrated in adapter via `_cb` property; 13 tests            |
 | Error handling standardization   | ⚠️ PARTIAL     | `JSONResponse({"error": "..."})` consistent but no shared model; WS uses different shape                    |
 | Training monitor race conditions | ✅ COMPLETE    | All shared state reads/writes under lock; callbacks snapshot under lock before iteration                    |
 | Dark mode table fix              | ✅ COMPLETE    | All 3 hardcoded `#f8f9fa` replaced with `is_dark` conditionals                                              |
