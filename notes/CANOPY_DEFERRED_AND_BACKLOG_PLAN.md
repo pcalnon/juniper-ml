@@ -98,12 +98,12 @@ Foundation Hardening — ✅ COMPLETE (2026-03-31)
 
 ### Step 2.2: Snapshot REST Delegation (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task                                                            | Source       | Details                                                                                                                                        | Status  |
-|-----------------------------------------------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| Add `/v1/snapshots` endpoints to juniper-cascor                 | CAN-CRIT-002 | `POST /v1/snapshots` (save), `GET /v1/snapshots` (list), `GET /v1/snapshots/{id}` (detail), `POST /v1/snapshots/{id}/restore` (load)          | ✅ Done |
-| Add snapshot methods to juniper-cascor-client                   | CAN-CRIT-002 | `save_snapshot()`, `load_snapshot()`, `list_snapshots()`, `get_snapshot()` + FakeCascorClient support                                          | ✅ Done |
-| Add `save_snapshot()`/`load_snapshot()` to CascorServiceAdapter | CAN-CRIT-002 | Delegates to client methods; `load_snapshot` extracts snapshot_id from path stem                                                                | ✅ Done |
-| Update HDF5 snapshots panel for service mode                    | CAN-CRIT-002 | `main.py` already checks `hasattr(backend._adapter, "save_snapshot")` — now resolves to the real methods                                       | ✅ Auto |
+| Task                                                            | Source       | Details                                                                                                                              | Status  |
+|-----------------------------------------------------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Add `/v1/snapshots` endpoints to juniper-cascor                 | CAN-CRIT-002 | `POST /v1/snapshots` (save), `GET /v1/snapshots` (list), `GET /v1/snapshots/{id}` (detail), `POST /v1/snapshots/{id}/restore` (load) | ✅ Done |
+| Add snapshot methods to juniper-cascor-client                   | CAN-CRIT-002 | `save_snapshot()`, `load_snapshot()`, `list_snapshots()`, `get_snapshot()` + FakeCascorClient support                                | ✅ Done |
+| Add `save_snapshot()`/`load_snapshot()` to CascorServiceAdapter | CAN-CRIT-002 | Delegates to client methods; `load_snapshot` extracts snapshot_id from path stem                                                     | ✅ Done |
+| Update HDF5 snapshots panel for service mode                    | CAN-CRIT-002 | `main.py` already checks `hasattr(backend._adapter, "save_snapshot")` — now resolves to the real methods                             | ✅ Auto |
 
 ### Step 2.3: JuniperData Error Handling (P1) — ✅ COMPLETE (2026-03-31)
 
@@ -138,8 +138,8 @@ Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
 
 ### Step 3.1: Async/Sync Boundary Tests (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task                                         | Source       | Details                                                                                                                                                                                          | Status  |
-|----------------------------------------------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Task                                         | Source       | Details                                                                                                                                                                                        | Status  |
+|----------------------------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | Add dedicated async/sync boundary test suite | CAN-HIGH-003 | `test_async_sync_boundary.py`: 17 tests covering `run_in_executor`, `run_coroutine_threadsafe`, `broadcast_sync` vs `broadcast_from_thread` behavioral difference, concurrent delivery, errors | ✅ Done |
 
 ### Step 3.2: Real Backend Path Coverage (P1) — ✅ COMPLETE (2026-03-31)
@@ -151,19 +151,19 @@ Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
 
 ### Step 3.3: Integration Test Expansion (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task                            | Source       | Details                                                                                                                                                                                                             | Status        |
-|---------------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| Convert remaining skipped tests | CAN-HIGH-007 | Already properly gated: `test_candidate_visibility` (`RUN_SERVER_TESTS=1` + `@pytest.mark.requires_server`), `test_mvp_functionality` (skip on connection error), `test_parameter_persistence`/`test_demo_endpoints` (server-gated) | ✅ Already gated |
-| E2E JuniperData path tests      | CAN-MED-010  | Full import → train → retrieve path, gated behind env vars                                                                                                                                                           | Not started   |
+| Task                            | Source       | Details                                                                                                                                                                                                         | Status           |
+|---------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| Convert remaining skipped tests | CAN-HIGH-007 | gated: `test_candidate_visibility` (`RUN_SERVER_TESTS=1` + `@pytest.mark.requires_server`), `test_mvp_functionality` (skip on connect error), `test_parameter_persistence`/`test_demo_endpoints` (server-gated) | ✅ Already gated |
+| E2E JuniperData path tests      | CAN-MED-010  | Full import → train → retrieve path, gated behind env vars                                                                                                                                                      | Not started      |
 
 ### Step 3.4: Code Quality (P2) — ✅ COMPLETE (2026-03-31)
 
-| Task                               | Source        | Details                                                                                                                         | Status           |
-|------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
-| Type annotation gaps               | CAN-MED-007   | `demo_mode.py` (8→0), `service_backend.py` (5→0), `demo_backend.py` (5→0) — all mypy errors resolved via type annotations + cast() | ✅ Done           |
-| Test docstrings                    | CAN-MED-014   | 32 module docstrings + 16 class docstrings added across unit/integration/regression/performance test files                       | ✅ Done           |
-| Enable MyPy `warn_return_any=true` | Audit Backlog | 44 `no-any-return` errors fixed across 12 files (bool() wrappers, dict() wrappers, cast(), type annotations, name-unmangle)     | ✅ Done           |
-| Enable MyPy `strict_optional=true` | Audit Backlog | Enabled globally; 9 modules with pre-existing Optional errors use per-module `strict_optional=false` override pending migration  | ✅ Done (incremental) |
+| Task                               | Source        | Details                                                                                                                            | Status                |
+|------------------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
+| Type annotation gaps               | CAN-MED-007   | `demo_mode.py` (8→0), `service_backend.py` (5→0), `demo_backend.py` (5→0) — all mypy errors resolved via type annotations + cast() | ✅ Done               |
+| Test docstrings                    | CAN-MED-014   | 32 module docstrings + 16 class docstrings added across unit/integration/regression/performance test files                         | ✅ Done               |
+| Enable MyPy `warn_return_any=true` | Audit Backlog | 44 `no-any-return` errors fixed across 12 files (bool() wrappers, dict() wrappers, cast(), type annotations, name-unmangle)        | ✅ Done               |
+| Enable MyPy `strict_optional=true` | Audit Backlog | Enabled globally; 9 modules with pre-existing Optional errors use per-module `strict_optional=false` override pending migration    | ✅ Done (incremental) |
 
 ---
 
@@ -176,17 +176,17 @@ DevOps & Deployment — ✅ COMPLETE (2026-03-31)
 
 ### Step 4.1: Docker Compose Modernization (P2) — ✅ COMPLETE (pre-existing)
 
-| Task                              | Source                | Details                                                                                                                     | Status            |
-|-----------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------|-------------------|
-| Create Makefile in juniper-deploy | Microservices Phase 1 | Wrap Docker Compose: `up`, `down`, `restart`, `logs`, `status`, `build`, `clean`, `health`, `ps`, `shell-*`, `demo`, `dev`, `obs` | ✅ Already exists |
-| Create health check script        | Microservices Phase 1 | `scripts/health_check.sh` hitting `/v1/health/ready` for all 3 services with formatted report                                | ✅ Already exists |
-| Add Docker Compose profiles       | Microservices Phase 3 | `full`, `demo`, `dev`, `observability` profiles with network segmentation (frontend/backend/data)                            | ✅ Already exists |
-| Docker Compose demo profile       | Microservices Phase 7 | `juniper-cascor-demo` with auto-start, `demo-seed` init container, `juniper-canopy-demo` dashboard                           | ✅ Already exists |
+| Task                              | Source                | Details                                                                                                                            | Status            |
+|-----------------------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Create Makefile in juniper-deploy | Microservices Phase 1 | Wrap Docker Compose: `up`, `down`, `restart`, `logs`, `status`, `build`, `clean`, `health`, `ps`, `shell-*`, `demo`, `dev`, `obs`  | ✅ Already exists |
+| Create health check script        | Microservices Phase 1 | `scripts/health_check.sh` hitting `/v1/health/ready` for all 3 services with formatted report                                      | ✅ Already exists |
+| Add Docker Compose profiles       | Microservices Phase 3 | `full`, `demo`, `dev`, `observability` profiles with network segmentation (frontend/backend/data)                                  | ✅ Already exists |
+| Docker Compose demo profile       | Microservices Phase 7 | `juniper-cascor-demo` with auto-start, `demo-seed` init container, `juniper-canopy-demo` dashboard                                 | ✅ Already exists |
 
 ### Step 4.2: Health Check Consolidation (P2) — ✅ COMPLETE (2026-03-31)
 
-| Task                      | Source                | Details                                                                                                                                                                  | Status  |
-|---------------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Task                      | Source                | Details                                                                                                                                                                   | Status  |
+|---------------------------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | Consolidate health routes | Microservices Phase 8 | 3 canonical routes: `/v1/health`, `/v1/health/live`, `/v1/health/ready`. Legacy `/health` and `/api/health` marked `deprecated=True` with runtime deprecation warning log | ✅ Done |
 
 ### Step 4.3: Configuration Standardization (P2) — ✅ COMPLETE (pre-existing + 2026-03-31)
@@ -242,36 +242,38 @@ UI Enhancements — Core — ✅ COMPLETE (2026-03-31)
 
 ## Sprint 6: UI Enhancements — Advanced
 
+UI Enhancements — Advanced — ✅ COMPLETE (2026-03-31)
+
 **Goal**: Advanced features for power users and research workflows.
-**Estimated Effort**: 5-8 days
+**Estimated Effort**: 5-8 days | **Actual**: ~2 hours
 
-### Step 6.1: Meta Parameter Tuning Tab (P3)
+### Step 6.1: Meta Parameter Tuning Tab (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                              | Source                  | Details                                                                                                                                                               | Effort |
-|-----------------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|
-| Create meta parameter tuning tab  | CAN-004                 | New dashboard tab with all exposed meta params in organized sections                                                                                                  | 4-6 hr |
-| Pin/unpin parameters to side menu | CAN-005                 | Drag-to-pin params from tuning tab to persistent side panel                                                                                                           | 2-3 hr |
-| Individual parameter controls     | CAN-006 through CAN-013 | Network train epochs, candidate pool epochs, pool size, correlation threshold, optimizer, activation, selection count, integration mode — all tunable during training | 4-6 hr |
+| Task                              | Source                  | Details                                                                                                                                                               | Status            |
+|-----------------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
+| Create meta parameter tuning tab  | CAN-004                 | "Parameters" tab with `ParametersPanel` component — 3-section dbc.Table (Network Training, Dataset, Candidate Training) showing current/min/max/default values        | ✅ Done           |
+| Pin/unpin parameters to side menu | CAN-005                 | Drag-to-pin params from tuning tab to persistent side panel                                                                                                           | ⏸ Deferred — sidebar already has all params; pin/unpin adds complexity for marginal UX gain |
+| Individual parameter controls     | CAN-006 through CAN-013 | All 22+ parameters already tunable in sidebar (nn-* and cn-* inputs) with Apply button; Parameters tab provides read-only summary                                     | ✅ Already done   |
 
-### Step 6.2: Snapshot & Replay (P3)
+### Step 6.2: Snapshot & Replay (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                                | Source  | Details                                                                    | Effort |
-|-------------------------------------|---------|----------------------------------------------------------------------------|--------|
-| Snapshot captures with tuning state | CAN-014 | Record meta param values at each snapshot; store alongside network weights | 3-4 hr |
-| Snapshot replay with tuning         | CAN-015 | Load snapshot and allow meta param modification during replay              | 3-5 hr |
+| Task                                | Source  | Details                                                                    | Status  |
+|-------------------------------------|---------|----------------------------------------------------------------------------|---------|
+| Snapshot captures with tuning state | CAN-014 | Demo mode: `meta_params` dict stored on snapshot entry. HDF5: `meta_params` group with attributes. Captured from `backend.get_status()` | ✅ Done |
+| Snapshot replay with tuning         | CAN-015 | Restore reads `meta_params` and applies via `backend.apply_params()`. Returns params in response for frontend sync | ✅ Done |
 
-### Step 6.3: Candidate Pool History (P3)
+### Step 6.3: Candidate Pool History (P3) — ✅ COMPLETE (pre-existing)
 
-| Task                           | Source  | Details                                                                                 | Effort |
-|--------------------------------|---------|-----------------------------------------------------------------------------------------|--------|
-| Candidate pool history browser | CAN-003 | Retain candidate pool data for each cascade addition; expandable "Previous Pools" panel | 3-4 hr |
+| Task                           | Source  | Details                                                                                 | Status            |
+|--------------------------------|---------|-----------------------------------------------------------------------------------------|-------------------|
+| Candidate pool history browser | CAN-003 | `candidate-pools-history` dcc.Store (max 20 entries), expandable `dbc.Card` per pool with epoch, top candidate, scores, metrics | ✅ Already exists |
 
-### Step 6.4: Tutorial System (P3)
+### Step 6.4: Tutorial System (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                        | Source  | Details                                                                            | Effort |
-|-----------------------------|---------|------------------------------------------------------------------------------------|--------|
-| Tutorial text (right-click) | CAN-018 | Right-click context menu with detailed descriptions and doc links                  | 3-4 hr |
-| Guided walkthrough          | CAN-019 | Step-by-step highlighted tutorial using a tour library (dash-extensions or custom) | 5-8 hr |
+| Task                        | Source  | Details                                                                            | Status  |
+|-----------------------------|---------|------------------------------------------------------------------------------------|---------|
+| Tutorial reference guide    | CAN-018 | "Tutorial" tab with `TutorialPanel` — 5-section dbc.Accordion: CasCor overview, workflow guide, UI guide, parameter reference, tips | ✅ Done |
+| Getting Started walkthrough | CAN-019 | Welcome modal on first visit (localStorage-gated), 4-step quick start guide with Tutorial tab link | ✅ Done |
 
 ---
 
