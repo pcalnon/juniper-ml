@@ -207,28 +207,30 @@ DevOps & Deployment — ✅ COMPLETE (2026-03-31)
 
 ## Sprint 5: UI Enhancements — Core
 
+UI Enhancements — Core — ✅ COMPLETE (2026-03-31)
+
 **Goal**: Most impactful UI improvements for everyday use.
-**Estimated Effort**: 3-5 days
+**Estimated Effort**: 3-5 days | **Actual**: ~2 hours
 
-### Step 5.1: Training UX Improvements (P1 — UX)
+### Step 5.1: Training UX Improvements (P1 — UX) — ✅ COMPLETE (2026-03-31)
 
-| Task                             | Source    | Details                                                                         | Effort |
-|----------------------------------|-----------|---------------------------------------------------------------------------------|--------|
-| Meta parameter updates pause     | CAN-000   | Pause periodic backend sync when Apply Parameters is active                     | 30 min |
-| Decision boundary poll frequency | P08-BUG-3 | Reduce boundary poll from 5s to 1-2s; or wire to WebSocket events for real-time | 1 hr   |
-| Sliding window default fix       | P08-BUG-1 | Change default window or auto-adjust based on training activity density         | 30 min |
+| Task                             | Source    | Details                                                                         | Status                          |
+|----------------------------------|-----------|---------------------------------------------------------------------------------|---------------------------------|
+| Meta parameter updates pause     | CAN-000   | Pause periodic backend sync when Apply Parameters is active                     | ✅ N/A — architecture already prevents overwriting (one-shot init only) |
+| Decision boundary poll frequency | P08-BUG-3 | Changed boundary poll from `slow-update-interval` (5s) to `fast-update-interval` (1s) | ✅ Done                   |
+| Sliding window default fix       | P08-BUG-1 | Changed default from 100→500 via `DashboardConstants.DEFAULT_SLIDING_WINDOW_SIZE`     | ✅ Done                   |
 
-### Step 5.2: Tooltips & Help (P2)
+### Step 5.2: Tooltips & Help (P2) — ✅ COMPLETE (2026-03-31)
 
-| Task                         | Source  | Details                                                                     | Effort |
-|------------------------------|---------|-----------------------------------------------------------------------------|--------|
-| Add tooltips to all controls | CAN-017 | Use `dbc.Tooltip` on each control; define text in a constants/config module | 2-3 hr |
+| Task                         | Source  | Details                                                                     | Status  |
+|------------------------------|---------|-----------------------------------------------------------------------------|---------|
+| Add tooltips to all controls | CAN-017 | 25 `dbc.Tooltip` components for all NN/CN parameter inputs + Apply button, text in `frontend/tooltips.py` | ✅ Done |
 
-### Step 5.3: Layout Persistence (P3)
+### Step 5.3: Layout Persistence (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                             | Source   | Details                                                                                    | Effort |
-|----------------------------------|----------|--------------------------------------------------------------------------------------------|--------|
-| Layout save/load to localStorage | CAN-016a | Serialize dashboard state (selected tab, chart zoom, window sizes) via clientside_callback | 3-4 hr |
+| Task                             | Source   | Details                                                                                    | Status  |
+|----------------------------------|----------|--------------------------------------------------------------------------------------------|---------|
+| Layout save/load to localStorage | CAN-016a | Active tab persisted via two `clientside_callback`s (save on change, restore on page load)  | ✅ Done |
 
 ### Step 5.4: Dataset Management (P3)
 
