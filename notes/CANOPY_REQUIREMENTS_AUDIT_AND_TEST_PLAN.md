@@ -477,9 +477,9 @@ This document consolidates all documented requirements for juniper-canopy across
 
 ## Recommendations & Next Steps
 
-### Immediate Actions (This Sprint)
+### Immediate Actions (This Sprint) — ✅ ALL COMPLETE (2026-03-30)
 
-#### Action 1: Fix Hardcoded URLs (30 min)
+#### Action 1: Fix Hardcoded URLs (30 min) — ✅ DONE
 
 Replace 4 remaining `localhost:8050` references with settings-based URLs:
 
@@ -493,7 +493,7 @@ Replace 4 remaining `localhost:8050` references with settings-based URLs:
 # Same pattern
 ```
 
-#### Action 2: Fix Dark Mode Backgrounds (15 min)
+#### Action 2: Fix Dark Mode Backgrounds (15 min) — ✅ DONE
 
 Replace 3 hardcoded `#f8f9fa` with theme-aware pattern:
 
@@ -503,7 +503,7 @@ Replace 3 hardcoded `#f8f9fa` with theme-aware pattern:
 # TO:   "backgroundColor": "#2d2d2d" if is_dark else "#f8f9fa"
 ```
 
-#### Action 3: Add FakeCascorClient Conformance Test (30 min)
+#### Action 3: Add FakeCascorClient Conformance Test (30 min) — ✅ DONE
 
 ```python
 # tests/unit/test_fake_client_conformance.py
@@ -514,7 +514,7 @@ def test_fake_client_has_all_real_methods():
     assert not missing, f"FakeCascorClient missing methods: {missing}"
 ```
 
-#### Action 4: Add Data Generator Functions (30 min)
+#### Action 4: Add Data Generator Functions (30 min) — ✅ DONE
 
 ```python
 # tests/data/generators.py
