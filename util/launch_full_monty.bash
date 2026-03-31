@@ -33,7 +33,7 @@ JUNIPER_DATA_LOG="${JUNIPER_DATA_LOG_DIR}/${JUNIPER_DATA_LOGNAME}"
 JUNIPER_DATA_HOST="0.0.0.0"
 JUNIPER_DATA_PORT="8100"
 JUNIPER_DATA_CONDA="JuniperData"
-JUNIPER_DATA_SLEEPYTIME="15"
+JUNIPER_DATA_SLEEPYTIME="10"
 
 
 ###########################################################################################################################################################################################################
@@ -49,7 +49,7 @@ JUNIPER_CASCOR_HOST="localhost"
 JUNIPER_CASCOR_PORT="8201"
 JUNIPER_CASCOR_URL="http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
 JUNIPER_CASCOR_CONDA="JuniperCascor"
-JUNIPER_CASCOR_SLEEPYTIME="40"
+JUNIPER_CASCOR_SLEEPYTIME="30"
 
 
 ###########################################################################################################################################################################################################
@@ -81,7 +81,7 @@ echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_DATA_CONDA}\""
 conda activate "${JUNIPER_DATA_CONDA}"
 echo "[${SCRIPT_NAME}:${LINENO}] PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host \"${JUNIPER_DATA_HOST}\" --port \"${JUNIPER_DATA_PORT}\" >\"${JUNIPER_DATA_LOG}\" 2>&1 &"
 PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host "${JUNIPER_DATA_HOST}" --port "${JUNIPER_DATA_PORT}" >"${JUNIPER_DATA_LOG}" 2>&1 &
-JUNIPER_DATA_PID=$#
+JUNIPER_DATA_PID=$!
 echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_DATA_PID=${JUNIPER_DATA_PID}"
 echo "[${SCRIPT_NAME}:${LINENO}] Sleeping for ${JUNIPER_DATA_SLEEPYTIME} sec"
 sleep "${JUNIPER_DATA_SLEEPYTIME}"
@@ -96,7 +96,7 @@ echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CASCOR_CONDA}\""
 conda activate "${JUNIPER_CASCOR_CONDA}"
 echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT}" nohup "${PYTHON}" "${JUNIPER_CASCOR_MODULE}" >"${JUNIPER_CASCOR_LOG}" 2>&1 &
-JUNIPER_CASCOR_PID=$#
+JUNIPER_CASCOR_PID=$!
 echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PID=\"${JUNIPER_CASCOR_PID}\""
 echo "[${SCRIPT_NAME}:${LINENO}] Sleeping for ${JUNIPER_CASCOR_SLEEPYTIME} sec"
 sleep "${JUNIPER_CASCOR_SLEEPYTIME}"
@@ -111,7 +111,7 @@ echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CANOPY_CONDA}\""
 conda activate "${JUNIPER_CANOPY_CONDA}"
 echo "[${SCRIPT_NAME}:${LINENO}] CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" nohup \"${PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
 CASCOR_SERVICE_URL="${JUNIPER_CASCOR_URL}" nohup "${PYTHON}" "${JUNIPER_CANOPY_MODULE}" >"${JUNIPER_CANOPY_LOG}" 2>&1 &
-JUNIPER_CANOPY_PID=$#
+JUNIPER_CANOPY_PID=$!
 echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_PID=${JUNIPER_CANOPY_PID}"
 echo "[${SCRIPT_NAME}:${LINENO}] Sleeping for ${JUNIPER_CANOPY_SLEEPYTIME} sec"
 sleep "${JUNIPER_CANOPY_SLEEPYTIME}"
@@ -129,9 +129,9 @@ else
     touch "${JUNIPER_PROJECT_PID_FILE}"
 fi
 
-echo "${JUNIPER_DATA_PID}" >>"juniper-data   ${JUNIPER_PROJECT_PID_FILE}"
-echo "${JUNIPER_CASCOR_PID}" >>"juniper-cascor ${JUNIPER_PROJECT_PID_FILE}"
-echo "${JUNIPER_CANOPY_PID}" >>"juniper-canopy ${JUNIPER_PROJECT_PID_FILE}"
+echo "juniper-data:   ${JUNIPER_DATA_PID}"   >> ${JUNIPER_PROJECT_PID_FILE}
+echo "juniper-cascor: ${JUNIPER_CASCOR_PID}" >> ${JUNIPER_PROJECT_PID_FILE}
+echo "juniper-canopy: ${JUNIPER_CANOPY_PID}" >> ${JUNIPER_PROJECT_PID_FILE}
 
 cat "${JUNIPER_PROJECT_PID_FILE}"
 
