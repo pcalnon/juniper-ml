@@ -287,7 +287,7 @@ Items requiring external dependencies, major architectural work, or with low nea
 |--------------------------------|--------------|----------------------------------------|----------------------------------------------------|
 | Multi-hierarchy network view   | CAN-020      | Multi-hierarchy CasCor implementation  | CasCor doesn't support hierarchy yet               |
 | Population network view        | CAN-021      | Population-based CasCor implementation | CasCor doesn't support populations yet             |
-| Remote worker status dashboard | CAN-HIGH-005 | RemoteWorkerClient in CasCor           | Worker monitoring belongs in juniper-cascor-worker |
+| ~~Remote worker status dashboard~~ | ~~CAN-HIGH-005~~ | ~~RemoteWorkerClient in CasCor~~ | ✅ COMPLETE (2026-03-31) — REST routes in cascor, client methods in cascor-client, WorkerPanel + demo endpoints in canopy |
 | Cassandra integration tests    | CAN-DEF-002  | Cassandra instance                     | Needs infrastructure provisioning                  |
 | Redis integration tests        | CAN-DEF-003  | Redis instance                         | Needs infrastructure provisioning                  |
 | Dataset versioning             | CAN-DEF-005  | JuniperData API versioning support     | Requires juniper-data feature                      |
