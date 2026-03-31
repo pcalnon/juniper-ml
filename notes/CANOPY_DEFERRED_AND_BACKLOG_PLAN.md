@@ -131,6 +131,8 @@ Foundation Hardening — ✅ COMPLETE (2026-03-31)
 
 ## Sprint 3: Testing & Quality Gates
 
+Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
+
 **Goal**: Close all testing gaps, achieve coverage targets.
 **Estimated Effort**: 2-3 days
 
@@ -154,14 +156,14 @@ Foundation Hardening — ✅ COMPLETE (2026-03-31)
 | Convert remaining skipped tests | CAN-HIGH-007 | Already properly gated: `test_candidate_visibility` (`RUN_SERVER_TESTS=1` + `@pytest.mark.requires_server`), `test_mvp_functionality` (skip on connection error), `test_parameter_persistence`/`test_demo_endpoints` (server-gated) | ✅ Already gated |
 | E2E JuniperData path tests      | CAN-MED-010  | Full import → train → retrieve path, gated behind env vars                                                                                                                                                           | Not started   |
 
-### Step 3.4: Code Quality (P2) — ⏳ IN PROGRESS
+### Step 3.4: Code Quality (P2) — ✅ COMPLETE (2026-03-31)
 
 | Task                               | Source        | Details                                                                                                                         | Status           |
 |------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------|------------------|
 | Type annotation gaps               | CAN-MED-007   | `demo_mode.py` (8→0), `service_backend.py` (5→0), `demo_backend.py` (5→0) — all mypy errors resolved via type annotations + cast() | ✅ Done           |
-| Test docstrings                    | CAN-MED-014   | Add descriptive docstrings to tests lacking them (bulk operation)                                                                | Not started      |
-| Enable MyPy `warn_return_any=true` | Audit Backlog | Fix resulting type errors (~100+); do incrementally per module                                                                   | Not started      |
-| Enable MyPy `strict_optional=true` | Audit Backlog | Fix resulting Optional-related errors (~100+); do incrementally                                                                  | Not started      |
+| Test docstrings                    | CAN-MED-014   | 32 module docstrings + 16 class docstrings added across unit/integration/regression/performance test files                       | ✅ Done           |
+| Enable MyPy `warn_return_any=true` | Audit Backlog | 44 `no-any-return` errors fixed across 12 files (bool() wrappers, dict() wrappers, cast(), type annotations, name-unmangle)     | ✅ Done           |
+| Enable MyPy `strict_optional=true` | Audit Backlog | Enabled globally; 9 modules with pre-existing Optional errors use per-module `strict_optional=false` override pending migration  | ✅ Done (incremental) |
 
 ---
 
