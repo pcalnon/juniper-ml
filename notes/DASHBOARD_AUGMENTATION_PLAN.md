@@ -2,7 +2,7 @@
 
 **Date:** 2026-03-29
 **Version:** 2.0.0
-**Status:** Pending Approval
+**Status:** PARTIALLY COMPLETE — Phase 1 items done, Phase 2-4 remaining
 **Scope:** juniper-canopy (primary), juniper-cascor + juniper-cascor-client (dataset endpoint)
 **Prerequisite:** FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md Appendix G (Tiers 0-2 all merged)
 **Synthesized From:**
@@ -384,6 +384,32 @@ All three tasks validated by specialized sub-agents (2026-03-29):
 - Card pattern: `html.Div([html.H5(), html.H2(id=...)])` with flex layout (lines 393-428)
 - Handler return tuple: 8 elements — use separate callbacks for new outputs
 - dbc.Progress available (dbc imported) but never used (first usage)
+
+---
+
+## 11. Implementation Status (2026-04-01)
+
+| Phase | Item | Status |
+|-------|------|--------|
+| 1 | Fix pre-existing test failures (section 5) | ✅ COMPLETE — Fixed in Backlog Sprint 1 |
+| 1 | Task 3: Fix topology layer assignments | ✅ COMPLETE — output_weights transposition fixed |
+| 1 | Task 2 Phase 1: Metadata-only graceful handling | ❌ NOT STARTED |
+| 2 | Task 1A: Validation loss/accuracy overlays | ❌ NOT STARTED |
+| 2 | Task 1B: Training progress bars (dbc.Progress) | ✅ COMPLETE — Candidate training display fixes plan delivered progress bars |
+| 2 | Task 1C: Learning rate metric card | ❌ NOT STARTED |
+| 2 | Task 1D: Phase duration display | ❌ NOT STARTED |
+| 2 | Task 1E: Hidden units progress ratio | ✅ COMPLETE — commit 18e39cf (max_hidden_units denominator) |
+| 4 | Task 2 Phase 2: Dataset data endpoint | ❌ NOT STARTED — requires cross-repo work |
+
+### Additional Work Completed (not in original plan)
+
+| Feature | Commit | Description |
+|---------|--------|-------------|
+| Weight matrix heatmap (OF-1) | b55ff46 | New display mode for network visualizer with raw topology endpoint |
+| Correlation statistics | 37c885d | Replace pool metrics with correlation stats, forward all_correlations |
+| WebSocket topology buffer | 04db7e6 | Real-time topology updates via WebSocket |
+| CasCor state mapping | 8d6b858 | Top candidate field mapping, candidate_pool_phase derivation |
+| GIL contention test fix | 04db7e6 | Rewrote flaky training loop tests to use thread.join instead of polling |
 
 ---
 
