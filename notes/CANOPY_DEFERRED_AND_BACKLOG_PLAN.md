@@ -154,7 +154,7 @@ Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
 | Task                            | Source       | Details                                                                                                                                                                                                         | Status           |
 |---------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
 | Convert remaining skipped tests | CAN-HIGH-007 | gated: `test_candidate_visibility` (`RUN_SERVER_TESTS=1` + `@pytest.mark.requires_server`), `test_mvp_functionality` (skip on connect error), `test_parameter_persistence`/`test_demo_endpoints` (server-gated) | ✅ Already gated |
-| E2E JuniperData path tests      | CAN-MED-010  | Full import → train → retrieve path, gated behind env vars                                                                                                                                                      | Not started      |
+| E2E JuniperData path tests      | CAN-MED-010  | `test_juniper_data_e2e.py`: 48 tests (38 fake + 10 live) covering create → download → validate → train → verify. Gated behind `JUNIPER_DATA_E2E_TEST=1` | ✅ Done (2026-04-01) |
 
 ### Step 3.4: Code Quality (P2) — ✅ COMPLETE (2026-03-31)
 
@@ -303,7 +303,7 @@ Items requiring external dependencies, major architectural work, or with low nea
 | Kubernetes deployment via k3s                 | Microservices Phase 4         | Post-Docker maturity                                                           |
 | Network segmentation                          | Microservices Phase 3         | Docker network isolation (backend/frontend/monitoring)                         |
 | Observability stack (Prometheus + Grafana)    | Microservices Phase 3         | Needs Docker monitoring profile                                                |
-| JuniperData performance benchmarks            | CAN-DEF-007                   | Useful but low urgency                                                         |
+| ~~JuniperData performance benchmarks~~        | ~~CAN-DEF-007~~               | ✅ COMPLETE (2026-04-01) — 23 benchmarks in juniper-data-client (14 fake + 9 live gated behind JUNIPER_DATA_BENCHMARK=1) |
 | Docker secrets management                     | Microservices Phase 3         | `secrets.example/` directory, `_FILE` env var pattern                          |
 
 ---
