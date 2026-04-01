@@ -291,7 +291,7 @@ Items requiring external dependencies, major architectural work, or with low nea
 | ~~Cassandra integration tests~~    | ~~CAN-DEF-002~~  | ~~Cassandra instance~~                     | ✅ COMPLETE (2026-03-31) — Docker service in juniper-deploy, 16 real-instance integration tests gated behind CASSANDRA_INTEGRATION_TEST=1 |
 | ~~Redis integration tests~~        | ~~CAN-DEF-003~~  | ~~Redis instance~~                         | ✅ COMPLETE (2026-03-31) — Docker service in juniper-deploy, 15 real-instance integration tests gated behind REDIS_INTEGRATION_TEST=1. Verified against local Redis |
 | Dataset versioning             | CAN-DEF-005  | JuniperData API versioning support     | Requires juniper-data feature                      |
-| Dataset batch operations       | CAN-DEF-006  | JuniperData batch API                  | Requires juniper-data feature                      |
+| ~~Dataset batch operations~~       | ~~CAN-DEF-006~~  | ~~JuniperData batch API~~                  | ✅ COMPLETE (2026-03-31) — batch-create, batch-tags, batch-export endpoints in juniper-data; client wrappers + FakeDataClient in juniper-data-client |
 
 ### Long-Term Architecture
 
