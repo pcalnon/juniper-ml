@@ -46,15 +46,15 @@ own `TrainingState`, and the `/api/state` endpoint always returns zeros for prog
 
 ### Impact Summary
 
-| Component | Expected Display | Actual Display |
-|-----------|-----------------|----------------|
-| Grow iteration progress bar | "3/10" with progress fill | Hidden (0/0) |
-| Candidate epoch progress bar | "45/100 (45%)" | Hidden (0/0) |
-| Phase detail text | "training_candidates" | "" |
-| Best correlation | "0.9234" | Not shown |
-| Candidates trained/total | "2/8" | Not shown |
-| Phase duration | "2m 45s" | Not shown |
-| Candidate pool display | Rich table with top-2 candidates | "Inactive" |
+| Component                    | Expected Display                 | Actual Display |
+|------------------------------|----------------------------------|----------------|
+| Grow iteration progress bar  | "3/10" with progress fill        | Hidden (0/0)   |
+| Candidate epoch progress bar | "45/100 (45%)"                   | Hidden (0/0)   |
+| Phase detail text            | "training_candidates"            | ""             |
+| Best correlation             | "0.9234"                         | Not shown      |
+| Candidates trained/total     | "2/8"                            | Not shown      |
+| Phase duration               | "2m 45s"                         | Not shown      |
+| Candidate pool display       | Rich table with top-2 candidates | "Inactive"     |
 
 ---
 
@@ -64,15 +64,15 @@ own `TrainingState`, and the `/api/state` endpoint always returns zeros for prog
 
 All UI components exist and callbacks are correctly wired:
 
-| Component | Implementation | Callback |
-|-----------|---------------|----------|
-| `dbc.Progress` grow bar | Lines 452–488 | `update_training_progress` (line 628) |
-| `dbc.Progress` candidate bar | Lines 452–488 | Same callback |
-| Progress detail text | Lines 148, 607–612 | `_update_progress_detail_handler` (line 1157) |
-| Candidate pool display | Lines 502–532, 597–605 | `_update_candidate_pool_handler` (line 1938) |
-| Phase badge | Lines 136–147 | `_get_status_style` (line 1880) |
-| Phase duration | Lines 158–167, 621–626 | `_update_phase_duration_handler` (line 1231) |
-| Learning rate card | Lines 614–619 | Separate callback |
+| Component                    | Implementation         | Callback                                      |
+|------------------------------|------------------------|-----------------------------------------------|
+| `dbc.Progress` grow bar      | Lines 452–488          | `update_training_progress` (line 628)         |
+| `dbc.Progress` candidate bar | Lines 452–488          | Same callback                                 |
+| Progress detail text         | Lines 148, 607–612     | `_update_progress_detail_handler` (line 1157) |
+| Candidate pool display       | Lines 502–532, 597–605 | `_update_candidate_pool_handler` (line 1938)  |
+| Phase badge                  | Lines 136–147          | `_get_status_style` (line 1880)               |
+| Phase duration               | Lines 158–167, 621–626 | `_update_phase_duration_handler` (line 1231)  |
+| Learning rate card           | Lines 614–619          | Separate callback                             |
 
 All callbacks read from `training-state-store`, which is populated by polling `GET /api/state`
 every 5 seconds.
@@ -82,7 +82,7 @@ every 5 seconds.
 The `/api/state` endpoint (main.py ~line 600) returns `training_state.get_state()` which
 includes all 28 `_STATE_FIELDS`. The data pipeline is:
 
-```
+```text
 TrainingState.get_state() → /api/state → training-state-store → callbacks
 ```
 
@@ -108,15 +108,15 @@ The CasCor `TrainingState` (monitor.py) has all 20 progress fields:
 
 ### 2.5 CasCor WebSocket Broadcasts — ❌ THE GAP
 
-| Data | Stored in TrainingState? | Broadcast via WebSocket? |
-|------|------------------------|------------------------|
-| status/phase | ✅ | ⚠️ Only at training start, hardcoded `{"status": "Started", "phase": "Output"}` |
-| grow_iteration, grow_max | ✅ | ❌ **NEVER BROADCAST** |
-| candidates_trained/total | ✅ | ❌ **NEVER BROADCAST** |
-| phase_detail | ✅ | ❌ **NEVER BROADCAST** |
-| phase_started_at | ✅ | ❌ **NEVER BROADCAST** |
-| candidate_epoch/total | ✅ | ✅ Via `candidate_progress` messages |
-| best_correlation | ✅ | ✅ Via `candidate_progress` messages |
+| Data                     | Stored in TrainingState?  | Broadcast via WebSocket?                                                        |
+|--------------------------|---------------------------|---------------------------------------------------------------------------------|
+| status/phase             | ✅                        | ⚠️ Only at training start, hardcoded `{"status": "Started", "phase": "Output"}` |
+| grow_iteration, grow_max | ✅                        | ❌ **NEVER BROADCAST**                                                          |
+| candidates_trained/total | ✅                        | ❌ **NEVER BROADCAST**                                                          |
+| phase_detail             | ✅                        | ❌ **NEVER BROADCAST**                                                          |
+| phase_started_at         | ✅                        | ❌ **NEVER BROADCAST**                                                          |
+| candidate_epoch/total    | ✅                        | ✅ Via `candidate_progress` messages                                            |
+| best_correlation         | ✅                        | ✅ Via `candidate_progress` messages                                            |
 
 **Key insight**: `candidate_epoch` and `best_correlation` DO flow through (via
 `candidate_progress` messages) but ALL grow-level and phase-level fields are
@@ -152,6 +152,7 @@ create_state_message({"status": "Started", "phase": "Output"})
 ```
 
 This means:
+
 1. Grow iteration progress → stored locally, never broadcast
 2. Phase transitions (output→candidate→adding_candidate) → stored locally, never broadcast
 3. Phase detail/started_at → stored locally, never broadcast
@@ -173,7 +174,7 @@ unless the adapter derives this from phase_detail.
 
 ### 3.4 Root Cause Dependency
 
-```
+```text
 Primary: CasCor callbacks don't broadcast TrainingState via WebSocket
     └── Secondary: No REST polling fallback in Canopy
          └── Tertiary: candidate_pool_status not derived
@@ -190,6 +191,7 @@ and phase transition code to broadcast the full `TrainingState` via WebSocket af
 update.
 
 **Strengths**:
+
 - Fixes the root cause directly
 - Low latency — progress updates arrive immediately
 - Canopy relay already handles `state` messages with all fields
@@ -197,15 +199,18 @@ update.
 - No polling overhead
 
 **Weaknesses**:
+
 - Cross-repo change (requires CasCor modification)
 - High-frequency broadcasts during candidate training (each grow iteration callback)
 - Could flood WebSocket during fast training
 
 **Risks**:
+
 - Broadcast frequency may need throttling for very fast training scenarios
 - Must ensure `create_state_message()` can handle the full `TrainingState` dict
 
 **Guardrails**:
+
 - Throttle broadcasts to max 1 per second (same pattern as candidate_progress 50-epoch throttle)
 - Only broadcast fields that changed (or always send full state — simpler)
 
@@ -216,22 +221,26 @@ endpoint (alongside the existing WebSocket relay) to fetch the full TrainingStat
 all progress fields.
 
 **Strengths**:
+
 - No CasCor changes required (canopy-only)
 - Works even if WebSocket is disconnected
 - Simple implementation — add a timer to poll and update TrainingState
 
 **Weaknesses**:
+
 - Adds latency (polling interval = max delay)
 - Adds HTTP overhead per poll cycle
 - Duplicates data fetching (WebSocket + REST)
 - Masks the real issue (CasCor should broadcast state)
 
 **Risks**:
+
 - Polling too frequently wastes bandwidth
 - Polling too infrequently gives stale progress data
 - Race conditions between WebSocket updates and REST poll updates
 
 **Guardrails**:
+
 - Use 2-3 second poll interval
 - Only update fields that are zero/empty (don't overwrite WS-sourced data)
 
@@ -242,21 +251,25 @@ Canopy's initial state sync to populate all progress fields on connect (handles
 mid-training reconnection).
 
 **Strengths**:
+
 - Fixes root cause AND handles reconnection
 - Real-time updates via WebSocket
 - Full state recovery on reconnect via enhanced sync
 - Most robust solution
 
 **Weaknesses**:
+
 - Requires changes in both repos
 - More code to maintain
 - Initial sync enhancement may be partially redundant with existing logic
 
 **Risks**:
+
 - Same as Approach A, plus sync timing during reconnect
 - Must ensure sync and relay don't produce conflicting updates
 
 **Guardrails**:
+
 - Sync populates state first, then relay takes over
 - TrainingState.update_state() is already idempotent (ignores None values)
 
@@ -507,16 +520,16 @@ curl http://localhost:8050/api/state | python3 -m json.tool
 
 ## 8. Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| WebSocket broadcast floods during fast training | Medium | Low | 1-second throttle on `_broadcast_training_state` |
-| `create_state_message()` can't handle full TrainingState dict | Low | High | Verify format compatibility; `create_state_message` wraps any dict |
-| Canopy relay doesn't handle new fields in state messages | Low | Low | Relay already forwards all fields via `data.get()` patterns |
-| Thread safety in `_broadcast_training_state` | Medium | Medium | `broadcast_from_thread` is already thread-safe (uses queue) |
-| Breaking existing WebSocket consumers | Low | Medium | State message format is additive (more fields, same structure) |
-| Candidate pool status derivation incorrect | Low | Low | Simple phase_detail → status mapping; easy to adjust |
-| Mid-training reconnect sync races with relay | Low | Low | `update_state()` is idempotent; last-write-wins is acceptable |
-| CasCor tests fail due to new broadcasts | Medium | Low | Mock WebSocket manager in tests; broadcasts are fire-and-forget |
+| Risk                                                          | Likelihood | Impact | Mitigation                                                         |
+|---------------------------------------------------------------|------------|--------|--------------------------------------------------------------------|
+| WebSocket broadcast floods during fast training               | Medium     | Low    | 1-second throttle on `_broadcast_training_state`                   |
+| `create_state_message()` can't handle full TrainingState dict | Low        | High   | Verify format compatibility; `create_state_message` wraps any dict |
+| Canopy relay doesn't handle new fields in state messages      | Low        | Low    | Relay already forwards all fields via `data.get()` patterns        |
+| Thread safety in `_broadcast_training_state`                  | Medium     | Medium | `broadcast_from_thread` is already thread-safe (uses queue)        |
+| Breaking existing WebSocket consumers                         | Low        | Medium | State message format is additive (more fields, same structure)     |
+| Candidate pool status derivation incorrect                    | Low        | Low    | Simple phase_detail → status mapping; easy to adjust               |
+| Mid-training reconnect sync races with relay                  | Low        | Low    | `update_state()` is idempotent; last-write-wins is acceptable      |
+| CasCor tests fail due to new broadcasts                       | Medium     | Low    | Mock WebSocket manager in tests; broadcasts are fire-and-forget    |
 
 ---
 
@@ -524,20 +537,20 @@ curl http://localhost:8050/api/state | python3 -m json.tool
 
 ### Phase 1: CasCor WebSocket Broadcasts
 
-| File | Changes |
-|------|---------|
+| File                                          | Changes                                                                                                                                                                   |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `juniper-cascor/src/api/lifecycle/manager.py` | Add `_broadcast_training_state()` method; call it in `_grow_iteration_callback`, `_output_training_callback`, phase transitions; replace hardcoded training start message |
 
 ### Phase 2: Canopy Candidate Pool Status
 
-| File | Changes |
-|------|---------|
+| File                                                   | Changes                                                                   |
+| ------------------------------------------------------ | ------------------------------------------------------------------------- |
 | `juniper-canopy/src/backend/cascor_service_adapter.py` | Derive `candidate_pool_status` from `phase_detail` in state relay handler |
 
 ### Phase 3: Canopy Initial Sync Enhancement
 
-| File | Changes |
-|------|---------|
+| File                                       | Changes                                         |
+| ------------------------------------------ | ----------------------------------------------- |
 | `juniper-canopy/src/backend/state_sync.py` | Extract all progress fields during initial sync |
 
 ### Files NOT Requiring Modification
@@ -550,19 +563,17 @@ curl http://localhost:8050/api/state | python3 -m json.tool
 
 ---
 
----
-
 ## 10. Implementation Status
 
 ### 10.1 Changes Applied
 
-| Phase | File | Changes | Status |
-|-------|------|---------|--------|
-| 1 | `juniper-cascor/src/api/lifecycle/manager.py` | Added `_broadcast_training_state()` with throttling; broadcasts at all 13 state transitions | ✅ Applied |
-| 2 | `juniper-canopy/src/backend/cascor_service_adapter.py` | Derive `candidate_pool_status` from `phase_detail`; forward pool fields | ✅ Applied |
-| 3 | `juniper-canopy/src/backend/state_sync.py` | Added `progress_fields` to `SyncedState`; extract progress on sync | ✅ Applied |
-| 3 | `juniper-canopy/src/main.py` | Spread `synced.progress_fields` into training_state update | ✅ Applied |
-| — | `juniper-canopy/src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | Updated 2 tests for new `candidate_pool_status` field | ✅ Applied |
+| Phase | File                                                                            | Changes                                                                                     | Status     |
+|-------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|------------|
+| 1     | `juniper-cascor/src/api/lifecycle/manager.py`                                   | Added `_broadcast_training_state()` with throttling; broadcasts at all 13 state transitions | ✅ Applied |
+| 2     | `juniper-canopy/src/backend/cascor_service_adapter.py`                          | Derive `candidate_pool_status` from `phase_detail`; forward pool fields                     | ✅ Applied |
+| 3     | `juniper-canopy/src/backend/state_sync.py`                                      | Added `progress_fields` to `SyncedState`; extract progress on sync                          | ✅ Applied |
+| 3     | `juniper-canopy/src/main.py`                                                    | Spread `synced.progress_fields` into training_state update                                  | ✅ Applied |
+| —     | `juniper-canopy/src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | Updated 2 tests for new `candidate_pool_status` field                                       | ✅ Applied |
 
 ### 10.2 Test Results
 
@@ -587,10 +598,11 @@ the 2-spiral problem (8 candidates × 200 epochs × ~1 sec/epoch). The
 Per-candidate progress flows via the `_drain_progress_queue` with 50-epoch throttle.
 
 This means progress bars will show updates approximately every:
+
 - **Candidate epoch**: Every 50 epochs (~50 seconds per update)
 - **Grow iteration**: Every ~24 minutes (after full candidate pool trains)
 
 This is the expected behavior of the CasCor training algorithm — it cannot be
 made faster without changing the training architecture.
 
-*End of Candidate Training Display Fixes Plan*
+End of Candidate Training Display Fixes Plan.
