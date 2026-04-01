@@ -138,9 +138,9 @@ Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
 
 ### Step 3.1: Async/Sync Boundary Tests (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task                                         | Source       | Details                                                                                                                                                                                        | Status  |
-|----------------------------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| Add dedicated async/sync boundary test suite | CAN-HIGH-003 | `test_async_sync_boundary.py`: 17 tests covering `run_in_executor`, `run_coroutine_threadsafe`, `broadcast_sync` vs `broadcast_from_thread` behavioral difference, concurrent delivery, errors | ✅ Done |
+| Task                      | Source       | Details                                                                                                                                                                                | Status  |
+|---------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| async/sync boundary tests | CAN-HIGH-003 | `test_async_sync_boundary.py`: 17 tests: `run_in_executor`, `run_coroutine_threadsafe`, `broadcast_sync` vs `broadcast_from_thread` behavioral difference, concurrent delivery, errors | ✅ Done |
 
 ### Step 3.2: Real Backend Path Coverage (P1) — ✅ COMPLETE (2026-03-31)
 
@@ -151,10 +151,10 @@ Testing & Quality Gates — ✅ COMPLETE (2026-03-31)
 
 ### Step 3.3: Integration Test Expansion (P1) — ✅ COMPLETE (2026-03-31)
 
-| Task                            | Source       | Details                                                                                                                                                                                                         | Status           |
-|---------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| Convert remaining skipped tests | CAN-HIGH-007 | gated: `test_candidate_visibility` (`RUN_SERVER_TESTS=1` + `@pytest.mark.requires_server`), `test_mvp_functionality` (skip on connect error), `test_parameter_persistence`/`test_demo_endpoints` (server-gated) | ✅ Already gated |
-| E2E JuniperData path tests      | CAN-MED-010  | `test_juniper_data_e2e.py`: 48 tests (38 fake + 10 live) covering create → download → validate → train → verify. Gated behind `JUNIPER_DATA_E2E_TEST=1` | ✅ Done (2026-04-01) |
+| Task          | Source       | Details                                                                                                                                                                                        | Status               |
+|---------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
+| Skipped tests | CAN-HIGH-007 | gate `test_candidate_visibility` (`RUN_SERVER_TESTS=1`, `@pytest.mark.requires_server`), `test_mvp_functionality` (on error), `test_parameter_persistence`/`test_demo_endpoints` (server-gate) | ✅ Already gated     |
+| E2E tests     | CAN-MED-010  | `test_juniper_data_e2e.py`: 48 tests (38 fake + 10 live) covering create → download → validate → train → verify. Gated behind `JUNIPER_DATA_E2E_TEST=1`                                        | ✅ Done (2026-04-01) |
 
 ### Step 3.4: Code Quality (P2) — ✅ COMPLETE (2026-03-31)
 
@@ -191,17 +191,17 @@ DevOps & Deployment — ✅ COMPLETE (2026-03-31)
 
 ### Step 4.3: Configuration Standardization (P2) — ✅ COMPLETE (pre-existing + 2026-03-31)
 
-| Task                                               | Source                | Details                                                                                                                                              | Status            |
-|----------------------------------------------------|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| Migrate env prefix `CASCOR_*` → `JUNIPER_CANOPY_*` | Microservices Phase 9 | `JUNIPER_CANOPY_*` primary via Pydantic BaseSettings; `CASCOR_*` fallback with `DeprecationWarning` in field validators for 6 legacy env vars       | ✅ Already done   |
-| Add `.env` file support                            | Microservices Phase 9 | `.env.example` (reference), `.env.dev` (demo mode, debug logging), `.env.prod` (service mode, production defaults)                                   | ✅ Done           |
+| Task                                               | Source                | Details                                                                                                                                       | Status          |
+|----------------------------------------------------|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| Migrate env prefix `CASCOR_*` → `JUNIPER_CANOPY_*` | Microservices Phase 9 | `JUNIPER_CANOPY_*` primary via Pydantic BaseSettings; `CASCOR_*` fallback with `DeprecationWarning` in field validators for 6 legacy env vars | ✅ Already done |
+| Add `.env` file support                            | Microservices Phase 9 | `.env.example` (reference), `.env.dev` (demo mode, debug logging), `.env.prod` (service mode, production defaults)                            | ✅ Done         |
 
 ### Step 4.4: Systemd Service Units (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                                           | Source                | Details                                                                                    | Status  |
-|------------------------------------------------|-----------------------|--------------------------------------------------------------------------------------------|---------|
+| Task                                           | Source                | Details                                                                                                                                               | Status  |
+|------------------------------------------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
 | Define systemd user service for juniper-canopy | Microservices Phase 2 | `scripts/juniper-canopy.service` — user unit with MemoryMax=2G, CPUQuota=200%, security hardening (NoNewPrivileges, ProtectSystem=strict, PrivateTmp) | ✅ Done |
-| Create `juniper-ctl` management CLI            | Microservices Phase 2 | `scripts/juniper-ctl` — start/stop/restart/status/logs/health/resources commands wrapping systemctl | ✅ Done |
+| Create `juniper-ctl` management CLI            | Microservices Phase 2 | `scripts/juniper-ctl` — start/stop/restart/status/logs/health/resources commands wrapping systemctl                                                   | ✅ Done |
 
 ---
 
@@ -214,29 +214,29 @@ UI Enhancements — Core — ✅ COMPLETE (2026-03-31)
 
 ### Step 5.1: Training UX Improvements (P1 — UX) — ✅ COMPLETE (2026-03-31)
 
-| Task                             | Source    | Details                                                                         | Status                          |
-|----------------------------------|-----------|---------------------------------------------------------------------------------|---------------------------------|
-| Meta parameter updates pause     | CAN-000   | Pause periodic backend sync when Apply Parameters is active                     | ✅ N/A — architecture already prevents overwriting (one-shot init only) |
-| Decision boundary poll frequency | P08-BUG-3 | Changed boundary poll from `slow-update-interval` (5s) to `fast-update-interval` (1s) | ✅ Done                   |
-| Sliding window default fix       | P08-BUG-1 | Changed default from 100→500 via `DashboardConstants.DEFAULT_SLIDING_WINDOW_SIZE`     | ✅ Done                   |
+| Task                             | Source    | Details                                                                               | Status                                                                  |
+|----------------------------------|-----------|---------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
+| Meta parameter updates pause     | CAN-000   | Pause periodic backend sync when Apply Parameters is active                           | ✅ N/A — architecture already prevents overwriting (one-shot init only) |
+| Decision boundary poll frequency | P08-BUG-3 | Changed boundary poll from `slow-update-interval` (5s) to `fast-update-interval` (1s) | ✅ Done                                                                 |
+| Sliding window default fix       | P08-BUG-1 | Changed default from 100→500 via `DashboardConstants.DEFAULT_SLIDING_WINDOW_SIZE`     | ✅ Done                                                                 |
 
 ### Step 5.2: Tooltips & Help (P2) — ✅ COMPLETE (2026-03-31)
 
-| Task                         | Source  | Details                                                                     | Status  |
-|------------------------------|---------|-----------------------------------------------------------------------------|---------|
+| Task                         | Source  | Details                                                                                                   | Status  |
+|------------------------------|---------|-----------------------------------------------------------------------------------------------------------|---------|
 | Add tooltips to all controls | CAN-017 | 25 `dbc.Tooltip` components for all NN/CN parameter inputs + Apply button, text in `frontend/tooltips.py` | ✅ Done |
 
 ### Step 5.3: Layout Persistence (P3) — ✅ COMPLETE (2026-03-31)
 
 | Task                             | Source   | Details                                                                                    | Status  |
 |----------------------------------|----------|--------------------------------------------------------------------------------------------|---------|
-| Layout save/load to localStorage | CAN-016a | Active tab persisted via two `clientside_callback`s (save on change, restore on page load)  | ✅ Done |
+| Layout save/load to localStorage | CAN-016a | Active tab persisted via two `clientside_callback`s (save on change, restore on page load) | ✅ Done |
 
 ### Step 5.4: Dataset Management (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                        | Source   | Details                                                                                   | Status  |
-|-----------------------------|----------|-------------------------------------------------------------------------------------------|---------|
-| Generate new dataset        | CAN-016b | "Generate Dataset" button + modal with samples/spirals/rotations/noise params; `POST /api/dataset/generate` endpoint; `DemoMode.regenerate_dataset()` + `DemoBackend.regenerate_dataset()` | ✅ Done |
+| Task                 | Source   | Details                                                                                                                                                                                    | Status  |
+|----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| Generate new dataset | CAN-016b | "Generate Dataset" button + modal with samples/spirals/rotations/noise params; `POST /api/dataset/generate` endpoint; `DemoMode.regenerate_dataset()` + `DemoBackend.regenerate_dataset()` | ✅ Done |
 
 ---
 
@@ -249,11 +249,11 @@ UI Enhancements — Advanced — ✅ COMPLETE (2026-03-31)
 
 ### Step 6.1: Meta Parameter Tuning Tab (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                              | Source                  | Details                                                                                                                                                               | Status            |
-|-----------------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| Create meta parameter tuning tab  | CAN-004                 | "Parameters" tab with `ParametersPanel` component — 3-section dbc.Table (Network Training, Dataset, Candidate Training) showing current/min/max/default values        | ✅ Done           |
-| Pin/unpin parameters to side menu | CAN-005                 | Drag-to-pin params from tuning tab to persistent side panel                                                                                                           | ⏸ Deferred — sidebar already has all params; pin/unpin adds complexity for marginal UX gain |
-| Individual parameter controls     | CAN-006 through CAN-013 | All 22+ parameters already tunable in sidebar (nn-* and cn-* inputs) with Apply button; Parameters tab provides read-only summary                                     | ✅ Already done   |
+| Task                              | Source            | Details                                                                                                                | Status                                                            |
+|-----------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
+| Create meta parameter tuning tab  | CAN-004           | Params tab, `ParametersPanel`: 3-sect dbc.Table (Network Train, Dataset, Candidate Train) current/min/max/default vals | ✅ Done                                                           |
+| Pin/unpin parameters to side menu | CAN-005           | Drag-to-pin params from tuning tab to persistent side panel                                                            | ⏸ Defer — sidebar has all params; pin/unpin complex, min UX gain  |
+| Individual parameter controls     | CAN-006 - CAN-013 | 22+ params tunable in sidebar (nn-*and cn-* inputs), Apply button; Params tab read-only summary                        | ✅ Already done                                                   |
 
 ### Step 6.2: Snapshot & Replay (P3) — ✅ COMPLETE (2026-03-31)
 
@@ -264,14 +264,14 @@ UI Enhancements — Advanced — ✅ COMPLETE (2026-03-31)
 
 ### Step 6.3: Candidate Pool History (P3) — ✅ COMPLETE (pre-existing)
 
-| Task                           | Source  | Details                                                                                 | Status            |
-|--------------------------------|---------|-----------------------------------------------------------------------------------------|-------------------|
+| Task                           | Source  | Details                                                                                                                         | Status            |
+|--------------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------|-------------------|
 | Candidate pool history browser | CAN-003 | `candidate-pools-history` dcc.Store (max 20 entries), expandable `dbc.Card` per pool with epoch, top candidate, scores, metrics | ✅ Already exists |
 
 ### Step 6.4: Tutorial System (P3) — ✅ COMPLETE (2026-03-31)
 
-| Task                        | Source  | Details                                                                                                                             | Status |
-|-----------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------|--------|
+| Task                        | Source  | Details                                                                                                                             | Status  |
+|-----------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------|---------|
 | Tutorial reference guide    | CAN-018 | "Tutorial" tab with `TutorialPanel` — 5-section dbc.Accordion: CasCor overview, workflow guide, UI guide, parameter reference, tips | ✅ Done |
 | Getting Started walkthrough | CAN-019 | Welcome modal on first visit (localStorage-gated), 4-step quick start guide with Tutorial tab link                                  | ✅ Done |
 
@@ -285,25 +285,25 @@ Items requiring external dependencies, major architectural work, or with low nea
 
 ### Status Summary
 
-| Item | Source | Status | Verdict |
-|------|--------|--------|---------|
-| Multi-hierarchy network view | CAN-020 | BLOCKED | Requires fundamental CasCor algorithm extension |
-| Population network view | CAN-021 | BLOCKED | Requires CAN-020 + population training paradigm |
-| Dataset versioning | CAN-DEF-005 | ACTIONABLE | 3-repo change; unblocked with phased approach |
-| 3D network visualization | CAN-DEF-008 | ✅ ALREADY IMPLEMENTED | Plotly 3D with 2D/3D toggle; enhancement opportunities remain |
-| Network segmentation | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | 3 networks (frontend/backend/data) with internal isolation |
-| Observability stack | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | Prometheus + Grafana + 23 metrics + 4 dashboards |
-| Docker secrets management | Microservices Phase 3 | ACTIONABLE | Partial; needs `_FILE` env var pattern in services |
+| Item                         | Source                | Status                 | Verdict                                                       |
+|------------------------------|-----------------------|------------------------|---------------------------------------------------------------|
+| Multi-hierarchy network view | CAN-020               | BLOCKED                | Requires fundamental CasCor algorithm extension               |
+| Population network view      | CAN-021               | BLOCKED                | Requires CAN-020 + population training paradigm               |
+| Dataset versioning           | CAN-DEF-005           | ACTIONABLE             | 3-repo change; unblocked with phased approach                 |
+| 3D network visualization     | CAN-DEF-008           | ✅ ALREADY IMPLEMENTED | Plotly 3D with 2D/3D toggle; enhancement opportunities remain |
+| Network segmentation         | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | 3 networks (frontend/backend/data) with internal isolation    |
+| Observability stack          | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | Prometheus + Grafana + 23 metrics + 4 dashboards              |
+| Docker secrets management    | Microservices Phase 3 | ACTIONABLE             | Partial; needs `_FILE` env var pattern in services            |
 
 ### Completed Items (Cross-Repo)
 
-| Task                               | Source           | Notes |
-|------------------------------------|------------------|-------|
-| ~~Remote worker status dashboard~~ | ~~CAN-HIGH-005~~ | ✅ COMPLETE (2026-03-31) — REST routes in cascor, client methods in cascor-client, WorkerPanel + demo endpoints in canopy |
-| ~~Cassandra integration tests~~    | ~~CAN-DEF-002~~  | ✅ COMPLETE (2026-03-31) — Docker service in juniper-deploy, 16 real-instance integration tests gated behind CASSANDRA_INTEGRATION_TEST=1 |
-| ~~Redis integration tests~~        | ~~CAN-DEF-003~~  | ✅ COMPLETE (2026-03-31) — Docker in juniper-deploy, 15 real-instance int tests gated behind REDIS_INTEGRATION_TEST=1 |
-| ~~Dataset batch operations~~       | ~~CAN-DEF-006~~  | ✅ COMPLETE (2026-03-31) — batch-create, batch-tags, batch-export endpoints in juniper-data; client wrappers + FakeDataClient in juniper-data-client |
-| ~~JuniperData performance benchmarks~~ | ~~CAN-DEF-007~~ | ✅ COMPLETE (2026-04-01) — 23 benchmarks in juniper-data-client (14 fake + 9 live gated behind JUNIPER_DATA_BENCHMARK=1) |
+| Task                                   | Source           | Notes                                                                                                                                                |
+|----------------------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~~Remote worker status dashboard~~     | ~~CAN-HIGH-005~~ | ✅ COMPLETE (2026-03-31) — REST routes in cascor, client methods in cascor-client, WorkerPanel + demo endpoints in canopy                            |
+| ~~Cassandra integration tests~~        | ~~CAN-DEF-002~~  | ✅ COMPLETE (2026-03-31) — Docker service in juniper-deploy, 16 real-instance integration tests gated behind CASSANDRA_INTEGRATION_TEST=1            |
+| ~~Redis integration tests~~            | ~~CAN-DEF-003~~  | ✅ COMPLETE (2026-03-31) — Docker in juniper-deploy, 15 real-instance int tests gated behind REDIS_INTEGRATION_TEST=1                                |
+| ~~Dataset batch operations~~           | ~~CAN-DEF-006~~  | ✅ COMPLETE (2026-03-31) — batch-create, batch-tags, batch-export endpoints in juniper-data; client wrappers + FakeDataClient in juniper-data-client |
+| ~~JuniperData performance benchmarks~~ | ~~CAN-DEF-007~~  | ✅ COMPLETE (2026-04-01) — 23 benchmarks in juniper-data-client (14 fake + 9 live gated behind JUNIPER_DATA_BENCHMARK=1)                             |
 
 ---
 
@@ -317,6 +317,7 @@ Items requiring external dependencies, major architectural work, or with low nea
 #### Current State
 
 The juniper-data `DatasetMeta` model (`juniper_data/core/models.py`) currently has:
+
 - **Identity**: `dataset_id` (deterministic hash from generator + version + params), `generator`, `generator_version`
 - **Lifecycle**: `tags`, `ttl_seconds`, `expires_at`, `last_accessed_at`, `access_count`
 - **Shape**: `n_samples`, `n_features`, `n_classes`, `n_train`, `n_test`
@@ -328,68 +329,68 @@ The `dataset_id` is deterministic (`{generator}-{version}-{hash[:16]}`) — iden
 
 #### Gap Analysis
 
-| Capability | Current | Required |
-|------------|---------|----------|
-| Version field | Only `generator_version` (algorithm) | Explicit `dataset_version` (v1, v2, ...) |
-| Named datasets | ID-only reference | Name + version lookup |
-| Version history | None | Lineage chain via `parent_dataset_id` |
-| Data integrity | `checksum` field (unused) | SHA256 of NPZ artifact |
-| Provenance | `created_at` only | `created_by`, `description`, derivation info |
-| API endpoints | CRUD by ID | List versions by name, get latest version |
-| Client methods | ID-based only | Name+version reference, version listing |
+| Capability      | Current                              | Required                                     |
+|-----------------|--------------------------------------|----------------------------------------------|
+| Version field   | Only `generator_version` (algorithm) | Explicit `dataset_version` (v1, v2, ...)     |
+| Named datasets  | ID-only reference                    | Name + version lookup                        |
+| Version history | None                                 | Lineage chain via `parent_dataset_id`        |
+| Data integrity  | `checksum` field (unused)            | SHA256 of NPZ artifact                       |
+| Provenance      | `created_at` only                    | `created_by`, `description`, derivation info |
+| API endpoints   | CRUD by ID                           | List versions by name, get latest version    |
+| Client methods  | ID-based only                        | Name+version reference, version listing      |
 
 #### Implementation Plan
 
 **Phase 1 — juniper-data model + API** (3-4 days):
 
-| Step | Change | Files |
-|------|--------|-------|
-| 1.1 | Add `dataset_name`, `dataset_version`, `parent_dataset_id`, `description`, `created_by` to `DatasetMeta` | `juniper_data/core/models.py` |
-| 1.2 | Extend PostgreSQL schema with versioning columns (nullable for backward compat) | `juniper_data/storage/postgres_store.py` |
-| 1.3 | Extend all storage backends (InMemory, LocalFS, S3) with version-aware queries | `juniper_data/storage/*.py` |
-| 1.4 | Populate `checksum` field with SHA256 of NPZ artifact on creation | `juniper_data/core/dataset_manager.py` |
-| 1.5 | Add `GET /v1/datasets/versions?name={name}` — list versions of a named dataset | `juniper_data/api/routes/datasets.py` |
-| 1.6 | Add `GET /v1/datasets/latest?name={name}` — get latest version | `juniper_data/api/routes/datasets.py` |
-| 1.7 | Extend filter endpoint to support `name` and `version` parameters | `juniper_data/api/routes/datasets.py` |
-| 1.8 | Auto-increment version when creating dataset with existing `dataset_name` | `juniper_data/core/dataset_manager.py` |
-| 1.9 | Tests: unit tests for model, storage queries, API endpoints | `juniper_data/tests/` |
+| Step | Change                                                                                                   | Files                                    |
+|------|----------------------------------------------------------------------------------------------------------|------------------------------------------|
+| 1.1  | Add `dataset_name`, `dataset_version`, `parent_dataset_id`, `description`, `created_by` to `DatasetMeta` | `juniper_data/core/models.py`            |
+| 1.2  | Extend PostgreSQL schema with versioning columns (nullable for backward compat)                          | `juniper_data/storage/postgres_store.py` |
+| 1.3  | Extend all storage backends (InMemory, LocalFS, S3) with version-aware queries                           | `juniper_data/storage/*.py`              |
+| 1.4  | Populate `checksum` field with SHA256 of NPZ artifact on creation                                        | `juniper_data/core/dataset_manager.py`   |
+| 1.5  | Add `GET /v1/datasets/versions?name={name}` — list versions of a named dataset                           | `juniper_data/api/routes/datasets.py`    |
+| 1.6  | Add `GET /v1/datasets/latest?name={name}` — get latest version                                           | `juniper_data/api/routes/datasets.py`    |
+| 1.7  | Extend filter endpoint to support `name` and `version` parameters                                        | `juniper_data/api/routes/datasets.py`    |
+| 1.8  | Auto-increment version when creating dataset with existing `dataset_name`                                | `juniper_data/core/dataset_manager.py`   |
+| 1.9  | Tests: unit tests for model, storage queries, API endpoints                                              | `juniper_data/tests/`                    |
 
 **Phase 2 — juniper-data-client** (1-2 days):
 
-| Step | Change | Files |
-|------|--------|-------|
-| 2.1 | Add `name` and `description` params to `create_dataset()` | `juniper_data_client/client.py` |
-| 2.2 | Add `list_versions(name)`, `get_latest(name)` methods | `juniper_data_client/client.py` |
-| 2.3 | Mirror in `FakeDataClient` with in-memory version tracking | `juniper_data_client/testing/fake_client.py` |
-| 2.4 | Tests: unit tests for new client methods | `tests/test_client.py`, `tests/test_fake_client.py` |
+| Step | Change                                                     | Files                                               |
+|------|------------------------------------------------------------|-----------------------------------------------------|
+| 2.1  | Add `name` and `description` params to `create_dataset()`  | `juniper_data_client/client.py`                     |
+| 2.2  | Add `list_versions(name)`, `get_latest(name)` methods      | `juniper_data_client/client.py`                     |
+| 2.3  | Mirror in `FakeDataClient` with in-memory version tracking | `juniper_data_client/testing/fake_client.py`        |
+| 2.4  | Tests: unit tests for new client methods                   | `tests/test_client.py`, `tests/test_fake_client.py` |
 
 **Phase 3 — juniper-canopy integration** (1-2 days):
 
-| Step | Change | Files |
-|------|--------|-------|
-| 3.1 | Store `dataset_name` + `dataset_version` in training session metadata | `src/demo_mode.py`, `src/backend/data_adapter.py` |
-| 3.2 | Display dataset version in dashboard status panel | `src/frontend/components/` |
-| 3.3 | Add dataset version to snapshot metadata (for reproducibility) | `src/backend/demo_backend.py` |
-| 3.4 | Tests: E2E version-aware dataset flow | `src/tests/integration/` |
+| Step | Change                                                                | Files                                             |
+|------|-----------------------------------------------------------------------|---------------------------------------------------|
+| 3.1  | Store `dataset_name` + `dataset_version` in training session metadata | `src/demo_mode.py`, `src/backend/data_adapter.py` |
+| 3.2  | Display dataset version in dashboard status panel                     | `src/frontend/components/`                        |
+| 3.3  | Add dataset version to snapshot metadata (for reproducibility)        | `src/backend/demo_backend.py`                     |
+| 3.4  | Tests: E2E version-aware dataset flow                                 | `src/tests/integration/`                          |
 
 #### Industry Best Practices Reference
 
-| Tool | Versioning Model | Key Insight |
-|------|-----------------|-------------|
-| MLflow | Artifact + run ID, git-tagged | Tight coupling to experiment tracking |
-| DVC | Content-hash in `.dvc` files, git-native | Versioning via VCS, not API |
-| W&B Artifacts | Name + version + alias, content-addressed | Semantic names with auto-increment |
-| Delta Lake | Transaction log, time travel | ACID semantics, overly complex for this use case |
+| Tool          | Versioning Model                          | Key Insight                                      |
+|---------------|-------------------------------------------|--------------------------------------------------|
+| MLflow        | Artifact + run ID, git-tagged             | Tight coupling to experiment tracking            |
+| DVC           | Content-hash in `.dvc` files, git-native  | Versioning via VCS, not API                      |
+| W&B Artifacts | Name + version + alias, content-addressed | Semantic names with auto-increment               |
+| Delta Lake    | Transaction log, time travel              | ACID semantics, overly complex for this use case |
 
 **Recommended approach**: W&B-style — `dataset_name` + auto-incrementing `dataset_version` + optional alias (e.g., "production", "latest"). Content-addressed storage via `checksum` for deduplication.
 
 #### Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Breaking existing dataset ID semantics | Medium | High | Make `dataset_name` optional; existing ID-only workflows unchanged |
-| Storage backend migration complexity | Low | Medium | New columns are nullable; no migration for existing datasets |
-| Version numbering conflicts in batch operations | Low | Low | Auto-increment uses DB-level atomic counter |
+| Risk                                            | Likelihood | Impact | Mitigation                                                         |
+|-------------------------------------------------|------------|--------|--------------------------------------------------------------------|
+| Breaking existing dataset ID semantics          | Medium     | High   | Make `dataset_name` optional; existing ID-only workflows unchanged |
+| Storage backend migration complexity            | Low        | Medium | New columns are nullable; no migration for existing datasets       |
+| Version numbering conflicts in batch operations | Low        | Low    | Auto-increment uses DB-level atomic counter                        |
 
 ---
 
@@ -415,16 +416,17 @@ The `CascadeCorrelationNetwork` class (`juniper-cascor/src/cascade_correlation/c
 
 "Hierarchy levels" in CasCor typically refers to **Cascade-2** or **deep cascade** extensions where hidden units are organized into groups (levels), and connectivity is restricted:
 
-| Aspect | Current (Flat Cascade) | Multi-Hierarchy |
-|--------|----------------------|-----------------|
-| Hidden unit storage | `List[Dict]` (flat) | `List[List[Dict]]` (nested by level) |
-| Connectivity | Each unit connects to ALL prior units + inputs | Level-restricted: units connect to same-level and lower-level units |
-| Candidate training | Pool trained against global residual | Pool trained per-level against level residual |
-| Grow logic | Add single unit to flat list | Add unit to current level; create new level when saturated |
-| Topology format | `{hidden_units: [...]}` | `{levels: [{units: [...]}, ...]}` |
-| Network size | O(n^2) connections | O(n * level_size) connections per level |
+| Aspect              | Current (Flat Cascade)                         | Multi-Hierarchy                                                     |
+|---------------------|------------------------------------------------|---------------------------------------------------------------------|
+| Hidden unit storage | `List[Dict]` (flat)                            | `List[List[Dict]]` (nested by level)                                |
+| Connectivity        | Each unit connects to ALL prior units + inputs | Level-restricted: units connect to same-level and lower-level units |
+| Candidate training  | Pool trained against global residual           | Pool trained per-level against level residual                       |
+| Grow logic          | Add single unit to flat list                   | Add unit to current level; create new level when saturated          |
+| Topology format     | `{hidden_units: [...]}`                        | `{levels: [{units: [...]}, ...]}`                                   |
+| Network size        | O(n^2) connections                             | O(n * level_size) connections per level                             |
 
 **CasCor changes required** (juniper-cascor):
+
 1. Refactor `hidden_units` from flat list to nested list-of-lists
 2. Modify `forward()` to respect level boundaries
 3. Modify `add_unit()` with level assignment logic
@@ -435,6 +437,7 @@ The `CascadeCorrelationNetwork` class (`juniper-cascor/src/cascade_correlation/c
 8. Backward compatibility for loading flat-cascade snapshots
 
 **Canopy changes required** (when CasCor support exists):
+
 1. Hierarchy level selector (dropdown or slider) per CAN-020 spec
 2. Level-filtered topology view in network visualizer
 3. Per-level metrics aggregation
@@ -464,6 +467,7 @@ CasCor trains **one network at a time**. There is no ensemble, evolutionary, or 
 Population-based training means running multiple CasCor networks simultaneously with different hyperparameters, architectures, or random seeds, then selecting the best-performing network(s):
 
 **CasCor changes** (juniper-cascor):
+
 1. Population manager: orchestrate N concurrent `CascadeCorrelationNetwork` instances
 2. Selection strategy: fitness function to rank networks (loss, accuracy, complexity)
 3. Crossover/mutation (evolutionary): combine hidden units from different networks
@@ -472,6 +476,7 @@ Population-based training means running multiple CasCor networks simultaneously 
 6. REST API: `/v1/population/*` endpoints for management
 
 **Canopy changes** (when CasCor support exists):
+
 1. Network selector within a population (dropdown per CAN-021 spec)
 2. Population-level dashboard (comparative metrics across networks)
 3. Per-network detail view (existing visualizer per selected network)
@@ -494,34 +499,34 @@ Population-based training is a **separate research direction** from core CasCor.
 
 The 3D visualization was implemented as part of P3-5 using Plotly's native 3D capabilities:
 
-| Feature | Implementation |
-|---------|---------------|
-| **Rendering** | `go.Scatter3d` traces (one per layer + edges) |
-| **Layout** | `_calculate_3d_layout()`: Z-axis = network layers, Y-axis = node spread within layer |
-| **Toggle** | 2D/3D radio buttons in header controls |
-| **Edge colors** | Blue (negative weights), Red (positive), Gray (zero) |
-| **Edge width** | Scaled by weight magnitude: `max(1, min(5, abs(w)*3+1))` |
-| **Camera** | Pre-configured eye position (1.5, 1.5, 0.8) with interactive rotation |
-| **Theme** | Dark/light mode with scene background colors |
-| **Tests** | 19 unit tests in `test_network_visualizer_3d.py` |
+| Feature         | Implementation                                                                       |
+|-----------------|--------------------------------------------------------------------------------------|
+| **Rendering**   | `go.Scatter3d` traces (one per layer + edges)                                        |
+| **Layout**      | `_calculate_3d_layout()`: Z-axis = network layers, Y-axis = node spread within layer |
+| **Toggle**      | 2D/3D radio buttons in header controls                                               |
+| **Edge colors** | Blue (negative weights), Red (positive), Gray (zero)                                 |
+| **Edge width**  | Scaled by weight magnitude: `max(1, min(5, abs(w)*3+1))`                             |
+| **Camera**      | Pre-configured eye position (1.5, 1.5, 0.8) with interactive rotation                |
+| **Theme**       | Dark/light mode with scene background colors                                         |
+| **Tests**       | 19 unit tests in `test_network_visualizer_3d.py`                                     |
 
 #### Technology Evaluation (2026-04-01)
 
-| Technology | Verdict | Rationale |
-|------------|---------|-----------|
-| **Plotly 3D** (current) | ✅ Recommended | Zero new deps, native Dash integration, sufficient for <500 nodes |
-| **Dash VTK** | ❌ Not recommended | Overkill for network graphs; designed for volumetric/mesh data; +50MB dep |
-| **Three.js (iframe)** | ⚠️ Future option | Full control but breaks Dash callback integration; separate build pipeline |
-| **Three.js (dash-extensions)** | ⚠️ Future option | Best advanced option but requires custom React+JS component |
+| Technology                     | Verdict            | Rationale                                                                  |
+|--------------------------------|--------------------|----------------------------------------------------------------------------|
+| **Plotly 3D** (current)        | ✅ Recommended     | Zero new deps, native Dash integration, sufficient for <500 nodes          |
+| **Dash VTK**                   | ❌ Not recommended | Overkill for network graphs; designed for volumetric/mesh data; +50MB dep  |
+| **Three.js (iframe)**          | ⚠️ Future option   | Full control but breaks Dash callback integration; separate build pipeline |
+| **Three.js (dash-extensions)** | ⚠️ Future option   | Best advanced option but requires custom React+JS component                |
 
 #### Enhancement Opportunities (not required, low priority)
 
-| Enhancement | Effort | Value |
-|------------|--------|-------|
-| Force-directed 3D layout (spring physics) | 2-3 days | Better aesthetics for large networks |
-| Animation during grow_network (unit addition) | 1-2 days | Research visualization aid |
-| Weight flow animation (data passing through edges) | 2-3 days | Educational value |
-| WebGL performance optimization for >500 nodes | 3-5 days | Only needed at scale |
+| Enhancement                                        | Effort   | Value                                |
+|----------------------------------------------------|----------|--------------------------------------|
+| Force-directed 3D layout (spring physics)          | 2-3 days | Better aesthetics for large networks |
+| Animation during grow_network (unit addition)      | 1-2 days | Research visualization aid           |
+| Weight flow animation (data passing through edges) | 2-3 days | Educational value                    |
+| WebGL performance optimization for >500 nodes      | 3-5 days | Only needed at scale                 |
 
 **Recommendation**: Mark as COMPLETE. Current Plotly 3D implementation meets the CAN-DEF-008 requirement. Enhancements are optional polish, not blocking.
 
@@ -537,7 +542,7 @@ The 3D visualization was implemented as part of P3-5 using Plotly's native 3D ca
 
 Three custom bridge networks are defined with appropriate isolation:
 
-```
+```bash
 networks:
   frontend:   bridge (external)  — canopy, prometheus, grafana
   backend:    bridge (internal)  — cascor, canopy, redis, cassandra
@@ -545,6 +550,7 @@ networks:
 ```
 
 **Service connectivity**:
+
 - `juniper-canopy` → `frontend` + `backend` + `data` (needs access to both cascor and data)
 - `juniper-cascor` → `backend` + `data` (bridges between canopy and data layer)
 - `juniper-data` → `data` only (isolated data layer)
@@ -552,6 +558,7 @@ networks:
 - `prometheus` → `frontend` (needs cross-network scraping access — see gap below)
 
 **Security features**:
+
 - `internal: true` on `backend` and `data` networks blocks external access
 - Port binding uses `127.0.0.1` for host-exposed services
 - Service discovery via Docker DNS hostnames
@@ -582,30 +589,32 @@ networks:
 
 #### Current Implementation
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| **Prometheus** | ✅ Deployed | `prometheus.yml` with scrape jobs for all 3 services (10s interval) |
-| **Grafana** | ✅ Deployed | Auto-provisioned Prometheus datasource + 4 pre-built dashboards |
+| Component              | Status        | Details                                                                         |
+|------------------------|---------------|---------------------------------------------------------------------------------|
+| **Prometheus**         | ✅ Deployed   | `prometheus.yml` with scrape jobs for all 3 services (10s interval)             |
+| **Grafana**            | ✅ Deployed   | Auto-provisioned Prometheus datasource + 4 pre-built dashboards                 |
 | **Metrics middleware** | ✅ Integrated | `PrometheusMiddleware` in all 3 services, gated by `*_METRICS_ENABLED` env vars |
-| **Docker profile** | ✅ Configured | `observability` profile in docker-compose.yml; `make monitor` target |
-| **Data retention** | ✅ Configured | 30-day TSDB retention via `--storage.tsdb.retention.time=30d` |
+| **Docker profile**     | ✅ Configured | `observability` profile in docker-compose.yml; `make monitor` target            |
+| **Data retention**     | ✅ Configured | 30-day TSDB retention via `--storage.tsdb.retention.time=30d`                   |
 
 **23 total metrics across 3 services**:
+
 - juniper-data: 6 metrics (HTTP requests/duration, dataset generations/duration, cache gauge, build info)
 - juniper-cascor: 11 metrics (HTTP, training sessions/epochs/loss/accuracy/hidden-units/correlation, inference, build info)
 - juniper-canopy: 6 metrics (HTTP, WebSocket connections/messages, demo mode status, build info)
 
 **4 Grafana dashboards** (auto-provisioned via `grafana/provisioning/dashboards/`):
+
 - Service overview, training progress, data pipeline, infrastructure
 
 #### Enhancement Opportunities
 
-| Enhancement | Effort | Value | Priority |
-|------------|--------|-------|----------|
-| **Alerting rules** (Prometheus AlertManager) | 2-3 days | Production readiness: alert on service down, high error rate, training stall | Medium |
-| **SLO/SLA dashboards** | 1-2 days | Track availability, latency percentiles, error budgets | Low |
-| **Log aggregation** (Loki + Promtail) | 2-3 days | Centralized logs searchable via Grafana | Medium |
-| **Custom CasCor dashboard** | 1 day | Training-specific: loss curves, candidate pool heatmaps, network growth timeline | Low |
+| Enhancement                                  | Effort   | Value                                                                            | Priority |
+|----------------------------------------------|----------|----------------------------------------------------------------------------------|----------|
+| **Alerting rules** (Prometheus AlertManager) | 2-3 days | Production readiness: alert on service down, high error rate, training stall     | Medium   |
+| **SLO/SLA dashboards**                       | 1-2 days | Track availability, latency percentiles, error budgets                           | Low      |
+| **Log aggregation** (Loki + Promtail)        | 2-3 days | Centralized logs searchable via Grafana                                          | Medium   |
+| **Custom CasCor dashboard**                  | 1 day    | Training-specific: loss curves, candidate pool heatmaps, network growth timeline | Low      |
 
 **Recommendation**: Mark base implementation as COMPLETE. Alerting rules are the highest-value enhancement for production readiness.
 
@@ -620,33 +629,33 @@ networks:
 
 #### Current State
 
-| Aspect | Status | Details |
-|--------|--------|---------|
-| **`.env` files** | ✅ Exist | `.env.example`, `.env.demo`, `.env.observability`, `.env.secrets.example` in juniper-deploy |
-| **Compose secrets syntax** | ❌ Not used | No `secrets:` block in docker-compose.yml |
-| **`_FILE` env var pattern** | ❌ Not implemented | Services read secrets directly from env vars |
-| **`secrets.example/` directory** | ❌ Not created | Roadmap specifies this as documentation for required secrets |
-| **Application `get_secret()` helper** | ❌ Not implemented | No fallback from file to env var |
+| Aspect                                | Status             | Details                                                                                     |
+|---------------------------------------|--------------------|---------------------------------------------------------------------------------------------|
+| **`.env` files**                      | ✅ Exist           | `.env.example`, `.env.demo`, `.env.observability`, `.env.secrets.example` in juniper-deploy |
+| **Compose secrets syntax**            | ❌ Not used        | No `secrets:` block in docker-compose.yml                                                   |
+| **`_FILE` env var pattern**           | ❌ Not implemented | Services read secrets directly from env vars                                                |
+| **`secrets.example/` directory**      | ❌ Not created     | Roadmap specifies this as documentation for required secrets                                |
+| **Application `get_secret()` helper** | ❌ Not implemented | No fallback from file to env var                                                            |
 
 #### Secrets Inventory
 
-| Secret | Service(s) | Current Source | Risk |
-|--------|-----------|---------------|------|
-| `JUNIPER_DATA_API_KEY` | juniper-data, juniper-cascor | Environment variable | Medium — visible in `docker inspect` |
-| `GRAFANA_ADMIN_PASSWORD` | grafana | `.env.observability` (default: `admin`) | Low — local dev only |
-| Database credentials (future) | juniper-data (PostgreSQL) | Not yet needed (InMemory/LocalFS storage) | N/A |
+| Secret                        | Service(s)                   | Current Source                            | Risk                                 |
+|-------------------------------|------------------------------|-------------------------------------------|--------------------------------------|
+| `JUNIPER_DATA_API_KEY`        | juniper-data, juniper-cascor | Environment variable                      | Medium — visible in `docker inspect` |
+| `GRAFANA_ADMIN_PASSWORD`      | grafana                      | `.env.observability` (default: `admin`)   | Low — local dev only                 |
+| Database credentials (future) | juniper-data (PostgreSQL)    | Not yet needed (InMemory/LocalFS storage) | N/A                                  |
 
 #### Implementation Plan
 
-| Step | Change | Repos | Effort |
-|------|--------|-------|--------|
-| 1 | Create `get_secret(env_var, file_env_var)` utility function | juniper-data, juniper-cascor, juniper-canopy | 2 hours |
-| 2 | Replace direct `os.environ.get()` for secrets with `get_secret()` | Same 3 repos | 1 hour |
-| 3 | Add `secrets:` block to docker-compose.yml | juniper-deploy | 30 min |
-| 4 | Create `secrets.example/` directory with placeholder files | juniper-deploy | 15 min |
-| 5 | Add `secrets/` to `.gitignore` | juniper-deploy | 5 min |
-| 6 | Document secret setup in README | juniper-deploy | 30 min |
-| 7 | Tests: verify `_FILE` fallback works | All 3 services | 1 hour |
+| Step | Change                                                            | Repos                                        | Effort  |
+|------|-------------------------------------------------------------------|----------------------------------------------|---------|
+| 1    | Create `get_secret(env_var, file_env_var)` utility function       | juniper-data, juniper-cascor, juniper-canopy | 2 hours |
+| 2    | Replace direct `os.environ.get()` for secrets with `get_secret()` | Same 3 repos                                 | 1 hour  |
+| 3    | Add `secrets:` block to docker-compose.yml                        | juniper-deploy                               | 30 min  |
+| 4    | Create `secrets.example/` directory with placeholder files        | juniper-deploy                               | 15 min  |
+| 5    | Add `secrets/` to `.gitignore`                                    | juniper-deploy                               | 5 min   |
+| 6    | Document secret setup in README                                   | juniper-deploy                               | 30 min  |
+| 7    | Tests: verify `_FILE` fallback works                              | All 3 services                               | 1 hour  |
 
 **Application-side helper** (identical across all 3 services):
 
@@ -660,20 +669,20 @@ def get_secret(env_var: str, file_env_var: str | None = None) -> str | None:
 
 #### Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Breaking existing env var workflows | Low | Medium | `get_secret()` falls back to env var when `_FILE` not set |
-| Secrets files accidentally committed | Low | High | `.gitignore` + pre-commit hook + `secrets.example/` pattern |
+| Risk                                 | Likelihood | Impact | Mitigation                                                  |
+|--------------------------------------|------------|--------|-------------------------------------------------------------|
+| Breaking existing env var workflows  | Low        | Medium | `get_secret()` falls back to env var when `_FILE` not set   |
+| Secrets files accidentally committed | Low        | High   | `.gitignore` + pre-commit hook + `secrets.example/` pattern |
 
 ---
 
 ### Remaining Long-Term Architecture Items
 
-| Task | Source | Status | Notes |
-|------|--------|--------|-------|
-| WebSocket relay into Dash clientside_callback | Audit | DEFERRED | Requires significant Dash architecture rework; current REST polling is functional |
-| Local CasCor operation within canopy | CASCOR_DEMO_TRAINING (Step 4) | DEFERRED | Run CasCor as embedded library; complex dependency management |
-| Kubernetes deployment via k3s | Microservices Phase 4 | DEFERRED | Post-Docker maturity; current Docker Compose is sufficient |
+| Task                                          | Source                        | Status   | Notes                                                                             |
+|-----------------------------------------------|-------------------------------|----------|-----------------------------------------------------------------------------------|
+| WebSocket relay into Dash clientside_callback | Audit                         | DEFERRED | Requires significant Dash architecture rework; current REST polling is functional |
+| Local CasCor operation within canopy          | CASCOR_DEMO_TRAINING (Step 4) | DEFERRED | Run CasCor as embedded library; complex dependency management                     |
+| Kubernetes deployment via k3s                 | Microservices Phase 4         | DEFERRED | Post-Docker maturity; current Docker Compose is sufficient                        |
 
 ---
 
@@ -681,17 +690,17 @@ def get_secret(env_var: str, file_env_var: str | None = None) -> str | None:
 
 Items sorted by actionability and impact:
 
-| Priority | Item | Actionable? | Effort | Next Step |
-|----------|------|-------------|--------|-----------|
-| 1 | CAN-DEF-005 (Dataset versioning) | Yes | 5-8 days | Phase 1: extend juniper-data model + API |
-| 2 | Docker secrets management | Yes | 2-3 days | Create `get_secret()` utility across services |
-| 3 | Monitoring network enhancement | Yes | < 1 hour | Add `monitoring` network to docker-compose.yml |
-| 4 | Alerting rules (Prometheus) | Yes | 2-3 days | Add AlertManager + rules for critical metrics |
-| — | CAN-DEF-008 (3D visualization) | ✅ Complete | — | Mark complete; enhancements are optional |
-| — | Network segmentation | ✅ Complete | — | Mark complete; minor monitoring network gap |
-| — | Observability stack | ✅ Complete | — | Mark complete; alerting is optional enhancement |
-| — | CAN-020 (Multi-hierarchy) | Blocked | 11-17 days | Requires CasCor algorithm research |
-| — | CAN-021 (Population view) | Blocked | 8-13 days | Requires CAN-020 + population training |
+| Priority | Item                             | Actionable?  | Effort     | Next Step                                       |
+|----------|----------------------------------|--------------|------------|-------------------------------------------------|
+| 1        | CAN-DEF-005 (Dataset versioning) | Yes          | 5-8 days   | Phase 1: extend juniper-data model + API        |
+| 2        | Docker secrets management        | Yes          | 2-3 days   | Create `get_secret()` utility across services   |
+| 3        | Monitoring network enhancement   | Yes          | < 1 hour   | Add `monitoring` network to docker-compose.yml  |
+| 4        | Alerting rules (Prometheus)      | Yes          | 2-3 days   | Add AlertManager + rules for critical metrics   |
+| —        | CAN-DEF-008 (3D visualization)   | ✅ Complete  | —          | Mark complete; enhancements are optional        |
+| —        | Network segmentation             | ✅ Complete  | —          | Mark complete; minor monitoring network gap     |
+| —        | Observability stack              | ✅ Complete  | —          | Mark complete; alerting is optional enhancement |
+| —        | CAN-020 (Multi-hierarchy)        | Blocked      | 11-17 days | Requires CasCor algorithm research              |
+| —        | CAN-021 (Population view)        | Blocked      | 8-13 days  | Requires CAN-020 + population training          |
 
 ---
 
