@@ -1,10 +1,11 @@
 # Canopy Candidate Display — Residual Bug Analysis
 
-- **Version**: 1.0.0
-- **Date**: 2026-03-31
-- **Status**: ANALYSIS COMPLETE — FIXES PENDING
+- **Version**: 1.1.0
+- **Date**: 2026-04-01
+- **Status**: ALL FIXES APPLIED ✅
 - **Scope**: juniper-cascor (primary), juniper-canopy (secondary)
 - **Prereqs**: CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md Phase 1–3 (all applied ✅)
+- **Completed**: 2026-04-01 — All 6 bugs fixed across Phase 1 (P0), Phase 2 (P1), Phase 3 (P2)
 
 ---
 
@@ -47,14 +48,14 @@ The prior fix resolved the "CasCor never broadcasts state" problem. Data IS now 
 broadcast and received. However, **6 distinct residual bugs** prevent the data from
 rendering correctly:
 
-| # | Bug | Category | Severity |
-|---|-----|----------|----------|
-| 1 | `grow_max` set to `max_epochs` (10000), not `max_hidden_units` (10) | Semantic mismatch | **Critical** |
-| 2 | Drain thread never starts (progress queue race condition) | Timing bug | **Critical** |
-| 3 | Top candidate IDs never forwarded from CasCor to Canopy | Missing data | **High** |
-| 4 | Pool training metrics never populated | Missing data | **Medium** |
-| 5 | Previous pools show "Best: (0.000)" | Cascading from #3 | **Medium** |
-| 6 | `candidate_pool_phase` never set in adapter | Missing derivation | **Low** |
+| # | Bug                                                                 | Category           | Severity     |
+|---|---------------------------------------------------------------------|--------------------|--------------|
+| 1 | `grow_max` set to `max_epochs` (10000), not `max_hidden_units` (10) | Semantic mismatch  | **Critical** |
+| 2 | Drain thread never starts (progress queue race condition)           | Timing bug         | **Critical** |
+| 3 | Top candidate IDs never forwarded from CasCor to Canopy             | Missing data       | **High**     |
+| 4 | Pool training metrics never populated                               | Missing data       | **Medium**   |
+| 5 | Previous pools show "Best: (0.000)"                                 | Cascading from #3  | **Medium**   |
+| 6 | `candidate_pool_phase` never set in adapter                         | Missing derivation | **Low**      |
 
 ---
 
@@ -78,6 +79,7 @@ the data is broadcast but is either semantically wrong, never generated, or not 
 ### Screenshot Evidence (2026-03-31 15:59:51)
 
 **Image 1 — Training Metrics tab:**
+
 - Status bar: `Phase: Candidate Pool | Epoch: 14 | Hidden Units: 0/10`
 - Metrics: `Current Epoch: 14 | Loss: 0.1702 | Accuracy: 72.90% | Hidden Units: 13/10`
 - Progress detail text: `Adding Candidate | Iteration 12/10000 | Best Corr: 0.1611 | Candidates: 40/40`
@@ -85,6 +87,7 @@ the data is broadcast but is either semantically wrong, never generated, or not 
 - Candidate Epoch bar: **empty (0%)**
 
 **Image 2 — Candidate Pool section (scrolled down):**
+
 - Status: `Selecting Best` | Phase: `Idle` | Pool Size: 40
 - Top 2 Candidates: **"No candidates"**
 - Pool Training Metrics: all **0.0000**
@@ -133,6 +136,7 @@ thread never starts. Candidate epoch data from workers is never consumed.
 8. Nobody reads the queue → `candidate_epoch` stays 0
 
 **Consequence**: Since the drain thread never runs:
+
 - `candidate_epoch` and `candidate_total_epochs` remain 0 in CasCor's TrainingState
 - No `candidate_progress` WebSocket messages are broadcast
 - Canopy's `candidate_epoch` stays at its default 0
@@ -206,7 +210,7 @@ sets this field.
 
 ### 5.1 Issue Dependency Graph
 
-```
+```bash
 Bug 2 (Drain thread race) ←── Blocks candidate_epoch data generation
     ↓
 Bug 1 (grow_max semantic) ←── Independent, causes grow bar 0%
@@ -222,14 +226,14 @@ Bug 6 (Pool phase "Idle") ←── Independent, simple derivation gap
 
 ### 5.2 Fix Priority
 
-| Priority | Bug | Rationale |
-|----------|-----|-----------|
-| P0 | Bug 2 | Blocks ALL candidate epoch data — nothing else can display without this |
-| P0 | Bug 1 | Makes grow bar permanently 0% regardless of actual progress |
-| P1 | Bug 3 | Top candidates table is a prominent, empty UI element |
-| P1 | Bug 6 | Simple one-line fix, should be bundled with P0/P1 work |
-| P2 | Bug 5 | Automatically fixed by Bug 3 fix |
-| P2 | Bug 4 | Requires redefining pool metrics around correlation (larger scope) |
+| Priority | Bug   | Rationale                                                               |
+|----------|-------|-------------------------------------------------------------------------|
+| P0       | Bug 2 | Blocks ALL candidate epoch data — nothing else can display without this |
+| P0       | Bug 1 | Makes grow bar permanently 0% regardless of actual progress             |
+| P1       | Bug 3 | Top candidates table is a prominent, empty UI element                   |
+| P1       | Bug 6 | Simple one-line fix, should be bundled with P0/P1 work                  |
+| P2       | Bug 5 | Automatically fixed by Bug 3 fix                                        |
+| P2       | Bug 4 | Requires redefining pool metrics around correlation (larger scope)      |
 
 ---
 
@@ -245,12 +249,12 @@ In `_update_training_progress_handler`, replace `grow_max` with `max_hidden_unit
 grow_max = state.get("max_hidden_units") or state.get("grow_max")
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | No CasCor changes; immediate fix; uses existing data |
+| Attribute      | Assessment                                                                         |
+|----------------|------------------------------------------------------------------------------------|
+| **Strengths**  | No CasCor changes; immediate fix; uses existing data                               |
 | **Weaknesses** | `max_hidden_units` is the config target, not the iteration limit; could show >100% |
-| **Risks** | Progress exceeding 100% if more units added than configured max |
-| **Guardrails** | Cap percentage at 100%: `min(100, int(100 * grow_iter / grow_max))` |
+| **Risks**      | Progress exceeding 100% if more units added than configured max                    |
+| **Guardrails** | Cap percentage at 100%: `min(100, int(100 * grow_iter / grow_max))`                |
 
 #### Approach B: Pass `max_hidden_units` in CasCor callback alongside `max_epochs`
 
@@ -265,23 +269,23 @@ _grow_cb(
 )
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Sends both values; Canopy can choose which to use |
+| Attribute      | Assessment                                                                        |
+|----------------|-----------------------------------------------------------------------------------|
+| **Strengths**  | Sends both values; Canopy can choose which to use                                 |
 | **Weaknesses** | Cross-repo change; callback signature change requires update in lifecycle manager |
-| **Risks** | Must update all callback consumers |
-| **Guardrails** | Use `**kwargs` or default parameter for backward compatibility |
+| **Risks**      | Must update all callback consumers                                                |
+| **Guardrails** | Use `**kwargs` or default parameter for backward compatibility                    |
 
 #### Approach C: Change `max_iterations` to `max_hidden_units` in callback
 
 Modify `cascade_correlation.py:3388` to `max_iterations=self.max_hidden_units`:
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Direct fix at the source |
+| Attribute      | Assessment                                                           |
+|----------------|----------------------------------------------------------------------|
+| **Strengths**  | Direct fix at the source                                             |
 | **Weaknesses** | `max_hidden_units` may not always be set; changes callback semantics |
-| **Risks** | Could break other callback consumers that rely on the loop limit |
-| **Guardrails** | Use `getattr(self, "max_hidden_units", max_epochs)` fallback |
+| **Risks**      | Could break other callback consumers that rely on the loop limit     |
+| **Guardrails** | Use `getattr(self, "max_hidden_units", max_epochs)` fallback         |
 
 ### 6.2 Bug 2: Drain Thread Race Condition
 
@@ -307,12 +311,12 @@ def _drain_progress_queue(network_ref, stop_event):
         # ... update state and broadcast
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Minimal change; drain thread always starts; discovers queue dynamically |
-| **Weaknesses** | Polling for queue existence (0.1s intervals) |
-| **Risks** | If queue is never created, thread polls until stop_event |
-| **Guardrails** | `stop_event` already provides clean shutdown |
+| Attribute      | Assessment                                                              |
+|----------------|-------------------------------------------------------------------------|
+| **Strengths**  | Minimal change; drain thread always starts; discovers queue dynamically |
+| **Weaknesses** | Polling for queue existence (0.1s intervals)                            |
+| **Risks**      | If queue is never created, thread polls until stop_event                |
+| **Guardrails** | `stop_event` already provides clean shutdown                            |
 
 #### Approach B: Pre-create Progress Queue in `monitored_grow`
 
@@ -323,12 +327,12 @@ if manager_ref.network._persistent_progress_queue is None:
     manager_ref.network._persistent_progress_queue = manager_ref.network._mp_ctx.Queue(...)
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Queue guaranteed to exist when drain thread checks |
+| Attribute      | Assessment                                                              |
+|----------------|-------------------------------------------------------------------------|
+| **Strengths**  | Queue guaranteed to exist when drain thread checks                      |
 | **Weaknesses** | Reaches into network internals; may conflict with `_ensure_worker_pool` |
-| **Risks** | Double-creating queue if `_ensure_worker_pool` also creates one |
-| **Guardrails** | Only create if None; `_ensure_worker_pool` checks for existing pool |
+| **Risks**      | Double-creating queue if `_ensure_worker_pool` also creates one         |
+| **Guardrails** | Only create if None; `_ensure_worker_pool` checks for existing pool     |
 
 #### Approach C: Always Start Drain Thread, Use Queue Reference From Network
 
@@ -344,12 +348,12 @@ _drain_thread = threading.Thread(
 _drain_thread.start()  # Always start, regardless of queue state
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Clean separation; works for any queue creation timing |
-| **Weaknesses** | Thread must handle None queue gracefully |
-| **Risks** | Minimal — thread simply sleeps when no queue |
-| **Guardrails** | `stop_event` + timeout ensure clean shutdown |
+| Attribute      | Assessment                                            |
+|----------------|-------------------------------------------------------|
+| **Strengths**  | Clean separation; works for any queue creation timing |
+| **Weaknesses** | Thread must handle None queue gracefully              |
+| **Risks**      | Minimal — thread simply sleeps when no queue          |
+| **Guardrails** | `stop_event` + timeout ensure clean shutdown          |
 
 ### 6.3 Bug 3: Top Candidates Not Forwarded
 
@@ -371,23 +375,23 @@ _grow_cb(
 )
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Data already available in TrainingResults; direct forwarding |
-| **Weaknesses** | Cross-repo change; callback signature grows |
-| **Risks** | Must update lifecycle manager callback and adapter |
-| **Guardrails** | Use `**kwargs` for backward compatibility |
+| Attribute      | Assessment                                                   |
+|----------------|--------------------------------------------------------------|
+| **Strengths**  | Data already available in TrainingResults; direct forwarding |
+| **Weaknesses** | Cross-repo change; callback signature grows                  |
+| **Risks**      | Must update lifecycle manager callback and adapter           |
+| **Guardrails** | Use `**kwargs` for backward compatibility                    |
 
 #### Approach B: Separate WebSocket message type for pool details
 
 Create a `pool_update` message type broadcast after each grow iteration.
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Clean separation of concerns; doesn't modify callback |
-| **Weaknesses** | New message type; new handler in adapter; more complexity |
-| **Risks** | Out-of-order messages if pool_update arrives before state update |
-| **Guardrails** | Use same throttle as state broadcasts |
+| Attribute      | Assessment                                                       |
+|----------------|------------------------------------------------------------------|
+| **Strengths**  | Clean separation of concerns; doesn't modify callback            |
+| **Weaknesses** | New message type; new handler in adapter; more complexity        |
+| **Risks**      | Out-of-order messages if pool_update arrives before state update |
+| **Guardrails** | Use same throttle as state broadcasts                            |
 
 ### 6.4 Bug 4: Pool Training Metrics
 
@@ -405,33 +409,33 @@ pool_metrics = {
 }
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Aligns with CasCor's actual training objective; data already available |
-| **Weaknesses** | Different metric names than current UI expects; requires UI change |
-| **Risks** | Breaking change to pool_metrics schema |
-| **Guardrails** | Version the schema; update UI to display correlation metrics |
+| Attribute      | Assessment                                                             |
+|----------------|------------------------------------------------------------------------|
+| **Strengths**  | Aligns with CasCor's actual training objective; data already available |
+| **Weaknesses** | Different metric names than current UI expects; requires UI change     |
+| **Risks**      | Breaking change to pool_metrics schema                                 |
+| **Guardrails** | Version the schema; update UI to display correlation metrics           |
 
 #### Approach B: Populate Existing Metrics Where Possible
 
 Map `best_correlation` to `avg_loss` slot (as a proxy), leave others N/A.
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Minimal code change |
+| Attribute      | Assessment                                                           |
+|----------------|----------------------------------------------------------------------|
+| **Strengths**  | Minimal code change                                                  |
 | **Weaknesses** | Semantically misleading; "Avg Loss" showing correlation is confusing |
-| **Risks** | User confusion |
-| **Guardrails** | Add tooltips explaining metric source |
+| **Risks**      | User confusion                                                       |
+| **Guardrails** | Add tooltips explaining metric source                                |
 
 #### Approach C: Hide Pool Metrics, Show Correlation Summary Instead
 
 Replace the pool metrics table with a correlation summary panel:
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | Honest representation; no misleading metrics |
-| **Weaknesses** | UI layout change |
-| **Risks** | Low |
+| Attribute      | Assessment                                                   |
+|----------------|--------------------------------------------------------------|
+| **Strengths**  | Honest representation; no misleading metrics                 |
+| **Weaknesses** | UI layout change                                             |
+| **Risks**      | Low                                                          |
 | **Guardrails** | Progressive enhancement — add more metrics as CasCor evolves |
 
 ### 6.5 Bug 6: candidate_pool_phase Not Derived
@@ -448,31 +452,31 @@ else:
     candidate_pool_phase = "Idle"
 ```
 
-| Attribute | Assessment |
-|-----------|-----------|
-| **Strengths** | One-line fix; follows same pattern as status derivation |
-| **Weaknesses** | None |
-| **Risks** | None |
-| **Guardrails** | None needed |
+| Attribute      | Assessment                                              |
+|----------------|---------------------------------------------------------|
+| **Strengths**  | One-line fix; follows same pattern as status derivation |
+| **Weaknesses** | None                                                    |
+| **Risks**      | None                                                    |
+| **Guardrails** | None needed                                             |
 
 ---
 
 ## 7. Recommended Approach per Issue
 
-| Bug | Recommended | Rationale |
-|-----|-------------|-----------|
-| 1 | **Approach A** (Canopy-only, use `max_hidden_units`) | Fastest fix; no cross-repo dependency; cap at 100% handles edge case |
-| 2 | **Approach C** (Always start drain thread, deferred discovery) | Most robust; clean separation; handles any creation timing |
-| 3 | **Approach A** (Enhance callback with top candidate data) | Most direct; data already available in TrainingResults |
-| 4 | **Approach C** (Hide current metrics, show correlation summary) | Honest; avoids misleading users with wrong metric types |
-| 5 | *(Automatic)* | Fixed by Bug 3 fix |
-| 6 | **Single approach** (Derive from phase_detail) | Trivial fix |
+| Bug | Recommended                                                     | Rationale                                                            |
+|-----|-----------------------------------------------------------------|----------------------------------------------------------------------|
+| 1   | **Approach A** (Canopy-only, use `max_hidden_units`)            | Fastest fix; no cross-repo dependency; cap at 100% handles edge case |
+| 2   | **Approach C** (Always start drain thread, deferred discovery)  | Most robust; clean separation; handles any creation timing           |
+| 3   | **Approach A** (Enhance callback with top candidate data)       | Most direct; data already available in TrainingResults               |
+| 4   | **Approach C** (Hide current metrics, show correlation summary) | Honest; avoids misleading users with wrong metric types              |
+| 5   | *(Automatic)*                                                   | Fixed by Bug 3 fix                                                   |
+| 6   | **Single approach** (Derive from phase_detail)                  | Trivial fix                                                          |
 
 ---
 
 ## 8. Implementation Plan
 
-### Phase 1: Critical Fixes (P0) — Bugs 1 + 2
+### Phase 1: Critical Fixes (P0) — Bugs 1 + 2 ✅ COMPLETE
 
 #### Step 1.1: Fix Drain Thread Race Condition (Bug 2)
 
@@ -551,6 +555,7 @@ def _drain_progress_queue(network_ref, stop_event):
 ```
 
 **Test changes needed**:
+
 - `juniper-cascor/src/tests/unit/api/test_monitoring_hooks.py` — Update drain thread
   tests to verify deferred queue discovery
 - `juniper-cascor/src/tests/unit/api/test_lifecycle_manager.py` — Verify drain thread
@@ -581,11 +586,12 @@ grow_pct = min(100, int(100 * grow_iter / grow_max)) if has_grow else 0
 ```
 
 **Test changes needed**:
+
 - `juniper-canopy/src/tests/unit/frontend/test_metrics_panel_handlers.py` — Add test
   case where `grow_max >> max_hidden_units`, verify bar uses `max_hidden_units`
 - Add test case where `max_hidden_units` is 0 or None, verify fallback to `grow_max`
 
-### Phase 2: High Priority Fixes (P1) — Bugs 3 + 6
+### Phase 2: High Priority Fixes (P1) — Bugs 3 + 6 ✅ COMPLETE
 
 #### Step 2.1: Add Top Candidate Data to Grow Callback (Bug 3)
 
@@ -701,7 +707,7 @@ self._state_update_callback(
 )
 ```
 
-### Phase 3: Medium Priority (P2) — Bug 4
+### Phase 3: Medium Priority (P2) — Bug 4 ✅ COMPLETE
 
 #### Step 3.1: Redefine Pool Metrics Around Correlation
 
@@ -731,6 +737,7 @@ else:
 ```
 
 **Also**: Forward `all_correlations` through the data pipeline:
+
 - CasCor → grow callback → lifecycle manager → WebSocket state message
 - Canopy adapter → TrainingState (add `all_correlations` field)
 - `/api/state` → frontend
@@ -775,15 +782,15 @@ conda run -n JuniperPython pytest tests/unit/ -q --timeout=30
 
 ### 9.2 Specific Test Cases Required
 
-| Bug | Test Description | Expected Result |
-|-----|-----------------|-----------------|
-| 1 | Progress handler with `grow_max=10000, max_hidden_units=10, grow_iteration=5` | `grow_pct=50`, label `"5/10"` |
-| 1 | Progress handler with `max_hidden_units=0` (fallback) | Falls back to `grow_max` |
-| 1 | Progress handler with `grow_iteration > max_hidden_units` | Capped at 100% |
-| 2 | Drain thread starts when `_persistent_progress_queue` is initially None | Thread starts, discovers queue when created |
-| 2 | Drain thread exits cleanly when stop_event is set before queue exists | No errors, clean shutdown |
-| 3 | State message with `best_candidate_id` populates Top 2 table | Candidate rows appear |
-| 6 | State message with `phase_detail="training_candidates"` | `candidate_pool_phase="Training"` |
+| Bug | Test Description                                                              | Expected Result                             |
+|-----|-------------------------------------------------------------------------------|---------------------------------------------|
+| 1   | Progress handler with `grow_max=10000, max_hidden_units=10, grow_iteration=5` | `grow_pct=50`, label `"5/10"`               |
+| 1   | Progress handler with `max_hidden_units=0` (fallback)                         | Falls back to `grow_max`                    |
+| 1   | Progress handler with `grow_iteration > max_hidden_units`                     | Capped at 100%                              |
+| 2   | Drain thread starts when `_persistent_progress_queue` is initially None       | Thread starts, discovers queue when created |
+| 2   | Drain thread exits cleanly when stop_event is set before queue exists         | No errors, clean shutdown                   |
+| 3   | State message with `best_candidate_id` populates Top 2 table                  | Candidate rows appear                       |
+| 6   | State message with `phase_detail="training_candidates"`                       | `candidate_pool_phase="Training"`           |
 
 ### 9.3 Integration Validation
 
@@ -822,14 +829,14 @@ print(f'candidate_pool_phase: {s.get(\"candidate_pool_phase\")}')
 
 ## 10. Risk Assessment
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Drain thread polling wastes CPU while waiting for queue | Low | Low | 0.1s sleep interval; stop_event provides immediate exit |
-| `all_correlations` list grows large in WebSocket message | Low | Medium | Limit to top N (e.g., 50) or send summary statistics only |
-| Callback `**kwargs` breaks existing tests | Medium | Low | Add `**kwargs` acceptance; update test mocks |
-| `max_hidden_units` not in state when grow bar renders | Low | Medium | Fallback chain: `max_hidden_units` → `grow_max` → hide bar |
-| Pool metrics schema change breaks history snapshots | Low | Low | History is ephemeral (in-memory Store); no persistence to migrate |
-| Drain thread references stale progress queue after pool restart | Low | Medium | Re-discover queue each time `_pq` becomes None |
+| Risk                                                            | Likelihood | Impact | Mitigation                                                        |
+|-----------------------------------------------------------------|------------|--------|-------------------------------------------------------------------|
+| Drain thread polling wastes CPU while waiting for queue         | Low        | Low    | 0.1s sleep interval; stop_event provides immediate exit           |
+| `all_correlations` list grows large in WebSocket message        | Low        | Medium | Limit to top N (e.g., 50) or send summary statistics only         |
+| Callback `**kwargs` breaks existing tests                       | Medium     | Low    | Add `**kwargs` acceptance; update test mocks                      |
+| `max_hidden_units` not in state when grow bar renders           | Low        | Medium | Fallback chain: `max_hidden_units` → `grow_max` → hide bar        |
+| Pool metrics schema change breaks history snapshots             | Low        | Low    | History is ephemeral (in-memory Store); no persistence to migrate |
+| Drain thread references stale progress queue after pool restart | Low        | Medium | Re-discover queue each time `_pq` becomes None                    |
 
 ---
 
@@ -837,32 +844,32 @@ print(f'candidate_pool_phase: {s.get(\"candidate_pool_phase\")}')
 
 ### Phase 1: Critical (P0)
 
-| File | Changes | Bug |
-|------|---------|-----|
-| `juniper-cascor/src/api/lifecycle/manager.py` | Modify `_drain_progress_queue` for deferred queue discovery; always start drain thread in `monitored_grow` | Bug 2 |
-| `juniper-canopy/src/frontend/components/metrics_panel.py` | Use `max_hidden_units` for grow bar denominator; cap at 100% | Bug 1 |
+| File                                                      | Changes                                                                                                    | Bug   |
+|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------|-------|
+| `juniper-cascor/src/api/lifecycle/manager.py`             | Modify `_drain_progress_queue` for deferred queue discovery; always start drain thread in `monitored_grow` | Bug 2 |
+| `juniper-canopy/src/frontend/components/metrics_panel.py` | Use `max_hidden_units` for grow bar denominator; cap at 100%                                               | Bug 1 |
 
 ### Phase 2: High (P1)
 
-| File | Changes | Bug |
-|------|---------|-----|
-| `juniper-cascor/src/cascade_correlation/cascade_correlation.py` | Add top candidate data to grow callback invocation | Bug 3 |
-| `juniper-cascor/src/api/lifecycle/manager.py` | Forward top candidate data in `_grow_iteration_callback`; add `**kwargs` | Bug 3 |
-| `juniper-canopy/src/backend/cascor_service_adapter.py` | Map top candidate fields from state message; derive `candidate_pool_phase` | Bugs 3, 6 |
+| File                                                            | Changes                                                                    | Bug       |
+|-----------------------------------------------------------------|----------------------------------------------------------------------------|-----------|
+| `juniper-cascor/src/cascade_correlation/cascade_correlation.py` | Add top candidate data to grow callback invocation                         | Bug 3     |
+| `juniper-cascor/src/api/lifecycle/manager.py`                   | Forward top candidate data in `_grow_iteration_callback`; add `**kwargs`   | Bug 3     |
+| `juniper-canopy/src/backend/cascor_service_adapter.py`          | Map top candidate fields from state message; derive `candidate_pool_phase` | Bugs 3, 6 |
 
 ### Phase 3: Medium (P2)
 
-| File | Changes | Bug |
-|------|---------|-----|
+| File                                                      | Changes                                                                   | Bug       |
+|-----------------------------------------------------------|---------------------------------------------------------------------------|-----------|
 | `juniper-canopy/src/frontend/components/metrics_panel.py` | Redefine pool metrics as correlation statistics; update history rendering | Bugs 4, 5 |
-| `juniper-canopy/src/backend/training_monitor.py` | Add `all_correlations` field to TrainingState | Bug 4 |
+| `juniper-canopy/src/backend/training_monitor.py`          | Add `all_correlations` field to TrainingState                             | Bug 4     |
 
 ### Test Files Requiring Updates
 
-| File | Changes |
-|------|---------|
-| `juniper-cascor/src/tests/unit/api/test_monitoring_hooks.py` | Update drain thread tests for deferred discovery |
-| `juniper-cascor/src/tests/unit/api/test_lifecycle_manager.py` | Verify drain thread starts with None queue |
-| `juniper-cascor/src/tests/unit/test_cascade_correlation_callback_hooks.py` | Update callback invocation tests for new kwargs |
-| `juniper-canopy/src/tests/unit/frontend/test_metrics_panel_handlers.py` | Test grow bar with `max_hidden_units` denominator |
-| `juniper-canopy/src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | Test `candidate_pool_phase` derivation |
+| File                                                                            | Changes                                           |
+|---------------------------------------------------------------------------------|---------------------------------------------------|
+| `juniper-cascor/src/tests/unit/api/test_monitoring_hooks.py`                    | Update drain thread tests for deferred discovery  |
+| `juniper-cascor/src/tests/unit/api/test_lifecycle_manager.py`                   | Verify drain thread starts with None queue        |
+| `juniper-cascor/src/tests/unit/test_cascade_correlation_callback_hooks.py`      | Update callback invocation tests for new kwargs   |
+| `juniper-canopy/src/tests/unit/frontend/test_metrics_panel_handlers.py`         | Test grow bar with `max_hidden_units` denominator |
+| `juniper-canopy/src/tests/unit/backend/test_cascor_service_adapter_boundary.py` | Test `candidate_pool_phase` derivation            |
