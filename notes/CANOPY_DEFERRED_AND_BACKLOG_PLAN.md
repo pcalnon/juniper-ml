@@ -285,27 +285,27 @@ Items requiring external dependencies, major architectural work, or with low nea
 
 ### Status Summary
 
-| Item                         | Source                | Status                 | Verdict                                                       |
-|------------------------------|-----------------------|------------------------|---------------------------------------------------------------|
-| Multi-hierarchy network view | CAN-020               | BLOCKED                | Requires fundamental CasCor algorithm extension               |
-| Population network view      | CAN-021               | BLOCKED                | Requires CAN-020 + population training paradigm               |
-| Dataset versioning           | CAN-DEF-005           | ✅ COMPLETE            | 3-phase, 3-repo implementation with 59 tests                  |
-| 3D network visualization     | CAN-DEF-008           | ✅ ALREADY IMPLEMENTED | Plotly 3D with 2D/3D toggle; enhancement opportunities remain |
+| Item                         | Source                | Status                 | Verdict                                                            |
+|------------------------------|-----------------------|------------------------|--------------------------------------------------------------------|
+| Multi-hierarchy network view | CAN-020               | BLOCKED                | Requires fundamental CasCor algorithm extension                    |
+| Population network view      | CAN-021               | BLOCKED                | Requires CAN-020 + population training paradigm                    |
+| Dataset versioning           | CAN-DEF-005           | ✅ COMPLETE            | 3-phase, 3-repo implementation with 59 tests                       |
+| 3D network visualization     | CAN-DEF-008           | ✅ ALREADY IMPLEMENTED | Plotly 3D with 2D/3D toggle; enhancement opportunities remain      |
 | Network segmentation         | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | 3 networks + monitoring network (frontend/backend/data/monitoring) |
-| Observability stack          | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | Prometheus + Grafana + AlertManager + 23 metrics + 13 alert rules |
-| Docker secrets management    | Microservices Phase 3 | ✅ COMPLETE            | get_secret() in 3 services + compose secrets block            |
+| Observability stack          | Microservices Phase 3 | ✅ ALREADY IMPLEMENTED | Prometheus + Grafana + AlertManager + 23 metrics + 13 alert rules  |
+| Docker secrets management    | Microservices Phase 3 | ✅ COMPLETE            | get_secret() in 3 services + compose secrets block                 |
 
 ### Completed Items (Cross-Repo)
 
-| Task                                   | Source           | Notes                                                                                                                                                |
-|----------------------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ~~Remote worker status dashboard~~     | ~~CAN-HIGH-005~~ | ✅ COMPLETE (2026-03-31) — REST routes in cascor, client methods in cascor-client, WorkerPanel + demo endpoints in canopy                            |
-| ~~Cassandra integration tests~~        | ~~CAN-DEF-002~~  | ✅ COMPLETE (2026-03-31) — Docker service in juniper-deploy, 16 real-instance integration tests gated behind CASSANDRA_INTEGRATION_TEST=1            |
-| ~~Redis integration tests~~            | ~~CAN-DEF-003~~  | ✅ COMPLETE (2026-03-31) — Docker in juniper-deploy, 15 real-instance int tests gated behind REDIS_INTEGRATION_TEST=1                                |
-| ~~Dataset batch operations~~           | ~~CAN-DEF-006~~  | ✅ COMPLETE (2026-03-31) — batch-create, batch-tags, batch-export endpoints in juniper-data; client wrappers + FakeDataClient in juniper-data-client |
-| ~~JuniperData performance benchmarks~~ | ~~CAN-DEF-007~~  | ✅ COMPLETE (2026-04-01) — 23 benchmarks in juniper-data-client (14 fake + 9 live gated behind JUNIPER_DATA_BENCHMARK=1)                             |
-| ~~Dataset versioning~~                 | ~~CAN-DEF-005~~  | ✅ COMPLETE (2026-04-01) — 3-phase across juniper-data (PR #15), juniper-data-client, juniper-canopy. 59 total tests                                |
-| ~~Docker secrets management~~          | ~~Micro Phase 3~~ | ✅ COMPLETE (2026-04-01) — get_secret() in 3 services, compose secrets block, AlertManager, monitoring network (juniper-deploy PR #6)               |
+| Task                                   | Source            | Notes                                                                                                                                                |
+|----------------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~~Remote worker status dashboard~~     | ~~CAN-HIGH-005~~  | ✅ COMPLETE (2026-03-31) — REST routes in cascor, client methods in cascor-client, WorkerPanel + demo endpoints in canopy                            |
+| ~~Cassandra integration tests~~        | ~~CAN-DEF-002~~   | ✅ COMPLETE (2026-03-31) — Docker service in juniper-deploy, 16 real-instance integration tests gated behind CASSANDRA_INTEGRATION_TEST=1            |
+| ~~Redis integration tests~~            | ~~CAN-DEF-003~~   | ✅ COMPLETE (2026-03-31) — Docker in juniper-deploy, 15 real-instance int tests gated behind REDIS_INTEGRATION_TEST=1                                |
+| ~~Dataset batch operations~~           | ~~CAN-DEF-006~~   | ✅ COMPLETE (2026-03-31) — batch-create, batch-tags, batch-export endpoints in juniper-data; client wrappers + FakeDataClient in juniper-data-client |
+| ~~JuniperData performance benchmarks~~ | ~~CAN-DEF-007~~   | ✅ COMPLETE (2026-04-01) — 23 benchmarks in juniper-data-client (14 fake + 9 live gated behind JUNIPER_DATA_BENCHMARK=1)                             |
+| ~~Dataset versioning~~                 | ~~CAN-DEF-005~~   | ✅ COMPLETE (2026-04-01) — 3-phase across juniper-data (PR #15), juniper-data-client, juniper-canopy. 59 total tests                                 |
+| ~~Docker secrets management~~          | ~~Micro Phase 3~~ | ✅ COMPLETE (2026-04-01) — get_secret() in 3 services, compose secrets block, AlertManager, monitoring network (juniper-deploy PR #6)                |
 
 ---
 
@@ -692,17 +692,17 @@ def get_secret(env_var: str, file_env_var: str | None = None) -> str | None:
 
 Items sorted by actionability and impact:
 
-| Priority | Item                             | Status       | Effort     | Result                                                          |
-|----------|----------------------------------|--------------|------------|-----------------------------------------------------------------|
-| 1        | CAN-DEF-005 (Dataset versioning) | ✅ Complete  | 5-8 days   | 3-phase, 3-repo: juniper-data PR #15 + client + canopy (59 tests) |
-| 2        | Docker secrets management        | ✅ Complete  | 2-3 days   | get_secret() in 3 services + compose secrets (25 tests)         |
-| 3        | Monitoring network enhancement   | ✅ Complete  | < 1 hour   | Dedicated monitoring network for Prometheus/Grafana             |
-| 4        | Alerting rules (Prometheus)      | ✅ Complete  | 2-3 days   | AlertManager + 13 alert rules + 7 recording rules              |
-| —        | CAN-DEF-008 (3D visualization)   | ✅ Complete  | —          | Pre-existing Plotly 3D implementation                           |
-| —        | Network segmentation             | ✅ Complete  | —          | 4 networks: frontend/backend/data/monitoring                    |
-| —        | Observability stack              | ✅ Complete  | —          | Prometheus + Grafana + AlertManager + 23 metrics                |
-| —        | CAN-020 (Multi-hierarchy)        | Blocked      | 11-17 days | Requires CasCor algorithm research                              |
-| —        | CAN-021 (Population view)        | Blocked      | 8-13 days  | Requires CAN-020 + population training                          |
+| Priority | Item                             | Status      | Effort     | Result                                                            |
+|----------|----------------------------------|-------------|------------|-------------------------------------------------------------------|
+| 1        | CAN-DEF-005 (Dataset versioning) | ✅ Complete | 5-8 days   | 3-phase, 3-repo: juniper-data PR #15 + client + canopy (59 tests) |
+| 2        | Docker secrets management        | ✅ Complete | 2-3 days   | get_secret() in 3 services + compose secrets (25 tests)           |
+| 3        | Monitoring network enhancement   | ✅ Complete | < 1 hour   | Dedicated monitoring network for Prometheus/Grafana               |
+| 4        | Alerting rules (Prometheus)      | ✅ Complete | 2-3 days   | AlertManager + 13 alert rules + 7 recording rules                 |
+| —        | CAN-DEF-008 (3D visualization)   | ✅ Complete | —          | Pre-existing Plotly 3D implementation                             |
+| —        | Network segmentation             | ✅ Complete | —          | 4 networks: frontend/backend/data/monitoring                      |
+| —        | Observability stack              | ✅ Complete | —          | Prometheus + Grafana + AlertManager + 23 metrics                  |
+| —        | CAN-020 (Multi-hierarchy)        | Blocked     | 11-17 days | Requires CasCor algorithm research                                |
+| —        | CAN-021 (Population view)        | Blocked     | 8-13 days  | Requires CAN-020 + population training                            |
 
 ---
 
