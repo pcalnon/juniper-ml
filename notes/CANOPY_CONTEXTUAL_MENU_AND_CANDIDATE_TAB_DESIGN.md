@@ -1,10 +1,11 @@
 # Canopy Contextual Left Menu & Candidate Metrics Tab Enhancement Design
 
-**Version**: 1.2.0
+**Version**: 1.3.0
 **Created**: 2026-03-31
 **Updated**: 2026-04-01
-**Status**: DESIGN — Validated
+**Status**: IMPLEMENTED
 **Project**: juniper-canopy
+**Implementation Branch**: `feature/contextual-sidebar-candidate-tab`
 **Author**: Claude Code (Principal Engineer)
 
 ---
@@ -726,8 +727,8 @@ Candidate Metrics Tab
 
 #### Component IDs
 
-| Component            | ID                                       | Type         |
-|----------------------|------------------------------------------|--------------|
+| Component            | ID                                             | Type         |
+|----------------------|------------------------------------------------|--------------|
 | Status badge         | `candidate-metrics-panel-status`               | html.Div     |
 | Phase display        | `candidate-metrics-panel-phase`                | html.Div     |
 | Pool size display    | `candidate-metrics-panel-pool-size`            | html.Div     |
@@ -774,17 +775,17 @@ No new API endpoints are required.
 
 The new `CandidateMetricsPanel` will require the following imports and copied helper methods from `metrics_panel.py`:
 
-| Import / Method            | Source                | Action   | Purpose                                           |
-|----------------------------|-----------------------|----------|---------------------------------------------------|
-| `time`                     | stdlib                | Import   | Timestamp formatting                              |
-| `dash`                     | dash                  | Import   | Dash framework core                               |
-| `dash_bootstrap_components` | dbc                  | Import   | Bootstrap layout components                       |
-| `plotly.graph_objects`     | plotly                | Import   | Candidate loss plot construction                  |
-| `BaseComponent`            | `base_component.py`  | Import   | Parent class for component pattern                |
-| `_candidate_add_trace()`   | `metrics_panel.py`   | **Copy** | Adds candidate training trace to loss figure      |
-| `_phase_band_color()`      | `metrics_panel.py`   | **Copy** | Returns color for training phase background bands |
-| `_create_empty_plot()`     | `metrics_panel.py`   | **Copy** | Creates empty placeholder figure with styling     |
-| `_get_status_style()`      | `metrics_panel.py`   | **Copy** | Returns CSS style dict for status badge coloring  |
+| Import / Method             | Source              | Action   | Purpose                                           |
+|-----------------------------|---------------------|----------|---------------------------------------------------|
+| `time`                      | stdlib              | Import   | Timestamp formatting                              |
+| `dash`                      | dash                | Import   | Dash framework core                               |
+| `dash_bootstrap_components` | dbc                 | Import   | Bootstrap layout components                       |
+| `plotly.graph_objects`      | plotly              | Import   | Candidate loss plot construction                  |
+| `BaseComponent`             | `base_component.py` | Import   | Parent class for component pattern                |
+| `_candidate_add_trace()`    | `metrics_panel.py`  | **Copy** | Adds candidate training trace to loss figure      |
+| `_phase_band_color()`       | `metrics_panel.py`  | **Copy** | Returns color for training phase background bands |
+| `_create_empty_plot()`      | `metrics_panel.py`  | **Copy** | Creates empty placeholder figure with styling     |
+| `_get_status_style()`       | `metrics_panel.py`  | **Copy** | Returns CSS style dict for status badge coloring  |
 
 > **Note**: Copied methods should be refactored into a shared utility module in a follow-up cleanup pass to eliminate duplication. For the initial implementation, copying maintains independence between components and avoids modifying the existing MetricsPanel.
 
@@ -949,15 +950,15 @@ Implement both enhancements simultaneously in a single branch/PR.
 
 **Steps**:
 
-| Step | Task                                                                         | File                   | Effort |
-|------|------------------------------------------------------------------------------|------------------------|--------|
-| 5.1  | Import `CandidateMetricsPanel` in `dashboard_manager.py`                     | `dashboard_manager.py` | Low    |
-| 5.2  | Initialize component in `_initialize_components()`                           | `dashboard_manager.py` | Low    |
-| 5.3  | Add `dbc.Tab` entry after Training Metrics tab                               | `dashboard_manager.py` | Low    |
-| 5.4  | Add `"candidates"` entry to `TAB_SIDEBAR_CONFIG`                             | `dashboard_manager.py` | Low    |
-| 5.5  | ~~No change needed~~ — existing active-tab-aware data store callbacks do NOT need updating; `CandidateMetricsPanel.register_callbacks()` registers its own data fetch callback gated on `active_tab == "candidates"` | N/A | None |
-| 5.6  | Update localStorage tab persistence (no change needed — works automatically) | N/A                    | None   |
-| 5.7  | Verify tab renders and data updates in real-time                             | Manual test            | Medium |
+| Step | Task                                                                                                                                                                                 | File                   | Effort |
+|------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|--------|
+| 5.1  | Import `CandidateMetricsPanel` in `dashboard_manager.py`                                                                                                                             | `dashboard_manager.py` | Low    |
+| 5.2  | Initialize component in `_initialize_components()`                                                                                                                                   | `dashboard_manager.py` | Low    |
+| 5.3  | Add `dbc.Tab` entry after Training Metrics tab                                                                                                                                       | `dashboard_manager.py` | Low    |
+| 5.4  | Add `"candidates"` entry to `TAB_SIDEBAR_CONFIG`                                                                                                                                     | `dashboard_manager.py` | Low    |
+| 5.5  | ~~No changes~~ — active-tab-aware data store callbacks NOT updating; `CandidateMetricsPanel.register_callbacks()` register data fetch callback gated on `active_tab == "candidates"` | N/A                    | None   |
+| 5.6  | Update localStorage tab persistence (no change needed — works automatically)                                                                                                         | N/A                    | None   |
+| 5.7  | Verify tab renders and data updates in real-time                                                                                                                                     | Manual test            | Medium |
 
 **Verification**: New tab appears, displays candidate data, updates in real-time.
 
@@ -1167,6 +1168,63 @@ All new IDs use prefixes (`sidebar-`, `ctx-`, `candidate-metrics-panel-`) that d
 - `about-panel-` (About)
 - `parameters-panel-` (Parameters)
 - `tutorial-panel-` (Tutorial)
+
+---
+
+## 11. Implementation Results
+
+**Date**: 2026-04-01
+**Branch**: `feature/contextual-sidebar-candidate-tab` (juniper-canopy)
+
+### 11.1 Phase Completion Summary
+
+| Phase | Title | Status | Commits |
+|-------|-------|--------|---------|
+| Phase 1 | Sidebar Decomposition | COMPLETE | `234b85b` |
+| Phase 2 | Contextual Visibility Callback | COMPLETE | `9596627` |
+| Phase 3 | Collapsible Section Wrappers | COMPLETE | `6566588` |
+| Phase 4 | CandidateMetricsPanel Component | COMPLETE | `39f2527` |
+| Phase 5 | Register Tab and Wire Up | COMPLETE | `b995002` |
+| Phase 6 | Extract Candidate Content | COMPLETE | `8133d84` |
+| Phase 7 | Testing & Polish | COMPLETE | `31f88a2`, `3d4e378`, `d82a27a`, final commit |
+
+### 11.2 Implementation Deviations from Design
+
+1. **Status badge ID**: Implementation uses `candidate-metrics-panel-status-badge` instead of `candidate-metrics-panel-status`. The `-badge` suffix better conveys the visual purpose.
+
+2. **Combined callbacks**: The design specified separate "Update top candidates" and "Update pool metrics" callbacks. Implementation combines them into a single `update_pool_info` callback that renders both within the `pool-info` container. This is architecturally simpler since both consume the same input (`training-state-store`).
+
+3. **Separate epoch progress callback**: Implementation adds a dedicated `update_epoch_progress` callback not in the original design. This cleanly separates progress bar visibility/value from the status display callback.
+
+4. **Pool details toggle**: Implementation adds a `toggle_pool_details` callback for the collapsible pool info section, providing better UX for the detailed pool view.
+
+### 11.3 Test Coverage
+
+| Test File | Type | Tests | Status |
+|-----------|------|-------|--------|
+| `test_sidebar_visibility.py` | Unit | 37 | NEW |
+| `test_candidate_metrics_panel.py` | Unit | 31 | NEW |
+| `test_dashboard_enhancements.py` | Integration | 1 fix | UPDATED |
+| `test_dashboard_manager.py` | Unit | 1 fix | UPDATED |
+| `test_dashboard_manager_coverage.py` | Unit | 1 fix | UPDATED |
+| `test_meta_parameters_layout.py` | Unit | 1 fix | UPDATED |
+| `test_metrics_panel_coverage.py` | Unit | 2 removed | UPDATED |
+| `test_metrics_panel_handlers.py` | Unit | 2 removed | UPDATED |
+| `test_metrics_panel_helpers_coverage.py` | Unit | 3 removed | UPDATED |
+
+**Full suite**: 4000+ tests pass, 0 failures.
+
+### 11.4 Files Changed
+
+| File | Change | Lines |
+|------|--------|-------|
+| `src/frontend/dashboard_manager.py` | Major Modify | +1051/-853 |
+| `src/frontend/components/candidate_metrics_panel.py` | New File | +702 |
+| `src/frontend/components/metrics_panel.py` | Moderate Modify | -361 |
+| `src/tests/unit/frontend/test_sidebar_visibility.py` | New File | +159 |
+| `src/tests/unit/frontend/test_candidate_metrics_panel.py` | New File | +222 |
+| `CHANGELOG.md` | Updated | +10 |
+| 7 test files | Count/fixture fixes | ~-100 |
 
 ---
 
