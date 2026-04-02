@@ -1,4 +1,4 @@
-"""Targeted regression tests for scripts/check_doc_links.py."""
+"""Targeted regression tests for util/check_doc_links.py."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from unittest import mock
 
 
 def _load_check_doc_links_module():
-    module_path = Path(__file__).resolve().parent.parent / "scripts" / "check_doc_links.py"
+    module_path = Path(__file__).resolve().parent.parent / "util" / "check_doc_links.py"
     spec = importlib.util.spec_from_file_location("check_doc_links", module_path)
     if spec is None or spec.loader is None:
         raise RuntimeError("Unable to load check_doc_links module")

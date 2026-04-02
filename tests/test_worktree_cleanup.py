@@ -1,5 +1,5 @@
 """
-Tests for scripts/worktree_cleanup.bash
+Tests for util/worktree_cleanup.bash
 
 Validates argument parsing, dry-run output, and error handling for the
 worktree cleanup script. Does NOT execute actual git operations — all tests
@@ -13,7 +13,7 @@ import unittest
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parent.parent / "scripts" / "worktree_cleanup.bash"
+SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "worktree_cleanup.bash"
 
 
 def run_script(*args: str, cwd: str | None = None) -> subprocess.CompletedProcess:
