@@ -139,4 +139,3 @@ echo "juniper-cascor: ${JUNIPER_CASCOR_PID}" >> ${JUNIPER_PROJECT_PID_FILE}
 echo "juniper-canopy: ${JUNIPER_CANOPY_PID}" >> ${JUNIPER_PROJECT_PID_FILE}
 
 cat "${JUNIPER_PROJECT_PID_FILE}"
-

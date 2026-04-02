@@ -42,4 +42,4 @@ source "${CONDA_ACTIVATE}"
 exec conda activate "${CONDA_ENV_NAME}"
 
 # exec conda activate "${CONDA_ENV_NAME}"
-exec bash 
+exec bash
