@@ -22,6 +22,6 @@ function activate_new_worktree() {
     elif [[ ! -d "${1}" ]]; then
         echo "Error, Worktree Directory Does not Exist!"
     else
-        cd ${1}
+        cd "${1}" || return
     fi
 }

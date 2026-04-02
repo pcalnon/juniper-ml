@@ -69,6 +69,7 @@ JUNIPER_CANOPY_SLEEPYTIME="10"
 # Initialize Conda prior to launching individual services
 ###########################################################################################################################################################################################################
 echo "[${SCRIPT_NAME}:${LINENO}] source \"${CONDA}\""
+# shellcheck source=/dev/null
 source "${CONDA}"
 
 
@@ -76,7 +77,7 @@ source "${CONDA}"
 # Launch Juniper Data service in Background
 ###########################################################################################################################################################################################################
 echo "[${SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_DATA_DIR}\""
-cd "${JUNIPER_DATA_DIR}"
+cd "${JUNIPER_DATA_DIR}" || exit
 echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_DATA_CONDA}\""
 conda activate "${JUNIPER_DATA_CONDA}"
 echo "[${SCRIPT_NAME}:${LINENO}] PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host \"${JUNIPER_DATA_HOST}\" --port \"${JUNIPER_DATA_PORT}\" >\"${JUNIPER_DATA_LOG}\" 2>&1 &"
@@ -91,7 +92,7 @@ sleep "${JUNIPER_DATA_SLEEPYTIME}"
 # Launch Juniper Cascor service in Background
 ###########################################################################################################################################################################################################
 echo "[${SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CASCOR_SRC_DIR}\""
-cd "${JUNIPER_CASCOR_SRC_DIR}"
+cd "${JUNIPER_CASCOR_SRC_DIR}" || exit
 echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CASCOR_CONDA}\""
 conda activate "${JUNIPER_CASCOR_CONDA}"
 echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
@@ -106,7 +107,7 @@ sleep "${JUNIPER_CASCOR_SLEEPYTIME}"
 # Launch Juniper Canopy service in Background
 ###########################################################################################################################################################################################################
 echo "[${SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CANOPY_SRC_DIR}\""
-cd "${JUNIPER_CANOPY_SRC_DIR}"
+cd "${JUNIPER_CANOPY_SRC_DIR}" || exit
 echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CANOPY_CONDA}\""
 conda activate "${JUNIPER_CANOPY_CONDA}"
 

@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-TRUE="0"
-FALSE="1"
-
 JUNIPER_PROJECT_WORKTREE_DIR="${HOME}/Development/python/Juniper/worktrees"
 JUNIPER_WORKTREE_NAME="juniper-canopy-cascor--fix--connect-canopy-cascor--$(date +%Y%m%d-%H%M)--$(uuidgen)"
 JUNIPER_WORKTREE_NEW="${JUNIPER_PROJECT_WORKTREE_DIR}/${JUNIPER_WORKTREE_NAME}"
@@ -31,15 +28,16 @@ if [[ ! ( -d "${JUNIPER_WORKTREE_NEW}" ) ]]; then
 fi
 
 echo "cd \"${JUNIPER_WORKTREE_NEW}\""
-cd "${JUNIPER_WORKTREE_NEW}"
+cd "${JUNIPER_WORKTREE_NEW}" || exit
 pwd
 
 # source /opt/miniforge3/etc/profile.d/conda.sh && conda activate JuniperCascor
 # echo "source \"${CONDA_ACTIVATE}\""
+# shellcheck source=/dev/null
 source "${CONDA_ACTIVATE}"
 
 # echo "conda activate \"${CONDA_ENV_NAME}\""
-exec conda activate "${CONDA_ENV_NAME}"
+conda activate "${CONDA_ENV_NAME}"
 
 # exec conda activate "${CONDA_ENV_NAME}"
 exec bash
