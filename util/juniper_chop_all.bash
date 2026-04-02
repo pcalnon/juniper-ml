@@ -24,8 +24,13 @@ JUNIPER_ML_SLEEPYTIME="10"
 JUNIPER_PROJECT_PID_FILENAME="JuniperProject.pid"
 JUNIPER_PROJECT_PID_FILE="${JUNIPER_ML_DIR}/${JUNIPER_PROJECT_PID_FILENAME}"
 echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILE=\"${JUNIPER_ML_DIR}/${JUNIPER_PROJECT_PID_FILENAME}\""
+
 CONDA="/opt/miniforge3/etc/profile.d/conda.sh"
 PYTHON="/opt/miniforge3/envs/JuniperCanopy/bin/python"
+
+# KILL_SIGNAL="-KILL"
+KILL_SIGNAL="-SIGHUP"
+# KILL_SIGNAL="-SIGTERM"
 
 
 ###########################################################################################################################################################################################################
@@ -53,8 +58,8 @@ for JUNIPER_PIDFILE_LINE in $(cat "${JUNIPER_PROJECT_PID_FILE}"); do
     JUNIPER_APPLICATION_PID="$( echo "${JUNIPER_PIDFILE_LINE}" | awk -F " " '{print $2;}')"
     echo "[${SCRIPT_NAME}:${LINENO}] Juniper Application PID: \"${JUNIPER_APPLICATION_PID}\""
     echo "[${SCRIPT_NAME}:${LINENO}] Stopping ${JUNIPER_APPLICATION_NAME} pid ${JUNIPER_APPLICATION_PID}"
-    echo "[${SCRIPT_NAME}:${LINENO}] kill -9 \"${JUNIPER_APPLICATION_PID}\""
-    kill -9 "${JUNIPER_APPLICATION_PID}"
+    echo "[${SCRIPT_NAME}:${LINENO}] kill \"${KILL_SIGNAL}\" \"${JUNIPER_APPLICATION_PID}\""
+    kill "${KILL_SIGNAL}" "${JUNIPER_APPLICATION_PID}"
     echo "[${SCRIPT_NAME}:${LINENO}] Sleeping for ${JUNIPER_ML_SLEEPYTIME} sec"
     sleep "${JUNIPER_ML_SLEEPYTIME}"
 done
