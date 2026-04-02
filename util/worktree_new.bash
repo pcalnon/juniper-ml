@@ -39,4 +39,5 @@ source "${CONDA_ACTIVATE}"
 # echo "conda activate \"${CONDA_ENV_NAME}\""
 conda activate "${CONDA_ENV_NAME}"
 
+# exec conda activate "${CONDA_ENV_NAME}"
 exec bash
