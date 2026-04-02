@@ -34,19 +34,19 @@ default_language_version:
 # Exclude patterns (files/directories to skip)
 exclude: |
   (?x)^(
-      \.git/|
-      \.venv/|
-      venv/|
-      __pycache__/|
-      \.pytest_cache/|
-      \.mypy_cache/|
-      data/|
-      prompts/|
-      reports/|
-      resources/|
-      logs/|
-      images/|
-      .*\.egg-info/|
+      \.git/.*|
+      \.venv/.*|
+      venv/.*|
+      __pycache__/.*|
+      \.pytest_cache/.*|
+      \.mypy_cache/.*|
+      data/.*|
+      prompts/.*|
+      reports/.*|
+      resources/.*|
+      logs/.*|
+      images/.*|
+      .*\.egg-info/.*|
       .*\.ipynb_checkpoints/.*|
       .*/backups/.*|
       .*-ORIG\.py$|
