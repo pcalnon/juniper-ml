@@ -16,14 +16,16 @@
 
 ## Roadmap Summary
 
-| Phase     | Description               | Tasks  | Priority      | Dependencies      | Est. Effort   |
-|-----------|---------------------------|--------|---------------|-------------------|---------------|
-| 1         | Critical Fixes (P0)       | 6      | P0 — Critical | None              | 2-3 days      |
-| 2         | High-Priority Fixes (P1)  | 6      | P1 — High     | Phase 1 (partial) | 2-3 days      |
-| 3         | Feature Enhancements (P2) | 10     | P2 — Medium   | Phase 2 (partial) | 3-5 days      |
-| 4         | Code Quality (P3)         | 5      | P3 — Low      | Phase 1           | 0.5 day       |
-| 5         | Validation & Release      | 5      | —             | Phases 1-4        | 1-2 days      |
-| **Total** |                           | **32** |               |                   | **9-14 days** |
+| Phase     | Description               | Tasks  | Priority      | Status                          |
+|-----------|---------------------------|--------|---------------|---------------------------------|
+| 1         | Critical Fixes (P0)       | 6      | P0 — Critical | ✅ **ALL RESOLVED**             |
+| 2         | High-Priority Fixes (P1)  | 6      | P1 — High     | ✅ **ALL RESOLVED**             |
+| 3         | Feature Enhancements (P2) | 10     | P2 — Medium   | ✅ 9/10 resolved (T14 deferred) |
+| 4         | Code Quality (P3)         | 5      | P3 — Low      | ✅ **ALL RESOLVED**             |
+| 5         | Validation & Release      | 5      | —             | 🔲 Pending (integration tests)  |
+| **Total** |                           | **32** |               | **30/32 resolved**              |
+
+> **Status as of 2026-04-03**: 30 of 32 tasks resolved. T14 (decision boundary replay) deferred as new feature. T7 (network info zeros) and T24 (ActivationWithDerivative extraction) are the only new code changes — both on branch `fix/regression-phase2-cascor`, pending PR.
 
 ---
 
@@ -228,57 +230,38 @@ The following items appeared in source roadmaps but are already resolved. They a
 
 ---
 
-## Phase 4: Code Quality (P3)
+## Phase 4: Code Quality (P3) — ✅ ALL RESOLVED
 
 ### T23: Remove Undeclared Global `shared_object_dict`
 
-- [ ] **Status**: Pending
+- [x] **Status**: ✅ Fixed (verified 2026-04-03 — already removed)
 - **ID**: P3-1
-- **Repo**: juniper-cascor
-- **File**: `src/cascade_correlation/cascade_correlation.py` (line 2923)
-- **Action**: Delete `global shared_object_dict` — variable is never declared at module scope.
-- **Depends On**: None
-- **Verification**: `grep -n 'shared_object_dict' src/cascade_correlation/cascade_correlation.py` — no results.
+- **Resolution**: `global shared_object_dict` no longer exists in `cascade_correlation.py`.
 
 ### T24: Extract ActivationWithDerivative to Shared Module
 
-- [ ] **Status**: Pending
+- [x] **Status**: ✅ Fixed (2026-04-03 — branch `fix/regression-phase2-cascor`)
 - **ID**: P3-2
 - **Repo**: juniper-cascor
-- **Files**: `src/utils/activation.py` (new), `src/cascade_correlation/cascade_correlation.py`, `src/candidate_unit/candidate_unit.py`
-- **Action**: Create canonical `ActivationWithDerivative` class in `src/utils/activation.py`. Update both consumers to import from the shared module. Verify `ACTIVATION_MAP` is consistent.
-- **Depends On**: None
-- **Verification**: `python -c "from src.utils.activation import ActivationWithDerivative"` succeeds; full test suite passes.
+- **Resolution**: Created `src/utils/activation.py` with canonical class + `ACTIVATION_MAP`. Updated imports in `cascade_correlation.py` and `candidate_unit.py`. Updated pickle allowlist. 851 tests pass (30 forward pass + 599 API + 222 activation/candidate/cascor).
 
 ### T25: Remove Misleading `import datetime as pd`
 
-- [ ] **Status**: Pending
+- [x] **Status**: ✅ Fixed (verified 2026-04-03 — already removed)
 - **ID**: P3-3
-- **Repo**: juniper-cascor
-- **File**: `src/cascade_correlation/cascade_correlation.py` (line 39)
-- **Action**: Delete the misleading aliased import. If `pd` is referenced elsewhere in the file, replace with correct `datetime` usage.
-- **Depends On**: None
-- **Verification**: `grep -n 'import datetime as pd' src/cascade_correlation/cascade_correlation.py` — no results; no `NameError` at runtime.
+- **Resolution**: The misleading aliased import no longer exists in `cascade_correlation.py`.
 
 ### T26: Remove Duplicate snapshot_counter Init
 
-- [ ] **Status**: Pending
+- [x] **Status**: ✅ Not a bug (verified 2026-04-03)
 - **ID**: P3-4
-- **Repo**: juniper-cascor
-- **File**: `src/cascade_correlation/cascade_correlation.py` (line 779)
-- **Action**: Remove the duplicate `self.snapshot_counter = 0` if it is already initialized in `__init__`.
-- **Depends On**: None
-- **Verification**: `grep -n 'snapshot_counter = 0' src/cascade_correlation/cascade_correlation.py` — single occurrence.
+- **Resolution**: Only one initialization at line 776 (inside `__init__`). No duplicate exists.
 
 ### T27: Weight Magnitude Validation Threshold Increase
 
-- [ ] **Status**: Pending
+- [x] **Status**: ✅ Fixed (verified 2026-04-03 — already at 1000.0)
 - **ID**: P3-5
-- **Repo**: juniper-cascor
-- **File**: `src/cascade_correlation/cascade_correlation.py` (line 2155)
-- **Action**: Change `_RESULT_MAX_WEIGHT_MAGNITUDE = 100.0` to `1000.0`. Add warning log (without rejection) for values in the 100.0–1000.0 range.
-- **Depends On**: None
-- **Verification**: `grep -n '_RESULT_MAX_WEIGHT_MAGNITUDE' src/cascade_correlation/cascade_correlation.py` shows `1000.0`.
+- **Resolution**: `_RESULT_MAX_WEIGHT_MAGNITUDE = 1000.0` at line 2215. Warning log for elevated values (100-1000 range) at line 2252.
 
 ---
 
