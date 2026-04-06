@@ -15,15 +15,16 @@
 #   systemctl --user status juniper-all.target  # check target status
 #
 # Prerequisites:
-#   - All three service units installed in ~/.config/systemd/user/:
-#     juniper-data.service, juniper-cascor.service, juniper-canopy.service
+#   - All service units installed in ~/.config/systemd/user/:
+#     juniper-data.service, juniper-cascor.service, juniper-canopy.service,
+#     juniper-cascor-worker.service
 # =============================================================================
 
 [Unit]
 Description=Juniper — All Microservices
 Documentation=https://github.com/pcalnon/juniper-ml
-Wants=juniper-data.service juniper-cascor.service juniper-canopy.service
-After=juniper-data.service juniper-cascor.service juniper-canopy.service
+Wants=juniper-data.service juniper-cascor.service juniper-canopy.service juniper-cascor-worker.service
+After=juniper-data.service juniper-cascor.service juniper-canopy.service juniper-cascor-worker.service
 
 [Install]
 WantedBy=default.target

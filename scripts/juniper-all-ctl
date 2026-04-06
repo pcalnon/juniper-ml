@@ -21,7 +21,7 @@
 set -euo pipefail
 
 TARGET="juniper-all.target"
-SERVICES=("juniper-data" "juniper-cascor" "juniper-canopy")
+SERVICES=("juniper-data" "juniper-cascor" "juniper-canopy" "juniper-cascor-worker")
 
 JUNIPER_DATA_PORT="${JUNIPER_DATA_PORT:-8100}"
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8200}"
@@ -78,7 +78,7 @@ cmd_status() {
 }
 
 cmd_logs() {
-    journalctl --user -u juniper-data -u juniper-cascor -u juniper-canopy -f --no-pager
+    journalctl --user -u juniper-data -u juniper-cascor -u juniper-canopy -u juniper-cascor-worker -f --no-pager
 }
 
 cmd_health() {
@@ -86,6 +86,21 @@ cmd_health() {
     local all_healthy=true
 
     for svc in "${SERVICES[@]}"; do
+        # Worker has no HTTP endpoint — check process liveness instead
+        if [[ "${svc}" == "juniper-cascor-worker" ]]; then
+            echo -e "${BOLD}--- ${svc} (process check) ---${RESET}"
+            local pid
+            pid=$(systemctl --user show "$svc" --property=MainPID --value 2>/dev/null || echo "0")
+            if [[ "$pid" != "0" && -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+                echo -e "${GREEN}Running (PID ${pid}).${RESET}"
+            else
+                echo -e "${RED}Not running.${RESET}"
+                all_healthy=false
+            fi
+            echo ""
+            continue
+        fi
+
         local port="${ports[$svc]}"
         local url="http://localhost:${port}/v1/health/ready"
         echo -e "${BOLD}--- ${svc} (${url}) ---${RESET}"
