@@ -35,6 +35,36 @@ echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILE=\"${JUNIPER_PROJECT_PI
 SIGTERM_TIMEOUT="${SIGTERM_TIMEOUT:-15}"
 KILL_WORKERS="${KILL_WORKERS:-0}"
 
+# systemd mode: use systemctl --user instead of PID files
+USE_SYSTEMD="${USE_SYSTEMD:-0}"
+if [[ "${1:-}" == "--systemd" ]]; then
+    USE_SYSTEMD=1
+    shift
+fi
+
+
+###########################################################################################################################################################################################################
+# systemd Mode (--systemd or USE_SYSTEMD=1)
+###########################################################################################################################################################################################################
+if [[ "${USE_SYSTEMD}" == "1" ]]; then
+    echo "[${SCRIPT_NAME}:${LINENO}] === Stopping services via systemd ==="
+
+    # Stop in reverse dependency order: canopy -> cascor -> data
+    for svc in juniper-canopy juniper-cascor juniper-data; do
+        echo "[${SCRIPT_NAME}:${LINENO}] Stopping ${svc}..."
+        if systemctl --user stop "${svc}.service" 2>/dev/null; then
+            echo "[${SCRIPT_NAME}:${LINENO}] ${svc} stopped."
+        else
+            echo "[${SCRIPT_NAME}:${LINENO}] ${svc} was not running or failed to stop."
+        fi
+    done
+
+    echo ""
+    echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services stopped via systemd ==="
+    echo "[${SCRIPT_NAME}:${LINENO}] Ending script run"
+    exit 0
+fi
+
 
 ###########################################################################################################################################################################################################
 # Utility Functions
