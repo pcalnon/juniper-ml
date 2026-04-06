@@ -3,7 +3,7 @@
 **Date**: 2026-04-06
 **Author**: Claude Code (Principal Engineer Review)
 **Scope**: All application startup, shutdown, and orchestration across the Juniper ecosystem
-**Version**: 1.1.0
+**Version**: 1.2.0
 
 ---
 
@@ -257,9 +257,9 @@ Additionally, one distributed worker (juniper-cascor-worker) has CLI-based start
 
 | ID   | Severity   | Issue                                                      | Impact                               |
 |------|------------|------------------------------------------------------------|--------------------------------------|
-| Y-01 | **High**   | References `JuniperPython` env (should be `JuniperCanopy`) | Wrong conda environment in ExecStart |
+| Y-01 | **High**   | References `JuniperPython` env (should be `JuniperCanopy`) | **Resolved** (Phase 2)               |
 | Y-02 | **Medium** | Hardcoded absolute paths in service file                   | Not portable                         |
-| Y-03 | **Medium** | No systemd units for juniper-data or juniper-cascor        | Incomplete service-mode coverage     |
+| Y-03 | **Medium** | No systemd units for juniper-data or juniper-cascor        | **Resolved** (Phase 2)               |
 | Y-04 | **Low**    | No socket activation or watchdog integration               | Missing advanced systemd features    |
 
 ### 3.4 Individual Application Startup Scripts
@@ -477,7 +477,7 @@ All services handle signals adequately at the application level. The gap is in t
 | Port availability check before startup                 | Medium | Low     | **P0**   | **Resolved** (commit `03aec86`)           |
 | Configurable paths in plant/chop scripts               | Medium | Medium  | **P0**   | **Resolved** (commit `03aec86`)           |
 | `get_cascor_dkdk.bash` completion or removal           | Low    | Trivial | **P0**   | **Resolved** — removed (commit `03aec86`) |
-| systemd units for juniper-data and juniper-cascor      | High   | Medium  | **P1**   | Open                                      |
+| systemd units for juniper-data and juniper-cascor      | High   | Medium  | **P1**   | **Resolved** (Phase 2)                    |
 | juniper-cascor-worker Dockerfile                       | High   | Medium  | **P1**   | Open                                      |
 | Worker service in juniper-deploy compose               | High   | Medium  | **P1**   | Open                                      |
 | Kubernetes manifests                                   | High   | High    | **P2**   | Open                                      |
@@ -729,20 +729,27 @@ juniper-cascor-worker:
 | 1.9  | Remove `get_cascor_dkdk.bash` (incomplete dead code)             | `juniper-ml/util/get_cascor_dkdk.bash`   | **Completed** |
 | 1.10 | Fix quoting issues in PID file operations                        | `juniper-ml/util/juniper_plant_all.bash` | **Completed** |
 
-### Phase 2: systemd & Service Management (P1) -- Short-Term
+### Phase 2: systemd & Service Management (P1) -- COMPLETED
 
 **Goal**: Provide OS-native service management for all three core services.
+**Status**: All steps completed on 2026-04-06. Implementation plan at `notes/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md`.
 
-| Step | Task                                                                   | Files                                                                             | Est. Complexity |
-|------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-----------------|
-| 2.1  | Create `juniper-data.service` systemd unit                             | `juniper-data/scripts/juniper-data.service`                                       | Medium          |
-| 2.2  | Create `juniper-cascor.service` systemd unit                           | `juniper-cascor/scripts/juniper-cascor.service`                                   | Medium          |
-| 2.3  | Fix `juniper-canopy.service` env name (JuniperPython -> JuniperCanopy) | `juniper-canopy/scripts/juniper-canopy.service`                                   | Trivial         |
-| 2.4  | Create `juniper-data-ctl` management CLI (modeled on juniper-ctl)      | `juniper-data/scripts/juniper-data-ctl`                                           | Medium          |
-| 2.5  | Create `juniper-cascor-ctl` management CLI                             | `juniper-cascor/scripts/juniper-cascor-ctl`                                       | Medium          |
-| 2.6  | Create `juniper-all.service` systemd target for starting all services  | `juniper-ml/scripts/juniper-all.target`                                           | Low             |
-| 2.7  | Make paths configurable via env vars in plant/chop scripts             | `juniper-ml/util/juniper_plant_all.bash`, `juniper-ml/util/juniper_chop_all.bash` | Medium          |
-| 2.8  | Update plant/chop scripts to optionally use systemctl                  | `juniper-ml/util/juniper_plant_all.bash`, `juniper-ml/util/juniper_chop_all.bash` | Medium          |
+| Step | Task                                                                   | Files                                                                             | Status        |
+|------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------|---------------|
+| 2.1  | Create `juniper-data.service` systemd unit                             | `juniper-data/scripts/juniper-data.service`                                       | **Completed** |
+| 2.2  | Create `juniper-cascor.service` systemd unit                           | `juniper-cascor/scripts/juniper-cascor.service`                                   | **Completed** |
+| 2.3  | Fix `juniper-canopy.service` env name (JuniperPython -> JuniperCanopy) | `juniper-canopy/scripts/juniper-canopy.service`                                   | **Completed** |
+| 2.4  | Create `juniper-data-ctl` management CLI                               | `juniper-data/scripts/juniper-data-ctl`                                           | **Completed** |
+| 2.5  | Create `juniper-cascor-ctl` management CLI                             | `juniper-cascor/scripts/juniper-cascor-ctl`                                       | **Completed** |
+| 2.6  | Create `juniper-all.target` + `juniper-all-ctl`                        | `juniper-ml/scripts/juniper-all.target`, `juniper-ml/scripts/juniper-all-ctl`     | **Completed** |
+| 2.7  | Make paths configurable via env vars in plant/chop scripts             | `juniper-ml/util/juniper_plant_all.bash`, `juniper-ml/util/juniper_chop_all.bash` | **Completed** (Phase 1) |
+| 2.8  | Add `--systemd` mode to plant/chop scripts                             | `juniper-ml/util/juniper_plant_all.bash`, `juniper-ml/util/juniper_chop_all.bash` | **Completed** |
+
+**Additional work completed**:
+
+- Renamed `juniper-canopy/scripts/juniper-ctl` to `juniper-canopy-ctl` for ecosystem naming consistency (`juniper-{service}-ctl` pattern). Backward-compat symlink added.
+- Fixed pre-existing shellcheck warning (unused `OLD_IFS` variable) in `juniper_chop_all.bash`.
+- Removed duplicate PID file existence check in `juniper_chop_all.bash`.
 
 ### Phase 3: Worker Deployment & Container Integration (P1) -- Short-Term
 

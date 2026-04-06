@@ -14,6 +14,10 @@
 #   JUNIPER_CANOPY_PORT     — juniper-canopy listen port (default: 8050)
 #   HEALTH_CHECK_TIMEOUT    — Max seconds to wait for each service health (default: 60)
 #   HEALTH_CHECK_INTERVAL   — Seconds between health polls (default: 2)
+#   USE_SYSTEMD             — Set to "1" to use systemctl instead of nohup (default: 0)
+#
+# Flags:
+#   --systemd               — Same as USE_SYSTEMD=1
 ###########################################################################################################################################################################################################
 set -euo pipefail
 

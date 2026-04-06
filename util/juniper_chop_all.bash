@@ -10,6 +10,10 @@
 #   JUNIPER_PROJECT_DIR     — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
 #   SIGTERM_TIMEOUT         — Seconds to wait after SIGTERM before SIGKILL (default: 15)
 #   KILL_WORKERS            — Set to "1" to also kill orphaned cascor worker processes (default: 0)
+#   USE_SYSTEMD             — Set to "1" to use systemctl instead of PID files (default: 0)
+#
+# Flags:
+#   --systemd               — Same as USE_SYSTEMD=1
 ###########################################################################################################################################################################################################
 set -euo pipefail
 
@@ -141,19 +145,6 @@ if [[ ! -s "${JUNIPER_PROJECT_PID_FILE}" ]]; then
     echo "[${SCRIPT_NAME}:${LINENO}] ERROR: PID file is empty: ${JUNIPER_PROJECT_PID_FILE}"
     exit 1
 fi
-
-OLD_IFS="${IFS}"
-IFS=$'\n'
-
-
-#########################################################################################################################
-# Check if PID file exists and has at least one PID
-###########################################################################################################################################################################################################
-if [[ ! -f "${JUNIPER_PROJECT_PID_FILE}" ]]; then
-    echo "[${SCRIPT_NAME}:${LINENO}] PID file not found: ${JUNIPER_PROJECT_PID_FILE}"
-    exit 1
-fi
-
 
 ###########################################################################################################################################################################################################
 # Load Juniper Pid File Lines into array
