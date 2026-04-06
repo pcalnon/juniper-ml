@@ -10,6 +10,10 @@
 #   JUNIPER_PROJECT_DIR     — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
 #   SIGTERM_TIMEOUT         — Seconds to wait after SIGTERM before SIGKILL (default: 15)
 #   KILL_WORKERS            — Set to "1" to also kill orphaned cascor worker processes (default: 0)
+#   USE_SYSTEMD             — Set to "1" to use systemctl instead of PID files (default: 0)
+#
+# Flags:
+#   --systemd               — Same as USE_SYSTEMD=1
 ###########################################################################################################################################################################################################
 set -euo pipefail
 
@@ -34,6 +38,36 @@ echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILE=\"${JUNIPER_PROJECT_PI
 
 SIGTERM_TIMEOUT="${SIGTERM_TIMEOUT:-15}"
 KILL_WORKERS="${KILL_WORKERS:-0}"
+
+# systemd mode: use systemctl --user instead of PID files
+USE_SYSTEMD="${USE_SYSTEMD:-0}"
+if [[ "${1:-}" == "--systemd" ]]; then
+    USE_SYSTEMD=1
+    shift
+fi
+
+
+###########################################################################################################################################################################################################
+# systemd Mode (--systemd or USE_SYSTEMD=1)
+###########################################################################################################################################################################################################
+if [[ "${USE_SYSTEMD}" == "1" ]]; then
+    echo "[${SCRIPT_NAME}:${LINENO}] === Stopping services via systemd ==="
+
+    # Stop in reverse dependency order: canopy -> cascor -> data
+    for svc in juniper-canopy juniper-cascor juniper-data; do
+        echo "[${SCRIPT_NAME}:${LINENO}] Stopping ${svc}..."
+        if systemctl --user stop "${svc}.service" 2>/dev/null; then
+            echo "[${SCRIPT_NAME}:${LINENO}] ${svc} stopped."
+        else
+            echo "[${SCRIPT_NAME}:${LINENO}] ${svc} was not running or failed to stop."
+        fi
+    done
+
+    echo ""
+    echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services stopped via systemd ==="
+    echo "[${SCRIPT_NAME}:${LINENO}] Ending script run"
+    exit 0
+fi
 
 
 ###########################################################################################################################################################################################################
@@ -111,19 +145,6 @@ if [[ ! -s "${JUNIPER_PROJECT_PID_FILE}" ]]; then
     echo "[${SCRIPT_NAME}:${LINENO}] ERROR: PID file is empty: ${JUNIPER_PROJECT_PID_FILE}"
     exit 1
 fi
-
-OLD_IFS="${IFS}"
-IFS=$'\n'
-
-
-#########################################################################################################################
-# Check if PID file exists and has at least one PID
-###########################################################################################################################################################################################################
-if [[ ! -f "${JUNIPER_PROJECT_PID_FILE}" ]]; then
-    echo "[${SCRIPT_NAME}:${LINENO}] PID file not found: ${JUNIPER_PROJECT_PID_FILE}"
-    exit 1
-fi
-
 
 ###########################################################################################################################################################################################################
 # Load Juniper Pid File Lines into array

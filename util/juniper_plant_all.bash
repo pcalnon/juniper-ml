@@ -14,6 +14,10 @@
 #   JUNIPER_CANOPY_PORT     — juniper-canopy listen port (default: 8050)
 #   HEALTH_CHECK_TIMEOUT    — Max seconds to wait for each service health (default: 60)
 #   HEALTH_CHECK_INTERVAL   — Seconds between health polls (default: 2)
+#   USE_SYSTEMD             — Set to "1" to use systemctl instead of nohup (default: 0)
+#
+# Flags:
+#   --systemd               — Same as USE_SYSTEMD=1
 ###########################################################################################################################################################################################################
 set -euo pipefail
 
@@ -39,6 +43,13 @@ CONDA="${JUNIPER_CONDA_DIR}/etc/profile.d/conda.sh"
 
 HEALTH_CHECK_TIMEOUT="${HEALTH_CHECK_TIMEOUT:-60}"
 HEALTH_CHECK_INTERVAL="${HEALTH_CHECK_INTERVAL:-2}"
+
+# systemd mode: use systemctl --user instead of nohup/PID files
+USE_SYSTEMD="${USE_SYSTEMD:-0}"
+if [[ "${1:-}" == "--systemd" ]]; then
+    USE_SYSTEMD=1
+    shift
+fi
 
 LOGGING_TIMESTAMP="$(date +%F_%H%M)"
 
@@ -180,6 +191,41 @@ cleanup_on_failure() {
 }
 
 trap cleanup_on_failure ERR
+
+
+###########################################################################################################################################################################################################
+# systemd Mode (--systemd or USE_SYSTEMD=1)
+###########################################################################################################################################################################################################
+if [[ "${USE_SYSTEMD}" == "1" ]]; then
+    echo "[${SCRIPT_NAME}:${LINENO}] === Starting services via systemd ==="
+
+    # Validate curl is available for health checks
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "[${SCRIPT_NAME}:${LINENO}] ERROR: 'curl' not found in PATH (needed for health checks)"
+        exit 1
+    fi
+
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-data..."
+    systemctl --user start juniper-data.service
+    wait_for_health "juniper-data" "http://localhost:${JUNIPER_DATA_PORT}/v1/health"
+
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-cascor..."
+    systemctl --user start juniper-cascor.service
+    wait_for_health "juniper-cascor" "http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}/v1/health"
+
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-canopy..."
+    systemctl --user start juniper-canopy.service
+    wait_for_health "juniper-canopy" "http://localhost:${JUNIPER_CANOPY_PORT}/v1/health"
+
+    # Disable ERR trap since startup succeeded
+    trap - ERR
+
+    echo ""
+    echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services started via systemd ==="
+    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'systemctl --user status juniper-{data,cascor,canopy}' to check status"
+    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'journalctl --user -u juniper-{data,cascor,canopy} -f' for logs"
+    exit 0
+fi
 
 
 ###########################################################################################################################################################################################################
