@@ -27,11 +27,11 @@
 
 The Juniper project operates three core microservices (juniper-data, juniper-cascor, juniper-canopy) across three operating modes:
 
-| Mode                          | Mechanism                                                  | Maturity               | Gaps                                                 |
-|-------------------------------|------------------------------------------------------------|------------------------|------------------------------------------------------|
+| Mode                          | Mechanism                                                  | Maturity                           | Gaps                                                                 |
+|-------------------------------|------------------------------------------------------------|------------------------------------|----------------------------------------------------------------------|
 | **Host-level services**       | Bash scripts + nohup + PID files                           | **Production-ready (P0 complete)** | Health checks, error handling, configurable paths (commit `03aec86`) |
-| **Docker Compose containers** | juniper-deploy profiles (full/demo/dev/test/observability) | Production-ready       | No k8s, alerting receivers unconfigured              |
-| **Kubernetes**                | None                                                       | Not implemented        | Complete gap                                         |
+| **Docker Compose containers** | juniper-deploy profiles (full/demo/dev/test/observability) | Production-ready                   | No k8s, alerting receivers unconfigured                              |
+| **Kubernetes**                | None                                                       | Not implemented                    | Complete gap                                                         |
 
 Additionally, one distributed worker (juniper-cascor-worker) has CLI-based startup but no container or service management configuration.
 
@@ -116,13 +116,13 @@ Additionally, one distributed worker (juniper-cascor-worker) has CLI-based start
 
 #### juniper-ml (Meta-Package / Orchestration Utilities)
 
-| Mechanism              | File                                 | Status           |
-|------------------------|--------------------------------------|------------------|
+| Mechanism              | File                                 | Status              |
+|------------------------|--------------------------------------|---------------------|
 | Start all services     | `util/juniper_plant_all.bash`        | Active (overhauled) |
 | Stop all services      | `util/juniper_chop_all.bash`         | Active (overhauled) |
-| Kill all Python        | `util/kill_all_pythons.bash`         | Emergency only   |
-| CasCor query utilities | `util/get_cascor_*.bash` (6 scripts) | Active           |
-| Conda activation       | `scripts/activate_conda_env.bash`    | Template         |
+| Kill all Python        | `util/kill_all_pythons.bash`         | Emergency only      |
+| CasCor query utilities | `util/get_cascor_*.bash` (6 scripts) | Active              |
+| Conda activation       | `scripts/activate_conda_env.bash`    | Template            |
 
 ### 2.2 Per-Client/Worker Inventory
 
@@ -184,26 +184,26 @@ Additionally, one distributed worker (juniper-cascor-worker) has CLI-based start
 
 **Issues Resolved** (from original review):
 
-| ID   | Original Severity | Issue                                    | Resolution                                              |
-|------|-------------------|------------------------------------------|---------------------------------------------------------|
-| S-01 | **Critical**      | No health check verification             | `wait_for_health()` polls `/v1/health` with timeout     |
-| S-02 | **Critical**      | No error handling                        | `set -euo pipefail` + `trap cleanup_on_failure ERR`     |
-| S-03 | **High**          | Hardcoded paths                          | All paths configurable via env vars with sensible defaults |
-| S-04 | **High**          | Fixed sleep delays                       | Replaced with `wait_for_health()` polling               |
-| S-05 | **High**          | Wrong Python binary for cascor           | Per-service conda env Python binaries                   |
-| S-06 | **Medium**        | No log directory creation                | `ensure_dir()` creates missing log dirs                 |
-| S-07 | **Medium**        | No port availability check               | `check_port_available()` via `ss`                       |
-| S-08 | **Medium**        | No conda env validation                  | `validate_conda_env()` checks dir + python binary       |
-| S-09 | **Low**           | Missing double-quotes on PID lines       | Proper quoting throughout                               |
-| S-10 | **Low**           | `get_cascor_dkdk.bash` incomplete        | Removed (dead code)                                     |
+| ID   | Original Severity | Issue                              | Resolution                                                 |
+|------|-------------------|------------------------------------|------------------------------------------------------------|
+| S-01 | **Critical**      | No health check verification       | `wait_for_health()` polls `/v1/health` with timeout        |
+| S-02 | **Critical**      | No error handling                  | `set -euo pipefail` + `trap cleanup_on_failure ERR`        |
+| S-03 | **High**          | Hardcoded paths                    | All paths configurable via env vars with sensible defaults |
+| S-04 | **High**          | Fixed sleep delays                 | Replaced with `wait_for_health()` polling                  |
+| S-05 | **High**          | Wrong Python binary for cascor     | Per-service conda env Python binaries                      |
+| S-06 | **Medium**        | No log directory creation          | `ensure_dir()` creates missing log dirs                    |
+| S-07 | **Medium**        | No port availability check         | `check_port_available()` via `ss`                          |
+| S-08 | **Medium**        | No conda env validation            | `validate_conda_env()` checks dir + python binary          |
+| S-09 | **Low**           | Missing double-quotes on PID lines | Proper quoting throughout                                  |
+| S-10 | **Low**           | `get_cascor_dkdk.bash` incomplete  | Removed (dead code)                                        |
 
 **Known limitations** (accepted trade-offs):
 
-| ID    | Issue                                     | Rationale                                                |
-|-------|-------------------------------------------|----------------------------------------------------------|
-| SL-01 | `$LINENO` in functions reports call site   | Bash limitation; function names visible in log messages  |
-| SL-02 | `$!` captures nohup PID, not child PID    | Acceptable for single-worker uvicorn; PID tracks the process group leader |
-| SL-03 | Three `conda activate` calls stack envs   | Each service needs its own env; final `conda deactivate` unwinds one level. Acceptable for sequential startup. |
+| ID    | Issue                                    | Rationale                                                                                                      |
+|-------|------------------------------------------|----------------------------------------------------------------------------------------------------------------|
+| SL-01 | `$LINENO` in functions reports call site | Bash limitation; function names visible in log messages                                                        |
+| SL-02 | `$!` captures nohup PID, not child PID   | Acceptable for single-worker uvicorn; PID tracks the process group leader                                      |
+| SL-03 | Three `conda activate` calls stack envs  | Each service needs its own env; final `conda deactivate` unwinds one level. Acceptable for sequential startup. |
 
 ### 3.2 Current State: `juniper_chop_all.bash`
 
@@ -230,15 +230,15 @@ Additionally, one distributed worker (juniper-cascor-worker) has CLI-based start
 
 **Issues Resolved** (from original review):
 
-| ID   | Original Severity | Issue                                         | Resolution                                                  |
-|------|-------------------|-----------------------------------------------|-------------------------------------------------------------|
-| D-01 | **Critical**      | Exits on missing workers                      | Worker cleanup is opt-in via `KILL_WORKERS=1`               |
-| D-02 | **High**          | No SIGKILL fallback                           | `graceful_stop()` escalates SIGTERM -> SIGKILL              |
-| D-03 | **High**          | Fragile worker detection via grep             | `pgrep -af` + cmdline pattern matching, avoids false positives |
-| D-04 | **High**          | No verification processes stopped             | `graceful_stop()` polls `kill -0` to confirm exit           |
-| D-05 | **Medium**        | Stale PIDs sent to wrong processes            | `validate_pid()` checks `/proc/<pid>/cmdline`               |
-| D-06 | **Medium**        | Brittle PID file parsing                      | Colon split + `tr -d ' '` trimming + numeric validation     |
-| D-07 | **Low**           | Unnecessary conda activation                  | Removed — no conda needed for kill operations               |
+| ID   | Original Severity | Issue                              | Resolution                                                     |
+|------|-------------------|------------------------------------|----------------------------------------------------------------|
+| D-01 | **Critical**      | Exits on missing workers           | Worker cleanup is opt-in via `KILL_WORKERS=1`                  |
+| D-02 | **High**          | No SIGKILL fallback                | `graceful_stop()` escalates SIGTERM -> SIGKILL                 |
+| D-03 | **High**          | Fragile worker detection via grep  | `pgrep -af` + cmdline pattern matching, avoids false positives |
+| D-04 | **High**          | No verification processes stopped  | `graceful_stop()` polls `kill -0` to confirm exit              |
+| D-05 | **Medium**        | Stale PIDs sent to wrong processes | `validate_pid()` checks `/proc/<pid>/cmdline`                  |
+| D-06 | **Medium**        | Brittle PID file parsing           | Colon split + `tr -d ' '` trimming + numeric validation        |
+| D-07 | **Low**           | Unnecessary conda activation       | Removed — no conda needed for kill operations                  |
 
 ### 3.3 Current State: systemd (juniper-canopy only)
 
@@ -467,24 +467,24 @@ All services handle signals adequately at the application level. The gap is in t
 
 ### 8.1 Priority Matrix
 
-| Gap                                                    | Impact | Effort  | Priority | Status                       |
-|--------------------------------------------------------|--------|---------|----------|------------------------------|
-| Health-check-based startup in `juniper_plant_all.bash` | High   | Low     | **P0**   | **Resolved** (commit `03aec86`) |
-| Error handling in startup/shutdown scripts             | High   | Low     | **P0**   | **Resolved** (commit `03aec86`) |
-| Fix worker-not-found exit in `juniper_chop_all.bash`   | High   | Trivial | **P0**   | **Resolved** (commit `03aec86`) |
-| SIGKILL fallback after SIGTERM timeout                 | High   | Low     | **P0**   | **Resolved** (commit `03aec86`) |
-| Fix wrong Python binary in plant script                | High   | Trivial | **P0**   | **Resolved** (commit `03aec86`) |
-| Port availability check before startup                 | Medium | Low     | **P0**   | **Resolved** (commit `03aec86`) |
-| Configurable paths in plant/chop scripts               | Medium | Medium  | **P0**   | **Resolved** (commit `03aec86`) |
+| Gap                                                    | Impact | Effort  | Priority | Status                                    |
+|--------------------------------------------------------|--------|---------|----------|-------------------------------------------|
+| Health-check-based startup in `juniper_plant_all.bash` | High   | Low     | **P0**   | **Resolved** (commit `03aec86`)           |
+| Error handling in startup/shutdown scripts             | High   | Low     | **P0**   | **Resolved** (commit `03aec86`)           |
+| Fix worker-not-found exit in `juniper_chop_all.bash`   | High   | Trivial | **P0**   | **Resolved** (commit `03aec86`)           |
+| SIGKILL fallback after SIGTERM timeout                 | High   | Low     | **P0**   | **Resolved** (commit `03aec86`)           |
+| Fix wrong Python binary in plant script                | High   | Trivial | **P0**   | **Resolved** (commit `03aec86`)           |
+| Port availability check before startup                 | Medium | Low     | **P0**   | **Resolved** (commit `03aec86`)           |
+| Configurable paths in plant/chop scripts               | Medium | Medium  | **P0**   | **Resolved** (commit `03aec86`)           |
 | `get_cascor_dkdk.bash` completion or removal           | Low    | Trivial | **P0**   | **Resolved** — removed (commit `03aec86`) |
-| systemd units for juniper-data and juniper-cascor      | High   | Medium  | **P1**   | Open                         |
-| juniper-cascor-worker Dockerfile                       | High   | Medium  | **P1**   | Open                         |
-| Worker service in juniper-deploy compose               | High   | Medium  | **P1**   | Open                         |
-| Kubernetes manifests                                   | High   | High    | **P2**   | Open                         |
-| juniper-cascor-worker systemd unit                     | Medium | Medium  | **P2**   | Open                         |
-| AlertManager receiver configuration                    | Medium | Low     | **P2**   | Open                         |
-| Health endpoint standardization across services        | Medium | Medium  | **P2**   | Open                         |
-| Volume backup/restore procedures                       | Low    | Medium  | **P3**   | Open                         |
+| systemd units for juniper-data and juniper-cascor      | High   | Medium  | **P1**   | Open                                      |
+| juniper-cascor-worker Dockerfile                       | High   | Medium  | **P1**   | Open                                      |
+| Worker service in juniper-deploy compose               | High   | Medium  | **P1**   | Open                                      |
+| Kubernetes manifests                                   | High   | High    | **P2**   | Open                                      |
+| juniper-cascor-worker systemd unit                     | Medium | Medium  | **P2**   | Open                                      |
+| AlertManager receiver configuration                    | Medium | Low     | **P2**   | Open                                      |
+| Health endpoint standardization across services        | Medium | Medium  | **P2**   | Open                                      |
+| Volume backup/restore procedures                       | Low    | Medium  | **P3**   | Open                                      |
 
 ### 8.2 Risk Assessment
 
@@ -790,16 +790,16 @@ juniper-cascor-worker:
 
 ### A.1 Startup Scripts
 
-| File                             | Repo           | Type                | Status              |
-|----------------------------------|----------------|---------------------|---------------------|
+| File                             | Repo           | Type                | Status                                |
+|----------------------------------|----------------|---------------------|---------------------------------------|
 | `util/juniper_plant_all.bash`    | juniper-ml     | Start all (host)    | Active (overhauled, commit `03aec86`) |
 | `util/juniper_chop_all.bash`     | juniper-ml     | Stop all (host)     | Active (overhauled, commit `03aec86`) |
-| `util/juniper_canopy-demo.bash`  | juniper-canopy | Start canopy (demo) | Active              |
-| `util/juniper_canopy.bash`       | juniper-canopy | Start canopy (prod) | Active              |
-| `util/launch_cascor.bash`        | juniper-cascor | Start cascor        | Active              |
-| `scripts/juniper-ctl`            | juniper-canopy | systemd CLI         | Active              |
-| `scripts/juniper-canopy.service` | juniper-canopy | systemd unit        | Active, needs fix   |
-| `util/kill_all_pythons.bash`     | juniper-ml     | Emergency kill      | Emergency only      |
+| `util/juniper_canopy-demo.bash`  | juniper-canopy | Start canopy (demo) | Active                                |
+| `util/juniper_canopy.bash`       | juniper-canopy | Start canopy (prod) | Active                                |
+| `util/launch_cascor.bash`        | juniper-cascor | Start cascor        | Active                                |
+| `scripts/juniper-ctl`            | juniper-canopy | systemd CLI         | Active                                |
+| `scripts/juniper-canopy.service` | juniper-canopy | systemd unit        | Active, needs fix                     |
+| `util/kill_all_pythons.bash`     | juniper-ml     | Emergency kill      | Emergency only                        |
 
 ### A.2 Container/Deploy Files
 
