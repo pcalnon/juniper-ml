@@ -49,7 +49,7 @@ The OPT-5 SharedMemory block is created by the parent process but is no longer a
 cannot access local variable 'candidate_inputs' where it is not associated with a value
 ```
 
-**Mechanism**: 
+**Mechanism**:
 1. `_build_candidate_inputs()` is called at line 2719 inside a `try` block
 2. The function raises `FileNotFoundError` during SharedMemory reconstruction
 3. Execution jumps to the `except Exception` handler at line 2783
@@ -60,7 +60,7 @@ cannot access local variable 'candidate_inputs' where it is not associated with 
 **Evidence**: Log file at `/home/pcalnon/Development/python/Juniper/juniper-cascor/logs/juniper_cascor.log` line 27740:
 ```
 [cascade_correlation.py: _execute_sequential_training:2149] (2026-04-02 08:57:24) [ERROR]
-CascadeCorrelationNetwork: _execute_sequential_training: Task error: 
+CascadeCorrelationNetwork: _execute_sequential_training: Task error:
 cannot access local variable 'candidate_inputs' where it is not associated with a value
 ```
 
@@ -280,7 +280,7 @@ For a binary classification problem (two-spiral), the network may legitimately h
 
 **Issue**: The sidebar dataset section heading is "Spiral Dataset" (line 728) and the fields are hardcoded for spiral parameters only (Rotations, Number, Elements, Noise).
 
-**Required**: 
+**Required**:
 - Rename heading to "Current Dataset"
 - Make fields dynamic based on selected dataset type
 - Update fields when dataset selection changes in the Dataset View tab

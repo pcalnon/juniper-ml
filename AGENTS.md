@@ -209,6 +209,7 @@ juniper-ml/
 Triggered on push to `main`/`develop`/`feature/**`/`fix/**` branches and PRs to `main`/`develop`.
 
 Jobs:
+
 1. **pre-commit** -- Runs all pre-commit hooks (flake8, bandit, shellcheck, yamllint, markdownlint)
 2. **tests** -- Python unittest (`test_wake_the_claude.py`, `test_check_doc_links.py`) and bash regression tests
 3. **build** -- Package build, twine validation, extras metadata verification
