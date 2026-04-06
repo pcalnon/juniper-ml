@@ -48,7 +48,7 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 
 ## Repository Structure
 
-```
+```bash
 juniper-ml/
 ├── AGENTS.md                  # This file (CLAUDE.md is a symlink to this)
 ├── CHANGELOG.md               # Version history (Keep a Changelog format)
