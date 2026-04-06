@@ -190,6 +190,41 @@ trap cleanup_on_failure ERR
 
 
 ###########################################################################################################################################################################################################
+# systemd Mode (--systemd or USE_SYSTEMD=1)
+###########################################################################################################################################################################################################
+if [[ "${USE_SYSTEMD}" == "1" ]]; then
+    echo "[${SCRIPT_NAME}:${LINENO}] === Starting services via systemd ==="
+
+    # Validate curl is available for health checks
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "[${SCRIPT_NAME}:${LINENO}] ERROR: 'curl' not found in PATH (needed for health checks)"
+        exit 1
+    fi
+
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-data..."
+    systemctl --user start juniper-data.service
+    wait_for_health "juniper-data" "http://localhost:${JUNIPER_DATA_PORT}/v1/health"
+
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-cascor..."
+    systemctl --user start juniper-cascor.service
+    wait_for_health "juniper-cascor" "http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}/v1/health"
+
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-canopy..."
+    systemctl --user start juniper-canopy.service
+    wait_for_health "juniper-canopy" "http://localhost:${JUNIPER_CANOPY_PORT}/v1/health"
+
+    # Disable ERR trap since startup succeeded
+    trap - ERR
+
+    echo ""
+    echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services started via systemd ==="
+    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'systemctl --user status juniper-{data,cascor,canopy}' to check status"
+    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'journalctl --user -u juniper-{data,cascor,canopy} -f' for logs"
+    exit 0
+fi
+
+
+###########################################################################################################################################################################################################
 # Pre-flight Checks
 ###########################################################################################################################################################################################################
 echo "[${SCRIPT_NAME}:${LINENO}] === Pre-flight Checks ==="
