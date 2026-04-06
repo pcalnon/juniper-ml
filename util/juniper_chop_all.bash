@@ -53,8 +53,8 @@ fi
 if [[ "${USE_SYSTEMD}" == "1" ]]; then
     echo "[${SCRIPT_NAME}:${LINENO}] === Stopping services via systemd ==="
 
-    # Stop in reverse dependency order: canopy -> cascor -> data
-    for svc in juniper-canopy juniper-cascor juniper-data; do
+    # Stop in reverse dependency order: worker -> canopy -> cascor -> data
+    for svc in juniper-cascor-worker juniper-canopy juniper-cascor juniper-data; do
         echo "[${SCRIPT_NAME}:${LINENO}] Stopping ${svc}..."
         if systemctl --user stop "${svc}.service" 2>/dev/null; then
             echo "[${SCRIPT_NAME}:${LINENO}] ${svc} stopped."

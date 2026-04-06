@@ -2,9 +2,9 @@
 ###########################################################################################################################################################################################################
 # juniper_plant_all.bash — Start all Juniper microservices (host-level)
 #
-# Starts juniper-data, juniper-cascor, and juniper-canopy sequentially with
-# health check verification after each service. Writes PIDs to a pidfile for
-# use by juniper_chop_all.bash.
+# Starts juniper-data, juniper-cascor, juniper-canopy, and juniper-cascor-worker
+# sequentially with health check verification after each service (where
+# applicable). Writes PIDs to a pidfile for use by juniper_chop_all.bash.
 #
 # Environment overrides:
 #   JUNIPER_PROJECT_DIR     — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
@@ -94,6 +94,16 @@ JUNIPER_CANOPY_MODULE="main.py"
 JUNIPER_CANOPY_PORT="${JUNIPER_CANOPY_PORT:-8050}"
 JUNIPER_CANOPY_CONDA="JuniperCanopy"
 JUNIPER_CANOPY_PYTHON="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_CANOPY_CONDA}/bin/python"
+
+###########################################################################################################################################################################################################
+# Juniper CasCor Worker Service Constants
+###########################################################################################################################################################################################################
+JUNIPER_WORKER_DIR="${JUNIPER_PROJECT_DIR}/juniper-cascor-worker"
+JUNIPER_WORKER_LOG_DIR="${JUNIPER_WORKER_DIR}/logs"
+JUNIPER_WORKER_LOGNAME="juniper-cascor-worker_${LOGGING_TIMESTAMP}.log"
+JUNIPER_WORKER_LOG="${JUNIPER_WORKER_LOG_DIR}/${JUNIPER_WORKER_LOGNAME}"
+JUNIPER_WORKER_CONDA="JuniperCascor"
+JUNIPER_WORKER_BIN="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_WORKER_CONDA}/bin/juniper-cascor-worker"
 
 
 ###########################################################################################################################################################################################################
@@ -217,13 +227,24 @@ if [[ "${USE_SYSTEMD}" == "1" ]]; then
     systemctl --user start juniper-canopy.service
     wait_for_health "juniper-canopy" "http://localhost:${JUNIPER_CANOPY_PORT}/v1/health"
 
+    echo "[${SCRIPT_NAME}:${LINENO}] Starting juniper-cascor-worker..."
+    systemctl --user start juniper-cascor-worker.service
+    # Worker has no HTTP endpoint — verify process started via systemd
+    sleep 2
+    if systemctl --user is-active juniper-cascor-worker.service >/dev/null 2>&1; then
+        echo "[${SCRIPT_NAME}:${LINENO}] juniper-cascor-worker is active"
+    else
+        echo "[${SCRIPT_NAME}:${LINENO}] WARNING: juniper-cascor-worker failed to start"
+        systemctl --user status juniper-cascor-worker.service --no-pager || true
+    fi
+
     # Disable ERR trap since startup succeeded
     trap - ERR
 
     echo ""
     echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services started via systemd ==="
-    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'systemctl --user status juniper-{data,cascor,canopy}' to check status"
-    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'journalctl --user -u juniper-{data,cascor,canopy} -f' for logs"
+    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'systemctl --user status juniper-{data,cascor,canopy,cascor-worker}' to check status"
+    echo "[${SCRIPT_NAME}:${LINENO}]   Use 'journalctl --user -u juniper-{data,cascor,canopy,cascor-worker} -f' for logs"
     exit 0
 fi
 
@@ -337,6 +358,29 @@ wait_for_health "juniper-canopy" "http://localhost:${JUNIPER_CANOPY_PORT}/v1/hea
 
 
 ###########################################################################################################################################################################################################
+# Launch Juniper CasCor Worker in Background
+###########################################################################################################################################################################################################
+echo ""
+echo "[${SCRIPT_NAME}:${LINENO}] === Starting juniper-cascor-worker ==="
+ensure_dir "${JUNIPER_WORKER_LOG_DIR}"
+echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_WORKER_CONDA}\""
+conda activate "${JUNIPER_WORKER_CONDA}"
+echo "[${SCRIPT_NAME}:${LINENO}] nohup \"${JUNIPER_WORKER_BIN}\" >\"${JUNIPER_WORKER_LOG}\" 2>&1 &"
+nohup "${JUNIPER_WORKER_BIN}" >"${JUNIPER_WORKER_LOG}" 2>&1 &
+JUNIPER_WORKER_PID=$!
+STARTED_PIDS+=("${JUNIPER_WORKER_PID}")
+echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_WORKER_PID=${JUNIPER_WORKER_PID}"
+echo "[${SCRIPT_NAME}:${LINENO}] Log: ${JUNIPER_WORKER_LOG}"
+# Worker has no HTTP health endpoint — verify process started
+sleep 2
+if kill -0 "${JUNIPER_WORKER_PID}" 2>/dev/null; then
+    echo "[${SCRIPT_NAME}:${LINENO}] juniper-cascor-worker process started (PID ${JUNIPER_WORKER_PID})"
+else
+    echo "[${SCRIPT_NAME}:${LINENO}] WARNING: juniper-cascor-worker process exited immediately — check ${JUNIPER_WORKER_LOG}"
+fi
+
+
+###########################################################################################################################################################################################################
 # Save PIDs for Juniper Project services to pidfile
 ###########################################################################################################################################################################################################
 echo ""
@@ -349,9 +393,10 @@ trap - ERR
 
 : > "${JUNIPER_PROJECT_PID_FILE}"
 {
-    echo "juniper-data:   ${JUNIPER_DATA_PID}"
-    echo "juniper-cascor: ${JUNIPER_CASCOR_PID}"
-    echo "juniper-canopy: ${JUNIPER_CANOPY_PID}"
+    echo "juniper-data:           ${JUNIPER_DATA_PID}"
+    echo "juniper-cascor:         ${JUNIPER_CASCOR_PID}"
+    echo "juniper-canopy:         ${JUNIPER_CANOPY_PID}"
+    echo "juniper-cascor-worker:  ${JUNIPER_WORKER_PID}"
 } >> "${JUNIPER_PROJECT_PID_FILE}"
 
 echo "[${SCRIPT_NAME}:${LINENO}] PID file written to ${JUNIPER_PROJECT_PID_FILE}:"
@@ -359,6 +404,7 @@ cat "${JUNIPER_PROJECT_PID_FILE}"
 
 echo ""
 echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services started successfully ==="
-echo "[${SCRIPT_NAME}:${LINENO}]   juniper-data   : PID ${JUNIPER_DATA_PID}   @ http://localhost:${JUNIPER_DATA_PORT}"
-echo "[${SCRIPT_NAME}:${LINENO}]   juniper-cascor : PID ${JUNIPER_CASCOR_PID} @ http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
-echo "[${SCRIPT_NAME}:${LINENO}]   juniper-canopy : PID ${JUNIPER_CANOPY_PID} @ http://localhost:${JUNIPER_CANOPY_PORT}"
+echo "[${SCRIPT_NAME}:${LINENO}]   juniper-data          : PID ${JUNIPER_DATA_PID}   @ http://localhost:${JUNIPER_DATA_PORT}"
+echo "[${SCRIPT_NAME}:${LINENO}]   juniper-cascor        : PID ${JUNIPER_CASCOR_PID} @ http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
+echo "[${SCRIPT_NAME}:${LINENO}]   juniper-canopy        : PID ${JUNIPER_CANOPY_PID} @ http://localhost:${JUNIPER_CANOPY_PORT}"
+echo "[${SCRIPT_NAME}:${LINENO}]   juniper-cascor-worker : PID ${JUNIPER_WORKER_PID} (WebSocket client)"
