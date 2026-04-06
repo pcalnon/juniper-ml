@@ -1,0 +1,29 @@
+# =============================================================================
+# juniper-all.target — systemd User Target Unit
+#
+# Groups all Juniper microservices for coordinated start/stop.
+#
+# Installation:
+#   mkdir -p ~/.config/systemd/user
+#   cp scripts/juniper-all.target ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable juniper-all.target
+#
+# Usage:
+#   systemctl --user start juniper-all.target   # start all services
+#   systemctl --user stop juniper-all.target    # stop all services
+#   systemctl --user status juniper-all.target  # check target status
+#
+# Prerequisites:
+#   - All three service units installed in ~/.config/systemd/user/:
+#     juniper-data.service, juniper-cascor.service, juniper-canopy.service
+# =============================================================================
+
+[Unit]
+Description=Juniper — All Microservices
+Documentation=https://github.com/pcalnon/juniper-ml
+Wants=juniper-data.service juniper-cascor.service juniper-canopy.service
+After=juniper-data.service juniper-cascor.service juniper-canopy.service
+
+[Install]
+WantedBy=default.target

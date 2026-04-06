@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+#####################################################################################################################################################################################################
+# Project:       Juniper
+# Application:   juniper-ml
+# File Name:     juniper-all-ctl
+# Author:        Paul Calnon
+#
+# License:       MIT License
+# Copyright:     Copyright (c) 2024-2026 Paul Calnon
+#
+# Description:
+#    Management CLI for all Juniper microservices via the juniper-all.target
+#    systemd user target. Provides coordinated start/stop/restart and
+#    aggregated status/logs/health/resources across all services.
+#
+# Usage:
+#    juniper-all-ctl start | stop | restart | status | logs | health | resources
+#
+#####################################################################################################################################################################################################
+
+set -euo pipefail
+
+TARGET="juniper-all.target"
+SERVICES=("juniper-data" "juniper-cascor" "juniper-canopy")
+
+JUNIPER_DATA_PORT="${JUNIPER_DATA_PORT:-8100}"
+JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8200}"
+JUNIPER_CANOPY_PORT="${JUNIPER_CANOPY_PORT:-8050}"
+
+# Colors
+if [[ -z "${NO_COLOR:-}" ]]; then
+    GREEN='\033[0;32m'
+    RED='\033[0;31m'
+    YELLOW='\033[0;33m'
+    CYAN='\033[0;36m'
+    BOLD='\033[1m'
+    RESET='\033[0m'
+else
+    GREEN='' RED='' YELLOW='' CYAN='' BOLD='' RESET=''
+fi
+
+usage() {
+    echo -e "${BOLD}juniper-all-ctl${RESET} — Juniper all-services manager"
+    echo ""
+    echo -e "${YELLOW}Usage:${RESET} juniper-all-ctl <command>"
+    echo ""
+    echo -e "  ${CYAN}start${RESET}       Start all services via juniper-all.target"
+    echo -e "  ${CYAN}stop${RESET}        Stop all services"
+    echo -e "  ${CYAN}restart${RESET}     Restart all services"
+    echo -e "  ${CYAN}status${RESET}      Show status of all services"
+    echo -e "  ${CYAN}logs${RESET}        Follow combined logs for all services (journalctl)"
+    echo -e "  ${CYAN}health${RESET}      Query /v1/health/ready on each service"
+    echo -e "  ${CYAN}resources${RESET}   Show CPU and memory usage for all services"
+    echo ""
+}
+
+cmd_start() {
+    systemctl --user start "$TARGET"
+    echo -e "${GREEN}All Juniper services started.${RESET}"
+}
+
+cmd_stop() {
+    systemctl --user stop "$TARGET"
+    echo -e "${YELLOW}All Juniper services stopped.${RESET}"
+}
+
+cmd_restart() {
+    systemctl --user restart "$TARGET"
+    echo -e "${GREEN}All Juniper services restarted.${RESET}"
+}
+
+cmd_status() {
+    for svc in "${SERVICES[@]}"; do
+        echo -e "${BOLD}--- ${svc} ---${RESET}"
+        systemctl --user status "$svc" --no-pager 2>/dev/null || echo -e "${YELLOW}  (not loaded)${RESET}"
+        echo ""
+    done
+}
+
+cmd_logs() {
+    journalctl --user -u juniper-data -u juniper-cascor -u juniper-canopy -f --no-pager
+}
+
+cmd_health() {
+    local -A ports=( ["juniper-data"]="${JUNIPER_DATA_PORT}" ["juniper-cascor"]="${JUNIPER_CASCOR_PORT}" ["juniper-canopy"]="${JUNIPER_CANOPY_PORT}" )
+    local all_healthy=true
+
+    for svc in "${SERVICES[@]}"; do
+        local port="${ports[$svc]}"
+        local url="http://localhost:${port}/v1/health/ready"
+        echo -e "${BOLD}--- ${svc} (${url}) ---${RESET}"
+        if python3 -c "
+import urllib.request, json, sys
+try:
+    resp = urllib.request.urlopen('${url}', timeout=5)
+    data = json.loads(resp.read().decode())
+    print(json.dumps(data, indent=2))
+except Exception as e:
+    print(f'Error: {e}', file=sys.stderr)
+    sys.exit(1)
+" 2>/dev/null; then
+            echo -e "${GREEN}Healthy.${RESET}"
+        else
+            echo -e "${RED}Not reachable.${RESET}"
+            all_healthy=false
+        fi
+        echo ""
+    done
+
+    if [[ "${all_healthy}" != "true" ]]; then
+        exit 1
+    fi
+}
+
+cmd_resources() {
+    for svc in "${SERVICES[@]}"; do
+        echo -e "${BOLD}--- ${svc} ---${RESET}"
+        systemctl --user show "$svc" --property=MemoryCurrent,CPUUsageNSec --no-pager 2>/dev/null || true
+        local pid
+        pid=$(systemctl --user show "$svc" --property=MainPID --value 2>/dev/null || echo "0")
+        if [[ "$pid" != "0" && -n "$pid" ]]; then
+            echo -e "${CYAN}Process ${pid}:${RESET}"
+            ps -p "$pid" -o pid,pcpu,pmem,rss,vsz,etime,args --no-headers 2>/dev/null || echo "  (not running)"
+        else
+            echo -e "${YELLOW}  (not running)${RESET}"
+        fi
+        echo ""
+    done
+}
+
+case "${1:-}" in
+    start)     cmd_start ;;
+    stop)      cmd_stop ;;
+    restart)   cmd_restart ;;
+    status)    cmd_status ;;
+    logs)      cmd_logs ;;
+    health)    cmd_health ;;
+    resources) cmd_resources ;;
+    -h|--help) usage ;;
+    *)         usage; exit 1 ;;
+esac

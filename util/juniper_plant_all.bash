@@ -40,6 +40,13 @@ CONDA="${JUNIPER_CONDA_DIR}/etc/profile.d/conda.sh"
 HEALTH_CHECK_TIMEOUT="${HEALTH_CHECK_TIMEOUT:-60}"
 HEALTH_CHECK_INTERVAL="${HEALTH_CHECK_INTERVAL:-2}"
 
+# systemd mode: use systemctl --user instead of nohup/PID files
+USE_SYSTEMD="${USE_SYSTEMD:-0}"
+if [[ "${1:-}" == "--systemd" ]]; then
+    USE_SYSTEMD=1
+    shift
+fi
+
 LOGGING_TIMESTAMP="$(date +%F_%H%M)"
 
 # Track started PIDs for cleanup on failure
