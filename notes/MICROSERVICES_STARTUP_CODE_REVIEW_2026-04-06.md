@@ -3,7 +3,7 @@
 **Date**: 2026-04-06
 **Author**: Claude Code (Principal Engineer Review)
 **Scope**: All application startup, shutdown, and orchestration across the Juniper ecosystem
-**Version**: 1.3.0
+**Version**: 1.4.0
 
 ---
 
@@ -31,7 +31,7 @@ The Juniper project operates three core microservices (juniper-data, juniper-cas
 |-------------------------------|------------------------------------------------------------|------------------------------------|----------------------------------------------------------------------|
 | **Host-level services**       | Bash scripts + nohup + PID files                           | **Production-ready (P0 complete)** | Health checks, error handling, configurable paths (commit `03aec86`) |
 | **Docker Compose containers** | juniper-deploy profiles (full/demo/dev/test/observability) | Production-ready                   | No k8s, alerting receivers unconfigured                              |
-| **Kubernetes**                | None                                                       | Not implemented                    | Complete gap                                                         |
+| **Kubernetes**                | Helm chart in `juniper-deploy/k8s/helm/juniper/`           | **Implemented (Phase 4 complete)** | Integration testing with live cluster pending                        |
 
 Additionally, one distributed worker (juniper-cascor-worker) has CLI-based startup but no container or service management configuration.
 
@@ -41,7 +41,7 @@ Additionally, one distributed worker (juniper-cascor-worker) has CLI-based start
 2. **Host-mode shutdown (`juniper_chop_all.bash`)** -- overhauled in commit `03aec86`. Now uses `validate_pid()` via `/proc/<pid>/cmdline`, `graceful_stop()` with SIGTERM-then-SIGKILL fallback, proper PID parsing, optional worker cleanup via `KILL_WORKERS=1`, and post-shutdown PID file cleanup.
 3. **Docker Compose (juniper-deploy)** is well-architected with 5 profiles, health-check-based dependency ordering, secrets management, and observability integration.
 4. **systemd integration** exists only for juniper-canopy (a service file + `juniper-ctl` CLI). No systemd units exist for juniper-data or juniper-cascor.
-5. **Kubernetes support** does not exist anywhere in the ecosystem.
+5. **Kubernetes support** implemented via Helm chart (`juniper-deploy/k8s/helm/juniper/`) with Deployments, Services, Ingress, NetworkPolicies, HPA, PVCs, Secrets, and ServiceMonitors for all 4 services.
 6. **juniper-cascor-worker** is the only client with startup/shutdown logic but lacks any deployment configuration (no Dockerfile, no systemd, no k8s).
 
 ---
@@ -780,22 +780,24 @@ juniper-cascor-worker:
 - systemd unit reuses JuniperCascor conda environment (same torch/numpy/websockets deps)
 - Docker Compose service has `deploy.replicas: 2` for multi-worker demonstration
 
-### Phase 4: Kubernetes Support (P2) -- Medium-Term
+### Phase 4: Kubernetes Support (P2) -- DONE
 
 **Goal**: Enable k8s deployment of the full stack.
+**Status**: Implemented in `juniper-deploy` branch `feature/phase4-kubernetes`.
+**Implementation plan**: `juniper-ml/notes/MICROSERVICES_PHASE4_PLAN_2026-04-06.md`
 
-| Step | Task                                                | Files                                | Est. Complexity |
-|------|-----------------------------------------------------|--------------------------------------|-----------------|
-| 4.1  | Create Helm chart structure                         | `juniper-deploy/k8s/helm/juniper/`   | High            |
-| 4.2  | Define Deployments for data, cascor, canopy, worker | `k8s/helm/juniper/templates/`        | High            |
-| 4.3  | Define Services (ClusterIP + Ingress)               | `k8s/helm/juniper/templates/`        | Medium          |
-| 4.4  | Define ConfigMaps and Secrets                       | `k8s/helm/juniper/templates/`        | Medium          |
-| 4.5  | Define PVCs for data persistence                    | `k8s/helm/juniper/templates/`        | Medium          |
-| 4.6  | Define HPA for worker auto-scaling                  | `k8s/helm/juniper/templates/`        | Medium          |
-| 4.7  | Define NetworkPolicies                              | `k8s/helm/juniper/templates/`        | Medium          |
-| 4.8  | Create values.yaml with all configuration           | `k8s/helm/juniper/values.yaml`       | Medium          |
-| 4.9  | Define ServiceMonitors for Prometheus Operator      | `k8s/helm/juniper/templates/`        | Low             |
-| 4.10 | Integration testing with kind or minikube           | `juniper-deploy/scripts/test_k8s.sh` | High            |
+| Step | Task                                                | Files                                | Status    |
+|------|-----------------------------------------------------|--------------------------------------|-----------|
+| 4.1  | Create Helm chart structure                         | `juniper-deploy/k8s/helm/juniper/`   | Done      |
+| 4.2  | Define Deployments for data, cascor, canopy, worker | `k8s/helm/juniper/templates/`        | Done      |
+| 4.3  | Define Services (ClusterIP + Ingress)               | `k8s/helm/juniper/templates/`        | Done      |
+| 4.4  | Define Secrets (file-based, _FILE env var pattern)  | `k8s/helm/juniper/templates/`        | Done      |
+| 4.5  | Define PVCs for data persistence                    | `k8s/helm/juniper/templates/`        | Done      |
+| 4.6  | Define HPA for worker auto-scaling                  | `k8s/helm/juniper/templates/`        | Done      |
+| 4.7  | Define NetworkPolicies                              | `k8s/helm/juniper/templates/`        | Done      |
+| 4.8  | Create values.yaml with all configuration           | `k8s/helm/juniper/values.yaml`       | Done      |
+| 4.9  | Define ServiceMonitors for Prometheus Operator      | `k8s/helm/juniper/templates/`        | Done      |
+| 4.10 | Integration testing with kind or minikube           | `juniper-deploy/scripts/test_k8s.sh` | Done      |
 
 ### Phase 5: Observability & Hardening (P2-P3) -- Medium-Term
 
