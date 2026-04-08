@@ -299,7 +299,8 @@ for ((i=0; i<${#JUNIPER_PIDS[*]}; i++)); do
     # Skip blank lines
     #[[ -z "${JUNIPER_PIDFILE_LINE}" ]] && continue
 
-    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDFILE_LINE}\""
+    # echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDFILE_LINE}\""
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDS[${i}]}\""
     # Format: "juniper-data:   12345" — split on colon, then trim whitespace from PID
     # JUNIPER_APPLICATION_NAME="${JUNIPER_PIDFILE_LINE%%:*}"
     JUNIPER_APPLICATION_NAME="${JUNIPER_PIDS[${i}]%%:*}"
