@@ -20,12 +20,26 @@
 
 set -euo pipefail
 
-TARGET="juniper-all.target"
+# SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
+# echo "[${SCRIPT_NAME}:${LINENO}] SCRIPT_NAME=\"${SCRIPT_NAME}\""
+
+SCRIPTS_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+# echo "[${SCRIPT_NAME}:${LINENO}] SCRIPTS_DIR=\"${SCRIPTS_DIR}\""
+
+TARGET="${SCRIPTS_DIR}/juniper-all.target"
+# echo "[${SCRIPT_NAME}:${LINENO}] TARGET=\"${TARGET}\""
+
 SERVICES=("juniper-data" "juniper-cascor" "juniper-canopy" "juniper-cascor-worker")
+# echo "[${SCRIPT_NAME}:${LINENO}] SERVICES=\"${SERVICES[*]}\""
 
 JUNIPER_DATA_PORT="${JUNIPER_DATA_PORT:-8100}"
+# echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_DATA_PORT=\"${JUNIPER_DATA_PORT}\""
+
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8200}"
+# echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\""
+
 JUNIPER_CANOPY_PORT="${JUNIPER_CANOPY_PORT:-8050}"
+# echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_PORT=\"${JUNIPER_CANOPY_PORT}\""
 
 # Colors
 if [[ -z "${NO_COLOR:-}" ]]; then

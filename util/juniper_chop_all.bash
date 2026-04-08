@@ -17,27 +17,76 @@
 ###########################################################################################################################################################################################################
 set -euo pipefail
 
+
 ###########################################################################################################################################################################################################
-# Script metadata
+# Define Script Global Environment Constants
 ###########################################################################################################################################################################################################
-echo "Script Name, Called: ${BASH_SOURCE[0]}"
-echo "Script Path, Full:   $(realpath "${BASH_SOURCE[0]}")"
-SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
-echo "Script Path, Only:   ${SCRIPT_NAME}"
-echo "[${SCRIPT_NAME}:${LINENO}] Beginning script run"
+JUNIPER_SCRIPT_NAME="$(basename "$(realpath "${BASH_SOURCE[0]}")")"
+JUNIPER_SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+JUNIPER_SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Script Name:      ${JUNIPER_SCRIPT_NAME}"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Script Path:      ${JUNIPER_SCRIPT_PATH}"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Script Dir:       ${JUNIPER_SCRIPT_DIR}"
+
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Beginning script run"
 
 
 ###########################################################################################################################################################################################################
-# Define constants
-###########################################################################################################################################################################################################
+# Define Project Environment Constants
+##########################################################################################################################################################################################################
 JUNIPER_PROJECT_DIR="${JUNIPER_PROJECT_DIR:-${HOME}/Development/python/Juniper}"
+
 JUNIPER_ML_DIR="${JUNIPER_PROJECT_DIR}/juniper-ml"
+JUNIPER_DATA_DIR="${JUNIPER_PROJECT_DIR}/juniper-data"
+JUNIPER_CASCOR_DIR="${JUNIPER_PROJECT_DIR}/juniper-cascor"
+JUNIPER_CANOPY_DIR="${JUNIPER_PROJECT_DIR}/juniper-canopy"
+JUNIPER_WORKER_DIR="${JUNIPER_PROJECT_DIR}/juniper-cascor-worker"
+
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_DIR=\"${JUNIPER_PROJECT_DIR}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_ML_DIR=\"${JUNIPER_ML_DIR}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_DATA_DIR=\"${JUNIPER_DATA_DIR}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_DIR=\"${JUNIPER_CASCOR_DIR}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_DIR=\"${JUNIPER_CANOPY_DIR}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_WORKER_DIR=\"${JUNIPER_WORKER_DIR}\""
+
+JUNIPER_CONDA_DIR="${JUNIPER_CONDA_DIR:-/opt/miniforge3}"
+CONDA="${JUNIPER_CONDA_DIR}/etc/profile.d/conda.sh"
+
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CONDA_DIR=\"${JUNIPER_CONDA_DIR}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] CONDA=\"${CONDA}\""
+
 JUNIPER_PROJECT_PID_FILENAME="JuniperProject.pid"
 JUNIPER_PROJECT_PID_FILE="${JUNIPER_ML_DIR}/${JUNIPER_PROJECT_PID_FILENAME}"
-echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILE=\"${JUNIPER_PROJECT_PID_FILE}\""
 
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILENAME=\"${JUNIPER_PROJECT_PID_FILENAME}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILE=\"${JUNIPER_PROJECT_PID_FILE}\""
+
+
+###########################################################################################################################################################################################################
+# Define Global Environment Constants
+###########################################################################################################################################################################################################
+SIGTERM_TIMEOUT="10"
+KILL_WORKERS="1"
+USE_SYSTEMD="0"
+
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] SIGTERM_TIMEOUT=\"${SIGTERM_TIMEOUT}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS=\"${KILL_WORKERS}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] USE_SYSTEMD=\"${USE_SYSTEMD}\""
+
+
+###########################################################################################################################################################################################################
+# Define Working Environment Constants
+###########################################################################################################################################################################################################
 SIGTERM_TIMEOUT="${SIGTERM_TIMEOUT:-15}"
 KILL_WORKERS="${KILL_WORKERS:-0}"
+
+WORKER_SEARCH_TERM="cascor"
+# WORKER_SEARCH_TERM="juniper-cascor"
+# WORKER_SEARCH_TERM="juniper.cascor"
+
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] SIGTERM_TIMEOUT=\"${SIGTERM_TIMEOUT}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS=\"${KILL_WORKERS}\""
 
 # systemd mode: use systemctl --user instead of PID files
 USE_SYSTEMD="${USE_SYSTEMD:-0}"
@@ -45,29 +94,31 @@ if [[ "${1:-}" == "--systemd" ]]; then
     USE_SYSTEMD=1
     shift
 fi
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] USE_SYSTEMD=\"${USE_SYSTEMD}\""
 
 
 ###########################################################################################################################################################################################################
 # systemd Mode (--systemd or USE_SYSTEMD=1)
 ###########################################################################################################################################################################################################
 if [[ "${USE_SYSTEMD}" == "1" ]]; then
-    echo "[${SCRIPT_NAME}:${LINENO}] === Stopping services via systemd ==="
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Stopping services via systemd ==="
 
     # Stop in reverse dependency order: worker -> canopy -> cascor -> data
     for svc in juniper-cascor-worker juniper-canopy juniper-cascor juniper-data; do
-        echo "[${SCRIPT_NAME}:${LINENO}] Stopping ${svc}..."
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Stopping ${svc}..."
         if systemctl --user stop "${svc}.service" 2>/dev/null; then
-            echo "[${SCRIPT_NAME}:${LINENO}] ${svc} stopped."
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${svc} stopped."
         else
-            echo "[${SCRIPT_NAME}:${LINENO}] ${svc} was not running or failed to stop."
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${svc} was not running or failed to stop."
         fi
     done
 
     echo ""
-    echo "[${SCRIPT_NAME}:${LINENO}] === All Juniper services stopped via systemd ==="
-    echo "[${SCRIPT_NAME}:${LINENO}] Ending script run"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === All Juniper services stopped via systemd ==="
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Ending script run"
     exit 0
 fi
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Stopping services via pidfile ==="
 
 
 ###########################################################################################################################################################################################################
@@ -75,32 +126,38 @@ fi
 ###########################################################################################################################################################################################################
 
 # Validate that a PID belongs to a Juniper process by checking /proc/<pid>/cmdline
-validate_pid() {
+function validate_pid() {
     local pid="$1"
     local expected_name="$2"
 
+    if ! [[ "${pid}" =~ ^[0-9]+$ ]]; then
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: Invalid PID '${pid}' for ${expected_name} — skipping"
+        return 1
+    fi
+
     if [[ ! -d "/proc/${pid}" ]]; then
-        echo "[${SCRIPT_NAME}:${LINENO}] WARNING: PID ${pid} (${expected_name}) is not running — already stopped or stale PID"
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: PID ${pid} (${expected_name}) is not running — already stopped or stale PID"
         return 1
     fi
 
     local cmdline
-    cmdline="$(tr '\0' ' ' < "/proc/${pid}/cmdline" 2>/dev/null || echo "")"
-    echo "[${SCRIPT_NAME}:${LINENO}] PID ${pid} cmdline: ${cmdline:0:200}"
+    # cmdline="$(tr '\0' ' ' < "/proc/${pid}/cmdline" 2>/dev/null || echo "")"
+    cmdline="$(tr '\0' ' ' < "/proc/${pid}/cmdline" 2>/dev/null || echo "Failed to read cmdline for PID ${pid}" )"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PID ${pid} cmdline: ${cmdline:0:200}"
     return 0
 }
 
 # Send SIGTERM then wait, escalate to SIGKILL if needed
-graceful_stop() {
+function graceful_stop() {
     local pid="$1"
     local service_name="$2"
     local timeout="${3:-${SIGTERM_TIMEOUT}}"
 
-    echo "[${SCRIPT_NAME}:${LINENO}] Stopping ${service_name} (PID ${pid}) with SIGTERM (timeout: ${timeout}s)"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Stopping ${service_name} (PID ${pid}) with SIGTERM (timeout: ${timeout}s)"
 
     # Send SIGTERM
     if ! kill -SIGTERM "${pid}" 2>/dev/null; then
-        echo "[${SCRIPT_NAME}:${LINENO}] WARNING: Failed to send SIGTERM to PID ${pid} — process may have already exited"
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: Failed to send SIGTERM to PID ${pid} — process may have already exited"
         return 0
     fi
 
@@ -108,7 +165,7 @@ graceful_stop() {
     local elapsed=0
     while (( elapsed < timeout )); do
         if ! kill -0 "${pid}" 2>/dev/null; then
-            echo "[${SCRIPT_NAME}:${LINENO}] ${service_name} (PID ${pid}) stopped gracefully after ${elapsed}s"
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${service_name} (PID ${pid}) stopped gracefully after ${elapsed}s"
             return 0
         fi
         sleep 1
@@ -116,47 +173,124 @@ graceful_stop() {
     done
 
     # Process still alive — escalate to SIGKILL
-    echo "[${SCRIPT_NAME}:${LINENO}] WARNING: ${service_name} (PID ${pid}) did not stop within ${timeout}s — sending SIGKILL"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: ${service_name} (PID ${pid}) did not stop within ${timeout}s — sending SIGKILL"
     if kill -SIGKILL "${pid}" 2>/dev/null; then
         sleep 1
         if ! kill -0 "${pid}" 2>/dev/null; then
-            echo "[${SCRIPT_NAME}:${LINENO}] ${service_name} (PID ${pid}) killed with SIGKILL"
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${service_name} (PID ${pid}) killed with SIGKILL"
             return 0
         fi
-        echo "[${SCRIPT_NAME}:${LINENO}] ERROR: ${service_name} (PID ${pid}) survived SIGKILL — manual intervention required"
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ERROR: ${service_name} (PID ${pid}) survived SIGKILL — manual intervention required"
         return 1
     else
-        echo "[${SCRIPT_NAME}:${LINENO}] ${service_name} (PID ${pid}) exited during SIGKILL attempt"
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${service_name} (PID ${pid}) exited during SIGKILL attempt"
         return 0
     fi
+}
+
+# Clean up orphaned worker processes
+function orphaned_worker_cleanup() {
+    local KILL_WORKERS="${1:-${KILL_WORKERS}}"
+    local WORKER_SEARCH_TERM="${2:-${WORKER_SEARCH_TERM}}"
+    local SIGTERM_TIMEOUT="${3:-${SIGTERM_TIMEOUT}}"
+
+    if [[ "${KILL_WORKERS}" == "1" ]]; then
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Cleaning up orphaned worker processes ==="
+        OLD_IFS="${IFS}"
+        IFS=$'\n'
+        WORKER_PIDS=()
+
+        # OLD_IFS="${IFS}"; IFS=$'\n'; for i in $(ps aux | grep cascor); do  PIDS="$(echo "${i}" | awk -F " " '{print $2;}')"; echo "Found PID: ${PIDS}"; kill -KILL ${PIDS}; done; IFS="${OLD_IFS}"
+        # Found PID: 2990961
+        # bash: kill: (2990961) - No such process
+
+        while IFS= read -r line; do
+            [[ -z "${line}" ]] && continue
+
+            # pgrep -af outputs: PID CMDLINE
+            worker_pid="$(echo "${line}" | awk '{print $1;}')"
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] worker_pid: ${worker_pid}"
+            cmdline="$(echo "${line}" | cut -d' ' -f2-)"
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cmdline: ${cmdline}"
+
+            # Only match actual worker processes, not greps or log viewers
+            if echo "${cmdline}" | grep -q "juniper.cascor.worker\|juniper_cascor_worker\|cascor.*worker\|${WORKER_SEARCH_TERM}"; then
+                WORKER_PIDS+=("${worker_pid}")
+                echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Found worker process: PID ${worker_pid} — ${cmdline:0:120}"
+            fi
+
+        # done < <(pgrep -af "juniper.cascor" 2>/dev/null || true)
+        done < <(pgrep -af "${WORKER_SEARCH_TERM}" 2>/dev/null || true)
+        IFS="${OLD_IFS}"
+
+        if (( ${#WORKER_PIDS[@]} > 0 )); then
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Found ${#WORKER_PIDS[@]} worker process(es) to stop"
+            for worker_pid in "${WORKER_PIDS[@]}"; do
+                graceful_stop "${worker_pid}" "cascor-worker" 5
+            done
+        else
+            echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] No orphaned worker processes found"
+            return 1
+        fi
+    else
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS flag is not set to 1. No orphaned worker processes cleanup"
+        return 1
+    fi
+    return 0
 }
 
 
 ###########################################################################################################################################################################################################
 # Check PID file exists
 ###########################################################################################################################################################################################################
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Checking PID file exists: ${JUNIPER_PROJECT_PID_FILE}"
 if [[ ! -f "${JUNIPER_PROJECT_PID_FILE}" ]]; then
-    echo "[${SCRIPT_NAME}:${LINENO}] ERROR: PID file not found: ${JUNIPER_PROJECT_PID_FILE}"
-    echo "[${SCRIPT_NAME}:${LINENO}] No services to stop. Was juniper_plant_all.bash run?"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ERROR: PID file not found: ${JUNIPER_PROJECT_PID_FILE}"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] No services to stop. Was juniper_plant_all.bash run?"
+
+    # Optionally clean up orphaned worker processes
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS flag to Optionally clean up orphaned worker processes: ${KILL_WORKERS}"
+    orphaned_worker_cleanup "${KILL_WORKERS}" "${WORKER_SEARCH_TERM}" "${SIGTERM_TIMEOUT}"
+
     exit 1
 fi
 
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Checking PID file is not empty: ${JUNIPER_PROJECT_PID_FILE}"
 if [[ ! -s "${JUNIPER_PROJECT_PID_FILE}" ]]; then
-    echo "[${SCRIPT_NAME}:${LINENO}] ERROR: PID file is empty: ${JUNIPER_PROJECT_PID_FILE}"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ERROR: PID file is empty: ${JUNIPER_PROJECT_PID_FILE}"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] No services to stop. Was juniper_plant_all.bash run?"
+
+    # Optionally clean up orphaned worker processes
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS flag to Optionally clean up orphaned worker processes: ${KILL_WORKERS}"
+    orphaned_worker_cleanup "${KILL_WORKERS}" "${WORKER_SEARCH_TERM}" "${SIGTERM_TIMEOUT}"
+
     exit 1
 fi
+
 
 ###########################################################################################################################################################################################################
 # Load Juniper Pid File Lines into array
 ###########################################################################################################################################################################################################
-read -d '' -r -a JUNIPER_PIDS < "${JUNIPER_PROJECT_PID_FILE}"
-echo -ne "[${SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Loading PID file lines into array: ${JUNIPER_PROJECT_PID_FILE}"
+
+# cat "${JUNIPER_PROJECT_PID_FILE}"
+OLD_IFS="${IFS}" && IFS=$'\n'
+# echo "read -d '' -r -a JUNIPER_PIDS < \"${JUNIPER_PROJECT_PID_FILE}\""
+read -d '' -r -a JUNIPER_PIDS < "${JUNIPER_PROJECT_PID_FILE}" || true
+# echo "done"
+IFS="${OLD_IFS}"
+
+# Display the PID array contents
+echo -ne "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
+for ((i=0; i<${#JUNIPER_PIDS[*]}; i++)); do
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${i}. \"${JUNIPER_PIDS[${i}]}\""
+done
 
 PID_COUNT="${#JUNIPER_PIDS[@]}"
-echo "[${SCRIPT_NAME}:${LINENO}] Juniper Project PID Count: \"${PID_COUNT}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID Count: \"${PID_COUNT}\""
 
 if (( PID_COUNT <= 0 )); then
-    echo "[${SCRIPT_NAME}:${LINENO}] No PIDs found in \"${JUNIPER_PROJECT_PID_FILE}\""
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] No PIDs found in \"${JUNIPER_PROJECT_PID_FILE}\""
     exit 1
 fi
 
@@ -164,29 +298,32 @@ fi
 ###########################################################################################################################################################################################################
 # Shutdown Juniper Project Services
 ###########################################################################################################################################################################################################
-echo "[${SCRIPT_NAME}:${LINENO}] === Stopping Juniper Services ==="
-echo "[${SCRIPT_NAME}:${LINENO}] PID file contents:"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Stopping Juniper Services ==="
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PID file contents:"
 cat "${JUNIPER_PROJECT_PID_FILE}"
 echo ""
 
 STOP_FAILURES=0
 
-while IFS= read -r JUNIPER_PIDFILE_LINE; do
+# while IFS= read -r JUNIPER_PIDFILE_LINE; do
+for ((i=0; i<${#JUNIPER_PIDS[*]}; i++)); do
     # Skip blank lines
-    [[ -z "${JUNIPER_PIDFILE_LINE}" ]] && continue
+    #[[ -z "${JUNIPER_PIDFILE_LINE}" ]] && continue
 
-    echo "[${SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDFILE_LINE}\""
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDFILE_LINE}\""
     # Format: "juniper-data:   12345" — split on colon, then trim whitespace from PID
-    JUNIPER_APPLICATION_NAME="${JUNIPER_PIDFILE_LINE%%:*}"
-    JUNIPER_APPLICATION_PID="$(echo "${JUNIPER_PIDFILE_LINE#*:}" | tr -d ' ')"
+    # JUNIPER_APPLICATION_NAME="${JUNIPER_PIDFILE_LINE%%:*}"
+    JUNIPER_APPLICATION_NAME="${JUNIPER_PIDS[${i}]%%:*}"
+    # JUNIPER_APPLICATION_PID="$(echo "${JUNIPER_PIDFILE_LINE#*:}" | tr -d ' ')"
+    JUNIPER_APPLICATION_PID="$(echo "${JUNIPER_PIDS[${i}]#*:}" | tr -d ' ')"
 
     # Validate PID is numeric
-    if ! [[ "${JUNIPER_APPLICATION_PID}" =~ ^[0-9]+$ ]]; then
-        echo "[${SCRIPT_NAME}:${LINENO}] WARNING: Invalid PID '${JUNIPER_APPLICATION_PID}' for ${JUNIPER_APPLICATION_NAME} — skipping"
-        continue
-    fi
+    # if ! [[ "${JUNIPER_APPLICATION_PID}" =~ ^[0-9]+$ ]]; then
+    #     echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: Invalid PID '${JUNIPER_APPLICATION_PID}' for ${JUNIPER_APPLICATION_NAME} — skipping"
+    #     continue
+    # fi
 
-    echo "[${SCRIPT_NAME}:${LINENO}] --- ${JUNIPER_APPLICATION_NAME} ---"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] --- ${JUNIPER_APPLICATION_NAME} ---"
 
     if validate_pid "${JUNIPER_APPLICATION_PID}" "${JUNIPER_APPLICATION_NAME}"; then
         if ! graceful_stop "${JUNIPER_APPLICATION_PID}" "${JUNIPER_APPLICATION_NAME}"; then
@@ -197,50 +334,24 @@ while IFS= read -r JUNIPER_PIDFILE_LINE; do
     echo ""
 done < "${JUNIPER_PROJECT_PID_FILE}"
 
-
-###########################################################################################################################################################################################################
 # Optionally clean up orphaned worker processes
-###########################################################################################################################################################################################################
-if [[ "${KILL_WORKERS}" == "1" ]]; then
-    echo "[${SCRIPT_NAME}:${LINENO}] === Cleaning up orphaned worker processes ==="
-
-    WORKER_PIDS=()
-    while IFS= read -r line; do
-        [[ -z "${line}" ]] && continue
-        # pgrep -af outputs: PID CMDLINE
-        worker_pid="$(echo "${line}" | awk '{print $1;}')"
-        cmdline="$(echo "${line}" | cut -d' ' -f2-)"
-        # Only match actual worker processes, not greps or log viewers
-        if echo "${cmdline}" | grep -q "juniper.cascor.worker\|juniper_cascor_worker\|cascor.*worker"; then
-            WORKER_PIDS+=("${worker_pid}")
-            echo "[${SCRIPT_NAME}:${LINENO}] Found worker process: PID ${worker_pid} — ${cmdline:0:120}"
-        fi
-    done < <(pgrep -af "juniper.cascor" 2>/dev/null || true)
-
-    if (( ${#WORKER_PIDS[@]} > 0 )); then
-        echo "[${SCRIPT_NAME}:${LINENO}] Found ${#WORKER_PIDS[@]} worker process(es) to stop"
-        for worker_pid in "${WORKER_PIDS[@]}"; do
-            graceful_stop "${worker_pid}" "cascor-worker" 5
-        done
-    else
-        echo "[${SCRIPT_NAME}:${LINENO}] No orphaned worker processes found"
-    fi
-fi
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS flag to Optionally clean up orphaned worker processes: ${KILL_WORKERS}"
+orphaned_worker_cleanup "${KILL_WORKERS}" "${WORKER_SEARCH_TERM}" "${SIGTERM_TIMEOUT}"
 
 
 ###########################################################################################################################################################################################################
 # Clean up PID file and report results
 ###########################################################################################################################################################################################################
-echo "[${SCRIPT_NAME}:${LINENO}] === Shutdown Summary ==="
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Shutdown Summary ==="
 
 if (( STOP_FAILURES > 0 )); then
-    echo "[${SCRIPT_NAME}:${LINENO}] WARNING: ${STOP_FAILURES} service(s) failed to stop cleanly"
-    echo "[${SCRIPT_NAME}:${LINENO}] PID file preserved at ${JUNIPER_PROJECT_PID_FILE} for investigation"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: ${STOP_FAILURES} service(s) failed to stop cleanly"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PID file preserved at ${JUNIPER_PROJECT_PID_FILE} for investigation"
     exit 1
 else
-    echo "[${SCRIPT_NAME}:${LINENO}] All services stopped successfully"
-    echo "[${SCRIPT_NAME}:${LINENO}] Clearing PID file"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] All services stopped successfully"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Clearing PID file"
     : > "${JUNIPER_PROJECT_PID_FILE}"
 fi
 
-echo "[${SCRIPT_NAME}:${LINENO}] Ending script run"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Ending script run"
