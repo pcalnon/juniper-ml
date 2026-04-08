@@ -271,20 +271,9 @@ fi
 ###########################################################################################################################################################################################################
 # Load Juniper Pid File Lines into array
 ###########################################################################################################################################################################################################
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Loading PID file lines into array: ${JUNIPER_PROJECT_PID_FILE}"
-
-# cat "${JUNIPER_PROJECT_PID_FILE}"
-OLD_IFS="${IFS}" && IFS=$'\n'
-# echo "read -d '' -r -a JUNIPER_PIDS < \"${JUNIPER_PROJECT_PID_FILE}\""
+# read -d '' returns exit code 1 at EOF even on success; suppress under set -e
 read -d '' -r -a JUNIPER_PIDS < "${JUNIPER_PROJECT_PID_FILE}" || true
-# echo "done"
-IFS="${OLD_IFS}"
-
-# Display the PID array contents
-echo -ne "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
-for ((i=0; i<${#JUNIPER_PIDS[*]}; i++)); do
-    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ${i}. \"${JUNIPER_PIDS[${i}]}\""
-done
+echo -ne "[${SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
 
 PID_COUNT="${#JUNIPER_PIDS[@]}"
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID Count: \"${PID_COUNT}\""
