@@ -202,7 +202,7 @@ function cleanup_on_failure() {
     trap - ERR EXIT
     set +e
 
-    echo "[${SCRIPT_NAME}] FAILURE: Cleaning up started services..."
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] FAILURE: Cleaning up started Juniper Project services..."
     set +u
     if (( ${#STARTED_PIDS[@]} > 0 )); then
         for pid in "${STARTED_PIDS[@]}"; do
@@ -220,7 +220,7 @@ function cleanup_on_failure() {
         done
     fi
     rm -f "${JUNIPER_PROJECT_PID_FILE}"
-    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Cleanup complete. Startup aborted."
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Cleanup complete. Juniper Project Startup aborted."
     exit 1
 }
 
@@ -345,9 +345,9 @@ echo ""
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Starting juniper-data ==="
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_DATA_DIR}\""
 cd "${JUNIPER_DATA_DIR}" || exit 1
-echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_DATA_CONDA}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_DATA_CONDA}\""
 safe_conda_activate "${JUNIPER_DATA_CONDA}"
-echo "[${SCRIPT_NAME}:${LINENO}] PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host \"${JUNIPER_DATA_HOST}\" --port \"${JUNIPER_DATA_PORT}\" >\"${JUNIPER_DATA_LOG}\" 2>&1 &"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host \"${JUNIPER_DATA_HOST}\" --port \"${JUNIPER_DATA_PORT}\" >\"${JUNIPER_DATA_LOG}\" 2>&1 &"
 PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host "${JUNIPER_DATA_HOST}" --port "${JUNIPER_DATA_PORT}" >"${JUNIPER_DATA_LOG}" 2>&1 &
 JUNIPER_DATA_PID=$!
 STARTED_PIDS+=("${JUNIPER_DATA_PID}")
@@ -363,9 +363,9 @@ echo ""
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Starting juniper-cascor ==="
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CASCOR_SRC_DIR}\""
 cd "${JUNIPER_CASCOR_SRC_DIR}" || exit 1
-echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CASCOR_CONDA}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CASCOR_CONDA}\""
 safe_conda_activate "${JUNIPER_CASCOR_CONDA}"
-echo "[${SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${JUNIPER_CASCOR_PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${JUNIPER_CASCOR_PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT}" nohup "${JUNIPER_CASCOR_PYTHON}" "${JUNIPER_CASCOR_MODULE}" >"${JUNIPER_CASCOR_LOG}" 2>&1 &
 JUNIPER_CASCOR_PID=$!
 STARTED_PIDS+=("${JUNIPER_CASCOR_PID}")
@@ -381,9 +381,9 @@ echo ""
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Starting juniper-canopy ==="
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CANOPY_SRC_DIR}\""
 cd "${JUNIPER_CANOPY_SRC_DIR}" || exit 1
-echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CANOPY_CONDA}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CANOPY_CONDA}\""
 safe_conda_activate "${JUNIPER_CANOPY_CONDA}"
-echo "[${SCRIPT_NAME}:${LINENO}] CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" nohup \"${JUNIPER_CANOPY_PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" nohup \"${JUNIPER_CANOPY_PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
 CASCOR_SERVICE_URL="${JUNIPER_CASCOR_URL}" nohup "${JUNIPER_CANOPY_PYTHON}" "${JUNIPER_CANOPY_MODULE}" >"${JUNIPER_CANOPY_LOG}" 2>&1 &
 JUNIPER_CANOPY_PID=$!
 STARTED_PIDS+=("${JUNIPER_CANOPY_PID}")
@@ -398,9 +398,9 @@ wait_for_health "juniper-canopy" "http://localhost:${JUNIPER_CANOPY_PORT}/v1/hea
 echo ""
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Starting juniper-cascor-worker ==="
 ensure_dir "${JUNIPER_WORKER_LOG_DIR}"
-echo "[${SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_WORKER_CONDA}\""
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_WORKER_CONDA}\""
 safe_conda_activate "${JUNIPER_WORKER_CONDA}"
-echo "[${SCRIPT_NAME}:${LINENO}] nohup \"${JUNIPER_WORKER_BIN}\" >\"${JUNIPER_WORKER_LOG}\" 2>&1 &"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] nohup \"${JUNIPER_WORKER_BIN}\" >\"${JUNIPER_WORKER_LOG}\" 2>&1 &"
 nohup "${JUNIPER_WORKER_BIN}" >"${JUNIPER_WORKER_LOG}" 2>&1 &
 JUNIPER_WORKER_PID=$!
 STARTED_PIDS+=("${JUNIPER_WORKER_PID}")
@@ -419,8 +419,8 @@ fi
 # Save PIDs for Juniper Project services to pidfile
 ###########################################################################################################################################################################################################
 echo ""
-echo "[${SCRIPT_NAME}:${LINENO}] === Writing PID File ==="
-echo "[${SCRIPT_NAME}:${LINENO}] conda deactivate"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Writing PID File ==="
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda deactivate"
 set +u
 conda deactivate
 set -u
