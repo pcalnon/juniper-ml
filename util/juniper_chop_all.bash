@@ -273,7 +273,7 @@ fi
 ###########################################################################################################################################################################################################
 # read -d '' returns exit code 1 at EOF even on success; suppress under set -e
 read -d '' -r -a JUNIPER_PIDS < "${JUNIPER_PROJECT_PID_FILE}" || true
-echo -ne "[${SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
+echo -ne "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
 
 PID_COUNT="${#JUNIPER_PIDS[@]}"
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID Count: \"${PID_COUNT}\""
