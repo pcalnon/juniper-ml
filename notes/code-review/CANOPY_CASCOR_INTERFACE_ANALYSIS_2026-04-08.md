@@ -1201,10 +1201,10 @@ ServiceBackend.initialize():
 | ~~CR-006~~ | Code Review | ~~S1~~ | ~~`max_epochs`/`max_iterations` conflation~~ | **RESOLVED** (verified 2026-04-08: `fit()` deconflated, all fields exist, defaults aligned) |
 | ~~CR-007~~ | Code Review | ~~S1~~ | ~~State machine terminal states irrecoverable~~ | **RESOLVED** (verified 2026-04-08: auto-reset in `_handle_start()` line 114 + Option C duplicate handler removed) |
 | ~~CR-008~~ | Code Review | ~~S2~~ | ~~WebSocket `set_params` not implemented~~ | **RESOLVED** (verified 2026-04-08: `set_params` in `_VALID_COMMANDS` and handler at line 97) |
-| CR-023 | Code Review | S2 | Unvalidated `params` dict in `TrainingStartRequest` | Open |
-| CR-024 | Code Review | S2 | Request body limit bypassed by chunked encoding | Open |
-| CR-025 | Code Review | S2 | WebSocket connections set lacks async lock | Open |
-| CR-026 | Code Review | S1 | Worker `worker_id` client-supplied without validation | Open |
+| ~~CR-023~~ | Code Review | ~~S2~~ | ~~Unvalidated `params` dict in `TrainingStartRequest`~~ | **RESOLVED** (verified 2026-04-09: `_ALLOWED_TRAINING_PARAMS` whitelist at `routes/training.py:36-42`; Phase 2 added regression test `test_start_training_filters_unwhitelisted_params`) |
+| ~~CR-024~~ | Code Review | ~~S2~~ | ~~Request body limit bypassed by chunked encoding~~ | **RESOLVED** (2026-04-09: `middleware.py::RequestBodyLimitMiddleware` now stream-reads with cumulative cap; 7 new regression tests) |
+| ~~CR-025~~ | Code Review | ~~S2~~ | ~~WebSocket connections set lacks async lock~~ | **RESOLVED** (2026-04-09: `WebSocketManager.close_all()` now takes snapshot under lock; connect/disconnect were already locked; regression test added) |
+| ~~CR-026~~ | Code Review | ~~S1~~ | ~~Worker `worker_id` client-supplied without validation~~ | **RESOLVED** (2026-04-09: server now generates `worker-<uuid>`; client-proposed name captured as `client_name` for audit only; 3 new impersonation regression tests) |
 | P5-RC-05 | Connection Analysis | LOW | Dashboard ignores WebSocket relay | Deferred |
 | P5-RC-14 | Connection Analysis | LOW | WebSocket relay broadcasts unnormalized metrics | Deferred (per plan) |
 | P5-RC-18 | Connection Analysis | SYSTEMIC | No canonical backend contract — **PARTIALLY ADDRESSED**: `BackendProtocol` now uses TypedDicts (`StatusResult`, `MetricsResult`, `TopologyResult`, `DatasetResult`) but implementations still return plain dicts | Partially addressed |
