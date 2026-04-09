@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bumped minimum versions of optional dependency extras to track latest releases:
+  - `juniper-data-client` from `>=0.3.0` to `>=0.4.0` (adds batch operations and dataset versioning)
+  - `juniper-cascor-client` from `>=0.1.0` to `>=0.3.0` (adds worker/snapshot/dataset methods, testing module)
+  - `juniper-cascor-worker` from `>=0.1.0` to `>=0.3.0` (WebSocket-based agent, TLS support, deprecates legacy mode)
+
 ### Added
 
 - `util/juniper_plant_all.bash` -- Microservices startup script with health checks, conda environment activation, and PID file management
