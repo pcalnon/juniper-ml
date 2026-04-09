@@ -27,11 +27,11 @@ dependencies = []
 
 [project.optional-dependencies]
 clients = [
-    "juniper-data-client>=0.3.0",
-    "juniper-cascor-client>=0.1.0",
+    "juniper-data-client>=0.4.0",
+    "juniper-cascor-client>=0.3.0",
 ]
 worker = [
-    "juniper-cascor-worker>=0.1.0",
+    "juniper-cascor-worker>=0.3.0",
 ]
 all = [
     "juniper-ml[clients,worker]",
