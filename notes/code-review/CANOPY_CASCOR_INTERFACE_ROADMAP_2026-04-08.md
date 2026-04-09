@@ -246,12 +246,31 @@ investment that is better amortized across Phase 2/3 work.
 ## 4. Phase 2: Security Hardening
 
 **Priority**: P1-P2 — Required before external deployment
-**Estimated Duration**: 2-3 days
+**Estimated Duration**: 2-3 days (original) — **ACTUAL: ~1 day (execution)**
 **Dependencies**: None (can parallel with Phase 1)
+**Status**: **COMPLETE (2026-04-09)**
+
+### 4.0 Phase 2 Execution Results (2026-04-09)
+
+Phase 2 was executed on branch `fix/interface-phase2-security` in cascor and
+`fix/interface-phase2-docs` in juniper-ml. All four issues were verified
+against live HEAD first. One was already resolved, one needed a new
+regression test, and the remaining three needed code fixes.
+
+| Item | Status | Evidence |
+|------|--------|----------|
+| **CR-023**: training start params whitelist | VERIFIED + test added | `_ALLOWED_TRAINING_PARAMS` whitelist at `routes/training.py:36-42` already filters unknown keys with warning log; added regression test `test_start_training_filters_unwhitelisted_params` spying on `lifecycle.start_training` to confirm non-whitelisted keys (`evil_injection_key`, `__class__`) never reach the forwarded kwargs |
+| **CR-026**: server-assigned worker IDs | **FIXED** | `worker_stream.py::_handle_registration` now generates `worker-<12 hex chars>` UUID; client-proposed name becomes `client_name` (audit-only, non-identity). `WorkerRegistration.client_name` field added; `WorkerRegistry.register` accepts optional `client_name` kwarg (backwards-compatible). 3 new regression tests: server != client id, registration_ack returns server id, two workers with same client_name get distinct server ids (impersonation impossible). Updated `test_worker_security_integration.py` metrics test to look up by server id. |
+| **CR-024**: chunked encoding body limit | **FIXED** | `middleware.py::RequestBodyLimitMiddleware` now always stream-reads POST/PUT/PATCH bodies with per-chunk cumulative cap, aborting with HTTP 413 as soon as the cap is exceeded. Content-Length fast-path retained but no longer trusted as sole gate; invalid Content-Length returns 400. Body cached on `request._body` for downstream handlers. 7 new regression tests including `test_chunked_body_over_limit_rejected` which sends a generator-based body exceeding the cap. |
+| **CR-025**: WebSocket connection lock | **FIXED** | `WebSocketManager.close_all()` now takes snapshot under `self._lock` before clearing the connection set (previously unlocked — connect/shutdown race). The actual `ws.close()` calls are issued against the snapshot outside the lock to avoid deadlock on exception paths. Regression test asserts `close_all` blocks when the lock is externally held. |
+
+**Test suite result**: `pytest tests/unit/api/` → all tests pass, exit=0, zero
+regressions after all Phase 2 changes. 14 new regression tests added across
+5 test files.
 
 ### 4.1 CR-023: Whitelist Training Start Parameters
 
-**Effort**: 0.5 day | **Repo**: juniper-cascor
+**Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: VERIFIED + test added
 
 Add parameter whitelist to `TrainingStartRequest.params`:
 ```python
@@ -259,9 +278,16 @@ ALLOWED_START_PARAMS = {"epochs", "learning_rate", "candidate_pool_size", ...}
 # Validate in route handler before forwarding
 ```
 
+**Actual state (verified 2026-04-09)**: Whitelist already exists at
+`routes/training.py:36-42` as `_ALLOWED_TRAINING_PARAMS`. Unknown keys are
+filtered with a WARNING log rather than rejected with HTTP 422. Phase 2
+added regression test coverage; the filter-and-log behavior is retained
+because it degrades gracefully for honest typos while preventing kwarg
+injection into `lifecycle.start_training()`.
+
 ### 4.2 CR-026: Server-Assigned Worker IDs
 
-**Effort**: 1 day | **Repo**: juniper-cascor
+**Effort**: 1 day | **Repo**: juniper-cascor | **Status**: FIXED
 
 Replace client-supplied `worker_id` with server-generated UUID:
 ```python
@@ -270,26 +296,53 @@ worker_id = f"worker-{uuid.uuid4().hex[:12]}"  # Server assigns
 # Log mapping: client-requested name → server-assigned ID
 ```
 
+**Implemented design**: The client-proposed `worker_id` in the REGISTER
+payload is treated as an untrusted display label (`client_name`) and
+captured on the registration for audit-only use. The server generates a
+fresh UUID-derived ID as the authoritative identity and returns it in the
+`registration_ack` payload. The `registration_ack.data.client_name` field
+echoes the client's proposal so workers can confirm their registration.
+This is backwards-compatible at the wire protocol level.
+
 ### 4.3 CR-024: Chunked Encoding Body Limit
 
-**Effort**: 0.5 day | **Repo**: juniper-cascor
+**Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED
 
 1. Immediate: Configure uvicorn `--limit-max-request-size`
 2. Follow-up: Implement incremental body reading in middleware
 
+**Implemented design**: Step 2 from the original plan. The middleware now
+iterates `request.stream()` for every POST/PUT/PATCH request, incrementing
+a cumulative byte counter and aborting with HTTP 413 as soon as the cap is
+exceeded. The Content-Length header is retained as an early-reject fast
+path but is no longer trusted as the sole size gate — an attacker sending
+a chunked stream with no Content-Length (or a lying value) can no longer
+bypass the limit by triggering full-body allocation via `await request.body()`.
+The fully-read body is cached on `request._body` so downstream FastAPI
+route handlers consume it without re-reading the drained stream.
+
 ### 4.4 CR-025: WebSocket Async Lock
 
-**Effort**: 0.5 day | **Repo**: juniper-cascor
+**Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED
 
 Add `asyncio.Lock` to `WebSocketManager` for connection set mutations.
 
+**Implemented design**: The lock was already present in `__init__` and
+already guarded `connect()` and `disconnect()`. The Phase 2 fix extends it
+to `close_all()`, which previously mutated `_active_connections` without
+the lock and could race with a concurrent `connect()` during shutdown.
+The new implementation takes a snapshot under the lock, clears the set,
+releases the lock, and then issues the actual `ws.close()` calls against
+the snapshot — avoiding the deadlock risk of re-entering the lock if a
+`close()` call triggers an exception path that calls back into the manager.
+
 ### 4.5 Phase 2 Success Criteria
 
-- [ ] Training start only accepts whitelisted parameters
-- [ ] Worker IDs are server-assigned UUIDs
-- [ ] Request body limit enforced regardless of transfer encoding
-- [ ] WebSocket connection management is async-safe
-- [ ] All security tests pass
+- [x] Training start only accepts whitelisted parameters — verified 2026-04-09; regression test added
+- [x] Worker IDs are server-assigned UUIDs — fixed 2026-04-09; 3 new regression tests
+- [x] Request body limit enforced regardless of transfer encoding — fixed 2026-04-09; 7 new regression tests
+- [x] WebSocket connection management is async-safe — fixed 2026-04-09; regression test added
+- [x] All security tests pass — full cascor `tests/unit/api/` suite passes, exit=0
 
 ---
 
