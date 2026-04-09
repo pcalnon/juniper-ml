@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Version**: 0.3.0
+**Version**: 0.4.0
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -145,7 +145,7 @@ juniper-ml/
 
 ### Package and Metadata
 
-- `pyproject.toml` -- Package metadata, version (`0.3.0`), and optional dependency groups (`clients`, `worker`, `all`)
+- `pyproject.toml` -- Package metadata, version (`0.4.0`), and optional dependency groups (`clients`, `worker`, `all`)
 - `README.md` -- PyPI landing page content
 - `CHANGELOG.md` -- Version history in Keep a Changelog format
 - `MANIFEST.in` -- Source distribution file includes
@@ -274,8 +274,8 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 | Extra | Packages |
 |-------|----------|
-| `clients` | `juniper-data-client>=0.3.0`, `juniper-cascor-client>=0.1.0` |
-| `worker` | `juniper-cascor-worker>=0.1.0` |
+| `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
+| `worker` | `juniper-cascor-worker>=0.3.0` |
 | `all` | All of the above |
 
 ## Conventions
