@@ -6,6 +6,7 @@
 **Owner**: Paul Calnon
 **Status**: ACTIVE
 **Companion Documents**:
+
 - Analysis: `CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md`
 - Plan: `CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md`
 
@@ -24,21 +25,21 @@ This roadmap documents all required work to bring the Canopy-Cascor interface to
 
 ## 2. Issue Priority Matrix
 
-| ID | Severity | Impact | Effort | Risk | Phase |
-|----|----------|--------|--------|------|-------|
-| CR-006 | S1 | Training limits — **LARGELY RESOLVED**: verify fit() deconflation, default alignment | S (0.5-1d) | Low | 1 |
-| CR-007 | S1 | State machine locks up after failure | M (1d) | Low | 1 |
-| CR-008 | S2 | Missing documented WS functionality | S (0.5d) | Low | 1 |
-| CR-023 | S2 | Unvalidated kwargs injection risk | S (0.5d) | Low | 2 |
-| CR-024 | S2 | Body limit bypass via chunked encoding | S (0.5d) | Low | 2 |
-| CR-025 | S2 | WebSocket race condition (latent) | S (0.5d) | Low | 2 |
-| CR-026 | S1 | Worker impersonation via client ID | M (1d) | Medium | 2 |
-| AppG-C | Arch | No metrics during output training | S-M (1-2d) | Low | 3 |
-| AppG-A | Arch | No metrics during candidate training | M-L (3-5d) | Medium | 3 |
-| P5-RC-18 | Systemic | No typed backend contract | L (3-5d) | Medium | 4 |
-| P5-RC-14 | Low | Relay broadcasts raw metrics | S (<1d) | Low | 4 |
-| P5-RC-05 | Low | Dashboard ignores WebSocket data | M (2-3d) | Medium | 4 |
-| KL-1 | Known | Dataset scatter empty in service mode | L (3-5d) | Medium | 4 |
+| ID       | Severity | Impact                                                                               | Effort     | Risk   | Phase |
+|----------|----------|--------------------------------------------------------------------------------------|------------|--------|-------|
+| CR-006   | S1       | Training limits — **LARGELY RESOLVED**: verify fit() deconflation, default alignment | S (0.5-1d) | Low    | 1     |
+| CR-007   | S1       | State machine locks up after failure                                                 | M (1d)     | Low    | 1     |
+| CR-008   | S2       | Missing documented WS functionality                                                  | S (0.5d)   | Low    | 1     |
+| CR-023   | S2       | Unvalidated kwargs injection risk                                                    | S (0.5d)   | Low    | 2     |
+| CR-024   | S2       | Body limit bypass via chunked encoding                                               | S (0.5d)   | Low    | 2     |
+| CR-025   | S2       | WebSocket race condition (latent)                                                    | S (0.5d)   | Low    | 2     |
+| CR-026   | S1       | Worker impersonation via client ID                                                   | M (1d)     | Medium | 2     |
+| AppG-C   | Arch     | No metrics during output training                                                    | S-M (1-2d) | Low    | 3     |
+| AppG-A   | Arch     | No metrics during candidate training                                                 | M-L (3-5d) | Medium | 3     |
+| P5-RC-18 | Systemic | No typed backend contract                                                            | L (3-5d)   | Medium | 4     |
+| P5-RC-14 | Low      | Relay broadcasts raw metrics                                                         | S (<1d)    | Low    | 4     |
+| P5-RC-05 | Low      | Dashboard ignores WebSocket data                                                     | M (2-3d)   | Medium | 4     |
+| KL-1     | Known    | Dataset scatter empty in service mode                                                | L (3-5d)   | Medium | 4     |
 
 ---
 
@@ -76,28 +77,29 @@ This roadmap documents all required work to bring the Canopy-Cascor interface to
 
 **Cascor Changes** (PR 1):
 
-| Step | File | Change |
-|------|------|--------|
-| 1 | `cascor_constants/constants_model.py` | Add `_PROJECT_MODEL_MAX_ITERATIONS = 1000` |
-| 2 | `cascor_constants/constants.py` | Add alias chain to `_CASCADE_CORRELATION_NETWORK_MAX_ITERATIONS` |
-| 3 | `cascade_correlation_config.py` | Add `max_iterations: int` field (default from constant) |
-| 4 | `cascade_correlation.py` | Add `self.max_iterations` attribute; use in `grow_network()` default |
-| 5 | `cascade_correlation.py` | **Deconflate `fit()`**: separate `max_epochs` → `train_output_layer()`, `max_iterations` → `grow_network()` |
-| 6 | `api/models/network.py` | Add `max_iterations: int = Field(1000, ge=1)` to `NetworkCreateRequest` |
-| 7 | `api/models/training.py` | Add `max_iterations: Optional[int]` to `TrainingParamUpdateRequest` |
-| 8 | `api/lifecycle/monitor.py` | Add `"max_iterations"` to `_STATE_FIELDS` |
-| 9 | `api/lifecycle/manager.py` | Fix `create_network()` to pass both keys; add to `updatable_keys` |
-| 10 | `api/lifecycle/manager.py` | Align `epochs_max` default to 1,000,000 (matching canopy) |
+| Step | File                                  | Change                                                                                                      |
+|------|---------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| 1    | `cascor_constants/constants_model.py` | Add `_PROJECT_MODEL_MAX_ITERATIONS = 1000`                                                                  |
+| 2    | `cascor_constants/constants.py`       | Add alias chain to `_CASCADE_CORRELATION_NETWORK_MAX_ITERATIONS`                                            |
+| 3    | `cascade_correlation_config.py`       | Add `max_iterations: int` field (default from constant)                                                     |
+| 4    | `cascade_correlation.py`              | Add `self.max_iterations` attribute; use in `grow_network()` default                                        |
+| 5    | `cascade_correlation.py`              | **Deconflate `fit()`**: separate `max_epochs` → `train_output_layer()`, `max_iterations` → `grow_network()` |
+| 6    | `api/models/network.py`               | Add `max_iterations: int = Field(1000, ge=1)` to `NetworkCreateRequest`                                     |
+| 7    | `api/models/training.py`              | Add `max_iterations: Optional[int]` to `TrainingParamUpdateRequest`                                         |
+| 8    | `api/lifecycle/monitor.py`            | Add `"max_iterations"` to `_STATE_FIELDS`                                                                   |
+| 9    | `api/lifecycle/manager.py`            | Fix `create_network()` to pass both keys; add to `updatable_keys`                                           |
+| 10   | `api/lifecycle/manager.py`            | Align `epochs_max` default to 1,000,000 (matching canopy)                                                   |
 
 **Canopy Changes** (PR 2, after cascor PR merges):
 
-| Step | File | Change |
-|------|------|--------|
-| 11 | `backend/cascor_service_adapter.py` | Add `"nn_max_iterations": "max_iterations"` to `_CANOPY_TO_CASCOR_PARAM_MAP` |
-| 12 | `main.py` | Update `apply_params()` to forward `max_iterations` to cascor |
-| 13 | `backend/training_monitor.py` | Add `__max_iterations` field to `TrainingState` |
+| Step | File                                | Change                                                                       |
+|------|-------------------------------------|------------------------------------------------------------------------------|
+| 11   | `backend/cascor_service_adapter.py` | Add `"nn_max_iterations": "max_iterations"` to `_CANOPY_TO_CASCOR_PARAM_MAP` |
+| 12   | `main.py`                           | Update `apply_params()` to forward `max_iterations` to cascor                |
+| 13   | `backend/training_monitor.py`       | Add `__max_iterations` field to `TrainingState`                              |
 
 **Tests**:
+
 - Unit test: both values flow through `create_network()` → `TrainingState` → `get_state()`
 - Unit test: `grow_network()` respects `max_iterations` independently from `max_epochs`
 - Integration test: canopy UI edit → cascor param update round-trip
@@ -139,6 +141,7 @@ if self.state_machine.status in (TrainingStatus.FAILED, TrainingStatus.COMPLETED
 Also remove the duplicate `except` block in `_run_training` that redundantly attempts STOP from FAILED state.
 
 **Tests**:
+
 - Test start after FAILED transitions correctly
 - Test start after COMPLETED transitions correctly
 - Test auto-reset is logged
@@ -193,21 +196,27 @@ elif command == "set_params":
 **Effort**: 0.5 day | **Repo**: juniper-cascor
 
 Add parameter whitelist to `TrainingStartRequest.params`:
+
 ```python
 ALLOWED_START_PARAMS = {"epochs", "learning_rate", "candidate_pool_size", ...}
 # Validate in route handler before forwarding
 ```
 
-### 4.2 CR-026: Server-Assigned Worker IDs
+### 4.2 CR-026: Server-Assigned Worker IDs -- **Deferred**
 
 **Effort**: 1 day | **Repo**: juniper-cascor
 
 Replace client-supplied `worker_id` with server-generated UUID:
+
 ```python
 # In worker_stream_handler:
 worker_id = f"worker-{uuid.uuid4().hex[:12]}"  # Server assigns
 # Log mapping: client-requested name → server-assigned ID
 ```
+
+**Recommendation**:
+This fix should be deferred until additional, in-depth analysis and further review can be completed.
+The ability for remote workers to resume connections is a juniper-cascor requirement.
 
 ### 4.3 CR-024: Chunked Encoding Body Limit
 
@@ -243,6 +252,7 @@ Add `asyncio.Lock` to `WebSocketManager` for connection set mutations.
 **Effort**: 1 day | **Repo**: juniper-cascor
 
 Add to `_STATE_FIELDS`:
+
 - `phase_detail` (str): Sub-phase detail (e.g., "training_candidates", "retraining_output")
 - `grow_iteration` (int): Current grow loop iteration
 - `grow_max` (int): Maximum grow iterations
@@ -256,6 +266,7 @@ Add to `_STATE_FIELDS`:
 **Effort**: 1-2 days | **Repo**: juniper-cascor
 
 Add `on_epoch_callback` parameter to `train_output_layer()`:
+
 ```python
 def train_output_layer(self, x, y, epochs=1000, on_epoch_callback=None):
     for epoch in range(epochs):
@@ -271,6 +282,7 @@ Hook in lifecycle manager to emit metrics and update TrainingState.
 **Effort**: 1-2 days | **Repo**: juniper-cascor
 
 Update TrainingState at each grow iteration boundary:
+
 1. Entering candidate training (phase_detail, candidates_total)
 2. Candidate training finished (best_correlation, success_count)
 3. Adding best candidate
@@ -292,6 +304,7 @@ Update TrainingState at each grow iteration boundary:
 **Effort**: 3-5 days | **Repo**: juniper-cascor
 
 Add `progress_queue` to persistent forkserver worker pool:
+
 - Workers emit lightweight progress events via `put_nowait()`
 - Main process drain thread aggregates into TrainingState
 - Throttle: every 10-50 epochs per worker
@@ -373,20 +386,20 @@ Option B: Direct juniper-data integration from canopy
 
 ## 7. Dependency Graph
 
-```
+```bash
 Phase 1 (Critical)
 ├── 3.1 CR-006: max_iterations ───────────────────────────┐
 │   ├── Cascor PR first                                   │
 │   └── Canopy PR second                                  │
 ├── 3.2 CR-007: State machine auto-reset (independent)    │
 └── 3.3 CR-008: WebSocket set_params (independent)        │
-                                                           │
+                                                          │
 Phase 2 (Security) — can parallel with Phase 1            │
 ├── 4.1 CR-023 (independent)                              │
 ├── 4.2 CR-026 (independent)                              │
 ├── 4.3 CR-024 (independent)                              │
 └── 4.4 CR-025 (independent)                              │
-                                                           │
+                                                          │
 Phase 3 (Metrics Granularity) — depends on Phase 1        │
 ├── 5.1 Progress fields ◄─────────────────────────────────┘
 │   ├── 5.2 Output training callback
@@ -408,27 +421,27 @@ Phase 4 (Architecture) — depends on Phases 1-3
 
 ## 8. Risk Register
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| CR-006 default change breaks existing users | Medium | High | Document migration; add deprecation notice |
-| CR-007 auto-reset surprises API clients | Low | Medium | Log auto-reset; document behavior change |
-| Metrics callback overhead in hot loop | Low | Low | Throttle to every 25 epochs |
-| Queue contention from 50 workers | Medium | Medium | Throttle + `put_nowait()` with silent drop |
-| Typed contract refactor breaks consumers | Medium | Medium | Incremental migration; backward-compatible TypedDicts |
-| Cross-repo coordination delays | Medium | Medium | PR cascor first, canopy second; use feature flags |
-| Test suite instability during changes | Medium | Low | Fix and stabilize tests before feature work |
+| Risk                                        | Likelihood | Impact | Mitigation                                            |
+|---------------------------------------------|------------|--------|-------------------------------------------------------|
+| CR-006 default change breaks existing users | Medium     | High   | Document migration; add deprecation notice            |
+| CR-007 auto-reset surprises API clients     | Low        | Medium | Log auto-reset; document behavior change              |
+| Metrics callback overhead in hot loop       | Low        | Low    | Throttle to every 25 epochs                           |
+| Queue contention from 50 workers            | Medium     | Medium | Throttle + `put_nowait()` with silent drop            |
+| Typed contract refactor breaks consumers    | Medium     | Medium | Incremental migration; backward-compatible TypedDicts |
+| Cross-repo coordination delays              | Medium     | Medium | PR cascor first, canopy second; use feature flags     |
+| Test suite instability during changes       | Medium     | Low    | Fix and stabilize tests before feature work           |
 
 ---
 
 ## 9. Milestone Timeline
 
-| Milestone | Target | Criteria |
-|-----------|--------|----------|
-| **M1: Interface Stability** | End of Week 1 | CR-006, CR-007, CR-008 resolved |
-| **M2: Security Ready** | End of Week 2 | CR-023, CR-024, CR-025, CR-026 resolved |
-| **M3: Real-Time Monitoring** | End of Week 4 | Output + candidate metrics streaming |
-| **M4: Production Architecture** | End of Week 6 | Typed contracts, WebSocket consumption |
+| Milestone                       | Target        | Criteria                                |
+|---------------------------------|---------------|-----------------------------------------|
+| **M1: Interface Stability**     | End of Week 1 | CR-006, CR-007, CR-008 resolved         |
+| **M2: Security Ready**          | End of Week 2 | CR-023, CR-024, CR-025, CR-026 resolved |
+| **M3: Real-Time Monitoring**    | End of Week 4 | Output + candidate metrics streaming    |
+| **M4: Production Architecture** | End of Week 6 | Typed contracts, WebSocket consumption  |
 
 ---
 
-*End of Development Roadmap*
+*End of Development Roadmap*:
