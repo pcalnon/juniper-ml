@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `util/juniper_plant_all.bash` -- Microservices startup script with health checks, conda environment activation, and PID file management
+- `util/juniper_chop_all.bash` -- Microservices shutdown script with graceful SIGTERM/SIGKILL escalation, PID file parsing, and orphaned worker cleanup
+- Systemd integration (`--systemd` mode) for both startup and shutdown scripts, including `juniper-all-ctl` management script and `juniper-all.target` unit
+- Cascor-worker integration into systemd target and startup/shutdown scripts (Phase 3)
+- `util/worktree_cleanup.bash` -- V2 automated worktree cleanup orchestrator with CWD-safe session continuity
+- `tests/test_worktree_cleanup.py` -- Regression tests for worktree cleanup argument parsing, dry-run, and error handling
+- `util/worktree_new.bash`, `util/worktree_activate.bash`, `util/worktree_close.bash`, `util/worktree_wipeout.bash` -- Worktree management utilities
+- `util/get_cascor_status.bash`, `util/get_cascor_metrics.bash`, `util/get_cascor_history.bash`, `util/get_cascor_network.bash`, `util/get_cascor_topology.bash` -- CasCor REST API query utilities
+- `scripts/claude_interactive.bash` -- Interactive Claude Code agent launcher (`claudey` symlink at repo root)
+- Cross-project regression analysis, remediation plans, and development roadmaps in `notes/`
+
+### Changed
+
+- `AGENTS.md` updated to v0.3.0 with comprehensive structure documentation, CI/CD pipeline details, and worktree/handoff procedures
+- Dependabot CI action version bumps: `anthropics/claude-code-action` (1.0.62 -> 1.0.89), `actions/cache` (4.2.3 -> 5.0.4), `actions/upload-artifact` (6.0.0 -> 7.0.0), `actions/download-artifact` (8.0.0 -> 8.0.1)
+- Moved worktree management and documentation utilities from `scripts/` to `util/`
+
+### Fixed
+
+- CI `dependency-docs` job path corrected from `scripts/generate_dep_docs.sh` to `util/generate_dep_docs.sh`
+- PID file parsing in `juniper_chop_all.bash` replaced `read -d ''` (whitespace splitting) with `mapfile -t` (line-oriented) to handle multi-word PID file lines correctly
+- Removed contradictory `done < PID_FILE` redirect from for-loop that iterated over an already-populated array
+- `juniper_chop_all.bash` `KILL_WORKERS` default changed from hardcoded `"1"` to `"0"` to match documented behavior
+- `juniper_chop_all.bash` `SIGTERM_TIMEOUT` default changed from hardcoded `"10"` to environment-variable-driven `"15"` to match documented behavior
+- Worker search term narrowed from `"cascor"` to `"juniper-cascor-worker"` to prevent false-positive matches against the cascor backend
+- Added `test_worktree_cleanup.py` to CI pipeline test execution
+- PID reference fixes in startup scripts (`juniper_plant_all.bash`)
+- Test script paths updated after `scripts/` to `util/` migration
+
 ## [0.3.0] - 2026-03-12
 
 ### Added

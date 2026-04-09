@@ -108,6 +108,7 @@ jobs:
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
           python3 -m unittest -v tests/test_check_doc_links.py
+          python3 -m unittest -v tests/test_worktree_cleanup.py
 
       - name: Run bash regression tests
         run: |
@@ -241,7 +242,7 @@ jobs:
           echo "╔════════════════════════════════════════════════════════════╗"
           echo "║       juniper-ml - Dependency Documentation               ║"
           echo "╚════════════════════════════════════════════════════════════╝"
-          bash scripts/generate_dep_docs.sh
+          bash util/generate_dep_docs.sh
 
       - name: Upload Dependency Documentation
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

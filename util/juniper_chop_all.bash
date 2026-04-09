@@ -66,9 +66,9 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_PROJECT_PID_FILE=\"${JUNIPER_PR
 ###########################################################################################################################################################################################################
 # Define Global Environment Constants
 ###########################################################################################################################################################################################################
-SIGTERM_TIMEOUT="10"
-KILL_WORKERS="1"
-USE_SYSTEMD="0"
+SIGTERM_TIMEOUT="${SIGTERM_TIMEOUT:-15}"
+KILL_WORKERS="${KILL_WORKERS:-0}"
+USE_SYSTEMD="${USE_SYSTEMD:-0}"
 
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] SIGTERM_TIMEOUT=\"${SIGTERM_TIMEOUT}\""
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS=\"${KILL_WORKERS}\""
@@ -78,12 +78,7 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] USE_SYSTEMD=\"${USE_SYSTEMD}\""
 ###########################################################################################################################################################################################################
 # Define Working Environment Constants
 ###########################################################################################################################################################################################################
-SIGTERM_TIMEOUT="${SIGTERM_TIMEOUT:-15}"
-KILL_WORKERS="${KILL_WORKERS:-0}"
-
-WORKER_SEARCH_TERM="cascor"
-# WORKER_SEARCH_TERM="juniper-cascor"
-# WORKER_SEARCH_TERM="juniper.cascor"
+WORKER_SEARCH_TERM="juniper-cascor-worker"
 
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] SIGTERM_TIMEOUT=\"${SIGTERM_TIMEOUT}\""
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS=\"${KILL_WORKERS}\""
@@ -271,8 +266,8 @@ fi
 ###########################################################################################################################################################################################################
 # Load Juniper Pid File Lines into array
 ###########################################################################################################################################################################################################
-# read -d '' returns exit code 1 at EOF even on success; suppress under set -e
-read -d '' -r -a JUNIPER_PIDS < "${JUNIPER_PROJECT_PID_FILE}" || true
+# mapfile reads lines into array (one element per line, preserving multi-word values)
+mapfile -t JUNIPER_PIDS < "${JUNIPER_PROJECT_PID_FILE}"
 echo -ne "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Project PID File Line Array:\n${JUNIPER_PIDS[*]}\n"
 
 PID_COUNT="${#JUNIPER_PIDS[@]}"
@@ -322,7 +317,7 @@ for ((i=0; i<${#JUNIPER_PIDS[*]}; i++)); do
     fi
 
     echo ""
-done < "${JUNIPER_PROJECT_PID_FILE}"
+done
 
 # Optionally clean up orphaned worker processes
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS flag to Optionally clean up orphaned worker processes: ${KILL_WORKERS}"
