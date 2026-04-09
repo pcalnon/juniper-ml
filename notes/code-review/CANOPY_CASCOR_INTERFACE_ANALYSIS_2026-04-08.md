@@ -1210,11 +1210,11 @@ ServiceBackend.initialize():
 | P5-RC-18 | Connection Analysis | SYSTEMIC | No canonical backend contract — **PARTIALLY ADDRESSED**: `BackendProtocol` now uses TypedDicts (`StatusResult`, `MetricsResult`, `TopologyResult`, `DatasetResult`) but implementations still return plain dicts | Partially addressed |
 | KL-1 | Connection Analysis | Known Limitation | Dataset scatter plot empty in service mode | Architectural |
 | Appendix G | Metrics Granularity | Architectural | No metrics during candidate training phase (see `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` Appendix G) | Planned (Options A+C) |
-| NEW-01 | This review (2026-04-08) | LOW | `_normalize_metric` returns redundant nested+flat format; `_to_dashboard_metric` discards the nested portion | Code quality |
-| NEW-02 | This review (2026-04-08) | LOW | CasCor and Canopy `TrainingState` field names diverge (`best_candidate_id` vs `top_candidate_id`); relay callback bridges with undocumented mapping | Maintenance hazard |
-| NEW-03 | This review (2026-04-08) | LOW | `candidate_learning_rate` not returned by cascor `get_training_params()` — canopy slider shows default instead of actual value on reconnect | Active |
-| NEW-04 | This review (2026-04-08) | MODERATE | CasCor `get_state_summary()` sends UPPERCASE enum names for phase (`OUTPUT`, `CANDIDATE`) while `training_state` sends title-case — latent asymmetry if canopy reads wrong source | Latent |
-| — | Default discrepancy | LOW | `max_hidden_units` defaults: cascor constant 1000, cascor API 10, canopy 1000 — API model default is inconsistent | Active |
+| NEW-01 | This review (2026-04-08) | LOW | `_normalize_metric` returns redundant nested+flat format; `_to_dashboard_metric` discards the nested portion | **DEFERRED** (canopy-only cosmetic refactor — separate PR) |
+| NEW-02 | This review (2026-04-08) | LOW | CasCor and Canopy `TrainingState` field names diverge (`best_candidate_id` vs `top_candidate_id`); relay callback bridges with undocumented mapping | **DOCUMENTED** (2026-04-09: inline comment added at bridge in `cascor_service_adapter.py:251`) |
+| NEW-03 | This review (2026-04-08) | LOW | `candidate_learning_rate` not returned by cascor `get_training_params()` — canopy slider shows default instead of actual value on reconnect | **FIXED** (2026-04-09: added `candidate_learning_rate`, `max_iterations`, `candidate_epochs`, `init_output_weights` to response; regression test `test_get_training_params_returns_all_updatable_keys`) |
+| NEW-04 | This review (2026-04-08) | MODERATE | CasCor `get_state_summary()` sends UPPERCASE enum names for phase (`OUTPUT`, `CANDIDATE`) while `training_state` sends title-case — latent asymmetry if canopy reads wrong source | **DOCUMENTED** (2026-04-09: explicit docstring on `get_state_summary` explaining the intentional asymmetry and normalization contract; canopy `state_sync.py:71,74` already handles case-insensitively — no runtime bug) |
+| — | Default discrepancy | LOW | `max_hidden_units` defaults: cascor constant 1000, cascor API 10, canopy 1000 — API model default is inconsistent | **FIXED** (2026-04-09: aligned `NetworkCreateRequest.max_hidden_units` default 10 → 1000 and `manager.py:175` kwargs fallback 10 → 1000) |
 
 ### 15.2 Resolved Issues (Verified Implemented)
 
