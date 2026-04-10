@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-09
+
+**Summary**: Microservices orchestration layer (`juniper_plant_all.bash` / `juniper_chop_all.bash`), full systemd integration, V2 worktree cleanup orchestrator with CWD-safe session continuity, CasCor REST API query utilities, the `claudey` interactive launcher, and ecosystem version convergence — extras bumped to track the latest released `juniper-data-client`, `juniper-cascor-client`, and `juniper-cascor-worker`. Also incorporates the cross-project release-prep code review and remediation plan.
+
+See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4.0.md) for the full release notes.
+
 ### Changed
 
 - Bumped minimum versions of optional dependency extras to track latest releases:
@@ -29,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `AGENTS.md` updated to v0.3.0 with comprehensive structure documentation, CI/CD pipeline details, and worktree/handoff procedures
+- `AGENTS.md` updated to v0.4.0 with comprehensive structure documentation, CI/CD pipeline details, and worktree/handoff procedures
 - Dependabot CI action version bumps: `anthropics/claude-code-action` (1.0.62 -> 1.0.89), `actions/cache` (4.2.3 -> 5.0.4), `actions/upload-artifact` (6.0.0 -> 7.0.0), `actions/download-artifact` (8.0.0 -> 8.0.1)
 - Moved worktree management and documentation utilities from `scripts/` to `util/`
 
