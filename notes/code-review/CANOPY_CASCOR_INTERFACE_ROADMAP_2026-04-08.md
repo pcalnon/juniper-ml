@@ -207,46 +207,79 @@ elif command == "set_params":
 ### 3.4 Phase 1 Success Criteria
 
 - [x] `max_iterations` independently controllable from canopy dashboard — verified end-to-end (2026-04-09)
-- [ ] `max_epochs` default aligned across cascor and canopy (1,000,000) — **deferred, see section 3.5**
+- [x] `max_epochs` default aligned across cascor and canopy (1,000,000) — **RESOLVED 2026-04-10**, see section 3.5
 - [x] Training restarts without reset after FAILED/COMPLETED — verified with regression tests (2026-04-09)
 - [x] `set_params` works via WebSocket control channel — verified and new integration tests added (2026-04-09)
 - [x] All existing tests pass in both repos — 640/640 cascor unit/api tests pass after Phase 1 changes (2026-04-09)
 - [x] New tests added for all changes — `test_websocket_control.py` (3 tests), `test_lifecycle_manager.py` (1 test)
 
-### 3.5 Phase 1 Deferred Items
+### 3.5 Phase 1 Deferred Items — RESOLUTION (2026-04-10)
 
-The following items were identified during Phase 1 execution but intentionally
-deferred to follow-up work:
+All three items deferred during Phase 1 execution have been resolved on branch
+`fix/canopy-cascor-phase1-deferred`. Status of each:
 
-**NEW-01: `_normalize_metric` redundant nested+flat format**
+**NEW-01: `_normalize_metric` redundant nested+flat format — RESOLVED**
 
 Location: `juniper-canopy/src/backend/cascor_service_adapter.py:509-579`
 
-The `_normalize_metric` helper returns a dict containing both a nested structure
-and flat top-level keys; `_to_dashboard_metric` then discards the nested portion.
-This is a pure cosmetic refactor with no functional impact. Deferred to keep
-Phase 1 scoped to cross-repo interface issues; a canopy-only cleanup PR is the
-appropriate vehicle.
+Refactored `_normalize_metric` to return ONLY the flat normalized fields
+(`epoch`, `train_loss`, `train_accuracy`, `val_loss`, `val_accuracy`,
+`hidden_units`, `phase`, `timestamp`). The redundant pre-built nested
+`metrics: {...}` and `network_topology: {...}` keys have been removed — they
+were dead code because every caller piped the result through
+`_to_dashboard_metric`, which discarded the nested portion and rebuilt it from
+the flat keys. Added a regression test
+`test_normalize_metric_no_redundant_nested_keys` in
+`tests/unit/test_response_normalization.py` to lock in the contract.
 
-**`epochs_max` default alignment (original roadmap step 10)**
+**`epochs_max` default alignment (original roadmap step 10) — RESOLVED**
 
-The original plan called for aligning the cascor `epochs_max` default from 200 to
-1,000,000 to match canopy. Phase 1 execution deferred this because it is a 4
-orders-of-magnitude behavior change that affects any user relying on the current
-default — not a silent alignment. The correct fix requires: (a) confirming what
-canopy's slider range actually is, (b) evaluating whether the current default
-surprises users in practice, and (c) deciding whether to change the default,
-the slider range, or both. This belongs in a dedicated change with its own
-validation, not bundled into an interface-verification pass.
+Aligned the cascor API model default from 200 to 1,000,000 to match canopy's
+`nn_max_total_epochs` default:
+
+- `juniper-cascor/src/api/models/network.py:21` — `epochs_max: int = Field(1000000, ge=1, ...)` (was `Field(200, ge=1)`)
+- `juniper-cascor/src/api/lifecycle/manager.py:176` — `max_epochs=kwargs.get("epochs_max", 1000000)` (was `200`)
 
 **Canopy integration test: UI edit → cascor round-trip**:
 
-The original Phase 1 plan called for a canopy-side integration test exercising
-the full param-update round-trip. This was deferred because: (a) the cascor side
-is fully tested by the WebSocket and REST param tests added in Phase 1, (b) the
-canopy adapter path is already exercised by the existing demo-mode integration
-tests, and (c) adding a live canopy-cascor fixture is a larger infrastructure
-investment that is better amortized across Phase 2/3 work.
+Added regression test
+`test_create_network_epochs_max_default_aligned_with_canopy` in
+`juniper-cascor/src/tests/unit/api/test_lifecycle_manager.py` to lock in the
+new default.
+
+This is a behavior change for any cascor API client that does not pass
+`epochs_max` explicitly: those clients will now train up to 1M epochs instead
+of the previous 200. The change is intentional — the prior 200 default
+silently capped training at a level vastly below the canopy slider range
+and surprised users who edited other params via the UI. The deferral
+rationale ("4 orders of magnitude behavior change") is now resolved by
+making the change explicit and tested.
+
+**Canopy `set_params` integration test — WONT-DO**
+
+Originally deferred as "canopy-side integration test exercising the full
+param-update round-trip via the WebSocket `set_params` command." Investigation
+shows the canopy adapter does NOT use the WebSocket `set_params` command path:
+
+- `juniper-cascor-client` (the canopy-side cascor SDK) does not expose a
+  `set_params` WebSocket method at all (verified by grep).
+- `juniper-canopy/src/backend/cascor_service_adapter.py::apply_params` calls
+  `self._client.update_params(...)` which is the **REST** `PATCH /v1/training/params`
+  endpoint (`cascor_service_adapter.py:458`).
+- The cascor-side WebSocket `set_params` command (CR-008, added in Phase 1)
+  is plumbed for completeness/symmetry with REST, but no canopy code path
+  exercises it.
+
+There is therefore no canopy-side code path to integration-test for the
+WebSocket `set_params` command. The cascor-side WebSocket integration tests
+added in Phase 1 (`test_websocket_control.py`, 3 tests) cover the cascor end
+of the contract; if a future canopy version adopts the WebSocket path, a
+matching canopy-side test should be added at that time.
+
+**Companion commits (same branch name `fix/canopy-cascor-phase1-deferred`):**
+
+- `juniper-canopy`: NEW-01 refactor + regression test
+- `juniper-cascor`: epochs_max alignment + regression test
 
 ---
 
@@ -381,16 +414,27 @@ roadmap snapshot and Phase 3 execution. The only real gap was the demo backend,
 which did not populate the new progress fields, leaving the demo-mode dashboard
 showing zeros where the service-mode dashboard already showed real values.
 
-| Item | Roadmap Effort | Status | Evidence |
-|------|----------------|--------|----------|
-| 5.1: Add 7 progress fields to cascor `TrainingState` | 1 day | **ALREADY PRESENT** | All seven fields exist in `juniper-cascor/src/api/lifecycle/monitor.py` `_STATE_FIELDS` (lines 37-43), are initialized in `__init__` (lines 68-74), and are serialized in `get_state()` (lines 83-114). |
-| 5.2: `train_output_layer(on_epoch_callback=...)` | 1-2 days | **ALREADY PRESENT** | Signature at `cascade_correlation.py:1562-1568` matches the spec; callback fires at `cascade_correlation.py:~1680` throttled to every 25 epochs + final epoch; hooked in `manager.py:237-248,259`. |
-| 5.3: Grow-network TrainingState updates | 1-2 days | **ALREADY PRESENT** | `_grow_iteration_callback` in `manager.py:354-368` updates `grow_iteration`, `grow_max`, `best_correlation`, `candidates_trained`, `candidates_total`, `phase_detail`, candidate IDs, and broadcasts. Wired at `cascade_correlation.py:3700-3719` inside the grow loop. |
-| 5.4: Canopy progress indicators | 2 days | **ALREADY PRESENT** | 7/8 components in `juniper-canopy/src/frontend/components/metrics_panel.py`: grow iteration progress bar (457-471, 1000-1029), candidate epoch progress bar (472-487), phase indicator (1149-1150), best correlation display (973-977), candidates_trained/total display (977-981), phase duration (1031-1065), phase-colored scatter plots (1355-1489). The 8th item ("hidden_units progress bar") is functionally equivalent to the existing grow iteration progress bar — not implemented and not needed. |
-| 5.5: Candidate progress queue (Option A) | 3-5 days | **ALREADY PRESENT** | Persistent worker pool created at `cascade_correlation.py:3049,3081`; queue passed to workers at line 3096; `put_nowait()` with silent drop in `_process_worker_task` (3307-3315); drain thread in `manager.py:309-344` consumes and updates `TrainingState`; `CandidateUnit.train_detailed` emits via callback at `candidate_unit.py:614-622` throttled every 50 epochs + final. |
-| **Demo backend gap (NEW)** | n/a | **FIXED** | `juniper-canopy/src/demo_mode.py` did not populate the Phase 3 progress fields, so the canopy dashboard showed zeros in demo mode. Added `_best_correlation_state`, `_candidates_trained_count`, `_candidates_total_count`, `_phase_detail`, `_phase_started_at` instance state, hooks in `_training_loop` at the four relevant boundaries (Phase 1 output entry, candidate phase entry, candidate progress callback, output retrain entry), wiring through `_update_candidate_pool_state()` to `training_state.update_state()`, and exposure in `get_current_state()`. Reset semantics added in `_reset_state_and_history()`. |
+| Item                                                 | Roadmap Effort | Status              | Evidence                                                                                                                                                               |
+|------------------------------------------------------|----------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 5.1: Add 7 progress fields to cascor `TrainingState` | 1 day          | **ALREADY PRESENT** | All seven fields exist in `juniper-cascor/src/api/lifecycle/monitor.py` `_STATE_FIELDS` (lines 37-43), are initialized in `__init__` (lines 68-74), and are serialized |
+|                                                      |                |                     | in `get_state()` (lines 83-114).                                                                                                                                       |
+| 5.2: `train_output_layer(on_epoch_callback=...)`     | 1-2 days       | **ALREADY PRESENT** | Signature at `cascade_correlation.py:1562-1568` matches the spec; callback fires at `cascade_correlation.py:~1680` throttled to every 25 epochs + final epoch;         |
+|                                                      |                |                     | hooked in `manager.py:237-248,259`.                                                                                                                                    |
+| 5.3: Grow-network TrainingState updates              | 1-2 days       | **ALREADY PRESENT** | `_grow_iteration_callback` in `manager.py:354-368` updates `grow_iteration`, `grow_max`, `best_correlation`, `candidates_trained`, `candidates_total`, `phase_detail`, |
+|                                                      |                |                     | candidate IDs, and broadcasts. Wired at `cascade_correlation.py:3700-3719` inside the grow loop.                                                                       |
+| 5.4: Canopy progress indicators                      | 2 days         | **ALREADY PRESENT** | 7/8 components in `juniper-canopy/src/frontend/components/metrics_panel.py`: grow iteration progress bar (457-471, 1000-1029), candidate epoch progress bar (472-487), |
+|                                                      |                |                     | phase indicator (1149-1150), best correlation display (973-977), candidates_trained/total display (977-981), phase duration (1031-1065), phase-colored scatter plots   |
+|                                                      |                |                     | (1355-1489). The 8th item ("hidden_units progress bar") functionally equivalent to existing grow iteration progress bar — not implemented and not needed.              |
+| 5.5: Candidate progress queue (Option A)             | 3-5 days       | **ALREADY PRESENT** | Persistent worker pool created at `cascade_correlation.py:3049,3081`; queue passed to workers at line 3096; `put_nowait()` with silent drop in `_process_worker_task`  |
+|                                                      |                |                     | (3307-3315); drain thread in `manager.py:309-344` consumes and updates `TrainingState`; `CandidateUnit.train_detailed` emits via callback at                           |
+|                                                      |                |                     | `candidate_unit.py:614-622` throttled every 50 epochs + final.                                                                                                         |
+| **Demo backend gap (NEW)**                           | n/a            | **FIXED**           | `juniper-canopy/src/demo_mode.py` did not populate the Phase 3 progress fields, so the canopy dashboard showed zeros in demo mode. Added `_best_correlation_state`,    |
+|                                                      |                |                     | `_candidates_trained_count`, `_candidates_total_count`, `_phase_detail`, `_phase_started_at` instance state, hooks in `_training_loop` at the four                     |
+|                                                      |                |                     | relevant boundaries (Phase 1 output entry, candidate phase entry, candidate progress callback, output retrain entry), wiring through `_update_candidate_pool_state()`  |
+|                                                      |                |                     | to `training_state.update_state()`, and exposure in `get_current_state()`. Reset semantics added in `_reset_state_and_history()`.                                      |
 
 **Test suite results**:
+
 - Cascor `pytest src/tests/unit/api/` → 636 tests, exit=0 (baseline; no cascor changes were needed)
 - Canopy `pytest src/tests/unit/` → **3501 passed** (154 demo tests prior + **4 new Phase 3 tests** in `test_demo_mode_advanced.py::TestPhase3ProgressFields`)
 - New tests cover: pre-start state shape, post-status-update `TrainingState` shape, post-training-loop field tracking, reset semantics
@@ -495,16 +539,28 @@ and implementations used `cast()` rather than constructing typed instances.
 **P5-RC-05 (frontend WebSocket consumption) is genuinely missing** and is
 deferred from this PR.
 
-| Item | Roadmap Effort | Status | Evidence |
-|------|----------------|--------|----------|
-| 6.1 P5-RC-18: Typed Backend Contract | 3-5 days | **COMPLETED** (this PR) | Added `ControlResult`, `ApplyParamsResult`, `NetworkStatsResult`, `RawTopologyResult`, `DecisionBoundaryResult` TypedDicts to `protocol.py`. Updated `BackendProtocol` signatures so all 9 previously-untyped methods now return typed results. Updated `service_backend.py` and `demo_backend.py` to use the new types in their casts. Standardized `demo_backend.apply_params()` to return the `{ok, data}` envelope (consistent with `service_backend.apply_params()`; `main.py:2169` already expects this shape). |
-| 6.1 Contract tests | (part of 6.1) | **COMPLETED** (this PR) | Added `TestPhase4TypedContract` to both `test_service_backend.py` (10 tests) and `test_demo_backend.py` (6 tests). Field-presence assertions for every typed return shape. |
-| 6.1 `data_adapter.py` integration | (part of 6.1) | **DEFERRED** | The dataclasses in `juniper-canopy/src/backend/data_adapter.py` (`TrainingMetrics`, `NetworkNode`, `NetworkConnection`, `NetworkTopology`) define a parallel typed model. They are not "dead" but also not integrated into the protocol path. Integrating them would either require runtime construction (perf cost) or a second-tier conversion (added complexity). Out of scope for the typed-contract pass; revisit if/when the dashboard moves to a stronger schema. |
-| 6.2 P5-RC-14: Relay normalization | (part of 6.2) | **ALREADY PRESENT** | `cascor_service_adapter.py:222` calls `_normalize_metric() -> _to_dashboard_metric()` on every relayed metric before broadcasting. |
-| 6.2 P5-RC-05: Frontend WebSocket consumption | 3-4 days | **DEFERRED** | `dashboard_manager.py:1202` declares `dcc.Store(id="ws-metrics-buffer", data=[])` but no `clientside_callback` wires the cascor WebSocket relay into it. The current dashboard polls REST (`dcc.Interval` at `dashboard_manager.py:1197`, fetching `/api/status` and `/api/metrics/history` at `dashboard_manager.py:2172,2397`). Wiring this requires browser-side JS (a `clientside_callback` that subscribes to the WebSocket and pushes into the store) plus a callback that drains the store into the chart components — work that I cannot manually verify in a browser from this environment. Getting it wrong silently breaks live metrics. Belongs in a focused PR with browser verification, not bundled with type annotation work. |
-| 6.3 KL-1: Dataset data in service mode | 3-5 days | **ALREADY PRESENT** | `juniper-cascor/src/api/routes/dataset.py:24` exposes `GET /v1/dataset/data`; `juniper-cascor/src/api/lifecycle/manager.py:660-666` serializes `train_x`/`train_y` as JSON arrays; `juniper-canopy/src/backend/cascor_service_adapter.py:743-770` consumes the endpoint via `get_dataset_data()`; `juniper-canopy/src/backend/service_backend.py:185` falls back to fetching arrays when `get_dataset_info()` returns metadata only; the dataset scatter plot in `juniper-canopy/src/frontend/components/dataset_plotter.py` is included unconditionally in tabs (`dashboard_manager.py:1148`) and works in service mode. |
+| Item                                         | Roadmap Effort | Status                  | Evidence                                                                                                                                                                      |
+|----------------------------------------------|----------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 6.1 P5-RC-18: Typed Backend Contract         | 3-5 days       | **COMPLETED** (this PR) | Added `ControlResult`, `ApplyParamsResult`, `NetworkStatsResult`, `RawTopologyResult`, `DecisionBoundaryResult` TypedDicts to `protocol.py`. Updated `BackendProtocol`        |
+|                                              |                |                         | signatures so all 9 previously-untyped methods now return typed results. Updated `service_backend.py` and `demo_backend.py` to use the new types in their casts.              |
+|                                              |                |                         | Standardized `demo_backend.apply_params()` to return the `{ok, data}` envelope (consistent with `service_backend.apply_params()`; `main.py:2169` already expects this shape). |
+| 6.1 Contract tests                           | (part of 6.1)  | **COMPLETED** (this PR) | Added `TestPhase4TypedContract` to both `test_service_backend.py` (10 tests) and `test_demo_backend.py` (6 tests). Field-presence assertions for every typed return shape.    |
+| 6.1 `data_adapter.py` integration            | (part of 6.1)  | **DEFERRED**            | The dataclasses in `juniper-canopy/src/backend/data_adapter.py` (`TrainingMetrics`, `NetworkNode`, `NetworkConnection`, `NetworkTopology`) define a parallel typed model.     |
+|                                              |                |                         | They are not "dead" but also not integrated into the protocol path. Integrating them would either require runtime construction (perf cost) or a second-tier conversion        |
+|                                              |                |                         | (added complexity). Out of scope for the typed-contract pass; revisit if/when the dashboard moves to a stronger schema.                                                       |
+| 6.2 P5-RC-14: Relay normalization            | (part of 6.2)  | **ALREADY PRESENT**     | `cascor_service_adapter.py:222` calls `_normalize_metric() -> _to_dashboard_metric()` on every relayed metric before broadcasting.                                            |
+| 6.2 P5-RC-05: Frontend WebSocket consumption | 3-4 days       | **DEFERRED**            | `dashboard_manager.py:1202` declares `dcc.Store(id="ws-metrics-buffer", data=[])` but no `clientside_callback` wires the cascor WebSocket relay into it.                      |
+|                                              |                |                         | The current dashboard polls REST (`dcc.Interval` at `dashboard_manager.py:1197`, fetching `/api/status` and `/api/metrics/history` at `dashboard_manager.py:2172,2397`).      |
+|                                              |                |                         | Wiring this requires browser-side JS (a `clientside_callback` that subscribes to the WebSocket and pushes into the store) plus a callback that drains the store               |
+|                                              |                |                         | into the chart components — work that I cannot manually verify in a browser from this environment. Getting it wrong silently breaks live metrics.                             |
+|                                              |                |                         | Belongs in a focused PR with browser verification, not bundled with type annotation work.                                                                                     |
+| 6.3 KL-1: Dataset data in service mode       | 3-5 days       | **ALREADY PRESENT**     | `juniper-cascor/src/api/routes/dataset.py:24` exposes `GET /v1/dataset/data`; `juniper-cascor/src/api/lifecycle/manager.py:660-666` serializes `train_x`/`train_y`            |
+|                                              |                |                         | JSON arrays; `juniper-canopy/src/backend/cascor_service_adapter.py:743-770` consumes endpoint via `get_dataset_data()`; `juniper-canopy/src/backend/service_backend.py:185`   |
+|                                              |                |                         | falls back to fetching arrays when `get_dataset_info()` returns metadata only; the dataset scatter plot in `juniper-canopy/src/frontend/components/dataset_plotter.py`        |
+|                                              |                |                         | is included unconditionally in tabs (`dashboard_manager.py:1148`) and works in service mode.                                                                                  |
 
 **Test suite results**:
+
 - Canopy `pytest tests/unit/` → **3513 passed**, exit=0, 22 pre-existing warnings (3501 prior + 16 new contract tests, of which 4 already existed in TestProtocolConformance from a prior pass)
 - No type-annotation-only changes can break runtime — confirmed by full unit suite
 
