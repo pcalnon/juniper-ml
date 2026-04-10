@@ -200,46 +200,75 @@ elif command == "set_params":
 ### 3.4 Phase 1 Success Criteria
 
 - [x] `max_iterations` independently controllable from canopy dashboard — verified end-to-end (2026-04-09)
-- [ ] `max_epochs` default aligned across cascor and canopy (1,000,000) — **deferred, see section 3.5**
+- [x] `max_epochs` default aligned across cascor and canopy (1,000,000) — **RESOLVED 2026-04-10**, see section 3.5
 - [x] Training restarts without reset after FAILED/COMPLETED — verified with regression tests (2026-04-09)
 - [x] `set_params` works via WebSocket control channel — verified and new integration tests added (2026-04-09)
 - [x] All existing tests pass in both repos — 640/640 cascor unit/api tests pass after Phase 1 changes (2026-04-09)
 - [x] New tests added for all changes — `test_websocket_control.py` (3 tests), `test_lifecycle_manager.py` (1 test)
 
-### 3.5 Phase 1 Deferred Items
+### 3.5 Phase 1 Deferred Items — RESOLUTION (2026-04-10)
 
-The following items were identified during Phase 1 execution but intentionally
-deferred to follow-up work:
+All three items deferred during Phase 1 execution have been resolved on branch
+`fix/canopy-cascor-phase1-deferred`. Status of each:
 
-**NEW-01: `_normalize_metric` redundant nested+flat format**
+**NEW-01: `_normalize_metric` redundant nested+flat format — RESOLVED**
 
 Location: `juniper-canopy/src/backend/cascor_service_adapter.py:509-579`
 
-The `_normalize_metric` helper returns a dict containing both a nested structure
-and flat top-level keys; `_to_dashboard_metric` then discards the nested portion.
-This is a pure cosmetic refactor with no functional impact. Deferred to keep
-Phase 1 scoped to cross-repo interface issues; a canopy-only cleanup PR is the
-appropriate vehicle.
+Refactored `_normalize_metric` to return ONLY the flat normalized fields
+(`epoch`, `train_loss`, `train_accuracy`, `val_loss`, `val_accuracy`,
+`hidden_units`, `phase`, `timestamp`). The redundant pre-built nested
+`metrics: {...}` and `network_topology: {...}` keys have been removed — they
+were dead code because every caller piped the result through
+`_to_dashboard_metric`, which discarded the nested portion and rebuilt it from
+the flat keys. Added a regression test
+`test_normalize_metric_no_redundant_nested_keys` in
+`tests/unit/test_response_normalization.py` to lock in the contract.
 
-**`epochs_max` default alignment (original roadmap step 10)**
+**`epochs_max` default alignment (original roadmap step 10) — RESOLVED**
 
-The original plan called for aligning the cascor `epochs_max` default from 200 to
-1,000,000 to match canopy. Phase 1 execution deferred this because it is a 4
-orders-of-magnitude behavior change that affects any user relying on the current
-default — not a silent alignment. The correct fix requires: (a) confirming what
-canopy's slider range actually is, (b) evaluating whether the current default
-surprises users in practice, and (c) deciding whether to change the default,
-the slider range, or both. This belongs in a dedicated change with its own
-validation, not bundled into an interface-verification pass.
+Aligned the cascor API model default from 200 to 1,000,000 to match canopy's
+`nn_max_total_epochs` default:
 
-**Canopy integration test: UI edit → cascor round-trip**
+- `juniper-cascor/src/api/models/network.py:21` — `epochs_max: int = Field(1000000, ge=1, ...)` (was `Field(200, ge=1)`)
+- `juniper-cascor/src/api/lifecycle/manager.py:176` — `max_epochs=kwargs.get("epochs_max", 1000000)` (was `200`)
 
-The original Phase 1 plan called for a canopy-side integration test exercising
-the full param-update round-trip. This was deferred because: (a) the cascor side
-is fully tested by the WebSocket and REST param tests added in Phase 1, (b) the
-canopy adapter path is already exercised by the existing demo-mode integration
-tests, and (c) adding a live canopy-cascor fixture is a larger infrastructure
-investment that is better amortized across Phase 2/3 work.
+Added regression test
+`test_create_network_epochs_max_default_aligned_with_canopy` in
+`juniper-cascor/src/tests/unit/api/test_lifecycle_manager.py` to lock in the
+new default.
+
+This is a behavior change for any cascor API client that does not pass
+`epochs_max` explicitly: those clients will now train up to 1M epochs instead
+of the previous 200. The change is intentional — the prior 200 default
+silently capped training at a level vastly below the canopy slider range
+and surprised users who edited other params via the UI. The deferral
+rationale ("4 orders of magnitude behavior change") is now resolved by
+making the change explicit and tested.
+
+**Canopy `set_params` integration test — WONT-DO**
+
+Originally deferred as "canopy-side integration test exercising the full
+param-update round-trip via the WebSocket `set_params` command." Investigation
+shows the canopy adapter does NOT use the WebSocket `set_params` command path:
+- `juniper-cascor-client` (the canopy-side cascor SDK) does not expose a
+  `set_params` WebSocket method at all (verified by grep).
+- `juniper-canopy/src/backend/cascor_service_adapter.py::apply_params` calls
+  `self._client.update_params(...)` which is the **REST** `PATCH /v1/training/params`
+  endpoint (`cascor_service_adapter.py:458`).
+- The cascor-side WebSocket `set_params` command (CR-008, added in Phase 1)
+  is plumbed for completeness/symmetry with REST, but no canopy code path
+  exercises it.
+
+There is therefore no canopy-side code path to integration-test for the
+WebSocket `set_params` command. The cascor-side WebSocket integration tests
+added in Phase 1 (`test_websocket_control.py`, 3 tests) cover the cascor end
+of the contract; if a future canopy version adopts the WebSocket path, a
+matching canopy-side test should be added at that time.
+
+**Companion commits (same branch name `fix/canopy-cascor-phase1-deferred`):**
+- `juniper-canopy`: NEW-01 refactor + regression test
+- `juniper-cascor`: epochs_max alignment + regression test
 
 ---
 
