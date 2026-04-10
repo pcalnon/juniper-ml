@@ -10,6 +10,7 @@
 #   JUNIPER_PROJECT_DIR     — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
 #   JUNIPER_CONDA_DIR       — Miniforge/conda install dir (default: /opt/miniforge3)
 #   JUNIPER_DATA_PORT       — juniper-data listen port (default: 8100)
+#   JUNIPER_CASCOR_HOST     — juniper-cascor bind host (default: localhost)
 #   JUNIPER_CASCOR_PORT     — juniper-cascor listen port (default: 8201)
 #   JUNIPER_CANOPY_PORT     — juniper-canopy listen port (default: 8050)
 #   HEALTH_CHECK_TIMEOUT    — Max seconds to wait for each service health (default: 60)
@@ -97,7 +98,7 @@ JUNIPER_CASCOR_LOG_DIR="${JUNIPER_CASCOR_DIR}/logs"
 JUNIPER_CASCOR_LOGNAME="juniper-cascor_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_CASCOR_LOG="${JUNIPER_CASCOR_LOG_DIR}/${JUNIPER_CASCOR_LOGNAME}"
 JUNIPER_CASCOR_MODULE="server.py"
-JUNIPER_CASCOR_HOST="localhost"
+JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST:-localhost}"
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8201}"
 JUNIPER_CASCOR_URL="http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
 JUNIPER_CASCOR_CONDA="JuniperCascor"
