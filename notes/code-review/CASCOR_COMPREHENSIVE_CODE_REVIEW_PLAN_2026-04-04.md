@@ -428,7 +428,7 @@ Each new finding must use §6 and §7.
 | **Developer experience** | CR-005                 | Quick pytest config fix or documented waiver                                                                                                      |
 | **Core correctness**     | (future IDs)           | After tooling noise drops, prioritize S0/S1 logical items                                                                                         |
 
-**Cross-cutting guardrails:** Any change touching `snapshots/` or wire protocol requires **juniper-cascor-client** / **juniper-canopy** smoke tests per ecosystem [AGENTS.md](../../../AGENTS.md).
+**Cross-cutting guardrails:** Any change touching `snapshots/` or wire protocol requires **juniper-cascor-client** / **juniper-canopy** smoke tests per the parent ecosystem `AGENTS.md` (outside this repo).
 
 ---
 
