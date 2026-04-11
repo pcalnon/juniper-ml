@@ -25,7 +25,7 @@ The canopy ↔ cascor WebSocket pipeline is built on both sides but the dashboar
 - [§0.2 Table of Contents](#02-table-of-contents)
 - [§1 Executive Summary](#1-executive-summary)
 - [§2 WebSocket Surface Inventory](#2-websocket-surface-inventory)
-  - [§2.9 Security Model (REQUIRED)](#29-security-model-required)
+  - [§2.9 Security Model (REQUIRED)](#29-security-model-required-before-phase-d)
 - [§3 Bidirectional Message Contract](#3-bidirectional-message-contract)
 - [§4 Nested vs Flat Data Structure Analysis](#4-nested-vs-flat-data-structure-analysis)
 - [§5 Latency Tolerance Matrix](#5-latency-tolerance-matrix)

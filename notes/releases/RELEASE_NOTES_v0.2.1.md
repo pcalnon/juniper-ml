@@ -123,5 +123,5 @@ None known at time of release.
 ## Links
 
 - [Full Changelog](../../CHANGELOG.md)
-- [Security Remediation Plan](../SECURITY_REMEDIATION_PLAN.md)
+- [Security Remediation Plan](../history/SECURITY_REMEDIATION_PLAN.md)
 - [Previous Release: v0.2.0](https://github.com/pcalnon/juniper-ml/releases/tag/v0.2.0)
