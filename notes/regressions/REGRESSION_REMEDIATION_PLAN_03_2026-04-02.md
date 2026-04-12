@@ -1,7 +1,7 @@
 # Juniper Regression Remediation Plan
 
 **Date**: 2026-04-02
-**Companion**: [JUNIPER_REGRESSION_ANALYSIS_2026-04-02.md](JUNIPER_REGRESSION_ANALYSIS_2026-04-02.md)
+**Companion**: `JUNIPER_REGRESSION_ANALYSIS_2026-04-02.md` (referenced by name; the companion analysis file was never landed in this repo)
 **Author**: Claude Code (Opus 4.6)
 
 ---

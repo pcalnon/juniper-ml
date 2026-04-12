@@ -16,6 +16,11 @@ DEFAULT_INTERACTIVE_SCRIPT_PATH = REPO_ROOT / "scripts" / "default_interactive_s
 VALID_UUID = "7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
 UUID_REGEX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
+# Test fixture timeouts (centralized so call sites and defaults stay in sync).
+DEFAULT_INVOCATION_WAIT_TIMEOUT: float = 2.0
+SHORT_INVOCATION_WAIT_TIMEOUT: float = 0.3
+INVOCATION_POLL_INTERVAL: float = 0.05
+
 
 class WakeTheClaudeResumeTests(unittest.TestCase):
     def _install_fake_claude(self, temp_dir: str, *, failing_uuidgen: bool = False) -> tuple[Path, dict[str, str]]:
@@ -64,7 +69,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             check=False,
         )
 
-    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
+    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = DEFAULT_INVOCATION_WAIT_TIMEOUT) -> list[list[str]]:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
             if invocations_log.exists():
@@ -83,7 +88,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
                         blocks.append(current_block)
                     if blocks:
                         return blocks
-            time.sleep(0.05)
+            time.sleep(INVOCATION_POLL_INTERVAL)
         return []
 
     @staticmethod
@@ -213,7 +218,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             combined_output = result.stdout + result.stderr
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_with_file_containing_invalid_uuid_fails_and_preserves_file(self) -> None:
@@ -235,7 +240,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
             self.assertNotIn("invalid-content", combined_output)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_rejects_filename_with_path_separator(self) -> None:
@@ -257,7 +262,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_rejects_non_txt_filename(self) -> None:
@@ -277,7 +282,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_with_missing_txt_file_fails_without_invoking_claude(self) -> None:
@@ -301,7 +306,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_with_empty_txt_file_fails_without_invoking_claude(self) -> None:
@@ -326,7 +331,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Error: Session ID is invalid. Exiting...", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_with_filename_works_when_debug_logging_enabled(self) -> None:
@@ -365,7 +370,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Error: Received Resume Flag but no Valid Session ID to Resume. Exiting...", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_session_id_save_rejects_symlink_target(self) -> None:
@@ -389,7 +394,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("symlink", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_with_nonexistent_txt_file_fails_without_invoking_claude(self) -> None:
@@ -408,7 +413,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Session ID is invalid", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_without_value_fails_without_invoking_claude(self) -> None:
@@ -427,7 +432,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("no Valid Session ID", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_prompt_with_shell_tokens_is_passed_as_single_argument(self) -> None:
@@ -528,7 +533,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertIn("Error: Failed to generate a valid UUID for Session ID.", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_prompt_file_path_then_file_name_loads_prompt(self) -> None:
@@ -732,7 +737,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
             self.assertIn("Failed to open nohup log file", result.stderr)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_missing_claude_binary_fails_without_silent_success(self) -> None:
@@ -760,7 +765,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
             self.assertIn("claude command not found in PATH", result.stderr)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_exported_claude_function_without_binary_fails_without_silent_success(self) -> None:
@@ -789,7 +794,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1, msg=result.stdout + result.stderr)
             self.assertIn("claude command not found in PATH", result.stderr)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
     def test_resume_with_generated_filename_but_invalid_content_preserves_file(self) -> None:
@@ -813,7 +818,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             combined_output = result.stdout + result.stderr
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
 
@@ -869,7 +874,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             check=False,
         )
 
-    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = 2.0) -> list[list[str]]:
+    def _wait_for_invocations(self, invocations_log: Path, timeout_seconds: float = DEFAULT_INVOCATION_WAIT_TIMEOUT) -> list[list[str]]:
         deadline = time.time() + timeout_seconds
         while time.time() < deadline:
             if invocations_log.exists():
@@ -888,7 +893,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
                         blocks.append(current_block)
                     if blocks:
                         return blocks
-            time.sleep(0.05)
+            time.sleep(INVOCATION_POLL_INTERVAL)
         return []
 
     @staticmethod
@@ -1310,7 +1315,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
             self.assertIn("invalid Prompt File", combined_output)
             self.assertEqual(combined_output.count("usage: wake_the_claude.bash"), 1)
 
-            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=0.3)
+            invocations = self._wait_for_invocations(invocations_log, timeout_seconds=SHORT_INVOCATION_WAIT_TIMEOUT)
             self.assertEqual(invocations, [])
 
 

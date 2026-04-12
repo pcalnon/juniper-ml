@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Hardcoded-values refactor (Wave 3 + Wave 4): all 6 `util/get_cascor_*.bash` REST query utilities now read `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` from the environment (defaulting to `localhost` / `8201`) so a single environment override targets every utility instead of editing each script individually.
+- `util/juniper_plant_all.bash` `JUNIPER_CASCOR_HOST` is now an env-var override (`JUNIPER_CASCOR_HOST=${JUNIPER_CASCOR_HOST:-localhost}`) — useful for orchestrating remote services from a control host.
+- New regression test suite `tests/test_worktree_cleanup.py` covering argument parsing, dry-run output, error handling, and the critical safety property that the new worktree is created before the old one is removed (CWD-trap prevention).
+
+### Changed
+
+- Hardcoded-values refactor (Wave 3): `util/worktree_cleanup.bash` `MAIN_REPO` is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) instead of being hardcoded to `/home/pcalnon/Development/python/Juniper/juniper-ml`. An optional `JUNIPER_ML_MAIN_REPO` environment variable overrides the derived path for test fixtures and unusual layouts. This makes the script portable across machines and CI runners.
+- Test timeout constants extracted in `tests/test_wake_the_claude.py` and `tests/test_worktree_cleanup.py` (`SCRIPT_TIMEOUT_SECONDS`) instead of inline `subprocess.run(..., timeout=30)` calls.
+- AGENTS.md "Utilities" section updated to document the new env-var overrides for `worktree_cleanup.bash`, `juniper_plant_all.bash`, and the `get_cascor_*.bash` utilities.
+
+### Notes
+
+- All 88 unittest tests pass plus the bash `test_resume_file_safety.bash` regression script; pre-commit (17 hooks: flake8, bandit, shellcheck, markdownlint, yamllint, sops-check) is clean.
+- This branch is on `feature/hardcoded-values-wave3` rather than `wave1` because juniper-ml had no Wave 1 task in the master roadmap (the meta-package owns no application code that needed a constants module).
+
+## [0.4.0] - 2026-04-09
+
+**Summary**: Microservices orchestration layer (`juniper_plant_all.bash` / `juniper_chop_all.bash`), full systemd integration, V2 worktree cleanup orchestrator with CWD-safe session continuity, CasCor REST API query utilities, the `claudey` interactive launcher, and ecosystem version convergence — extras bumped to track the latest released `juniper-data-client`, `juniper-cascor-client`, and `juniper-cascor-worker`. Also incorporates the cross-project release-prep code review and remediation plan.
+
+See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4.0.md) for the full release notes.
+
 ### Changed
 
 - Bumped minimum versions of optional dependency extras to track latest releases:
@@ -29,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `AGENTS.md` updated to v0.3.0 with comprehensive structure documentation, CI/CD pipeline details, and worktree/handoff procedures
+- `AGENTS.md` updated to v0.4.0 with comprehensive structure documentation, CI/CD pipeline details, and worktree/handoff procedures
 - Dependabot CI action version bumps: `anthropics/claude-code-action` (1.0.62 -> 1.0.89), `actions/cache` (4.2.3 -> 5.0.4), `actions/upload-artifact` (6.0.0 -> 7.0.0), `actions/download-artifact` (8.0.0 -> 8.0.1)
 - Moved worktree management and documentation utilities from `scripts/` to `util/`
 

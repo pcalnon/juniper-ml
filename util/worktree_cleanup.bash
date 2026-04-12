@@ -36,7 +36,13 @@ set -euo pipefail
 # Constants
 ############################################################################################################################################################
 
-readonly MAIN_REPO="/home/pcalnon/Development/python/Juniper/juniper-ml"
+# Derive MAIN_REPO from this script's location (util/worktree_cleanup.bash
+# lives at <MAIN_REPO>/util/, so MAIN_REPO is one directory up). Allow an
+# environment override for test fixtures and unusual layouts.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+MAIN_REPO_DEFAULT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+readonly MAIN_REPO="${JUNIPER_ML_MAIN_REPO:-${MAIN_REPO_DEFAULT}}"
 readonly WORKTREE_BASE="${MAIN_REPO}/.claude/worktrees"
 SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
 readonly SCRIPT_NAME

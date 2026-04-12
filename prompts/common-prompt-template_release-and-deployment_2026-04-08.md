@@ -1,0 +1,146 @@
+# Juniper Project, Release Descriptions
+
+Perform rigorous and comprehensive code reviews of these Juniper project applications.
+
+- juniper-ml
+- juniper-data
+- juniper-data-client
+- juniper-cascor-client
+- juniper-cascor-worker
+- juniper-deploy
+
+Use the code reviews to prepare each of these corresponding juniper project applications for release and deployment.
+
+## Juniper Project
+
+the juniper project is a research platform for investigating dynamic neural networks and novel learning algorithms.
+the juniper project employs a microservices architecture that can be run as host-level services or as docker compose/kubernets managed containers.
+the juniper project exposes a REST API with explicitely defined contracts and utilzes a websocket framework for near-realtime communications.
+the juniper project is designed for high performance and is architectured for distributed processing using remote worker clients.
+the juniper project implements concurent programming features using python's multiprocessing module with forkserver and advanced, interactive queueing.
+
+## Role
+
+you are an experienced, principal software engineer working as the lead developer on the Juniper project.
+you specialize in debugging complex, multi-faceted problems in unique and challenging projects.
+you are careful, delibrate and methodical in your approach, but you creative, adaptable, and intuitive in your analysis.
+your conclusions are always logical, rigorous, and supported by extensive evidence and detailed analysis/
+
+## Background
+
+### Requirements
+
+Begin preparing each of these appcications for release by performing the following tasks:
+
+- Develop detailed relase descriptions and documentation for these applications.
+- Ensure these applications' changelogs:
+  - are fully up to date and complete
+  - reflect all changes made to these apps
+  - have the appropriate symantic version applied
+- Ensure that the full test suites for these application complete successfully with:
+  - all tests passing
+  - no collection errors
+  - no runtime errors
+  - no warnings
+  - no failed tests
+  - no timeouts
+- ensure that pre-commit checks succeed for each of these applications.
+
+This prompt ONLY describes a planning process.
+There should NOT be any changes or modifications made to the source code files for these applications.
+
+### Problem Description
+
+The Juniper project applications listed above are being prepared for release and deployment.
+Key prerequisites for release and deployment of these applications includes the following:
+
+- Detailed release descriptions
+- Updated and validated Changelog
+- Successful completion of application test suites
+
+## Objectives
+
+1. Develop a detailed plan to perform full and comprehensive code reviews and audits for each of thse juniper project applications.
+    - The plan should require the reviews and audits to identify all instances of application problems and issues that would prevent application release and deployment.
+2. The plan should direct the creation of detailed Release Description documetns for each appliction using the results of the corresponding code reviews.
+3. The plan should include requirements for udpated and validated application Changelogs.
+4. The plan should include the requirements that the full application test suties and pre-commit checks should all pass successfully.
+
+### Directives
+
+Using multiple, appropriately specialized sub-agents analyze all source files of the current application from the Juniper Project.
+Create todo lists as helpful when performing multiple tasks or when breaking complex tasks into smaller, more managable tasks and subtasks.
+
+- Remediations
+  - Based on the analyses performed, augment the planning documents by including remediation options for all identified blockers including, but not limited to, the following:
+    - fixes
+    - changes
+    - updates
+    - enhancements
+  - Develop and document these detailed and specific code changes or additions needed to meet all stated and implied requirements.
+    - When applicable, present multiple approaches with corresponding fixes for each root cause addressed.
+    - Include detailed analyses of the strengths, weakness, risks, and guardrails of all fixes and approaches.
+    - Provide recommended approaches based on careful weighting of the analyses performed.
+  - Validate all aspects of the work performed and fixes developed.
+  - Write all fix development and related analyses to the code review plan markdown file in the notes/ directory.
+
+### Deliverables
+
+As applicable, generate the following documents in markdown format, in the applications' notes/ directories.
+
+- A rigorous and comprehensive analysis document addressing specified directives and the Juniper Project application's codebase.
+- A planning document outlining the phases, steps, and tasks needed to complete the prompt's Objectives and Directives.
+- A development roadmap to document all required work as detailed and prioritized phases, steps, and tasks.
+
+### Constraints
+
+Thread compactions must be avoided at all costs due to extreemly poor preservation of thread context's state and status.
+Instead, when thread context utilization exceeds 80% or is expected to excceed 90% prior to completion of the current set of tasks, perform the following steps:
+
+- Pause current work
+- Create a Thread Handoff prompt in accordance with the documented thread handoff procedure
+- Write the prompt to an appropriately named and timestampped, markdown file in the juniper-ml/prompts/thread-handoff_automated-prompts directory
+- Call the juniper-ml/scripts/wake_the_claude.bash script passing in the thread handoff prompt's filename and path
+- Include the following additional parameters in the call to wake_the_claude.bash
+  - include the current worktree name as a parameter with the "--worktree" switch
+  - include the "--effort" switch with the "high" parameter
+  - include the "--dangerously-skip-permissions" flag
+- Cease operation once the wake_the_claude.md script has been called successfully
+
+## Finalize
+
+### Validation
+
+1. Using appropriately specialized sub-agents, performa final validation of all aspects of the following:
+    - work performed during this process
+    - analysis completed during this process
+    - documentation compiled during this process
+
+### Correction
+
+1. Make any changes needed as a result of this validation process to the following:
+    - Documents
+      - Analysis documents
+      - Plan documents
+      - Development roadmaps
+      - User Documentation files
+    - Code
+      - Codebase contents
+      - Testing files
+      - Automation scripts
+    - Infrastructure
+      - Testing
+      - Monitoring
+      - Configuration
+      - Automation
+      - Deployment
+      - CI/CD
+2. Ensure that the full test suites pass for all affected Juniper Project applications.
+
+### Cleanup
+
+1. Commit all changes and push the working branches to the applicable, github repositories.
+2. Create pull requests as needed for any changes made.
+3. When pull requests have been successfully merged, perform the worktree cleanup v2 procedure, as documented.
+
+---
