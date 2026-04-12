@@ -1170,7 +1170,7 @@ lock-type-contract note).
 **What happens**: the event loop is stalled. All WebSocket endpoints stop responding.
 New connects fail (the `accept()` handler is also on the loop). Health checks time out.
 
-**Mitigation**: 
+**Mitigation**:
 - The source doc's lock-type-contract note at §2.2 is the primary defense. Document
   it at the lock definition sites.
 - Add a watchdog task that runs on the loop and logs a warning if its own sleep
