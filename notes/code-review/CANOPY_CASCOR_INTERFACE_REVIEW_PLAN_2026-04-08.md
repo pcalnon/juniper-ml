@@ -6,6 +6,7 @@
 **Owner**: Paul Calnon
 **Status**: ACTIVE
 **Companion Documents**:
+
 - Analysis: `CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md`
 - Roadmap: `CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md`
 
@@ -21,20 +22,21 @@ This plan outlines the phases, steps, and tasks needed to complete a comprehensi
 
 ### 2.1 Phases
 
-| Phase | Name | Duration | Status |
-|-------|------|----------|--------|
-| 0 | Prior Art Assessment | 0.5 day | **COMPLETE** |
-| 1 | Codebase Exploration and Discovery | 1 day | **COMPLETE** |
-| 2 | Deep-Dive API and Model Analysis | 1 day | **COMPLETE** |
-| 3 | Interface Contract Mapping | 1 day | **COMPLETE** |
-| 4 | Discrepancy Identification | 0.5 day | **COMPLETE** |
-| 5 | Comprehensive Documentation | 1 day | **COMPLETE** |
-| 6 | Remediation Planning | 0.5 day | **COMPLETE** |
-| 7 | Validation and Finalization | 0.5 day | **IN PROGRESS** |
+| Phase | Name                               | Duration | Status          |
+|-------|------------------------------------|----------|-----------------|
+| 0     | Prior Art Assessment               | 0.5 day  | **COMPLETE**    |
+| 1     | Codebase Exploration and Discovery | 1 day    | **COMPLETE**    |
+| 2     | Deep-Dive API and Model Analysis   | 1 day    | **COMPLETE**    |
+| 3     | Interface Contract Mapping         | 1 day    | **COMPLETE**    |
+| 4     | Discrepancy Identification         | 0.5 day  | **COMPLETE**    |
+| 5     | Comprehensive Documentation        | 1 day    | **COMPLETE**    |
+| 6     | Remediation Planning               | 0.5 day  | **COMPLETE**    |
+| 7     | Validation and Finalization        | 0.5 day  | **IN PROGRESS** |
 
 ### 2.2 Scope
 
 **In scope**:
+
 - All REST API endpoints between canopy and cascor
 - All WebSocket protocol messages and handlers
 - All data structures, models, and types in the interface
@@ -46,6 +48,7 @@ This plan outlines the phases, steps, and tasks needed to complete a comprehensi
 - Cross-side requirement asymmetry analysis
 
 **Out of scope**:
+
 - Internal cascor ML algorithm implementation (except where it produces interface data)
 - Internal canopy UI implementation (except where it consumes interface data)
 - juniper-data integration (separate interface)
@@ -98,15 +101,15 @@ Identify all interface touchpoints across the three codebases.
 
 ### 4.3 Interface Touchpoints Discovered
 
-| Component | Count | Examples |
-|-----------|-------|---------|
-| REST endpoints (cascor) | 22 | `/v1/network`, `/v1/training/*`, `/v1/metrics/*` |
-| WebSocket endpoints (cascor) | 3 | `/ws/training`, `/ws/control`, `/ws/v1/workers` |
-| Pydantic request models | 3 | `NetworkCreateRequest`, `TrainingStartRequest`, `TrainingParamUpdateRequest` |
-| Response envelope | 1 | `ResponseEnvelope` |
-| Client methods | 30+ | `JuniperCascorClient.*` |
-| Canopy adapter transformations | 5 | `_normalize_metric`, `_to_dashboard_metric`, `_transform_topology`, `_normalize_status`, `_CANOPY_TO_CASCOR_PARAM_MAP` |
-| Dashboard consumers | 10+ | `MetricsPanel`, `NetworkVisualizer`, `ParametersPanel`, etc. |
+| Component                      | Count | Examples                                                                                                               |
+|--------------------------------|-------|------------------------------------------------------------------------------------------------------------------------|
+| REST endpoints (cascor)        | 22    | `/v1/network`, `/v1/training/*`, `/v1/metrics/*`                                                                       |
+| WebSocket endpoints (cascor)   | 3     | `/ws/training`, `/ws/control`, `/ws/v1/workers`                                                                        |
+| Pydantic request models        | 3     | `NetworkCreateRequest`, `TrainingStartRequest`, `TrainingParamUpdateRequest`                                           |
+| Response envelope              | 1     | `ResponseEnvelope`                                                                                                     |
+| Client methods                 | 30+   | `JuniperCascorClient.*`                                                                                                |
+| Canopy adapter transformations | 5     | `_normalize_metric`, `_to_dashboard_metric`, `_transform_topology`, `_normalize_status`, `_CANOPY_TO_CASCOR_PARAM_MAP` |
+| Dashboard consumers            | 10+   | `MetricsPanel`, `NetworkVisualizer`, `ParametersPanel`, etc.                                                           |
 
 ---
 
@@ -217,12 +220,12 @@ Develop detailed remediation options for all open issues.
 
 ### 9.3 Remediation Summary
 
-| Tier | Issues | Total Effort | Priority |
-|------|--------|-------------|----------|
-| Tier 0: Critical Interface | CR-006, CR-007, CR-008 | 5-6 days | P0-P1 |
-| Tier 1: Security | CR-023, CR-024, CR-025, CR-026 | 2-3 days | P1-P2 |
-| Tier 2: Metrics Granularity | Appendix G (5 items) | 8-12 days | P2 |
-| Tier 3: Architecture | P5-RC-05, P5-RC-14, P5-RC-18, KL-1 | 9-14 days | P3-P4 |
+| Tier                        | Issues                             | Total Effort | Priority |
+|-----------------------------|------------------------------------|--------------|----------|
+| Tier 0: Critical Interface  | CR-006, CR-007, CR-008             | 5-6 days     | P0-P1    |
+| Tier 1: Security            | CR-023, CR-024, CR-025, CR-026     | 2-3 days     | P1-P2    |
+| Tier 2: Metrics Granularity | Appendix G (5 items)               | 8-12 days    | P2       |
+| Tier 3: Architecture        | P5-RC-05, P5-RC-14, P5-RC-18, KL-1 | 9-14 days    | P3-P4    |
 
 ---
 
@@ -243,25 +246,25 @@ Validate all work performed, correct any issues, and finalize deliverables.
 
 ### 10.3 Validation Checklist
 
-| Requirement | Document Section | Status |
-|-------------|-----------------|--------|
-| Data contracts | §5 | **Complete** |
-| Code promises | §6, §7, §8 | **Complete** |
-| Interface agreements | §3, §4 | **Complete** |
-| APIs | §3 (REST), §4 (WS) | **Complete** |
-| Developer expectations | §14 | **Complete** |
-| High-level walkthroughs | §12 | **Complete** |
-| Detailed walkthroughs | §13 | **Complete** |
-| Field breakdowns with types/defaults | §5 | **Complete** |
-| Constants class locations | Appendix B | **Complete** |
-| Naming discrepancies | §9 | **Complete** |
-| Complete data structure list | Appendix A | **Complete** |
-| Instantiation locations | §11 | **Complete** |
-| Mapping classes/translators | §10 | **Complete** |
-| Cross-side requirement asymmetries | §14 | **Complete** |
-| Explanatory diagrams | Appendix C | **Complete** |
-| Remediation options | §16 | **Complete** |
-| Development roadmap | §17 | **Complete** |
+| Requirement                          | Document Section   | Status       |
+|--------------------------------------|--------------------|--------------|
+| Data contracts                       | §5                 | **Complete** |
+| Code promises                        | §6, §7, §8         | **Complete** |
+| Interface agreements                 | §3, §4             | **Complete** |
+| APIs                                 | §3 (REST), §4 (WS) | **Complete** |
+| Developer expectations               | §14                | **Complete** |
+| High-level walkthroughs              | §12                | **Complete** |
+| Detailed walkthroughs                | §13                | **Complete** |
+| Field breakdowns with types/defaults | §5                 | **Complete** |
+| Constants class locations            | Appendix B         | **Complete** |
+| Naming discrepancies                 | §9                 | **Complete** |
+| Complete data structure list         | Appendix A         | **Complete** |
+| Instantiation locations              | §11                | **Complete** |
+| Mapping classes/translators          | §10                | **Complete** |
+| Cross-side requirement asymmetries   | §14                | **Complete** |
+| Explanatory diagrams                 | Appendix C         | **Complete** |
+| Remediation options                  | §16                | **Complete** |
+| Development roadmap                  | §17                | **Complete** |
 
 ---
 

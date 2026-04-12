@@ -24,6 +24,11 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  # Allow manual dispatch so operators can re-fire a publish against any tag
+  # (useful when a release-triggered run failed and the release is immutable
+  # or the original run is non-retriable). Run via:
+  #   gh workflow run publish.yml --repo pcalnon/juniper-ml --ref <tag>
+  workflow_dispatch:
 
 permissions:
   id-token: write

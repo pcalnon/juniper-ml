@@ -15,6 +15,9 @@ from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "worktree_cleanup.bash"
 
+# Subprocess timeout for worktree_cleanup.bash invocations (seconds).
+SCRIPT_TIMEOUT_SECONDS: int = 30
+
 
 def run_script(*args: str, cwd: str | None = None) -> subprocess.CompletedProcess:
     """Run worktree_cleanup.bash with the given arguments."""
@@ -23,7 +26,7 @@ def run_script(*args: str, cwd: str | None = None) -> subprocess.CompletedProces
         capture_output=True,
         text=True,
         cwd=cwd,
-        timeout=30,
+        timeout=SCRIPT_TIMEOUT_SECONDS,
     )
 
 
