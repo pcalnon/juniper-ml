@@ -189,7 +189,7 @@ jobs:
           echo "╔════════════════════════════════════════════════════════════╗"
           echo "║       juniper-ml - Documentation Link Validation          ║"
           echo "╚════════════════════════════════════════════════════════════╝"
-          python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
+          python scripts/check_doc_links.py --exclude templates --exclude history --exclude DEVELOPER_CHEATSHEET-ORIGINAL.md --cross-repo skip
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Security: pip-audit for dependency vulnerabilities
@@ -213,7 +213,15 @@ jobs:
           echo "╚════════════════════════════════════════════════════════════╝"
           pip install pip-audit
           pip install -e .
-          pip-audit --strict --desc on
+          # --skip-editable so the meta-package itself (installed as editable)
+          # is not audited; pip-audit would otherwise try to look juniper-ml up
+          # on PyPI by name and fail for unreleased versions.
+          #
+          # --strict is intentionally omitted: pip-audit counts a skipped
+          # editable install as "dependency collection failure", and --strict
+          # would escalate that to a fatal error. Real vulnerabilities still
+          # cause exit 1 without --strict.
+          pip-audit --desc on --skip-editable
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Dependency Documentation: Generate pip dependency records

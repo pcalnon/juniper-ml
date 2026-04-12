@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Version**: 0.3.0
+**Version**: 0.4.0
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -145,7 +145,7 @@ juniper-ml/
 
 ### Package and Metadata
 
-- `pyproject.toml` -- Package metadata, version (`0.3.0`), and optional dependency groups (`clients`, `worker`, `all`)
+- `pyproject.toml` -- Package metadata, version (`0.4.0`), and optional dependency groups (`clients`, `worker`, `all`)
 - `README.md` -- PyPI landing page content
 - `CHANGELOG.md` -- Version history in Keep a Changelog format
 - `MANIFEST.in` -- Source distribution file includes
@@ -169,12 +169,12 @@ juniper-ml/
 
 ### Utilities
 
-- `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). Supports `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`.
+- `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). The `MAIN_REPO` path is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) with an optional `JUNIPER_ML_MAIN_REPO` environment override for test fixtures and unusual layouts. Supports `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`.
 - `util/check_doc_links.py` -- Documentation link validator (v0.6.0) for internal markdown links; used in CI/CD pipelines
 - `util/generate_dep_docs.sh` -- Generates `requirements_ci.txt` and `conda_environment_ci.yaml` for CI
-- `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services
+- `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` but can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com util/juniper_plant_all.bash`).
 - `util/juniper_chop_all.bash` -- Stops all Juniper ecosystem services
-- `util/get_cascor_*.bash` -- Cascor REST API query utilities (status, metrics, history, network, topology)
+- `util/get_cascor_*.bash` -- Cascor REST API query utilities (status, metrics, history, network, topology). All scripts read `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` from the environment (with `localhost` / `8201` defaults) so a single environment override targets every utility.
 
 ### Tests
 
@@ -274,8 +274,8 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 | Extra | Packages |
 |-------|----------|
-| `clients` | `juniper-data-client>=0.3.0`, `juniper-cascor-client>=0.1.0` |
-| `worker` | `juniper-cascor-worker>=0.1.0` |
+| `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
+| `worker` | `juniper-cascor-worker>=0.3.0` |
 | `all` | All of the above |
 
 ## Conventions

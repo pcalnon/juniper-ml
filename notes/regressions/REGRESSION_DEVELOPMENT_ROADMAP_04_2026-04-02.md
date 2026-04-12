@@ -1,9 +1,7 @@
 # Juniper Regression Development Roadmap
 
 **Date**: 2026-04-02
-**Companion Documents**:
-- [JUNIPER_REGRESSION_ANALYSIS_2026-04-02.md](JUNIPER_REGRESSION_ANALYSIS_2026-04-02.md)
-- [JUNIPER_REGRESSION_REMEDIATION_PLAN_2026-04-02.md](JUNIPER_REGRESSION_REMEDIATION_PLAN_2026-04-02.md)
+**Companion Documents**: `JUNIPER_REGRESSION_ANALYSIS_2026-04-02.md`, `JUNIPER_REGRESSION_REMEDIATION_PLAN_2026-04-02.md` (referenced by name; these companion files were never landed in this repo)
 
 **Author**: Claude Code (Opus 4.6)
 
