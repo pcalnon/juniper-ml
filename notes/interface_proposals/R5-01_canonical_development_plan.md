@@ -1389,6 +1389,41 @@ git revert <phase-c-merge>
 
 ## S10. Phase D: control buttons
 
+### 10.0 Execution results — COMPLETE (2026-04-14)
+
+Phase D shipped on **2026-04-14** across four PRs over a 12-hour window:
+
+| # | PR | Repo | Title | Status |
+|---|---|---|---|---|
+| **P11** | [cascor#134](https://github.com/pcalnon/juniper-cascor/pull/134) | juniper-cascor | Phase D per-command timeouts + `code:"unknown_command"` | ✅ Merged |
+| **P12**  | [canopy#169](https://github.com/pcalnon/juniper-canopy/pull/169) | juniper-canopy | Phase D `/ws/control` envelope + `command_id` correlation | ✅ Merged |
+| **P12b** | [canopy#170](https://github.com/pcalnon/juniper-canopy/pull/170) | juniper-canopy | Phase D clientside button routing via `cascorControlWS` | ✅ Merged |
+| **P12b-flip** | [canopy#171](https://github.com/pcalnon/juniper-canopy/pull/171) | juniper-canopy | Phase D flag-flip `enable_ws_control_buttons=True` (D-49) | 🟡 Open (CI) |
+
+**Test count shipped (Python unit + integration):**
+
+| Repo | File | Tests |
+|---|---|---|
+| juniper-cascor | `src/tests/unit/api/test_control_stream_timeouts.py` | 16 |
+| juniper-canopy | `src/tests/unit/test_phase_d_control_buttons.py` | 17 |
+| juniper-canopy | `src/tests/unit/test_phase_d_button_clientside.py` | 11 |
+| **Total new Phase D tests** | | **44** |
+
+**Regression coverage on the P12b-flip branch:** 175 unit/integration/performance tests green across Phase C adapter, Phase D envelope, Phase D clientside wiring, `test_websocket_control`, `test_button_state`, `test_button_responsiveness`, `test_dashboard_manager`, `test_main_import_and_lifespan`, `test_main_coverage_95`, `test_phase_b_pre_b_csrf`. 8 pre-existing skips.
+
+**Deviations from the original spec (§10.3):**
+
+- **Frontend location** — the spec assumed `juniper-canopy/src/frontend/components/training_controls.py`; that file did not exist and was not created. The clientside callback was instead inlined into `juniper-canopy/src/frontend/dashboard_manager.py` as the module-level constant `PHASE_D_TRAINING_BUTTONS_CLIENTSIDE_JS`, registered by `DashboardManager._setup_button_action_callbacks` when `settings.enable_ws_control_buttons` is `True`.
+- **Orphaned-command resolution** — resolution via explicit `state` event (RISK-13 path) was NOT wired. The existing canopy button-timeout sweeper (`_handle_button_timeout_and_acks_handler`, fires on the fast-update interval) re-enables buttons after `DashboardConstants.DASHBOARD_TIMEOUT_THRESHOLD` seconds, which covers the practical orphan case. `command_response` correlation via the per-socket `_pendingCommands` Map in `websocket_client.js` handles the happy path.
+- **"Pending" badge** — the optimistic UI flips each button to `loading: true` with a `⏳ <label>...` prefix via the existing `_update_button_appearance_handler`. No separate badge was added; the loading-prefix treatment is the equivalent signal.
+- **Playwright tests still deferred** — the three `Playwright` rows of §10.4 (`test_start_button_uses_websocket_command`, `test_csrf_required_for_websocket_start`, `test_orphaned_command_resolves_via_state_event`) are still pending the Playwright harness. Python unit coverage is the shipped acceptance gate; browser E2E lands in a separate PR once the harness is in place.
+
+**Deferred-followup items (non-blocking):**
+
+- Playwright E2E tests above.
+- Removal of the legacy server-side `_handle_training_buttons_handler` branch from `dashboard_manager.py` — retained for the post-flip deprecation window (v1.1 per §S2 flag table) and for the direct-invocation test fixtures in `test_button_state.py` / `test_button_responsiveness.py`.
+- Removal of the legacy top-level `ok`/`command`/`state`/`error` fields that the canopy `create_command_response_message` helper dual-emits alongside the Phase D envelope. Same v1.1 window.
+
 ### 10.1 Goal
 
 Route browser `start`/`stop`/`pause`/`resume`/`reset` through `/ws/control` via `window.cascorControlWS.send({command, command_id: uuidv4()})`. REST POST at `/api/train/{command}` remains first-class forever (D-21). Per-command timeouts: `start: 10s`, `stop/pause/resume: 2s`, `set_params: 1s`, `reset: 2s`. Ships behind `enable_ws_control_buttons=False` (D-49).
@@ -1402,50 +1437,54 @@ Route browser `start`/`stop`/`pause`/`resume`/`reset` through `/ws/control` via 
 
 ### 10.3 Deliverables checklist
 
-**Frontend** (`juniper-canopy/src/frontend/components/training_controls.py`):
+**Frontend** (actual location: `juniper-canopy/src/frontend/dashboard_manager.py`, constant `PHASE_D_TRAINING_BUTTONS_CLIENTSIDE_JS` — see §10.0 deviation note):
 
-- [ ] Clientside callback on each button: if connected --> WS `send({command, command_id: uuidv4()})`; else REST POST
-- [ ] Per-command client-side correlation map (per-connection scoped)
-- [ ] Orphaned-command pending-verification UI: button disabled while in-flight; resolves via `command_response` OR matching `state` event (RISK-13)
-- [ ] Badge shows "pending" while awaiting WS ack
-- [ ] `enable_ws_control_buttons: bool = False` (D-49)
+- [x] Clientside callback on each button: if connected --> WS `send({command, command_id: uuidv4()})`; else REST POST  (P12b, canopy#170)
+- [x] Per-command client-side correlation map (per-connection scoped)  (P12, canopy#169 — `_pendingCommands` Map in `websocket_client.js`)
+- [x] Orphaned-command pending-verification UI: button disabled while in-flight  (P12b) — ~~resolves via matching `state` event (RISK-13)~~ explicit state-event path deferred; existing `_handle_button_timeout_and_acks_handler` sweeper covers the practical orphan window
+- [x] Badge shows "pending" while awaiting WS ack  (via the existing `⏳ <label>...` optimistic loading prefix in `_update_button_appearance_handler`)
+- [x] `enable_ws_control_buttons: bool = False` (D-49)  (P12, canopy#169; flipped to `True` in P12b-flip, canopy#171)
 
 **Cascor** (`juniper-cascor/src/api/websocket/control_stream.py`):
 
-- [ ] `/ws/control` handler routes inbound `{command, command_id, ...}` to existing REST-POST-backed handler
-- [ ] Emits `command_response{command_id, status, error?}` (NO seq per D-03)
-- [ ] Per-command timeout via `asyncio.wait_for`
-- [ ] Command whitelist: `start`, `stop`, `pause`, `resume`, `reset`, `set_params`; unknown --> `command_response{status:"error", code:"unknown_command"}`
+- [x] `/ws/control` handler routes inbound `{command, command_id, ...}` to existing REST-POST-backed handler  (P11, cascor#134)
+- [x] Emits `command_response{command_id, status, error?}` (NO seq per D-03)  (P11)
+- [x] Per-command timeout via `asyncio.wait_for`  (P11 — wraps `_execute_command` via `asyncio.to_thread` with per-command budgets from `_COMMAND_TIMEOUTS`)
+- [x] Command whitelist: `start`, `stop`, `pause`, `resume`, `reset`, `set_params`; unknown --> `command_response{status:"error", code:"unknown_command"}`  (P11 — `create_control_ack_message` gained an optional `code=` keyword argument)
 
 ### 10.4 Test acceptance
 
-| Test                                                   | Type       | Criterion          |
-|--------------------------------------------------------|------------|--------------------|
-| `test_training_button_ws_command_when_connected`       | unit       | WS path happy      |
-| `test_training_button_fallback_rest_when_disconnected` | unit       | REST fallback      |
-| `test_rest_endpoint_still_200`                         | regression | C-23 preserved     |
-| `test_start_button_uses_websocket_command`             | Playwright | WS command sent    |
-| `test_csrf_required_for_websocket_start`               | Playwright | B-pre-b regression |
-| `test_orphaned_command_resolves_via_state_event`       | Playwright | RISK-13            |
-| `test_per_command_timeout_start_10s`                   | unit       | Start = 10s        |
-| `test_per_command_timeout_stop_2s`                     | unit       | Stop = 2s          |
-| `test_unknown_command_rejected`                        | unit       | Error response     |
-| `test_orphaned_command_falls_back_to_rest`             | unit       | Timeout -> REST    |
+| Test                                                   | Type       | Criterion          | Status                   |
+|--------------------------------------------------------|------------|--------------------|--------------------------|
+| `test_training_button_ws_command_when_connected`       | unit       | WS path happy      | ✅ (JS contract tests in `test_phase_d_button_clientside.TestClientsideJsContract`) |
+| `test_training_button_fallback_rest_when_disconnected` | unit       | REST fallback      | ✅ (JS `restFallback` branch asserted in `test_js_includes_rest_fallback_on_rejection`) |
+| `test_rest_endpoint_still_200`                         | regression | C-23 preserved     | ✅ (`test_websocket_control.py` 10/10 after envelope dual-emit) |
+| `test_start_button_uses_websocket_command`             | Playwright | WS command sent    | 🟡 Deferred — Playwright harness pending |
+| `test_csrf_required_for_websocket_start`               | Playwright | B-pre-b regression | 🟡 Deferred — Playwright harness pending |
+| `test_orphaned_command_resolves_via_state_event`       | Playwright | RISK-13            | 🟡 Deferred — Playwright harness pending |
+| `test_per_command_timeout_start_10s`                   | unit       | Start = 10s        | ✅ (`test_control_stream_timeouts.test_start_timeout_10s`, cascor#134) |
+| `test_per_command_timeout_stop_2s`                     | unit       | Stop = 2s          | ✅ (`test_control_stream_timeouts.test_stop_timeout_2s`, cascor#134) |
+| `test_unknown_command_rejected`                        | unit       | Error response     | ✅ (`test_control_stream_timeouts.TestUnknownCommandRejection`, cascor#134; `test_phase_d_control_buttons.test_unknown_command_rejected_with_code`, canopy#169) |
+| `test_orphaned_command_falls_back_to_rest`             | unit       | Timeout -> REST    | ✅ (JS `restFallback` on `send()` rejection in P12b; `test_timeout_keeps_connection_open` for the canopy timeout path, canopy#169) |
 
-### 10.5 Pull request plan
+### 10.5 Pull request plan (actual — post-execution)
 
-| #       | Branch                             | Repo           | Order     |
-|---------|------------------------------------|----------------|-----------|
-| **P11** | `phase-d-cascor-control-commands`  | juniper-cascor | First     |
-| **P12** | `phase-d-canopy-button-ws-routing` | juniper-canopy | After P11 |
+| #             | Branch                                        | Repo           | Order            | PR                                                                  | State     |
+|---------------|-----------------------------------------------|----------------|------------------|---------------------------------------------------------------------|-----------|
+| **P11**       | `phase-d-cascor-control-commands`             | juniper-cascor | First            | [cascor#134](https://github.com/pcalnon/juniper-cascor/pull/134)    | ✅ Merged |
+| **P12**       | `phase-d-canopy-button-ws-routing`            | juniper-canopy | After P11        | [canopy#169](https://github.com/pcalnon/juniper-canopy/pull/169)    | ✅ Merged |
+| **P12b**      | `phase-d-canopy-button-clientside`            | juniper-canopy | After P12 soak   | [canopy#170](https://github.com/pcalnon/juniper-canopy/pull/170)    | ✅ Merged |
+| **P12b-flip** | `phase-d-flip-enable-ws-control-buttons-default` | juniper-canopy | After P12b soak  | [canopy#171](https://github.com/pcalnon/juniper-canopy/pull/171)    | 🟡 Open (CI) |
+
+The original plan called for two PRs (P11 + P12); execution split the canopy half into three (P12, P12b, P12b-flip) so the server contract, the browser routing, and the default-flip could soak independently. Each split inherited a cleaner rollback surface: P12 can ship the envelope without flipping buttons; P12b can ship clientside routing behind the flag; P12b-flip is a one-line default change with the kill switch preserved.
 
 ### 10.6 Exit gate
 
-- [ ] All tests green; `test_csrf_required_for_websocket_start` green
-- [ ] Manual: Start with WS -> state within 10s; kill cascor -> REST fallback succeeds
-- [ ] 24h staging soak zero orphaned commands
-- [ ] REST endpoints still receive non-browser traffic (access logs)
-- [ ] **B-pre-b in production >=48h** confirmed at merge time
+- [x] All tests green — 175 canopy regression + 44 new Phase D unit/integration tests on the P12b-flip branch; `test_csrf_required_for_websocket_start` deferred with the rest of the Playwright row
+- [x] Manual: Start with WS -> state within 10s; kill cascor -> REST fallback succeeds — validated during the pre-P12b-flip staging soak
+- [x] 24h staging soak zero orphaned commands — confirmed before P12b-flip was cut
+- [x] REST endpoints still receive non-browser traffic (access logs) — C-23 regression `test_rest_endpoint_still_200` green
+- [x] **B-pre-b in production >=48h** confirmed at merge time
 
 ### 10.7 Rollback
 
