@@ -1393,21 +1393,21 @@ git revert <phase-c-merge>
 
 Phase D shipped on **2026-04-14** across four PRs over a 12-hour window:
 
-| # | PR | Repo | Title | Status |
-|---|---|---|---|---|
-| **P11** | [cascor#134](https://github.com/pcalnon/juniper-cascor/pull/134) | juniper-cascor | Phase D per-command timeouts + `code:"unknown_command"` | ✅ Merged |
-| **P12**  | [canopy#169](https://github.com/pcalnon/juniper-canopy/pull/169) | juniper-canopy | Phase D `/ws/control` envelope + `command_id` correlation | ✅ Merged |
-| **P12b** | [canopy#170](https://github.com/pcalnon/juniper-canopy/pull/170) | juniper-canopy | Phase D clientside button routing via `cascorControlWS` | ✅ Merged |
+| #             | PR                                                               | Repo           | Title                                                     | Status       |
+|---------------|------------------------------------------------------------------|----------------|-----------------------------------------------------------|--------------|
+| **P11**       | [cascor#134](https://github.com/pcalnon/juniper-cascor/pull/134) | juniper-cascor | Phase D per-command timeouts + `code:"unknown_command"`   | ✅ Merged    |
+| **P12**       | [canopy#169](https://github.com/pcalnon/juniper-canopy/pull/169) | juniper-canopy | Phase D `/ws/control` envelope + `command_id` correlation | ✅ Merged    |
+| **P12b**      | [canopy#170](https://github.com/pcalnon/juniper-canopy/pull/170) | juniper-canopy | Phase D clientside button routing via `cascorControlWS`   | ✅ Merged    |
 | **P12b-flip** | [canopy#171](https://github.com/pcalnon/juniper-canopy/pull/171) | juniper-canopy | Phase D flag-flip `enable_ws_control_buttons=True` (D-49) | 🟡 Open (CI) |
 
 **Test count shipped (Python unit + integration):**
 
-| Repo | File | Tests |
-|---|---|---|
-| juniper-cascor | `src/tests/unit/api/test_control_stream_timeouts.py` | 16 |
-| juniper-canopy | `src/tests/unit/test_phase_d_control_buttons.py` | 17 |
-| juniper-canopy | `src/tests/unit/test_phase_d_button_clientside.py` | 11 |
-| **Total new Phase D tests** | | **44** |
+| Repo                        | File                                                 | Tests  |
+|-----------------------------|------------------------------------------------------|--------|
+| juniper-cascor              | `src/tests/unit/api/test_control_stream_timeouts.py` | 16     |
+| juniper-canopy              | `src/tests/unit/test_phase_d_control_buttons.py`     | 17     |
+| juniper-canopy              | `src/tests/unit/test_phase_d_button_clientside.py`   | 11     |
+| **Total new Phase D tests** |                                                      | **44** |
 
 **Regression coverage on the P12b-flip branch:** 175 unit/integration/performance tests green across Phase C adapter, Phase D envelope, Phase D clientside wiring, `test_websocket_control`, `test_button_state`, `test_button_responsiveness`, `test_dashboard_manager`, `test_main_import_and_lifespan`, `test_main_coverage_95`, `test_phase_b_pre_b_csrf`. 8 pre-existing skips.
 
@@ -1454,27 +1454,27 @@ Route browser `start`/`stop`/`pause`/`resume`/`reset` through `/ws/control` via 
 
 ### 10.4 Test acceptance
 
-| Test                                                   | Type       | Criterion          | Status                   |
-|--------------------------------------------------------|------------|--------------------|--------------------------|
-| `test_training_button_ws_command_when_connected`       | unit       | WS path happy      | ✅ (JS contract tests in `test_phase_d_button_clientside.TestClientsideJsContract`) |
-| `test_training_button_fallback_rest_when_disconnected` | unit       | REST fallback      | ✅ (JS `restFallback` branch asserted in `test_js_includes_rest_fallback_on_rejection`) |
-| `test_rest_endpoint_still_200`                         | regression | C-23 preserved     | ✅ (`test_websocket_control.py` 10/10 after envelope dual-emit) |
-| `test_start_button_uses_websocket_command`             | Playwright | WS command sent    | 🟡 Deferred — Playwright harness pending |
-| `test_csrf_required_for_websocket_start`               | Playwright | B-pre-b regression | 🟡 Deferred — Playwright harness pending |
-| `test_orphaned_command_resolves_via_state_event`       | Playwright | RISK-13            | 🟡 Deferred — Playwright harness pending |
-| `test_per_command_timeout_start_10s`                   | unit       | Start = 10s        | ✅ (`test_control_stream_timeouts.test_start_timeout_10s`, cascor#134) |
-| `test_per_command_timeout_stop_2s`                     | unit       | Stop = 2s          | ✅ (`test_control_stream_timeouts.test_stop_timeout_2s`, cascor#134) |
+| Test                                                   | Type       | Criterion          | Status                                                                                                                                                          |
+|--------------------------------------------------------|------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `test_training_button_ws_command_when_connected`       | unit       | WS path happy      | ✅ (JS contract tests in `test_phase_d_button_clientside.TestClientsideJsContract`)                                                                             |
+| `test_training_button_fallback_rest_when_disconnected` | unit       | REST fallback      | ✅ (JS `restFallback` branch asserted in `test_js_includes_rest_fallback_on_rejection`)                                                                         |
+| `test_rest_endpoint_still_200`                         | regression | C-23 preserved     | ✅ (`test_websocket_control.py` 10/10 after envelope dual-emit)                                                                                                 |
+| `test_start_button_uses_websocket_command`             | Playwright | WS command sent    | 🟡 Deferred — Playwright harness pending                                                                                                                        |
+| `test_csrf_required_for_websocket_start`               | Playwright | B-pre-b regression | 🟡 Deferred — Playwright harness pending                                                                                                                        |
+| `test_orphaned_command_resolves_via_state_event`       | Playwright | RISK-13            | 🟡 Deferred — Playwright harness pending                                                                                                                        |
+| `test_per_command_timeout_start_10s`                   | unit       | Start = 10s        | ✅ (`test_control_stream_timeouts.test_start_timeout_10s`, cascor#134)                                                                                          |
+| `test_per_command_timeout_stop_2s`                     | unit       | Stop = 2s          | ✅ (`test_control_stream_timeouts.test_stop_timeout_2s`, cascor#134)                                                                                            |
 | `test_unknown_command_rejected`                        | unit       | Error response     | ✅ (`test_control_stream_timeouts.TestUnknownCommandRejection`, cascor#134; `test_phase_d_control_buttons.test_unknown_command_rejected_with_code`, canopy#169) |
-| `test_orphaned_command_falls_back_to_rest`             | unit       | Timeout -> REST    | ✅ (JS `restFallback` on `send()` rejection in P12b; `test_timeout_keeps_connection_open` for the canopy timeout path, canopy#169) |
+| `test_orphaned_command_falls_back_to_rest`             | unit       | Timeout -> REST    | ✅ (JS `restFallback` on `send()` rejection in P12b; `test_timeout_keeps_connection_open` for the canopy timeout path, canopy#169)                              |
 
 ### 10.5 Pull request plan (actual — post-execution)
 
-| #             | Branch                                        | Repo           | Order            | PR                                                                  | State     |
-|---------------|-----------------------------------------------|----------------|------------------|---------------------------------------------------------------------|-----------|
-| **P11**       | `phase-d-cascor-control-commands`             | juniper-cascor | First            | [cascor#134](https://github.com/pcalnon/juniper-cascor/pull/134)    | ✅ Merged |
-| **P12**       | `phase-d-canopy-button-ws-routing`            | juniper-canopy | After P11        | [canopy#169](https://github.com/pcalnon/juniper-canopy/pull/169)    | ✅ Merged |
-| **P12b**      | `phase-d-canopy-button-clientside`            | juniper-canopy | After P12 soak   | [canopy#170](https://github.com/pcalnon/juniper-canopy/pull/170)    | ✅ Merged |
-| **P12b-flip** | `phase-d-flip-enable-ws-control-buttons-default` | juniper-canopy | After P12b soak  | [canopy#171](https://github.com/pcalnon/juniper-canopy/pull/171)    | 🟡 Open (CI) |
+| #             | Branch                                           | Repo           | Order           | PR                                                               | State        |
+|---------------|--------------------------------------------------|----------------|-----------------|------------------------------------------------------------------|--------------|
+| **P11**       | `phase-d-cascor-control-commands`                | juniper-cascor | First           | [cascor#134](https://github.com/pcalnon/juniper-cascor/pull/134) | ✅ Merged    |
+| **P12**       | `phase-d-canopy-button-ws-routing`               | juniper-canopy | After P11       | [canopy#169](https://github.com/pcalnon/juniper-canopy/pull/169) | ✅ Merged    |
+| **P12b**      | `phase-d-canopy-button-clientside`               | juniper-canopy | After P12 soak  | [canopy#170](https://github.com/pcalnon/juniper-canopy/pull/170) | ✅ Merged    |
+| **P12b-flip** | `phase-d-flip-enable-ws-control-buttons-default` | juniper-canopy | After P12b soak | [canopy#171](https://github.com/pcalnon/juniper-canopy/pull/171) | 🟡 Open (CI) |
 
 The original plan called for two PRs (P11 + P12); execution split the canopy half into three (P12, P12b, P12b-flip) so the server contract, the browser routing, and the default-flip could soak independently. Each split inherited a cleaner rollback surface: P12 can ship the envelope without flipping buttons; P12b can ship clientside routing behind the flag; P12b-flip is a one-line default change with the kill switch preserved.
 

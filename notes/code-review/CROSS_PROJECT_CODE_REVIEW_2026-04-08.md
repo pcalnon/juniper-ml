@@ -114,14 +114,14 @@ References `nohup.out` (removed in security hardening), relies on `sleep 12` tim
 
 ### Critical Issues
 
-**C-JD-1: Version mismatch across 4 files**
+**C-JD-1: Version mismatch across 4 files:**
 
-| Location | Version |
-|----------|---------|
-| `pyproject.toml [project].version` | 0.5.0 |
-| `juniper_data/__init__.py __version__` | 0.4.2 |
-| `Dockerfile` label | 0.4.0 |
-| `pyproject.toml` header comment | 0.4.0 |
+| Location                               | Version |
+|----------------------------------------|---------|
+| `pyproject.toml [project].version`     | 0.5.0   |
+| `juniper_data/__init__.py __version__` | 0.4.2   |
+| `Dockerfile` label                     | 0.4.0   |
+| `pyproject.toml` header comment        | 0.4.0   |
 
 The health endpoint, Prometheus build_info metrics, and TestPyPI verification all report 0.4.2. Any PyPI publish would fail verification.
 
@@ -250,7 +250,7 @@ Connection_established message consumed but not validated; error responses silen
 **M-JCC-4: README API reference missing 9 methods**
 Methods added in v0.2.0 and v0.3.0 (update_params, snapshots, workers, dataset_data) not in README.
 
-**M-JCC-5: Snapshot/dataset_data FakeCascorClient methods have 0% test coverage**
+**M-JCC-5: Snapshot/dataset_data FakeCascorClient methods have 0% test coverage:**
 
 ### Low Issues
 
@@ -360,7 +360,7 @@ AGENTS.md states `backend` and `data` networks are "internal (no external access
 **H-JDP-2: Dockerfile.test copies non-existent file** (`Dockerfile.test:30`)
 `COPY conftest.py .` fails because `conftest.py` is at `tests/conftest.py`, not repo root. The `test` profile cannot build.
 
-**H-JDP-3: AGENTS.md documentation inconsistencies**
+**H-JDP-3: AGENTS.md documentation inconsistencies:**
 
 - Cassandra documented in `full` profile but absent from `docker-compose.yml`
 - Redis documented in `demo` profile but only in `full` and `test`
@@ -410,28 +410,28 @@ AGENTS.md says `0.2.0`, Helm chart appVersion is `0.4.0`, no pyproject.toml vers
 
 ### By Severity
 
-| Severity | Count | Applications Affected |
-|----------|-------|-----------------------|
-| CRITICAL | 10 | All 6 |
-| HIGH | 18 | All 6 |
-| MEDIUM | 21 | All 6 |
-| LOW | 31 | All 6 |
-| **Total** | **80** | |
+| Severity  | Count  | Applications Affected |
+|-----------|--------|-----------------------|
+| CRITICAL  | 10     | All 6                 |
+| HIGH      | 18     | All 6                 |
+| MEDIUM    | 21     | All 6                 |
+| LOW       | 31     | All 6                 |
+| **Total** | **80** |                       |
 
 ### By Category
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| Changelog gaps | 12 | Missing entries, wrong versions, empty sections |
-| Missing git tags | 8 | CHANGELOG references versions without tags |
-| Version mismatches | 5 | Different versions across files in same project |
-| Test coverage gaps | 6 | Untested critical code paths |
-| Security issues | 5 | Path traversal, PII exposure, network isolation |
-| Documentation drift | 9 | README/docs don't match actual API |
-| Code bugs | 8 | PID parsing, fallback bugs, thread safety |
-| CI/CD issues | 4 | Wrong paths, missing tests in pipeline |
-| Infrastructure | 7 | Floating tags, undefined vars, broken Dockerfiles |
-| Code quality | 16 | Typos, dead code, hardcoded paths |
+| Category            | Count | Description                                       |
+|---------------------|-------|---------------------------------------------------|
+| Changelog gaps      | 12    | Missing entries, wrong versions, empty sections   |
+| Missing git tags    | 8     | CHANGELOG references versions without tags        |
+| Version mismatches  | 5     | Different versions across files in same project   |
+| Test coverage gaps  | 6     | Untested critical code paths                      |
+| Security issues     | 5     | Path traversal, PII exposure, network isolation   |
+| Documentation drift | 9     | README/docs don't match actual API                |
+| Code bugs           | 8     | PID parsing, fallback bugs, thread safety         |
+| CI/CD issues        | 4     | Wrong paths, missing tests in pipeline            |
+| Infrastructure      | 7     | Floating tags, undefined vars, broken Dockerfiles |
+| Code quality        | 16    | Typos, dead code, hardcoded paths                 |
 
 ### Ecosystem-Wide Patterns
 

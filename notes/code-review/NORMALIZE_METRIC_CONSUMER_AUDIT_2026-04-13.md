@@ -1,9 +1,9 @@
 # `_normalize_metric` Consumer Audit
 
-**Phase**: H (P16)  
-**Date**: 2026-04-13  
-**Author**: Paul Calnon  
-**Contract**: C-22 (dual-format: flat + nested keys both present)  
+**Phase**: H (P16)
+**Date**: 2026-04-13
+**Author**: Paul Calnon
+**Contract**: C-22 (dual-format: flat + nested keys both present)
 **Gate**: D-27 (CODEOWNERS hard merge gate on shape changes)
 
 ---
@@ -99,14 +99,14 @@ All production call sites pipe output through `_to_dashboard_metric()`, which ex
 
 ## Regression Protection
 
-| Guard | Location | What it catches |
-|-------|----------|-----------------|
-| Golden shape file | `tests/fixtures/normalize_metric_shape.golden.json` | Key removal from output |
-| Shape hash test | `test_normalize_metric_shape_hash_matches_golden_file` | Structural drift |
-| Dual-format test | `test_normalize_metric_produces_dual_format` | Missing flat or nested keys |
-| Zero-value test | `test_normalize_metric_preserves_zero_values` | `_first_defined()` regression |
-| CODEOWNERS | `.github/CODEOWNERS` | Unreviewed changes to adapter/panel |
-| Pre-commit hook | `normalize-metric-format-guard` | Golden file deletion |
+| Guard             | Location                                               | What it catches                     |
+|-------------------|--------------------------------------------------------|-------------------------------------|
+| Golden shape file | `tests/fixtures/normalize_metric_shape.golden.json`    | Key removal from output             |
+| Shape hash test   | `test_normalize_metric_shape_hash_matches_golden_file` | Structural drift                    |
+| Dual-format test  | `test_normalize_metric_produces_dual_format`           | Missing flat or nested keys         |
+| Zero-value test   | `test_normalize_metric_preserves_zero_values`          | `_first_defined()` regression       |
+| CODEOWNERS        | `.github/CODEOWNERS`                                   | Unreviewed changes to adapter/panel |
+| Pre-commit hook   | `normalize-metric-format-guard`                        | Golden file deletion                |
 
 ---
 

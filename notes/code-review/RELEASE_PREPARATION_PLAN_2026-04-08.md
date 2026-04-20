@@ -11,14 +11,14 @@
 
 Based on the code review findings, the following release versions are recommended:
 
-| Application | Current Declared | Recommended Release | Rationale |
-|-------------|-----------------|---------------------|-----------|
-| juniper-ml | 0.3.0 | 0.4.0 | Post-0.3.0 features (systemd, startup/shutdown scripts, worker integration) |
-| juniper-data | 0.5.0 | 0.6.0 | Post-0.5.0 features (versioning, batch endpoints, Docker secrets, systemd) |
-| juniper-data-client | 0.3.2 | 0.4.0 | New public API surface (6 methods) requires MINOR bump |
-| juniper-cascor-client | 0.3.0 | 0.3.0 | Current version appropriate; needs changelog and tags |
-| juniper-cascor-worker | 0.3.0 | 0.3.0 | Current version appropriate; needs changelog and tags |
-| juniper-deploy | 0.2.0 | 0.2.0 | First formal release at documented version |
+| Application           | Current Declared | Recommended Release | Rationale                                                                   |
+|-----------------------|------------------|---------------------|-----------------------------------------------------------------------------|
+| juniper-ml            | 0.3.0            | 0.4.0               | Post-0.3.0 features (systemd, startup/shutdown scripts, worker integration) |
+| juniper-data          | 0.5.0            | 0.6.0               | Post-0.5.0 features (versioning, batch endpoints, Docker secrets, systemd)  |
+| juniper-data-client   | 0.3.2            | 0.4.0               | New public API surface (6 methods) requires MINOR bump                      |
+| juniper-cascor-client | 0.3.0            | 0.3.0               | Current version appropriate; needs changelog and tags                       |
+| juniper-cascor-worker | 0.3.0            | 0.3.0               | Current version appropriate; needs changelog and tags                       |
+| juniper-deploy        | 0.2.0            | 0.2.0               | First formal release at documented version                                  |
 
 ---
 
@@ -274,22 +274,22 @@ Remove `COPY conftest.py .` — conftest.py is already inside `tests/` which is 
 
 For each application, compile changelog entries from git history:
 
-| Application | Action | Target Section |
-|-------------|--------|---------------|
-| juniper-ml | Populate [Unreleased], rename to [0.4.0] | Added, Changed, Fixed, CI |
-| juniper-data | Add [0.6.0] section | Added (versioning, batch, secrets, systemd), Fixed (postgres), Changed (CI) |
-| juniper-data-client | Add [0.4.0] section | Added (batch ops, versioning, benchmarks), Fixed (PATCH retry) |
-| juniper-cascor-client | Add [0.2.0] and [0.3.0] sections | Added (workers, snapshots, testing module), Fixed (response format) |
-| juniper-cascor-worker | Add [0.1.1] and [0.3.0] sections | Added (WebSocket agent, TLS), Deprecated (legacy mode), Security |
-| juniper-deploy | Restructure into [0.2.0] section | Added (all features), Security, Infrastructure |
+| Application           | Action                                   | Target Section                                                              |
+|-----------------------|------------------------------------------|-----------------------------------------------------------------------------|
+| juniper-ml            | Populate [Unreleased], rename to [0.4.0] | Added, Changed, Fixed, CI                                                   |
+| juniper-data          | Add [0.6.0] section                      | Added (versioning, batch, secrets, systemd), Fixed (postgres), Changed (CI) |
+| juniper-data-client   | Add [0.4.0] section                      | Added (batch ops, versioning, benchmarks), Fixed (PATCH retry)              |
+| juniper-cascor-client | Add [0.2.0] and [0.3.0] sections         | Added (workers, snapshots, testing module), Fixed (response format)         |
+| juniper-cascor-worker | Add [0.1.1] and [0.3.0] sections         | Added (WebSocket agent, TLS), Deprecated (legacy mode), Security            |
+| juniper-deploy        | Restructure into [0.2.0] section         | Added (all features), Security, Infrastructure                              |
 
 ### 3.2 README & Documentation Updates
 
-| Application | Documents to Update |
-|-------------|-------------------|
-| juniper-data-client | README API table (+6 methods), REFERENCE.md (version + batch/versioning), QUICK_START.md (FakeDataClient class name) |
-| juniper-cascor-client | README API table (+9 methods), WebSocket reconnection documentation |
-| juniper-deploy | AGENTS.md (profile table, port bindings, Makefile targets), CHANGELOG image versions |
+| Application           | Documents to Update                                                                                                  |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------|
+| juniper-data-client   | README API table (+6 methods), REFERENCE.md (version + batch/versioning), QUICK_START.md (FakeDataClient class name) |
+| juniper-cascor-client | README API table (+9 methods), WebSocket reconnection documentation                                                  |
+| juniper-deploy        | AGENTS.md (profile table, port bindings, Makefile targets), CHANGELOG image versions                                 |
 
 ### 3.3 Release Description Documents
 
@@ -304,12 +304,12 @@ Draft release descriptions for each application (templates provided in the code 
 
 ### 4.1 Create Missing Retroactive Tags
 
-| Application | Tags to Create | At Commit |
-|-------------|---------------|-----------|
-| juniper-ml | v0.2.1, v0.3.0 | Identify from git log |
-| juniper-data-client | v0.3.2 | Identify from git log |
-| juniper-cascor-client | v0.2.0 | Identify from git log |
-| juniper-cascor-worker | v0.2.0 | Identify from git log |
+| Application           | Tags to Create | At Commit             |
+|-----------------------|----------------|-----------------------|
+| juniper-ml            | v0.2.1, v0.3.0 | Identify from git log |
+| juniper-data-client   | v0.3.2         | Identify from git log |
+| juniper-cascor-client | v0.2.0         | Identify from git log |
+| juniper-cascor-worker | v0.2.0         | Identify from git log |
 
 ### 4.2 Pre-Release Validation Checklist
 
@@ -352,7 +352,7 @@ For juniper-ml, juniper-data, juniper-data-client, juniper-cascor-client, junipe
 
 Releases must follow the dependency graph:
 
-```
+```bash
 1. juniper-data (upstream, no Juniper dependencies)
 2. juniper-data-client (depends on juniper-data API contract)
 3. juniper-cascor-client (depends on juniper-cascor API contract)
@@ -385,11 +385,11 @@ For each application (in dependency order):
 
 ### Release Order Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|-----------|
-| juniper-data publish fails | Blocks all downstream releases | Test with TestPyPI first; the publish workflow already does this |
-| Version pin mismatch | juniper-ml installs wrong versions | Verify all extras resolve correctly before publishing juniper-ml |
-| Docker image tag drift | juniper-deploy pulls wrong images | Pin to exact version tags, not `latest` |
+| Risk                       | Impact                             | Mitigation                                                       |
+|----------------------------|------------------------------------|------------------------------------------------------------------|
+| juniper-data publish fails | Blocks all downstream releases     | Test with TestPyPI first; the publish workflow already does this |
+| Version pin mismatch       | juniper-ml installs wrong versions | Verify all extras resolve correctly before publishing juniper-ml |
+| Docker image tag drift     | juniper-deploy pulls wrong images  | Pin to exact version tags, not `latest`                          |
 
 ### Rollback Plan
 
@@ -401,11 +401,11 @@ For each application (in dependency order):
 
 ## Dependencies & Prerequisites
 
-| Prerequisite | Status | Required By |
-|-------------|--------|-------------|
-| All tests passing | DONE (1394 tests across all apps) | Phase 4 |
-| All pre-commit passing | DONE (all apps clean) | Phase 4 |
-| Code review complete | DONE (this document) | Phase 1 |
-| Worktrees for each affected repo | TO CREATE | Phase 1 |
-| PyPI trusted publishing configured | TO VERIFY | Phase 5 |
-| GitHub Actions secrets configured | TO VERIFY | Phase 5 |
+| Prerequisite                       | Status                            | Required By |
+|------------------------------------|-----------------------------------|-------------|
+| All tests passing                  | DONE (1394 tests across all apps) | Phase 4     |
+| All pre-commit passing             | DONE (all apps clean)             | Phase 4     |
+| Code review complete               | DONE (this document)              | Phase 1     |
+| Worktrees for each affected repo   | TO CREATE                         | Phase 1     |
+| PyPI trusted publishing configured | TO VERIFY                         | Phase 5     |
+| GitHub Actions secrets configured  | TO VERIFY                         | Phase 5     |
