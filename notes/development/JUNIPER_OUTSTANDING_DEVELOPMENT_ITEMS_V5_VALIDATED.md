@@ -27,11 +27,11 @@
 - [15. Client Library Outstanding Items](#15-client-library-outstanding-items)
 - [16. Performance Issues](#16-performance-issues-v4-new-section)
 - [17. Source Document Lineage](#17-source-document-lineage)
-- [18. Concurrency and Thread Safety Issues](#18-concurrency-and-thread-safety-issues)
-- [19. Error Handling and Robustness](#19-error-handling-and-robustness)
-- [20. Testing and CI/CD Gaps](#20-testing-and-cicd-gaps)
-- [21. Configuration and Dependency Issues](#21-configuration-and-dependency-issues)
-- [22. API Contract and Protocol Issues](#22-api-contract-and-protocol-issues)
+- [18. Concurrency and Thread Safety Issues](#18-concurrency-and-thread-safety-issues-v5-new)
+- [19. Error Handling and Robustness](#19-error-handling-and-robustness-v5-new)
+- [20. Testing and CI/CD Gaps](#20-testing-and-cicd-gaps-v5-new)
+- [21. Configuration and Dependency Issues](#21-configuration-and-dependency-issues-v5-new)
+- [22. API Contract and Protocol Issues](#22-api-contract-and-protocol-issues-v5-new)
 - [23. Validation Methodology (v5.0.0)](#23-validation-methodology-v500)
 
 ---
@@ -148,64 +148,64 @@ This document consolidates all **currently incomplete** development work across 
 
 ### 5.1 juniper-cascor
 
-| ID        | Severity   | Description                                                            | File(s)                                                            | Evidence                                                                                              |
-|-----------|------------|------------------------------------------------------------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
-| BUG-CC-01 | **MEDIUM** | `create_topology_message()` not fully implemented:                     | `src/api/websocket/messages.py:72`                                 | Defined and exported but zero production callers                                                      |
-|           |            | -- topology changes never broadcast via WS                             |                                                                    |                                                                                                       |
-| BUG-CC-02 | **MEDIUM** | `cascade_add` correlation hardcoded to `0.0`                           | `src/api/lifecycle/manager.py:427-430`                             | `monitor.on_cascade_add(hidden_unit_index=i, correlation=0.0)` — actual correlation is lost           |
-| BUG-CC-03 | **MEDIUM** | `or` fallback bugs for falsy values in spiral_problem.py               | `src/spiral_problem/spiral_problem.py:600-608,1250-1262,1411-1419` | `self.clockwise = clockwise or self.clockwise or DEFAULT` — falsy `False`/`0` silently overridden     |
-| BUG-CC-04 | **LOW**    | Version strings inconsistent across file headers                       | `src/main.py` (0.3.1), `cascade_correlation.py` (0.3.2),           | All three disagree                                                                                    |
-|           |            |                                                                        | -- `pyproject.toml` (0.4.0)                                        |                                                                                                       |
-| BUG-CC-05 | **LOW**    | `remote_client_0.py` has hardcoded old monorepo path                   | `src/remote_client/remote_client_0.py:16`                          | `sys.path.append("/home/pcalnon/Development/python/Juniper/src/prototypes/cascor/src")`               |
-| BUG-CC-06 | **LOW**    | 32 test files have hardcoded `sys.path.append` to old monorepo         | `src/tests/` (32 files)                                            | Stale path references from pre-polyrepo era                                                           |
-| BUG-CC-07 | **MEDIUM** | `TrainingMonitor.current_phase` never updated by state machine         | `src/api/lifecycle/monitor.py:157`, `manager.py:272,395$,433`      | Manually set as str$ing, not managed by `TrainingStateMachine.phase` — can drift                      |
-| BUG-CC-08 | **MEDIUM** | Undeclared global `shared_object_dict`                                 | Shared memory module                                               | Fails static analysis, fragile — relies on implicit global state                                      |
-| BUG-CC-09 | **MEDIUM** | `validate_training_results` uninitialized variable when `max_epochs=0` | Training validation                                                | Causes crash when `max_epochs=0` — variable referenced before assignment                              |
-| BUG-CC-10 | **MEDIUM** | `validate_training`: `value_output`/`value_loss`/`value_accuracy`      | `src/cascade_correlation/cascade_correlation.py:4444`              | Variables only assigned inside `if x_val is not None` branch;                                         |
-|           |            | -- not initialized for no-validation-data path                         |                                                                    | -- verbose log at L4444 references them on else path — `UnboundLocalError` at VERBOSE log level       |
-| BUG-CC-11 | **MEDIUM** | `_init_content_list` walrus operator precedence bug in `utils.py`      | `src/utils/utils.py:208`                                           | `content := _init_content_list(...) is not None` assigns `True`/`False` to `content`,                 |
-|           |            |                                                                        |                                                                    | -- not the list — subsequent `.append()` raises `AttributeError`                                      |
-| BUG-CC-12 | **MEDIUM** | `load_dataset` uses `yaml.safe_load` instead of `torch.load`           | `src/utils/utils.py:90-92`                                         | Changed from `torch.load` to `yaml.safe_load` but expects torch tensor keys:                          |
-|           |            |                                                                        |                                                                    | -- function is broken. Dead code (no callers)                                                         |
-| BUG-CC-13 | **MEDIUM** | `RateLimiter._counters` never pruned — unbounded memory growth         | `src/api/security.py:107`                                          | No expired entries cleaned; `ConnectionRateLimiter` has `_maybe_cleanup`, `RateLimiter` does not      |
-| BUG-CC-14 | **LOW**    | `HandshakeCooldown._rejections` never pruned for non-blocked IPs       | `src/api/websocket/control_security.py:88,108-114`                 | Entries persist forever if IPs fail & never reach block threshold: minor mem leak                     |
-| BUG-CC-15 | **MEDIUM** | `RequestBodyLimitMiddleware` reads full body before size check         | `src/api/middleware.py:86`                                         | `body = await request.body()`: body in mem before check `len(body) > self._max_bytes`: SEC-08 partial |
-| BUG-CC-16 | **MEDIUM** | `_last_state_broadcast_time` unprotected cross-thread R/W             | `src/api/lifecycle/manager.py:151-155`                             | Two concurrent callers can both pass throttle check and broadcast simultaneously (v5 new)              |
-| BUG-CC-17 | **MEDIUM** | `_extract_and_record_metrics()` split-lock — duplicate metric emission | `src/api/lifecycle/manager.py:453-495`                             | Lock released between reading and writing high-water-mark; duplicate metrics possible (v5 new)        |
+| ID        | Severity   | Description                                                            | File(s)                                                            | Evidence                                                                                                      |
+|-----------|------------|------------------------------------------------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| BUG-CC-01 | **MEDIUM** | `create_topology_message()` not fully implemented:                     | `src/api/websocket/messages.py:72`                                 | Defined and exported but zero production callers                                                              |
+|           |            | -- topology changes never broadcast via WS                             |                                                                    |                                                                                                               |
+| BUG-CC-02 | **MEDIUM** | `cascade_add` correlation hardcoded to `0.0`                           | `src/api/lifecycle/manager.py:427-430`                             | `monitor.on_cascade_add(hidden_unit_index=i, correlation=0.0)` — actual correlation is lost                   |
+| BUG-CC-03 | **MEDIUM** | `or` fallback bugs for falsy values in spiral_problem.py               | `src/spiral_problem/spiral_problem.py:600-608,1250-1262,1411-1419` | `self.clockwise = clockwise or self.clockwise or DEFAULT` — falsy `False`/`0` silently overridden             |
+| BUG-CC-04 | **LOW**    | Version strings inconsistent across file headers                       | `src/main.py` (0.3.1), `cascade_correlation.py` (0.3.2),           | All three disagree                                                                                            |
+|           |            |                                                                        | -- `pyproject.toml` (0.4.0)                                        |                                                                                                               |
+| BUG-CC-05 | **LOW**    | `remote_client_0.py` has hardcoded old monorepo path                   | `src/remote_client/remote_client_0.py:16`                          | `sys.path.append("/home/pcalnon/Development/python/Juniper/src/prototypes/cascor/src")`                       |
+| BUG-CC-06 | **LOW**    | 32 test files have hardcoded `sys.path.append` to old monorepo         | `src/tests/` (32 files)                                            | Stale path references from pre-polyrepo era                                                                   |
+| BUG-CC-07 | **MEDIUM** | `TrainingMonitor.current_phase` never updated by state machine         | `src/api/lifecycle/monitor.py:157`, `manager.py:272,395$,433`      | Manually set as str$ing, not managed by `TrainingStateMachine.phase` — can drift                              |
+| BUG-CC-08 | **MEDIUM** | Undeclared global `shared_object_dict`                                 | Shared memory module                                               | Fails static analysis, fragile — relies on implicit global state                                              |
+| BUG-CC-09 | **MEDIUM** | `validate_training_results` uninitialized variable when `max_epochs=0` | Training validation                                                | Causes crash when `max_epochs=0` — variable referenced before assignment                                      |
+| BUG-CC-10 | **MEDIUM** | `validate_training`: `value_output`/`value_loss`/`value_accuracy`      | `src/cascade_correlation/cascade_correlation.py:4444`              | Variables only assigned inside `if x_val is not None` branch;                                                 |
+|           |            | -- not initialized for no-validation-data path                         |                                                                    | -- verbose log at L4444 references them on else path — `UnboundLocalError` at VERBOSE log level               |
+| BUG-CC-11 | **MEDIUM** | `_init_content_list` walrus operator precedence bug in `utils.py`      | `src/utils/utils.py:208`                                           | `content := _init_content_list(...) is not None` assigns `True`/`False` to `content`,                         |
+|           |            |                                                                        |                                                                    | -- not the list — subsequent `.append()` raises `AttributeError`                                              |
+| BUG-CC-12 | **MEDIUM** | `load_dataset` uses `yaml.safe_load` instead of `torch.load`           | `src/utils/utils.py:90-92`                                         | Changed from `torch.load` to `yaml.safe_load` but expects torch tensor keys:                                  |
+|           |            |                                                                        |                                                                    | -- function is broken. Dead code (no callers)                                                                 |
+| BUG-CC-13 | **MEDIUM** | `RateLimiter._counters` never pruned — unbounded memory growth         | `src/api/security.py:107`                                          | No expired entries cleaned; `ConnectionRateLimiter` has `_maybe_cleanup`, `RateLimiter` does not              |
+| BUG-CC-14 | **LOW**    | `HandshakeCooldown._rejections` never pruned for non-blocked IPs       | `src/api/websocket/control_security.py:88,108-114`                 | Entries persist forever if IPs fail & never reach block threshold: minor mem leak                             |
+| BUG-CC-15 | **MEDIUM** | `RequestBodyLimitMiddleware` reads full body before size check         | `src/api/middleware.py:86`                                         | `body = await request.body()`: body in mem before check `len(body) > self._max_bytes`: SEC-08 partial         |
+| BUG-CC-16 | **MEDIUM** | `_last_state_broadcast_time` unprotected cross-thread R/W              | `src/api/lifecycle/manager.py:151-155`                             | Two concurrent callers can both pass throttle check and broadcast simultaneously (v5 new)                     |
+| BUG-CC-17 | **MEDIUM** | `_extract_and_record_metrics()` split-lock — duplicate metric emission | `src/api/lifecycle/manager.py:453-495`                             | Lock released between reading and writing high-water-mark; duplicate metrics possible (v5 new)                |
 | BUG-CC-18 | **HIGH**   | Dummy candidate results on double training failure — silent corruption | `src/cascade_correlation/cascade_correlation.py:1930-1962`         | When parallel AND sequential fallback both fail, dummy zero-correlation candidate installed silently (v5 new) |
 
 ### 5.2 juniper-canopy
 
-| ID        | Severity   | Description                                           | File(s)                                                      | Evidence                                                                                                                      |
-|-----------|------------|-------------------------------------------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| BUG-CN-01 | **HIGH**   | `_stop.clear()` race: `_perform_reset()` w/o lock     | `src/demo_mode.py:1614-1618`                                 | `_stop.clear()` at L1617 and `_pause.clear()` at L1618 outside lock block (lock covers L1615-1616)                            |
-| BUG-CN-02 | **HIGH**   | DashboardManager god class (3,232 lines)              | `src/frontend/dashboard_manager.py`                          | 3,232 lines, 81 `def` functions — still growing                                                                               |
-| BUG-CN-03 | **MEDIUM** | 226 `hasattr` guards, tests skip test logic           | `src/tests/` (226 occurrences)                               | Verified exact count: 226                                                                                                     |
-| BUG-CN-04 | **MEDIUM** | `_api_base_url` hardcoded to `127.0.0.1`              | `cascor_service_adapter.py`                                  | Breaks in Docker/remote deployments                                                                                           |
-| BUG-CN-05 | **MEDIUM** | Service populate param values w/ int defaults         | Parameter UI                                                 | UI shows incorrect values for params cascor doesn't expose                                                                    |
-| BUG-CN-06 | **MEDIUM** | 1 Hz state throttle drops terminal transitions        | State update handling                                        | Fast Started→Failed→Stopped leaves dashboard showing Started forever                                                          |
-| BUG-CN-07 | **LOW**    | Duplicate `APP_VERSION` assignment in module          | `src/main.py:90-93` and `src/main.py:110-113`                | Two identical `try/except` blocks for version extraction — copy-paste error                                                   |
-| BUG-CN-08 | **MEDIUM** | `_demo_snapshots` list grows unbounded: demo mode     | `src/main.py:1345, 1444`                                     | `insert(0, snapshot)` with no cap or eviction — memory leak proportional to snapshot frequency                                |
-| BUG-CN-09 | **MEDIUM** | `WebSocketManager.active_connections` not thread safe | `src/communication/websocket_manager.py:178,239,304-310,446` | `broadcast_from_thread()` reads bg threads, `connect()`/`disconnect()` mod: `RuntimeError: Set changed size during iteration` |
-| BUG-CN-10 | **LOW**    | `message_count` increment not atomic                  | `src/communication/websocket_manager.py:375`                 | `self.message_count += 1` not thread-safe — inaccurate statistics under concurrent broadcasts                                 |
-| BUG-CN-11 | **MEDIUM** | `regenerate_dataset` mutates state without lock       | `src/demo_mode.py:1660-1676`                                 | train_x, train_y, epoch, loss mutated without `_lock` — training thread sees partial state (v5 new)                           |
-| BUG-CN-12 | **LOW**    | `config_manager._load_config()` returns {} on any error | `src/config_manager.py:147-149`                           | Catches all exceptions including programming errors, returns empty config silently (v5 new)                                    |
+| ID        | Severity   | Description                                             | File(s)                                                      | Evidence                                                                                                                      |
+|-----------|------------|---------------------------------------------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| BUG-CN-01 | **HIGH**   | `_stop.clear()` race: `_perform_reset()` w/o lock       | `src/demo_mode.py:1614-1618`                                 | `_stop.clear()` at L1617 and `_pause.clear()` at L1618 outside lock block (lock covers L1615-1616)                            |
+| BUG-CN-02 | **HIGH**   | DashboardManager god class (3,232 lines)                | `src/frontend/dashboard_manager.py`                          | 3,232 lines, 81 `def` functions — still growing                                                                               |
+| BUG-CN-03 | **MEDIUM** | 226 `hasattr` guards, tests skip test logic             | `src/tests/` (226 occurrences)                               | Verified exact count: 226                                                                                                     |
+| BUG-CN-04 | **MEDIUM** | `_api_base_url` hardcoded to `127.0.0.1`                | `cascor_service_adapter.py`                                  | Breaks in Docker/remote deployments                                                                                           |
+| BUG-CN-05 | **MEDIUM** | Service populate param values w/ int defaults           | Parameter UI                                                 | UI shows incorrect values for params cascor doesn't expose                                                                    |
+| BUG-CN-06 | **MEDIUM** | 1 Hz state throttle drops terminal transitions          | State update handling                                        | Fast Started→Failed→Stopped leaves dashboard showing Started forever                                                          |
+| BUG-CN-07 | **LOW**    | Duplicate `APP_VERSION` assignment in module            | `src/main.py:90-93` and `src/main.py:110-113`                | Two identical `try/except` blocks for version extraction — copy-paste error                                                   |
+| BUG-CN-08 | **MEDIUM** | `_demo_snapshots` list grows unbounded: demo mode       | `src/main.py:1345, 1444`                                     | `insert(0, snapshot)` with no cap or eviction — memory leak proportional to snapshot frequency                                |
+| BUG-CN-09 | **MEDIUM** | `WebSocketManager.active_connections` not thread safe   | `src/communication/websocket_manager.py:178,239,304-310,446` | `broadcast_from_thread()` reads bg threads, `connect()`/`disconnect()` mod: `RuntimeError: Set changed size during iteration` |
+| BUG-CN-10 | **LOW**    | `message_count` increment not atomic                    | `src/communication/websocket_manager.py:375`                 | `self.message_count += 1` not thread-safe — inaccurate statistics under concurrent broadcasts                                 |
+| BUG-CN-11 | **MEDIUM** | `regenerate_dataset` mutates state without lock         | `src/demo_mode.py:1660-1676`                                 | train_x, train_y, epoch, loss mutated without `_lock` — training thread sees partial state (v5 new)                           |
+| BUG-CN-12 | **LOW**    | `config_manager._load_config()` returns {} on any error | `src/config_manager.py:147-149`                              | Catches all exceptions including programming errors, returns empty config silently (v5 new)                                   |
 
 ### 5.3 juniper-data
 
-| ID        | Severity   | Description                                                     | File(s)                          | Evidence                                                                                                             |
-|-----------|------------|-----------------------------------------------------------------|----------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| BUG-JD-01 | **MEDIUM** | `batch_export` builds entire ZIP in memory — OOM risk           | `api/routes/datasets.py:416-434` | Large dataset exports accumulate entire ZIP in memory before sending response                                        |
-| BUG-JD-02 | **MEDIUM** | `delete()` TOCTOU race condition — non-atomic check-then-unlink | `storage/local_fs.py`            | Time-of-check to time-of-use race between existence check and file deletion                                          |
-| BUG-JD-03 | **MEDIUM** | `update_meta` writes without temp file — partial data exposure  | `storage/local_fs.py:221-226`    | Confirmed: `meta_path.write_text(...)` directly, while `save()` uses atomic temp-file-replace at L80-101             |
-| BUG-JD-04 | **MEDIUM** | Deterministic IDs with `seed=None` → stale cache returns        | `core/dataset_id.py`             | When seed is None, generated dataset ID is deterministic causing stale cache hits                                    |
-| BUG-JD-05 | **LOW**    | `_version_lock` is class variable — won't work across workers   | `storage/base.py:23`             | Confirmed: `_version_lock = threading.Lock()` at class level — per-process, not per-cluster                          |
-| BUG-JD-06 | **LOW**    | `ReadinessResponse.timestamp` uses naive `datetime.now()`       | `api/models/health.py:24`        | All other timestamps use `datetime.now(UTC)`; this one produces local-time timestamps                                |
-| BUG-JD-07 | **MEDIUM** | `record_dataset_generation()` defined but never called          | `api/observability.py:218-229`   | Prometheus metrics `dataset_generations_total` and `generation_duration_seconds` never recorded from route handlers  |
-| BUG-JD-08 | **LOW**    | `record_access()` defined but never called from API layer       | `storage/base.py:125-135`        | `access_count` and `last_accessed_at` fields never populated; TTL-based expiration by access won't work              |
-| BUG-JD-09 | **MEDIUM** | High-cardinality Prometheus labels from parameterized routes    | `api/observability.py:98`        | `endpoint = request.url.path` captures full path with dataset IDs — unbounded label cardinality; Prometheus OOM risk |
-| BUG-JD-10 | **HIGH**   | ALL storage operations block async event loop (extends JD-PERF-01) | `api/routes/datasets.py:98-424` | get_meta, save, batch_export, batch_update_tags — all synchronous in async handlers; blocks ALL concurrent requests (v5 new) |
-| BUG-JD-11 | **LOW**    | `record_access` TOCTOU race on access_count increment           | `storage/base.py:125-135`        | Two concurrent requests read same count, both increment, one lost (v5 new)                                            |
+| ID        | Severity   | Description                                                        | File(s)                          | Evidence                                                                                                                     |
+|-----------|------------|--------------------------------------------------------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| BUG-JD-01 | **MEDIUM** | `batch_export` builds entire ZIP in memory — OOM risk              | `api/routes/datasets.py:416-434` | Large dataset exports accumulate entire ZIP in memory before sending response                                                |
+| BUG-JD-02 | **MEDIUM** | `delete()` TOCTOU race condition — non-atomic check-then-unlink    | `storage/local_fs.py`            | Time-of-check to time-of-use race between existence check and file deletion                                                  |
+| BUG-JD-03 | **MEDIUM** | `update_meta` writes without temp file — partial data exposure     | `storage/local_fs.py:221-226`    | Confirmed: `meta_path.write_text(...)` directly, while `save()` uses atomic temp-file-replace at L80-101                     |
+| BUG-JD-04 | **MEDIUM** | Deterministic IDs with `seed=None` → stale cache returns           | `core/dataset_id.py`             | When seed is None, generated dataset ID is deterministic causing stale cache hits                                            |
+| BUG-JD-05 | **LOW**    | `_version_lock` is class variable — won't work across workers      | `storage/base.py:23`             | Confirmed: `_version_lock = threading.Lock()` at class level — per-process, not per-cluster                                  |
+| BUG-JD-06 | **LOW**    | `ReadinessResponse.timestamp` uses naive `datetime.now()`          | `api/models/health.py:24`        | All other timestamps use `datetime.now(UTC)`; this one produces local-time timestamps                                        |
+| BUG-JD-07 | **MEDIUM** | `record_dataset_generation()` defined but never called             | `api/observability.py:218-229`   | Prometheus metrics `dataset_generations_total` and `generation_duration_seconds` never recorded from route handlers          |
+| BUG-JD-08 | **LOW**    | `record_access()` defined but never called from API layer          | `storage/base.py:125-135`        | `access_count` and `last_accessed_at` fields never populated; TTL-based expiration by access won't work                      |
+| BUG-JD-09 | **MEDIUM** | High-cardinality Prometheus labels from parameterized routes       | `api/observability.py:98`        | `endpoint = request.url.path` captures full path with dataset IDs — unbounded label cardinality; Prometheus OOM risk         |
+| BUG-JD-10 | **HIGH**   | ALL storage operations block async event loop (extends JD-PERF-01) | `api/routes/datasets.py:98-424`  | get_meta, save, batch_export, batch_update_tags — all synchronous in async handlers; blocks ALL concurrent requests (v5 new) |
+| BUG-JD-11 | **LOW**    | `record_access` TOCTOU race on access_count increment              | `storage/base.py:125-135`        | Two concurrent requests read same count, both increment, one lost (v5 new)                                                   |
 
 ---
 
@@ -444,18 +444,19 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 
 ### 11.2 New cross-repo issues (v4)
 
-| ID       | Severity   | Repositories       | Description                                                                                     | Evidence                                                                                         |
-|----------|------------|--------------------|-------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| XREPO-08 | **MEDIUM** | cascor-client      | Three distinct WS message formats: `send_command()`, `command()`, and `set_params()` all differ | `ws_client.py:99` (no type), `:232` (no type), `:280-285` (has `type: "command"`) — inconsistent |
-| XREPO-09 | **MEDIUM** | data-client ↔ data | Client `create_dataset()` missing `tags` and `ttl_seconds` parameters from server API           | Server `CreateDatasetRequest` has 8 fields; client only sends 6 — `tags`/`ttl_seconds` dropped   |
-| XREPO-10 | **MEDIUM** | data-client        | `FakeDataClient` metadata schema diverges from real server response structure                   | Fake uses `"n_full"` key, flat meta structure; real returns full `DatasetMeta` Pydantic model    |
-| XREPO-11 | **MEDIUM** | data-client        | Client retries non-idempotent mutations (POST, DELETE)                                          | `RETRY_ALLOWED_METHODS = ["HEAD", "GET", "POST", "PATCH", "DELETE"]` — can create duplicates     |
-| XREPO-12 | **MEDIUM** | cascor-worker      | `y` tensor received from server but never used in training task                                 | `task_executor.py:35` documents key `y` but L74-75 only use `candidate_input`/`residual_error`   |
-| XREPO-13 | **MEDIUM** | cascor ↔ data ↔ canopy | Health endpoint `status` value inconsistency: cascor/data return `"ok"`, canopy returns `"healthy"` | `cascor/health.py:27`, `canopy/main.py:694-705` (v5 new)                                   |
-| XREPO-14 | **MEDIUM** | cascor-client ↔ cascor | FakeClient state constants use different vocabulary: `"idle"`/`"training"` vs server's `"STOPPED"`/`"STARTED"` | `testing/constants.py:39-43` vs server `state_machine.py:21-29` (v5 new) |
-| XREPO-15 | **MEDIUM** | all services       | Error response format inconsistent — three different JSON error shapes across services         | cascor: `{"status":"error","error":{}}` + `{"detail":""}`, data: `{"detail":""}`, canopy: `{"error":"","detail":"","status_code":500}` (v5 new) |
-| XREPO-16 | **MEDIUM** | data ↔ data-client | Client missing methods for 4 server endpoints: filter, stats, cleanup-expired, individual tags | Server has routes; client has no corresponding methods (v5 new)                                    |
-| XREPO-17 | **LOW**    | cascor ↔ cascor-client | `candidate_progress` WS message broadcast by server but not in client constants, no callback | `messages.py:102-109` — server sends it; client has no handler (v5 new)                           |
+| ID       | Severity   | Repositories           | Description                                                                                            | Evidence                                                                                         |
+|----------|------------|------------------------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| XREPO-08 | **MEDIUM** | cascor-client          | Three distinct WS message formats: `send_command()`, `command()`, and `set_params()` all differ        | `ws_client.py:99` (no type), `:232` (no type), `:280-285` (has `type: "command"`) — inconsistent |
+| XREPO-09 | **MEDIUM** | data-client ↔ data     | Client `create_dataset()` missing `tags` and `ttl_seconds` parameters from server API                  | Server `CreateDatasetRequest` has 8 fields; client only sends 6 — `tags`/`ttl_seconds` dropped   |
+| XREPO-10 | **MEDIUM** | data-client            | `FakeDataClient` metadata schema diverges from real server response structure                          | Fake uses `"n_full"` key, flat meta structure; real returns full `DatasetMeta` Pydantic model    |
+| XREPO-11 | **MEDIUM** | data-client            | Client retries non-idempotent mutations (POST, DELETE)                                                 | `RETRY_ALLOWED_METHODS = ["HEAD", "GET", "POST", "PATCH", "DELETE"]` — can create duplicates     |
+| XREPO-12 | **MEDIUM** | cascor-worker          | `y` tensor received from server but never used in training task                                        | `task_executor.py:35` documents key `y` but L74-75 only use `candidate_input`/`residual_error`   |
+| XREPO-13 | **MEDIUM** | cascor ↔ data ↔ canopy | Health endpoint `status` value inconsistency: cascor/data return `"ok"`, canopy returns `"healthy"`    | `cascor/health.py:27`, `canopy/main.py:694-705` (v5 new)                                         |
+| XREPO-14 | **MEDIUM** | cascor-client ↔ cascor | FakeClient state consts use different vocab: `"idle"`/`"training"` vs server's `"STOPPED"`/`"STARTED"` | `testing/constants.py:39-43` vs server `state_machine.py:21-29` (v5 new)                         |
+| XREPO-15 | **MEDIUM** | all services           | Error response format inconsistent — three different JSON error shapes across services                 | cascor: `{"status":"error","error":{}}` + `{"detail":""}`, data: `{"detail":""}`,                |
+|          |            |                        |                                                                                                        | -- canopy: `{"error":"","detail":"","status_code":500}` (v5 new)                                 |
+| XREPO-16 | **MEDIUM** | data ↔ data-client     | Client missing methods for 4 server endpoints: filter, stats, cleanup-expired, individual tags         | Server has routes; client has no corresponding methods (v5 new)                                  |
+| XREPO-17 | **LOW**    | cascor ↔ cascor-client | `candidate_progress` WS message broadcast by server but not in client constants, no callback           | `messages.py:102-109` — server sends it; client has no handler (v5 new)                          |
 
 ---
 
@@ -518,22 +519,22 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 
 ### 13.2 New infrastructure issues (v4)
 
-| ID        | Severity   | Description                                                                                                    | Evidence                                                                                   |
-|-----------|------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| DEPLOY-13 | **HIGH**   | `canopy-dev` network isolation prevents data access — on `frontend` only, but juniper-data on `backend`+`data` | `docker-compose.yml:391-392` — dev profile is broken, canopy-dev cannot reach juniper-data |
-| DEPLOY-14 | **MEDIUM** | Prometheus rule files not mounted into container (extends DEPLOY-03 with specific fix)                         | Only `prometheus.yml` file is volume-mounted; needs `./prometheus:/etc/prometheus:ro`      |
-| DEPLOY-15 | **MEDIUM** | Helm chart default values use `latest` image tags for all 4 services                                           | `values.yaml:27,86,163,227` — non-reproducible deployments                                 |
-| DEPLOY-16 | **MEDIUM** | `kube-prometheus-stack.grafana.adminPassword` empty in values.yaml                                             | `values.yaml:334` — if kube-prometheus-stack enabled, Grafana installs with empty password |
-| DEPLOY-17 | **LOW**    | CI compose validation missing worker build context stubs                                                       | `.github/workflows/ci.yml:163-170` — only 3 of 4 Dockerfiles stubbed, 3 of 7 secrets       |
-| DEPLOY-18 | **LOW**    | Prometheus container has no healthcheck                                                                        | `docker-compose.yml:410-428` — Grafana may start before Prometheus is ready                |
-| DEPLOY-19 | **LOW**    | Grafana container has no healthcheck                                                                           | `docker-compose.yml:433-453`                                                               |
-| DEPLOY-20 | **LOW**    | Redis has no persistence volume — data lost on restart                                                         | `docker-compose.yml:458-467` — acceptable for cache, should be documented                  |
-| DEPLOY-21 | **LOW**    | `canopy-demo` and `canopy-dev` missing Redis dependency                                                        | Full canopy depends on Redis; demo/dev profiles don't include it                           |
-| DEPLOY-22 | **LOW**    | `Dockerfile.test` uses unpinned `python:3.12-slim`                                                             | No digest or patch version pin — non-reproducible test builds                              |
-| DEPLOY-23 | **LOW**    | No Helm chart linting in CI                                                                                    | CI validates Docker Compose but doesn't run `helm lint` or `helm template`                 |
+| ID        | Severity   | Description                                                                                                       | Evidence                                                                                      |
+|-----------|------------|-------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| DEPLOY-13 | **HIGH**   | `canopy-dev` network isolation prevents data access — on `frontend` only, but juniper-data on `backend`+`data`    | `docker-compose.yml:391-392` — dev profile is broken, canopy-dev cannot reach juniper-data    |
+| DEPLOY-14 | **MEDIUM** | Prometheus rule files not mounted into container (extends DEPLOY-03 with specific fix)                            | Only `prometheus.yml` file is volume-mounted; needs `./prometheus:/etc/prometheus:ro`         |
+| DEPLOY-15 | **MEDIUM** | Helm chart default values use `latest` image tags for all 4 services                                              | `values.yaml:27,86,163,227` — non-reproducible deployments                                    |
+| DEPLOY-16 | **MEDIUM** | `kube-prometheus-stack.grafana.adminPassword` empty in values.yaml                                                | `values.yaml:334` — if kube-prometheus-stack enabled, Grafana installs with empty password    |
+| DEPLOY-17 | **LOW**    | CI compose validation missing worker build context stubs                                                          | `.github/workflows/ci.yml:163-170` — only 3 of 4 Dockerfiles stubbed, 3 of 7 secrets          |
+| DEPLOY-18 | **LOW**    | Prometheus container has no healthcheck                                                                           | `docker-compose.yml:410-428` — Grafana may start before Prometheus is ready                   |
+| DEPLOY-19 | **LOW**    | Grafana container has no healthcheck                                                                              | `docker-compose.yml:433-453`                                                                  |
+| DEPLOY-20 | **LOW**    | Redis has no persistence volume — data lost on restart                                                            | `docker-compose.yml:458-467` — acceptable for cache, should be documented                     |
+| DEPLOY-21 | **LOW**    | `canopy-demo` and `canopy-dev` missing Redis dependency                                                           | Full canopy depends on Redis; demo/dev profiles don't include it                              |
+| DEPLOY-22 | **LOW**    | `Dockerfile.test` uses unpinned `python:3.12-slim`                                                                | No digest or patch version pin — non-reproducible test builds                                 |
+| DEPLOY-23 | **LOW**    | No Helm chart linting in CI                                                                                       | CI validates Docker Compose but doesn't run `helm lint` or `helm template`                    |
 | DEPLOY-24 | **HIGH**   | Helm values.yaml missing `JUNIPER_DATA_URL` and `CASCOR_SERVICE_URL` for canopy — K8s canopy can't reach services | `values.yaml` canopy env section — only SERVER, RATE_LIMIT, LOG, SENTRY, METRICS set (v5 new) |
-| DEPLOY-25 | **HIGH**   | Helm values.yaml missing `CASCOR_SERVER_URL` for worker — worker fails to start in K8s                         | `values.yaml` worker env — only `CASCOR_HEARTBEAT_INTERVAL` set (v5 new)                  |
-| DEPLOY-26 | **MEDIUM** | Helm values.yaml missing `JUNIPER_DATA_URL` for cascor — cascor can't locate data service in K8s               | `values.yaml` cascor env — `main.py` treats missing `JUNIPER_DATA_URL` as fatal (v5 new)  |
+| DEPLOY-25 | **HIGH**   | Helm values.yaml missing `CASCOR_SERVER_URL` for worker — worker fails to start in K8s                            | `values.yaml` worker env — only `CASCOR_HEARTBEAT_INTERVAL` set (v5 new)                      |
+| DEPLOY-26 | **MEDIUM** | Helm values.yaml missing `JUNIPER_DATA_URL` for cascor — cascor can't locate data service in K8s                  | `values.yaml` cascor env — `main.py` treats missing `JUNIPER_DATA_URL` as fatal (v5 new)      |
 
 ### 13.3 Unimplemented Roadmap Items (carried from v3)
 
@@ -617,16 +618,17 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 
 ### 15.3 juniper-cascor-worker
 
-| ID    | Severity   | Description                                                                                          | Status                                                                                              |
-|-------|------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | ⚠️ Partially fixed — `_parse_json()` catches but `receive_json()` at `ws_connection.py:184` doesn't |
-| CW-02 | **MEDIUM** | `requirements.lock` includes CUDA packages (~2-4GB image bloat)                                      | 🔴 Open                                                                                             |
-| CW-03 | **LOW**    | No integration tests (marker defined, zero tests use it)                                             | 🔴 Open                                                                                             |
-| CW-04 | **MEDIUM** | Timeout error sends `candidate_uuid: ""` instead of actual UUID                                      | 🔴 Open                                                                                             |
-| CW-05 | **MEDIUM** | Dynamic import `from candidate_unit.candidate_unit import CandidateUnit` — fragile, no version check | 🔴 Open                                                                                             |
-| CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | 🔴 Open (v4 new)                                                                                    |
-| CW-07 | **MEDIUM** | No validation of `tensor_manifest` keys against received binary frames — deadlock risk               | 🔴 Open (v4 new)                                                                                    |
-| CW-08 | **MEDIUM** | `task_executor.py:12` top-level `import torch` — first-task latency from deferred torch import       | 🔴 Open (v4 new)                                                                                    |
+| ID    | Severity   | Description                                                                                          | Status                                                |
+|-------|------------|------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | ⚠️ Partially fixed — `_parse_json()` catches but      |
+|       |            |                                                                                                      | -- `receive_json()` at `ws_connection.py:184` doesn't |
+| CW-02 | **MEDIUM** | `requirements.lock` includes CUDA packages (~2-4GB image bloat)                                      | 🔴 Open                                               |
+| CW-03 | **LOW**    | No integration tests (marker defined, zero tests use it)                                             | 🔴 Open                                               |
+| CW-04 | **MEDIUM** | Timeout error sends `candidate_uuid: ""` instead of actual UUID                                      | 🔴 Open                                               |
+| CW-05 | **MEDIUM** | Dynamic import `from candidate_unit.candidate_unit import CandidateUnit` — fragile, no version check | 🔴 Open                                               |
+| CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | 🔴 Open (v4 new)                                      |
+| CW-07 | **MEDIUM** | No validation of `tensor_manifest` keys against received binary frames — deadlock risk               | 🔴 Open (v4 new)                                      |
+| CW-08 | **MEDIUM** | `task_executor.py:12` top-level `import torch` — first-task latency from deferred torch import       | 🔴 Open (v4 new)                                      |
 
 ---
 
@@ -685,17 +687,17 @@ This document was produced by cross-referencing:
 
 Issues identified through cross-cutting concurrency analysis across all repositories.
 
-| ID      | Severity   | Repository     | Description                                                                            | File(s)                                              | Evidence                                                                    |
-|---------|------------|----------------|----------------------------------------------------------------------------------------|------------------------------------------------------|-----------------------------------------------------------------------------|
-| CONC-01 | **HIGH**   | juniper-canopy | `_per_ip_counts` check-then-act race in WebSocketManager — no lock on check+decrement | `websocket_manager.py:278-282,289-292`               | Concurrent connect/disconnect can corrupt per-IP tracking                  |
-| CONC-02 | **MEDIUM** | juniper-cascor | `_last_state_broadcast_time` unprotected cross-thread R/W                             | `manager.py:151-155`                                 | Two callers can both pass throttle check simultaneously                    |
-| CONC-03 | **MEDIUM** | juniper-cascor | `_extract_and_record_metrics` split-lock — duplicate emissions                        | `manager.py:453-495`                                 | Lock released between read and write of high-water-mark                    |
-| CONC-04 | **HIGH**   | juniper-data   | ALL storage operations block async event loop (extends JD-PERF-01)                    | `datasets.py:98-154,259,277,377-424`                 | get_meta, save, batch ops are synchronous in async handlers                |
-| CONC-07 | **MEDIUM** | juniper-canopy | `regenerate_dataset` mutates state without lock                                       | `demo_mode.py:1660-1676`                             | Training thread sees partially updated dataset                              |
-| CONC-08 | **LOW**    | juniper-canopy | `is_running` reads/writes inconsistently locked                                       | `demo_mode.py:1151,1293,1398,1478`                   | Boolean check-then-act not atomic                                           |
-| CONC-09 | **MEDIUM** | juniper-cascor | Fire-and-forget `asyncio.create_task` without stored reference                        | `app.py:137,142`                                     | Startup tasks silently swallowed on exception; GC'd references              |
-| CONC-10 | **LOW**    | juniper-cascor | Health monitor deregister/assign race window                                          | `coordinator.py:379-408`                             | Task assigned to worker about to be deregistered — 120s delay risk          |
-| CONC-12 | **LOW**    | juniper-data   | `record_access` TOCTOU on access_count increment                                     | `base.py:125-135`                                    | Concurrent access increments can lose counts                                |
+| ID      | Severity   | Repository     | Description                                                                           | File(s)                                | Evidence                                                           |
+|---------|------------|----------------|---------------------------------------------------------------------------------------|----------------------------------------|--------------------------------------------------------------------|
+| CONC-01 | **HIGH**   | juniper-canopy | `_per_ip_counts` check-then-act race in WebSocketManager — no lock on check+decrement | `websocket_manager.py:278-282,289-292` | Concurrent connect/disconnect can corrupt per-IP tracking          |
+| CONC-02 | **MEDIUM** | juniper-cascor | `_last_state_broadcast_time` unprotected cross-thread R/W                             | `manager.py:151-155`                   | Two callers can both pass throttle check simultaneously            |
+| CONC-03 | **MEDIUM** | juniper-cascor | `_extract_and_record_metrics` split-lock — duplicate emissions                        | `manager.py:453-495`                   | Lock released between read and write of high-water-mark            |
+| CONC-04 | **HIGH**   | juniper-data   | ALL storage operations block async event loop (extends JD-PERF-01)                    | `datasets.py:98-154,259,277,377-424`   | get_meta, save, batch ops are synchronous in async handlers        |
+| CONC-07 | **MEDIUM** | juniper-canopy | `regenerate_dataset` mutates state without lock                                       | `demo_mode.py:1660-1676`               | Training thread sees partially updated dataset                     |
+| CONC-08 | **LOW**    | juniper-canopy | `is_running` reads/writes inconsistently locked                                       | `demo_mode.py:1151,1293,1398,1478`     | Boolean check-then-act not atomic                                  |
+| CONC-09 | **MEDIUM** | juniper-cascor | Fire-and-forget `asyncio.create_task` without stored reference                        | `app.py:137,142`                       | Startup tasks silently swallowed on exception; GC'd references     |
+| CONC-10 | **LOW**    | juniper-cascor | Health monitor deregister/assign race window                                          | `coordinator.py:379-408`               | Task assigned to worker about to be deregistered — 120s delay risk |
+| CONC-12 | **LOW**    | juniper-data   | `record_access` TOCTOU on access_count increment                                      | `base.py:125-135`                      | Concurrent access increments can lose counts                       |
 
 ---
 
@@ -703,18 +705,18 @@ Issues identified through cross-cutting concurrency analysis across all reposito
 
 Issues identified through cross-cutting error handling analysis across all repositories.
 
-| ID        | Severity   | Repository          | Description                                                                         | File(s)                                                     |
-|-----------|------------|---------------------|-------------------------------------------------------------------------------------|-------------------------------------------------------------|
-| ERR-01    | **MEDIUM** | juniper-data-client | `response.json()` unguarded against JSONDecodeError on all 13 public methods       | `client.py:215-531`                                          |
-| ERR-02    | **MEDIUM** | juniper-cascor-client | `response.json()` unguarded in `_request()` — ValueError escapes                 | `client.py:366`                                              |
-| ERR-06    | **LOW**    | juniper-cascor      | `raise HTTPException` without `from e` — loses exception context (6 locations)     | `routes/network.py:31,52`, `training.py:89,109,121,170`      |
-| ERR-07    | **LOW**    | juniper-data        | `raise HTTPException` without `from e` — broad except masks programming errors as 400 | `datasets.py:90`                                          |
-| ERR-08    | **LOW**    | juniper-data        | `str(e)` in batch create error response — information disclosure                   | `datasets.py:342-348`                                        |
-| ERR-09    | **MEDIUM** | juniper-cascor      | `remote_client_0.process_tasks()` catches all exceptions, only prints — silent failure | `remote_client_0.py:73-74`                                |
-| ERR-12    | **LOW**    | juniper-canopy      | `config_manager._load_config()` silently returns {} on any exception               | `config_manager.py:147-149`                                  |
-| ERR-13    | **LOW**    | juniper-data        | `arc_agi` generator silently falls back on any exception — masks auth/network errors | `generator.py:95-98`                                       |
-| ERR-14    | **MEDIUM** | juniper-cascor-client | `CascorMetricsStream.stream()` swallows ConnectionClosed — caller can't detect disconnect | `ws_client.py:79-80`                                 |
-| ROBUST-01 | **HIGH**   | juniper-cascor      | Dummy candidate results on double training failure — zero-correlation candidate installed silently | `cascade_correlation.py:1930-1962`               |
+| ID        | Severity   | Repository            | Description                                                                                        | File(s)                                                 |
+|-----------|------------|-----------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| ERR-01    | **MEDIUM** | juniper-data-client   | `response.json()` unguarded against JSONDecodeError on all 13 public methods                       | `client.py:215-531`                                     |
+| ERR-02    | **MEDIUM** | juniper-cascor-client | `response.json()` unguarded in `_request()` — ValueError escapes                                   | `client.py:366`                                         |
+| ERR-06    | **LOW**    | juniper-cascor        | `raise HTTPException` without `from e` — loses exception context (6 locations)                     | `routes/network.py:31,52`, `training.py:89,109,121,170` |
+| ERR-07    | **LOW**    | juniper-data          | `raise HTTPException` without `from e` — broad except masks programming errors as 400              | `datasets.py:90`                                        |
+| ERR-08    | **LOW**    | juniper-data          | `str(e)` in batch create error response — information disclosure                                   | `datasets.py:342-348`                                   |
+| ERR-09    | **MEDIUM** | juniper-cascor        | `remote_client_0.process_tasks()` catches all exceptions, only prints — silent failure             | `remote_client_0.py:73-74`                              |
+| ERR-12    | **LOW**    | juniper-canopy        | `config_manager._load_config()` silently returns {} on any exception                               | `config_manager.py:147-149`                             |
+| ERR-13    | **LOW**    | juniper-data          | `arc_agi` generator silently falls back on any exception — masks auth/network errors               | `generator.py:95-98`                                    |
+| ERR-14    | **MEDIUM** | juniper-cascor-client | `CascorMetricsStream.stream()` swallows ConnectionClosed — caller can't detect disconnect          | `ws_client.py:79-80`                                    |
+| ROBUST-01 | **HIGH**   | juniper-cascor        | Dummy candidate results on double training failure — zero-correlation candidate installed silently | `cascade_correlation.py:1930-1962`                      |
 
 ---
 
@@ -722,25 +724,25 @@ Issues identified through cross-cutting error handling analysis across all repos
 
 Issues identified through cross-cutting test coverage and CI analysis across all repositories.
 
-| ID        | Severity   | Category      | Repository      | Description                                                                     |
-|-----------|------------|---------------|-----------------|---------------------------------------------------------------------------------|
-| CI-01     | **HIGH**   | CI/CD         | cascor-client   | CI doesn't test Python 3.14 — consumers (cascor, canopy) run on 3.14           |
-| CI-02     | **HIGH**   | CI/CD         | cascor-worker   | CI doesn't test Python 3.14 — cascor (consumer) runs on 3.14                   |
-| CI-03     | **HIGH**   | CI/CD         | juniper-deploy  | 1,177 lines of tests exist but CI runs ZERO of them                             |
-| CI-04     | **MEDIUM** | CI/CD         | cascor-client   | Missing dedicated weekly security-scan.yml — vulnerability detection gap        |
-| CI-05     | **MEDIUM** | CI/CD         | cascor-client   | Missing lockfile-update.yml workflow — stale dependencies accumulate            |
-| CI-06     | **MEDIUM** | CI/CD         | juniper-deploy  | No coverage configuration at all — tests exist but coverage never measured      |
-| CI-07     | **LOW**    | CI/CD         | cascor, worker  | Inconsistent GitHub Actions artifact upload/cache versions across repos         |
-| COV-01    | **MEDIUM** | Coverage      | juniper-deploy  | Tests exist but zero coverage infrastructure (no `[tool.coverage]`, no `--cov`) |
-| COV-02    | **MEDIUM** | Coverage      | juniper-canopy  | No per-module coverage gate (juniper-data enforces 85% per-module)              |
-| COV-04    | **LOW**    | Coverage      | juniper-data    | Coverage gate mismatch — CI comment says 95%, actual `COVERAGE_FAIL_UNDER` is 80% |
-| TQ-01     | **MEDIUM** | Test Quality  | juniper-cascor  | 10+ tests with no assertions — fire-and-forget test methods inflate counts     |
-| TQ-02     | **MEDIUM** | Test Quality  | juniper-canopy  | 149 `time.sleep` calls in tests — excessive hard-coded waits, flakiness risk   |
-| TQ-03     | **MEDIUM** | Test Quality  | cascor-worker   | Config validation tests have no assertions — pass as long as no exception      |
-| TQ-04     | **LOW**    | Test Quality  | juniper-cascor  | 139 `hasattr` guards in tests (similar to canopy's 226 tracked in BUG-CN-03)   |
-| TQ-05     | **LOW**    | Test Quality  | juniper-canopy  | 10 unit tests import httpx — actually integration-level tests                   |
-| CI-SEC-01 | **HIGH**   | Security CI   | cascor-client   | No weekly security scan — supply chain vulnerability window for widely-consumed lib |
-| CI-SEC-02 | **LOW**    | Security CI   | juniper-deploy  | No security scanning at all (shell scripts, Python helpers unaudited)           |
+| ID        | Severity   | Category     | Repository     | Description                                                                         |
+|-----------|------------|--------------|----------------|-------------------------------------------------------------------------------------|
+| CI-01     | **HIGH**   | CI/CD        | cascor-client  | CI doesn't test Python 3.14 — consumers (cascor, canopy) run on 3.14                |
+| CI-02     | **HIGH**   | CI/CD        | cascor-worker  | CI doesn't test Python 3.14 — cascor (consumer) runs on 3.14                        |
+| CI-03     | **HIGH**   | CI/CD        | juniper-deploy | 1,177 lines of tests exist but CI runs ZERO of them                                 |
+| CI-04     | **MEDIUM** | CI/CD        | cascor-client  | Missing dedicated weekly security-scan.yml — vulnerability detection gap            |
+| CI-05     | **MEDIUM** | CI/CD        | cascor-client  | Missing lockfile-update.yml workflow — stale dependencies accumulate                |
+| CI-06     | **MEDIUM** | CI/CD        | juniper-deploy | No coverage configuration at all — tests exist but coverage never measured          |
+| CI-07     | **LOW**    | CI/CD        | cascor, worker | Inconsistent GitHub Actions artifact upload/cache versions across repos             |
+| COV-01    | **MEDIUM** | Coverage     | juniper-deploy | Tests exist but zero coverage infrastructure (no `[tool.coverage]`, no `--cov`)     |
+| COV-02    | **MEDIUM** | Coverage     | juniper-canopy | No per-module coverage gate (juniper-data enforces 85% per-module)                  |
+| COV-04    | **LOW**    | Coverage     | juniper-data   | Coverage gate mismatch — CI comment says 95%, actual `COVERAGE_FAIL_UNDER` is 80%   |
+| TQ-01     | **MEDIUM** | Test Quality | juniper-cascor | 10+ tests with no assertions — fire-and-forget test methods inflate counts          |
+| TQ-02     | **MEDIUM** | Test Quality | juniper-canopy | 149 `time.sleep` calls in tests — excessive hard-coded waits, flakiness risk        |
+| TQ-03     | **MEDIUM** | Test Quality | cascor-worker  | Config validation tests have no assertions — pass as long as no exception           |
+| TQ-04     | **LOW**    | Test Quality | juniper-cascor | 139 `hasattr` guards in tests (similar to canopy's 226 tracked in BUG-CN-03)        |
+| TQ-05     | **LOW**    | Test Quality | juniper-canopy | 10 unit tests import httpx — actually integration-level tests                       |
+| CI-SEC-01 | **HIGH**   | Security CI  | cascor-client  | No weekly security scan — supply chain vulnerability window for widely-consumed lib |
+| CI-SEC-02 | **LOW**    | Security CI  | juniper-deploy | No security scanning at all (shell scripts, Python helpers unaudited)               |
 
 ### Cross-Repo CI Feature Matrix
 
@@ -763,21 +765,21 @@ Issues identified through cross-cutting test coverage and CI analysis across all
 
 Issues identified through cross-cutting configuration and dependency analysis across all repositories.
 
-| ID     | Severity   | Category             | Repository     | Description                                                                                   | Evidence                                                           |
-|--------|------------|----------------------|----------------|-----------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| CFG-01 | **HIGH**   | Missing Dependency   | juniper-canopy | `torch` imported unconditionally but missing from dependencies — demo mode crashes on install | `demo_backend.py:45` imports torch; not in pyproject.toml          |
-| CFG-02 | **MEDIUM** | Unnecessary Dep      | juniper-cascor | `sentry-sdk` in core deps but only used when `SENTRY_SDK_DSN` is set                         | Should be in optional `observability` extra                        |
-| CFG-03 | **MEDIUM** | Env Var Inconsistency | juniper-cascor | `SENTRY_SDK_DSN` (main.py) vs `JUNIPER_CASCOR_SENTRY_DSN` (Settings) — two env vars for one feature | `main.py:58` vs `settings.py:189`                            |
-| CFG-04 | **MEDIUM** | Config Bypass        | juniper-cascor | `JUNIPER_DATA_URL` read via raw `os.getenv`, bypasses Settings class — no validation          | `app.py:121,185,253`, `health.py:56`                               |
-| CFG-05 | **MEDIUM** | Env Var Conflict     | juniper-cascor | `CASCOR_LOG_LEVEL` vs `JUNIPER_CASCOR_LOG_LEVEL` — both needed for full log level control     | `constants.py:580` vs `settings.py:116`                            |
-| CFG-06 | **LOW**    | Naming               | cascor-worker  | `CASCOR_*` env prefix inconsistent with ecosystem `JUNIPER_*` convention                      | `constants.py:126-138` — 13 env vars use bare `CASCOR_*`           |
-| CFG-07 | **MEDIUM** | Port Inconsistency   | Cross-repo     | Port 8200 vs 8201 confusion — cascor binds 8200, Docker maps to 8201, clients default to 8200 | cascor-client, canopy default to 8200; Docker host port is 8201   |
-| CFG-08 | **LOW**    | Config Inconsistency | Cross-repo     | Rate limiting defaults differ — data enabled, cascor/canopy disabled by default               | Local dev has no rate limits; production does — behavioral gap     |
-| CFG-09 | **MEDIUM** | Unsafe Default       | juniper-canopy | `audit_log_path` defaults to `/var/log/canopy/audit.log` — requires root, crashes non-root deploys | `settings.py:172` — `audit_log_enabled: True` default        |
-| CFG-12 | **LOW**    | Build Config         | cascor-worker  | `setuptools>=82.0` vs `>=61.0` everywhere else — unnecessary constraint                      | `pyproject.toml:2`                                                 |
-| CFG-13 | **LOW**    | Unnecessary Dep      | juniper-canopy | `python-dotenv` in core deps but never imported — pydantic-settings handles `.env`            | No `import dotenv` in canopy `src/`                                |
-| CFG-14 | **LOW**    | Stale Constraint     | juniper-canopy | `juniper-cascor-client>=0.1.0` allows outdated incompatible versions (current is 0.4.0)       | juniper-ml requires `>=0.3.0`                                      |
-| CFG-16 | **LOW**    | Config Bypass        | juniper-canopy | `CASCOR_DEMO_MODE` read directly, bypasses Settings deprecation validator                     | `backend/__init__.py:66`                                           |
+| ID     | Severity   | Category              | Repository     | Description                                                                                         | Evidence                                                        |
+|--------|------------|-----------------------|----------------|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| CFG-01 | **HIGH**   | Missing Dependency    | juniper-canopy | `torch` imported unconditionally but missing from dependencies — demo mode crashes on install       | `demo_backend.py:45` imports torch; not in pyproject.toml       |
+| CFG-02 | **MEDIUM** | Unnecessary Dep       | juniper-cascor | `sentry-sdk` in core deps but only used when `SENTRY_SDK_DSN` is set                                | Should be in optional `observability` extra                     |
+| CFG-03 | **MEDIUM** | Env Var Inconsistency | juniper-cascor | `SENTRY_SDK_DSN` (main.py) vs `JUNIPER_CASCOR_SENTRY_DSN` (Settings) — two env vars for one feature | `main.py:58` vs `settings.py:189`                               |
+| CFG-04 | **MEDIUM** | Config Bypass         | juniper-cascor | `JUNIPER_DATA_URL` read via raw `os.getenv`, bypasses Settings class — no validation                | `app.py:121,185,253`, `health.py:56`                            |
+| CFG-05 | **MEDIUM** | Env Var Conflict      | juniper-cascor | `CASCOR_LOG_LEVEL` vs `JUNIPER_CASCOR_LOG_LEVEL` — both needed for full log level control           | `constants.py:580` vs `settings.py:116`                         |
+| CFG-06 | **LOW**    | Naming                | cascor-worker  | `CASCOR_*` env prefix inconsistent with ecosystem `JUNIPER_*` convention                            | `constants.py:126-138` — 13 env vars use bare `CASCOR_*`        |
+| CFG-07 | **MEDIUM** | Port Inconsistency    | Cross-repo     | Port 8200 vs 8201 confusion — cascor binds 8200, Docker maps to 8201, clients default to 8200       | cascor-client, canopy default to 8200; Docker host port is 8201 |
+| CFG-08 | **LOW**    | Config Inconsistency  | Cross-repo     | Rate limiting defaults differ — data enabled, cascor/canopy disabled by default                     | Local dev has no rate limits; production does — behavioral gap  |
+| CFG-09 | **MEDIUM** | Unsafe Default        | juniper-canopy | `audit_log_path` defaults to `/var/log/canopy/audit.log` — requires root, crashes non-root deploys  | `settings.py:172` — `audit_log_enabled: True` default           |
+| CFG-12 | **LOW**    | Build Config          | cascor-worker  | `setuptools>=82.0` vs `>=61.0` everywhere else — unnecessary constraint                             | `pyproject.toml:2`                                              |
+| CFG-13 | **LOW**    | Unnecessary Dep       | juniper-canopy | `python-dotenv` in core deps but never imported — pydantic-settings handles `.env`                  | No `import dotenv` in canopy `src/`                             |
+| CFG-14 | **LOW**    | Stale Constraint      | juniper-canopy | `juniper-cascor-client>=0.1.0` allows outdated incompatible versions (current is 0.4.0)             | juniper-ml requires `>=0.3.0`                                   |
+| CFG-16 | **LOW**    | Config Bypass         | juniper-canopy | `CASCOR_DEMO_MODE` read directly, bypasses Settings deprecation validator                           | `backend/__init__.py:66`                                        |
 
 ---
 
@@ -785,18 +787,18 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 Issues identified through cross-cutting API contract and protocol correctness analysis.
 
-| ID       | Severity   | Category        | Repositories                 | Description                                                                                       |
-|----------|------------|-----------------|------------------------------|---------------------------------------------------------------------------------------------------|
-| API-01   | **MEDIUM** | Health Endpoint | cascor, data, canopy         | Health `status` value inconsistent: cascor/data return `"ok"`, canopy returns `"healthy"`         |
-| API-02   | **LOW**    | Health Endpoint | cascor, data, canopy         | Health response schema diverges — canopy returns 7 fields, cascor/data return 2                   |
-| API-03   | **HIGH**   | State Machine   | cascor, canopy               | Canopy FSM lacks auto-reset from FAILED/COMPLETED on START — training unrestartable in demo mode without explicit RESET |
-| API-04   | **MEDIUM** | Testing         | cascor-client, cascor        | FakeClient state constants use different vocabulary: `"idle"` vs `"STOPPED"`, `"training"` vs `"STARTED"` |
-| API-05   | **MEDIUM** | Error Handling  | all services                 | Error response format inconsistent — three different JSON error shapes across services            |
-| API-06   | **LOW**    | Protocol        | cascor, cascor-client        | `candidate_progress` WS message broadcast by server, not in client constants, no callback handler |
-| API-07   | **MEDIUM** | API Coverage    | data, data-client            | Client missing methods for 4 server endpoints: filter, stats, cleanup-expired, individual tags    |
-| API-08   | **LOW**    | Protocol        | cascor-client, cascor        | `set_params` includes extraneous `type:command` field; `command()` does not — asymmetric envelopes |
-| API-09   | **MEDIUM** | API Contract    | juniper-cascor               | HTTPException errors bypass ResponseEnvelope — dual error format in same API                      |
-| PROTO-01 | **LOW**    | Protocol        | canopy, cascor               | Canopy `/ws/control` accepts `reset` parameter not in cascor's control protocol                   |
+| ID       | Severity   | Category        | Repositories          | Description                                                                                                             |
+|----------|------------|-----------------|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
+| API-01   | **MEDIUM** | Health Endpoint | cascor, data, canopy  | Health `status` value inconsistent: cascor/data return `"ok"`, canopy returns `"healthy"`                               |
+| API-02   | **LOW**    | Health Endpoint | cascor, data, canopy  | Health response schema diverges — canopy returns 7 fields, cascor/data return 2                                         |
+| API-03   | **HIGH**   | State Machine   | cascor, canopy        | Canopy FSM lacks auto-reset from FAILED/COMPLETED on START — training unrestartable in demo mode without explicit RESET |
+| API-04   | **MEDIUM** | Testing         | cascor-client, cascor | FakeClient state constants use different vocabulary: `"idle"` vs `"STOPPED"`, `"training"` vs `"STARTED"`               |
+| API-05   | **MEDIUM** | Error Handling  | all services          | Error response format inconsistent — three different JSON error shapes across services                                  |
+| API-06   | **LOW**    | Protocol        | cascor, cascor-client | `candidate_progress` WS message broadcast by server, not in client constants, no callback handler                       |
+| API-07   | **MEDIUM** | API Coverage    | data, data-client     | Client missing methods for 4 server endpoints: filter, stats, cleanup-expired, individual tags                          |
+| API-08   | **LOW**    | Protocol        | cascor-client, cascor | `set_params` includes extraneous `type:command` field; `command()` does not — asymmetric envelopes                      |
+| API-09   | **MEDIUM** | API Contract    | juniper-cascor        | HTTPException errors bypass ResponseEnvelope — dual error format in same API                                            |
+| PROTO-01 | **LOW**    | Protocol        | canopy, cascor        | Canopy `/ws/control` accepts `reset` parameter not in cascor's control protocol                                         |
 
 ---
 
@@ -818,28 +820,28 @@ Version 5.0.0 extends the v4.0.0 per-repository audit with a second wave of **cr
 
 ### v5.0.0 Agents (cross-cutting concerns)
 
-| Agent   | Focus Area                              | Repositories | New Findings |
-|---------|-----------------------------------------|--------------|--------------|
-| Agent 6 | Concurrency, threading, async correctness | All 8      | 9            |
-| Agent 7 | Error handling, exception safety, robustness | All 8   | 10           |
-| Agent 8 | Test coverage, test quality, CI/CD completeness | All 8 | 17           |
-| Agent 9 | Configuration, dependencies, environment variables | All 8 | 13         |
-| Agent 10 | API contracts, protocol correctness, integration | All 8 | 10          |
+| Agent    | Focus Area                                         | Repositories | New Findings |
+|----------|----------------------------------------------------|--------------|--------------|
+| Agent 6  | Concurrency, threading, async correctness          | All 8        | 9            |
+| Agent 7  | Error handling, exception safety, robustness       | All 8        | 10           |
+| Agent 8  | Test coverage, test quality, CI/CD completeness    | All 8        | 17           |
+| Agent 9  | Configuration, dependencies, environment variables | All 8        | 13           |
+| Agent 10 | API contracts, protocol correctness, integration   | All 8        | 10           |
 
 ### Key Changes from v4.0.0
 
-| Change Type              | Count   | Details                                                                                                      |
-|--------------------------|---------|--------------------------------------------------------------------------------------------------------------|
-| Items confirmed FIXED    | 0       | No additional items resolved between v4 and v5                                                                |
-| New bugs                 | 8       | BUG-CC-16–18, BUG-CN-11–12, BUG-JD-10–11                                                                    |
-| New deploy issues        | 3       | DEPLOY-24–26 (Helm missing critical env vars for K8s)                                                        |
-| New cross-repo issues    | 5       | XREPO-13–17 (health status, FakeClient vocabulary, error shapes, missing methods, candidate_progress)        |
-| New concurrency issues   | 9       | CONC-01–12 (per-IP race, throttle race, split-lock, async blocking, state mutation, fire-and-forget tasks)   |
-| New error handling       | 10      | ERR-01–14, ROBUST-01 (JSONDecodeError gaps, silent failures, dummy training results)                         |
-| New testing/CI gaps      | 17      | CI-01–07, COV-01–04, TQ-01–05, CI-SEC-01–02                                                                 |
-| New configuration issues | 13      | CFG-01–16 (torch missing dep, Sentry dual env, port confusion, audit log root crash)                         |
-| New API/protocol issues  | 10      | API-01–09, PROTO-01 (FSM auto-reset, health inconsistency, error format, missing client methods)             |
-| **Total new items (v5)** | **~70** | Deduplicated across 5 cross-cutting agents                                                                   |
+| Change Type              | Count   | Details                                                                                                    |
+|--------------------------|---------|------------------------------------------------------------------------------------------------------------|
+| Items confirmed FIXED    | 0       | No additional items resolved between v4 and v5                                                             |
+| New bugs                 | 8       | BUG-CC-16–18, BUG-CN-11–12, BUG-JD-10–11                                                                   |
+| New deploy issues        | 3       | DEPLOY-24–26 (Helm missing critical env vars for K8s)                                                      |
+| New cross-repo issues    | 5       | XREPO-13–17 (health status, FakeClient vocabulary, error shapes, missing methods, candidate_progress)      |
+| New concurrency issues   | 9       | CONC-01–12 (per-IP race, throttle race, split-lock, async blocking, state mutation, fire-and-forget tasks) |
+| New error handling       | 10      | ERR-01–14, ROBUST-01 (JSONDecodeError gaps, silent failures, dummy training results)                       |
+| New testing/CI gaps      | 17      | CI-01–07, COV-01–04, TQ-01–05, CI-SEC-01–02                                                                |
+| New configuration issues | 13      | CFG-01–16 (torch missing dep, Sentry dual env, port confusion, audit log root crash)                       |
+| New API/protocol issues  | 10      | API-01–09, PROTO-01 (FSM auto-reset, health inconsistency, error format, missing client methods)           |
+| **Total new items (v5)** | **~70** | Deduplicated across 5 cross-cutting agents                                                                 |
 
 ### Cumulative Audit Statistics
 
@@ -852,11 +854,11 @@ Version 5.0.0 extends the v4.0.0 per-repository audit with a second wave of **cr
 
 ### Severity Distribution (v5 new items only)
 
-| Severity | Count | Highlights                                                                                                   |
-|----------|-------|--------------------------------------------------------------------------------------------------------------|
+| Severity | Count | Highlights                                                                                                                            |
+|----------|-------|---------------------------------------------------------------------------------------------------------------------------------------|
 | HIGH     | 8     | ROBUST-01 (dummy training results), API-03 (FSM auto-reset), CFG-01 (torch missing), BUG-CC-18, CONC-01/04, CI-01/02/03, DEPLOY-24/25 |
-| MEDIUM   | 35    | Config env var conflicts, port confusion, JSONDecodeError gaps, race conditions, test quality, error formats  |
-| LOW      | 27    | Config bypass, naming inconsistencies, missing assertions, minor protocol asymmetries                        |
+| MEDIUM   | 35    | Config env var conflicts, port confusion, JSONDecodeError gaps, race conditions, test quality, error formats                          |
+| LOW      | 27    | Config bypass, naming inconsistencies, missing assertions, minor protocol asymmetries                                                 |
 
 ---
 
