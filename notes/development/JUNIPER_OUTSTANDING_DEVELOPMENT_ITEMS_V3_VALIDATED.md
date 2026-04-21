@@ -176,7 +176,7 @@ All items confirmed **still open** in current codebases.
 
 | ID        | Priority | Description                                                        | Evidence                                                                          | Effort |
 |-----------|----------|--------------------------------------------------------------------|-----------------------------------------------------------------------------------|--------|
-| CLN-CN-01 | **P2**   | `theme-table` CSS class not yet implemented                          | No `.theme-table` in any CSS file — conditional `is_dark` styling used instead    | S      |
+| CLN-CN-01 | **P2**   | `theme-table` CSS class not yet implemented                        | No `.theme-table` in any CSS file — conditional `is_dark` styling used instead    | S      |
 | CLN-CN-02 | **P2**   | NPZ validation only in DemoMode, not ServiceBackend                | `_validate_npz_arrays()` exists only in `demo_mode.py:767`                        | S      |
 | CLN-CN-03 | **P2**   | Performance test suite minimal — only 1 test file                  | `src/tests/performance/test_button_responsiveness.py` only                        | M      |
 | CLN-CN-04 | **P2**   | JuniperData-specific error handling missing                        | Only cascor-client errors caught; no juniper-data-client error classes            | M      |
