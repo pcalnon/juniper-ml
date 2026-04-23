@@ -488,7 +488,7 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 | BUG-CC-11 | **MEDIUM** | `_init_content_list` walrus operator precedence bug in `utils.py`      | `src/utils/utils.py:208`                                           | `content := _init_content_list(...) is not None` assigns `True`/`False` to `content`,                         |
 |           |            |                                                                        |                                                                    | -- not the list — subsequent `.append()` raises `AttributeError`                                              |
 | BUG-CC-12 | **MEDIUM** | `load_dataset` uses `yaml.safe_load` instead of `torch.load`           | `src/utils/utils.py:90-92`                                         | Changed from `torch.load` to `yaml.safe_load` but expects torch tensor keys: function is broken.              |
-|           |            |                                                                        |                                                                    | -- This is **NOT** dead code. This code hasn't been fully implemented and/or integrated yet.                  |
+|           |            |                                                                        |                                                                    | -- This is **NOT** dead code. This code hasn't yet been fully implemented and/or integrated.                  |
 | BUG-CC-13 | **MEDIUM** | `RateLimiter._counters` never pruned — unbounded memory growth         | `src/api/security.py:107`                                          | No expired entries cleaned; `ConnectionRateLimiter` has `_maybe_cleanup`, `RateLimiter` does not              |
 | BUG-CC-14 | **LOW**    | `HandshakeCooldown._rejections` never pruned for non-blocked IPs       | `src/api/websocket/control_security.py:88,108-114`                 | Entries persist forever if IPs fail & never reach block threshold: minor mem leak                             |
 | BUG-CC-15 | **MEDIUM** | `RequestBodyLimitMiddleware` reads full body before size check         | `src/api/middleware.py:86`                                         | `body = await request.body()`: body in mem before check `len(body) > self._max_bytes`: SEC-08 partial         |
@@ -983,7 +983,7 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 
 **Approach A — Remove Duplicate**:
 
-- *Implementation*: Delete the second `try/except` block (lines 110-113). Keep the first one.
+- *Implementation*: Delete the first `try/except` block (lines 90-93). Keep the second one.
 - *Strengths*: Removes dead code; trivial fix.
 - *Weaknesses*: None.
 - *Risks*: None — both blocks are identical.
@@ -1265,23 +1265,23 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 
 #### 6.1 juniper-cascor — Stale Code Removal
 
-| ID        | Priority | Description                                                                                      | File(s)                                                                      | Effort      |
-|-----------|----------|--------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|-------------|
-| CLN-CC-01 | **P2**   | Delete legacy `remote_client/` directory (3 files) — superseded by juniper-cascor-worker         | `src/remote_client/`                                                         | 10 min      |
-| CLN-CC-02 | **P2**   | Delete stale `check.py` duplicate (600 lines) — copy of spiral_problem.py                        | `src/spiral_problem/check.py`                                                | 10 min      |
-| CLN-CC-03 | **P2**   | Remove 9 local `import traceback` in cascade_correlation.py — uncomment line 64 top-level import | `cascade_correlation.py:64,2270,2804,3775,3840` + other files                | 30 min      |
-| CLN-CC-04 | **P2**   | Enable mypy strict mode                                                                          | `pyproject.toml`                                                             | M           |
-| CLN-CC-05 | **P2**   | Legacy spiral code — ~20 trivial getter/setter methods, no `@deprecated` markers                 | `src/spiral_problem/spiral_problem.py` (53 methods)                          | M           |
-| CLN-CC-06 | **P3**   | Remove "Roll" concept in CandidateUnit                                                           | candidate_unit.py                                                            | 🔵 Deferred |
-| CLN-CC-07 | **P3**   | Candidate factory refactor — all creation through `_create_candidate_unit()`                     | cascade_correlation.py                                                       | 🔵 Deferred |
-| CLN-CC-08 | **P3**   | Remove commented-out code blocks                                                                 | Multiple files                                                               | 🔵 Deferred |
-| CLN-CC-09 | **P3**   | Line length reduction to 120 characters                                                          | Multiple files                                                               | 🔵 Deferred |
-| CLN-CC-10 | **P2**   | `utils.py:238` — fix broken `check_object_pickleability` function (uses `dill` not in deps)      | `src/utils/utils.py:238`                                                     | S           |
-| CLN-CC-11 | **P2**   | `snapshot_serializer.py:~756` — extend optimizer support (per in-code TODO)                      | `snapshot_serializer.py`                                                     | M           |
-| CLN-CC-12 | **P2**   | `.ipynb_checkpoints` directories committed to repository                                         | `src/cascade_correlation/.ipynb_checkpoints/`, `src/candidate_unit/`, `src/` | 10 min      |
-| CLN-CC-13 | **P2**   | `sys.path.append` at module level in `cascade_correlation.py:69`                                 | `src/cascade_correlation/cascade_correlation.py:69`                          | S           |
-| CLN-CC-14 | **P3**   | Empty `# TODO :` headers in 18+ files (boilerplate noise)                                        | Multiple file headers                                                        | S           |
-| CLN-CC-15 | **P3**   | `_object_attributes_to_table` return type annotation wrong (`str` but returns `list`/`None`)     | `src/utils/utils.py:197`                                                     | S           |
+| ID        | Priority | Description                                                                                                    | File(s)                                                                      | Effort       |
+|-----------|----------|----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|--------------|
+| CLN-CC-01 | **P2**   | Delete stale file from `remote_client/` directory (`remote_client_0.py`) — superseded by juniper-cascor-worker | `src/remote_client/remote_client_0.py`                                       | 10 min       |
+| CLN-CC-02 | **P2**   | Delete stale `check.py` duplicate (600 lines) — copy of spiral_problem.py                                      | `src/spiral_problem/check.py`                                                | 10 min       |
+| CLN-CC-03 | **P2**   | Remove 9 local `import traceback` in cascade_correlation.py — uncomment line 64 top-level import               | `cascade_correlation.py:64,2270,2804,3775,3840` + other files                | 30 min       |
+| CLN-CC-04 | **P2**   | Enable mypy strict mode                                                                                        | `pyproject.toml`                                                             | M            |
+| CLN-CC-05 | **P2**   | Legacy spiral code — ~20 trivial getter/setter methods, no `@deprecated` markers                               | `src/spiral_problem/spiral_problem.py` (53 methods)                          | M            |
+| CLN-CC-06 | **P3**   | Remove "Roll" concept in CandidateUnit                                                                         | candidate_unit.py                                                            | 🔵 Deferred  |
+| CLN-CC-07 | **P3**   | Candidate factory refactor — all creation through `_create_candidate_unit()`                                   | cascade_correlation.py                                                       | Analysis Req |
+| CLN-CC-08 | **P3**   | Remove commented-out code blocks                                                                               | Multiple files                                                               | M            |
+| CLN-CC-09 | **P3**   | Line length reduction to ~~120~~ 512 characters                                                                | Multiple files                                                               | 🔵 Deferred  |
+| CLN-CC-10 | **P2**   | `utils.py:238` — fix broken `check_object_pickleability` function (uses `dill` not in deps)                    | `src/utils/utils.py:238`                                                     | S            |
+| CLN-CC-11 | **P2**   | `snapshot_serializer.py:~756` — extend optimizer support (per in-code TODO)                                    | `snapshot_serializer.py`                                                     | M            |
+| CLN-CC-12 | **P2**   | `.ipynb_checkpoints` directories committed to repository                                                       | `src/cascade_correlation/.ipynb_checkpoints/`, `src/candidate_unit/`, `src/` | 10 min       |
+| CLN-CC-13 | **P2**   | `sys.path.append` at module level in `cascade_correlation.py:69`                                               | `src/cascade_correlation/cascade_correlation.py:69`                          | S            |
+| CLN-CC-14 | **P3**   | Empty `# TODO :` headers in 18+ files (boilerplate noise)                                                      | Multiple file headers                                                        | 🔵 Deferred  |
+| CLN-CC-15 | **P3**   | `_object_attributes_to_table` return type annotation wrong (`str` but returns `list`/`None`)                   | `src/utils/utils.py:197`                                                     | S            |
 
 #### 6.2 juniper-canopy — Code Quality
 
@@ -1320,15 +1320,26 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 **Root Cause**: Legacy code from pre-polyrepo era not cleaned up.
 **Cross-References**: CLN-CC-01 = HSK-02
 
-**Approach A — Delete Directory**:
+**Approach A — Delete Only the Stale Remote Client File**:
+
+- *Implementation*: Delete `src/remote_client/remote_client_0.py` files. This file is stale and has been superseded by juniper-cascor-worker.
+- *Strengths*: Surgically Removes only the Stale File.  Avoids any unexpected side effects.
+- *Weaknesses*: None — remote_client_0.py file is unused.
+- *Risks*: None.
+- *Guardrails*: Verify zero callers/imports of remote_client_0.py file before deletion.
+
+~~**Approach B — Delete Directory**:~~
+
+<strike>
 
 - *Implementation*: `git rm -r src/remote_client/`. Update `.gitignore` if needed.
 - *Strengths*: 10-minute cleanup; removes 3 files of dead code.
 - *Weaknesses*: None.
 - *Risks*: None — zero callers verified.
 - *Guardrails*: Grep for `remote_client` imports before deletion.
+</strike>
 
-**Recommended**: Approach A — trivial deletion of dead code.
+**Recommended**: Approach A because the entire directory is NOT dead code. The remote_client_0.py file is stale and can be removed, but the remote_client.py source file will still be used.
 
 ---
 
@@ -1442,15 +1453,23 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 **Current Code**: `src/utils/utils.py:238` — uses `dill` library which is not in dependencies.
 **Root Cause**: Function references `dill` but it's not declared as a dependency.
 
-**Approach A — Add dill or Remove Function**:
+**Approach A — Add dill**:
 
-- *Implementation*: Option 1: Add `dill` to optional dependencies. Option 2: Remove the function if unused.
-- *Strengths*: Either approach resolves the broken import.
+- *Implementation*: Add `dill` to optional dependencies
+- *Strengths*: Resolves the broken import while maintaining the functionality.
 - *Weaknesses*: Adding deps for a utility function may be overkill.
+- *Risks*: None.
+- *Guardrails*: Add tests as necessary to validate functionality and ensure no regressions.
+
+**Approach B — Remove Function**:
+
+- *Implementation*: Remove the function if unused.
+- *Strengths*: Resolves the broken import.
+- *Weaknesses*: Loses this functionality.
 - *Risks*: None.
 - *Guardrails*: Grep for callers to determine if function is used.
 
-**Recommended**: Check usage first — remove if unused, add `dill` if used.
+**Recommended**: Add `dill` as an optional dependency.
 
 ---
 
@@ -1518,7 +1537,7 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 - *Risks*: Must not remove non-empty TODOs.
 - *Guardrails*: Only remove lines matching exactly `# TODO :` (with nothing after).
 
-**Recommended**: Approach A — trivial cleanup.
+**Recommended**: Approach A — trivial cleanup, but this action is **Deferred**.
 
 ---
 
@@ -1546,15 +1565,26 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 **Current Code**: No `.theme-table` in any CSS file.
 **Root Cause**: CSS class referenced in templates but never defined.
 
-**Approach A — Implement or Remove References**:
+**Approach A — Implement References**:
 
-- *Implementation*: Either add `.theme-table` CSS rules or remove all HTML references to the class.
-- *Strengths*: Resolves dead reference.
+- *Implementation*: Add `.theme-table` CSS rules.
+- *Strengths*: Completes partially implemented code and incompletely integrated reference.
 - *Weaknesses*: None.
 - *Risks*: None.
 - *Guardrails*: Grep for all `theme-table` references.
 
-**Recommended**: Approach A — implement if styling is needed, remove if not.
+~~**Approach B — Remove References**:~~
+
+<strike>
+
+- *Implementation*: Remove all HTML references to the `.theme-table` class.
+- *Strengths*: Resolves dead reference.
+- *Weaknesses*: None.
+- *Risks*: None.
+- *Guardrails*: Grep for all `theme-table` references.
+</strike>
+
+**Recommended**: Approach A — Complete implementation since styling is needed.
 
 ---
 
@@ -1759,7 +1789,7 @@ See [Section 23](#23-validation-methodology-v600---v100) for the agent assignmen
 - *Risks*: Removing fallback too early breaks demo mode when data service is down.
 - *Guardrails*: Track JuniperData availability metrics before removal.
 
-**Recommended**: Approach A — keep as fallback for now; remove when data service is production-stable.
+**Recommended**: Approach A — No longer needed as a fallback; data service is production-stable.
 
 ---
 
@@ -2511,12 +2541,12 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Approach B — Implement Server-Side MoonGenerator**:
 
 - *Implementation*: Add `MoonGenerator` to juniper-data using `sklearn.datasets.make_moons()`.
-- *Strengths*: Fulfills client expectation; adds useful dataset type.
+- *Strengths*: Fulfills client expectation; adds useful dataset type; meets feature requirements.
 - *Weaknesses*: More effort; adds sklearn dependency if not present.
 - *Risks*: Must define parameter schema consistent with other generators.
 - *Guardrails*: Add integration test between client and server for moon generator.
 
-**Recommended**: Approach A for immediate fix; Approach B as a follow-up feature.
+**Recommended**: Approach B to meet feature requirements.
 
 ---
 
@@ -2814,21 +2844,21 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 #### 12.1 Original items (v3)
 
-| ID     | Repository     | Description                                                                         | Priority |
-|--------|----------------|-------------------------------------------------------------------------------------|----------|
-| HSK-01 | juniper-canopy | 3 broken symlinks in `notes/development/` pointing to deleted juniper-ml files      | P3       |
-| HSK-02 | juniper-cascor | `src/remote_client/` directory still exists (3 files) — superseded by cascor-worker | P2       |
-| HSK-03 | juniper-cascor | `src/spiral_problem/check.py` — 600-line stale duplicate                            | P2       |
-| HSK-04 | juniper-cascor | 32 test files with hardcoded `sys.path.append` to old monorepo paths                | P2       |
-| HSK-05 | cascor-client  | AGENTS.md header version 0.3.0, package is 0.4.0                                    | P3       |
-| HSK-06 | juniper-data   | AGENTS.md header version 0.5.0, package is 0.6.0                                    | P3       |
-| HSK-07 | cascor-client  | File headers (constants.py, testing/*) show versions 0.1.0–0.3.0 (should be 0.4.0)  | P3       |
-| HSK-08 | data-client    | `tests/conftest.py` version header says 0.3.1, project is 0.4.0                     | P3       |
-| HSK-09 | cascor-client  | Dead code: `_STATE_TO_FSM` and `_STATE_TO_PHASE` class attributes never referenced  | P3       |
-| HSK-10 | juniper-ml     | `scripts/test.bash` outdated/non-functional — references removed `nohup.out`        | P3       |
-| HSK-11 | juniper-ml     | `wake_the_claude.bash` `DEBUG="${TRUE}"` hardcoded ON — noisy output                | P2       |
-| HSK-12 | juniper-ml     | `NOHUP_STATUS=$?` captures fork status (always 0) — dead error check                | P3       |
-| HSK-13 | juniper-canopy | 169 hardcoded ThemeColors remain — MED-026 rollout deferred                         | P3       |
+| ID     | Repository     | Description                                                                              | Priority |
+|--------|----------------|------------------------------------------------------------------------------------------|----------|
+| HSK-01 | juniper-canopy | 3 broken symlinks in `notes/development/` pointing to deleted juniper-ml files           | P3       |
+| HSK-02 | juniper-cascor | `src/remote_client/` directory still exists (3 files) — superseded by cascor-worker      | P2       |
+| HSK-03 | juniper-cascor | `src/spiral_problem/check.py` — 600-line stale duplicate                                 | P2       |
+| HSK-04 | juniper-cascor | 32 test files with hardcoded `sys.path.append` to old monorepo paths                     | P2       |
+| HSK-05 | cascor-client  | AGENTS.md header version 0.3.0, package is 0.4.0                                         | P3       |
+| HSK-06 | juniper-data   | AGENTS.md header version 0.5.0, package is 0.6.0                                         | P3       |
+| HSK-07 | cascor-client  | File headers (constants.py, testing/*) show versions 0.1.0–0.3.0 (should be 0.4.0)       | P3       |
+| HSK-08 | data-client    | `tests/conftest.py` version header says 0.3.1, project is 0.4.0                          | P3       |
+| HSK-09 | cascor-client  | Unfinished code: `_STATE_TO_FSM` and `_STATE_TO_PHASE` class attributes never referenced | P3       |
+| HSK-10 | juniper-ml     | `scripts/test.bash` outdated/non-functional — references removed `nohup.out`             | P3       |
+| HSK-11 | juniper-ml     | `wake_the_claude.bash` `DEBUG="${TRUE}"` hardcoded ON — noisy output                     | P2       |
+| HSK-12 | juniper-ml     | `NOHUP_STATUS=$?` captures fork status (always 0) — dead error check                     | P3       |
+| HSK-13 | juniper-canopy | 169 hardcoded ThemeColors remain — MED-026 rollout deferred until hardcoded colors fixed | P3       |
 
 #### 12.2 New housekeeping items (v4)
 
@@ -2844,7 +2874,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 | HSK-21 | juniper-ml    | `wake_the_claude.bash:53` stale TODO comment — `debug_log` already writes to stderr                                      | P3       |
 | HSK-22 | juniper-ml    | `wake_the_claude.bash:547` TODO — model parameter accepted but never validated                                           | P3       |
 | HSK-23 | juniper-ml    | `scripts/juniper-all-ctl:38` cascor port defaults to 8200 (container port) vs host port 8201                             | P3       |
-| HSK-24 | cascor-client | Dead constants: `ERROR_PRONE_INITIAL_HIDDEN_UNITS` / `ERROR_PRONE_INITIAL_EPOCH` never used                              | P3       |
+| HSK-24 | cascor-client | Unused constants: `ERROR_PRONE_INITIAL_HIDDEN_UNITS` / `ERROR_PRONE_INITIAL_EPOCH` not yet used                          | P3       |
 
 ### Issue Remediations, Section 12
 
@@ -2929,15 +2959,26 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Current Code**: Class attributes never referenced.
 **Root Cause**: Mapping tables defined but never used.
 
-**Approach A — Delete Dead Code**:
+~~**Approach A — Delete Dead Code**:~~
+
+<strike>
 
 - *Implementation*: Remove `_STATE_TO_FSM` and `_STATE_TO_PHASE` attributes.
 - *Strengths*: Cleaner code.
 - *Weaknesses*: None.
 - *Risks*: None — zero references.
 - *Guardrails*: Grep for any references before deletion.
+</strike>
 
-**Recommended**: Approach A — trivial dead code removal.
+**Approach B --
+
+- *Implementation*: Implement and integrate the `_STATE_TO_FSM` and `_STATE_TO_PHASE` attributes.
+- *Strengths*: Complete code implementation.
+- *Weaknesses*: Possible Regression Introduction.
+- *Risks*: None — zero current references.
+- *Guardrails*: Grep for any references and add additional testing to validate expected functionality and to identify any regressions.
+
+**Recommended**: Approach B — These attributes are **NOT** dead code. They are incompletely implemented code and should be fully implementated and integrated.
 
 ---
 
@@ -2946,15 +2987,26 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Current Code**: References removed `nohup.out` file.
 **Root Cause**: Script not updated when `nohup.out` was removed.
 
-**Approach A — Update or Delete Script**:
+**Approach A — Update Script**:
 
-- *Implementation*: Update script to use current test infrastructure, or delete if superseded by `pytest` commands.
-- *Strengths*: Working or removed script.
+- *Implementation*: Update script to use current test infrastructure including `pytest` commands.
+- *Strengths*: Working script.
+- *Weaknesses*: None.
+- *Risks*: None.
+- *Guardrails*: Check if script is referenced anywhere, and add tests if necessary to ensure script functions correctly.
+
+~~**Approach B — Delete Script**:~~
+
+<strike>
+
+- *Implementation*: Delete script because it is superseded by `pytest` commands.
+- *Strengths*: Removed script.
 - *Weaknesses*: None.
 - *Risks*: None.
 - *Guardrails*: Check if script is referenced anywhere.
+</strike>
 
-**Recommended**: Approach A — update if used, delete if not.
+**Recommended**: Approach A — update this script because it is being used.
 
 ---
 
@@ -3015,10 +3067,18 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Current Code**: One-time-use script committed with hardcoded session UUID.
 **Root Cause**: Script was used once and committed without parameterization.
 
-**Approach A — Parameterize or Delete**:
+**Approach A — Parameterize Script**:
 
-- *Implementation*: Either make the UUID a required parameter (`$1`) or delete the script.
-- *Strengths*: Reusable or removed.
+- *Implementation*: Make the UUID a required parameter (`$1`) for the script.
+- *Strengths*: Makes the script reusable.
+- *Weaknesses*: None.
+- *Risks*: None.
+- *Guardrails*: None needed.
+
+**Approach B — Delete Script**:
+
+- *Implementation*: Delete the script.
+- *Strengths*: One time script removed.
 - *Weaknesses*: None.
 - *Risks*: None.
 - *Guardrails*: None needed.
@@ -3032,13 +3092,21 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Current Code**: Search == replace are identical strings; also has misspelled `KIBAB`.
 **Root Cause**: Script was used once with specific values; committed without cleanup.
 
-**Approach A — Fix or Delete**:
+**Approach A — Fix Script for Reuse**:
 
-- *Implementation*: Parameterize search/replace as `$1` and `$2`, or delete the script.
-- *Strengths*: Functional utility or removed noise.
+- *Implementation*: Parameterize search/replace as `$1` and `$2` for the script.
+- *Strengths*: Provides a Functional utility.
 - *Weaknesses*: None.
 - *Risks*: None.
 - *Guardrails*: Fix `KIBAB` → `KEBAB` if keeping.
+
+**Approach B — Delete Script**:
+
+- *Implementation*: Delete the script.
+- *Strengths*: Deleting the script removes noise.
+- *Weaknesses*: None.
+- *Risks*: None.
+- *Guardrails*: None.
 
 **Recommended**: Approach A — parameterize for reuse.
 
@@ -3181,20 +3249,31 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 ---
 
-#### HSK-24: Dead Constants in cascor-client
+#### HSK-24: Unused Constants in cascor-client
 
-**Current Code**: `ERROR_PRONE_INITIAL_HIDDEN_UNITS` / `ERROR_PRONE_INITIAL_EPOCH` never used.
+**Current Code**: The `ERROR_PRONE_INITIAL_HIDDEN_UNITS` and `ERROR_PRONE_INITIAL_EPOCH` constants are never used.
 **Root Cause**: Constants defined but never referenced.
 
-**Approach A — Delete**:
+**Approach A — Complete Implementation**:
+
+- *Implementation*: Complete implementation and integration of these constants.
+- *Strengths*: Correct code that is not incomplete.
+- *Weaknesses*: Possible Regressions.
+- *Risks*: None — zero references.
+- *Guardrails*: Add additional tests to validate expected functionality and to ensure no regressions are introduced.
+
+~~**Approach B — Delete**:~~
+
+<strike>
 
 - *Implementation*: Remove both constants by commenting these lines out.
 - *Strengths*: Cleaner code.
 - *Weaknesses*: None.
 - *Risks*: None — zero references.
 - *Guardrails*: Grep before deletion.
+</strike>
 
-**Recommended**: Approach A.
+**Recommended**: Approach A because this code is currently unfinished.
 
 ---
 
@@ -4218,7 +4297,7 @@ Issues identified through cross-cutting concurrency analysis across all reposito
 - *Risks*: Significant development effort; regression risk.
 - *Guardrails*: Feature-flag async backend; run parallel with sync for comparison.
 
-**Recommended**: Approach A for immediate fix (highest-priority performance issue); Approach B as long-term target.
+**Recommended**: Approach A for immediate fix (highest-priority performance issue); Approach B should be documented and added as a longer-term fix.
 
 ---
 
@@ -4426,9 +4505,9 @@ Issues identified through cross-cutting error handling analysis across all repos
 - *Strengths*: Proper structured logging; exceptions visible in monitoring.
 - *Weaknesses*: None.
 - *Risks*: Propagation may crash the process (which is correct — silent failure is worse).
-- *Guardrails*: Note: `remote_client_0.py` is in `src/remote_client/` which is slated for deletion (CLN-CC-01/HSK-02). Fix is moot if directory is deleted.
+- *Guardrails*: Note: `remote_client_0.py` is in `src/remote_client/` which is slated for deletion (CLN-CC-01/HSK-02). Fix is moot if file is deleted.
 
-**Recommended**: Approach A, but prioritize CLN-CC-01 (deleting the directory) as the real fix.
+**Recommended**: Approach A, but prioritize CLN-CC-01 (deleting the file) as the real fix.
 
 ---
 
@@ -4880,7 +4959,7 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Strengths*: Backward compatible; ecosystem-consistent.
 - *Weaknesses*: None.
 - *Risks*: None.
-- *Guardrails*: Remove deprecated alias after two release cycles.
+- *Guardrails*: Remove deprecated alias after one release cycle.
 
 **Recommended**: Approach A.
 
