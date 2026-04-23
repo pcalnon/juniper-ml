@@ -94,7 +94,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 
 ### Issue Identification Tables, Section 3
 
-### Fixed in v1–v3 (carried forward)
+#### 3.1 Fixed in v1–v3 (carried forward)
 
 | Item                                            | Source                                 | Repo   | Evidence                                                                                                                |
 |-------------------------------------------------|----------------------------------------|--------|-------------------------------------------------------------------------------------------------------------------------|
@@ -108,12 +108,14 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | **Per-IP connection cap (canopy)**              | juniper-ml R5-01                       | canopy | `settings.py:99` — `max_connections_per_ip: int = 5`; `websocket_manager.py:269-291` enforces                           |
 | **OPT-3**: Persistent output layer              | juniper-cascor dev record              | cascor | `cascade_correlation.py:1603-1607` — intentional fresh nn.Linear per call (documented design decision)                  |
 
-### Newly confirmed fixed in v4
+#### 3.2 Newly confirmed fixed in v4
 
 | Item                                    | v3 ID  | Repo   | Evidence                                                                                                                                                               |
 |-----------------------------------------|--------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Request body limit for chunked encoding | SEC-08 | cascor | `src/api/middleware.py:58-89` — `RequestBodyLimitMiddleware` now stream-reads POST/PUT/PATCH bodies when Content-Length absent; caps at `_MAX_REQUEST_BODY_BYTES`      |
 | Worker `worker_id` server-generated     | SEC-09 | cascor | `src/api/websocket/worker_stream.py:159-164` — server generates `worker_id = f"worker-{uuid.uuid4().hex[:12]}"`. Client-supplied value is stored as `client_name` only |
+
+### Issue Remediations, Section 3
 
 ---
 
@@ -121,7 +123,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 
 ### Issue Identification Tables, Section 4
 
-### 4.1 Original items (v3) — status updated
+#### 4.1 Original items (v3) — status updated
 
 | ID     | Severity   | Repository     | Description                                                   | File                                      | Status (v4)                                                                                                                 |
 |--------|------------|----------------|---------------------------------------------------------------|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
@@ -138,7 +140,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 
 > **SEC-08 partial reopening**: While the middleware caps body size, it uses `await request.body()` (line 86) which reads the *full* body into memory before checking size. A malicious chunked body larger than RAM but smaller than OS socket buffer could cause memory exhaustion. See BUG-CC-15 below.
 
-### 4.2 New security issues (v4)
+#### 4.2 New security issues (v4)
 
 | ID     | Severity   | Repository     | Description                                                   | File(s)                                           | Evidence                                                                                                          |
 |--------|------------|----------------|---------------------------------------------------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
@@ -152,13 +154,15 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 |        |            |                |                                                               | `src/api/routes/snapshots.py:48-64`               |                                                                                                                   |
 | SEC-18 | **MEDIUM** | cascor-worker  | `_decode_binary_frame` no bounds check, malformed binary data | `juniper_cascor_worker/worker.py:330-343`         | Trusts header-encoded `ndim`, `shape`, `dtype_len`, no bounds check: crafted frame, cause OOM via `np.frombuffer` |
 
+### Issue Remediations, Section 4
+
 ---
 
 ## 5. Active Bugs (Confirmed Still Present)
 
 ### Issue Identification Tables, Section 5
 
-### 5.1 juniper-cascor
+#### 5.1 juniper-cascor
 
 | ID        | Severity   | Description                                                            | File(s)                                                            | Evidence                                                                                                      |
 |-----------|------------|------------------------------------------------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
@@ -186,7 +190,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | BUG-CC-17 | **MEDIUM** | `_extract_and_record_metrics()` split-lock — duplicate metric emission | `src/api/lifecycle/manager.py:453-495`                             | Lock released between reading and writing high-water-mark; duplicate metrics possible (v5 new)                |
 | BUG-CC-18 | **HIGH**   | Dummy candidate results on double training failure — silent corruption | `src/cascade_correlation/cascade_correlation.py:1930-1962`         | When parallel AND sequential fallback both fail, dummy zero-correlation candidate installed silently (v5 new) |
 
-### 5.2 juniper-canopy
+#### 5.2 juniper-canopy
 
 | ID        | Severity   | Description                                             | File(s)                                                      | Evidence                                                                                                                      |
 |-----------|------------|---------------------------------------------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
@@ -203,7 +207,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | BUG-CN-11 | **MEDIUM** | `regenerate_dataset` mutates state without lock         | `src/demo_mode.py:1660-1676`                                 | train_x, train_y, epoch, loss mutated without `_lock` — training thread sees partial state (v5 new)                           |
 | BUG-CN-12 | **LOW**    | `config_manager._load_config()` returns {} on any error | `src/config_manager.py:147-149`                              | Catches all exceptions including programming errors, returns empty config silently (v5 new)                                   |
 
-### 5.3 juniper-data
+#### 5.3 juniper-data
 
 | ID        | Severity   | Description                                                        | File(s)                          | Evidence                                                                                                                     |
 |-----------|------------|--------------------------------------------------------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
@@ -219,13 +223,15 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | BUG-JD-10 | **HIGH**   | ALL storage operations block async event loop (extends JD-PERF-01) | `api/routes/datasets.py:98-424`  | get_meta, save, batch_export, batch_update_tags — all synchronous in async handlers; blocks ALL concurrent requests (v5 new) |
 | BUG-JD-11 | **LOW**    | `record_access` TOCTOU race on access_count increment              | `storage/base.py:125-135`        | Two concurrent requests read same count, both increment, one lost (v5 new)                                                   |
 
+### Issue Remediations, Section 5
+
 ---
 
 ## 6. Code Quality and Cleanup
 
 ### Issue Identification Tables, Section 6
 
-### 6.1 juniper-cascor — Stale Code Removal
+#### 6.1 juniper-cascor — Stale Code Removal
 
 | ID        | Priority | Description                                                                                      | File(s)                                                                      | Effort      |
 |-----------|----------|--------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|-------------|
@@ -245,7 +251,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | CLN-CC-14 | **P3**   | Empty `# TODO :` headers in 18+ files (boilerplate noise)                                        | Multiple file headers                                                        | S           |
 | CLN-CC-15 | **P3**   | `_object_attributes_to_table` return type annotation wrong (`str` but returns `list`/`None`)     | `src/utils/utils.py:197`                                                     | S           |
 
-### 6.2 juniper-canopy — Code Quality
+#### 6.2 juniper-canopy — Code Quality
 
 | ID        | Priority | Description                                                                     | Evidence                                                                          | Effort |
 |-----------|----------|---------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|--------|
@@ -264,7 +270,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | CLN-CN-13 | **P3**   | `demo_mode.py:938` — deprecated `_generate_spiral_dataset_local()` still called | `@deprecated` but called as fallback at L554 and L1667                            | S      |
 | CLN-CN-14 | **P3**   | `np.random.seed(42)` sets global numpy seed in `demo_mode.py:960`               | Mutates global RNG state; affects all concurrent `np.random` users                | S      |
 
-### 6.3 juniper-data — Code Quality (v4 new)
+#### 6.3 juniper-data — Code Quality (v4 new)
 
 | ID        | Priority | Description                                                            | Evidence                                                                   | Effort |
 |-----------|----------|------------------------------------------------------------------------|----------------------------------------------------------------------------|--------|
@@ -272,13 +278,15 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | CLN-JD-02 | **P2**   | `FakeDataClient.close()` destroys data, unlike real client             | `testing/fake_client.py:762-766` — clears `_datasets` on close             | S      |
 | CLN-JD-03 | **P3**   | Module-level `create_app()` at `app.py:142` — import-time side effects | Reads env vars and creates middleware at import time                       | M      |
 
+### Issue Remediations, Section 6
+
 ---
 
 ## 7. Dashboard Enhancements
 
 ### Issue Identification Tables, Section 7
 
-### 7.0 Critical and High-Priority Enhancements (v3.0.0)
+#### 7.1 Critical and High-Priority Enhancements (v3.0.0)
 
 | ID           | Severity     | Description                                                                        | Status                                                                   |
 |--------------|--------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
@@ -288,7 +296,7 @@ See [Section 23](#23-validation-methodology-v500---v100) for details.
 | KL-1         | **MEDIUM**   | Dataset scatter plot empty in service mode (known limitation)                      | 🔴 Known limitation                                                      |
 | CAN-DEF-008  | **LOW**      | Advanced 3D node interactions                                                      | 🔵 Deferred                                                              |
 
-### 7.1 Canopy Enhancement Backlog (CAN-000 through CAN-021)
+#### 7.2 Canopy Enhancement Backlog (CAN-000 through CAN-021)
 
 All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3 — see CAN-000 through CAN-021.)
 
@@ -318,17 +326,19 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | CAN-020  | All               | Show network at specific hierarchy level                                  | P4       |
 | CAN-021  | All               | Show network in population (ensemble view)                                | P4       |
 
+### Issue Remediations, Section 7
+
 ---
 
 ## 8. WebSocket Migration (R5-01 Remaining Phases)
 
 ### Issue Identification Tables, Section 8
 
-### 8.1 Phases Now Complete
+#### 8.1 Phases Now Complete
 
 (Unchanged from v3 — Phases 0-cascor, A-SDK, B-pre-a, B, C, D all ✅ Complete.)
 
-### 8.2 Phases Still Incomplete
+#### 8.2 Phases Still Incomplete
 
 | Phase | Goal                                           | Status                                         | Priority | Effort |
 |-------|------------------------------------------------|------------------------------------------------|----------|--------|
@@ -337,7 +347,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | G     | Integration tests (cascor `set_params` via WS) | 🔴 NOT STARTED                                 | P2       | M      |
 | H     | `_normalize_metric` audit                      | 🔴 NOT STARTED                                 | P3       | S      |
 
-### 8.3 Critical Individual Gaps (from WebSocket Architecture Review)
+#### 8.3 Critical Individual Gaps (from WebSocket Architecture Review)
 
 (All 12 items unchanged from v3 — GAP-WS-16 through GAP-WS-32 + Phase B-pre-b. All 🔴 NOT STARTED.)
 
@@ -356,6 +366,8 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | GAP-WS-32     | **P2**   | Per-command timeouts and orphaned-command resolution                                         | 🔴 NOT STARTED |
 | Phase B-pre-b | **P1**   | CSWSH/CSRF on `/ws/control` — NOT STARTED (required before Phase D default-on)               | 🔴 NOT STARTED |
 
+### Issue Remediations, Section 8
+
 ---
 
 ## 9. Microservices and Infrastructure
@@ -364,7 +376,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 
 ### Issue Identification Tables, Section 9
 
-### 9.1 Completed Phases
+#### 9.1 Completed Phases
 
 | Phase   | Description                                          | Status      |
 |---------|------------------------------------------------------|-------------|
@@ -373,7 +385,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | Phase 3 | Worker Dockerfile, docker-compose, systemd           | ✅ Complete |
 | Phase 4 | Kubernetes Helm chart (23 templates)                 | ✅ Complete |
 
-### 9.2 Phase 5: Observability & Hardening — INCOMPLETE
+#### 9.2 Phase 5: Observability & Hardening — INCOMPLETE
 
 | Step | Task                                             | Status               | Evidence                                                          |
 |------|--------------------------------------------------|----------------------|-------------------------------------------------------------------|
@@ -383,7 +395,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | 5.4  | Volume backup/restore documentation              | 🔴 NOT STARTED       | No backup docs exist                                              |
 | 5.5  | Startup validation test suite                    | 🔴 NOT STARTED       | No startup script tests in juniper-ml                             |
 
-### 9.3 Microservices Architecture Roadmap (Phases 5–9)
+#### 9.3 Microservices Architecture Roadmap (Phases 5–9)
 
 | Phase | Description                                           | Status                                               |
 |-------|-------------------------------------------------------|------------------------------------------------------|
@@ -393,6 +405,8 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | 8     | Enhanced Health Checks with Dependency Status         | ⚠️ Partial — some services have dependency reporting |
 | 9     | Configuration Standardization (Pydantic BaseSettings) | ✅ Complete for cascor and data; canopy migrated     |
 
+### Issue Remediations, Section 9
+
 ---
 
 ## 10. CasCor Algorithm and Feature Enhancements
@@ -401,7 +415,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 
 ### Issue Identification Tables, Section 10
 
-### Training Control
+#### 10.1 Training Control
 
 | ID      | Description                                                | Priority |
 |---------|------------------------------------------------------------|----------|
@@ -409,21 +423,21 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | CAS-003 | Max train session iterations meta parameter                | P3       |
 | CAS-006 | Auto-snap best network when new best accuracy achieved     | P3       |
 
-### Algorithm Enhancements
+#### 10.2 Algorithm Enhancements
 
 | ID      | Description                                           | Priority |
 |---------|-------------------------------------------------------|----------|
 | ENH-006 | Flexible optimizer system (Adam, SGD, RMSprop, AdamW) | P3       |
 | ENH-007 | N-best candidate layer selection                      | P3       |
 
-### Network Architecture
+#### 10.3 Network Architecture
 
 | ID      | Description                                              | Priority |
 |---------|----------------------------------------------------------|----------|
 | CAS-008 | Network hierarchy management (multi-hierarchical CasCor) | P4       |
 | CAS-009 | Network population management (ensemble approaches)      | P4       |
 
-### Serialization & Validation
+#### 10.4 Serialization & Validation
 
 | ID      | Description                                                              | Priority |
 |---------|--------------------------------------------------------------------------|----------|
@@ -434,7 +448,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | ENH-005 | Refactor candidate unit instantiation (factory method)                   | P2       |
 | ENH-008 | Worker cleanup improvements (SIGKILL fallback)                           | P2       |
 
-### Storage & Infrastructure
+#### 10.5 Storage & Infrastructure
 
 | ID         | Description                                                          | Priority       |
 |------------|----------------------------------------------------------------------|----------------|
@@ -446,13 +460,15 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | —          | Large file refactoring (no file > 2000 lines)                        | P3             |
 | —          | Auto-generated API docs (MkDocs/Sphinx)                              | P3             |
 
+### Issue Remediations, Section 10
+
 ---
 
 ## 11. Cross-Repository Alignment Issues
 
 ### Issue Identification Tables, Section 11
 
-### 11.1 Original items (v3)
+#### 11.1 Original items (v3)
 
 | ID        | Severity     | Repositories           | Description                                                                                                    | Evidence                                                              |
 |-----------|--------------|------------------------|----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
@@ -466,7 +482,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | XREPO-06  | **MEDIUM**   | cascor ↔ canopy        | `epochs_max` default discrepancy — cascor 10,000 vs API 200 vs canopy 1,000,000                                | Three different defaults for the same parameter across the stack      |
 | XREPO-07  | **MEDIUM**   | cascor-client          | `command()` vs `set_params()` message format inconsistency — `command()` never sends `type` field              | Wire protocol mismatch between the two methods                        |
 
-### 11.2 New cross-repo issues (v4)
+#### 11.2 New cross-repo issues (v4)
 
 | ID       | Severity   | Repositories           | Description                                                                                            | Evidence                                                                                         |
 |----------|------------|------------------------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
@@ -482,13 +498,15 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | XREPO-16 | **MEDIUM** | data ↔ data-client     | Client missing methods for 4 server endpoints: filter, stats, cleanup-expired, individual tags         | Server has routes; client has no corresponding methods (v5 new)                                  |
 | XREPO-17 | **LOW**    | cascor ↔ cascor-client | `candidate_progress` WS message broadcast by server but not in client constants, no callback           | `messages.py:102-109` — server sends it; client has no handler (v5 new)                          |
 
+### Issue Remediations, Section 11
+
 ---
 
 ## 12. Housekeeping and Broken References
 
 ### Issue Identification Tables, Section 12
 
-### 12.1 Original items (v3)
+#### 12.1 Original items (v3)
 
 | ID     | Repository     | Description                                                                         | Priority |
 |--------|----------------|-------------------------------------------------------------------------------------|----------|
@@ -506,7 +524,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | HSK-12 | juniper-ml     | `NOHUP_STATUS=$?` captures fork status (always 0) — dead error check                | P3       |
 | HSK-13 | juniper-canopy | 169 hardcoded ThemeColors remain — MED-026 rollout deferred                         | P3       |
 
-### 12.2 New housekeeping items (v4)
+#### 12.2 New housekeeping items (v4)
 
 | ID     | Repository    | Description                                                                                                              | Priority |
 |--------|---------------|--------------------------------------------------------------------------------------------------------------------------|----------|
@@ -522,13 +540,15 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | HSK-23 | juniper-ml    | `scripts/juniper-all-ctl:38` cascor port defaults to 8200 (container port) vs host port 8201                             | P3       |
 | HSK-24 | cascor-client | Dead constants: `ERROR_PRONE_INITIAL_HIDDEN_UNITS` / `ERROR_PRONE_INITIAL_EPOCH` never used                              | P3       |
 
+### Issue Remediations, Section 12
+
 ---
 
 ## 13. juniper-deploy Outstanding Items
 
 ### Issue Identification Tables, Section 13
 
-### 13.1 Infrastructure Bugs (Confirmed Still Present)
+#### 13.1 Infrastructure Bugs (Confirmed Still Present)
 
 | ID        | Severity   | Description                                                                                                                      | Evidence                                                    |
 |-----------|------------|----------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|
@@ -545,7 +565,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | DEPLOY-11 | **LOW**    | `JUNIPER_DATA_API_KEYS` defaults to empty — auth disabled by default                                                             | Empty default means API key auth is effectively off         |
 | DEPLOY-12 | **LOW**    | `wait_for_services.sh` uses hardcoded ports instead of env vars                                                                  | Port numbers hardcoded in health check script               |
 
-### 13.2 New infrastructure issues (v4)
+#### 13.2 New infrastructure issues (v4)
 
 | ID        | Severity   | Description                                                                                                       | Evidence                                                                                      |
 |-----------|------------|-------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
@@ -564,7 +584,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | DEPLOY-25 | **HIGH**   | Helm values.yaml missing `CASCOR_SERVER_URL` for worker — worker fails to start in K8s                            | `values.yaml` worker env — only `CASCOR_HEARTBEAT_INTERVAL` set (v5 new)                      |
 | DEPLOY-26 | **MEDIUM** | Helm values.yaml missing `JUNIPER_DATA_URL` for cascor — cascor can't locate data service in K8s                  | `values.yaml` cascor env — `main.py` treats missing `JUNIPER_DATA_URL` as fatal (v5 new)      |
 
-### 13.3 Unimplemented Roadmap Items (carried from v3)
+#### 13.3 Unimplemented Roadmap Items (carried from v3)
 
 | ID           | Planned Version | Description                                              | Status                                                             |
 |--------------|-----------------|----------------------------------------------------------|--------------------------------------------------------------------|
@@ -577,13 +597,15 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | DEPLOY-RD-07 | —               | SOPS multi-key per environment (SOPS-002)                | 🔴 Deferred to Phase 5                                             |
 | DEPLOY-RD-08 | —               | Docker secrets + SOPS integration (SOPS-014)             | 🔴 Deferred to Phase 5                                             |
 
+### Issue Remediations, Section 13
+
 ---
 
 ## 14. juniper-data Outstanding Items
 
 ### Issue Identification Tables, Section 14
 
-### 14.1 Security Issues (Confirmed Still Present)
+#### 14.1 Security Issues (Confirmed Still Present)
 
 | ID        | Severity   | File                        | Description                                                                                                                                                         |
 |-----------|------------|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -591,7 +613,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | JD-SEC-02 | **MEDIUM** | `api/security.py:59`        | API key comparison not constant-time — timing side-channel (SEC-01 from prior audit, still present)                                                                 |
 | JD-SEC-03 | **MEDIUM** | `api/security.py:116`       | Rate limiter memory unbounded — no eviction/TTL (SEC-02 from prior audit, still present)                                                                            |
 
-### 14.2 Performance Issues
+#### 14.2 Performance Issues
 
 | ID         | Severity   | File                                | Description                                                                                                                              |
 |------------|------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
@@ -601,7 +623,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | JD-PERF-04 | **MEDIUM** | `storage/postgres_store.py:125-127` | No connection pooling — `psycopg2.connect()` called per operation. Confirmed: `close()` is a no-op for "connection-per-request pattern". |
 | JD-PERF-05 | **MEDIUM** | `api/routes/health.py:57`           | Readiness probe does filesystem glob on every call — `len(list(storage_path.glob("*.npz")))` is O(n) per probe (v4 new)                  |
 
-### 14.3 Deferred Roadmap Items
+#### 14.3 Deferred Roadmap Items
 
 | ID     | Description                             | Status      |
 |--------|-----------------------------------------|-------------|
@@ -610,13 +632,15 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | RD-016 | GPU Acceleration for large datasets     | 🔵 DEFERRED |
 | RD-017 | Continuous Profiling infrastructure     | 🔵 DEFERRED |
 
+### Issue Remediations, Section 14
+
 ---
 
 ## 15. Client Library Outstanding Items
 
 ### Issue Identification Tables, Section 15
 
-### 15.1 juniper-cascor-client
+#### 15.1 juniper-cascor-client
 
 | ID    | Severity   | Description                                                                                                 | Status             |
 |-------|------------|-------------------------------------------------------------------------------------------------------------|--------------------|
@@ -638,7 +662,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | CC-16 | **LOW**    | `FakeCascorClient.wait_for_ready()` returns `True` immediately — no timeout testing possible                | 🔴 Open (v4 new)   |
 | CC-17 | **LOW**    | `FakeCascorClient.wait_for_ready()` missing `self._lock` — thread safety gap                                | 🔴 Open (v4 new)   |
 
-### 15.2 juniper-data-client
+#### 15.2 juniper-data-client
 
 | ID    | Severity     | Description                                                                                    | Status              |
 |-------|--------------|------------------------------------------------------------------------------------------------|---------------------|
@@ -648,7 +672,7 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | DC-04 | **MEDIUM**   | `FakeDataClient` masks generator name bugs — accepts invalid names                             | 🔴 Open             |
 | DC-05 | **MEDIUM**   | `FakeDataClient` missing lifecycle methods (`filter_datasets`, `get_stats`, `cleanup_expired`) | 🔴 Open (v4 new)    |
 
-### 15.3 juniper-cascor-worker
+#### 15.3 juniper-cascor-worker
 
 | ID    | Severity   | Description                                                                                          | Status                                                |
 |-------|------------|------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
@@ -661,6 +685,8 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 | CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | 🔴 Open (v4 new)                                      |
 | CW-07 | **MEDIUM** | No validation of `tensor_manifest` keys against received binary frames — deadlock risk               | 🔴 Open (v4 new)                                      |
 | CW-08 | **MEDIUM** | `task_executor.py:12` top-level `import torch` — first-task latency from deferred torch import       | 🔴 Open (v4 new)                                      |
+
+### Issue Remediations, Section 15
 
 ---
 
@@ -692,6 +718,8 @@ Issues identified through deep code analysis that impact runtime performance.
 | PERF-JD-01 | **MEDIUM** | Readiness probe does filesystem glob on every call           | `api/routes/health.py:57` | `len(list(storage_path.glob("*.npz")))` is O(n) per probe              |
 | PERF-JD-02 | **MEDIUM** | High-cardinality Prometheus labels from parameterized routes | `api/observability.py:98` | `endpoint = request.url.path` with dataset IDs — unbounded cardinality |
 
+### Issue Remediations, Section 16
+
 ---
 
 ## 17. Concurrency and Thread Safety Issues (v5 new)
@@ -711,6 +739,8 @@ Issues identified through cross-cutting concurrency analysis across all reposito
 | CONC-09 | **MEDIUM** | juniper-cascor | Fire-and-forget `asyncio.create_task` without stored reference                        | `app.py:137,142`                       | Startup tasks silently swallowed on exception; GC'd references     |
 | CONC-10 | **LOW**    | juniper-cascor | Health monitor deregister/assign race window                                          | `coordinator.py:379-408`               | Task assigned to worker about to be deregistered — 120s delay risk |
 | CONC-12 | **LOW**    | juniper-data   | `record_access` TOCTOU on access_count increment                                      | `base.py:125-135`                      | Concurrent access increments can lose counts                       |
+
+### Issue Remediations, Section 17
 
 ---
 
@@ -732,6 +762,8 @@ Issues identified through cross-cutting error handling analysis across all repos
 | ERR-13    | **LOW**    | juniper-data          | `arc_agi` generator silently falls back on any exception — masks auth/network errors               | `generator.py:95-98`                                    |
 | ERR-14    | **MEDIUM** | juniper-cascor-client | `CascorMetricsStream.stream()` swallows ConnectionClosed — caller can't detect disconnect          | `ws_client.py:79-80`                                    |
 | ROBUST-01 | **HIGH**   | juniper-cascor        | Dummy candidate results on double training failure — zero-correlation candidate installed silently | `cascade_correlation.py:1930-1962`                      |
+
+### Issue Remediations, Section 18
 
 ---
 
@@ -776,6 +808,8 @@ Issues identified through cross-cutting test coverage and CI analysis across all
 | Weekly security-scan | ✅     | ✅     | ✅   | ✅          | ❌            | ✅            | —      | ✅         |
 | Docker smoke test    | ✅     | ✅     | ✅   | —           | —             | —             | —      | —          |
 
+### Issue Remediations, Section 19
+
 ---
 
 ## 20. Configuration and Dependency Issues (v5 new)
@@ -800,6 +834,8 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 | CFG-14 | **LOW**    | Stale Constraint      | juniper-canopy | `juniper-cascor-client>=0.1.0` allows outdated incompatible versions (current is 0.4.0)             | juniper-ml requires `>=0.3.0`                                   |
 | CFG-16 | **LOW**    | Config Bypass         | juniper-canopy | `CASCOR_DEMO_MODE` read directly, bypasses Settings deprecation validator                           | `backend/__init__.py:66`                                        |
 
+### Issue Remediations, Section 20
+
 ---
 
 ## 21. API Contract and Protocol Issues (v5 new)
@@ -820,6 +856,8 @@ Issues identified through cross-cutting API contract and protocol correctness an
 | API-08   | **LOW**    | Protocol        | cascor-client, cascor | `set_params` includes extraneous `type:command` field; `command()` does not — asymmetric envelopes                      |
 | API-09   | **MEDIUM** | API Contract    | juniper-cascor        | HTTPException errors bypass ResponseEnvelope — dual error format in same API                                            |
 | PROTO-01 | **LOW**    | Protocol        | canopy, cascor        | Canopy `/ws/control` accepts `reset` parameter not in cascor's control protocol                                         |
+
+### Issue Remediations, Section 21
 
 ---
 

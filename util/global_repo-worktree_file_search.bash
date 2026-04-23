@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO: Normalize this into a general purpose util script.
+
 IFS=" "
 for i in juniper-ml juniper-canopy juniper-cascor juniper-data juniper-data-client juniper-cascor-client juniper-cascor-worker juniper-deploy; do
     OLD_IFS="${IFS}"
