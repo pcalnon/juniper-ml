@@ -2,26 +2,26 @@
 #########################################################################################################################################################################################################
 #
 # Notes:
-#     grep 
-#         --exclude-dir juniper-legacy 
-#         --exclude-dir prompts 
-#         --exclude-dir logs 
-#         --exclude-dir reports 
-#         --exclude-dir notes 
-#         --exclude-dir docs 
-#         --exclude-dir util 
-#         --exclude-dir *.egg-info 
-#         --exclude-dir .mypy_cache 
-#         --exclude-dir .pytest_cache 
-#         --exclude-dir backups 
-#         --exclude-dir .serena 
+#     grep
+#         --exclude-dir juniper-legacy
+#         --exclude-dir prompts
+#         --exclude-dir logs
+#         --exclude-dir reports
+#         --exclude-dir notes
+#         --exclude-dir docs
+#         --exclude-dir util
+#         --exclude-dir *.egg-info
+#         --exclude-dir .mypy_cache
+#         --exclude-dir .pytest_cache
+#         --exclude-dir backups
+#         --exclude-dir .serena
 #
-#         --exclude CHANGELOG.md 
+#         --exclude CHANGELOG.md
 #         --exclude AGENTS.md
 #         --exclude CLAUDE.md
 #         --exclude .pre-commit-config.yaml
 #
-#         -rnI 
+#         -rnI
 #
 #         "${SEARCH_TERM}"
 #
@@ -119,4 +119,3 @@ echo "grep ${EXCLUDE_DIR_PARAMS} ${EXCLUDE_FILE_PARAMS} ${GREP_PARAMS_DIR_RECURS
 grep ${EXCLUDE_DIR_PARAMS} ${EXCLUDE_FILE_PARAMS} ${GREP_PARAMS_DIR_RECURSE} ${GREP_PARAMS_LINE_NUMBER} ${GREP_PARAMS_SKIP_BINARY} "${SEARCH_TERM}" ${SEARCH_LOCATION}
 
 echo "Completed Executing grep command for search term in source code files."
-

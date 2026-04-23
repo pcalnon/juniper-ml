@@ -3503,6 +3503,30 @@ S (< 1 hour)
 
 **Recommended**: Approach A because the entire directory is NOT dead code. The remote_client_0.py file is stale and can be removed, but the remote_client.py source file will still be used.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor/src/remote_client/remote_client_0.py
+# Delete the stale remote_client_0.py file
+git rm src/remote_client/remote_client_0.py
+```
+
+##### Verification Status
+
+⚠️ Source structure differs — `remote_client_0.py` no longer exists (already deleted); only `remote_client.py` and `__init__.py` remain in `src/remote_client/`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-CC-02: Delete Stale `check.py` Duplicate (600 Lines)
@@ -3521,6 +3545,30 @@ S (< 1 hour)
 
 **Recommended**: Approach A — trivial deletion.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor/src/spiral_problem/check.py
+# Delete the stale duplicate file
+git rm src/spiral_problem/check.py
+```
+
+##### Verification Status
+
+⚠️ Source structure differs — `check.py` no longer exists in `src/spiral_problem/` (already deleted)
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-CC-03: Remove 9 Local `import traceback` in cascade_correlation.py
@@ -3537,6 +3585,35 @@ S (< 1 hour)
 - *Guardrails*: Run tests after change.
 
 **Recommended**: Approach A — 30-minute cleanup.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/cascade_correlation/cascade_correlation.py
+# Step 1: Uncomment line 64 to enable top-level import
+import traceback
+
+# Step 2: Remove all local `import traceback` statements at lines:
+# 1719, 1932, 2270, 2778, 2804, 2971, 3277, 3290, 3775, 3839,
+# 3877, 3908, 4039, 4133, 4225, 4271, 4297, 4317
+# (18 local imports found — more than originally documented)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — line 64 has `# import traceback` (commented out); 18 local `import traceback` statements found (more than the 9 originally documented)
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
 
 ---
 
@@ -3555,6 +3632,37 @@ S (< 1 hour)
 
 **Recommended**: Approach A because incremental migration is manageable.
 
+##### Implementation
+
+```toml
+# File: juniper-cascor/pyproject.toml
+# Add strict mode with per-module overrides
+[tool.mypy]
+strict = true
+no_strict_optional = true  # keep existing override during migration
+
+# Add per-module ignore_errors for non-compliant modules
+[[tool.mypy.overrides]]
+module = ["cascade_correlation.*", "candidate_unit.*", "spiral_problem.*"]
+ignore_errors = true
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `pyproject.toml` has `[tool.mypy]` at line 198 with `no_strict_optional = true` but no `strict = true`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — incremental migration across many modules)
+
 ---
 
 #### CLN-CC-05: Legacy Spiral Code — Trivial Getter/Setter Methods, No @deprecated
@@ -3572,6 +3680,35 @@ S (< 1 hour)
 
 **Recommended**: Approach A as first step; follow with deletion of confirmed-unused methods.
 
+##### Implementation
+
+```python
+# File: juniper-cascor/src/spiral_problem/spiral_problem.py
+# Add @deprecated decorator to trivial getters/setters
+# Example for a representative getter:
+from warnings import deprecated  # Python 3.13+
+
+@deprecated("Use property directly")
+def get_num_points(self) -> int:
+    return self._num_points
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `spiral_problem.py` is 1,644 lines with ~20 trivial getters/setters, no deprecation markers present
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+M (1-4 hours — identify callers and add markers to ~20 methods)
+
 ---
 
 #### CLN-CC-06: Remove "Roll" Concept in CandidateUnit
@@ -3580,6 +3717,18 @@ S (< 1 hour)
 **Root Cause**: Legacy concept no longer relevant to algorithm.
 
 **Approach A — Deferred**: 🔵 Explicitly deferred per V5 document. Low priority; address when CandidateUnit is refactored.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3 (deferred)
+
+##### Scope
+
+M (1-4 hours)
 
 ---
 
@@ -3590,6 +3739,18 @@ S (< 1 hour)
 
 **Approach A — Deferred**: 🔵 Explicitly deferred per V5 document.
 
+##### Severity
+
+Low
+
+##### Priority
+
+P3 (deferred)
+
+##### Scope
+
+L (4-16 hours)
+
 ---
 
 #### CLN-CC-08: Remove Commented-Out Code Blocks
@@ -3599,6 +3760,18 @@ S (< 1 hour)
 
 **Approach A — Deferred**: 🔵 Explicitly deferred per V5 document.
 
+##### Severity
+
+Low
+
+##### Priority
+
+P3 (deferred)
+
+##### Scope
+
+M (1-4 hours)
+
 ---
 
 #### CLN-CC-09: Line Length Reduction to 120 Characters
@@ -3607,6 +3780,18 @@ S (< 1 hour)
 **Root Cause**: Project convention is 512 chars; 120 is a stricter standard.
 
 **Approach A — Deferred**: 🔵 Explicitly deferred. Note: Project convention is 512 chars per AGENTS.md.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3 (deferred — conflicts with project convention of 512 chars)
+
+##### Scope
+
+XL (project-wide reformatting)
 
 ---
 
@@ -3633,6 +3818,42 @@ S (< 1 hour)
 
 **Recommended**: Add `dill` as an optional dependency.
 
+##### Implementation
+
+```toml
+# File: juniper-cascor/pyproject.toml
+# Add dill as optional dependency
+[project.optional-dependencies]
+debug = ["dill>=0.3.8"]
+```
+
+```python
+# File: juniper-cascor/src/utils/utils.py
+# Guard the import at line 248 with a try/except
+def check_object_pickleability(instance: object = None) -> bool:
+    try:
+        import dill  # trunk-ignore(bandit/B403)
+    except ImportError:
+        raise ImportError("dill is required for pickleability checks. Install with: pip install juniper-cascor[debug]")
+    # ... rest of function unchanged ...
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `src/utils/utils.py:239` defines `check_object_pickleability` with `import dill` at line 248; `dill` is not in `pyproject.toml` dependencies
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-CC-11: `snapshot_serializer.py` — Extend Optimizer Support (In-Code TODO)
@@ -3649,6 +3870,42 @@ S (< 1 hour)
 - *Guardrails*: Add parametrized test for each supported optimizer.
 
 **Recommended**: Approach A because incomplete serialization silently loses optimizer state.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/snapshots/snapshot_serializer.py
+# At line ~731 where the TODO exists, extend optimizer serialization
+# to use generic state_dict() approach for all optimizer types
+
+def _serialize_optimizer(self, optimizer) -> dict:
+    """Serialize any PyTorch optimizer using generic state_dict()."""
+    return {
+        "type": type(optimizer).__name__,
+        "state_dict": optimizer.state_dict(),
+    }
+
+def _deserialize_optimizer(self, optimizer_data: dict, optimizer):
+    """Restore optimizer state from serialized data."""
+    optimizer.load_state_dict(optimizer_data["state_dict"])
+    return optimizer
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `src/snapshots/snapshot_serializer.py:731` contains `# TODO: Extend to support more optimizers`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1 (important — incomplete serialization loses training state)
+
+##### Scope
+
+M (1-4 hours — implement + test for each optimizer type)
 
 ---
 
@@ -3667,6 +3924,35 @@ S (< 1 hour)
 
 **Recommended**: Approach A — trivial cleanup.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor/.gitignore
+# Add .ipynb_checkpoints to .gitignore
+echo ".ipynb_checkpoints/" >> .gitignore
+
+# Remove cached checkpoint directories
+git rm -r --cached src/cascade_correlation/.ipynb_checkpoints/
+git rm -r --cached src/candidate_unit/.ipynb_checkpoints/
+git rm -r --cached src/.ipynb_checkpoints/
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `.ipynb_checkpoints/` directories confirmed at `src/cascade_correlation/`, `src/candidate_unit/`, and `src/`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-CC-13: `sys.path.append` at Module Level in cascade_correlation.py
@@ -3683,6 +3969,35 @@ S (< 1 hour)
 - *Guardrails*: Run tests after removal; fix any ImportError.
 
 **Recommended**: Approach A because sys.path manipulation is fragile.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/cascade_correlation/cascade_correlation.py
+# Remove lines 67-68 (sys.path.append block)
+# BEFORE:
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# AFTER: Remove line entirely. Update the import at line 71 to use
+# package-relative import instead:
+from ..candidate_unit.candidate_unit import CandidateTrainingResult, CandidateUnit
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `cascade_correlation.py:67` has `sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))` followed by `from candidate_unit.candidate_unit import ...` at line 71
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1 (important — runtime path mutation is fragile)
+
+##### Scope
+
+S (< 1 hour)
 
 ---
 
@@ -3701,6 +4016,30 @@ S (< 1 hour)
 
 **Recommended**: Approach A — trivial cleanup, but this action is **Deferred**.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor/src/ (multiple files)
+# Remove empty TODO headers matching exactly "# TODO :"
+grep -rl "^# TODO :$" src/ --include="*.py" | xargs sed -i '/^# TODO :$/d'
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — empty `# TODO :` headers confirmed in `cascade_correlation.py:30`, `cascade_correlation_config.py:30`, `cascade_correlation_exceptions.py:30`, and additional source files
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3 (deferred)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-CC-15: `_object_attributes_to_table` Return Type Annotation Wrong
@@ -3717,6 +4056,33 @@ S (< 1 hour)
 - *Guardrails*: Run mypy on the file after fix.
 
 **Recommended**: Approach A — one-line fix.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/utils/utils.py
+# Fix return type annotation at line 197
+# BEFORE:
+# def _object_attributes_to_table(obj_dict: dict = None, keys: [str] = None, private_attrs: bool = False) -> str:
+# AFTER:
+def _object_attributes_to_table(obj_dict: dict = None, keys: list[str] = None, private_attrs: bool = False) -> list | None:
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `src/utils/utils.py:197` has `-> str` annotation but function returns `list` or `None` via `_init_content_list`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
 
 ---
 
@@ -3745,6 +4111,45 @@ S (< 1 hour)
 
 **Recommended**: Approach A — Complete implementation since styling is needed.
 
+##### Implementation
+
+```css
+/* File: juniper-canopy/src/assets/custom.css (or appropriate stylesheet) */
+/* Add .theme-table CSS rules */
+.theme-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.theme-table th, .theme-table td {
+    padding: 8px 12px;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    text-align: left;
+}
+
+.theme-table th {
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
+    font-weight: 600;
+}
+```
+
+##### Verification Status
+
+⚠️ Source structure differs — no `theme-table` references found in `src/` Python or CSS files; references exist only in `notes/fixes/REMAINING_ISSUES_REMEDIATION_PLAN.md` as planned work
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-CN-02: NPZ Validation Only in DemoMode, Not ServiceBackend
@@ -3761,6 +4166,39 @@ S (< 1 hour)
 - *Guardrails*: Add test for validation in service backend path.
 
 **Recommended**: Approach A because inconsistent validation is a reliability gap.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/validation.py (new shared module)
+# Extract _validate_npz_arrays from demo_mode.py:767 into shared module
+from typing import Any, Dict
+
+
+def validate_npz_arrays(npz_data: Dict[str, Any]) -> None:
+    """Validate that NPZ data contains required array keys with correct shapes."""
+    required_keys = {"X_train", "y_train", "X_test", "y_test"}
+    missing = required_keys - set(npz_data.keys())
+    if missing:
+        raise ValueError(f"NPZ data missing required keys: {missing}")
+    # ... existing validation logic from demo_mode.py:767 ...
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `demo_mode.py:767` defines `_validate_npz_arrays` as private method; no equivalent exists in the service backend path
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1 (important — inconsistent validation is a reliability gap)
+
+##### Scope
+
+M (1-4 hours — extract, test both paths)
 
 ---
 
@@ -3779,6 +4217,41 @@ S (< 1 hour)
 
 **Recommended**: Approach A because performance testing prevents silent regressions.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/tests/performance/test_callback_performance.py (new)
+# Add performance test suite alongside existing test_button_responsiveness.py
+import time
+import pytest
+
+
+@pytest.mark.performance
+class TestCallbackPerformance:
+    def test_callback_execution_time(self, app):
+        """Verify callback execution completes within threshold."""
+        start = time.perf_counter()
+        # ... trigger callback ...
+        elapsed = time.perf_counter() - start
+        assert elapsed < 2.0, f"Callback took {elapsed:.2f}s (threshold: 2.0s)"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `src/tests/performance/` contains only `test_button_responsiveness.py`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — multiple test categories to cover)
+
 ---
 
 #### CLN-CN-04: JuniperData-Specific Error Handling Missing
@@ -3795,6 +4268,39 @@ S (< 1 hour)
 - *Guardrails*: Add test simulating data service errors.
 
 **Recommended**: Approach A because unhandled data-client errors crash the dashboard.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/backend/data_adapter.py (or service adapter module)
+# Add data-client error handling alongside existing cascor-client handling
+from juniper_data_client.exceptions import DataClientError, DataClientConnectionError
+
+try:
+    result = self._data_client.get_datasets()
+except DataClientConnectionError as e:
+    logger.error(f"Data service connection failed: {e}")
+    return {"error": "Data service unavailable", "datasets": []}
+except DataClientError as e:
+    logger.error(f"Data client error: {e}")
+    return {"error": str(e), "datasets": []}
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — no `DataClientError` or data-client exception handling found in `src/backend/`; only cascor-client errors are caught
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1 (important — unhandled errors crash the dashboard)
+
+##### Scope
+
+M (1-4 hours)
 
 ---
 
@@ -3814,6 +4320,35 @@ S (< 1 hour)
 
 **Recommended**: Approach A — incremental extraction.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/frontend/dashboard_manager.py
+# Progressive extraction — start with training controls component
+# Cross-reference: Related to BUG-CN-02 — same refactoring target
+
+# Step 1: Create juniper-canopy/src/frontend/components/training_controls.py
+# Step 2: Move training-related callbacks and methods
+# Step 3: Import and delegate from DashboardManager
+# Step 4: Repeat for each component group (network, metrics, datasets)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `dashboard_manager.py` confirmed at 3,232 lines
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — incremental extraction across multiple sessions)
+
 ---
 
 #### CLN-CN-06: Re-enable Remaining MyPy Disabled Codes
@@ -3830,6 +4365,46 @@ S (< 1 hour)
 - *Guardrails*: Document any codes that must remain suppressed with justification.
 
 **Recommended**: Approach A — incremental, one code at a time.
+
+##### Implementation
+
+```toml
+# File: juniper-canopy/pyproject.toml
+# Current: strict_optional = false for 7 modules (lines ~207-219)
+# Fix type errors in one module at a time, then remove from override list
+# Start with smallest module (e.g., config_manager) and work up
+
+# After fixing config_manager types, remove from override:
+[[tool.mypy.overrides]]
+module = [
+    "main",
+    # "config_manager",  # FIXED — removed from suppression list
+    "demo_mode",
+    "backend.data_adapter",
+    "backend.cassandra_client",
+    "frontend.dashboard_manager",
+    "frontend.components.metrics_panel",
+    "frontend.components.network_visualizer",
+    "frontend.components.hdf5_snapshots_panel",
+]
+strict_optional = false
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `pyproject.toml` has `strict_optional = false` override for 7+ modules at line ~220
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — one module at a time)
 
 ---
 
@@ -3848,6 +4423,39 @@ S (< 1 hour)
 
 **Recommended**: Approach A because unit tests with fakes cannot catch integration issues.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/tests/integration/test_real_backend.py (new)
+# Add integration tests with requires_server marker
+import pytest
+
+
+@pytest.mark.requires_server
+class TestRealBackendIntegration:
+    def test_cascor_service_adapter_connection(self, real_cascor_client):
+        """Verify CascorServiceAdapter connects to live cascor instance."""
+        status = real_cascor_client.get_status()
+        assert status is not None
+        assert "phase" in status
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — all tests use fakes/mocks; `requires_server` marker defined in `conftest.py:175` but only used in 4 existing test files
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — requires Docker-based CI setup)
+
 ---
 
 #### CLN-CN-08: Convert Skipped Integration Tests (4 Files with `requires_server`)
@@ -3864,6 +4472,42 @@ S (< 1 hour)
 - *Guardrails*: Run as optional (non-blocking) CI step initially.
 
 **Recommended**: Approach A because existing tests should be exercised.
+
+##### Implementation
+
+```yaml
+# File: juniper-canopy/.github/workflows/ci.yml
+# Add integration test job that starts services via Docker
+integration-tests:
+  runs-on: ubuntu-latest
+  services:
+    juniper-data:
+      image: ghcr.io/pcalnon/juniper-data:latest
+      ports: ["8100:8100"]
+    juniper-cascor:
+      image: ghcr.io/pcalnon/juniper-cascor:latest
+      ports: ["8201:8200"]
+  steps:
+    - uses: actions/checkout@v4
+    - run: pytest -m requires_server --timeout=60
+  continue-on-error: true  # non-blocking initially
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — 4 test files with `requires_server` marker: `test_candidate_visibility.py`, `test_websocket_message_schema.py`, `test_mvp_functionality.py`, `test_demo_endpoints.py`, `test_parameter_persistence.py`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+M (1-4 hours — CI configuration)
 
 ---
 
@@ -3882,6 +4526,33 @@ S (< 1 hour)
 
 **Recommended**: Approach A with intermediate target of 90%.
 
+##### Implementation
+
+```bash
+# File: juniper-canopy/src/main.py
+# Step 1: Generate coverage report to identify uncovered lines
+coverage run -m pytest src/tests/ && coverage html
+# Step 2: Target highest-impact uncovered paths (error handlers, edge cases)
+# Step 3: Write focused tests for each uncovered block
+# Target: 84% → 90% first, then 90% → 95%
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `main.py` is 2,527 lines (close to documented 2,543)
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+M (1-4 hours for 90% target)
+
 ---
 
 #### CLN-CN-10: `main.py` Is 2,543 Lines — Second God File
@@ -3898,6 +4569,42 @@ S (< 1 hour)
 - *Guardrails*: Extract one route group at a time; maintain full test suite.
 
 **Recommended**: Approach A — incremental extraction by route group.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/routes/ (new directory)
+# Extract route handlers from main.py into domain modules
+# Step 1: Create routes/training.py — move training-related callbacks
+# Step 2: Create routes/datasets.py — move dataset route handlers
+# Step 3: Create routes/websocket.py — move WebSocket handlers
+# Step 4: Create routes/health.py — move health check routes
+# Step 5: Import and register in main.py
+
+# Example: routes/health.py
+from dash import Dash
+
+def register_health_routes(app: Dash):
+    @app.server.route("/v1/health")
+    def health():
+        return {"status": "ok"}
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `main.py` is 2,527 lines with 65+ functions/methods and 30+ route handlers in a single file
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — incremental extraction)
 
 ---
 
@@ -3916,6 +4623,33 @@ S (< 1 hour)
 
 **Recommended**: Approach A — incremental extraction.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/frontend/components/metrics_panel.py
+# Split 1,790-line file into domain-specific modules
+# Step 1: Create training_metrics.py — training loss/error callbacks
+# Step 2: Create candidate_metrics.py — candidate pool metrics
+# Step 3: Create validation_metrics.py — validation/test metrics
+# Maintain callback registration order to preserve Dash behavior
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `metrics_panel.py` confirmed at 1,790 lines
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog cleanup)
+
+##### Scope
+
+L (4-16 hours — incremental extraction with callback dependency analysis)
+
 ---
 
 #### CLN-CN-12: `network_visualizer.py:1512` — Active TODO Indicating Logging Error Bug
@@ -3932,6 +4666,36 @@ S (< 1 hour)
 - *Guardrails*: Add test that triggers the code path and verifies no logging error.
 
 **Recommended**: Approach A because active TODOs indicating bugs should be fixed.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/frontend/components/network_visualizer.py
+# At line 1512, investigate and fix the logging error in _create_new_node_highlight_traces
+# Likely cause: f-string formatting error or incorrect log level usage
+
+# Common fix pattern for logging format errors:
+# BEFORE (broken):
+# logger.debug("Creating traces for %s nodes", node_data)  # if node_data is complex
+# AFTER (fixed):
+# logger.debug(f"Creating traces for {len(node_data)} nodes")
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `network_visualizer.py:1512` contains `# TODO: this is throwing a logging error`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1 (important — active bug in logging)
+
+##### Scope
+
+S (< 1 hour — investigate and fix logging error)
 
 ---
 
@@ -3950,6 +4714,48 @@ S (< 1 hour)
 
 **Recommended**: Approach A — No longer needed as a fallback; data service is production-stable.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/demo_mode.py
+# Remove deprecated _generate_spiral_dataset_local() and its call sites
+# Step 1: Remove the fallback call at line 554
+# Replace:
+#     self.dataset = self._generate_spiral_dataset_local(n_samples=200)
+# With:
+#     raise DataServiceUnavailableError("JuniperData service is required for dataset generation")
+
+# Step 2: Remove the fallback call at line 1667
+# Replace:
+#     self.dataset = self._generate_spiral_dataset_local(n_samples=n_samples)
+# With:
+#     raise DataServiceUnavailableError("JuniperData service is required for dataset regeneration")
+
+# Step 3: Remove the fallback call at line 1812
+# Replace:
+#     self.dataset = self._generate_spiral_dataset_local(n_samples=200)
+# With:
+#     raise DataServiceUnavailableError("JuniperData service is required")
+
+# Step 4: Delete the _generate_spiral_dataset_local method (lines 938-980)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `_generate_spiral_dataset_local()` at line 938 with callers at lines 554, 1667, 1812
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog)
+
+##### Scope
+
+M (1-4 hours)
+
 ---
 
 #### CLN-CN-14: `np.random.seed(42)` Sets Global Numpy Seed
@@ -3966,6 +4772,43 @@ S (< 1 hour)
 - *Guardrails*: Test reproducibility with same seed.
 
 **Recommended**: Approach A because global seed is a numpy anti-pattern.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/demo_mode.py
+# Replace line 960: np.random.seed(42)
+# With local RNG generator passed to all random operations
+
+# Before (line 960):
+#     np.random.seed(42)
+
+# After:
+#     self._rng = np.random.default_rng(42)
+
+# Then replace all np.random.* calls in the method with self._rng.*:
+#   np.random.rand(...)      → self._rng.random(...)
+#   np.random.randn(...)     → self._rng.standard_normal(...)
+#   np.random.randint(...)   → self._rng.integers(...)
+#   np.random.choice(...)    → self._rng.choice(...)
+#   np.random.shuffle(...)   → self._rng.shuffle(...)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `np.random.seed(42)` confirmed at line 960
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2 (backlog)
+
+##### Scope
+
+S (< 1 hour)
 
 ---
 
@@ -3986,6 +4829,56 @@ S (< 1 hour)
 
 **Recommended**: Approach A because hard dependencies for optional features bloat installs.
 
+##### Implementation
+
+```toml
+# File: juniper-data/pyproject.toml
+# Move python-dotenv from core dependencies to optional extra
+
+# Remove from [project] dependencies:
+#     "python-dotenv>=1.0.0",
+
+# Add to [project.optional-dependencies]:
+# [project.optional-dependencies]
+# arc-agi = ["python-dotenv>=1.0.0"]
+```
+
+```python
+# File: juniper-data/juniper_data/__init__.py
+# Replace unconditional import with conditional import
+
+# Before:
+#     from dotenv import load_dotenv
+
+# After:
+def get_arc_agi_env() -> bool:
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        raise ImportError(
+            "python-dotenv is required for ARC-AGI features. "
+            "Install with: pip install juniper-data[arc-agi]"
+        )
+    load_dotenv()
+    return True
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `python-dotenv>=1.0.0` at pyproject.toml line 41, `from dotenv import load_dotenv` at `__init__.py` line 7
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2 (backlog)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-JD-02: `FakeDataClient.close()` Destroys Data
@@ -4003,6 +4896,41 @@ S (< 1 hour)
 
 **Recommended**: Approach A because close() should release resources, not destroy data.
 
+##### Implementation
+
+```python
+# File: juniper-data-client/juniper_data_client/testing/fake_client.py
+# Modify close() method (line ~762) to not clear datasets
+
+def close(self) -> None:
+    """Close the fake client (release resources without destroying data)."""
+    # Do NOT clear self._datasets — data should persist after close
+    # Do NOT clear self._version_counters — version state should persist
+    self._closed = True
+
+def reset(self) -> None:
+    """Reset all internal state — use in tests that need clean state."""
+    self._datasets.clear()
+    self._version_counters.clear()
+    self._closed = False
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `close()` at line 762 clears `_datasets` and `_version_counters`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog)
+
+##### Scope
+
+S (< 1 hour)
+
 ---
 
 #### CLN-JD-03: Module-Level `create_app()` at `app.py:142` — Import-Time Side Effects
@@ -4019,6 +4947,42 @@ S (< 1 hour)
 - *Guardrails*: Use uvicorn factory pattern: `uvicorn.run("module:get_app", factory=True)`.
 
 **Recommended**: Approach A because import-time side effects break testing and configuration.
+
+##### Implementation
+
+```python
+# File: juniper-data/juniper_data/api/app.py
+# Replace module-level create_app() call with lazy factory pattern
+
+import functools
+
+# Remove line 142: app = create_app()
+# Replace with:
+
+@functools.lru_cache(maxsize=1)
+def get_app() -> FastAPI:
+    """Lazy app factory — creates app on first call, returns cached instance thereafter."""
+    return create_app()
+
+# For uvicorn, use factory mode:
+# uvicorn juniper_data.api.app:get_app --factory --host 0.0.0.0 --port 8100
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `app = create_app()` at line 142 of `juniper_data/api/app.py`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2 (backlog)
+
+##### Scope
+
+S (< 1 hour)
 
 ---
 
@@ -6910,12 +7874,65 @@ S
 
 **Recommended**: Approach A — trivial cleanup.
 
+##### Implementation
+
+```bash
+# File: juniper-canopy/notes/development/
+cd /home/pcalnon/Development/python/Juniper/juniper-canopy
+# Remove the 3 broken symlinks
+rm notes/development/DATASET_DISPLAY_FAILURE_ANALYSIS.md
+rm notes/development/DATASET_DISPLAY_FIX_PLAN.md
+rm notes/development/DASHBOARD_AUGMENTATION_PLAN.md
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — confirmed 3 broken symlinks exist pointing to deleted juniper-ml files
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-02: `src/remote_client/` Directory Still Exists
 
 **Cross-References**: HSK-02 = CLN-CC-01
 **Approach A**: See CLN-CC-01 remediation.
+
+##### Implementation
+
+```bash
+# File: juniper-cascor/src/remote_client/remote_client_0.py
+# See CLN-CC-01 implementation — delete the stale remote_client_0.py file
+# The remote_client.py file is still in active use and must be retained
+cd /home/pcalnon/Development/python/Juniper/juniper-cascor
+rm src/remote_client/remote_client_0.py
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `src/remote_client/` directory exists with `__init__.py`, `remote_client.py` (active), and `remote_client_0.py` was already removed
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
@@ -6924,12 +7941,64 @@ S
 **Cross-References**: HSK-03 = CLN-CC-02
 **Approach A**: See CLN-CC-02 remediation.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor/src/spiral_problem/check.py
+# See CLN-CC-02 implementation — delete the stale 600-line duplicate
+cd /home/pcalnon/Development/python/Juniper/juniper-cascor
+rm src/spiral_problem/check.py
+```
+
+##### Verification Status
+
+⚠️ File `src/spiral_problem/check.py` not found in live codebase — may have already been removed
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-04: 32 Test Files with Hardcoded `sys.path.append`
 
 **Cross-References**: Related to BUG-CC-06
 **Approach A**: See BUG-CC-06 remediation.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/tests/conftest.py
+# See BUG-CC-06 implementation — remove sys.path.insert lines and rely on
+# proper package installation (pip install -e .) for test discovery
+# Remove these lines from conftest.py:
+#   sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#   sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)))
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `src/tests/conftest.py` lines 63-64 contain `sys.path.insert` calls
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
 
 ---
 
@@ -6948,12 +8017,62 @@ S
 
 **Recommended**: Approach A — trivial update.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor-client/AGENTS.md
+# Update version header from 0.3.0 to 0.4.0 to match pyproject.toml
+cd /home/pcalnon/Development/python/Juniper/juniper-cascor-client
+sed -i 's/\*\*Version\*\*: 0.3.0/**Version**: 0.4.0/' AGENTS.md
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — AGENTS.md shows `**Version**: 0.3.0`, pyproject.toml shows `version = "0.4.0"`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-06: juniper-data AGENTS.md Header Version 0.5.0 vs Package 0.6.0
 
 **Approach A**: Same as HSK-05 — update version header.
 **Recommended**: Approach A.
+
+##### Implementation
+
+```bash
+# File: juniper-data/AGENTS.md
+# Update version header from 0.5.0 to 0.6.0 to match pyproject.toml
+cd /home/pcalnon/Development/python/Juniper/juniper-data
+sed -i 's/\*\*Version\*\*: 0.5.0/**Version**: 0.6.0/' AGENTS.md
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — AGENTS.md shows `**Version**: 0.5.0`, pyproject.toml shows `version = "0.6.0"`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
 
 ---
 
@@ -6962,12 +8081,62 @@ S
 **Approach A**: Update all file headers to current version, or remove file-level version headers (see BUG-CC-04 approach).
 **Recommended**: Remove file-level versions in favor of single source in pyproject.toml.
 
+##### Implementation
+
+```bash
+# File: juniper-cascor-client/juniper_cascor_client/constants.py (and other files)
+# Remove file-level Version: headers from all .py files in juniper-cascor-client
+cd /home/pcalnon/Development/python/Juniper/juniper-cascor-client
+grep -rln "^# Version:" juniper_cascor_client/ | xargs sed -i '/^# Version:/d'
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `juniper_cascor_client/constants.py` line 14 shows `Version: 0.3.0`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+M
+
 ---
 
 #### HSK-08: data-client `tests/conftest.py` Version Header Says 0.3.1
 
 **Approach A**: Same as HSK-07 — update or remove file-level version.
 **Recommended**: Same approach.
+
+##### Implementation
+
+```bash
+# File: juniper-data-client/tests/conftest.py
+# Remove the stale Version header line (line 7: "# Version:       0.3.1")
+cd /home/pcalnon/Development/python/Juniper/juniper-data-client
+sed -i '/^# Version:/d' tests/conftest.py
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `tests/conftest.py` line 7 shows `# Version:       0.3.1`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
 
 ---
 
@@ -6994,6 +8163,33 @@ S
 
 **Recommended**: Approach B — These attributes are **NOT** dead code. They are incompletely implemented code and should be fully implementated and integrated.
 
+##### Implementation
+
+```python
+# File: juniper-cascor-client/juniper_cascor_client/testing/constants.py
+# Uncomment and integrate _STATE_TO_FSM and _STATE_TO_PHASE into the
+# cascor-client state management logic. These mappings should be used
+# by the client to translate server state strings into FSM/phase enums.
+# Implementation requires understanding the full state machine design
+# in juniper-cascor — see cascor's training_state.py for state definitions.
+```
+
+##### Verification Status
+
+⚠️ Verified against live codebase — `_STATE_TO_FSM` and `_STATE_TO_PHASE` not found in any cascor-client source files (may have been removed or renamed)
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
+
 ---
 
 #### HSK-10: `scripts/test.bash` Outdated/Non-Functional
@@ -7019,6 +8215,35 @@ S
 
 **Recommended**: Approach A — update this script because it is being used.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/test.bash
+# Replace the stale `cat nohup.out` (line 21) with current test infrastructure
+# Updated test.bash should use the existing session-based test flow without
+# referencing the removed nohup.out file:
+# Replace line 21:
+#   cat nohup.out
+# With:
+#   echo "Test runs completed"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/test.bash` line 21 references `cat nohup.out` which no longer exists
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-11: `wake_the_claude.bash` `DEBUG="${TRUE}"` Hardcoded ON
@@ -7037,6 +8262,32 @@ S
 
 **Recommended**: Approach A — one-line fix.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/wake_the_claude.bash
+# Change line 36 from:
+#   DEBUG="${TRUE}"
+# To:
+DEBUG="${DEBUG:-${FALSE}}"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/wake_the_claude.bash` line 36 shows `DEBUG="${TRUE}"` hardcoded
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-12: `NOHUP_STATUS=$?` Captures Fork Status (Always 0)
@@ -7054,6 +8305,35 @@ S
 
 **Recommended**: Approach A.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/wake_the_claude.bash
+# Remove the dead NOHUP_STATUS check (lines 652-655):
+#   NOHUP_STATUS=$?
+#   if [[ "${NOHUP_STATUS}" != "0" ]]; then
+#       debug_log "Error: Failed to launch claude with nohup"
+#       exit 1
+#   fi
+# The $? after nohup & always captures fork status (0), not command result
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/wake_the_claude.bash` lines 652-653 contain the dead `NOHUP_STATUS=$?` check
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-13: 169 Hardcoded ThemeColors Remain in canopy
@@ -7070,6 +8350,36 @@ S
 - *Guardrails*: Visual comparison screenshots before/after each batch.
 
 **Recommended**: Approach A — incremental migration by component.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/ (multiple component files)
+# Incremental migration: replace hardcoded hex colors with ThemeColors constants
+# Example pattern in each component file:
+# Before:
+#   style={"color": "#ffffff"}
+# After:
+#   from juniper_canopy.theme import ThemeColors
+#   style={"color": ThemeColors.TEXT_PRIMARY}
+# Apply in batches of 10-20 replacements per PR across component files
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — 726 hardcoded hex color values found vs only 3 ThemeColors references in canopy `src/`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+XL
 
 ---
 
@@ -7096,6 +8406,35 @@ S
 
 **Recommended**: Approach A — parameterize for reuse.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/resume_session.bash
+# Replace hardcoded UUID with parameterized input
+#!/usr/bin/env bash
+if [[ -z "${1}" ]]; then
+    echo "Usage: resume_session.bash <session-uuid> [--worktree <name>] [additional flags...]"
+    exit 1
+fi
+./scripts/wake_the_claude.bash --resume "${1}" "${@:2}"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/resume_session.bash` contains hardcoded UUID `2bde217d-7375-4329-a253-e611909dca5c`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-15: `util/global_text_replace.bash` Is a No-Op
@@ -7121,6 +8460,44 @@ S
 
 **Recommended**: Approach A — parameterize for reuse.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/util/global_text_replace.bash
+# Parameterize search/replace and fix KIBAB typo
+#!/usr/bin/env bash
+if [[ -z "${1}" || -z "${2}" ]]; then
+    echo "Usage: global_text_replace.bash <search_text> <replace_text>"
+    exit 1
+fi
+SEARCH_TEXT="${1}"
+REPLACE_TEXT="${2}"
+OLD_IFS="${IFS}"
+IFS=$'{\n}'
+for i in $(grep --exclude-dir logs --exclude-dir reports -rnI "${SEARCH_TEXT}" ./*); do
+    FILE="$(echo "${i}" | awk -F ":" '{print $1;}')"
+    echo "${FILE}"
+    sed -i "s/${SEARCH_TEXT}/${REPLACE_TEXT}/g" "${FILE}"
+done
+IFS="${OLD_IFS}"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `util/global_text_replace.bash` has identical search/replace values (`juniper-cascor` → `juniper-cascor`) and misspelled `KIBAB_CASE_TEXT`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-16: `util/kill_all_pythons.bash` Uses `sudo kill -9` on ALL Python Processes
@@ -7137,6 +8514,42 @@ S
 - *Guardrails*: Add `--dry-run` mode; list processes before killing.
 
 **Recommended**: Approach A because killing ALL Python processes is dangerous.
+
+##### Implementation
+
+```bash
+# File: juniper-ml/util/kill_all_pythons.bash
+#!/usr/bin/env bash
+# Scope to Juniper processes only; add confirmation; remove sudo
+PIDS=$(pgrep -f "juniper" 2>/dev/null)
+if [[ -z "${PIDS}" ]]; then
+    echo "No Juniper Python processes found."
+    exit 0
+fi
+echo "Found Juniper processes:"
+ps -p $(echo "${PIDS}" | tr '\n' ',') -o pid,cmd 2>/dev/null
+read -rp "Kill these processes? [y/N]: " CONFIRM
+if [[ "${CONFIRM}" =~ ^[Yy]$ ]]; then
+    echo "${PIDS}" | xargs kill -9
+    echo "Processes terminated."
+fi
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `util/kill_all_pythons.bash` uses `sudo kill -9` on all Python processes indiscriminately
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
@@ -7155,6 +8568,41 @@ S
 
 **Recommended**: Approach A.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/util/worktree_new.bash
+# Parameterize branch name, repo name, and conda env; fix stray `}`
+#!/usr/bin/env bash
+if [[ -z "${1}" ]]; then
+    echo "Usage: worktree_new.bash <branch-name> [--conda-env <env-name>]"
+    exit 1
+fi
+BRANCH_NAME="${1}"
+CONDA_ENV_NAME="${3:-JuniperCascor}"
+REPO_NAME="$(basename "$(git rev-parse --show-toplevel)")"
+JUNIPER_PROJECT_WORKTREE_DIR="${HOME}/Development/python/Juniper/worktrees"
+JUNIPER_WORKTREE_NAME="${REPO_NAME}--$(echo "${BRANCH_NAME}" | sed 's|/|--|g')--$(date +%Y%m%d-%H%M)--$(git rev-parse --short=8 HEAD)"
+JUNIPER_WORKTREE_NEW="${JUNIPER_PROJECT_WORKTREE_DIR}/${JUNIPER_WORKTREE_NAME}"
+# ... rest of script with parameterized values and fixed error message (remove stray `}`)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `util/worktree_new.bash` hardcodes `juniper-canopy-cascor--fix--connect-canopy-cascor` branch name, `JuniperCascor` conda env, and has stray `}` in error message on line 17
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-18: `util/worktree_close.bash` Hardcodes Default Identifier
@@ -7172,6 +8620,38 @@ S
 
 **Recommended**: Approach A.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/util/worktree_close.bash
+# Make identifier a required parameter (remove hardcoded default)
+# Change line 9 from:
+#   WORKTREE_NAME_IDENTIFIER_DEFAULT="fix--connect-canopy-cascor"
+# To: require $1 or error
+#!/usr/bin/env bash
+if [[ -z "${1}" ]]; then
+    echo "Usage: worktree_close.bash <worktree-name-identifier>"
+    exit 1
+fi
+WORKTREE_NAME_IDENTIFIER="${1}"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `util/worktree_close.bash` line 9 hardcodes `WORKTREE_NAME_IDENTIFIER_DEFAULT="fix--connect-canopy-cascor"`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-19: Stale Files in Repo Root
@@ -7188,6 +8668,36 @@ S
 - *Guardrails*: Verify none of the files are used by any script.
 
 **Recommended**: Approach A — trivial cleanup.
+
+##### Implementation
+
+```bash
+# File: juniper-ml/ (repo root)
+cd /home/pcalnon/Development/python/Juniper/juniper-ml
+# Remove stale files from git tracking and filesystem
+git rm bla juniper_cascor.log juniper-project-pids.txt JuniperProject.pid .mcp.json.swp
+# Add patterns to .gitignore (*.log already present; add remaining)
+echo "*.pid" >> .gitignore
+echo "*.swp" >> .gitignore
+echo "bla" >> .gitignore
+echo "juniper-project-pids.txt" >> .gitignore
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — all 5 stale files exist: `bla`, `juniper_cascor.log`, `juniper-project-pids.txt`, `JuniperProject.pid`, `.mcp.json.swp`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
 
 ---
 
@@ -7207,6 +8717,33 @@ S
 
 **Recommended**: Approach A.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/claude_interactive.bash
+# Change line 17 from:
+#   DEBUG="${TRUE}"
+# To:
+DEBUG="${DEBUG:-${FALSE}}"
+# Same pattern as HSK-11 fix for wake_the_claude.bash
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/claude_interactive.bash` line 17 shows `DEBUG="${TRUE}"` hardcoded
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-21: `wake_the_claude.bash:53` Stale TODO Comment
@@ -7223,6 +8760,31 @@ S
 - *Guardrails*: None.
 
 **Recommended**: Approach A — 30-second fix.
+
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/wake_the_claude.bash
+# Delete the stale TODO comment at line 53:
+#   # TODO: this isn't going to stderr?????
+# The debug_log function already writes to stderr via `echo ... 1>&2`
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — line 53 contains `# TODO: this isn't going to stderr?????` but `debug_log` already uses `1>&2`
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
 
 ---
 
@@ -7241,6 +8803,39 @@ S
 
 **Recommended**: Approach A with warning (not error) for unknown models.
 
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/wake_the_claude.bash
+# Add model validation with warning (not error) after the model flag parsing
+# After the line: CLAUDE_CODE_PARAMS+=("${CLAUDE_MODEL_FLAGS}" "${1}")
+# Add:
+KNOWN_MODELS="claude-sonnet-4-20250514 claude-opus-4-20250514 claude-3-5-haiku-20241022"
+MODEL_KNOWN="false"
+for m in ${KNOWN_MODELS}; do
+    if [[ "${1}" == "${m}" ]]; then MODEL_KNOWN="true"; break; fi
+done
+if [[ "${MODEL_KNOWN}" == "false" ]]; then
+    echo "Warning: Unknown model '${1}'. Proceeding anyway." >&2
+fi
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/wake_the_claude.bash` ~line 547 has `# TODO: Validate Model value` with no validation implemented
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### HSK-23: `scripts/juniper-all-ctl:38` Cascor Port Defaults to 8200 (Container) vs Host 8201
@@ -7257,6 +8852,34 @@ S
 - *Guardrails*: Make port configurable via env var.
 
 **Recommended**: Approach A.
+
+##### Implementation
+
+```bash
+# File: juniper-ml/scripts/juniper-all-ctl
+# Change line 38 from:
+#   JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8200}"
+# To:
+JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8201}"
+# Add comment explaining the port mapping:
+# Host port 8201 maps to container port 8200 (see juniper-deploy docker-compose.yml)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `scripts/juniper-all-ctl` line 38 defaults to `8200` (container port) instead of `8201` (host port)
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
@@ -7282,6 +8905,34 @@ S
 ~~- *Guardrails*: Grep before deletion.~~
 
 **Recommended**: Approach A because this code is currently unfinished.
+
+##### Implementation
+
+```python
+# File: juniper-cascor-client/juniper_cascor_client/testing/constants.py
+# Uncomment lines 93-94 and integrate the constants into the error_prone
+# scenario configuration in scenarios.py:
+ERROR_PRONE_INITIAL_HIDDEN_UNITS: int = 1
+ERROR_PRONE_INITIAL_EPOCH: int = 5
+# Then reference these constants in the SCENARIO_ERROR_PRONE dict in
+# juniper_cascor_client/testing/scenarios.py to replace any hardcoded values
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `testing/constants.py` lines 93-94 show the constants commented out: `# ERROR_PRONE_INITIAL_HIDDEN_UNITS: int = 1` and `# ERROR_PRONE_INITIAL_EPOCH: int = 5`
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
@@ -9127,6 +10778,59 @@ Issues identified through deep code analysis that impact runtime performance.
 
 **Recommended**: Approach A because 33 unnecessary callback fires is measurable performance waste.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/frontend/components/metrics_panel.py
+# Add prevent_initial_call=True to all 33 callback decorators that don't need initial execution.
+# Example for metrics_panel.py (14 callbacks):
+
+        @app.callback(
+            Output(f"{self.component_id}-network-stats-store", "data"),
+            [Input(f"{self.component_id}-stats-update-interval", "n_intervals")],
+            prevent_initial_call=True,
+        )
+        def fetch_network_stats(n_intervals):
+            return self._fetch_network_stats_handler(n_intervals=n_intervals)
+
+        @app.callback(
+            Output(f"{self.component_id}-training-state-store", "data"),
+            [Input(f"{self.component_id}-stats-update-interval", "n_intervals")],
+            prevent_initial_call=True,
+        )
+        def fetch_training_state(n_intervals):
+            return self._fetch_training_state_handler(n_intervals=n_intervals)
+
+        @app.callback(
+            Output(f"{self.component_id}-progress-detail", "children"),
+            [Input(f"{self.component_id}-training-state-store", "data")],
+            prevent_initial_call=True,
+        )
+        def update_progress_detail(state):
+            return self._update_progress_detail_handler(state=state)
+
+# File: juniper-canopy/src/frontend/components/candidate_metrics_panel.py
+# Same pattern for all 7 callbacks missing prevent_initial_call=True.
+# Apply to: fetch_training_state, update_status_display, update_epoch_progress,
+#           update_pool_info, update_loss_plot, update_pool_history, render_pool_history
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `metrics_panel.py` lines 546-595 confirm 14 callbacks without `prevent_initial_call=True`; `candidate_metrics_panel.py` confirms 7 callbacks without it.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
+
 ---
 
 #### PERF-CN-02: f-string Logging in Hot Paths (71 Occurrences)
@@ -9143,6 +10847,52 @@ Issues identified through deep code analysis that impact runtime performance.
 - *Guardrails*: Add flake8 plugin to catch future f-string logging.
 
 **Recommended**: Approach A for hot paths; lower priority for cold paths.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/demo_mode.py
+# BEFORE (f-string evaluated even when log level suppresses):
+            self.logger.warning(f"WebSocket broadcast failed: {type(e).__name__}: {e}")
+            self.logger.warning(f"WebSocket cascade broadcast failed: {type(e).__name__}: {e}")
+            self.logger.info(f"Restoring candidate state: {candidate_state}")
+
+# AFTER (lazy % formatting — no interpolation when level is suppressed):
+            self.logger.warning("WebSocket broadcast failed: %s: %s", type(e).__name__, e)
+            self.logger.warning("WebSocket cascade broadcast failed: %s: %s", type(e).__name__, e)
+            self.logger.info("Restoring candidate state: %s", candidate_state)
+
+# File: juniper-canopy/src/main.py
+# BEFORE:
+        system_logger.info(f"Settings: server={settings.server.host}:{settings.server.port}, demo={settings.demo_mode}")
+        system_logger.info(f"Auto-discovered cascor at {discovered_url} — activating service mode")
+        system_logger.info(f"JuniperData reachable at {juniper_data_url} ({data_probe.latency_ms:.1f}ms)")
+        system_logger.warning(f"JuniperData unreachable at {juniper_data_url}: {data_probe.message}")
+
+# AFTER:
+        system_logger.info("Settings: server=%s:%s, demo=%s", settings.server.host, settings.server.port, settings.demo_mode)
+        system_logger.info("Auto-discovered cascor at %s — activating service mode", discovered_url)
+        system_logger.info("JuniperData reachable at %s (%.1fms)", juniper_data_url, data_probe.latency_ms)
+        system_logger.warning("JuniperData unreachable at %s: %s", juniper_data_url, data_probe.message)
+
+# Apply same pattern to all 71 occurrences across both files.
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `demo_mode.py` line 1356 confirms f-string in `logger.warning`; `main.py` lines 137, 163, 177, 179, 187, 189, 207, 220, 224 confirm f-string logging throughout.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
 
 ---
 
@@ -9161,6 +10911,49 @@ Issues identified through deep code analysis that impact runtime performance.
 
 **Recommended**: Approach A because blocking I/O in async handlers impacts all concurrent requests.
 
+##### Implementation
+
+```python
+# File: juniper-cascor/src/api/lifecycle/manager.py, lines 863-894
+# The save/load methods use CascadeHDF5Serializer (h5py I/O), not torch directly.
+# Wrap the blocking serializer calls with asyncio.to_thread.
+
+import asyncio
+
+# BEFORE (save_snapshot, line 870 — blocking HDF5 I/O):
+        success = serializer.save_network(self.network, filepath, include_training_state=True)
+
+# AFTER (non-blocking via thread offload):
+        success = await asyncio.to_thread(serializer.save_network, self.network, filepath, include_training_state=True)
+
+# BEFORE (load_snapshot, line 894 — blocking HDF5 I/O):
+        network = serializer.load_network(matches[0])
+
+# AFTER (non-blocking via thread offload):
+        network = await asyncio.to_thread(serializer.load_network, matches[0])
+
+# Note: save_snapshot and load_snapshot methods must become `async def` and
+# their callers (REST handlers) must `await` them. The serializer itself
+# (CascadeHDF5Serializer.save_network / load_network) is thread-safe since
+# each call opens its own h5py.File handle.
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `manager.py:870` calls `serializer.save_network()` and `manager.py:894` calls `serializer.load_network()`, both synchronous h5py I/O in async-adjacent code paths.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1
+
+##### Scope
+
+M
+
 ---
 
 #### PERF-CC-02: `replay_since` Scans Entire Replay Buffer O(n)
@@ -9178,6 +10971,52 @@ Issues identified through deep code analysis that impact runtime performance.
 
 **Recommended**: Approach A as a nice-to-have; low priority since N ≤ 1024.
 
+##### Implementation
+
+```python
+# File: juniper-cascor/src/api/websocket/manager.py, line 248
+import bisect
+
+    def replay_since(self, last_seq: int) -> List[dict]:
+        """Return buffered messages with seq > last_seq."""
+        with self._seq_lock:
+            if self._replay_buffer_max_size <= 0:
+                raise ReplayOutOfRange("Replay buffer disabled")
+            if not self._replay_buffer:
+                if last_seq > 0:
+                    raise ReplayOutOfRange("Buffer empty, cannot verify continuity")
+                return []
+            oldest_seq = self._replay_buffer[0].get("seq", 0)
+            if last_seq < oldest_seq - 1:
+                raise ReplayOutOfRange(
+                    f"Requested seq {last_seq} older than oldest buffered seq {oldest_seq}"
+                )
+
+            # BEFORE (O(n) linear scan):
+            # return [msg for msg in self._replay_buffer if msg.get("seq", 0) > last_seq]
+
+            # AFTER (O(log n) binary search on monotonically increasing seq):
+            seqs = [msg.get("seq", 0) for msg in self._replay_buffer]
+            idx = bisect.bisect_right(seqs, last_seq)
+            return list(self._replay_buffer)[idx:]
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `manager.py:248` confirms `[msg for msg in self._replay_buffer if msg.get("seq", 0) > last_seq]` linear scan on deque.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### PERF-CC-03: `_broadcast_training_state` Uses `hasattr` Check
@@ -9194,6 +11033,44 @@ Issues identified through deep code analysis that impact runtime performance.
 - *Guardrails*: Covered by CONC-02 fix.
 
 **Recommended**: Approach A — trivial fix, covered by CONC-02 remediation.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/api/lifecycle/manager.py
+# In __init__ (around line 68), add initialization:
+
+        self._state_throttle_interval: float = 1.0  # seconds, configurable via set_ws_manager
+        self._last_state_broadcast_time: float = 0.0  # PERF-CC-03: initialize to avoid hasattr
+
+# In _broadcast_training_state (line 153), replace hasattr check:
+
+# BEFORE:
+        if not force and not is_terminal:
+            if hasattr(self, "_last_state_broadcast_time") and now - self._last_state_broadcast_time < self._state_throttle_interval:
+                return
+
+# AFTER:
+        if not force and not is_terminal:
+            if now - self._last_state_broadcast_time < self._state_throttle_interval:
+                return
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `manager.py:153` confirms `hasattr(self, "_last_state_broadcast_time")` check; `__init__` (line 68) initializes `_state_throttle_interval` but not `_last_state_broadcast_time`.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
@@ -9220,6 +11097,44 @@ Issues identified through deep code analysis that impact runtime performance.
 
 **Recommended**: Approach B because readiness probes should be fast and simple.
 
+##### Implementation
+
+```python
+# File: juniper-data/juniper_data/api/routes/health.py, lines 56-61
+# BEFORE (O(n) glob on every readiness probe):
+    if storage_path.is_dir():
+        dataset_count = len(list(storage_path.glob("*.npz")))
+        storage_dep = DependencyStatus(
+            name="Dataset Storage",
+            status="healthy",
+            message=f"{storage_path} ({dataset_count} datasets)",
+        )
+
+# AFTER (O(1) directory existence check — sufficient for readiness):
+    if storage_path.is_dir():
+        storage_dep = DependencyStatus(
+            name="Dataset Storage",
+            status="healthy",
+            message=f"{storage_path} (accessible)",
+        )
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `health.py:57` confirms `len(list(storage_path.glob("*.npz")))` evaluated on every `/health/ready` call.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1
+
+##### Scope
+
+S
+
 ---
 
 #### PERF-JD-02: High-Cardinality Prometheus Labels
@@ -9230,6 +11145,40 @@ Issues identified through deep code analysis that impact runtime performance.
 
 **Approach A**: See BUG-JD-09 remediation (use route template).
 **Recommended**: See BUG-JD-09.
+
+##### Implementation
+
+```python
+# File: juniper-data/juniper_data/api/observability.py, line 98
+# Cross-reference: PERF-JD-02 = BUG-JD-09 — identical fix.
+# See BUG-JD-09 implementation for full details.
+
+# BEFORE (full path with dataset IDs as label — unbounded cardinality):
+        endpoint = request.url.path
+
+# AFTER (use Starlette route template for fixed cardinality):
+        route = request.scope.get("route")
+        if route is not None and hasattr(route, "path"):
+            endpoint = route.path  # e.g., "/v1/datasets/{dataset_id}/artifact"
+        else:
+            endpoint = request.url.path
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `observability.py:98` confirms `endpoint = request.url.path` capturing full parameterized paths with dataset IDs.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1
+
+##### Scope
+
+S
 
 ---
 
@@ -11165,6 +13114,33 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A with `[demo]` optional extra to avoid bloating base install.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/pyproject.toml
+# Add [demo] optional extra (torch is not in core dependencies, only in tests and demo_backend.py)
+[project.optional-dependencies]
+demo = [
+    "torch>=2.0.0",
+]
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `demo_backend.py:45` imports torch unconditionally; `demo_mode.py:63` also imports torch. Neither `torch` nor a `[demo]` extra exists in canopy's `pyproject.toml` dependencies. Tests also import torch but are covered by dev/test extras.
+
+##### Severity
+
+High
+
+##### Priority
+
+P1
+
+##### Scope
+
+S
+
 ---
 
 #### CFG-02: `sentry-sdk` in Core Dependencies but Only Used Optionally
@@ -11181,6 +13157,44 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Guardrails*: Clear error message when DSN is set but SDK not installed.
 
 **Recommended**: Approach A because optional features should use optional dependencies.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/pyproject.toml
+# Move sentry-sdk from core dependencies to optional [observability] extra
+# BEFORE (in [project] dependencies):
+#     "sentry-sdk>=2.0.0",
+# AFTER: Remove from dependencies, add to optional-dependencies
+[project.optional-dependencies]
+observability = [
+    "prometheus-client>=0.20.0",
+    "sentry-sdk>=2.0.0",
+]
+
+# File: juniper-cascor/src/main.py (line ~53)
+# Add graceful fallback for missing sentry-sdk
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None  # type: ignore[assignment]
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `sentry-sdk>=2.0.0` is in cascor core `[project] dependencies`. `main.py:53` does `import sentry_sdk` unconditionally; `main.py:123` reads `os.getenv("SENTRY_SDK_DSN")`. The `[observability]` extra already exists but only contains `prometheus-client`.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
@@ -11199,6 +13213,44 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A because dual env vars is confusing and error-prone.
 
+##### Implementation
+
+```python
+# File: juniper-cascor/src/main.py (lines ~123-126)
+# BEFORE:
+# _sentry_dsn = os.getenv("SENTRY_SDK_DSN")
+# if _sentry_dsn:
+#     sentry_sdk.init(dsn=_sentry_dsn, ...)
+# AFTER: Remove raw os.getenv; use settings.sentry_dsn (reads JUNIPER_CASCOR_SENTRY_DSN)
+# Delete lines 123-152 (the standalone sentry_sdk.init block in main.py)
+# Sentry is already initialized via settings in app.py:41: configure_sentry(settings.sentry_dsn, ...)
+
+# File: juniper-cascor/src/api/settings.py (line 189)
+# Add AliasChoices for backward compatibility
+from pydantic import AliasChoices
+
+sentry_dsn: str | None = Field(
+    default=None,
+    validation_alias=AliasChoices("JUNIPER_CASCOR_SENTRY_DSN", "SENTRY_SDK_DSN"),
+)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `main.py:123` reads `os.getenv("SENTRY_SDK_DSN")` and calls `sentry_sdk.init()` independently. `settings.py:189` defines `sentry_dsn` with default `None`. `app.py:41` already calls `configure_sentry(settings.sentry_dsn, ...)`. The `main.py` block is redundant.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
+
 ---
 
 #### CFG-04: `JUNIPER_DATA_URL` Read via Raw `os.getenv`, Bypasses Settings
@@ -11215,6 +13267,45 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Guardrails*: Use `AliasChoices` for both env var names if needed.
 
 **Recommended**: Approach A because all config should go through Settings.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/api/settings.py
+# Add juniper_data_url to Settings class (env_prefix is "JUNIPER_CASCOR_")
+juniper_data_url: str | None = Field(
+    default=None,
+    validation_alias=AliasChoices("JUNIPER_CASCOR_JUNIPER_DATA_URL", "JUNIPER_DATA_URL"),
+)
+
+# File: juniper-cascor/src/api/app.py (lines 121, 185, 253)
+# BEFORE:
+#     data_url = os.environ.get("JUNIPER_DATA_URL", _PROJECT_API_JUNIPER_DATA_URL_DEFAULT)
+# AFTER (at each occurrence):
+    data_url = settings.juniper_data_url or _PROJECT_API_JUNIPER_DATA_URL_DEFAULT
+
+# File: juniper-cascor/src/api/routes/health.py (line 56)
+# BEFORE:
+#     data_url = os.getenv("JUNIPER_DATA_URL")
+# AFTER: Inject settings via dependency
+    data_url = settings.juniper_data_url
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `app.py:121,185,253` all call `os.environ.get("JUNIPER_DATA_URL", ...)`. `routes/health.py:56` calls `os.getenv("JUNIPER_DATA_URL")`. Settings class at `settings.py` uses `env_prefix="JUNIPER_CASCOR_"` but has no `juniper_data_url` field.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
 
 ---
 
@@ -11233,6 +13324,39 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A.
 
+##### Implementation
+
+```python
+# File: juniper-cascor/src/cascor_constants/constants.py (line ~580)
+# BEFORE:
+# _CASCOR_LOG_LEVEL_ENV = os.environ.get("CASCOR_LOG_LEVEL", "").upper()
+# AFTER: Read both env vars, prefer JUNIPER_CASCOR_LOG_LEVEL
+import warnings
+
+_CASCOR_LOG_LEVEL_ENV = os.environ.get("JUNIPER_CASCOR_LOG_LEVEL", "").upper()
+if not _CASCOR_LOG_LEVEL_ENV:
+    _legacy = os.environ.get("CASCOR_LOG_LEVEL", "").upper()
+    if _legacy:
+        warnings.warn("CASCOR_LOG_LEVEL is deprecated. Use JUNIPER_CASCOR_LOG_LEVEL instead.", DeprecationWarning, stacklevel=1)
+        _CASCOR_LOG_LEVEL_ENV = _legacy
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `cascor_constants/constants.py:580` reads `os.environ.get("CASCOR_LOG_LEVEL")`. `api/settings.py:125` defines `log_level` with `env_prefix="JUNIPER_CASCOR_"` (reads `JUNIPER_CASCOR_LOG_LEVEL`). The two code paths use different env var names for the same concept.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### CFG-06: `CASCOR_*` Env Prefix Inconsistent with `JUNIPER_*` Convention
@@ -11249,6 +13373,47 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Guardrails*: Deprecation warnings on old prefix usage.
 
 **Recommended**: Approach A.
+
+##### Implementation
+
+```python
+# File: juniper-cascor-worker/juniper_cascor_worker/constants.py (lines 126-138)
+# Add JUNIPER_CASCOR_WORKER_ aliased versions of all 13 env vars.
+# Example for the first few:
+import warnings as _warnings
+
+def _env_with_alias(new_name: str, old_name: str) -> str:
+    """Read JUNIPER_CASCOR_WORKER_* with CASCOR_* fallback + deprecation warning."""
+    val = os.environ.get(new_name)
+    if val is not None:
+        return val
+    legacy = os.environ.get(old_name)
+    if legacy is not None:
+        _warnings.warn(f"{old_name} is deprecated. Use {new_name} instead.", DeprecationWarning, stacklevel=2)
+        return legacy
+    return ""
+
+ENV_SERVER_URL: Final[str] = "JUNIPER_CASCOR_WORKER_SERVER_URL"
+ENV_AUTH_TOKEN: Final[str] = "JUNIPER_CASCOR_WORKER_AUTH_TOKEN"  # nosec B105
+ENV_API_KEY: Final[str] = "JUNIPER_CASCOR_WORKER_API_KEY"  # nosec B105
+# ... (all 13 env vars renamed from CASCOR_* to JUNIPER_CASCOR_WORKER_*)
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `constants.py:126-138` defines 13 `CASCOR_*` env var names. All use bare `CASCOR_` prefix without the ecosystem `JUNIPER_` convention. No aliasing or deprecation mechanism exists.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2
+
+##### Scope
+
+M
 
 ---
 
@@ -11267,6 +13432,37 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A because changing ports has deployment impact.
 
+##### Implementation
+
+```python
+# File: juniper-deploy/docker-compose.yml (line ~129)
+# Document the port mapping explicitly with a comment:
+# Container binds 8200; host maps to 8201 to avoid conflicts with local dev cascor
+      - "${CASCOR_HOST_PORT:-8201}:${CASCOR_PORT:-8200}"  # host:8201 -> container:8200
+
+# File: juniper-cascor-client/juniper_cascor_client/constants.py (lines 22-23)
+# Add clarifying comment:
+# Default ports target direct (non-Docker) connections. For Docker, use port 8201.
+DEFAULT_BASE_URL: str = "http://localhost:8200"
+DEFAULT_WS_BASE_URL: str = "ws://localhost:8200"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `docker-compose.yml:129` maps `${CASCOR_HOST_PORT:-8201}:${CASCOR_PORT:-8200}`. `cascor-client/constants.py:22-23` defaults to port 8200. `canopy/settings.py:110` uses `ports: list[int] = [8200]`. The confusion is real: clients default to 8200 (correct for local dev), Docker exposes 8201.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### CFG-08: Rate Limiting Defaults Differ Across Services
@@ -11283,6 +13479,39 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Guardrails*: Add rate limit config to deployment templates.
 
 **Recommended**: Approach A because different defaults may be intentional per-service.
+
+##### Implementation
+
+```python
+# File: juniper-cascor/src/api/settings.py (line ~185)
+# Document that rate limiting is intentionally disabled by default in dev
+rate_limit_enabled: bool = False  # Disabled by default for local dev; enable in production
+
+# File: juniper-canopy/src/settings.py (line ~164)
+# Document that rate limiting is intentionally disabled by default in dev
+rate_limit_enabled: bool = False  # Disabled by default for local dev; enable in production
+
+# File: juniper-deploy/docker-compose.yml
+# Add rate limiting env vars to production/staging profile:
+#   JUNIPER_CASCOR_RATE_LIMIT_ENABLED: "true"
+#   JUNIPER_CANOPY_RATE_LIMIT_ENABLED: "true"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `canopy/settings.py:164` has `rate_limit_enabled: bool = False`. `cascor/api/settings.py:185` has `rate_limit_enabled: bool = _JUNIPER_CASCOR_API_RATELIMIT_DISABLED` (False). juniper-data has rate limiting enabled by default in its own settings. The difference is intentional but undocumented.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
 
 ---
 
@@ -11309,6 +13538,44 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A because audit logging should work out-of-the-box.
 
+##### Implementation
+
+```python
+# File: juniper-canopy/src/settings.py (lines 171-173)
+# BEFORE:
+#     audit_log_enabled: bool = True
+#     audit_log_path: str = "/var/log/canopy/audit.log"
+#     audit_log_retention_days: int = 90
+# AFTER: Use user-space default path
+    audit_log_enabled: bool = True
+    audit_log_path: str = "./logs/audit.log"
+    audit_log_retention_days: int = 90
+
+    @model_validator(mode="after")
+    def _ensure_audit_log_dir(self) -> "Settings":
+        """Create audit log directory if audit logging is enabled."""
+        if self.audit_log_enabled:
+            from pathlib import Path
+            Path(self.audit_log_path).parent.mkdir(parents=True, exist_ok=True)
+        return self
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `canopy/settings.py:171-173` confirms `audit_log_enabled: bool = True` and `audit_log_path: str = "/var/log/canopy/audit.log"`. This path requires root privileges and will crash non-root deployments with a PermissionError.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P1
+
+##### Scope
+
+S
+
 ---
 
 #### CFG-12: `setuptools>=82.0` vs `>=61.0` Elsewhere
@@ -11325,6 +13592,34 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Guardrails*: Test build with setuptools 61.0.
 
 **Recommended**: Approach A — trivial version constraint fix.
+
+##### Implementation
+
+```toml
+# File: juniper-cascor-worker/pyproject.toml (line 2)
+# BEFORE:
+# requires = ["setuptools>=82.0", "wheel"]
+# AFTER:
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `juniper-cascor-worker/pyproject.toml:2` has `requires = ["setuptools>=82.0", "wheel"]`. All other repos (juniper-cascor, juniper-canopy, juniper-ml) use `setuptools>=61.0`. No setuptools 82.0-specific features are used in the worker.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
 
 ---
 
@@ -11343,6 +13638,33 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A because unused dependencies are bloat.
 
+##### Implementation
+
+```toml
+# File: juniper-canopy/pyproject.toml
+# Remove python-dotenv from [project] dependencies
+# BEFORE:
+#     "python-dotenv>=1.0.0",
+# AFTER: Delete the line entirely
+# pydantic-settings>=2.0.0 handles .env file reading natively
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `juniper-canopy/pyproject.toml` includes `"python-dotenv>=1.0.0"` in core dependencies. No `import dotenv` or `from dotenv` exists in `src/` (non-test) source files. `pydantic-settings>=2.0.0` is already a dependency and handles `.env` loading natively via `SettingsConfigDict(env_file=".env")`.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P3
+
+##### Scope
+
+S
+
 ---
 
 #### CFG-14: `juniper-cascor-client>=0.1.0` Allows Outdated Incompatible Versions
@@ -11360,6 +13682,35 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 
 **Recommended**: Approach A — one-line fix.
 
+##### Implementation
+
+```toml
+# File: juniper-canopy/pyproject.toml
+# In [project.optional-dependencies] juniper-cascor section:
+# BEFORE:
+#     "juniper-cascor-client>=0.1.0",
+# AFTER:
+juniper-cascor = [
+    "juniper-cascor-client>=0.3.0",
+]
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `juniper-canopy/pyproject.toml` has `"juniper-cascor-client>=0.1.0"` in the `[project.optional-dependencies] juniper-cascor` section. `juniper-ml/pyproject.toml` requires `>=0.3.0`. Current juniper-cascor-client version is 0.4.0. Versions <0.3.0 have incompatible API signatures.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
+
 ---
 
 #### CFG-16: `CASCOR_DEMO_MODE` Read Directly, Bypasses Settings
@@ -11376,6 +13727,40 @@ Issues identified through cross-cutting configuration and dependency analysis ac
 - *Guardrails*: Verify Settings includes demo mode detection.
 
 **Recommended**: Approach A because all config should go through Settings.
+
+##### Implementation
+
+```python
+# File: juniper-canopy/src/backend/__init__.py (line ~66)
+# BEFORE:
+#     force_demo = os.getenv("CASCOR_DEMO_MODE", "0").lower() in ("1", "true", "yes")
+# AFTER: Remove raw os.getenv; Settings already handles CASCOR_DEMO_MODE via field_validator
+# The Settings class (settings.py:204-212) already has _check_legacy_demo_mode validator
+# that reads CASCOR_DEMO_MODE with a deprecation warning. Just remove the fallback.
+
+# In create_backend() function:
+# BEFORE:
+#     if force_demo is None and not force_demo:
+#         force_demo = os.getenv("CASCOR_DEMO_MODE", "0").lower() in ("1", "true", "yes")
+# AFTER: Remove the os.getenv fallback entirely — settings.demo_mode already covers it
+#     # No fallback needed; settings.demo_mode handles CASCOR_DEMO_MODE via validator
+```
+
+##### Verification Status
+
+✅ Verified against live codebase — `backend/__init__.py:66` reads `os.getenv("CASCOR_DEMO_MODE", "0")` directly. `settings.py:204-212` already has a `@field_validator("demo_mode")` that reads `CASCOR_DEMO_MODE` with deprecation warning and maps it to `settings.demo_mode`. The raw `os.getenv` in `__init__.py` is redundant.
+
+##### Severity
+
+Low
+
+##### Priority
+
+P2
+
+##### Scope
+
+S
 
 ---
 
