@@ -2937,7 +2937,7 @@ import zlib
 
 ##### Verification Status
 
-✅ Verified against live codebase — `datasets.py:416-434` confirms `io.BytesIO()` accumulating entire ZIP in memory with `ZIP_DEFLATED`.
+✅ **Implemented 2026-04-24** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — `batch_export` now builds the ZIP via a chunk-buffer that `zipfile.ZipFile` writes into and that a generator drains between entries, so peak memory tracks one NPZ rather than the sum of all exported artifacts. Compression switched to `ZIP_STORED` (required for streaming — `ZIP_DEFLATED` would need to seek back to patch the local-file-header size after each entry). Added an up-front `store.exists` pre-check so the 404-when-nothing-matches path is taken before the response body is committed. Regression coverage in `juniper_data/tests/unit/test_phase_2b_data_integrity.py::TestBugJD01StreamingBatchExport` (404 path, valid ZIP entries, skip-missing, `ZIP_STORED` assertion).
 
 ##### Severity
 
@@ -3000,7 +3000,7 @@ M (1-4 hours)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `local_fs.py:176-182` confirms check-then-delete pattern with `if path.exists(): path.unlink()`.
+✅ **Implemented 2026-04-24** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A at `juniper_data/storage/local_fs.py::delete`: both the meta and NPZ paths are now unlinked via `try: path.unlink(); except FileNotFoundError: pass`. Return value is `True` if either unlink succeeded, `False` if both files were already absent. Idempotent across repeat calls; no race window between check and unlink. Regression coverage in `test_phase_2b_data_integrity.py::TestBugJD02AtomicDelete`, including a simulated TOCTOU where the first unlink raises `FileNotFoundError` and the function still returns `True` because the second unlink succeeded.
 
 ##### Severity
 
@@ -3062,7 +3062,7 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `local_fs.py:226` confirms `meta_path.write_text(meta_json)` without temp file; `save()` at lines 80-101 uses the atomic temp+replace pattern.
+✅ **Implemented 2026-04-24** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A at `juniper_data/storage/local_fs.py::update_meta`: serialized JSON is written to `<meta>.tmp` and atomically `Path.replace`-d onto the final path, mirroring the pattern already used by `save()`. On exception the temp file is unlinked and the error re-raised, so no `.tmp` siblings leak. Regression coverage in `test_phase_2b_data_integrity.py::TestBugJD03AtomicUpdateMeta::test_update_meta_cleans_tmp_file_on_failure` asserts no `.tmp` leftovers and that the original metadata is still intact after a simulated `Path.replace` failure.
 
 ##### Severity
 
@@ -3120,7 +3120,7 @@ def generate_dataset_id(generator: str, version: str, params: dict[str, Any]) ->
 
 ##### Verification Status
 
-✅ Verified against live codebase — `dataset_id.py` confirms `generate_dataset_id` produces deterministic IDs with no special handling for `seed=None`.
+✅ **Implemented 2026-04-24** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A in `juniper_data/core/dataset_id.py::generate_dataset_id`: when `params.get("seed") is None` (absent or explicitly `None`), an 8-hex-char `uuid.uuid4()` slice is injected under a `_nonce` key in the canonical JSON before hashing, so seedless requests produce distinct IDs and can no longer collide on a stale cached artifact. Seeded requests (including `seed=0`) stay fully deterministic. Two pre-existing tests (`test_multiple_calls_identical`, `test_params_order_independent`) were updated to pass an explicit seed so they exercise the deterministic branch. New regression suite `test_phase_2b_data_integrity.py::TestBugJD04SeedlessNonce` covers seeded determinism, seedless uniqueness across repeated calls, absent-seed key handling, `seed=0` preservation, and ID-format stability under the nonce path.
 
 ##### Severity
 
@@ -14446,7 +14446,7 @@ Development tracks are identified by analyzing:
 | Phase | Items                                      | Scope | Description                                                     |
 |-------|--------------------------------------------|-------|-----------------------------------------------------------------|
 | 2A    | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03  | 3×S   | Critical: dummy candidate, walrus bug, falsy `or`               |
-| 2B    | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs            |
+| 2B ✅ | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs (Implemented 2026-04-24, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) |
 | 2C    | BUG-CC-13, BUG-CC-14, BUG-CC-15            | 3×S   | juniper-cascor: memory leaks and body limit bypass              |
 | 2D    | BUG-JD-06, BUG-JD-07, BUG-JD-08, BUG-JD-09 | 4×S   | juniper-data: timestamps, metrics wiring, Prometheus labels     |
 | 2E    | BUG-CC-01, BUG-CC-02, BUG-CC-04, BUG-CC-07 | 4×S-M | juniper-cascor: topology, correlation, versions, phase tracking |
