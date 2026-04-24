@@ -1519,7 +1519,7 @@ self.default_origin = default_origin if default_origin is not None else (self.de
 
 ##### Verification Status
 
-✅ Verified against live codebase — `or` fallback chains confirmed at lines 596-620, 1250-1266, and 1409-1425.
+✅ **Implemented 2026-04-24** (Phase 2A, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) — Applied Approach A across all three methods (`_initialize_spiral_problem_params` ~L574-591, `solve_n_spiral_problem` ~L1207-1225, `evaluate` ~L1367-1391). All `param or self.param or DEFAULT` chains replaced with explicit `param if param is not None else (self.param if self.param is not None else DEFAULT)`. Regression coverage added in `src/tests/unit/test_phase_2a_data_integrity.py::TestBugCC03FalsyFallbacks` — verifies that `False`, `0.0`, `0` caller values are preserved and that `None` still falls back to the class attribute.
 
 ##### Severity
 
@@ -1929,7 +1929,7 @@ S (< 1 hour) — already done
 
 ##### Verification Status
 
-✅ Verified against live codebase — `utils.py:208` confirms missing parentheses around walrus operator.
+✅ **Implemented 2026-04-24** (Phase 2A, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) — Applied Approach A at `src/utils/utils.py:208`; walrus is now parenthesized and `content` receives the list. Regression coverage added in `src/tests/unit/test_phase_2a_data_integrity.py::TestBugCC11WalrusPrecedence` plus updates to the existing `test_utils_coverage.py::TestDisplayObjectAttributesModulePath` / `TestObjectAttributesTableColumnarPath` and `test_remaining_coverage_deep.py::TestObjectAttributesToTableColumnar` classes that previously asserted the `AttributeError` — they now lock in the post-fix rendering. The `sys` module was swapped for `json` in the private-attrs test to keep columnar formatting within the 60s pytest timeout.
 
 ##### Severity
 
@@ -2305,7 +2305,7 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `cascade_correlation.py:1955-1962` confirms `_get_dummy_results()` called on double failure, silently installing known-bad candidate data.
+✅ **Implemented 2026-04-24** (Phase 2A, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) — See ROBUST-01 for the full implementation summary. Introduced `CandidateTrainingError` (subclass of `TrainingError`) and raise it from both the double-failure (`_execute_candidate_training` ~L1962-1971) and empty-results (~L1972-1985) paths. `train_candidates` re-raises the specific error unchanged. Regression coverage in `src/tests/unit/test_phase_2a_data_integrity.py::TestBugCC18CandidateTrainingError` and updated `test_cascade_correlation_coverage_deep.py::TestExecuteCandidateTraining::test_both_parallel_and_sequential_fail_raises_candidate_training_error`.
 
 ##### Severity
 
@@ -12440,7 +12440,12 @@ class CandidateTrainingError(RuntimeError):
 
 ##### Verification Status
 
-✅ Verified against live codebase — `src/cascade_correlation/cascade_correlation.py` confirmed dummy candidate installation on double failure (the exact line numbers may have shifted but the pattern exists)
+✅ **Implemented 2026-04-24** (Phase 2A, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) — Applied Approach A:
+
+- Added `CandidateTrainingError(TrainingError)` in `src/cascade_correlation/cascade_correlation_exceptions/cascade_correlation_exceptions.py`.
+- In `_execute_candidate_training` (`src/cascade_correlation/cascade_correlation.py`): on double-failure (sequential-fallback exception) now `raise CandidateTrainingError(...) from seq_error` instead of calling `_get_dummy_results`. The empty-results fallthrough at the end of the function also raises `CandidateTrainingError` instead of synthesizing dummies. `_get_dummy_results` is retained for the defensive path in `_process_training_results`.
+- `train_candidates` catches `CandidateTrainingError` before the generic `Exception` handler and re-raises unchanged so callers can distinguish irrecoverable candidate failure from generic training errors.
+- Regression coverage: `src/tests/unit/test_phase_2a_data_integrity.py::TestBugCC18CandidateTrainingError` (subclass check + both failure modes). Updated `test_cascade_correlation_coverage_deep.py::TestExecuteCandidateTraining::test_both_parallel_and_sequential_fail_raises_candidate_training_error` (was `test_both_parallel_and_sequential_fail_returns_dummy`) to expect the error.
 
 ##### Severity
 
@@ -14406,7 +14411,7 @@ Development tracks are identified by analyzing:
 
 | Phase | Items | Scope | Description |
 | ------- | ------- | ------- | ------------- |
-| 2A | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03 | 3×S | Critical: dummy candidate, walrus bug, falsy `or` |
+| 2A ✅ | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03 | 3×S | Critical: dummy candidate, walrus bug, falsy `or` (Implemented 2026-04-24, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) |
 | 2B | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs |
 | 2C | BUG-CC-13, BUG-CC-14, BUG-CC-15 | 3×S | juniper-cascor: memory leaks and body limit bypass |
 | 2D | BUG-JD-06, BUG-JD-07, BUG-JD-08, BUG-JD-09 | 4×S | juniper-data: timestamps, metrics wiring, Prometheus labels |
