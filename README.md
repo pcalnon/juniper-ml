@@ -23,26 +23,26 @@ This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml
 Verified compatible service versions:
 
 | juniper-data | juniper-cascor | juniper-canopy | data-client | cascor-client | cascor-worker |
-|---|---|---|---|---|---|
-| 0.4.x | 0.3.x | 0.2.x | >=0.3.1 | >=0.1.0 | >=0.1.0 |
+|--------------|----------------|----------------|-------------|---------------|---------------|
+| 0.4.x        | 0.3.x          | 0.2.x          | >=0.3.1     | >=0.1.0       | >=0.1.0       |
 
 For full-stack Docker deployment and integration tests, see `juniper-deploy`.
 
 ## Packages
 
-| Package | Description | Install |
-|---------|-------------|---------|
-| [juniper-data-client](https://github.com/pcalnon/juniper-data-client) | HTTP client for the JuniperData dataset generation service | `pip install juniper-data-client` |
+| Package                                                                   | Description                                                                 | Install                             |
+|---------------------------------------------------------------------------|-----------------------------------------------------------------------------|-------------------------------------|
+| [juniper-data-client](https://github.com/pcalnon/juniper-data-client)     | HTTP client for the JuniperData dataset generation service                  | `pip install juniper-data-client`   |
 | [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | HTTP/WebSocket client for the JuniperCascor neural network training service | `pip install juniper-cascor-client` |
-| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Remote candidate training worker for distributed CasCor training | `pip install juniper-cascor-worker` |
+| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Remote candidate training worker for distributed CasCor training            | `pip install juniper-cascor-worker` |
 
 ## Extras
 
-| Extra | Packages Included |
-|-------|-------------------|
+| Extra     | Packages Included                              |
+|-----------|------------------------------------------------|
 | `clients` | `juniper-data-client`, `juniper-cascor-client` |
-| `worker` | `juniper-cascor-worker` |
-| `all` | All of the above |
+| `worker`  | `juniper-cascor-worker`                        |
+| `all`     | All of the above                               |
 
 ## About Juniper
 
