@@ -180,6 +180,8 @@ See [Section 24](#24-severity-classification-and-priority-matrix) through [Secti
 
 #### SEC-01: API Key Comparison Not Constant-Time — Timing Side-Channel
 
+**Status**: ✅ Implemented (Phase 1A, 2026-04-24) — juniper-data PR #42, branch `security/phase-1a-track-1-security-hardening`. `APIKeyAuth.validate` now iterates configured keys with `hmac.compare_digest` and does not short-circuit on first match; unit tests assert the comparator is invoked and rejects prefix matches. See `juniper_data/api/security.py` and `juniper_data/tests/unit/test_security.py::TestAPIKeyAuth`.
+
 **Current Code**: `juniper_data/api/security.py:59` — `return api_key in self._api_keys` (Python set membership)
 **Root Cause**: Set membership test short-circuits on first matching character position, leaking key length/prefix via response timing.
 **Cross-References**: SEC-01 = JD-SEC-02
@@ -7733,6 +7735,8 @@ M (each), XL (combined)
 
 #### JD-SEC-01: Path Traversal via `dataset_id` in Filesystem Paths
 
+**Status**: ✅ Implemented (Phase 1A, 2026-04-24) — juniper-data PR #42. `LocalFSDatasetStore._build_path` now runs every `dataset_id` through `_validate_dataset_id` (allowlist: `[A-Za-z0-9][A-Za-z0-9._\-]{0,127}`, rejects `..` and leading dots) before constructing a path, then verifies the resolved path stays inside `self._resolved_base`. `ValueError` raised here is translated to HTTP 400 by the existing app-level exception handler; `batch_delete` catches it and classifies the offending ID as `not_found` so a single bad ID does not abort the batch. See `juniper_data/storage/local_fs.py`, `juniper_data/storage/base.py::DatasetStore.batch_delete`, and `juniper_data/tests/unit/test_local_fs_path_traversal.py`.
+
 **Current Code**: `storage/local_fs.py:52-58` — `dataset_id` concatenated directly into filesystem paths via `self._base_path / f"{dataset_id}{META_FILE_SUFFIX}"`.
 **Root Cause**: User-supplied `dataset_id` not sanitized; `../` sequences can escape storage directory.
 
@@ -7811,6 +7815,8 @@ S
 
 #### JD-SEC-02: API Key Comparison Not Constant-Time (data)
 
+**Status**: ✅ Implemented (Phase 1A, 2026-04-24) — shared fix with SEC-01, see entry above (juniper-data PR #42).
+
 **Current Code**: `api/security.py:59` — `return api_key in self._api_keys`.
 **Root Cause**: Same as SEC-01 — set membership test is not constant-time.
 **Cross-References**: JD-SEC-02 = SEC-01
@@ -7833,6 +7839,8 @@ S
 ---
 
 #### JD-SEC-03: Rate Limiter Memory Unbounded (data)
+
+**Status**: ✅ Implemented (Phase 1A, 2026-04-24) — juniper-data PR #42. `RateLimiter._counters` is now a `cachetools.TTLCache(maxsize=RATE_LIMITER_MAX_ENTRIES=10_000, ttl=window_seconds)`, giving automatic per-entry expiry and a hard cap so IP rotation cannot exhaust memory. A one-shot `logger.warning` fires when the cache crosses 80% capacity (`RATE_LIMITER_CAPACITY_WARNING_THRESHOLD`). `cachetools>=5.3.0` added to `pyproject.toml` base dependencies. See `juniper_data/api/security.py::RateLimiter` and `juniper_data/tests/unit/test_security.py::TestRateLimiter` (tests `test_counter_evicts_after_ttl`, `test_counter_bounded_by_max_entries`, `test_capacity_warning_emitted_once`).
 
 **Current Code**: `api/security.py:116` — no eviction/TTL on `_counters`.
 **Root Cause**: Same as SEC-02 — no entry eviction.
@@ -11989,7 +11997,7 @@ Development tracks are identified by analyzing:
 
 | Phase | Items | Scope | Description |
 | ------- | ------- | ------- | ------------- |
-| 1A | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03 | 4×S | juniper-data: constant-time auth, path traversal, rate limiter |
+| 1A ✅ | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03 | 4×S | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24, PR #42) |
 | 1B | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14 | 5×S | juniper-canopy: WS origin validation, auth, query param secrets |
 | 1C | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks |
 | 1D | SEC-02, SEC-04, SEC-10, SEC-16 | 4×S | juniper-data: rate limiter TTL, async gen, Sentry PII, metrics auth |
