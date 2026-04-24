@@ -456,6 +456,8 @@ S (< 1 hour)
 
 #### SEC-05: Cross-Site WebSocket Hijacking (CSWSH) — No Origin Validation (canopy)
 
+**Status**: ✅ Implemented (Phase 1B, 2026-04-24) — juniper-canopy PR #175. `/ws` generic endpoint now calls `validate_origin` and `check_per_ip_limit` before accepting, matching `/ws/training` and `/ws/control`. Rejected origins/IPs close with codes 4003/1013 and are audit-logged via `log_ws_origin_rejected`. See `src/main.py::ws_endpoint` and `src/tests/unit/test_phase1b_security.py::TestSEC05SEC12WSOriginAndPerIP`.
+
 **Current Code**: `/ws/training` and `/ws/control` endpoints in `canopy/src/main.py` accept WebSocket connections without checking `Origin` header.
 **Root Cause**: Missing Origin validation allows malicious web pages to connect to the WebSocket endpoints using the victim's browser session.
 
@@ -516,6 +518,8 @@ S (< 1 hour)
 ---
 
 #### SEC-06: No Auth on Canopy WS Endpoints
+
+**Status**: ✅ Implemented (Phase 1B, 2026-04-24) — juniper-canopy PR #175. New `_authenticate_websocket_token` helper enforces `Sec-WebSocket-Protocol: bearer, <token>` negotiation when `settings.ws_auth_enabled` is `True` (default `False`). Tokens are validated via `APIKeyAuth` (constant-time compare) and the accepted subprotocol `bearer` is echoed back through `WebsocketManager.connect(..., subprotocol=...)`. Default-off preserves compatibility until every downstream client (cascor-client, dashboard JS) is updated. Tests: `src/tests/unit/test_phase1b_security.py::TestSEC06WebSocketTokenAuth` (noop / missing / invalid / valid paths).
 
 **Current Code**: Canopy WebSocket endpoints (`/ws/training`, `/ws/control`) accept unauthenticated connections.
 **Root Cause**: WebSocket authentication was not implemented when endpoints were added.
@@ -795,6 +799,8 @@ M (1-4 hours)
 
 #### SEC-12: `/ws` Generic Endpoint Missing Origin/Per-IP Validation (canopy)
 
+**Status**: ✅ Implemented (Phase 1B, 2026-04-24) — shared fix with SEC-05, see entry above (juniper-canopy PR #175). The `/ws` endpoint now runs the full security gate sequence: API-key auth → opt-in bearer-token auth → origin allowlist → per-IP cap, matching `/ws/training` and `/ws/control`.
+
 **Current Code**: `src/main.py:2109-2127` — `/ws` endpoint has API key auth but misses `validate_origin()` and `check_per_ip_limit()` that `/ws/training` and `/ws/control` implement.
 **Root Cause**: Inconsistent security application — generic endpoint was added later without copying security checks from established endpoints.
 
@@ -864,6 +870,8 @@ S (< 1 hour)
 ---
 
 #### SEC-13: Auth Secrets Exposed via Query Params (`/api/remote/connect`)
+
+**Status**: ✅ Implemented (Phase 1B, 2026-04-24) — juniper-canopy PR #175. `POST /api/remote/connect` now requires a JSON body modeled by `RemoteConnectRequest(host: str, port: int, authkey: SecretStr)`; `authkey.get_secret_value()` is only dereferenced inside the handler before calling `_adapter.connect_remote_workers(...)`. Callers still passing the query param receive 422. Three existing tests (`test_main_import_and_lifespan`, `test_main_endpoints_coverage`, `test_main_coverage_95`) were updated to post JSON bodies; new test `test_phase1b_security.py::TestSEC13RemoteConnectBody` asserts both the accepted-body and rejected-query-param paths.
 
 **Current Code**: `src/main.py:2392` — `authkey` accepted as query parameter, logged by web servers, saved in browser history/referrer.
 **Root Cause**: Authentication was implemented via query params for convenience during development.
@@ -936,6 +944,8 @@ S (< 1 hour)
 ---
 
 #### SEC-14: Internal Exception Messages Leaked to Clients
+
+**Status**: ✅ Implemented (Phase 1B, 2026-04-24) — juniper-canopy PR #175. All five `return JSONResponse({"error": str(e)}, ...)` sites now return `{"error": "Internal server error", "error_id": <12-hex>}` (worker stats/list return `"Upstream error"` for the upstream-delegation paths). The full traceback is logged server-side with the same `error_id` via `system_logger.error(..., exception=exc)`. Tests: `src/tests/unit/test_phase1b_security.py::TestSEC14ErrorResponses` verifies the sentinel exception message never appears in the response body.
 
 **Current Code**: `src/main.py:996, 2055, 2076, 2371, 2411` — 5 endpoints return `str(e)` in JSON responses.
 **Root Cause**: Exception messages may contain internal paths, library versions, or connection strings.
@@ -11998,7 +12008,7 @@ Development tracks are identified by analyzing:
 | Phase | Items | Scope | Description |
 | ------- | ------- | ------- | ------------- |
 | 1A ✅ | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03 | 4×S | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24, PR #42) |
-| 1B | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14 | 5×S | juniper-canopy: WS origin validation, auth, query param secrets |
+| 1B ✅ | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14 | 5×S | juniper-canopy: WS origin validation, auth, query param secrets (Implemented 2026-04-24, PR #175) |
 | 1C | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks |
 | 1D | SEC-02, SEC-04, SEC-10, SEC-16 | 4×S | juniper-data: rate limiter TTL, async gen, Sentry PII, metrics auth |
 
