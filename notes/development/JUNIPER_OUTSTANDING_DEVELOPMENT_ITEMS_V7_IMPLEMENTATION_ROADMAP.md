@@ -6874,7 +6874,7 @@ GENERATOR_CIRCLE_LEGACY: str = "circle"  # deprecated — use GENERATOR_CIRCLE
 
 ##### Verification Status
 
-Verified — `juniper_data_client/constants.py:90` has `GENERATOR_CIRCLE = "circle"` while server `GENERATOR_REGISTRY` key is `"circles"` at `juniper_data/api/routes/generators.py:47`.
+✅ **Implemented 2026-04-24 (Phase 4A)** — `juniper_data_client/constants.py:88–108` now defines `GENERATOR_CIRCLE = "circles"` (matching the server's `GENERATOR_REGISTRY` key) plus `GENERATOR_CIRCLE_LEGACY = "circle"` as a one-release-cycle deprecation alias. `FakeDataClient.create_dataset()` and `get_generator_schema()` transparently map the legacy name and emit a `DeprecationWarning` via a new `_resolve_generator_alias()` helper. Existing fake-client tests rewritten against the canonical name; regression coverage for the alias lives in `tests/test_generator_parity.py`. `juniper-canopy` UI/tests updated to use the canonical name. CHANGELOG documents the breaking change. All 161 data-client tests and 223 canopy generator/dataset tests pass.
 
 ##### Severity
 
@@ -6977,7 +6977,7 @@ class MoonGenerator:
 
 ##### Verification Status
 
-Verified — server `GENERATOR_REGISTRY` at `juniper_data/api/routes/generators.py:28` has no `"moon"` key. Client `constants.py:91` defines `GENERATOR_MOON = "moon"`.
+✅ **Implemented 2026-04-24 (Phase 4A)** — New server-side generator module `juniper_data/generators/moon/` (`__init__.py`, `defaults.py`, `params.py`, `generator.py`) mirroring the `circles/` structure. `MoonParams` is a Pydantic model with n_samples / noise / seed / train_ratio / test_ratio / shuffle fields; `MoonGenerator.generate()` produces the canonical two-interleaving-half-moons dataset (upper moon on the unit circle, lower moon shifted +1.0 on x and +0.5 on y). Registered in `GENERATOR_REGISTRY` under the `"moon"` key. Full unit coverage in `juniper_data/tests/unit/test_moon_generator.py` (18 tests covering params validation, determinism, class balance, noise variation, analytic geometry, schema, and version). All 867 juniper-data tests pass.
 
 ##### Severity
 
@@ -7029,7 +7029,7 @@ GENERATOR_DESCRIPTION_ARC_AGI: str = "ARC-AGI visual reasoning tasks dataset"
 
 ##### Verification Status
 
-Verified — `juniper_data_client/constants.py` only defines `GENERATOR_SPIRAL`, `GENERATOR_XOR`, `GENERATOR_CIRCLE`, `GENERATOR_MOON` (lines 88-91). Server has 8 generators registered in `GENERATOR_REGISTRY`.
+✅ **Implemented 2026-04-24 (Phase 4A)** — `juniper_data_client/constants.py` now defines `GENERATOR_GAUSSIAN`, `GENERATOR_CHECKERBOARD`, `GENERATOR_CSV_IMPORT`, `GENERATOR_MNIST`, `GENERATOR_ARC_AGI` with matching `GENERATOR_DESCRIPTION_*` entries. `tests/test_generator_parity.py` enforces that the set of client constants matches the server `GENERATOR_REGISTRY` keys (including both directions: no orphan constants, no missing mappings) and parameterizes a description-presence check across every generator. The parity suite is now the authoritative drift guard.
 
 ##### Severity
 
@@ -9758,9 +9758,9 @@ S (RD-008), XL (RD-015..RD-017)
 
 | ID    | Severity     | Description                                                                                    | Status              |
 |-------|--------------|------------------------------------------------------------------------------------------------|---------------------|
-| DC-01 | **CRITICAL** | `GENERATOR_CIRCLE = "circle"` — server has `"circles"` (plural)                                | 🔴 Open (XREPO-01)  |
-| DC-02 | **CRITICAL** | `GENERATOR_MOON = "moon"` — server has no moon generator                                       | 🔴 Open (XREPO-01b) |
-| DC-03 | **MEDIUM**   | Missing constants for 5 server generators                                                      | 🔴 Open (XREPO-01c) |
+| DC-01 | **CRITICAL** | `GENERATOR_CIRCLE = "circle"` — server has `"circles"` (plural)                                | ✅ Implemented 2026-04-24 (XREPO-01, Phase 4A) |
+| DC-02 | **CRITICAL** | `GENERATOR_MOON = "moon"` — server has no moon generator                                       | ✅ Implemented 2026-04-24 (XREPO-01b, Phase 4A) |
+| DC-03 | **MEDIUM**   | Missing constants for 5 server generators                                                      | ✅ Implemented 2026-04-24 (XREPO-01c, Phase 4A) |
 | DC-04 | **MEDIUM**   | `FakeDataClient` masks generator name bugs — accepts invalid names                             | 🔴 Open             |
 | DC-05 | **MEDIUM**   | `FakeDataClient` missing lifecycle methods (`filter_datasets`, `get_stats`, `cleanup_expired`) | 🔴 Open (v4 new)    |
 
@@ -14417,7 +14417,7 @@ Development tracks are identified by analyzing:
 
 | Phase | Items | Scope | Description |
 | ------- | ------- | ------- | ------------- |
-| 4A | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S | Generator name constants — immediate breaking fix |
+| 4A ✅ | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
 | 4B | XREPO-02/CC-02, XREPO-09, XREPO-11 | 3×S | 503 retry, missing params, non-idempotent retry |
 | 4C | ERR-01, ERR-02, CW-01, CW-06 | 4×S | JSONDecodeError handling across all clients |
 | 4D | XREPO-04, XREPO-05, XREPO-07/XREPO-08 | 3×M | Protocol constants, state names, WS message format |
