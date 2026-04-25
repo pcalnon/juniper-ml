@@ -1415,7 +1415,7 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `create_topology_message()` exists at `messages.py:72` with zero production callers; `manager.py:425-430` confirmed as integration point.
+✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: wired `create_topology_message()` into `_install_grow_network_hook → monitored_grow` in `src/api/lifecycle/manager.py`. Whenever new hidden units are installed, a `topology` envelope (`hidden_units`, `input_size`, `output_size`, `event="cascade_add"`) is broadcast via `_ws_manager.broadcast_from_thread`. Dashboards now receive real-time topology updates on every cascade event.
 
 ##### Severity
 
@@ -1468,7 +1468,7 @@ M (1-4 hours)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `manager.py:427-430` confirms `correlation=0.0` hardcoded.
+✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: replaced the hardcoded `correlation=0.0` in the `monitored_grow` cascade-add loop with `actual_correlation = getattr(unit, "best_correlation", 0.0)` extracted from the installed hidden unit. Cascade events now report the true candidate correlation, enabling correlation-based monitoring. Implemented in the same loop as BUG-CC-01.
 
 ##### Severity
 
@@ -1582,7 +1582,7 @@ except importlib.metadata.PackageNotFoundError:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `main.py` has Version 0.3.1, `cascade_correlation.py` has 0.3.2, `pyproject.toml` has 0.4.0.
+✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A with one extension: removed `# Version: …` / `Version: …` header lines from 65 production+test files. Replaced the runtime `_API_VERSION` literal in `src/api/app.py` and the `juniper_version` HDF5 attribute literal in `src/snapshots/snapshot_serializer.py` with `importlib.metadata.version("juniper-cascor")` (with a `0.0.0-dev` fallback when the package is not installed). `pyproject.toml` is now the single source of truth for the version string; remaining version-string drift was caught and removed. Note: ipynb checkpoints and `scripts/backups/` artifacts were intentionally left untouched.
 
 ##### Severity
 
@@ -1752,7 +1752,7 @@ sm.set_phase = tracked_set_phase
 
 ##### Verification Status
 
-✅ Verified against live codebase — `monitor.py:157` has manual `current_phase = "output"`; `manager.py:272,395,433` manually set it as strings.
+✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: added `TrainingMonitor.on_phase_change(phase)` plus a `phase_change` callback slot, removed all three manual `monitor.current_phase = "..."` assignments in `manager.py`, and wrapped `TrainingStateMachine.set_phase` via a new `_install_phase_tracker` helper (restored cleanly via `_restore_original_methods`). Initial OUTPUT propagation is performed explicitly after `Command.START` because `_handle_start` sets `self._phase` directly without routing through `set_phase`. The state machine is now the single source of truth for `current_phase`; drift between the FSM and the monitor is no longer possible.
 
 ##### Severity
 
@@ -2113,7 +2113,7 @@ class RateLimiter:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `security.py:107` confirms `defaultdict` with no cleanup mechanism.
+✅ **Implemented 2026-04-25** (Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A in `RateLimiter`: added `_maybe_cleanup()` that runs every `_CLEANUP_INTERVAL = 100` `check()` calls, evicts buckets older than `2 * window_seconds`, and enforces a hard cap of `_MAX_ENTRIES = 10_000` (oldest by `window_start` dropped first). `reset()` clears the cleanup tick counter for clean test isolation.
 
 ##### Severity
 
@@ -2182,7 +2182,7 @@ class HandshakeCooldown:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `control_security.py:88,108-114` confirms per-IP pruning only; no global cleanup for non-blocked IPs.
+✅ **Implemented 2026-04-25** (Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A: added `_maybe_full_cleanup()` to `HandshakeCooldown` that runs every `CLEANUP_EVERY_N = 50` `record_rejection()` calls and removes IPs whose timestamps are all older than `2 * window_sec`. Per-IP pruning logic preserved; global cleanup now collects non-blocked stragglers.
 
 ##### Severity
 
@@ -2238,7 +2238,7 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `middleware.py:86` confirms `body = await request.body()` reads full body before size check, contradicting the docstring at lines 63-68.
+✅ **Implemented 2026-04-25** (Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A: replaced `body = await request.body()` on the no-Content-Length path with `async for chunk in request.stream()` plus an early 413 abort once cumulative bytes exceed `_max_bytes`. Body is cached on `request._body` so downstream FastAPI handlers can still read it (Starlette convention). The middleware now matches the streaming intent claimed by its docstring and closes the SEC-08 partial reopening.
 
 ##### Severity
 
@@ -2937,7 +2937,7 @@ import zlib
 
 ##### Verification Status
 
-✅ Verified against live codebase — `datasets.py:416-434` confirms `io.BytesIO()` accumulating entire ZIP in memory with `ZIP_DEFLATED`.
+✅ **Implemented 2026-04-25** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A: rewrote `batch_export` in `juniper_data/api/routes/datasets.py` to stream a ZIP archive via an async generator and `StreamingResponse`. Uses `ZIP_STORED` (no compression) for streaming compatibility and emits central-directory and EOCD records after the file payloads. Memory usage is now bounded to a single artifact regardless of export size.
 
 ##### Severity
 
@@ -3000,7 +3000,7 @@ M (1-4 hours)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `local_fs.py:176-182` confirms check-then-delete pattern with `if path.exists(): path.unlink()`.
+✅ **Implemented 2026-04-25** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A: replaced the check-then-unlink sequence in `LocalFilesystemStore.delete` with an idempotent `try / except FileNotFoundError: continue` loop iterating over the metadata and NPZ paths. The TOCTOU race between `path.exists()` and `path.unlink()` is gone; the method is now atomic per-path and idempotent across concurrent callers.
 
 ##### Severity
 
@@ -3062,7 +3062,7 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `local_fs.py:226` confirms `meta_path.write_text(meta_json)` without temp file; `save()` at lines 80-101 uses the atomic temp+replace pattern.
+✅ **Implemented 2026-04-25** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A: `update_meta` now writes to `meta_path.with_suffix(".tmp")` and atomically replaces the target via `os.replace`. Temp file is unlinked on any error path so partial files cannot persist. Behavior is now consistent with `save()` (lines 80–101).
 
 ##### Severity
 
@@ -3120,7 +3120,7 @@ def generate_dataset_id(generator: str, version: str, params: dict[str, Any]) ->
 
 ##### Verification Status
 
-✅ Verified against live codebase — `dataset_id.py` confirms `generate_dataset_id` produces deterministic IDs with no special handling for `seed=None`.
+✅ **Implemented 2026-04-25** (Phase 2B, juniper-data PR [#44](https://github.com/pcalnon/juniper-data/pull/44)) — Applied Approach A: when `params.get("seed") is None`, `generate_dataset_id` injects `_nonce = uuid.uuid4().hex[:8]` into the canonical hash input. Seeded calls remain fully deterministic (cacheable); unseeded calls produce unique IDs and avoid stale cache hits. Regression coverage in `tests/unit/test_phase_2b_data_integrity.py` covers both branches.
 
 ##### Severity
 
@@ -3225,7 +3225,7 @@ from datetime import UTC, datetime
 
 ##### Verification Status
 
-✅ Verified against live codebase — `health.py:24` confirms `datetime.now().timestamp()` without timezone.
+✅ **Implemented 2026-04-25** (Phase 2D, juniper-data PR [#46](https://github.com/pcalnon/juniper-data/pull/46)) — Applied Approach A: imported `UTC` from `datetime` and changed `datetime.now().timestamp()` to `datetime.now(UTC).timestamp()` in `ReadinessResponse.timestamp`. Timestamps are now timezone-aware and consistent with the rest of the project.
 
 ##### Severity
 
@@ -3280,7 +3280,7 @@ async def create_dataset(...):
 
 ##### Verification Status
 
-✅ Verified against live codebase — `observability.py:218-229` defines `record_dataset_generation()` but grep confirms zero callers in `routes/datasets.py`.
+✅ **Implemented 2026-04-25** (Phase 2D, juniper-data PR [#46](https://github.com/pcalnon/juniper-data/pull/46)) — Applied Approach A: wired `record_dataset_generation()` into the `create_dataset` route handler. Generation duration is captured with `time.monotonic()` around the `generator_class.generate(params)` call; `dataset_generations_total` and `generation_duration_seconds` Prometheus metrics are now populated on every request (with `status="success"` / `status="error"` paths). Regression coverage in `tests/unit/test_phase_2d_metrics.py`.
 
 ##### Severity
 
@@ -3334,7 +3334,7 @@ async def get_dataset_artifact(dataset_id: str, store: DatasetStore = Depends(ge
 
 ##### Verification Status
 
-✅ Verified against live codebase — `base.py:125-135` defines `record_access()` with `access_count` increment and `last_accessed_at` update; grep confirms zero callers in route handlers.
+✅ **Implemented 2026-04-25** (Phase 2D, juniper-data PR [#46](https://github.com/pcalnon/juniper-data/pull/46)) — Applied Approach A: `record_access(dataset_id)` is now invoked from the `get_dataset_artifact` and `get_dataset_meta` route handlers. Access recording is dispatched via `asyncio.get_event_loop().call_soon(...)` so the I/O does not block the read path. `access_count` and `last_accessed_at` now populate as datasets are read.
 
 ##### Severity
 
@@ -3383,7 +3383,7 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ Verified against live codebase — `observability.py:98` confirms `endpoint = request.url.path` capturing full parameterized paths.
+✅ **Implemented 2026-04-25** (Phase 2D, juniper-data PR [#46](https://github.com/pcalnon/juniper-data/pull/46)) — Applied Approach A: replaced `endpoint = request.url.path` with route-template extraction via `request.scope.get("route")`. When the resolved route is available the Prometheus label uses the template (e.g. `/v1/datasets/{dataset_id}`); otherwise it falls back to `request.url.path`. Cardinality is now bounded by route count, not by dataset ID count — eliminates the Prometheus OOM risk.
 
 ##### Severity
 
@@ -14445,11 +14445,11 @@ Development tracks are identified by analyzing:
 
 | Phase | Items                                      | Scope | Description                                                     |
 |-------|--------------------------------------------|-------|-----------------------------------------------------------------|
-| 2A    | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03  | 3×S   | Critical: dummy candidate, walrus bug, falsy `or`               |
-| 2B    | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs            |
-| 2C    | BUG-CC-13, BUG-CC-14, BUG-CC-15            | 3×S   | juniper-cascor: memory leaks and body limit bypass              |
-| 2D    | BUG-JD-06, BUG-JD-07, BUG-JD-08, BUG-JD-09 | 4×S   | juniper-data: timestamps, metrics wiring, Prometheus labels     |
-| 2E    | BUG-CC-01, BUG-CC-02, BUG-CC-04, BUG-CC-07 | 4×S-M | juniper-cascor: topology, correlation, versions, phase tracking |
+| 2A ✅ | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03  | 3×S   | Critical: dummy candidate, walrus bug, falsy `or` (Implemented 2026-04-24, juniper-cascor PR #138) |
+| 2B ✅ | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs (Implemented 2026-04-25, juniper-data PR #44) |
+| 2C ✅ | BUG-CC-13, BUG-CC-14, BUG-CC-15            | 3×S   | juniper-cascor: memory leaks and body limit bypass (Implemented 2026-04-25, juniper-cascor PR #140) |
+| 2D ✅ | BUG-JD-06, BUG-JD-07, BUG-JD-08, BUG-JD-09 | 4×S   | juniper-data: timestamps, metrics wiring, Prometheus labels (Implemented 2026-04-25, juniper-data PR #46) |
+| 2E ✅ | BUG-CC-01, BUG-CC-02, BUG-CC-04, BUG-CC-07 | 4×S-M | juniper-cascor: topology, correlation, versions, phase tracking (Implemented 2026-04-25, juniper-cascor PR #141) |
 
 #### Track 3: Concurrency and Thread Safety (juniper-canopy, juniper-cascor, juniper-data)
 
