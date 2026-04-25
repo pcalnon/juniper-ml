@@ -414,6 +414,8 @@ M (1-4 hours)
 
 #### SEC-04: Sync Dataset Generation Blocks Event Loop
 
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45, branch `security/phase-1d-track-1-security-hardening`. `juniper_data/api/routes/datasets.py` now invokes `arrays = await asyncio.to_thread(generator_class.generate, params)` so the potentially CPU-bound generator runs off the event loop. Regression tests assert the call lands on a worker thread (not the event-loop thread) and a source-level guard prevents future refactors from dropping the `to_thread` wrap. See `juniper_data/api/routes/datasets.py` and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC04DatasetGenerateOffLoop`.
+
 **Current Code**: `juniper_data/api/routes/datasets.py:107` — `arrays = generator_class.generate(params)` — synchronous call in async handler.
 **Root Cause**: Generator computation (potentially CPU-intensive) runs on the async event loop thread, blocking all concurrent requests.
 **Cross-References**: CONC-04, JD-PERF-01, BUG-JD-10
@@ -655,6 +657,8 @@ M (1-4 hours)
 ---
 
 #### SEC-10: Sentry `send_default_pii=True` (juniper-data)
+
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45. `configure_sentry` now hard-sets `send_default_pii=False` and registers `_strip_sensitive_headers` as `before_send`, redacting `x-api-key`, `authorization`, and `cookie` (case-insensitive) on every outbound event — defense-in-depth so API keys cannot reach Sentry regardless of operator-facing `JUNIPER_DATA_SENTRY_SEND_PII`. See `juniper_data/api/observability.py` and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC10SentryPII`.
 
 **Current Code**: Sentry configuration sets `send_default_pii=True`, leaking API keys in request headers to Sentry.
 **Root Cause**: Default PII setting was enabled during development and never disabled.
@@ -1091,6 +1095,8 @@ S (< 1 hour)
 ---
 
 #### SEC-16: `/metrics` Prometheus Endpoint Bypasses Auth Middleware
+
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45. The `/metrics` mount is now wrapped in a new `MetricsAuthMiddleware` ASGI shim that rejects requests whose client IP is not in `settings.metrics_trusted_ips` (default `["127.0.0.1", "::1"]`, override via `JUNIPER_DATA_METRICS_TRUSTED_IPS`). Untrusted scrapers receive a plain-text 403 before reaching the Prometheus sub-app. See `juniper_data/api/observability.py::MetricsAuthMiddleware`, `juniper_data/api/app.py`, `juniper_data/api/settings.py::metrics_trusted_ips`, and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC16MetricsAuthMiddleware`.
 
 **Current Code**: `juniper_data/api/app.py:121` — Prometheus metrics endpoint mounted as ASGI sub-app, bypassing `SecurityMiddleware`.
 **Root Cause**: ASGI sub-app mounts are not processed by router-level middleware.
@@ -14448,7 +14454,7 @@ Development tracks are identified by analyzing:
 | 1A ✅ | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03        | 4×S   | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24, PR #42) |
 | 1B ✅ | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14         | 5×S   | juniper-canopy: WS origin validation, auth, query param secrets (Implemented 2026-04-24, PR #175) |
 | 1C ✅ | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks (Implemented 2026-04-24, cascor PR #139 + cascor-worker PR #32) |
-| 1D    | SEC-02 ✅, SEC-04, SEC-10, SEC-16              | 4×S   | juniper-data: rate limiter TTL (closed via Phase 1A JD-SEC-03), async gen, Sentry PII, metrics auth (PR #45 open) |
+| 1D ✅ | SEC-02 ✅, SEC-04, SEC-10, SEC-16              | 4×S   | juniper-data: rate limiter TTL (closed via Phase 1A JD-SEC-03), async gen, Sentry PII, metrics auth (Implemented 2026-04-25, PR #45) |
 
 #### Track 2: Bug Fixes — Data Integrity and Correctness (juniper-cascor, juniper-data)
 
