@@ -236,6 +236,8 @@ S (< 1 hour)
 
 #### SEC-02: Rate Limiter Memory Unbounded — DoS Vector
 
+**Status**: ✅ Implemented (Phase 1A, 2026-04-24) — closed by the JD-SEC-03 fix in juniper-data PR #42 (cross-referenced item). `RateLimiter._counters` now uses `cachetools.TTLCache(maxsize=10_000, ttl=window_seconds)` with a capacity-warning log at 80%. See `juniper_data/api/security.py` and the JD-SEC-03 entry in §14.
+
 **Current Code**: `juniper_data/api/security.py:116` — `self._counters: dict[str, tuple[int, float]] = defaultdict(lambda: (0, 0.0))` with no eviction.
 **Root Cause**: Each unique client key (IP) creates a permanent entry; attacker can exhaust memory by rotating source IPs.
 
@@ -334,6 +336,8 @@ S (< 1 hour)
 ---
 
 #### SEC-03: No Per-IP WebSocket Connection Limiting (cascor)
+
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139, branch `security/phase-1c-track-1-security-hardening`. New setting `JUNIPER_CASCOR_WS_MAX_CONNECTIONS_PER_IP` (default 5); `WebSocketManager` enforces the per-IP cap alongside the global `ws_max_connections`, rejects excess connections with code 1013 ("Per-IP connection limit reached"), and releases the slot on disconnect. Unknown clients share the sentinel `"unknown"` key. See `src/api/settings.py`, `src/services/websocket_manager.py`, and `src/tests/unit/api/test_phase1c_security.py`.
 
 **Current Code**: `src/api/settings.py:27-28` — only `ws_max_connections: 50` (global cap), no per-IP limit.
 **Root Cause**: Cascor's WebSocket settings lack the per-IP limiting that canopy already implements via `max_connections_per_ip`.
@@ -593,6 +597,8 @@ M (1-4 hours)
 
 #### SEC-07: Unvalidated `params` Dict Values in TrainingStartRequest
 
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. `params` on `TrainingStartRequest` replaced with a typed `TrainingParams` Pydantic model (`extra="forbid"`, per-field range constraints mirroring `TrainingParamUpdateRequest`). The hand-maintained whitelist + silent-drop path is removed; unknown keys now produce HTTP 422. **Breaking contract change** for clients that relied on the prior silent-drop behavior. See `src/api/models.py::TrainingParams` and `src/tests/unit/api/test_training_route_coverage.py`.
+
 **Current Code**: `TrainingStartRequest` — `_ALLOWED_TRAINING_PARAMS` whitelist filters key names but values remain `Dict[str, Any]`.
 **Root Cause**: Value types/ranges are not validated, allowing injection of arbitrary objects.
 
@@ -716,6 +722,8 @@ S (< 1 hour)
 ---
 
 #### SEC-11: `pickle.loads` HDF5 Snapshot Data Without RestrictedUnpickler
+
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. New `_SnapshotRestrictedUnpickler` locks `find_class` to `{random, _random, collections, collections.abc, _codecs, copyreg}` plus a small allowlist of builtin container types. RNG-state restore in `CascadeHDF5Serializer` now routes through `_snapshot_restricted_loads`; anything outside the allowlist raises `SnapshotUnpicklingError`. The allowlist intentionally rejects `torch` and `numpy` modules — tensor data uses `save_tensor`/`load_tensor` (not pickle). See `src/snapshots/snapshot_serializer.py` and `src/tests/unit/api/test_phase1c_security.py`.
 
 **Current Code**: `src/snapshots/snapshot_serializer.py:828` — `pickle.loads(python_state_bytes)` with `# trunk-ignore(bandit/B301)` comment.
 **Root Cause**: Arbitrary code execution via crafted pickle payload in snapshot files.
@@ -1022,6 +1030,8 @@ S (< 1 hour)
 
 #### SEC-15: Cascor Sentry `send_default_pii=True`
 
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. Both Sentry init sites (`api/observability.py::configure_sentry` and `main.py`) now set `send_default_pii=False` and register `_strip_sensitive_headers` as `before_send`, scrubbing `X-API-Key`, `Authorization`, and `Cookie`. See `src/api/observability.py` and `src/main.py`.
+
 **Current Code**: `src/api/observability.py:176` and `src/main.py:129` — both init sites set `send_default_pii=True`.
 **Root Cause**: Same issue as SEC-10 but in cascor; API keys leak in headers to Sentry.
 
@@ -1153,6 +1163,8 @@ S (< 1 hour)
 
 #### SEC-17: Snapshot `snapshot_id` Path Param Unchecked for Traversal
 
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. New `_validate_snapshot_id` (allowlist `^[A-Za-z0-9_-]{1,128}$`) runs before `GET /snapshots/{snapshot_id}` and `POST /snapshots/{snapshot_id}/restore` reach the lifecycle manager. Invalid IDs return HTTP 400 and are audit-logged. See `src/api/routes/snapshots.py` and `src/tests/unit/api/test_phase1c_security.py`.
+
 **Current Code**: `src/api/lifecycle/manager.py:883-904`, `src/api/routes/snapshots.py:48-64`.
 **Root Cause**: No regex rejecting `../` or special characters; glob-then-filter limits exposure but violates defense-in-depth.
 
@@ -1219,6 +1231,8 @@ S (< 1 hour)
 ---
 
 #### SEC-18: `_decode_binary_frame` No Bounds Check (cascor-worker)
+
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor-worker PR #32, branch `security/phase-1c-track-1-security-hardening`. `_decode_binary_frame` now validates every attacker-controlled header field (`ndim`, per-dim `shape`, `dtype_len`) against explicit bounds — `BINARY_FRAME_MAX_NDIM=10`, `BINARY_FRAME_MAX_TOTAL_ELEMENTS=100_000_000`, `BINARY_FRAME_MAX_DTYPE_LEN=32` — before calling `np.frombuffer`. New `BinaryFrameProtocolError` reports malformed frames without leaking raw header contents. See `juniper_cascor_worker/worker.py` and `tests/test_sec18_binary_frame_bounds.py`.
 
 **Current Code**: `juniper_cascor_worker/worker.py:330-343` — trusts header-encoded `ndim`, `shape`, `dtype_len`.
 **Root Cause**: Crafted frame can cause OOM via `np.frombuffer` with attacker-controlled shape.
@@ -14431,10 +14445,10 @@ Development tracks are identified by analyzing:
 
 | Phase | Items                                          | Scope | Description                                                          |
 |-------|------------------------------------------------|-------|----------------------------------------------------------------------|
-| 1A ✅ | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03        | 4×S   | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24) |
-| 1B    | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14         | 5×S   | juniper-canopy: WS origin validation, auth, query param secrets      |
-| 1C    | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks |
-| 1D    | SEC-02, SEC-04, SEC-10, SEC-16                 | 4×S   | juniper-data: rate limiter TTL, async gen, Sentry PII, metrics auth  |
+| 1A ✅ | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03        | 4×S   | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24, PR #42) |
+| 1B ✅ | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14         | 5×S   | juniper-canopy: WS origin validation, auth, query param secrets (Implemented 2026-04-24, PR #175) |
+| 1C ✅ | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks (Implemented 2026-04-24, cascor PR #139 + cascor-worker PR #32) |
+| 1D    | SEC-02 ✅, SEC-04, SEC-10, SEC-16              | 4×S   | juniper-data: rate limiter TTL (closed via Phase 1A JD-SEC-03), async gen, Sentry PII, metrics auth (PR #45 open) |
 
 #### Track 2: Bug Fixes — Data Integrity and Correctness (juniper-cascor, juniper-data)
 
