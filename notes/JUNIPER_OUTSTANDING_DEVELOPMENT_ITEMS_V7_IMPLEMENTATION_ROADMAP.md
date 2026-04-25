@@ -7110,7 +7110,7 @@ RETRYABLE_STATUS_CODES: List[int] = [429, 502, 503, 504]
 
 ##### Verification Status
 
-Verified — `juniper_cascor_client/constants.py:31` has `RETRYABLE_STATUS_CODES = [502, 504]` (missing 503 and 429).
+✅ **Implemented 2026-04-24 (Phase 4B)** — `juniper_cascor_client/constants.py` now defines `RETRYABLE_STATUS_CODES = [429, 502, 503, 504]`. The change is one line plus a longer header comment explaining why 503 (service restart/deploy) and 429 (rate limit) are now retryable. A new regression suite `tests/test_retry_policy.py` pins the allow-list in both directions (canonical transients retried, non-transient 4xx/5xx not) and asserts the `Retry` adapter mounted on `session` reflects the constant end-to-end. The existing `test_service_unavailable_503` test was updated to mount a retry-free `HTTPAdapter` for that one case so it continues to exercise the `JuniperCascorServiceUnavailableError` mapping path. All 251 cascor-client tests pass.
 
 ##### Severity
 
@@ -7530,7 +7530,7 @@ S
 
 ##### Verification Status
 
-Verified — `juniper_data_client/client.py:270-317` `create_dataset()` accepts 7 params but server `CreateDatasetRequest` has `tags` and `ttl_seconds` fields not included.
+✅ **Implemented 2026-04-24 (Phase 4B)** — `JuniperDataClient.create_dataset()` and `FakeDataClient.create_dataset()` now accept `tags: Optional[List[str]]` and `ttl_seconds: Optional[int]`. Both are forwarded to the server's `CreateDatasetRequest` (real client) and persisted in `meta` (fake). The fake enforces the server's `ge=1` Pydantic bound on `ttl_seconds` so tests catch misuse. New regression suite `tests/test_create_dataset_tags_ttl.py` covers POST-body shape (via mocked `_request`), fake-client round-trip through `get_dataset_metadata`, validation of zero / negative TTL, list-aliasing safety, and JSON serializability. All 183 data-client tests pass.
 
 ##### Severity
 
@@ -7599,7 +7599,7 @@ RETRY_ALLOWED_METHODS: List[str] = ["HEAD", "GET", "PUT"]
 
 ##### Verification Status
 
-Verified — `juniper_data_client/constants.py:29` has `RETRY_ALLOWED_METHODS = ["HEAD", "GET", "POST", "PATCH", "DELETE"]` including non-idempotent POST and DELETE.
+✅ **Implemented 2026-04-24 (Phase 4B)** — `juniper_data_client/constants.py` now defines `RETRY_ALLOWED_METHODS = ["HEAD", "GET", "PUT"]` per RFC 9110 §9.2.2 (idempotent-only). POST, PATCH, and DELETE were removed to prevent duplicate dataset creation (on POST) and repeated side-effects (on DELETE) when a transient 5xx retried a request that had already been applied server-side. The CHANGELOG documents this as an intentional behavior change; callers that need retry for mutations must layer their own idempotency. New regression suite `tests/test_retry_policy.py` pins the allow-list both ways (idempotent allowed, non-idempotent blocked) and verifies the `Retry` adapter mounted on the session reflects the constants end-to-end.
 
 ##### Severity
 
@@ -9789,7 +9789,7 @@ S (RD-008), XL (RD-015..RD-017)
 | ID    | Severity   | Description                                                                                                 | Status             |
 |-------|------------|-------------------------------------------------------------------------------------------------------------|--------------------|
 | CC-01 | **MEDIUM** | `_recv_loop` catches bare `Exception` — swallows programming errors, pending futures time out               | 🔴 Open            |
-| CC-02 | **MEDIUM** | 503 not in `RETRYABLE_STATUS_CODES`                                                                         | 🔴 Open (XREPO-02) |
+| CC-02 | **MEDIUM** | 503 not in `RETRYABLE_STATUS_CODES`                                                                         | ✅ Implemented 2026-04-24 (XREPO-02, Phase 4B) |
 | CC-03 | **MEDIUM** | No `FakeCascorControlStream`                                                                                | 🔴 Open (XREPO-03) |
 | CC-04 | **LOW**    | `set_params()` method not documented in AGENTS.md Architecture                                              | 🔴 Open            |
 | CC-05 | **LOW**    | CI doesn't test Python 3.14 (classified in pyproject.toml)                                                  | 🔴 Open            |
@@ -14475,7 +14475,7 @@ Development tracks are identified by analyzing:
 | Phase | Items                                            | Scope | Description                                        |
 |-------|--------------------------------------------------|-------|----------------------------------------------------|
 | 4A ✅ | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
-| 4B    | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry    |
+| 4B ✅ | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24) |
 | 4C    | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients        |
 | 4D    | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format |
 | 4E    | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements        |
