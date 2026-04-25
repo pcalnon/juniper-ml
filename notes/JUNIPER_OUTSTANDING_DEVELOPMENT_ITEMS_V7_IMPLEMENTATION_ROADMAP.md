@@ -150,15 +150,15 @@ See [Section 24](#24-severity-classification-and-priority-matrix) through [Secti
 | ID     | Severity   | Repository     | Description                                                   | File                                      | Status (v4)                                                                                                                 |
 |--------|------------|----------------|---------------------------------------------------------------|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | SEC-01 | **HIGH**   | juniper-data   | API key comparison not constant-time — timing side-channel    | `juniper_data/api/security.py:59`         | 🔴 Confirmed — `api_key in self._api_keys` (set membership)                                                                 |
-| SEC-02 | **MEDIUM** | juniper-data   | Rate limiter memory unbounded — DoS vector                    | `juniper_data/api/security.py`            | 🔴 Confirmed — no eviction, TTL, or max-size                                                                                |
-| SEC-03 | **MEDIUM** | juniper-cascor | No per-IP WebSocket connection limiting                       | `src/api/settings.py`                     | 🔴 Confirmed — only `ws_max_connections: 50` (global)                                                                       |
-| SEC-04 | **LOW**    | juniper-data   | Sync dataset generation blocks event loop                     | `juniper_data/api/routes/datasets.py:107` | 🔴 Confirmed                                                                                                                |
-| SEC-05 | **HIGH**   | juniper-canopy | Cross-Site WebSocket Hijacking (CSWSH) — no Origin validation | `/ws/training`, `/ws/control`             | 🔴 Confirmed                                                                                                                |
-| SEC-06 | **MEDIUM** | juniper-canopy | No auth on canopy WS endpoints                                | WebSocket endpoints                       | 🔴 Confirmed                                                                                                                |
-| SEC-07 | **MEDIUM** | juniper-cascor | Unvalidated `params` dict in `TrainingStartRequest`           | `TrainingStartRequest`                    | ⚠️ Partial fix — `_ALLOWED_TRAINING_PARAMS` whitelist filters key names at `training.py:36-52`, values are `Dict[str, Any]` |
+| SEC-02 | **MEDIUM** | juniper-data   | Rate limiter memory unbounded — DoS vector                    | `juniper_data/api/security.py`            | ✅ Implemented (Phase 1D, juniper-data PR #45) — TTLCache eviction shipped in Phase 1A PR #42; PR #45 adds regression tests |
+| SEC-03 | **MEDIUM** | juniper-cascor | No per-IP WebSocket connection limiting                       | `src/api/settings.py`                     | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24)                                                        |
+| SEC-04 | **LOW**    | juniper-data   | Sync dataset generation blocks event loop                     | `juniper_data/api/routes/datasets.py:107` | ✅ Implemented (Phase 1D, juniper-data PR #45) — `asyncio.to_thread` wrap                                                   |
+| SEC-05 | **HIGH**   | juniper-canopy | Cross-Site WebSocket Hijacking (CSWSH) — no Origin validation | `/ws/training`, `/ws/control`             | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24)                                                        |
+| SEC-06 | **MEDIUM** | juniper-canopy | No auth on canopy WS endpoints                                | WebSocket endpoints                       | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24)                                                        |
+| SEC-07 | **MEDIUM** | juniper-cascor | Unvalidated `params` dict in `TrainingStartRequest`           | `TrainingStartRequest`                    | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — typed `TrainingParams` w/ `extra="forbid"`           |
 | SEC-08 | ~~MEDIUM~~ | juniper-cascor | ~~Request body limit bypassed by chunked encoding~~           | `src/api/middleware.py:58-89`             | ✅ Fixed — `RequestBodyLimitMiddleware` now caps chunked bodies (see note below)                                            |
 | SEC-09 | ~~MEDIUM~~ | juniper-cascor | ~~Worker `worker_id` client-supplied without validation~~     | `src/api/websocket/worker_stream.py:159`  | ✅ Fixed — server generates `worker_id`, client value stored as `client_name`                                               |
-| SEC-10 | **LOW**    | juniper-data   | Sentry `send_default_pii=True`                                | Sentry configuration                      | 🔴 Confirmed                                                                                                                |
+| SEC-10 | **LOW**    | juniper-data   | Sentry `send_default_pii=True`                                | Sentry configuration                      | ✅ Implemented (Phase 1D, juniper-data PR #45) — `send_default_pii=False` + `_strip_sensitive_headers` hook                 |
 
 > **SEC-08 partial reopening**: While the middleware caps body size, it uses `await request.body()` (line 86) which reads the *full* body into memory before checking size. A malicious chunked body larger than RAM but smaller than OS socket buffer could cause memory exhaustion. See BUG-CC-15 below.
 
@@ -166,15 +166,15 @@ See [Section 24](#24-severity-classification-and-priority-matrix) through [Secti
 
 | ID     | Severity   | Repository     | Description                                                   | File(s)                                           | Evidence                                                                                                          |
 |--------|------------|----------------|---------------------------------------------------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| SEC-11 | **HIGH**   | juniper-cascor | `pickle.loads` HDF5 snapshot data w/o `RestrictedUnpickler`   | `src/snapshots/snapshot_serializer.py:828`        | `pickle.loads(python_state_bytes)`: arbitrary code exec, crafted snapshots; `# trunk-ignore(bandit/B301)` comment |
-| SEC-12 | **HIGH**   | juniper-canopy | `/ws` generic endpoint: no Origin validation, per-IP limit    | `src/main.py:2109-2127`                           | API key auth, miss `validate_origin()`, `check_per_ip_limit()` implemented by: `/ws/training`, `/ws/control`      |
-| SEC-13 | **HIGH**   | juniper-canopy | Auth secrets exposed: query params via `/api/remote/connect`  | `src/main.py:2392`                                | `authkey` accepted query parameter: logged by web servers, saved browser history/referrer                         |
-| SEC-14 | **MEDIUM** | juniper-canopy | Internal exception messages leaked to clients via `str(e)`    | `src/main.py:996, 2055, 2076, 2371, 2411`         | 5 endpoints return `str(e)` in JSON responses — may expose paths, library versions, connect strings               |
-| SEC-15 | **MEDIUM** | juniper-cascor | Cascor sentry `send_default_pii=True` (same as SEC-10)        | `src/api/observability.py:176`, `src/main.py:129` | Both init sites set `send_default_pii=True` — API keys leak in headers to Sentry                                  |
-| SEC-16 | **MEDIUM** | juniper-data   | `/metrics` Prometheus endpoint bypasses auth middleware       | `juniper_data/api/app.py:121`                     | Mounted ASGI sub-app: `SecurityMiddleware` for router-dispatched requests, not mounts                             |
-| SEC-17 | **MEDIUM** | juniper-cascor | Snapshot `snapshot_id` path param, unchecked traversal chars  | `src/api/lifecycle/manager.py:883-904`,           | No regex rejecting `../`, special characters; glob-then-filter limits exposure, violates defense-in-depth         |
-|        |            |                |                                                               | `src/api/routes/snapshots.py:48-64`               |                                                                                                                   |
-| SEC-18 | **MEDIUM** | cascor-worker  | `_decode_binary_frame` no bounds check, malformed binary data | `juniper_cascor_worker/worker.py:330-343`         | Trusts header-encoded `ndim`, `shape`, `dtype_len`, no bounds check: crafted frame, cause OOM via `np.frombuffer` |
+| SEC-11 | **HIGH**   | juniper-cascor | `pickle.loads` HDF5 snapshot data w/o `RestrictedUnpickler`   | `src/snapshots/snapshot_serializer.py:828`        | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — `JuniperRestrictedUnpickler` allowlist          |
+| SEC-12 | **HIGH**   | juniper-canopy | `/ws` generic endpoint: no Origin validation, per-IP limit    | `src/main.py:2109-2127`                           | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24)                                                  |
+| SEC-13 | **HIGH**   | juniper-canopy | Auth secrets exposed: query params via `/api/remote/connect`  | `src/main.py:2392`                                | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24) — `RemoteConnectRequest` POST body w/ `SecretStr` |
+| SEC-14 | **MEDIUM** | juniper-canopy | Internal exception messages leaked to clients via `str(e)`    | `src/main.py:996, 2055, 2076, 2371, 2411`         | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24) — generic responses w/ `error_id` correlation     |
+| SEC-15 | **MEDIUM** | juniper-cascor | Cascor sentry `send_default_pii=True` (same as SEC-10)        | `src/api/observability.py:176`, `src/main.py:129` | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — both init sites + `_strip_sensitive_headers`    |
+| SEC-16 | **MEDIUM** | juniper-data   | `/metrics` Prometheus endpoint bypasses auth middleware       | `juniper_data/api/app.py:121`                     | ✅ Implemented (Phase 1D, juniper-data PR #45) — `MetricsAuthMiddleware` w/ `metrics_trusted_ips` setting              |
+| SEC-17 | **MEDIUM** | juniper-cascor | Snapshot `snapshot_id` path param, unchecked traversal chars  | `src/api/lifecycle/manager.py:883-904`,           | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — `^[A-Za-z0-9_-]{1,128}$` regex                  |
+|        |            |                |                                                               | `src/api/routes/snapshots.py:48-64`               |                                                                                                                       |
+| SEC-18 | **MEDIUM** | cascor-worker  | `_decode_binary_frame` no bounds check, malformed binary data | `juniper_cascor_worker/worker.py:330-343`         | ✅ Implemented (Phase 1C, juniper-cascor-worker PR #32, merged 2026-04-24) — bounds caps + `BinaryFrameProtocolError`  |
 
 ### Issue Remediations, Section 4
 
@@ -236,7 +236,7 @@ S (< 1 hour)
 
 #### SEC-02: Rate Limiter Memory Unbounded — DoS Vector
 
-**Status**: ✅ Implemented (Phase 1A, 2026-04-24) — closed by the JD-SEC-03 fix in juniper-data PR #42 (cross-referenced item). `RateLimiter._counters` now uses `cachetools.TTLCache(maxsize=10_000, ttl=window_seconds)` with a capacity-warning log at 80%. See `juniper_data/api/security.py` and the JD-SEC-03 entry in §14.
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — TTL eviction shipped with the Phase 1A landing (juniper-data PR #42, merged 2026-04-24); regression tests added in juniper-data PR #45. `RateLimiter._counters` is now a `cachetools.TTLCache(maxsize=RATE_LIMITER_MAX_ENTRIES, ttl=window_seconds)` so abandoned IP buckets are evicted automatically. See `juniper_data/api/security.py:145` and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC02RateLimiterTTL`.
 
 **Current Code**: `juniper_data/api/security.py:116` — `self._counters: dict[str, tuple[int, float]] = defaultdict(lambda: (0, 0.0))` with no eviction.
 **Root Cause**: Each unique client key (IP) creates a permanent entry; attacker can exhaust memory by rotating source IPs.
@@ -337,7 +337,7 @@ S (< 1 hour)
 
 #### SEC-03: No Per-IP WebSocket Connection Limiting (cascor)
 
-**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139, branch `security/phase-1c-track-1-security-hardening`. New setting `JUNIPER_CASCOR_WS_MAX_CONNECTIONS_PER_IP` (default 5); `WebSocketManager` enforces the per-IP cap alongside the global `ws_max_connections`, rejects excess connections with code 1013 ("Per-IP connection limit reached"), and releases the slot on disconnect. Unknown clients share the sentinel `"unknown"` key. See `src/api/settings.py`, `src/services/websocket_manager.py`, and `src/tests/unit/api/test_phase1c_security.py`.
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139 (merged). Per-IP WebSocket connection cap added in `src/api/websocket/manager.py` with new `ws_max_connections_per_ip` setting in `src/api/settings.py`; (N+1)th connection from the same IP is rejected with code 1013. See `src/tests/unit/api/test_phase1c_security.py::TestSEC03PerIPLimit`.
 
 **Current Code**: `src/api/settings.py:27-28` — only `ws_max_connections: 50` (global cap), no per-IP limit.
 **Root Cause**: Cascor's WebSocket settings lack the per-IP limiting that canopy already implements via `max_connections_per_ip`.
@@ -414,7 +414,7 @@ M (1-4 hours)
 
 #### SEC-04: Sync Dataset Generation Blocks Event Loop
 
-**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45, branch `security/phase-1d-track-1-security-hardening`. `juniper_data/api/routes/datasets.py` now invokes `arrays = await asyncio.to_thread(generator_class.generate, params)` so the potentially CPU-bound generator runs off the event loop. Regression tests assert the call lands on a worker thread (not the event-loop thread) and a source-level guard prevents future refactors from dropping the `to_thread` wrap. See `juniper_data/api/routes/datasets.py` and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC04DatasetGenerateOffLoop`.
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45 (open). The synchronous generator call in `juniper_data/api/routes/datasets.py` is now wrapped with `await asyncio.to_thread(generator_class.generate, params)` so dataset generation no longer blocks the FastAPI event loop. See `juniper_data/tests/unit/test_phase1d_security.py::TestSEC04AsyncDatasetGen`.
 
 **Current Code**: `juniper_data/api/routes/datasets.py:107` — `arrays = generator_class.generate(params)` — synchronous call in async handler.
 **Root Cause**: Generator computation (potentially CPU-intensive) runs on the async event loop thread, blocking all concurrent requests.
@@ -599,7 +599,7 @@ M (1-4 hours)
 
 #### SEC-07: Unvalidated `params` Dict Values in TrainingStartRequest
 
-**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. `params` on `TrainingStartRequest` replaced with a typed `TrainingParams` Pydantic model (`extra="forbid"`, per-field range constraints mirroring `TrainingParamUpdateRequest`). The hand-maintained whitelist + silent-drop path is removed; unknown keys now produce HTTP 422. **Breaking contract change** for clients that relied on the prior silent-drop behavior. See `src/api/models.py::TrainingParams` and `src/tests/unit/api/test_training_route_coverage.py`.
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139 (merged). `params: Dict[str, Any]` in `TrainingStartRequest` replaced with a typed `TrainingParams` Pydantic model (`extra="forbid"`, bounded `learning_rate`, `max_epochs`, `patience`, `candidate_pool_size`, `candidate_epochs`, `weight_decay`). Out-of-range values are rejected with 422. See `src/api/models/training.py` and `src/tests/unit/api/test_phase1c_security.py::TestSEC07TrainingParamsValidation`.
 
 **Current Code**: `TrainingStartRequest` — `_ALLOWED_TRAINING_PARAMS` whitelist filters key names but values remain `Dict[str, Any]`.
 **Root Cause**: Value types/ranges are not validated, allowing injection of arbitrary objects.
@@ -658,7 +658,7 @@ M (1-4 hours)
 
 #### SEC-10: Sentry `send_default_pii=True` (juniper-data)
 
-**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45. `configure_sentry` now hard-sets `send_default_pii=False` and registers `_strip_sensitive_headers` as `before_send`, redacting `x-api-key`, `authorization`, and `cookie` (case-insensitive) on every outbound event — defense-in-depth so API keys cannot reach Sentry regardless of operator-facing `JUNIPER_DATA_SENTRY_SEND_PII`. See `juniper_data/api/observability.py` and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC10SentryPII`.
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45 (open). `juniper_data/api/observability.py` now sets `send_default_pii=False` and registers `before_send=_strip_sensitive_headers`, which redacts `x-api-key`, `authorization`, and `cookie` headers (case-insensitive) prior to upload. See `juniper_data/tests/unit/test_phase1d_security.py::TestSEC10SentryPII`.
 
 **Current Code**: Sentry configuration sets `send_default_pii=True`, leaking API keys in request headers to Sentry.
 **Root Cause**: Default PII setting was enabled during development and never disabled.
@@ -727,7 +727,7 @@ S (< 1 hour)
 
 #### SEC-11: `pickle.loads` HDF5 Snapshot Data Without RestrictedUnpickler
 
-**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. New `_SnapshotRestrictedUnpickler` locks `find_class` to `{random, _random, collections, collections.abc, _codecs, copyreg}` plus a small allowlist of builtin container types. RNG-state restore in `CascadeHDF5Serializer` now routes through `_snapshot_restricted_loads`; anything outside the allowlist raises `SnapshotUnpicklingError`. The allowlist intentionally rejects `torch` and `numpy` modules — tensor data uses `save_tensor`/`load_tensor` (not pickle). See `src/snapshots/snapshot_serializer.py` and `src/tests/unit/api/test_phase1c_security.py`.
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139 (merged). `JuniperRestrictedUnpickler` and `restricted_loads` introduced in `src/snapshots/snapshot_serializer.py`; `pickle.loads(python_state_bytes)` replaced and the `# trunk-ignore(bandit/B301)` comment removed. Crafted payloads (e.g. `os.system`) are blocked while torch state-dicts round-trip via the allowlist. See `src/tests/unit/api/test_phase1c_security.py::TestSEC11RestrictedUnpickler`.
 
 **Current Code**: `src/snapshots/snapshot_serializer.py:828` — `pickle.loads(python_state_bytes)` with `# trunk-ignore(bandit/B301)` comment.
 **Root Cause**: Arbitrary code execution via crafted pickle payload in snapshot files.
@@ -1034,7 +1034,7 @@ S (< 1 hour)
 
 #### SEC-15: Cascor Sentry `send_default_pii=True`
 
-**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. Both Sentry init sites (`api/observability.py::configure_sentry` and `main.py`) now set `send_default_pii=False` and register `_strip_sensitive_headers` as `before_send`, scrubbing `X-API-Key`, `Authorization`, and `Cookie`. See `src/api/observability.py` and `src/main.py`.
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139 (merged). Both Sentry init sites (`src/api/observability.py` and `src/main.py`) now pass `send_default_pii=False` and a shared `before_send=_strip_sensitive_headers` hook that redacts `x-api-key`, `authorization`, and `cookie` headers (case-insensitive). Mirrors SEC-10 in juniper-data. See `src/tests/unit/api/test_phase1c_security.py::TestSEC15SentryPII`.
 
 **Current Code**: `src/api/observability.py:176` and `src/main.py:129` — both init sites set `send_default_pii=True`.
 **Root Cause**: Same issue as SEC-10 but in cascor; API keys leak in headers to Sentry.
@@ -1096,7 +1096,7 @@ S (< 1 hour)
 
 #### SEC-16: `/metrics` Prometheus Endpoint Bypasses Auth Middleware
 
-**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45. The `/metrics` mount is now wrapped in a new `MetricsAuthMiddleware` ASGI shim that rejects requests whose client IP is not in `settings.metrics_trusted_ips` (default `["127.0.0.1", "::1"]`, override via `JUNIPER_DATA_METRICS_TRUSTED_IPS`). Untrusted scrapers receive a plain-text 403 before reaching the Prometheus sub-app. See `juniper_data/api/observability.py::MetricsAuthMiddleware`, `juniper_data/api/app.py`, `juniper_data/api/settings.py::metrics_trusted_ips`, and `juniper_data/tests/unit/test_phase1d_security.py::TestSEC16MetricsAuthMiddleware`.
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45 (open). The `/metrics` ASGI mount in `juniper_data/api/app.py` is now wrapped in `MetricsAuthMiddleware`, gated by a new `metrics_trusted_ips` setting (defaults to loopback). Unauthorized hosts receive 403; authorized scrape sources continue to succeed. End-to-end TestClient assertions confirm both paths. See `juniper_data/tests/unit/test_phase1d_security.py::TestSEC16MetricsAuth`.
 
 **Current Code**: `juniper_data/api/app.py:121` — Prometheus metrics endpoint mounted as ASGI sub-app, bypassing `SecurityMiddleware`.
 **Root Cause**: ASGI sub-app mounts are not processed by router-level middleware.
@@ -1169,7 +1169,7 @@ S (< 1 hour)
 
 #### SEC-17: Snapshot `snapshot_id` Path Param Unchecked for Traversal
 
-**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139. New `_validate_snapshot_id` (allowlist `^[A-Za-z0-9_-]{1,128}$`) runs before `GET /snapshots/{snapshot_id}` and `POST /snapshots/{snapshot_id}/restore` reach the lifecycle manager. Invalid IDs return HTTP 400 and are audit-logged. See `src/api/routes/snapshots.py` and `src/tests/unit/api/test_phase1c_security.py`.
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor PR #139 (merged). `snapshot_id` is now validated against `^[A-Za-z0-9_-]{1,128}$` before any filesystem join in `src/api/routes/snapshots.py`; rejects `..`, path separators, null bytes, dotfiles, and oversize values with HTTP 400. See `src/tests/unit/api/test_phase1c_security.py::TestSEC17SnapshotPathTraversal`.
 
 **Current Code**: `src/api/lifecycle/manager.py:883-904`, `src/api/routes/snapshots.py:48-64`.
 **Root Cause**: No regex rejecting `../` or special characters; glob-then-filter limits exposure but violates defense-in-depth.
@@ -1238,7 +1238,7 @@ S (< 1 hour)
 
 #### SEC-18: `_decode_binary_frame` No Bounds Check (cascor-worker)
 
-**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor-worker PR #32, branch `security/phase-1c-track-1-security-hardening`. `_decode_binary_frame` now validates every attacker-controlled header field (`ndim`, per-dim `shape`, `dtype_len`) against explicit bounds — `BINARY_FRAME_MAX_NDIM=10`, `BINARY_FRAME_MAX_TOTAL_ELEMENTS=100_000_000`, `BINARY_FRAME_MAX_DTYPE_LEN=32` — before calling `np.frombuffer`. New `BinaryFrameProtocolError` reports malformed frames without leaking raw header contents. See `juniper_cascor_worker/worker.py` and `tests/test_sec18_binary_frame_bounds.py`.
+**Status**: ✅ Implemented (Phase 1C, 2026-04-24) — juniper-cascor-worker PR #32 (merged). `_decode_binary_frame` in `juniper_cascor_worker/worker.py:335-374` is now bounds-checked against `BINARY_FRAME_MAX_NDIM=10`, `BINARY_FRAME_MAX_TOTAL_ELEMENTS=100_000_000`, and `BINARY_FRAME_MAX_DTYPE_LEN=32`; per-dimension `total_elements` is rejected mid-shape-scan before `np.frombuffer`. Violations raise typed `BinaryFrameProtocolError` instead of leaking raw `IndexError`/`struct.error`. See `tests/test_sec18_binary_frame_bounds.py`.
 
 **Current Code**: `juniper_cascor_worker/worker.py:330-343` — trusts header-encoded `ndim`, `shape`, `dtype_len`.
 **Root Cause**: Crafted frame can cause OOM via `np.frombuffer` with attacker-controlled shape.
@@ -9417,13 +9417,13 @@ M (each), XL (combined)
 |-----------|------------|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | JD-SEC-01 | **HIGH**   | `storage/local_fs.py:52-58` | Path traversal: `dataset_id` concatenated into filesystem paths without `../` sanitization. User-supplied IDs in delete/get endpoints can escape storage directory. |
 | JD-SEC-02 | **MEDIUM** | `api/security.py:59`        | API key comparison not constant-time — timing side-channel (SEC-01 from prior audit, still present)                                                                 |
-| JD-SEC-03 | **MEDIUM** | `api/security.py:116`       | Rate limiter memory unbounded — no eviction/TTL (SEC-02 from prior audit, still present)                                                                            |
+| JD-SEC-03 | **MEDIUM** | `api/security.py:116`       | ✅ Implemented (Phase 1A, juniper-data PR #42, merged 2026-04-24) — TTLCache eviction; SEC-02 regression tests added in PR #45                                       |
 
 #### 14.2 Performance Issues
 
 | ID         | Severity   | File                                | Description                                                                                                                              |
 |------------|------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| JD-PERF-01 | **HIGH**   | `api/routes/datasets.py:107`        | Sync `generator.generate()` blocks async event loop. Needs `asyncio.to_thread()`.                                                        |
+| JD-PERF-01 | **HIGH**   | `api/routes/datasets.py:107`        | ✅ Implemented (Phase 1D, juniper-data PR #45) — `asyncio.to_thread` wrap (shared with SEC-04 / CONC-04).                                 |
 | JD-PERF-02 | **MEDIUM** | `storage/base.py:261,317`           | `filter_datasets`/`get_stats` load ALL metadata on every call — O(n) disk reads.                                                         |
 | JD-PERF-03 | **MEDIUM** | `storage/base.py:169`               | `list_versions` loads all metadata then filters in Python. No DB-level filtering for Postgres.                                           |
 | JD-PERF-04 | **MEDIUM** | `storage/postgres_store.py:125-127` | No connection pooling — `psycopg2.connect()` called per operation. Confirmed: `close()` is a no-op for "connection-per-request pattern". |
@@ -9581,6 +9581,8 @@ S
 #### 14.2-14.3 — Performance and Roadmap Items (juniper-data)
 
 #### JD-PERF-01: Sync `generator.generate()` Blocks Event Loop
+
+**Status**: ✅ Implemented (Phase 1D, 2026-04-25) — juniper-data PR #45 (open). Shared fix with SEC-04 / CONC-04 — `juniper_data/api/routes/datasets.py` now wraps the synchronous generator with `await asyncio.to_thread(generator_class.generate, params)`. See `juniper_data/tests/unit/test_phase1d_security.py::TestSEC04AsyncDatasetGen`.
 
 **Cross-References**: JD-PERF-01 = SEC-04 = CONC-04
 **Approach A**: See SEC-04/CONC-04 remediation (asyncio.to_thread).
