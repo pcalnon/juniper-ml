@@ -2276,6 +2276,8 @@ S (< 1 hour)
 
 #### BUG-CC-16: `_last_state_broadcast_time` Unprotected Cross-Thread R/W
 
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — see CONC-02 for the shared remediation in juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`.
+
 **Current Code**: `src/api/lifecycle/manager.py:151-155` — see CONC-02.
 **Root Cause**: Unprotected shared mutable state between threads.
 **Cross-References**: BUG-CC-16 = CONC-02
@@ -2302,6 +2304,8 @@ S (< 1 hour)
 ---
 
 #### BUG-CC-17: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission
+
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — see CONC-03 for the shared remediation in juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`.
 
 **Current Code**: `src/api/lifecycle/manager.py:453-495` — see CONC-03.
 **Root Cause**: Lock scope too narrow, allowing duplicate emissions.
@@ -2817,6 +2821,8 @@ S (< 1 hour)
 ---
 
 #### BUG-CN-11: `regenerate_dataset` Mutates State Without Lock
+
+**Status**: ✅ Implemented (Phase 3A, 2026-04-26) — see CONC-07 for the shared remediation in juniper-canopy branch `concurrency/phase-3a-track-3-conc-07-bug-cn-11`.
 
 **Current Code**: `src/demo_mode.py:1660-1676` — see CONC-07.
 **Root Cause**: State mutation outside lock; training thread sees partial updates.
@@ -7263,6 +7269,8 @@ M
 
 **Recommended**: Approach A because CI verification catches drift with minimal infrastructure.
 
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-worker PR #34. New `tests/test_protocol_alignment.py` parametrically asserts each worker `MSG_TYPE_*` matches the cascor server's `MessageType` enum bit-for-bit and skips cleanly when cascor source isn't available so worker CI doesn't need a cascor checkout.
+
 ##### Implementation
 
 ```python
@@ -7336,6 +7344,8 @@ S
 - *Guardrails*: Case-insensitive comparison during migration period.
 
 **Recommended**: Approach A because the server should define canonical state names.
+
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-client PR #25. `juniper_cascor_client.constants` now defines canonical `TRAINING_STATE_*` constants (UPPERCASE: `STOPPED`/`STARTED`/`PAUSED`/`COMPLETED`/`FAILED`). `testing/constants.py::STATE_*` realigned with the server FSM; legacy lowercase tokens preserved as `LEGACY_STATE_*` aliases and `set_state()` accepts both during the migration window.
 
 ##### Implementation
 
@@ -7433,6 +7443,8 @@ S
 
 **Recommended**: Approach A because consistent message envelopes are essential for protocol reliability.
 
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-client PR #25. Both `CascorTrainingStream.send_command()` and `CascorControlStream.command()` (correlated and direct paths) now emit `{"type": "command", "command": ..., ...}`. New `WS_MSG_TYPE_COMMAND_OUT` constant; `FakeCascorTrainingStream.send_command` mirrors the new envelope. Closed jointly with XREPO-08 and CC-06.
+
 ##### Implementation
 
 ```python
@@ -7479,6 +7491,8 @@ S
 
 **Approach A**: See XREPO-07 remediation (standardize envelope format).
 **Recommended**: See XREPO-07.
+
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-client PR #25. Closed by the same envelope-unification fix as XREPO-07.
 
 ##### Severity
 
@@ -9842,13 +9856,13 @@ S (RD-008), XL (RD-015..RD-017)
 
 | ID    | Severity   | Description                                                                                          | Status                                                |
 |-------|------------|------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | ⚠️ Partially fixed — `_parse_json()` catches but      |
+| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | ✅ Implemented 2026-04-25 (Phase 4C, juniper-cascor-worker #33) |
 |       |            |                                                                                                      | -- `receive_json()` at `ws_connection.py:184` doesn't |
 | CW-02 | **MEDIUM** | `requirements.lock` includes CUDA packages (~2-4GB image bloat)                                      | 🔴 Open                                               |
 | CW-03 | **LOW**    | No integration tests (marker defined, zero tests use it)                                             | 🔴 Open                                               |
 | CW-04 | **MEDIUM** | Timeout error sends `candidate_uuid: ""` instead of actual UUID                                      | 🔴 Open                                               |
 | CW-05 | **MEDIUM** | Dynamic import `from candidate_unit.candidate_unit import CandidateUnit` — fragile, no version check | 🔴 Open                                               |
-| CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | 🔴 Open (v4 new)                                      |
+| CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | ✅ Implemented 2026-04-25 (Phase 4C, juniper-cascor-worker #33) |
 | CW-07 | **MEDIUM** | No validation of `tensor_manifest` keys against received binary frames — deadlock risk               | 🔴 Open (v4 new)                                      |
 | CW-08 | **MEDIUM** | `task_executor.py:12` top-level `import torch` — first-task latency from deferred torch import       | 🔴 Open (v4 new)                                      |
 
@@ -9933,6 +9947,8 @@ S
 
 **Recommended**: Approach A — documentation update.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-client PR #25. AGENTS.md now documents `CascorControlStream.command()`, `set_params()` (timeout/correlation/overload semantics), and the canonical outbound envelope.
+
 ##### Severity
 
 Low
@@ -9956,6 +9972,8 @@ S
 **Approach A**: See CI-01 remediation (add 3.14 to CI matrix).
 **Recommended**: See CI-01.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-client PR #25. Pre-commit and unit-test matrices in `.github/workflows/ci.yml` extended to include 3.14, matching the pyproject.toml classifier.
+
 ##### Severity
 
 Low
@@ -9977,6 +9995,8 @@ S
 
 **Approach A**: See XREPO-07 remediation.
 **Recommended**: See XREPO-07.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-client PR #25. Closed by the XREPO-07/08 envelope-unification fix.
 
 ##### Severity
 
@@ -10006,6 +10026,8 @@ S
 - *Guardrails*: Add test verifying no resource warnings.
 
 **Recommended**: Approach A because resource leaks accumulate in long-running processes.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-data-client PR #36. `download_artifact_npz` now wraps `np.load` in a `with` block and materialises arrays via `np.asarray` while the NpzFile is still open. New `test_npzfile_resource_lifecycle.py` asserts no `ResourceWarning`, a complete array dict, and no fd-count growth across 50 calls; also a source-level guard against future regressions reintroducing an uncontext-managed `np.load`.
 
 ##### Implementation
 
@@ -10510,6 +10532,8 @@ M
 
 Verified — `ws_connection.py:184` calls `json.loads(msg)` without try/except for `JSONDecodeError`. Malformed server message will crash with untyped exception.
 
+✅ **Implemented 2026-04-25 (Phase 4C)** — juniper-cascor-worker PR #33 wraps `json.loads(msg)` in `WorkerConnection.receive_json()` and raises `WorkerConnectionError` with a 200-char body preview on malformed JSON. Single fix covers both task-message and registration paths because both invoke `receive_json()` (so this also closes CW-06). Test coverage: `tests/test_ws_connection.py::TestReceive::test_receive_json_malformed_raises` and `test_receive_json_empty_string_raises`. Full suite: 142 passed.
+
 ##### Severity
 
 Medium
@@ -10538,6 +10562,8 @@ S
 - *Guardrails*: CI builds and tests both CPU and GPU images.
 
 **Recommended**: Approach A because 2-4GB image bloat impacts deployment time and cost.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. New `requirements-cpu.lock` excludes torch + the entire NVIDIA/CUDA transitive stack (~2-4 GB image bloat). Dockerfile now uses the CPU lock; legacy `requirements.lock` preserved for GPU dev installs.
 
 ##### Severity
 
@@ -10568,6 +10594,8 @@ M
 
 **Recommended**: Approach A because zero integration tests is a significant gap.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. New `tests/test_integration_ws_server.py` stands up an in-process `websockets` server and drives the agent end-to-end through registration, heartbeat, task-assign/result roundtrip, the CW-04 timeout regression, and the CW-07 invalid-manifest rejection. No live cascor server required; tests use the existing `integration` pytest marker.
+
 ##### Severity
 
 Low
@@ -10596,6 +10624,8 @@ L
 - *Guardrails*: Add test verifying UUID in error response.
 
 **Recommended**: Approach A because empty UUID prevents error correlation.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. Timeout-path `task_result` now carries `candidate_data.get("candidate_uuid", "")`. Regression covered in both unit and integration tests.
 
 ##### Implementation
 
@@ -10654,6 +10684,8 @@ S
 
 **Recommended**: Approach A for clean architecture; Approach B as interim solution.
 
+✅ **Implemented 2026-04-26 (Phase 4E, Approach B — interim)** — juniper-cascor-worker PR #34. The dynamic CandidateUnit import is now centralised behind `task_executor._get_candidate_unit_class()` with a clear `ImportError` pointing at `--cascor-path` and the canonical Approach A. Approach A (publishing `juniper-cascor-core` as a PyPI package with shared types) remains the canonical long-term fix and is tracked as **CW-05-FOLLOWUP** below.
+
 ##### Severity
 
 Medium
@@ -10675,6 +10707,8 @@ L
 
 **Approach A**: Same fix as CW-01 applies.
 **Recommended**: See CW-01.
+
+✅ **Implemented 2026-04-25 (Phase 4C)** — closed by the same fix as CW-01 (juniper-cascor-worker PR #33). Both `worker.py:90` and `worker.py:146` (registration ack handling) call `WorkerConnection.receive_json()`, so wrapping `json.loads()` once in `receive_json()` covers both paths.
 
 ##### Severity
 
@@ -10704,6 +10738,8 @@ S
 - *Guardrails*: Timeout at 2x expected frame count duration.
 
 **Recommended**: Approach A because unvalidated manifests cause silent deadlocks.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. New `_validate_tensor_manifest()` rejects non-dict, empty, and required-key-missing manifests up front, emitting a `task_result` failure envelope via `_build_task_failure_message()` instead of leaving the worker blocked on `receive_bytes()` or KeyError-ing later in the executor.
 
 ##### Implementation
 
@@ -10770,6 +10806,8 @@ S
 
 **Recommended**: Approach A because module-level heavy imports slow startup.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. Removed module-level `import torch` from `task_executor.py`; lazy-imported inside `execute_training_task()` and `_get_activation_function()`. Subprocess-isolated regression test asserts importing `task_executor` does NOT pull torch into `sys.modules`.
+
 ##### Implementation
 
 ```python
@@ -10802,6 +10840,56 @@ P2
 ##### Scope
 
 S
+
+---
+
+#### CW-05-FOLLOWUP: Publish `juniper-cascor-core` Shared Package (CW-05 Approach A)
+
+**Status**: **🟡 Open follow-up** to CW-05 (Phase 4E shipped Approach B as the interim).
+
+**Current Code**: `juniper_cascor_worker.task_executor._get_candidate_unit_class()` resolves `CandidateUnit` via a `sys.path`-driven runtime import. The seam is now centralised but still depends on the cascor source tree being on `PYTHONPATH` at install time (typically via `--cascor-path` on the worker CLI).
+
+**Why this matters**: The runtime `sys.path` import:
+
+- couples worker deployments to a separate cascor source checkout that has to be co-located on disk;
+- prevents the worker from being installed cleanly from PyPI alone;
+- masks the cascor↔worker version skew problem — there is no pinned dependency that CI can validate;
+- makes the worker container image fragile when cascor refactors its module layout (renames, package-init changes, etc.);
+- breaks every IDE / type-checker that expects normal package resolution.
+
+**Approach A — Publish `juniper-cascor-core`** *(canonical fix, deferred)*:
+
+- *Implementation*: Extract the worker-relevant types from cascor — at minimum `CandidateUnit` and its transitive imports (`cascor_constants.constants`, `cascor_constants.constants_candidates.*`, `log_config.logger.Logger`, `utils.utils.display_progress`, `utils.activation.ActivationWithDerivative`) — into a new `juniper-cascor-core` PyPI package.
+- *Worker change*: Replace `_get_candidate_unit_class()`'s body with a normal `from juniper_cascor_core.candidate_unit import CandidateUnit` and pin the package in `pyproject.toml`.
+- *Cascor change*: Either depend on `juniper-cascor-core` and import the shared types from there, or re-export them so existing cascor imports keep working during migration.
+- *CI*: Add a cross-version compatibility matrix (worker × cascor-core × cascor) to catch contract drift early.
+- *Strengths*: clean dependency management; pinned versioning; no `sys.path`; deployable to PyPI without a cascor checkout; IDE/type-checker friendly; testable in isolation.
+- *Weaknesses*: requires extracting and stabilising a small public surface from cascor; needs a release/tagging cadence for `juniper-cascor-core`; one additional package to maintain.
+- *Risks*: extracting types may surface hidden coupling inside cascor (e.g. `CandidateUnit` reaching into `CascadeCorrelationNetwork` constants that are not yet stable). A spike to map the closure of imports starting at `CandidateUnit` is the natural first step.
+- *Guardrails*: lock the `juniper-cascor-core` API surface to a small, documented set of exports (start with `CandidateUnit`, `ActivationWithDerivative`, the constants modules, and `Logger`). Use `__all__` to lock public exports. Tag the first release `0.1.0` and require both worker and cascor to declare compatible version ranges in their pyproject metadata.
+
+**Approach B (interim — already shipped Phase 4E)**:
+
+- Centralised the dynamic import behind `_get_candidate_unit_class()` with a clear `ImportError` message pointing at `--cascor-path`. Documented the limitation in `task_executor.py`'s module docstring.
+- This is intentionally a one-line migration target: replacing the `from candidate_unit.candidate_unit import CandidateUnit` line inside `_get_candidate_unit_class()` with the real package import is the only worker-side change required to graduate to Approach A.
+
+**Recommended**: Schedule CW-05-FOLLOWUP as a Phase 5 / Phase 6 item alongside the broader cross-repo packaging work (Track 4 follow-up or Track 5 infrastructure). Approach A is the right long-term fix; the interim landed in Phase 4E to remove the worst smell (an uncentralised dynamic import scattered across the executor) without destabilising the in-flight track.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+L
+
+##### Cross-References
+
+CW-05-FOLLOWUP supersedes CW-05 Approach A. Tracked here so it is not lost when CW-05 is closed.
 
 ---
 
@@ -11278,6 +11366,8 @@ Issues identified through cross-cutting concurrency analysis across all reposito
 
 #### CONC-01: `_per_ip_counts` Check-Then-Act Race in WebSocketManager
 
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — juniper-canopy branch `concurrency/phase-3b-conc-01-per-ip-race`. `WebSocketManager.__init__` now creates a dedicated `self._ip_lock = threading.Lock()`; both `check_per_ip_limit` and `_decrement_ip_count` execute their read-modify-write sequence inside `with self._ip_lock:` so concurrent connect/disconnect from the same IP cannot lose updates or exceed the per-IP cap. `threading.Lock` (rather than the plan's `asyncio.Lock`) was chosen so the protection covers any caller — sync, async, or background thread (e.g. `broadcast_from_thread → disconnect`) — without forcing the public API to become async. Verified by `src/tests/unit/test_websocket_manager_concurrency.py::TestPerIpRace` (3 tests; the lock-scope tests fail on the pre-fix code with `32 ≤ 5` cap-exceedance and a `1 == 32` lost-update before passing after).
+
 **Current Code**: `websocket_manager.py:278-282` — `current = self._per_ip_counts.get(source_ip, 0)` then `self._per_ip_counts[source_ip] = current + 1` without lock.
 **Root Cause**: Non-atomic read-modify-write on shared dict allows two concurrent connections from same IP to both pass the limit check.
 **Cross-References**: Canopy-specific, no other section refs.
@@ -11350,6 +11440,8 @@ S (< 1 hour)
 
 #### CONC-02: `_last_state_broadcast_time` Unprotected Cross-Thread R/W
 
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`. `TrainingLifecycleManager.__init__` now allocates `self._broadcast_lock = threading.Lock()` and initializes `self._last_state_broadcast_time = 0.0` (eliminating the earlier `hasattr` gate that itself contributed to the race). The throttle check in `_broadcast_training_state` is held under `self._broadcast_lock` so the `now - last < interval` test and the `_last_state_broadcast_time = now` write happen atomically — only one caller can win each throttle window. Verified by `src/tests/unit/api/test_lifecycle_concurrency.py::TestBroadcastThrottleRace`.
+
 **Current Code**: `manager.py:151-155` — `now = time.monotonic()` + `if hasattr(self, "_last_state_broadcast_time") and now - self._last_state_broadcast_time < self._state_throttle_interval: return` — no lock around read/write of `_last_state_broadcast_time`.
 **Root Cause**: Multiple threads can pass the throttle check simultaneously and broadcast duplicate state messages.
 **Cross-References**: CONC-02 = BUG-CC-16
@@ -11418,6 +11510,8 @@ S (< 1 hour)
 ---
 
 #### CONC-03: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission
+
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`. `TrainingLifecycleManager._extract_and_record_metrics` now holds `self._metrics_lock` across the entire read-process-write cycle: snapshot of `network.history`, the per-entry `training_monitor.on_epoch_end` calls, and the `_last_emitted_history_len` advance. The idempotent `training_state.update_state` call is left outside the lock to bound the critical section. The pre-fix split-lock allowed two concurrent callers to both observe the same `last_emitted = 0` and emit identical epoch-1..N entries; the new single-scope lock guarantees each epoch is emitted to TrainingMonitor exactly once. Verified by `src/tests/unit/api/test_lifecycle_concurrency.py::TestExtractAndRecordMetricsRace`.
 
 **Current Code**: `manager.py:453-495` — Lock at line 464 released after reading history (line 474); lock re-acquired at line 494 to update high-water-mark. Between these locks, duplicate emissions possible.
 **Root Cause**: Lock scope doesn't cover the full read-process-write cycle, creating a window where two callers read the same `_last_emitted_history_len` and both emit the same metrics.
@@ -11582,6 +11676,8 @@ M (1-4 hours)
 ---
 
 #### CONC-07: `regenerate_dataset` Mutates State Without Lock
+
+**Status**: ✅ Implemented (Phase 3A, 2026-04-26) — juniper-canopy branch `concurrency/phase-3a-track-3-conc-07-bug-cn-11`. `src/demo_mode.py:regenerate_dataset` now wraps `self.network.train_x`, `self.network.train_y`, `self.current_epoch`, `self.current_loss`, `self.current_accuracy`, and `self.metrics_history.clear()` in a single `with self._lock:` block so the training thread can no longer observe a half-updated dataset/epoch pair. Dataset generation itself remains outside the lock to avoid blocking readers across the JuniperData round-trip. Verified by `src/tests/unit/test_demo_mode_concurrency.py::TestRegenerateDatasetLocking` (3 tests; the lock-scope test fails on the pre-fix code with `train_x: False, train_y: False` and passes after).
 
 **Current Code**: `demo_mode.py:1660-1676` — `self.network.train_x`, `train_y`, `current_epoch`, `current_loss`, `current_accuracy` mutated without `_lock` at lines 1668-1672. Lock only used at line 1673 for `metrics_history.clear()`.
 **Root Cause**: State mutation outside lock means the training thread can read partially updated state (e.g., new `train_x` with old `train_y`).
@@ -11907,8 +12003,8 @@ Issues identified through cross-cutting error handling analysis across all repos
 
 | ID        | Severity   | Repository            | Description                                                                                        | File(s)                                                 |
 |-----------|------------|-----------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| ERR-01    | **MEDIUM** | juniper-data-client   | `response.json()` unguarded against JSONDecodeError on all 13 public methods                       | `client.py:215-531`                                     |
-| ERR-02    | **MEDIUM** | juniper-cascor-client | `response.json()` unguarded in `_request()` — ValueError escapes                                   | `client.py:366`                                         |
+| ERR-01    | **MEDIUM** | juniper-data-client   | `response.json()` unguarded against JSONDecodeError on all 13 public methods                       | `client.py:215-531` — ✅ Implemented 2026-04-25 (Phase 4C, juniper-data-client #35) |
+| ERR-02    | **MEDIUM** | juniper-cascor-client | `response.json()` unguarded in `_request()` — ValueError escapes                                   | `client.py:366` — ✅ Implemented 2026-04-25 (Phase 4C, juniper-cascor-client #24)   |
 | ERR-06    | **LOW**    | juniper-cascor        | `raise HTTPException` without `from e` — loses exception context (6 locations)                     | `routes/network.py:31,52`, `training.py:89,109,121,170` |
 | ERR-07    | **LOW**    | juniper-data          | `raise HTTPException` without `from e` — broad except masks programming errors as 400              | `datasets.py:90`                                        |
 | ERR-08    | **LOW**    | juniper-data          | `str(e)` in batch create error response — information disclosure                                   | `datasets.py:342-348`                                   |
@@ -11965,7 +12061,9 @@ class JuniperDataClient:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `juniper_data_client/client.py:215` confirmed `response.json()` without JSONDecodeError handling; pattern repeats across all 13 public methods
+✅ Verified against live codebase — `juniper_data_client/client.py:215` confirmed `response.json()` without JSONDecodeError handling; pattern repeats across all 13 public methods.
+
+✅ **Implemented 2026-04-25 (Phase 4C)** — juniper-data-client PR #35 adds a `_parse_json` staticmethod that wraps every `response.json()` call site (14 total) and raises `JuniperDataClientError` with a 200-char body preview on malformed JSON. Test coverage: `tests/test_malformed_json_response.py` (4 tests). Full suite: 187 passed, 9 skipped.
 
 ##### Severity
 
@@ -12027,7 +12125,9 @@ def _request(self, method: str, path: str, ...) -> Dict[str, Any]:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `juniper_cascor_client/client.py:366` confirmed `response.json()` without JSONDecodeError handling
+✅ Verified against live codebase — `juniper_cascor_client/client.py:366` confirmed `response.json()` without JSONDecodeError handling.
+
+✅ **Implemented 2026-04-25 (Phase 4C)** — juniper-cascor-client PR #24 adds a `_parse_json_body` helper that wraps `response.json()` and raises `JuniperCascorClientError` with a 200-char body preview on malformed JSON. `_handle_response()` already handled `ValueError` for error-side bodies; behavior preserved. Test coverage: `tests/test_client.py::TestMalformedJsonResponse` (2 tests). Full suite: 285 passed.
 
 ##### Severity
 
@@ -14482,8 +14582,8 @@ Development tracks are identified by analyzing:
 
 | Phase | Items                                         | Scope | Description                                          |
 |-------|-----------------------------------------------|-------|------------------------------------------------------|
-| 3A    | CONC-04/BUG-JD-10, CONC-07/BUG-CN-11          | 2×S   | Async event loop blocking, state mutation            |
-| 3B    | CONC-01, CONC-02/BUG-CC-16, CONC-03/BUG-CC-17 | 3×S   | Per-IP race, broadcast throttle, split-lock          |
+| 3A ✅ | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅    | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11) |
+| 3B ✅ | CONC-01 ✅, CONC-02/BUG-CC-16 ✅, CONC-03/BUG-CC-17 ✅ | 3×S   | Per-IP race (Implemented 2026-04-26, juniper-canopy concurrency/phase-3b-conc-01-per-ip-race), broadcast throttle + split-lock (Implemented 2026-04-26, juniper-cascor concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics) |
 | 3C    | BUG-CN-09, BUG-CN-10, CONC-08, CONC-09        | 4×S   | Thread-safe sets, atomic counters, fire-and-forget   |
 | 3D    | CONC-10, CONC-12/BUG-JD-11, BUG-CN-01         | 3×S   | Health monitor race, access count TOCTOU, reset race |
 
@@ -14494,13 +14594,13 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~56 hours
 **Dependencies**: Track 1 security fixes for auth-related items; Track 2 for API contract items
 
-| Phase | Items                                            | Scope | Description                                        |
-|-------|--------------------------------------------------|-------|----------------------------------------------------|
-| 4A ✅ | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
-| 4B ✅ | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24) |
-| 4C    | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients        |
-| 4D    | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format |
-| 4E    | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements        |
+| Phase  | Items                                            | Scope | Description                                                                |
+|--------|--------------------------------------------------|-------|----------------------------------------------------------------------------|
+| 4A ✅  | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
+| 4B ✅  | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24)   |
+| 4C ✅  | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25)       |
+| 4D ✅  | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format (Implemented 2026-04-26, juniper-cascor-client PR #25 + juniper-cascor-worker PR #34) |
+| 4E ✅  | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements (Implemented 2026-04-26, juniper-cascor-client PR #25 + juniper-cascor-worker PR #34 + juniper-data-client PR #36; CW-05 Approach B interim — see follow-up) |
 
 #### Track 5: Infrastructure, Deploy, and CI/CD (juniper-deploy, all repos CI)
 
@@ -14525,14 +14625,14 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~120 hours
 **Dependencies**: Tracks 1-3 should be complete; Track 5 CI improvements
 
-| Phase | Items | Scope | Description |
-| ------- | ------- | ------- | ------------- |
-| 6A | GAP-WS-16, GAP-WS-14, GAP-WS-15 | 3×L | Critical: bandwidth reduction, extendTraces, rAF |
-| 6B | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M | Performance: dict sizes, computation caching |
-| 6C | CAN-CRIT-001, KL-1 | 2×L | Dashboard: decision boundary, scatter plot |
-| 6D | CAN-000..CAN-021 | 22×S-M | Dashboard enhancement backlog |
-| 6E | CAS-002..CAS-009 | 8×M-XL | CasCor algorithm enhancements |
-| 6F | Phase E..H, remaining GAP-WS | 8×M-L | WebSocket migration remaining phases |
+| Phase | Items                                  | Scope  | Description                                      |
+|-------|----------------------------------------|--------|--------------------------------------------------|
+| 6A    | GAP-WS-16, GAP-WS-14, GAP-WS-15        | 3×L    | Critical: bandwidth reduction, extendTraces, rAF |
+| 6B    | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M  | Performance: dict sizes, computation caching     |
+| 6C    | CAN-CRIT-001, KL-1                     | 2×L    | Dashboard: decision boundary, scatter plot       |
+| 6D    | CAN-000..CAN-021                       | 22×S-M | Dashboard enhancement backlog                    |
+| 6E    | CAS-002..CAS-009                       | 8×M-XL | CasCor algorithm enhancements                    |
+| 6F    | Phase E..H, remaining GAP-WS           | 8×M-L  | WebSocket migration remaining phases             |
 
 ### 25.3 Track Dependency Graph
 
