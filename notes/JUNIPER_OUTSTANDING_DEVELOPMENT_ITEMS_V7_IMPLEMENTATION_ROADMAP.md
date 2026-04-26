@@ -9842,13 +9842,13 @@ S (RD-008), XL (RD-015..RD-017)
 
 | ID    | Severity   | Description                                                                                          | Status                                                |
 |-------|------------|------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
-| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | ⚠️ Partially fixed — `_parse_json()` catches but      |
+| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | ✅ Implemented 2026-04-25 (Phase 4C, juniper-cascor-worker #33) |
 |       |            |                                                                                                      | -- `receive_json()` at `ws_connection.py:184` doesn't |
 | CW-02 | **MEDIUM** | `requirements.lock` includes CUDA packages (~2-4GB image bloat)                                      | 🔴 Open                                               |
 | CW-03 | **LOW**    | No integration tests (marker defined, zero tests use it)                                             | 🔴 Open                                               |
 | CW-04 | **MEDIUM** | Timeout error sends `candidate_uuid: ""` instead of actual UUID                                      | 🔴 Open                                               |
 | CW-05 | **MEDIUM** | Dynamic import `from candidate_unit.candidate_unit import CandidateUnit` — fragile, no version check | 🔴 Open                                               |
-| CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | 🔴 Open (v4 new)                                      |
+| CW-06 | **MEDIUM** | `receive_json()` in `ws_connection.py:184` — no `json.JSONDecodeError` catch (registration crash)    | ✅ Implemented 2026-04-25 (Phase 4C, juniper-cascor-worker #33) |
 | CW-07 | **MEDIUM** | No validation of `tensor_manifest` keys against received binary frames — deadlock risk               | 🔴 Open (v4 new)                                      |
 | CW-08 | **MEDIUM** | `task_executor.py:12` top-level `import torch` — first-task latency from deferred torch import       | 🔴 Open (v4 new)                                      |
 
@@ -10510,6 +10510,8 @@ M
 
 Verified — `ws_connection.py:184` calls `json.loads(msg)` without try/except for `JSONDecodeError`. Malformed server message will crash with untyped exception.
 
+✅ **Implemented 2026-04-25 (Phase 4C)** — juniper-cascor-worker PR #33 wraps `json.loads(msg)` in `WorkerConnection.receive_json()` and raises `WorkerConnectionError` with a 200-char body preview on malformed JSON. Single fix covers both task-message and registration paths because both invoke `receive_json()` (so this also closes CW-06). Test coverage: `tests/test_ws_connection.py::TestReceive::test_receive_json_malformed_raises` and `test_receive_json_empty_string_raises`. Full suite: 142 passed.
+
 ##### Severity
 
 Medium
@@ -10675,6 +10677,8 @@ L
 
 **Approach A**: Same fix as CW-01 applies.
 **Recommended**: See CW-01.
+
+✅ **Implemented 2026-04-25 (Phase 4C)** — closed by the same fix as CW-01 (juniper-cascor-worker PR #33). Both `worker.py:90` and `worker.py:146` (registration ack handling) call `WorkerConnection.receive_json()`, so wrapping `json.loads()` once in `receive_json()` covers both paths.
 
 ##### Severity
 
@@ -11907,8 +11911,8 @@ Issues identified through cross-cutting error handling analysis across all repos
 
 | ID        | Severity   | Repository            | Description                                                                                        | File(s)                                                 |
 |-----------|------------|-----------------------|----------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| ERR-01    | **MEDIUM** | juniper-data-client   | `response.json()` unguarded against JSONDecodeError on all 13 public methods                       | `client.py:215-531`                                     |
-| ERR-02    | **MEDIUM** | juniper-cascor-client | `response.json()` unguarded in `_request()` — ValueError escapes                                   | `client.py:366`                                         |
+| ERR-01    | **MEDIUM** | juniper-data-client   | `response.json()` unguarded against JSONDecodeError on all 13 public methods                       | `client.py:215-531` — ✅ Implemented 2026-04-25 (Phase 4C, juniper-data-client #35) |
+| ERR-02    | **MEDIUM** | juniper-cascor-client | `response.json()` unguarded in `_request()` — ValueError escapes                                   | `client.py:366` — ✅ Implemented 2026-04-25 (Phase 4C, juniper-cascor-client #24)   |
 | ERR-06    | **LOW**    | juniper-cascor        | `raise HTTPException` without `from e` — loses exception context (6 locations)                     | `routes/network.py:31,52`, `training.py:89,109,121,170` |
 | ERR-07    | **LOW**    | juniper-data          | `raise HTTPException` without `from e` — broad except masks programming errors as 400              | `datasets.py:90`                                        |
 | ERR-08    | **LOW**    | juniper-data          | `str(e)` in batch create error response — information disclosure                                   | `datasets.py:342-348`                                   |
@@ -11965,7 +11969,9 @@ class JuniperDataClient:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `juniper_data_client/client.py:215` confirmed `response.json()` without JSONDecodeError handling; pattern repeats across all 13 public methods
+✅ Verified against live codebase — `juniper_data_client/client.py:215` confirmed `response.json()` without JSONDecodeError handling; pattern repeats across all 13 public methods.
+
+✅ **Implemented 2026-04-25 (Phase 4C)** — juniper-data-client PR #35 adds a `_parse_json` staticmethod that wraps every `response.json()` call site (14 total) and raises `JuniperDataClientError` with a 200-char body preview on malformed JSON. Test coverage: `tests/test_malformed_json_response.py` (4 tests). Full suite: 187 passed, 9 skipped.
 
 ##### Severity
 
@@ -12027,7 +12033,9 @@ def _request(self, method: str, path: str, ...) -> Dict[str, Any]:
 
 ##### Verification Status
 
-✅ Verified against live codebase — `juniper_cascor_client/client.py:366` confirmed `response.json()` without JSONDecodeError handling
+✅ Verified against live codebase — `juniper_cascor_client/client.py:366` confirmed `response.json()` without JSONDecodeError handling.
+
+✅ **Implemented 2026-04-25 (Phase 4C)** — juniper-cascor-client PR #24 adds a `_parse_json_body` helper that wraps `response.json()` and raises `JuniperCascorClientError` with a 200-char body preview on malformed JSON. `_handle_response()` already handled `ValueError` for error-side bodies; behavior preserved. Test coverage: `tests/test_client.py::TestMalformedJsonResponse` (2 tests). Full suite: 285 passed.
 
 ##### Severity
 
@@ -14498,7 +14506,7 @@ Development tracks are identified by analyzing:
 |-------|--------------------------------------------------|-------|----------------------------------------------------|
 | 4A ✅ | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
 | 4B ✅ | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24) |
-| 4C    | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients        |
+| 4C ✅ | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25) |
 | 4D    | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format |
 | 4E    | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements        |
 
