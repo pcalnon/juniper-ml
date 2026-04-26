@@ -7269,6 +7269,8 @@ M
 
 **Recommended**: Approach A because CI verification catches drift with minimal infrastructure.
 
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-worker PR #34. New `tests/test_protocol_alignment.py` parametrically asserts each worker `MSG_TYPE_*` matches the cascor server's `MessageType` enum bit-for-bit and skips cleanly when cascor source isn't available so worker CI doesn't need a cascor checkout.
+
 ##### Implementation
 
 ```python
@@ -7342,6 +7344,8 @@ S
 - *Guardrails*: Case-insensitive comparison during migration period.
 
 **Recommended**: Approach A because the server should define canonical state names.
+
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-client PR #25. `juniper_cascor_client.constants` now defines canonical `TRAINING_STATE_*` constants (UPPERCASE: `STOPPED`/`STARTED`/`PAUSED`/`COMPLETED`/`FAILED`). `testing/constants.py::STATE_*` realigned with the server FSM; legacy lowercase tokens preserved as `LEGACY_STATE_*` aliases and `set_state()` accepts both during the migration window.
 
 ##### Implementation
 
@@ -7439,6 +7443,8 @@ S
 
 **Recommended**: Approach A because consistent message envelopes are essential for protocol reliability.
 
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-client PR #25. Both `CascorTrainingStream.send_command()` and `CascorControlStream.command()` (correlated and direct paths) now emit `{"type": "command", "command": ..., ...}`. New `WS_MSG_TYPE_COMMAND_OUT` constant; `FakeCascorTrainingStream.send_command` mirrors the new envelope. Closed jointly with XREPO-08 and CC-06.
+
 ##### Implementation
 
 ```python
@@ -7485,6 +7491,8 @@ S
 
 **Approach A**: See XREPO-07 remediation (standardize envelope format).
 **Recommended**: See XREPO-07.
+
+✅ **Implemented 2026-04-26 (Phase 4D)** — juniper-cascor-client PR #25. Closed by the same envelope-unification fix as XREPO-07.
 
 ##### Severity
 
@@ -9939,6 +9947,8 @@ S
 
 **Recommended**: Approach A — documentation update.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-client PR #25. AGENTS.md now documents `CascorControlStream.command()`, `set_params()` (timeout/correlation/overload semantics), and the canonical outbound envelope.
+
 ##### Severity
 
 Low
@@ -9962,6 +9972,8 @@ S
 **Approach A**: See CI-01 remediation (add 3.14 to CI matrix).
 **Recommended**: See CI-01.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-client PR #25. Pre-commit and unit-test matrices in `.github/workflows/ci.yml` extended to include 3.14, matching the pyproject.toml classifier.
+
 ##### Severity
 
 Low
@@ -9983,6 +9995,8 @@ S
 
 **Approach A**: See XREPO-07 remediation.
 **Recommended**: See XREPO-07.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-client PR #25. Closed by the XREPO-07/08 envelope-unification fix.
 
 ##### Severity
 
@@ -10012,6 +10026,8 @@ S
 - *Guardrails*: Add test verifying no resource warnings.
 
 **Recommended**: Approach A because resource leaks accumulate in long-running processes.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-data-client PR #36. `download_artifact_npz` now wraps `np.load` in a `with` block and materialises arrays via `np.asarray` while the NpzFile is still open. New `test_npzfile_resource_lifecycle.py` asserts no `ResourceWarning`, a complete array dict, and no fd-count growth across 50 calls; also a source-level guard against future regressions reintroducing an uncontext-managed `np.load`.
 
 ##### Implementation
 
@@ -10547,6 +10563,8 @@ S
 
 **Recommended**: Approach A because 2-4GB image bloat impacts deployment time and cost.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. New `requirements-cpu.lock` excludes torch + the entire NVIDIA/CUDA transitive stack (~2-4 GB image bloat). Dockerfile now uses the CPU lock; legacy `requirements.lock` preserved for GPU dev installs.
+
 ##### Severity
 
 Medium
@@ -10576,6 +10594,8 @@ M
 
 **Recommended**: Approach A because zero integration tests is a significant gap.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. New `tests/test_integration_ws_server.py` stands up an in-process `websockets` server and drives the agent end-to-end through registration, heartbeat, task-assign/result roundtrip, the CW-04 timeout regression, and the CW-07 invalid-manifest rejection. No live cascor server required; tests use the existing `integration` pytest marker.
+
 ##### Severity
 
 Low
@@ -10604,6 +10624,8 @@ L
 - *Guardrails*: Add test verifying UUID in error response.
 
 **Recommended**: Approach A because empty UUID prevents error correlation.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. Timeout-path `task_result` now carries `candidate_data.get("candidate_uuid", "")`. Regression covered in both unit and integration tests.
 
 ##### Implementation
 
@@ -10662,6 +10684,8 @@ S
 
 **Recommended**: Approach A for clean architecture; Approach B as interim solution.
 
+✅ **Implemented 2026-04-26 (Phase 4E, Approach B — interim)** — juniper-cascor-worker PR #34. The dynamic CandidateUnit import is now centralised behind `task_executor._get_candidate_unit_class()` with a clear `ImportError` pointing at `--cascor-path` and the canonical Approach A. Approach A (publishing `juniper-cascor-core` as a PyPI package with shared types) remains the canonical long-term fix and is tracked as **CW-05-FOLLOWUP** below.
+
 ##### Severity
 
 Medium
@@ -10714,6 +10738,8 @@ S
 - *Guardrails*: Timeout at 2x expected frame count duration.
 
 **Recommended**: Approach A because unvalidated manifests cause silent deadlocks.
+
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. New `_validate_tensor_manifest()` rejects non-dict, empty, and required-key-missing manifests up front, emitting a `task_result` failure envelope via `_build_task_failure_message()` instead of leaving the worker blocked on `receive_bytes()` or KeyError-ing later in the executor.
 
 ##### Implementation
 
@@ -10780,6 +10806,8 @@ S
 
 **Recommended**: Approach A because module-level heavy imports slow startup.
 
+✅ **Implemented 2026-04-26 (Phase 4E)** — juniper-cascor-worker PR #34. Removed module-level `import torch` from `task_executor.py`; lazy-imported inside `execute_training_task()` and `_get_activation_function()`. Subprocess-isolated regression test asserts importing `task_executor` does NOT pull torch into `sys.modules`.
+
 ##### Implementation
 
 ```python
@@ -10812,6 +10840,56 @@ P2
 ##### Scope
 
 S
+
+---
+
+#### CW-05-FOLLOWUP: Publish `juniper-cascor-core` Shared Package (CW-05 Approach A)
+
+**Status**: **🟡 Open follow-up** to CW-05 (Phase 4E shipped Approach B as the interim).
+
+**Current Code**: `juniper_cascor_worker.task_executor._get_candidate_unit_class()` resolves `CandidateUnit` via a `sys.path`-driven runtime import. The seam is now centralised but still depends on the cascor source tree being on `PYTHONPATH` at install time (typically via `--cascor-path` on the worker CLI).
+
+**Why this matters**: The runtime `sys.path` import:
+
+- couples worker deployments to a separate cascor source checkout that has to be co-located on disk;
+- prevents the worker from being installed cleanly from PyPI alone;
+- masks the cascor↔worker version skew problem — there is no pinned dependency that CI can validate;
+- makes the worker container image fragile when cascor refactors its module layout (renames, package-init changes, etc.);
+- breaks every IDE / type-checker that expects normal package resolution.
+
+**Approach A — Publish `juniper-cascor-core`** *(canonical fix, deferred)*:
+
+- *Implementation*: Extract the worker-relevant types from cascor — at minimum `CandidateUnit` and its transitive imports (`cascor_constants.constants`, `cascor_constants.constants_candidates.*`, `log_config.logger.Logger`, `utils.utils.display_progress`, `utils.activation.ActivationWithDerivative`) — into a new `juniper-cascor-core` PyPI package.
+- *Worker change*: Replace `_get_candidate_unit_class()`'s body with a normal `from juniper_cascor_core.candidate_unit import CandidateUnit` and pin the package in `pyproject.toml`.
+- *Cascor change*: Either depend on `juniper-cascor-core` and import the shared types from there, or re-export them so existing cascor imports keep working during migration.
+- *CI*: Add a cross-version compatibility matrix (worker × cascor-core × cascor) to catch contract drift early.
+- *Strengths*: clean dependency management; pinned versioning; no `sys.path`; deployable to PyPI without a cascor checkout; IDE/type-checker friendly; testable in isolation.
+- *Weaknesses*: requires extracting and stabilising a small public surface from cascor; needs a release/tagging cadence for `juniper-cascor-core`; one additional package to maintain.
+- *Risks*: extracting types may surface hidden coupling inside cascor (e.g. `CandidateUnit` reaching into `CascadeCorrelationNetwork` constants that are not yet stable). A spike to map the closure of imports starting at `CandidateUnit` is the natural first step.
+- *Guardrails*: lock the `juniper-cascor-core` API surface to a small, documented set of exports (start with `CandidateUnit`, `ActivationWithDerivative`, the constants modules, and `Logger`). Use `__all__` to lock public exports. Tag the first release `0.1.0` and require both worker and cascor to declare compatible version ranges in their pyproject metadata.
+
+**Approach B (interim — already shipped Phase 4E)**:
+
+- Centralised the dynamic import behind `_get_candidate_unit_class()` with a clear `ImportError` message pointing at `--cascor-path`. Documented the limitation in `task_executor.py`'s module docstring.
+- This is intentionally a one-line migration target: replacing the `from candidate_unit.candidate_unit import CandidateUnit` line inside `_get_candidate_unit_class()` with the real package import is the only worker-side change required to graduate to Approach A.
+
+**Recommended**: Schedule CW-05-FOLLOWUP as a Phase 5 / Phase 6 item alongside the broader cross-repo packaging work (Track 4 follow-up or Track 5 infrastructure). Approach A is the right long-term fix; the interim landed in Phase 4E to remove the worst smell (an uncentralised dynamic import scattered across the executor) without destabilising the in-flight track.
+
+##### Severity
+
+Medium
+
+##### Priority
+
+P2
+
+##### Scope
+
+L
+
+##### Cross-References
+
+CW-05-FOLLOWUP supersedes CW-05 Approach A. Tracked here so it is not lost when CW-05 is closed.
 
 ---
 
@@ -14521,8 +14599,8 @@ Development tracks are identified by analyzing:
 | 4A ✅  | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
 | 4B ✅  | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24)   |
 | 4C ✅  | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25)       |
-| 4D     | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format                         |
-| 4E     | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements                                |
+| 4D ✅  | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format (Implemented 2026-04-26, juniper-cascor-client PR #25 + juniper-cascor-worker PR #34) |
+| 4E ✅  | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements (Implemented 2026-04-26, juniper-cascor-client PR #25 + juniper-cascor-worker PR #34 + juniper-data-client PR #36; CW-05 Approach B interim — see follow-up) |
 
 #### Track 5: Infrastructure, Deploy, and CI/CD (juniper-deploy, all repos CI)
 
