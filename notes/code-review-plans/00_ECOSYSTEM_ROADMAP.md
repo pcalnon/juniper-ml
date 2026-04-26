@@ -5,54 +5,46 @@
 **Author**: Paul Calnon (lead developer)
 **Created**: 2026-04-24
 **Last revised**: 2026-04-24 (post-audit pass)
-**Status**: Draft v2 — planning + per-plan audit corrections applied;
-reviews not yet executed
+**Status**: Draft v2 — planning + per-plan audit corrections applied; reviews not yet executed
 
 ---
 
 ## 1. Purpose
 
-This roadmap sequences and coordinates six per-app code review plans (one per
-target application). Each per-app plan is the authoritative work artifact for
-that application; this document exists to:
+This roadmap sequences and coordinates six per-app code review plans (one per target application).
+Each per-app plan is the authoritative work artifact for that application; this document exists to:
 
-- Sequence the per-app reviews in dependency order so upstream contracts are
-  validated before downstream consumers are reviewed.
-- Capture cross-cutting concerns (data contract, ports, env vars, shared
-  observability libraries) that no single per-app review owns.
-- Define the ecosystem-wide validation gates that must pass before this review
-  cycle is considered complete.
-- Establish the issue-classification framework, severity rubric, and
-  remediation-evidence requirements that all per-app plans inherit.
+- Sequence the per-app reviews in dependency order so upstream contracts are validated before downstream consumers are reviewed.
+- Capture cross-cutting concerns (data contract, ports, env vars, shared observability libraries) that no single per-app review owns.
+- Define the ecosystem-wide validation gates that must pass before this review cycle is considered complete.
+- Establish the issue-classification framework, severity rubric, and remediation-evidence requirements that all per-app plans inherit.
 
-This document does **not** duplicate per-app inventories or per-app remediation
-plans — those live in the per-app plan files
-(`<app>/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md`).
+This document does **not** duplicate per-app inventories or per-app remediation plans — those live in the per-app plan files (`<app>/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md`).
 
 ---
 
 ## 2. Per-app plan index
 
-| # | Application | Plan path (target) | Staging copy in this worktree |
-|---|-------------|-------------------|-------------------------------|
-| 1 | juniper-data | `juniper-data/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md` | `01_juniper-data.md` |
-| 2 | juniper-data-client | `juniper-data-client/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md` | `02_juniper-data-client.md` |
-| 3 | juniper-cascor | `juniper-cascor/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md` | `03_juniper-cascor.md` |
+| # | Application           | Plan path (target)                                                       | Staging copy in this worktree |
+|---|-----------------------|--------------------------------------------------------------------------|-------------------------------|
+| 1 | juniper-data          | `juniper-data/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md`          | `01_juniper-data.md`          |
+| 2 | juniper-data-client   | `juniper-data-client/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md`   | `02_juniper-data-client.md`   |
+| 3 | juniper-cascor        | `juniper-cascor/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md`        | `03_juniper-cascor.md`        |
 | 4 | juniper-cascor-worker | `juniper-cascor-worker/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md` | `04_juniper-cascor-worker.md` |
 | 5 | juniper-cascor-client | `juniper-cascor-client/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md` | `05_juniper-cascor-client.md` |
-| 6 | juniper-canopy | `juniper-canopy/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md` | `06_juniper-canopy.md` |
+| 6 | juniper-canopy        | `juniper-canopy/notes/CODE_REVIEW_PLAN_METRICS-AND-MONITORING.md`        | `06_juniper-canopy.md`        |
 
 The ordering is deliberate (see §4).
 
 ### 2.1 Reference catalogs (added 2026-04-24)
 
-| File | Purpose |
-|------|---------|
-| `07_ENV_VAR_INVENTORY.md` | All 70 observability-related env vars across the 6 apps, grouped and flagged. Feeds §5.3 and §5.4. |
-| `08_METRIC_CATALOG.md` | All 38 Prometheus metrics defined across the 3 FastAPI services, with emission status. Feeds §5.7, §5.9, §5.10. |
+| File                      | Purpose                                                                                                         |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `07_ENV_VAR_INVENTORY.md` | All 70 observability-related env vars across the 6 apps, grouped and flagged. Feeds §5.3 and §5.4.              |
+| `08_METRIC_CATALOG.md`    | All 38 Prometheus metrics defined across the 3 FastAPI services, with emission status. Feeds §5.7, §5.9, §5.10. |
 
-These two catalogs are **living documents**. Re-generate before each
-review pass if the code has moved.
+These two catalogs are **living documents**.
+Re-generate before each review pass if the code has moved.
 
 ---
 
@@ -63,49 +55,43 @@ review pass if the code has moved.
 Every finding in every per-app review must be assigned exactly one of the
 following types:
 
-| Type | Definition |
-|------|------------|
-| **Architectural** | Structural problems crossing module/process/service boundaries: wrong layering, leaky abstractions, race-prone designs, missing isolation. |
-| **Logical** | Bug in business logic — code does the wrong thing for some input or state. |
-| **Syntactical** | Code does not parse or violates language rules; usually surfaced by compiler/parser/linter. |
-| **Code Smell** | Maintainability problem: dead code, duplication, deep nesting, over-broad except, magic numbers, large functions. |
-| **Departure from Requirements** | Behavior diverges from a documented requirement (CLAUDE.md, README, OpenAPI contract, parent CLAUDE.md). |
+| Type                              | Definition                                                                                                                                                    |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Architectural**                 | Structural problems crossing module/process/service boundaries: wrong layering, leaky abstractions, race-prone designs, missing isolation.                    |
+| **Logical**                       | Bug in business logic — code does the wrong thing for some input or state.                                                                                    |
+| **Syntactical**                   | Code does not parse or violates language rules; usually surfaced by compiler/parser/linter.                                                                   |
+| **Code Smell**                    | Maintainability problem: dead code, duplication, deep nesting, over-broad except, magic numbers, large functions.                                             |
+| **Departure from Requirements**   | Behavior diverges from a documented requirement (CLAUDE.md, README, OpenAPI contract, parent CLAUDE.md).                                                      |
 | **Deviation from Best Practices** | Project- or community-standard violations not otherwise enumerated (missing histogram buckets, label-cardinality risk, fire-and-forget IO, missing timeouts). |
-| **Formatting & Linting** | Pre-commit / linter / formatter violations only; no semantic impact. |
+| **Formatting & Linting**          | Pre-commit / linter / formatter violations only; no semantic impact.                                                                                          |
 
 Findings that span multiple types should be split into multiple findings.
 
 ### 3.2 Issue characteristics — required for every finding
 
-| Characteristic | Scale / definition |
-|----------------|---------------------|
-| **Risk profile** | What can go wrong if left unfixed (one of: data loss, observability blackout, performance degradation, security exposure, user-visible regression, cleanup-only). |
-| **Severity** | `Critical` (release-blocker), `High` (should not ship), `Medium` (fix before next minor), `Low` (cleanup), `Informational` (note only). |
-| **Likelihood** | `Certain` (will occur on every run), `Likely` (will occur under normal load), `Possible` (will occur under specific conditions), `Unlikely` (requires unusual state). |
-| **Scope** | `In-process`, `Cross-process`, `Cross-service`, `Cross-repo`, `External-facing`. |
-| **Remediation effort** | `Trivial` (<1 hr), `Small` (<1 day), `Medium` (1–3 days), `Large` (>3 days, may need design). |
+| Characteristic         | Scale / definition                                                                                                                                                    |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Risk profile**       | What can go wrong if left unfixed (one of: data loss, observability blackout, performance degradation, security exposure, user-visible regression, cleanup-only).     |
+| **Severity**           | `Critical` (release-blocker), `High` (should not ship), `Medium` (fix before next minor), `Low` (cleanup), `Informational` (note only).                               |
+| **Likelihood**         | `Certain` (will occur on every run), `Likely` (will occur under normal load), `Possible` (will occur under specific conditions), `Unlikely` (requires unusual state). |
+| **Scope**              | `In-process`, `Cross-process`, `Cross-service`, `Cross-repo`, `External-facing`.                                                                                      |
+| **Remediation effort** | `Trivial` (<1 hr), `Small` (<1 day), `Medium` (1–3 days), `Large` (>3 days, may need design).                                                                         |
 
-A combined **Priority** label may be derived as `Severity × Likelihood`, but
-the five raw characteristics must be recorded individually so future readers
-can re-prioritize.
+A combined **Priority** label may be derived as `Severity × Likelihood`, but the five raw characteristics must be recorded individually so future readers can re-prioritize.
 
 ### 3.3 Remediation framework
 
 For every finding ranked Medium or higher, the per-app plan must capture:
 
-1. **Root cause analysis** — what underlying decision/omission produced the
-   finding; not the symptom.
-2. **Remediation options** — at least one, ideally two-to-three for
-   Critical/High findings, each with:
+1. **Root cause analysis** — what underlying decision/omission produced the finding; not the symptom.
+2. **Remediation options** — at least one, ideally two-to-three for Critical/High findings, each with:
    - Description of code/config change
    - Strengths
    - Weaknesses
    - Risks introduced by the fix itself
    - Guardrails (tests, monitoring, feature flags) that must accompany the fix
-3. **Recommended approach** — explicit recommendation with the reasoning that
-   weighs the trade-offs.
-4. **Validation plan** — how the fix will be proven correct (specific tests
-   to add or run, manual verification steps, metrics to observe post-deploy).
+3. **Recommended approach** — explicit recommendation with the reasoning that weighs the trade-offs.
+4. **Validation plan** — how the fix will be proven correct (specific tests to add or run, manual verification steps, metrics to observe post-deploy).
 
 Low/Informational findings may be captured as a single line.
 
@@ -113,11 +99,9 @@ Low/Informational findings may be captured as a single line.
 
 ## 4. Sequencing & rationale
 
-The per-app reviews are sequenced in **dependency-graph order** so that
-upstream contract drift is identified before downstream consumers are
-re-validated against it.
+The per-app reviews are sequenced in **dependency-graph order** so that upstream contract drift is identified before downstream consumers are re-validated against it.
 
-```
+```bash
 Phase A (Foundation contracts)
     1. juniper-data            — observability surface of upstream data service
     2. juniper-data-client     — client-side instrumentation for that contract
@@ -131,46 +115,37 @@ Phase D (Cross-cutting)
     7. Ecosystem-level validation (this document, §6)
 ```
 
-Reviewers may parallelize within a phase but should not enter Phase B before
-Phase A reviews are complete enough to lock the contracts in writing.
+Reviewers may parallelize within a phase but should not enter Phase B before Phase A reviews are complete enough to lock the contracts in writing.
 
 ---
 
 ## 5. Cross-cutting concerns (owned by this roadmap, not any single app)
 
-The following are explicitly out-of-scope for individual per-app reviews and
-must be treated here so no concern falls through the cracks.
+The following are explicitly out-of-scope for individual per-app reviews and must be treated here so no concern falls through the cracks.
 
 ### 5.1 Service ports & endpoint contract
 
 Source of truth: `Juniper/CLAUDE.md` "Service Ports" table.
 
-| Service | Host port | Container port | Health endpoint |
-|---------|-----------|----------------|-----------------|
-| juniper-data | 8100 | 8100 | `/v1/health` |
-| juniper-cascor | 8201 | 8200 | `/v1/health` |
-| juniper-canopy | 8050 | 8050 | `/v1/health` |
+| Service        | Host port | Container port | Health endpoint |
+|----------------|-----------|----------------|-----------------|
+| juniper-data   | 8100      | 8100           | `/v1/health`    |
+| juniper-cascor | 8201      | 8200           | `/v1/health`    |
+| juniper-canopy | 8050      | 8050           | `/v1/health`    |
 
-**Cross-cutting check**: every per-app plan must verify port and health-path
-references match this table; mismatches are flagged as
-`Departure from Requirements`.
+**Cross-cutting check**: every per-app plan must verify port and health-path references match this table; mismatches are flagged as `Departure from Requirements`.
 
 ### 5.2 Standardized observability libraries
 
-The surveys revealed that the three FastAPI services (juniper-data,
-juniper-cascor, juniper-canopy) each implement their own `observability.py`
-with overlapping but **not identical** Prometheus-middleware shapes (label
-sets, histogram buckets, metric naming conventions). The cross-cutting
-concern is whether to:
+The surveys revealed that the three FastAPI services (juniper-data, juniper-cascor, juniper-canopy) each implement their own `observability.py` with overlapping but **not identical** Prometheus-middleware shapes (label sets, histogram buckets, metric naming conventions).
+The cross-cutting concern is whether to:
 
 - **Option A**: Continue duplicated implementations (current state).
 - **Option B**: Extract a shared `juniper-observability` micro-library.
 - **Option C**: Standardize via convention (documented contract in
   `juniper-ml/docs/REFERENCE.md`) without code sharing.
 
-This roadmap does not pre-decide; the per-app plans should each surface
-naming/bucket/cardinality drift as Findings, and the post-review synthesis
-(§7) chooses among A/B/C with full evidence.
+This roadmap does not pre-decide; the per-app plans should each surface naming/bucket/cardinality drift as Findings, and the post-review synthesis (§7) chooses among A/B/C with full evidence.
 
 ### 5.3 Environment-variable conventions
 
@@ -293,6 +268,21 @@ the services are doing.
 **Provisional recommendation**: Option A for the release; Option B if
 scope-constrained.
 
+**Decision (2026-04-24)**: **Hybrid Option A′** per
+`09_OQ06_INVESTIGATION.md`. Of the 26 unused cascor + canopy metrics:
+
+- **20 wire-now** (~10 hr engineering across 5 PRs)
+- **3 defer-with-ticket** (cascor `training_accuracy_ratio`,
+  `hidden_units_total`, `state_throttle_coalesced_total` — each
+  needs design work outside observability scope)
+- **2 delete-now** (cascor inference metrics — endpoint they describe
+  does not exist)
+
+Pure Option A was rejected: it required ~60 hr including shipping an
+inference HTTP endpoint that is not on the release roadmap. Pure
+Option B was rejected: 20 metrics have trivial wire-up and removing
+them throws away design intent.
+
 ### 5.10 Metric-name prefix drift (added 2026-04-24)
 
 juniper-cascor uses two prefix styles in the same module:
@@ -412,6 +402,8 @@ Items deferred to the user before the cycle proceeds:
 6. **Defined-but-unused metrics** (§5.9, added by extraction):
    Option A (wire all emission sites), B (delete declarations and ship
    "HTTP + build only"), or C (startup warning to disclose)?
+   **ANSWERED 2026-04-24** — Hybrid Option A′ recommended; see
+   `09_OQ06_INVESTIGATION.md`. Awaiting your accept/reject.
 7. **Metric-name prefix drift** (§5.10, added by extraction):
    rename cascor's 15 `cascor_ws_*` metrics to `juniper_cascor_ws_*`
    or document the split as permanent?
