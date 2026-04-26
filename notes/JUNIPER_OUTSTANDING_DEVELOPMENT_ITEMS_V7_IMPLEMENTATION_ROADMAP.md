@@ -2818,6 +2818,8 @@ S (< 1 hour)
 
 #### BUG-CN-11: `regenerate_dataset` Mutates State Without Lock
 
+**Status**: ✅ Implemented (Phase 3A, 2026-04-26) — see CONC-07 for the shared remediation in juniper-canopy branch `concurrency/phase-3a-track-3-conc-07-bug-cn-11`.
+
 **Current Code**: `src/demo_mode.py:1660-1676` — see CONC-07.
 **Root Cause**: State mutation outside lock; training thread sees partial updates.
 **Cross-References**: BUG-CN-11 = CONC-07
@@ -11583,6 +11585,8 @@ M (1-4 hours)
 
 #### CONC-07: `regenerate_dataset` Mutates State Without Lock
 
+**Status**: ✅ Implemented (Phase 3A, 2026-04-26) — juniper-canopy branch `concurrency/phase-3a-track-3-conc-07-bug-cn-11`. `src/demo_mode.py:regenerate_dataset` now wraps `self.network.train_x`, `self.network.train_y`, `self.current_epoch`, `self.current_loss`, `self.current_accuracy`, and `self.metrics_history.clear()` in a single `with self._lock:` block so the training thread can no longer observe a half-updated dataset/epoch pair. Dataset generation itself remains outside the lock to avoid blocking readers across the JuniperData round-trip. Verified by `src/tests/unit/test_demo_mode_concurrency.py::TestRegenerateDatasetLocking` (3 tests; the lock-scope test fails on the pre-fix code with `train_x: False, train_y: False` and passes after).
+
 **Current Code**: `demo_mode.py:1660-1676` — `self.network.train_x`, `train_y`, `current_epoch`, `current_loss`, `current_accuracy` mutated without `_lock` at lines 1668-1672. Lock only used at line 1673 for `metrics_history.clear()`.
 **Root Cause**: State mutation outside lock means the training thread can read partially updated state (e.g., new `train_x` with old `train_y`).
 **Cross-References**: CONC-07 = BUG-CN-11
@@ -14482,7 +14486,7 @@ Development tracks are identified by analyzing:
 
 | Phase | Items                                         | Scope | Description                                          |
 |-------|-----------------------------------------------|-------|------------------------------------------------------|
-| 3A    | CONC-04/BUG-JD-10, CONC-07/BUG-CN-11          | 2×S   | Async event loop blocking, state mutation            |
+| 3A ✅ | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅    | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11) |
 | 3B    | CONC-01, CONC-02/BUG-CC-16, CONC-03/BUG-CC-17 | 3×S   | Per-IP race, broadcast throttle, split-lock          |
 | 3C    | BUG-CN-09, BUG-CN-10, CONC-08, CONC-09        | 4×S   | Thread-safe sets, atomic counters, fire-and-forget   |
 | 3D    | CONC-10, CONC-12/BUG-JD-11, BUG-CN-01         | 3×S   | Health monitor race, access count TOCTOU, reset race |
