@@ -2276,6 +2276,8 @@ S (< 1 hour)
 
 #### BUG-CC-16: `_last_state_broadcast_time` Unprotected Cross-Thread R/W
 
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — see CONC-02 for the shared remediation in juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`.
+
 **Current Code**: `src/api/lifecycle/manager.py:151-155` — see CONC-02.
 **Root Cause**: Unprotected shared mutable state between threads.
 **Cross-References**: BUG-CC-16 = CONC-02
@@ -2302,6 +2304,8 @@ S (< 1 hour)
 ---
 
 #### BUG-CC-17: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission
+
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — see CONC-03 for the shared remediation in juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`.
 
 **Current Code**: `src/api/lifecycle/manager.py:453-495` — see CONC-03.
 **Root Cause**: Lock scope too narrow, allowing duplicate emissions.
@@ -11284,6 +11288,8 @@ Issues identified through cross-cutting concurrency analysis across all reposito
 
 #### CONC-01: `_per_ip_counts` Check-Then-Act Race in WebSocketManager
 
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — juniper-canopy branch `concurrency/phase-3b-conc-01-per-ip-race`. `WebSocketManager.__init__` now creates a dedicated `self._ip_lock = threading.Lock()`; both `check_per_ip_limit` and `_decrement_ip_count` execute their read-modify-write sequence inside `with self._ip_lock:` so concurrent connect/disconnect from the same IP cannot lose updates or exceed the per-IP cap. `threading.Lock` (rather than the plan's `asyncio.Lock`) was chosen so the protection covers any caller — sync, async, or background thread (e.g. `broadcast_from_thread → disconnect`) — without forcing the public API to become async. Verified by `src/tests/unit/test_websocket_manager_concurrency.py::TestPerIpRace` (3 tests; the lock-scope tests fail on the pre-fix code with `32 ≤ 5` cap-exceedance and a `1 == 32` lost-update before passing after).
+
 **Current Code**: `websocket_manager.py:278-282` — `current = self._per_ip_counts.get(source_ip, 0)` then `self._per_ip_counts[source_ip] = current + 1` without lock.
 **Root Cause**: Non-atomic read-modify-write on shared dict allows two concurrent connections from same IP to both pass the limit check.
 **Cross-References**: Canopy-specific, no other section refs.
@@ -11356,6 +11362,8 @@ S (< 1 hour)
 
 #### CONC-02: `_last_state_broadcast_time` Unprotected Cross-Thread R/W
 
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`. `TrainingLifecycleManager.__init__` now allocates `self._broadcast_lock = threading.Lock()` and initializes `self._last_state_broadcast_time = 0.0` (eliminating the earlier `hasattr` gate that itself contributed to the race). The throttle check in `_broadcast_training_state` is held under `self._broadcast_lock` so the `now - last < interval` test and the `_last_state_broadcast_time = now` write happen atomically — only one caller can win each throttle window. Verified by `src/tests/unit/api/test_lifecycle_concurrency.py::TestBroadcastThrottleRace`.
+
 **Current Code**: `manager.py:151-155` — `now = time.monotonic()` + `if hasattr(self, "_last_state_broadcast_time") and now - self._last_state_broadcast_time < self._state_throttle_interval: return` — no lock around read/write of `_last_state_broadcast_time`.
 **Root Cause**: Multiple threads can pass the throttle check simultaneously and broadcast duplicate state messages.
 **Cross-References**: CONC-02 = BUG-CC-16
@@ -11424,6 +11432,8 @@ S (< 1 hour)
 ---
 
 #### CONC-03: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission
+
+**Status**: ✅ Implemented (Phase 3B, 2026-04-26) — juniper-cascor branch `concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics`. `TrainingLifecycleManager._extract_and_record_metrics` now holds `self._metrics_lock` across the entire read-process-write cycle: snapshot of `network.history`, the per-entry `training_monitor.on_epoch_end` calls, and the `_last_emitted_history_len` advance. The idempotent `training_state.update_state` call is left outside the lock to bound the critical section. The pre-fix split-lock allowed two concurrent callers to both observe the same `last_emitted = 0` and emit identical epoch-1..N entries; the new single-scope lock guarantees each epoch is emitted to TrainingMonitor exactly once. Verified by `src/tests/unit/api/test_lifecycle_concurrency.py::TestExtractAndRecordMetricsRace`.
 
 **Current Code**: `manager.py:453-495` — Lock at line 464 released after reading history (line 474); lock re-acquired at line 494 to update high-water-mark. Between these locks, duplicate emissions possible.
 **Root Cause**: Lock scope doesn't cover the full read-process-write cycle, creating a window where two callers read the same `_last_emitted_history_len` and both emit the same metrics.
@@ -14495,7 +14505,7 @@ Development tracks are identified by analyzing:
 | Phase | Items                                         | Scope | Description                                          |
 |-------|-----------------------------------------------|-------|------------------------------------------------------|
 | 3A ✅ | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅    | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11) |
-| 3B    | CONC-01, CONC-02/BUG-CC-16, CONC-03/BUG-CC-17 | 3×S   | Per-IP race, broadcast throttle, split-lock          |
+| 3B ✅ | CONC-01 ✅, CONC-02/BUG-CC-16 ✅, CONC-03/BUG-CC-17 ✅ | 3×S   | Per-IP race (Implemented 2026-04-26, juniper-canopy concurrency/phase-3b-conc-01-per-ip-race), broadcast throttle + split-lock (Implemented 2026-04-26, juniper-cascor concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics) |
 | 3C    | BUG-CN-09, BUG-CN-10, CONC-08, CONC-09        | 4×S   | Thread-safe sets, atomic counters, fire-and-forget   |
 | 3D    | CONC-10, CONC-12/BUG-JD-11, BUG-CN-01         | 3×S   | Health monitor race, access count TOCTOU, reset race |
 
