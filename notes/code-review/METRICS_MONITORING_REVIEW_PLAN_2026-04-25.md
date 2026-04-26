@@ -6,6 +6,7 @@
 **Scope:** Metrics, monitoring, observability, telemetry, health surface
 **Repos in scope (6):** juniper-canopy, juniper-cascor, juniper-cascor-client, juniper-cascor-worker, juniper-data, juniper-data-client
 **Companion documents:**
+
 - [METRICS_MONITORING_ANALYSIS_2026-04-25.md](METRICS_MONITORING_ANALYSIS_2026-04-25.md) — current-state baseline (the inventory this plan consumes)
 - [METRICS_MONITORING_ROADMAP_2026-04-25.md](METRICS_MONITORING_ROADMAP_2026-04-25.md) — prioritized work breakdown
 
@@ -47,15 +48,15 @@ This plan is the **single source of truth** for methodology, phase gating, sub-a
 
 Every finding gets **one primary category** (secondary tags allowed) drawn from the standard project taxonomy:
 
-| Category                          | Examples specific to this review                                                                                          |
-|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| Category                          | Examples specific to this review                                                                                                                                  |
+|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **Architectural**                 | Duplicated `DependencyStatus`/`ReadinessResponse` across 3 repos; absence of shared observability lib; probe direction asymmetry; client/worker observability gap |
-| **Logical / correctness**         | Cardinality fallback to raw URL path; readiness 200-on-degraded; liveness no-op; replay-buffer overflow undefined; demo-mode gauge drift |
-| **Syntactic**                     | Mis-typed Prometheus label names; broken metric registration; import-time failures masked by `importorskip`              |
-| **Code smells**                   | Hardcoded buffer sizes; magic numbers in histogram buckets; sync I/O in async; numeric defaults without validators        |
-| **Departure from requirements**   | Documented endpoints that don't fire metrics they claim; documented health semantics not implemented (live = no-op)       |
-| **Deviation from best practices** | `importorskip` on Sentry; no SLO/SLI tied to metrics; no scrape config; no schema validation on inbound WS frames; no end-to-end metric tests |
-| **Formatting and linting**        | Black/isort/flake8 violations under `[tool.*]` line-length=512 in observability files                                     |
+| **Logical / correctness**         | Cardinality fallback to raw URL path; readiness 200-on-degraded; liveness no-op; replay-buffer overflow undefined; demo-mode gauge drift                          |
+| **Syntactic**                     | Mis-typed Prometheus label names; broken metric registration; import-time failures masked by `importorskip`                                                       |
+| **Code smells**                   | Hardcoded buffer sizes; magic numbers in histogram buckets; sync I/O in async; numeric defaults without validators                                                |
+| **Departure from requirements**   | Documented endpoints that don't fire metrics they claim; documented health semantics not implemented (live = no-op)                                               |
+| **Deviation from best practices** | `importorskip` on Sentry; no SLO/SLI tied to metrics; no scrape config; no schema validation on inbound WS frames; no end-to-end metric tests                     |
+| **Formatting and linting**        | Black/isort/flake8 violations under `[tool.*]` line-length=512 in observability files                                                                             |
 
 ---
 
@@ -63,13 +64,13 @@ Every finding gets **one primary category** (secondary tags allowed) drawn from 
 
 Each finding scored on five axes. Numbers are 1–5 unless otherwise noted.
 
-| Axis                  | Definition                                                                              | 1 (low)                       | 5 (high)                                    |
-|-----------------------|-----------------------------------------------------------------------------------------|-------------------------------|---------------------------------------------|
-| **Risk profile**      | Production blast radius if defect manifests                                             | Cosmetic                      | Service outage / data loss                  |
-| **Severity**          | User-facing impact when triggered                                                       | Internal-only                 | User-visible / silent corruption            |
-| **Likelihood**        | Probability of triggering in the release window                                         | Hypothetical                  | Already observed                            |
-| **Scope**             | How many repos / components affected                                                    | Single function               | Cross-repo                                  |
-| **Remediation effort**| Engineer-days to fix with tests                                                         | < 0.5 day                     | > 5 days / requires design                  |
+| Axis                   | Definition                                      | 1 (low)         | 5 (high)                         |
+|------------------------|-------------------------------------------------|-----------------|----------------------------------|
+| **Risk profile**       | Production blast radius if defect manifests     | Cosmetic        | Service outage / data loss       |
+| **Severity**           | User-facing impact when triggered               | Internal-only   | User-visible / silent corruption |
+| **Likelihood**         | Probability of triggering in the release window | Hypothetical    | Already observed                 |
+| **Scope**              | How many repos / components affected            | Single function | Cross-repo                       |
+| **Remediation effort** | Engineer-days to fix with tests                 | < 0.5 day       | > 5 days / requires design       |
 
 **Composite severity** = max(Risk, Severity, Likelihood). Findings with composite ≥ 4 are **release-blocking**. Findings with composite 3 are **must-have for next release**. Composite ≤ 2 are tracked but non-blocking.
 
@@ -139,15 +140,16 @@ The review is split into **eight phases**. Phase gates are mandatory; phases mus
 
 **Sub-agent assignments (parallel):**
 
-| Sub-agent          | Repo                    | Deliverable                                                |
-|--------------------|-------------------------|------------------------------------------------------------|
-| `Explore` (cascor) | juniper-cascor          | `juniper-cascor/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` |
-| `Explore` (canopy) | juniper-canopy          | `juniper-canopy/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` |
-| `Explore` (data)   | juniper-data            | `juniper-data/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` |
-| `Explore` (cli/wk) | cascor-client + worker  | `juniper-cascor-client/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` and `juniper-cascor-worker/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` |
-| `Explore` (dc)     | juniper-data-client     | `juniper-data-client/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` |
+| Sub-agent          | Repo                   | Deliverable                                                                                                                                 |
+|--------------------|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `Explore` (cascor) | juniper-cascor         | `juniper-cascor/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`                                                                                |
+| `Explore` (canopy) | juniper-canopy         | `juniper-canopy/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`                                                                                |
+| `Explore` (data)   | juniper-data           | `juniper-data/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`                                                                                  |
+| `Explore` (cli/wk) | cascor-client + worker | `juniper-cascor-client/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` and `juniper-cascor-worker/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md` |
+| `Explore` (dc)     | juniper-data-client    | `juniper-data-client/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`                                                                           |
 
 **Each functional spec must enumerate:**
+
 1. Every metric (name, type, labels, description, units, scrape path).
 2. Every health endpoint (path, method, response model, dependencies probed, status codes).
 3. Every WebSocket frame carrying observability data (type, schema, sequence semantics).
@@ -176,14 +178,14 @@ The review is split into **eight phases**. Phase gates are mandatory; phases mus
 
 **Sub-agent assignments (parallel, one per repo for findings authoring; results consolidated):**
 
-| Sub-agent              | Focus                                                                                            |
-|------------------------|--------------------------------------------------------------------------------------------------|
-| `general-purpose`      | Cardinality fallback in 3 server middlewares (one finding per repo, share root cause)            |
-| `general-purpose`      | Liveness/readiness contract violations across cascor, canopy, data                                |
-| `Explore`              | Client/worker observability gap (architectural finding)                                          |
-| `Explore`              | Schema validation absence on inbound WS frames in cascor-client and worker                       |
-| `general-purpose`      | Test-suite gap audit (skipped, mocked-only, missing end-to-end)                                  |
-| `Plan`                 | Architectural finding: shared observability lib opportunity vs status-quo cost                   |
+| Sub-agent         | Focus                                                                                 |
+|-------------------|---------------------------------------------------------------------------------------|
+| `general-purpose` | Cardinality fallback in 3 server middlewares (one finding per repo, share root cause) |
+| `general-purpose` | Liveness/readiness contract violations across cascor, canopy, data                    |
+| `Explore`         | Client/worker observability gap (architectural finding)                               |
+| `Explore`         | Schema validation absence on inbound WS frames in cascor-client and worker            |
+| `general-purpose` | Test-suite gap audit (skipped, mocked-only, missing end-to-end)                       |
+| `Plan`            | Architectural finding: shared observability lib opportunity vs status-quo cost        |
 
 Findings written into a dedicated section of this plan (§9), each using the §5.1 template. The roadmap consumes these IDs.
 
@@ -209,6 +211,7 @@ For each repo:
 **Goal.** Propose 2–N remediation options per finding with explicit trade-offs and a recommendation.
 
 **Per-finding requirements:**
+
 - Each remediation option includes: code sketch (function signatures, file edits, new tests required) — sketches, not full PRs.
 - Strengths, weaknesses, risks, guardrails enumerated.
 - Recommended option chosen by weighing risk/severity/effort/scope.
@@ -216,13 +219,13 @@ For each repo:
 
 Sub-agent split (parallel):
 
-| Sub-agent      | Cluster                                                                  |
-|----------------|--------------------------------------------------------------------------|
-| `Plan`         | Cardinality strategy (3 server repos, 1 unified design)                  |
-| `Plan`         | Health probe semantics + status-code propagation (3 server repos)        |
-| `Plan`         | Worker liveness + heartbeat design                                       |
-| `Plan`         | Client WS frame schema validation + version-tag handshake                |
-| `Plan`         | Shared observability library proposal (`juniper-observability` extras)   |
+| Sub-agent         | Cluster                                                                |
+|-------------------|------------------------------------------------------------------------|
+| `Plan`            | Cardinality strategy (3 server repos, 1 unified design)                |
+| `Plan`            | Health probe semantics + status-code propagation (3 server repos)      |
+| `Plan`            | Worker liveness + heartbeat design                                     |
+| `Plan`            | Client WS frame schema validation + version-tag handshake              |
+| `Plan`            | Shared observability library proposal (`juniper-observability` extras) |
 | `general-purpose` | Test-gap closure plan (per-repo)                                       |
 
 **Exit gate.** Every release-blocking finding has a recommended remediation with effort estimate.
@@ -233,7 +236,7 @@ Sub-agent split (parallel):
 
 - [ ] Spawn a fresh validation sub-agent (no prior session context) that reads the plan + analysis + roadmap and reports inconsistencies, missing evidence, or unsupported recommendations.
 - [ ] Validation sub-agent re-runs each repo's full test suite from a clean checkout to confirm baseline pass.
-- [ ] Validation sub-agent independently spot-checks five randomly-selected findings: confirms file:line references, reproduces evidence, agrees with category/score.
+- [ ] Validation sub-agent independently spot-checks 10 randomly-selected findings: confirms file:line references, reproduces evidence, agrees with category/score.
 - [ ] Validation sub-agent reviews the §9 finding section for taxonomy/score consistency.
 
 **Exit gate.** Validation report signed off; corrections (if any) merged into the plan.
@@ -243,12 +246,14 @@ Sub-agent split (parallel):
 **Goal.** Apply only the documentation, infrastructure, and code corrections that the review flags as in-scope and immediately required to validate the plan itself (this is **not** the implementation phase — that is in the roadmap).
 
 In-scope corrections at this phase:
+
 - Updating analysis/plan/roadmap documents per validation feedback.
 - Restoring CI gates if review revealed observability tests were silently skipped.
 - Documenting AGENTS.md / CLAUDE.md inconsistencies discovered during review.
 - Fixing trivial lint/format issues blocking CI from running observability tests.
 
 Out of scope at this phase:
+
 - Implementation of remediations (executed via the roadmap, in separate worktrees, by separate PRs).
 
 **Exit gate.** Plan, analysis, roadmap docs final; CI green per repo on baseline branch.
@@ -257,16 +262,16 @@ Out of scope at this phase:
 
 ## 7. Deliverables (per phase)
 
-| Phase | Deliverable                                                                              | Location                                                          |
-|-------|------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| 0     | Baseline SHA + test-suite baseline log                                                   | This plan, Appendix A                                             |
-| 1     | Per-repo functional spec (×6)                                                            | `<repo>/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`              |
-| 2     | Resource/infra/dependency inventory                                                      | This plan, Appendix B                                             |
-| 3     | Numbered findings (METRICS-MON-NNN)                                                      | This plan, §9                                                     |
-| 4     | Test coverage matrix                                                                     | This plan, §10                                                    |
-| 5     | Remediation options + recommendations per finding                                        | This plan, §9 (per finding)                                       |
-| 6     | Validation report                                                                        | `notes/code-review/METRICS_MONITORING_VALIDATION_2026-04-25.md`   |
-| 7     | Corrected plan + analysis + roadmap documents; PR(s) for in-scope corrections            | This worktree; PR(s) per repo as applicable                       |
+| Phase | Deliverable                                                                   | Location                                                        |
+|-------|-------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| 0     | Baseline SHA + test-suite baseline log                                        | This plan, Appendix A                                           |
+| 1     | Per-repo functional spec (×6)                                                 | `<repo>/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`            |
+| 2     | Resource/infra/dependency inventory                                           | This plan, Appendix B                                           |
+| 3     | Numbered findings (METRICS-MON-NNN)                                           | This plan, §9                                                   |
+| 4     | Test coverage matrix                                                          | This plan, §10                                                  |
+| 5     | Remediation options + recommendations per finding                             | This plan, §9 (per finding)                                     |
+| 6     | Validation report                                                             | `notes/code-review/METRICS_MONITORING_VALIDATION_2026-04-25.md` |
+| 7     | Corrected plan + analysis + roadmap documents; PR(s) for in-scope corrections | This worktree; PR(s) per repo as applicable                     |
 
 Roadmap document drives implementation phases beyond this review; tracked separately at [METRICS_MONITORING_ROADMAP_2026-04-25.md](METRICS_MONITORING_ROADMAP_2026-04-25.md).
 
@@ -277,6 +282,7 @@ Roadmap document drives implementation phases beyond this review; tracked separa
 **Why sub-agents.** The six repos are independent enough to parallelize, and the main thread's context budget cannot hold full-fidelity inspection of all six simultaneously. Sub-agents protect main-thread context and allow concurrent file-level work.
 
 **Selection rules.**
+
 - **`Explore`** — for "what exists where" inventory work (Phase 1, parts of Phase 3).
 - **`Plan`** — for design-level work proposing remediations (Phase 5).
 - **`general-purpose`** — for multi-step investigations that may need to read, edit, run tests (Phases 3, 4, 7).
@@ -372,6 +378,7 @@ The review is complete when **all** of the following hold:
 ## 13. Validation requirements (Phase 6, expanded)
 
 Phase 6 must verify, by a fresh sub-agent:
+
 - **Work performed** — every claimed file:line reference exists; every claimed test exists and runs; every recorded test result is reproducible.
 - **Analyses completed** — every score is defensible against the §4 model; every remediation option has the required strengths/weaknesses/risks/guardrails block; every recommendation cites the axes that drove it.
 - **Documentation compiled** — analysis, plan, roadmap, per-repo functional specs are internally consistent; cross-references resolve; AGENTS.md updates (if any) match the implemented behavior.
@@ -383,6 +390,7 @@ If validation surfaces a discrepancy, the **document is corrected first** (analy
 ## 14. Cleanup (post-review)
 
 After the review (and any in-scope Phase 7 corrections) merge:
+
 1. Commit, push, and open PRs for any document/code/infra changes.
 2. After PRs merge, perform Worktree Cleanup V2 per `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md` (Phase 1–4) for the worktree(s) created during review.
 3. Run `git worktree prune` and confirm no stale worktrees remain.
@@ -422,7 +430,20 @@ After the review (and any in-scope Phase 7 corrections) merge:
 
 **Phase 1 functional-spec prompt (per repo):**
 
-> You are auditing the metrics/monitoring functional surface of `<repo>` at HEAD `<sha>`. Produce a functional spec at `<repo>/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`. Enumerate: (1) every metric — name, type, labels, units, scrape path; (2) every health endpoint — path, response model, dependencies probed, status codes; (3) every WS frame carrying observability data; (4) every test asserting metric/health behavior with assertion summary; (5) every middleware/hook; (6) every Prom/Sentry dependency and pin; (7) every cross-repo emit/consume relationship. Use grep/glob aggressively; cite file:line for every claim. Cap output at 2000 words. Do not propose changes. Do not edit code.
+You are auditing the metrics/monitoring functional surface of `<repo>` at HEAD `<sha>`.
+Produce a functional spec at `<repo>/notes/METRICS_FUNCTIONAL_SPEC_2026-04-25.md`.
+
+Enumerate:
+
+1. every metric — name, type, labels, units, scrape path
+2. every health endpoint — path, response model, dependencies probed, status codes
+3. every WS frame carrying observability data
+4. every test asserting metric/health behavior with assertion summary
+5. every middleware/hook
+6. every Prom/Sentry dependency and pin
+7. every cross-repo emit/consume relationship
+
+Use grep/glob aggressively; cite file:line for every claim. Cap output at 5000 words. Do not propose changes. Do not edit code.
 
 **Phase 3 finding-authoring prompt:**
 
@@ -430,8 +451,27 @@ After the review (and any in-scope Phase 7 corrections) merge:
 
 **Phase 5 remediation prompt:**
 
-> For findings <list>, propose 2–N remediation options each per the template in §5.1. Include code sketches (signatures + file edits + new tests). Enumerate strengths/weaknesses/risks/guardrails per option. Recommend one option per finding, weighted against the §4 axes. Where findings share a root cause, propose a unified remediation. Do not implement; output is a design.
+> For findings `<list>`, propose 2–N remediation options each per the template in §5.1. Include code sketches (signatures + file edits + new tests). Enumerate strengths/weaknesses/risks/guardrails per option. Recommend one option per finding, weighted against the §4 axes. Where findings share a root cause, propose a unified remediation. Do not implement; output is a design.
 
 **Phase 6 validation prompt:**
 
-> You are a fresh validation agent with no prior context. Read `notes/code-review/METRICS_MONITORING_{ANALYSIS,REVIEW_PLAN,ROADMAP}_2026-04-25.md`. Re-verify: (1) every file:line reference exists in the named repo at the named SHA; (2) every claimed test exists and passes; (3) every score is defensible per the model in §4; (4) the documents are internally consistent. Spot-check five random findings end-to-end. Report inconsistencies, missing evidence, and unsupported claims as a list of corrections. Do not edit any documents — propose corrections only.
+You are a fresh validation agent with no prior context.
+Read `notes/code-review/METRICS_MONITORING_{ANALYSIS,REVIEW_PLAN,ROADMAP}_2026-04-25.md`.
+
+Re-verify:
+
+1. every file:line reference exists in the named repo at the named SHA
+2. every claimed test exists and passes
+    - ensure that the actual testing functionality is not:
+      - disabled
+      - commented out
+      - gated to not run
+      - in any other manner, rendered ineffective
+3. every score is defensible per the model in §4
+4. the documents are internally consistent.
+    - Spot-check five random findings end-to-end
+    - Report the following as a list of corrections:
+      - inconsistencies
+      - missing evidence
+      - unsupported claims
+5. Do not edit any documents — propose corrections only.

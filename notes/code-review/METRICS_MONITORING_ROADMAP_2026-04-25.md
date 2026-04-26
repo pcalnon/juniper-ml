@@ -6,6 +6,7 @@
 **Scope:** Metrics, monitoring, observability, telemetry, health surface
 **Repos in scope (6):** juniper-canopy, juniper-cascor, juniper-cascor-client, juniper-cascor-worker, juniper-data, juniper-data-client
 **Companion documents:**
+
 - [METRICS_MONITORING_ANALYSIS_2026-04-25.md](METRICS_MONITORING_ANALYSIS_2026-04-25.md) — current-state baseline
 - [METRICS_MONITORING_REVIEW_PLAN_2026-04-25.md](METRICS_MONITORING_REVIEW_PLAN_2026-04-25.md) — review methodology
 
@@ -204,38 +205,38 @@ Total estimate: **26–39 engineer-days** if executed sequentially. R3 and R4 ha
 
 ## 9. Status tracker (updated through execution)
 
-| Phase | Item   | Status   | Owner | PR(s) | Worktree                         | Notes |
-|-------|--------|----------|-------|-------|----------------------------------|-------|
-| R1.1  | seed-01 cardinality | not started |       |       |                                  |       |
-| R1.2  | seed-02/03 probe semantics | not started |       |       |                                  |       |
-| R1.3  | seed-04 worker heartbeat | not started |       |       |                                  |       |
-| R2.1  | seed-06 shared lib | not started |       |       |                                  |       |
-| R2.2  | seed-05 WS schema validation | not started |       |       |                          |       |
-| R2.3  | seed-15 probe symmetry | not started |       |       |                              |       |
-| R3.1  | seed-08 dataset-gen e2e | not started |       |       |                              |       |
-| R3.2  | seed-11 demo-mode test | not started |       |       |                              |       |
-| R3.3  | seed-12 restore skipped test | not started |       |       |                        |       |
-| R3.4  | seed-09 Sentry unconditional | not started |       |       |                        |       |
-| R3.5  | seed-07 replay-buffer test | not started |       |       |                          |       |
-| R3.6  | coverage-matrix gaps | not started |       |       |                                |       |
-| R4.1  | seed-14 bucket rationales | not started |       |       |                           |       |
-| R4.2  | seed-10 async-safe probes | not started |       |       |                           |       |
-| R4.3  | seed-13 data-client hooks | not started |       |       |                           |       |
-| R4.4  | worker training-loop instr | not started |       |       |                          |       |
-| R5.1  | SLO catalog | not started |       |       |                                          |       |
-| R5.2  | scrape manifests | not started |       |       |                                     |       |
-| R5.3  | Grafana dashboards | not started |       |       |                                   |       |
-| R5.4  | alerting rules | not started |       |       |                                       |       |
+| Phase | Item                         | Status      | Owner | PR(s) | Worktree | Notes |
+|-------|------------------------------|-------------|-------|-------|----------|-------|
+| R1.1  | seed-01 cardinality          | not started |       |       |          |       |
+| R1.2  | seed-02/03 probe semantics   | not started |       |       |          |       |
+| R1.3  | seed-04 worker heartbeat     | not started |       |       |          |       |
+| R2.1  | seed-06 shared lib           | not started |       |       |          |       |
+| R2.2  | seed-05 WS schema validation | not started |       |       |          |       |
+| R2.3  | seed-15 probe symmetry       | not started |       |       |          |       |
+| R3.1  | seed-08 dataset-gen e2e      | not started |       |       |          |       |
+| R3.2  | seed-11 demo-mode test       | not started |       |       |          |       |
+| R3.3  | seed-12 restore skipped test | not started |       |       |          |       |
+| R3.4  | seed-09 Sentry unconditional | not started |       |       |          |       |
+| R3.5  | seed-07 replay-buffer test   | not started |       |       |          |       |
+| R3.6  | coverage-matrix gaps         | not started |       |       |          |       |
+| R4.1  | seed-14 bucket rationales    | not started |       |       |          |       |
+| R4.2  | seed-10 async-safe probes    | not started |       |       |          |       |
+| R4.3  | seed-13 data-client hooks    | not started |       |       |          |       |
+| R4.4  | worker training-loop instr   | not started |       |       |          |       |
+| R5.1  | SLO catalog                  | not started |       |       |          |       |
+| R5.2  | scrape manifests             | not started |       |       |          |       |
+| R5.3  | Grafana dashboards           | not started |       |       |          |       |
+| R5.4  | alerting rules               | not started |       |       |          |       |
 
 ---
 
 ## 10. Cross-cutting risks during execution
 
-| Risk                                                                            | Mitigation                                                                          |
-|---------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|
+| Risk                                                                            | Mitigation                                                                           |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | Shared lib (R2.1) blocks every consumer and slips                               | Ship it as alpha pre-release; consumers pin range; allow incremental migration       |
 | Probe-semantics change (R1.2) trips Helm probe failure thresholds and pages SRE | Roll out in staging first; coordinate with juniper-deploy probe-threshold update     |
-| Cardinality fix (R1.1) suppresses metrics needed by existing dashboards         | Keep `_unmatched` bucket; emit deprecation warning on raw-path label use for one rel|
+| Cardinality fix (R1.1) suppresses metrics needed by existing dashboards         | Keep `_unmatched` bucket; emit deprecation warning on raw-path label use for one rel |
 | Worker heartbeat (R1.3) introduces new failure mode (heartbeat itself fails)    | Heartbeat failure is best-effort logged; absence treated as soft-degraded, not down  |
 | Test-suite expansion balloons CI time                                           | Mark new perf/cardinality tests `@pytest.mark.performance` and gate weekly, not PR   |
 
@@ -260,6 +261,7 @@ When picking up an item, the engineer must:
 ## 12. Definition of done (per item)
 
 An item is **done** when:
+
 - PR is merged to the affected repo's main.
 - The associated test exists, runs in CI, and asserts the corrected behavior.
 - The finding's status in the review plan is moved to `RESOLVED` with a link to the PR.
@@ -267,6 +269,7 @@ An item is **done** when:
 - If the item changed an AGENTS.md / CLAUDE.md contract, that file is updated in the same PR.
 
 A **phase** is **done** when:
+
 - All items in the phase are done.
 - Full test suites pass for every affected repo (no errors, no warnings, no criteria failures).
 - A phase summary is appended to this roadmap describing scope shipped, deferred items (with new IDs), and any newly-discovered findings.
@@ -282,6 +285,7 @@ Every roadmap item references one or more findings. No roadmap work is performed
 ## 14. Closure of the roadmap
 
 The roadmap is **closed** when:
+
 - All phases R1–R5 are done.
 - A retrospective document `notes/code-review/METRICS_MONITORING_RETROSPECTIVE_<date>.md` is written summarizing what shipped, what slipped, and what should be added to the next review's baseline.
 - The next review's baseline document is opened (or this document is re-baselined for an incremental review).
