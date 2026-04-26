@@ -14506,13 +14506,13 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~56 hours
 **Dependencies**: Track 1 security fixes for auth-related items; Track 2 for API contract items
 
-| Phase | Items                                            | Scope | Description                                        |
-|-------|--------------------------------------------------|-------|----------------------------------------------------|
-| 4A ✅ | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
-| 4B ✅ | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24) |
-| 4C ✅ | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25) |
-| 4D    | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format |
-| 4E    | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements        |
+| Phase  | Items                                            | Scope | Description                                                                |
+|--------|--------------------------------------------------|-------|----------------------------------------------------------------------------|
+| 4A ✅  | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
+| 4B ✅  | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24)   |
+| 4C ✅  | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25)       |
+| 4D     | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format                         |
+| 4E     | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements                                |
 
 #### Track 5: Infrastructure, Deploy, and CI/CD (juniper-deploy, all repos CI)
 
@@ -14537,14 +14537,14 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~120 hours
 **Dependencies**: Tracks 1-3 should be complete; Track 5 CI improvements
 
-| Phase | Items | Scope | Description |
-| ------- | ------- | ------- | ------------- |
-| 6A | GAP-WS-16, GAP-WS-14, GAP-WS-15 | 3×L | Critical: bandwidth reduction, extendTraces, rAF |
-| 6B | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M | Performance: dict sizes, computation caching |
-| 6C | CAN-CRIT-001, KL-1 | 2×L | Dashboard: decision boundary, scatter plot |
-| 6D | CAN-000..CAN-021 | 22×S-M | Dashboard enhancement backlog |
-| 6E | CAS-002..CAS-009 | 8×M-XL | CasCor algorithm enhancements |
-| 6F | Phase E..H, remaining GAP-WS | 8×M-L | WebSocket migration remaining phases |
+| Phase | Items                                  | Scope  | Description                                      |
+|-------|----------------------------------------|--------|--------------------------------------------------|
+| 6A    | GAP-WS-16, GAP-WS-14, GAP-WS-15        | 3×L    | Critical: bandwidth reduction, extendTraces, rAF |
+| 6B    | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M  | Performance: dict sizes, computation caching     |
+| 6C    | CAN-CRIT-001, KL-1                     | 2×L    | Dashboard: decision boundary, scatter plot       |
+| 6D    | CAN-000..CAN-021                       | 22×S-M | Dashboard enhancement backlog                    |
+| 6E    | CAS-002..CAS-009                       | 8×M-XL | CasCor algorithm enhancements                    |
+| 6F    | Phase E..H, remaining GAP-WS           | 8×M-L  | WebSocket migration remaining phases             |
 
 ### 25.3 Track Dependency Graph
 
