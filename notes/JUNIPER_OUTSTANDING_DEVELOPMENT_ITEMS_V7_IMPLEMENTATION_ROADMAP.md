@@ -164,16 +164,16 @@ See [Section 24](#24-severity-classification-and-priority-matrix) through [Secti
 
 #### 4.2 New security issues (v4)
 
-| ID     | Severity   | Repository     | Description                                                   | File(s)                                           | Evidence                                                                                                          |
-|--------|------------|----------------|---------------------------------------------------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| ID     | Severity   | Repository     | Description                                                   | File(s)                                           | Evidence                                                                                                               |
+|--------|------------|----------------|---------------------------------------------------------------|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | SEC-11 | **HIGH**   | juniper-cascor | `pickle.loads` HDF5 snapshot data w/o `RestrictedUnpickler`   | `src/snapshots/snapshot_serializer.py:828`        | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — `JuniperRestrictedUnpickler` allowlist          |
-| SEC-12 | **HIGH**   | juniper-canopy | `/ws` generic endpoint: no Origin validation, per-IP limit    | `src/main.py:2109-2127`                           | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24)                                                  |
+| SEC-12 | **HIGH**   | juniper-canopy | `/ws` generic endpoint: no Origin validation, per-IP limit    | `src/main.py:2109-2127`                           | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24)                                                   |
 | SEC-13 | **HIGH**   | juniper-canopy | Auth secrets exposed: query params via `/api/remote/connect`  | `src/main.py:2392`                                | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24) — `RemoteConnectRequest` POST body w/ `SecretStr` |
 | SEC-14 | **MEDIUM** | juniper-canopy | Internal exception messages leaked to clients via `str(e)`    | `src/main.py:996, 2055, 2076, 2371, 2411`         | ✅ Implemented (Phase 1B, juniper-canopy PR #175, merged 2026-04-24) — generic responses w/ `error_id` correlation     |
 | SEC-15 | **MEDIUM** | juniper-cascor | Cascor sentry `send_default_pii=True` (same as SEC-10)        | `src/api/observability.py:176`, `src/main.py:129` | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — both init sites + `_strip_sensitive_headers`    |
 | SEC-16 | **MEDIUM** | juniper-data   | `/metrics` Prometheus endpoint bypasses auth middleware       | `juniper_data/api/app.py:121`                     | ✅ Implemented (Phase 1D, juniper-data PR #45) — `MetricsAuthMiddleware` w/ `metrics_trusted_ips` setting              |
 | SEC-17 | **MEDIUM** | juniper-cascor | Snapshot `snapshot_id` path param, unchecked traversal chars  | `src/api/lifecycle/manager.py:883-904`,           | ✅ Implemented (Phase 1C, juniper-cascor PR #139, merged 2026-04-24) — `^[A-Za-z0-9_-]{1,128}$` regex                  |
-|        |            |                |                                                               | `src/api/routes/snapshots.py:48-64`               |                                                                                                                       |
+|        |            |                |                                                               | `src/api/routes/snapshots.py:48-64`               |                                                                                                                        |
 | SEC-18 | **MEDIUM** | cascor-worker  | `_decode_binary_frame` no bounds check, malformed binary data | `juniper_cascor_worker/worker.py:330-343`         | ✅ Implemented (Phase 1C, juniper-cascor-worker PR #32, merged 2026-04-24) — bounds caps + `BinaryFrameProtocolError`  |
 
 ### Issue Remediations, Section 4
@@ -1435,7 +1435,10 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: wired `create_topology_message()` into `_install_grow_network_hook → monitored_grow` in `src/api/lifecycle/manager.py`. Whenever new hidden units are installed, a `topology` envelope (`hidden_units`, `input_size`, `output_size`, `event="cascade_add"`) is broadcast via `_ws_manager.broadcast_from_thread`. Dashboards now receive real-time topology updates on every cascade event.
+✅ **Implemented 2026-04-25**
+(Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: wired `create_topology_message()` into `_install_grow_network_hook → monitored_grow` in `src/api/lifecycle/manager.py`.
+Whenever new hidden units are installed, a `topology` envelope (`hidden_units`, `input_size`, `output_size`, `event="cascade_add"`) is broadcast via `_ws_manager.broadcast_from_thread`.
+Dashboards now receive real-time topology updates on every cascade event.
 
 ##### Severity
 
@@ -1602,7 +1605,11 @@ except importlib.metadata.PackageNotFoundError:
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A with one extension: removed `# Version: …` / `Version: …` header lines from 65 production+test files. Replaced the runtime `_API_VERSION` literal in `src/api/app.py` and the `juniper_version` HDF5 attribute literal in `src/snapshots/snapshot_serializer.py` with `importlib.metadata.version("juniper-cascor")` (with a `0.0.0-dev` fallback when the package is not installed). `pyproject.toml` is now the single source of truth for the version string; remaining version-string drift was caught and removed. Note: ipynb checkpoints and `scripts/backups/` artifacts were intentionally left untouched.
+✅ **Implemented 2026-04-25**
+(Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A with one extension: removed `# Version: …` / `Version: …` header lines from 65 production+test files.
+Replaced the runtime `_API_VERSION` literal in `src/api/app.py` and the `juniper_version` HDF5 attribute literal in `src/snapshots/snapshot_serializer.py` with `importlib.metadata.version("juniper-cascor")` (with a `0.0.0-dev` fallback when the package is not installed).
+`pyproject.toml` is now the single source of truth for the version string; remaining version-string drift was caught and removed.
+Note: ipynb checkpoints and `scripts/backups/` artifacts were intentionally left untouched.
 
 ##### Severity
 
@@ -1772,7 +1779,10 @@ sm.set_phase = tracked_set_phase
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-25** (Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: added `TrainingMonitor.on_phase_change(phase)` plus a `phase_change` callback slot, removed all three manual `monitor.current_phase = "..."` assignments in `manager.py`, and wrapped `TrainingStateMachine.set_phase` via a new `_install_phase_tracker` helper (restored cleanly via `_restore_original_methods`). Initial OUTPUT propagation is performed explicitly after `Command.START` because `_handle_start` sets `self._phase` directly without routing through `set_phase`. The state machine is now the single source of truth for `current_phase`; drift between the FSM and the monitor is no longer possible.
+✅ **Implemented 2026-04-25**
+(Phase 2E, juniper-cascor PR [#141](https://github.com/pcalnon/juniper-cascor/pull/141)) — Applied Approach A: added `TrainingMonitor.on_phase_change(phase)` plus a `phase_change` callback slot, removed all three manual `monitor.current_phase = "..."` assignments in `manager.py`, and wrapped `TrainingStateMachine.set_phase` via a new `_install_phase_tracker` helper (restored cleanly via `_restore_original_methods`).
+Initial OUTPUT propagation is performed explicitly after `Command.START` because `_handle_start` sets `self._phase` directly without routing through `set_phase`.
+The state machine is now the single source of truth for `current_phase`; drift between the FSM and the monitor is no longer possible.
 
 ##### Severity
 
@@ -2133,7 +2143,9 @@ class RateLimiter:
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-25** (Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A in `RateLimiter`: added `_maybe_cleanup()` that runs every `_CLEANUP_INTERVAL = 100` `check()` calls, evicts buckets older than `2 * window_seconds`, and enforces a hard cap of `_MAX_ENTRIES = 10_000` (oldest by `window_start` dropped first). `reset()` clears the cleanup tick counter for clean test isolation.
+✅ **Implemented 2026-04-25**
+(Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A in `RateLimiter`: added `_maybe_cleanup()` that runs every `_CLEANUP_INTERVAL = 100` `check()` calls, evicts buckets older than `2 * window_seconds`, and enforces a hard cap of `_MAX_ENTRIES = 10_000` (oldest by `window_start` dropped first).
+`reset()` clears the cleanup tick counter for clean test isolation.
 
 ##### Severity
 
@@ -2202,7 +2214,9 @@ class HandshakeCooldown:
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-25** (Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A: added `_maybe_full_cleanup()` to `HandshakeCooldown` that runs every `CLEANUP_EVERY_N = 50` `record_rejection()` calls and removes IPs whose timestamps are all older than `2 * window_sec`. Per-IP pruning logic preserved; global cleanup now collects non-blocked stragglers.
+✅ **Implemented 2026-04-25**
+(Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A: added `_maybe_full_cleanup()` to `HandshakeCooldown` that runs every `CLEANUP_EVERY_N = 50` `record_rejection()` calls and removes IPs whose timestamps are all older than `2 * window_sec`.
+Per-IP pruning logic preserved; global cleanup now collects non-blocked stragglers.
 
 ##### Severity
 
@@ -2258,7 +2272,10 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-25** (Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A: replaced `body = await request.body()` on the no-Content-Length path with `async for chunk in request.stream()` plus an early 413 abort once cumulative bytes exceed `_max_bytes`. Body is cached on `request._body` so downstream FastAPI handlers can still read it (Starlette convention). The middleware now matches the streaming intent claimed by its docstring and closes the SEC-08 partial reopening.
+✅ **Implemented 2026-04-25**
+(Phase 2C, juniper-cascor PR [#140](https://github.com/pcalnon/juniper-cascor/pull/140)) — Applied Approach A: replaced `body = await request.body()` on the no-Content-Length path with `async for chunk in request.stream()` plus an early 413 abort once cumulative bytes exceed `_max_bytes`.
+Body is cached on `request._body` so downstream FastAPI handlers can still read it (Starlette convention).
+The middleware now matches the streaming intent claimed by its docstring and closes the SEC-08 partial reopening.
 
 ##### Severity
 
@@ -2343,7 +2360,8 @@ S (< 1 hour)
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-24** (Phase 2A, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) — See ROBUST-01 for the full implementation summary.
+✅ **Implemented 2026-04-24**
+(Phase 2A, juniper-cascor PR [#138](https://github.com/pcalnon/juniper-cascor/pull/138)) — See ROBUST-01 for the full implementation summary.
 Introduced `CandidateTrainingError` (subclass of `TrainingError`) and raise it from both the double-failure (`_execute_candidate_training` ~L1962-1971) and empty-results (~L1972-1985) paths.
 `train_candidates` re-raises the specific error unchanged.
 Regression coverage in `src/tests/unit/test_phase_2a_data_integrity.py::TestBugCC18CandidateTrainingError` and updated `test_cascade_correlation_coverage_deep.py::TestExecuteCandidateTraining::test_both_parallel_and_sequential_fail_raises_candidate_training_error`.
@@ -2366,7 +2384,10 @@ S (< 1 hour)
 
 #### BUG-CN-01: `_stop.clear()` Race — `_perform_reset()` Without Lock
 
-**Status**: ✅ Implemented (Phase 3D, 2026-04-27) — juniper-canopy branch `concurrency/phase-3d-bug-cn-01-perform-reset`. `DemoMode._perform_reset()` now applies all three transitions (`self.is_running = False`, `self._stop.clear()`, `self._pause.clear()`) inside a single `with self._lock:` block. Pre-fix the lock covered only the `is_running` write, so a reader could observe `is_running == False` while `_stop` was still set, leaving the next start() racing against a stale stop signal that gets cleared a moment later. Verified by `src/tests/unit/test_demo_mode_perform_reset.py::TestPerformResetSourceLevel::test_perform_reset_holds_lock_across_event_clears` (AST-based source check that fails on the pre-fix split-lock and passes after).
+✅ **Implemented (Phase 3D), 2026-04-27**
+juniper-canopy branch `concurrency/phase-3d-bug-cn-01-perform-reset`. `DemoMode._perform_reset()` now applies all three transitions (`self.is_running = False`, `self._stop.clear()`, `self._pause.clear()`) inside a single `with self._lock:` block.
+Pre-fix the lock covered only the `is_running` write, so a reader could observe `is_running == False` while `_stop` was still set, leaving the next start() racing against a stale stop signal that gets cleared a moment later.
+Verified by `src/tests/unit/test_demo_mode_perform_reset.py::TestPerformResetSourceLevel::test_perform_reset_holds_lock_across_event_clears` (AST-based source check that fails on the pre-fix split-lock and passes after).
 
 **Current Code**: `src/demo_mode.py:1614-1618` — `_stop.clear()` at L1617 and `_pause.clear()` at L1618 outside lock block (lock covers only L1615-1616).
 **Root Cause**: Event clears are not protected by the lock, so the training thread can observe `is_running=False` but `_stop` still set.
@@ -2711,7 +2732,15 @@ S (< 1 hour)
 
 #### BUG-CN-09: `WebSocketManager.active_connections` Not Thread Safe
 
-**Status**: ✅ Implemented (Phase 3C, 2026-04-26) — juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`. `WebSocketManager.__init__` now allocates `self._connections_lock = threading.Lock()`; every `active_connections`/`connection_metadata` mutation site (`connect`, `disconnect`, `send_personal_message`, `broadcast`, `shutdown`) and every observer (`broadcast_from_thread` early-out, `get_connection_count`, `get_connection_info`, `get_statistics`) now executes inside `with self._connections_lock:` — readers snapshot the set under the lock and iterate the snapshot outside it, so the previous `RuntimeError: Set changed size during iteration` is impossible. `disconnect()` releases the lock before invoking `_decrement_ip_count` to avoid nesting `_ip_lock` under `_connections_lock`. Verified by `src/tests/unit/test_websocket_manager_thread_safety.py::TestActiveConnectionsThreadSafety` (concurrent disconnect-vs-snapshot + shutdown snapshot tests).
+✅ **Implemented (Phase 3C) 2026-04-26**
+Added juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`.
+`WebSocketManager.__init__` now allocates `self._connections_lock = threading.Lock()`;
+    every `active_connections`/`connection_metadata` mutation site (`connect`, `disconnect`, `send_personal_message`, `broadcast`, `shutdown`) and
+    every observer (`broadcast_from_thread` early-out, `get_connection_count`, `get_connection_info`, `get_statistics`) now executes
+    inside `with self._connections_lock:` — readers snapshot the set under the lock and iterate the snapshot outside it,
+    so the previous `RuntimeError: Set changed size during iteration` is impossible.
+`disconnect()` releases the lock before invoking `_decrement_ip_count` to avoid nesting `_ip_lock` under `_connections_lock`.
+Verified by `src/tests/unit/test_websocket_manager_thread_safety.py::TestActiveConnectionsThreadSafety` (concurrent disconnect-vs-snapshot + shutdown snapshot tests).
 
 **Current Code**: `src/communication/websocket_manager.py:178,239,304-310,446` — `broadcast_from_thread()` reads from background threads while `connect()`/`disconnect()` modify from the main thread.
 **Root Cause**: Python `set` is not thread-safe for concurrent iteration and modification; `RuntimeError: Set changed size during iteration`.
@@ -2781,7 +2810,14 @@ M (1-4 hours)
 
 #### BUG-CN-10: `message_count` Increment Not Atomic
 
-**Status**: ✅ Implemented (Phase 3C, 2026-04-26) — juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`. `WebSocketManager.broadcast()` now performs the early-out check, the `self.message_count += 1` increment, and the connection-set snapshot inside a single `with self._connections_lock:` block (the same lock added for BUG-CN-09). Per-connection `messages_sent` bookkeeping in `send_personal_message` and `broadcast` also moved under the lock. Verified by `src/tests/unit/test_websocket_manager_thread_safety.py::TestMessageCountAtomicity::test_broadcast_message_count_no_lost_updates` (64 concurrent broadcasts to a seeded connection must produce exactly 64 increments).
+✅ **Implemented (Phase 3C) 2026-04-26**
+Added juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`.
+`WebSocketManager.broadcast()` now performs the early-out check, the `self.message_count += 1` increment,
+    and the connection-set snapshot inside a single `with self._connections_lock:` block
+    (the same lock added for BUG-CN-09).
+Per-connection `messages_sent` bookkeeping in `send_personal_message` and `broadcast` also moved under the lock.
+Verified by `src/tests/unit/test_websocket_manager_thread_safety.py::TestMessageCountAtomicity::test_broadcast_message_count_no_lost_updates`
+    (64 concurrent broadcasts to a seeded connection must produce exactly 64 increments).
 
 **Current Code**: `src/communication/websocket_manager.py:375` — `self.message_count += 1` not thread-safe.
 **Root Cause**: Compound increment (read-modify-write) is not atomic in Python.
@@ -7142,7 +7178,12 @@ RETRYABLE_STATUS_CODES: List[int] = [429, 502, 503, 504]
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-24 (Phase 4B)** — `juniper_cascor_client/constants.py` now defines `RETRYABLE_STATUS_CODES = [429, 502, 503, 504]`. The change is one line plus a longer header comment explaining why 503 (service restart/deploy) and 429 (rate limit) are now retryable. A new regression suite `tests/test_retry_policy.py` pins the allow-list in both directions (canonical transients retried, non-transient 4xx/5xx not) and asserts the `Retry` adapter mounted on `session` reflects the constant end-to-end. The existing `test_service_unavailable_503` test was updated to mount a retry-free `HTTPAdapter` for that one case so it continues to exercise the `JuniperCascorServiceUnavailableError` mapping path. All 251 cascor-client tests pass.
+✅ **Implemented 2026-04-24 (Phase 4B)**
+`juniper_cascor_client/constants.py` now defines `RETRYABLE_STATUS_CODES = [429, 502, 503, 504]`.
+The change is one line plus a longer header comment explaining why 503 (service restart/deploy) and 429 (rate limit) are now retryable.
+A new regression suite `tests/test_retry_policy.py` pins the allow-list in both directions (canonical transients retried, non-transient 4xx/5xx not) and asserts the `Retry` adapter mounted on `session` reflects the constant end-to-end.
+The existing `test_service_unavailable_503` test was updated to mount a retry-free `HTTPAdapter` for that one case so it continues to exercise the `JuniperCascorServiceUnavailableError` mapping path.
+All 251 cascor-client tests pass.
 
 ##### Severity
 
@@ -7570,7 +7611,14 @@ S
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-24 (Phase 4B)** — `JuniperDataClient.create_dataset()` and `FakeDataClient.create_dataset()` now accept `tags: Optional[List[str]]` and `ttl_seconds: Optional[int]`. Both are forwarded to the server's `CreateDatasetRequest` (real client) and persisted in `meta` (fake). The fake enforces the server's `ge=1` Pydantic bound on `ttl_seconds` so tests catch misuse. New regression suite `tests/test_create_dataset_tags_ttl.py` covers POST-body shape (via mocked `_request`), fake-client round-trip through `get_dataset_metadata`, validation of zero / negative TTL, list-aliasing safety, and JSON serializability. All 183 data-client tests pass.
+✅ **Implemented 2026-04-24 (Phase 4B)**
+`JuniperDataClient.create_dataset()` and `FakeDataClient.create_dataset()` now accept `tags: Optional[List[str]]` and `ttl_seconds: Optional[int]`.
+Both are forwarded to the server's `CreateDatasetRequest` (real client) and persisted in `meta` (fake).
+The fake enforces the server's `ge=1` Pydantic bound on `ttl_seconds` so tests catch misuse.
+New regression suite `tests/test_create_dataset_tags_ttl.py` covers POST-body shape (via mocked `_request`),
+    fake-client round-trip through `get_dataset_metadata`, validation of zero / negative TTL,
+    list-aliasing safety, and JSON serializability.
+All 183 data-client tests pass.
 
 ##### Severity
 
@@ -7639,7 +7687,11 @@ RETRY_ALLOWED_METHODS: List[str] = ["HEAD", "GET", "PUT"]
 
 ##### Verification Status
 
-✅ **Implemented 2026-04-24 (Phase 4B)** — `juniper_data_client/constants.py` now defines `RETRY_ALLOWED_METHODS = ["HEAD", "GET", "PUT"]` per RFC 9110 §9.2.2 (idempotent-only). POST, PATCH, and DELETE were removed to prevent duplicate dataset creation (on POST) and repeated side-effects (on DELETE) when a transient 5xx retried a request that had already been applied server-side. The CHANGELOG documents this as an intentional behavior change; callers that need retry for mutations must layer their own idempotency. New regression suite `tests/test_retry_policy.py` pins the allow-list both ways (idempotent allowed, non-idempotent blocked) and verifies the `Retry` adapter mounted on the session reflects the constants end-to-end.
+✅ **Implemented 2026-04-24 (Phase 4B)**
+`juniper_data_client/constants.py` now defines `RETRY_ALLOWED_METHODS = ["HEAD", "GET", "PUT"]` per RFC 9110 §9.2.2 (idempotent-only).
+POST, PATCH, and DELETE were removed to prevent duplicate dataset creation (on POST) and repeated side-effects (on DELETE) when a transient 5xx retried a request that had already been applied server-side.
+The CHANGELOG documents this as an intentional behavior change; callers that need retry for mutations must layer their own idempotency.
+New regression suite `tests/test_retry_policy.py` pins the allow-list both ways (idempotent allowed, non-idempotent blocked) and verifies the `Retry` adapter mounted on the session reflects the constants end-to-end.
 
 ##### Severity
 
@@ -14565,12 +14617,12 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~36 hours
 **Dependencies**: None (can start immediately)
 
-| Phase | Items                                          | Scope | Description                                                          |
-|-------|------------------------------------------------|-------|----------------------------------------------------------------------|
-| 1A ✅ | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03        | 4×S   | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24, PR #42) |
-| 1B ✅ | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14         | 5×S   | juniper-canopy: WS origin validation, auth, query param secrets (Implemented 2026-04-24, PR #175) |
-| 1C ✅ | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks (Implemented 2026-04-24, cascor PR #139 + cascor-worker PR #32) |
-| 1D ✅ | SEC-02 ✅, SEC-04, SEC-10, SEC-16              | 4×S   | juniper-data: rate limiter TTL (closed via Phase 1A JD-SEC-03), async gen, Sentry PII, metrics auth (Implemented 2026-04-25, PR #45) |
+| Phase  | Items                                          | Scope | Description                                                                                                                          |
+|--------|------------------------------------------------|-------|--------------------------------------------------------------------------------------------------------------------------------------|
+| 1A ✅  | SEC-01, JD-SEC-01, JD-SEC-02, JD-SEC-03        | 4×S   | juniper-data: constant-time auth, path traversal, rate limiter (Implemented 2026-04-24, PR #42)                                      |
+| 1B ✅  | SEC-05, SEC-06, SEC-12, SEC-13, SEC-14         | 5×S   | juniper-canopy: WS origin validation, auth, query param secrets (Implemented 2026-04-24, PR #175)                                    |
+| 1C ✅  | SEC-03, SEC-07, SEC-11, SEC-15, SEC-17, SEC-18 | 6×S-M | juniper-cascor + worker: per-IP limits, pickle safety, bounds checks (Implemented 2026-04-24, cascor PR #139 + cascor-worker PR #32) |
+| 1D ✅  | SEC-02 ✅, SEC-04, SEC-10, SEC-16              | 4×S   | juniper-data: rate limiter TTL (closed via Phase 1A JD-SEC-03), async gen, Sentry PII, metrics auth (Implemented 2026-04-25, PR #45) |
 
 #### Track 2: Bug Fixes — Data Integrity and Correctness (juniper-cascor, juniper-data)
 
@@ -14579,13 +14631,13 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~48 hours
 **Dependencies**: None (can start immediately, parallel with Track 1)
 
-| Phase | Items                                      | Scope | Description                                                     |
-|-------|--------------------------------------------|-------|-----------------------------------------------------------------|
-| 2A ✅ | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03  | 3×S   | Critical: dummy candidate, walrus bug, falsy `or` (Implemented 2026-04-24, juniper-cascor PR #138) |
-| 2B ✅ | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs (Implemented 2026-04-25, juniper-data PR #44) |
-| 2C ✅ | BUG-CC-13, BUG-CC-14, BUG-CC-15            | 3×S   | juniper-cascor: memory leaks and body limit bypass (Implemented 2026-04-25, juniper-cascor PR #140) |
-| 2D ✅ | BUG-JD-06, BUG-JD-07, BUG-JD-08, BUG-JD-09 | 4×S   | juniper-data: timestamps, metrics wiring, Prometheus labels (Implemented 2026-04-25, juniper-data PR #46) |
-| 2E ✅ | BUG-CC-01, BUG-CC-02, BUG-CC-04, BUG-CC-07 | 4×S-M | juniper-cascor: topology, correlation, versions, phase tracking (Implemented 2026-04-25, juniper-cascor PR #141) |
+| Phase  | Items                                      | Scope | Description                                                                                                      |
+|--------|--------------------------------------------|-------|------------------------------------------------------------------------------------------------------------------|
+| 2A ✅  | BUG-CC-18/ROBUST-01, BUG-CC-11, BUG-CC-03  | 3×S   | Critical: dummy candidate, walrus bug, falsy `or` (Implemented 2026-04-24, juniper-cascor PR #138)               |
+| 2B ✅  | BUG-JD-01, BUG-JD-02, BUG-JD-03, BUG-JD-04 | 4×S-M | juniper-data: ZIP OOM, TOCTOU, atomic write, det IDs (Implemented 2026-04-25, juniper-data PR #44)               |
+| 2C ✅  | BUG-CC-13, BUG-CC-14, BUG-CC-15            | 3×S   | juniper-cascor: memory leaks and body limit bypass (Implemented 2026-04-25, juniper-cascor PR #140)              |
+| 2D ✅  | BUG-JD-06, BUG-JD-07, BUG-JD-08, BUG-JD-09 | 4×S   | juniper-data: timestamps, metrics wiring, Prometheus labels (Implemented 2026-04-25, juniper-data PR #46)        |
+| 2E ✅  | BUG-CC-01, BUG-CC-02, BUG-CC-04, BUG-CC-07 | 4×S-M | juniper-cascor: topology, correlation, versions, phase tracking (Implemented 2026-04-25, juniper-cascor PR #141) |
 
 #### Track 3: Concurrency and Thread Safety (juniper-canopy, juniper-cascor, juniper-data)
 
@@ -14594,12 +14646,18 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~24 hours
 **Dependencies**: Partially blocked by Track 2 (shared state fixes)
 
-| Phase | Items                                         | Scope | Description                                          |
-|-------|-----------------------------------------------|-------|------------------------------------------------------|
-| 3A ✅ | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅    | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11) |
-| 3B ✅ | CONC-01 ✅, CONC-02/BUG-CC-16 ✅, CONC-03/BUG-CC-17 ✅ | 3×S   | Per-IP race (Implemented 2026-04-26, juniper-canopy concurrency/phase-3b-conc-01-per-ip-race), broadcast throttle + split-lock (Implemented 2026-04-26, juniper-cascor concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics) |
-| 3C ✅ | BUG-CN-09 ✅, BUG-CN-10 ✅, CONC-08 ✅, CONC-09 ✅ | 4×S   | Thread-safe sets + atomic counters (Implemented 2026-04-26, juniper-canopy concurrency/phase-3c-canopy-thread-safety), is_running consistency (same canopy branch), fire-and-forget startup tasks (Implemented 2026-04-26, juniper-cascor concurrency/phase-3c-conc-09-startup-task-references) |
-| 3D ✅ | CONC-10 ✅, CONC-12/BUG-JD-11 ✅, BUG-CN-01 ✅ | 3×S   | Health monitor race (Implemented 2026-04-27, juniper-cascor concurrency/phase-3d-conc-10-health-monitor-race), access-count TOCTOU (Implemented 2026-04-27, juniper-data concurrency/phase-3d-conc-12-record-access-toctou), reset race (Implemented 2026-04-27, juniper-canopy concurrency/phase-3d-bug-cn-01-perform-reset) — **Track 3 complete** |
+| Phase  | Items                                                  | Scope | Description                                                                                                             |
+|--------|--------------------------------------------------------|-------|-------------------------------------------------------------------------------------------------------------------------|
+| 3A ✅  | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅             | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation                                |
+|        |                                                        |       | (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11)                                 |
+| 3B ✅  | CONC-01 ✅, CONC-02/BUG-CC-16 ✅, CONC-03/BUG-CC-17 ✅ | 3×S   | Per-IP race (Implemented 2026-04-26, juniper-canopy concurrency/phase-3b-conc-01-per-ip-race), broadcast throttle +     |
+|        |                                                        |       | split-lock (Implemented 2026-04-26, juniper-cascor concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics)          |
+| 3C ✅  | BUG-CN-09 ✅, BUG-CN-10 ✅, CONC-08 ✅, CONC-09 ✅     | 4×S   | Thread-safe sets + atomic counters (Implemented 2026-04-26, juniper-canopy concurrency/phase-3c-canopy-thread-safety),  |
+|        |                                                        |       | is_running consistency (same canopy branch), fire-and-forget startup tasks (Implemented 2026-04-26,                     |
+|        |                                                        |       | juniper-cascor concurrency/phase-3c-conc-09-startup-task-references)                                                    |
+| 3D ✅  | CONC-10 ✅, CONC-12/BUG-JD-11 ✅, BUG-CN-01 ✅         | 3×S   | Health monitor race (Implemented 2026-04-27, juniper-cascor concurrency/phase-3d-conc-10-health-monitor-race),          |
+|        |                                                        |       | access-count TOCTOU (Implemented 2026-04-27, juniper-data concurrency/phase-3d-conc-12-record-access-toctou),           |
+|        |                                                        |       | reset race (Implemented 2026-04-27, juniper-canopy concurrency/phase-3d-bug-cn-01-perform-reset) — **Track 3 complete** |
 
 #### Track 4: Cross-Repo Alignment and Client Libraries (juniper-data-client, juniper-cascor-client, juniper-cascor-worker)
 
@@ -14608,13 +14666,16 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~56 hours
 **Dependencies**: Track 1 security fixes for auth-related items; Track 2 for API contract items
 
-| Phase  | Items                                            | Scope | Description                                                                |
-|--------|--------------------------------------------------|-------|----------------------------------------------------------------------------|
-| 4A ✅  | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24) |
-| 4B ✅  | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24)   |
-| 4C ✅  | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25)       |
-| 4D ✅  | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format (Implemented 2026-04-26, juniper-cascor-client PR #25 + juniper-cascor-worker PR #34) |
-| 4E ✅  | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements (Implemented 2026-04-26, juniper-cascor-client PR #25 + juniper-cascor-worker PR #34 + juniper-data-client PR #36; CW-05 Approach B interim — see follow-up) |
+| Phase  | Items                                            | Scope | Description                                                                 |
+|--------|--------------------------------------------------|-------|-----------------------------------------------------------------------------|
+| 4A ✅  | XREPO-01/DC-01, XREPO-01b/DC-02, XREPO-01c/DC-03 | 3×S   | Generator name constants — immediate breaking fix (Implemented 2026-04-24)  |
+| 4B ✅  | XREPO-02/CC-02, XREPO-09, XREPO-11               | 3×S   | 503 retry, missing params, non-idempotent retry (Implemented 2026-04-24)    |
+| 4C ✅  | ERR-01, ERR-02, CW-01, CW-06                     | 4×S   | JSONDecodeError handling across all clients (Implemented 2026-04-25)        |
+| 4D ✅  | XREPO-04, XREPO-05, XREPO-07/XREPO-08            | 3×M   | Protocol constants, state names, WS message format (Implemented 2026-04-26, |
+|        |                                                  |       | juniper-cascor-client PR #25 + juniper-cascor-worker PR #34)                |
+| 4E ✅  | CC-04..CC-07, CW-02..CW-08                       | 8×S-M | Client missing methods, worker improvements (Implemented 2026-04-26,        |
+|        |                                                  |       | juniper-cascor-client PR #25 + juniper-cascor-worker PR #34 +               |
+|        |                                                  |       | juniper-data-client PR #36; CW-05 Approach B interim — see follow-up)       |
 
 #### Track 5: Infrastructure, Deploy, and CI/CD (juniper-deploy, all repos CI)
 
