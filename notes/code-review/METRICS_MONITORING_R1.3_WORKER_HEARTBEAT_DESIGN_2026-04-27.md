@@ -8,6 +8,7 @@
 **Composite severity:** 4 (release-blocking)
 **Affected repos:** juniper-cascor-worker, juniper-cascor, juniper-deploy
 **Predecessors merged 2026-04-27:**
+
 - juniper-data#51, juniper-cascor#147, juniper-canopy#183, juniper-deploy#35 (R1.2 probe semantics)
 
 ---
@@ -237,12 +238,12 @@ Actually — the probe-path change is breaking for operators running an old work
 
 ## 8. Implementation sequence
 
-| Order | Repo                  | Branch                                   | What ships |
-|-------|-----------------------|------------------------------------------|------------|
-| 1     | juniper-cascor        | `metrics-mon-seed-04-worker-heartbeat`   | `WorkerRegistration` enrichment + `/v1/workers` serialization (accepts old + new heartbeat shapes) |
-| 2     | juniper-cascor-worker | `metrics-mon-seed-04-worker-heartbeat`   | HTTP health listener + enriched heartbeat payload + task accounting |
-| 3     | juniper-deploy        | `metrics-mon-seed-04-worker-probes`      | Helm chart probe wiring with `worker.healthcheck.enabled` flag (default `false` initially) |
-| 4     | juniper-deploy        | follow-up                                | Flip `worker.healthcheck.enabled` default to `true` once the worker image with the listener is stable in staging |
+| Order | Repo                  | Branch                                 | What ships                                                                                                       |
+|-------|-----------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| 1     | juniper-cascor        | `metrics-mon-seed-04-worker-heartbeat` | `WorkerRegistration` enrichment + `/v1/workers` serialization (accepts old + new heartbeat shapes)               |
+| 2     | juniper-cascor-worker | `metrics-mon-seed-04-worker-heartbeat` | HTTP health listener + enriched heartbeat payload + task accounting                                              |
+| 3     | juniper-deploy        | `metrics-mon-seed-04-worker-probes`    | Helm chart probe wiring with `worker.healthcheck.enabled` flag (default `false` initially)                       |
+| 4     | juniper-deploy        | follow-up                              | Flip `worker.healthcheck.enabled` default to `true` once the worker image with the listener is stable in staging |
 
 Order is enforced because: cascor must accept the new fields **before** workers send them (forward compat); workers must implement the listener **before** Helm's httpGet probes become defaults. Step 4 is a separate flip to avoid coupling the cut from step 3 with the staging burn-in.
 
@@ -250,13 +251,13 @@ Order is enforced because: cascor must accept the new fields **before** workers 
 
 ## 9. Backwards compatibility
 
-| Audience                                  | Impact                                                    | Mitigation |
-|-------------------------------------------|-----------------------------------------------------------|------------|
-| Workers running the old image             | Send minimal heartbeat. Cascor accepts; new fields appear as null/0 in `/v1/workers`. | Keyword-default acceptance in `record_heartbeat()` |
-| Cascor running the old image              | Receives enriched heartbeat from new worker. Unknown fields ignored by JSON unmarshaller (existing behavior). | n/a |
-| Helm chart consumers                      | `worker.healthcheck.enabled=false` by default (step 3) avoids breaking pods running old worker images. | Explicit flip in step 4 after burn-in. |
-| `kubectl describe pod` / k8s events       | New `httpGet` probe events appear once the flag flips.    | Documented in CHANGELOG. |
-| Operators using `gh workers list`-style scripts | New JSON keys appear on `/v1/workers`; existing keys unchanged. | Document in cascor CHANGELOG. |
+| Audience                                        | Impact                                                                                                        | Mitigation                                         |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
+| Workers running the old image                   | Send minimal heartbeat. Cascor accepts; new fields appear as null/0 in `/v1/workers`.                         | Keyword-default acceptance in `record_heartbeat()` |
+| Cascor running the old image                    | Receives enriched heartbeat from new worker. Unknown fields ignored by JSON unmarshaller (existing behavior). | n/a                                                |
+| Helm chart consumers                            | `worker.healthcheck.enabled=false` by default (step 3) avoids breaking pods running old worker images.        | Explicit flip in step 4 after burn-in.             |
+| `kubectl describe pod` / k8s events             | New `httpGet` probe events appear once the flag flips.                                                        | Documented in CHANGELOG.                           |
+| Operators using `gh workers list`-style scripts | New JSON keys appear on `/v1/workers`; existing keys unchanged.                                               | Document in cascor CHANGELOG.                      |
 
 ---
 
@@ -285,24 +286,24 @@ Order is enforced because: cascor must accept the new fields **before** workers 
 
 ## 11. Risks and mitigations
 
-| Risk                                                                          | Likelihood | Mitigation |
-|-------------------------------------------------------------------------------|:----------:|------------|
-| Hand-rolled HTTP handler has a parser bug that hangs the worker               | Low        | Strict GET-only handler; bounded read with timeout; reject any non-trivial request; comprehensive malformed-request unit tests |
-| HTTP listener bind conflicts with cascor pod on shared host                   | Low        | Default port `8210` (cascor uses 8200/8201); operators set via `CASCOR_WORKER_HEALTH_PORT` |
-| `rss_mb` reading wrong unit on macOS                                          | Medium     | Platform branch in `_sample_rss_mb()`; unit test exercises both code paths via monkeypatch |
-| Workers running old image lose HTTP probes when chart flag flips              | Medium     | Two-step rollout (steps 3 then 4 in §8); flag default `false` until burn-in |
-| Heartbeat payload growth slows scaled-out worker pools (1000+ workers)        | Low        | Payload still < 200 bytes; cascor TLS connection cost dominates |
-| Stale `last_task_completed_at` after worker reset confuses operators          | Low        | Explicit `null` when no task has completed since boot (not `0.0`) |
+| Risk                                                                   | Likelihood | Mitigation                                                                                                                     |
+|------------------------------------------------------------------------|:----------:|--------------------------------------------------------------------------------------------------------------------------------|
+| Hand-rolled HTTP handler has a parser bug that hangs the worker        |    Low     | Strict GET-only handler; bounded read with timeout; reject any non-trivial request; comprehensive malformed-request unit tests |
+| HTTP listener bind conflicts with cascor pod on shared host            |    Low     | Default port `8210` (cascor uses 8200/8201); operators set via `CASCOR_WORKER_HEALTH_PORT`                                     |
+| `rss_mb` reading wrong unit on macOS                                   |   Medium   | Platform branch in `_sample_rss_mb()`; unit test exercises both code paths via monkeypatch                                     |
+| Workers running old image lose HTTP probes when chart flag flips       |   Medium   | Two-step rollout (steps 3 then 4 in §8); flag default `false` until burn-in                                                    |
+| Heartbeat payload growth slows scaled-out worker pools (1000+ workers) |    Low     | Payload still < 200 bytes; cascor TLS connection cost dominates                                                                |
+| Stale `last_task_completed_at` after worker reset confuses operators   |    Low     | Explicit `null` when no task has completed since boot (not `0.0`)                                                              |
 
 ---
 
-## 12. Open questions before kickoff
+## 12. Open questions before kickoff — RESOLVED 2026-04-27
 
-1. **HTTP listener choice (Option A/B/C)**: confirm Option C (`asyncio.start_server` + minimal handler), or override to A/B?
-2. **Default health port (8210)**: confirm, or pick a different port?
-3. **`rss_mb` on macOS**: do we test macOS at all in CI? If not, the platform branch can ship without a macOS unit test (assumed Linux-only).
-4. **Two-step Helm rollout** (steps 3 + 4 in §8): acceptable, or prefer single PR with `worker.healthcheck.enabled=true` default?
-5. **Chart version**: minor (`1.0.0 → 1.1.0`) or major (`1.0.0 → 2.0.0`) given the probe wiring changes? Probes are gated by the new flag; default behavior unchanged in step 3, so I'd argue minor.
+1. **HTTP listener choice:** **Option C** — `asyncio.start_server` + minimal handler in a new `juniper_cascor_worker/http_health.py` module. Zero new dependencies.
+2. **Default health port:** **8210** confirmed. Configurable via `CASCOR_WORKER_HEALTH_PORT`.
+3. **`rss_mb` on macOS:** macOS is a supported platform — must work and must be CI-tested. The `_sample_rss_mb()` platform branch is required, and the unit test must exercise both Linux and macOS paths via `monkeypatch` on `sys.platform`. **If CI does not currently exercise macOS for the worker repo, that gap is itself a finding**: a new entry is added to the roadmap (§9) tracking it, and a brief CI-coverage note is appended to the analysis baseline.
+4. **Two-step Helm rollout:** **Proceed as documented** — chart ships with `worker.healthcheck.enabled=false` default (step 3); flag default flips to `true` in a follow-up after staging burn-in (step 4).
+5. **Chart version:** **Minor bump** `1.0.0 → 1.1.0` confirmed. Default behavior unchanged at step 3 (flag off); the breaking change in step 4 lifts the chart to `1.2.0` (still minor in 1.x as the contract change is gated by an opt-in flag).
 
 ---
 
