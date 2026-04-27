@@ -2,7 +2,14 @@
 
 The juniper project is currently experiencing failures in its test suite for the following applications:
 
--
+- juniper-ml
+- juniper-canopy
+- juniper-cascor
+- juniper-cascor-client
+- juniper-cascor-worker
+- juniper-data
+- juniper-data-client
+- juniper-deploy
 
 ## Juniper Project
 
@@ -43,7 +50,14 @@ The juniper project applications listed above are currently experiencing failure
 
 These failing tests are blocking further progress for these applications:
 
--
+- juniper-ml
+- juniper-canopy
+- juniper-cascor
+- juniper-cascor-client
+- juniper-cascor-worker
+- juniper-data
+- juniper-data-client
+- juniper-deploy
 
 ## Objectives
 
