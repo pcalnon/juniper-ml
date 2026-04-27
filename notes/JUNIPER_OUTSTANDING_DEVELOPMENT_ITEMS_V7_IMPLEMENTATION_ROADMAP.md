@@ -2366,6 +2366,8 @@ S (< 1 hour)
 
 #### BUG-CN-01: `_stop.clear()` Race — `_perform_reset()` Without Lock
 
+**Status**: ✅ Implemented (Phase 3D, 2026-04-27) — juniper-canopy branch `concurrency/phase-3d-bug-cn-01-perform-reset`. `DemoMode._perform_reset()` now applies all three transitions (`self.is_running = False`, `self._stop.clear()`, `self._pause.clear()`) inside a single `with self._lock:` block. Pre-fix the lock covered only the `is_running` write, so a reader could observe `is_running == False` while `_stop` was still set, leaving the next start() racing against a stale stop signal that gets cleared a moment later. Verified by `src/tests/unit/test_demo_mode_perform_reset.py::TestPerformResetSourceLevel::test_perform_reset_holds_lock_across_event_clears` (AST-based source check that fails on the pre-fix split-lock and passes after).
+
 **Current Code**: `src/demo_mode.py:1614-1618` — `_stop.clear()` at L1617 and `_pause.clear()` at L1618 outside lock block (lock covers only L1615-1616).
 **Root Cause**: Event clears are not protected by the lock, so the training thread can observe `is_running=False` but `_stop` still set.
 
@@ -3456,7 +3458,7 @@ M (1-4 hours)
 
 ---
 
-#### BUG-JD-11: `record_access` TOCTOU Race on access_count Increment
+#### BUG-JD-11: `record_access` TOCTOU Race on access_count Increment — ✅ Implemented (Phase 3D, 2026-04-27, see CONC-12 for shared remediation in juniper-data branch `concurrency/phase-3d-conc-12-record-access-toctou`)
 
 **Current Code**: `storage/base.py:125-135` — see CONC-12.
 **Root Cause**: Non-atomic read-modify-write.
@@ -11889,6 +11891,8 @@ S (< 1 hour)
 
 #### CONC-10: Health Monitor Deregister/Assign Race Window
 
+**Status**: ✅ Implemented (Phase 3D, 2026-04-27) — juniper-cascor branch `concurrency/phase-3d-conc-10-health-monitor-race`. `WorkerCoordinator._check_stale_workers` now holds `self._lock` across the entire per-worker sequence: re-check liveness via `self._registry.get(...)`, requeue any active task on `self._unassigned_tasks`, AND call `self._registry.deregister(...)`. Pre-fix the deregister was outside the lock, leaving a window in which `get_next_assignment(worker_id)` (which holds `self._lock` for its entire critical section) could land a task on the worker between the active-task handling and the deregister — incurring up to a 120s `_task_reassignment_timeout` delay before recovery. The send-callback unregister stays outside the lock per the lock-order rule. Verified by `src/tests/unit/api/test_coordinator_health_monitor_race.py::TestCheckStaleWorkersSourceLevel` (AST-based source checks that always run + behavioural test that races assignment vs deregister) — source check fails on the pre-fix code and passes after.
+
 **Current Code**: `coordinator.py:379-408` — task can be assigned to a worker that is about to be deregistered, creating a 120s delay before task reassignment.
 **Root Cause**: No atomic check-and-assign for worker availability during task assignment.
 
@@ -11954,6 +11958,8 @@ S (< 1 hour)
 ---
 
 #### CONC-12: `record_access` TOCTOU on access_count Increment
+
+**Status**: ✅ Implemented (Phase 3D, 2026-04-27) — juniper-data branch `concurrency/phase-3d-conc-12-record-access-toctou`. `DatasetStore.record_access` now wraps the entire `get_meta` → in-memory increment → `update_meta` sequence inside `with self._version_lock:` (using the existing class-level lock), so two concurrent requests racing on the same dataset can no longer both read the same count, both increment locally, and both write back the same new value. Per-process locking only — multi-process deployments still accept best-effort counting per the BUG-JD-05 caveat. Verified by `juniper_data/tests/unit/test_record_access_concurrency.py::TestRecordAccessAtomicity` (4 tests including a deepcopy + sleep-widened race that fails with `1 == 16` lost-updates on the pre-fix code and passes after).
 
 **Current Code**: `base.py:125-135` — two concurrent requests read same count, both increment, one lost.
 **Root Cause**: Non-atomic read-modify-write on access counter without synchronization.
@@ -14593,7 +14599,7 @@ Development tracks are identified by analyzing:
 | 3A ✅ | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅    | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11) |
 | 3B ✅ | CONC-01 ✅, CONC-02/BUG-CC-16 ✅, CONC-03/BUG-CC-17 ✅ | 3×S   | Per-IP race (Implemented 2026-04-26, juniper-canopy concurrency/phase-3b-conc-01-per-ip-race), broadcast throttle + split-lock (Implemented 2026-04-26, juniper-cascor concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics) |
 | 3C ✅ | BUG-CN-09 ✅, BUG-CN-10 ✅, CONC-08 ✅, CONC-09 ✅ | 4×S   | Thread-safe sets + atomic counters (Implemented 2026-04-26, juniper-canopy concurrency/phase-3c-canopy-thread-safety), is_running consistency (same canopy branch), fire-and-forget startup tasks (Implemented 2026-04-26, juniper-cascor concurrency/phase-3c-conc-09-startup-task-references) |
-| 3D    | CONC-10, CONC-12/BUG-JD-11, BUG-CN-01         | 3×S   | Health monitor race, access count TOCTOU, reset race |
+| 3D ✅ | CONC-10 ✅, CONC-12/BUG-JD-11 ✅, BUG-CN-01 ✅ | 3×S   | Health monitor race (Implemented 2026-04-27, juniper-cascor concurrency/phase-3d-conc-10-health-monitor-race), access-count TOCTOU (Implemented 2026-04-27, juniper-data concurrency/phase-3d-conc-12-record-access-toctou), reset race (Implemented 2026-04-27, juniper-canopy concurrency/phase-3d-bug-cn-01-perform-reset) — **Track 3 complete** |
 
 #### Track 4: Cross-Repo Alignment and Client Libraries (juniper-data-client, juniper-cascor-client, juniper-cascor-worker)
 
