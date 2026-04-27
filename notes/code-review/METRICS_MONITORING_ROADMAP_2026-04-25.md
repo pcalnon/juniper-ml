@@ -207,8 +207,8 @@ Total estimate: **26–39 engineer-days** if executed sequentially. R3 and R4 ha
 
 | Phase | Item                         | Status      | Owner | PR(s) | Worktree | Notes |
 |-------|------------------------------|-------------|-------|-------|----------|-------|
-| R1.1  | seed-01 cardinality          | not started |       |       |          |       |
-| R1.2  | seed-02/03 probe semantics   | not started |       |       |          |       |
+| R1.1  | seed-01 cardinality          | **done**    | Paul Calnon | juniper-data#49, juniper-cascor#143, juniper-canopy#178 | cleaned | Unified `_unmatched` bucket + `http_unmatched_requests_total{method}` counter across all 3 servers (merged 2026-04-27) |
+| R1.2  | seed-02/03 probe semantics   | design pending |    |       |          | Awaiting [METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md](METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md); needs juniper-deploy Helm coordination |
 | R1.3  | seed-04 worker heartbeat     | not started |       |       |          |       |
 | R2.1  | seed-06 shared lib           | not started |       |       |          |       |
 | R2.2  | seed-05 WS schema validation | not started |       |       |          |       |
