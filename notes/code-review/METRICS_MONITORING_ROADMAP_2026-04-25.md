@@ -208,8 +208,8 @@ Total estimate: **26–39 engineer-days** if executed sequentially. R3 and R4 ha
 | Phase | Item                         | Status      | Owner | PR(s) | Worktree | Notes |
 |-------|------------------------------|-------------|-------|-------|----------|-------|
 | R1.1  | seed-01 cardinality          | **done**    | Paul Calnon | juniper-data#49, juniper-cascor#143, juniper-canopy#178 | cleaned | Unified `_unmatched` bucket + `http_unmatched_requests_total{method}` counter across all 3 servers (merged 2026-04-27) |
-| R1.2  | seed-02/03 probe semantics   | design pending |    |       |          | Awaiting [METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md](METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md); needs juniper-deploy Helm coordination |
-| R1.3  | seed-04 worker heartbeat     | not started |       |       |          |       |
+| R1.2  | seed-02/03 probe semantics   | **done**    | Paul Calnon | juniper-data#51, juniper-cascor#147, juniper-canopy#183, juniper-deploy#35 | cleaned | Liveness tick (250 ms budget), readiness 503-on-not_ready, `X-Juniper-Readiness` header, cascor lifecycle heartbeat counter, Helm chart v1.0.0 with corrected probe paths (merged 2026-04-27) |
+| R1.3  | seed-04 worker heartbeat     | design pending |    |       |          | Awaiting [METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md](METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md) |
 | R2.1  | seed-06 shared lib           | not started |       |       |          |       |
 | R2.2  | seed-05 WS schema validation | not started |       |       |          |       |
 | R2.3  | seed-15 probe symmetry       | not started |       |       |          |       |
