@@ -2709,6 +2709,8 @@ S (< 1 hour)
 
 #### BUG-CN-09: `WebSocketManager.active_connections` Not Thread Safe
 
+**Status**: ✅ Implemented (Phase 3C, 2026-04-26) — juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`. `WebSocketManager.__init__` now allocates `self._connections_lock = threading.Lock()`; every `active_connections`/`connection_metadata` mutation site (`connect`, `disconnect`, `send_personal_message`, `broadcast`, `shutdown`) and every observer (`broadcast_from_thread` early-out, `get_connection_count`, `get_connection_info`, `get_statistics`) now executes inside `with self._connections_lock:` — readers snapshot the set under the lock and iterate the snapshot outside it, so the previous `RuntimeError: Set changed size during iteration` is impossible. `disconnect()` releases the lock before invoking `_decrement_ip_count` to avoid nesting `_ip_lock` under `_connections_lock`. Verified by `src/tests/unit/test_websocket_manager_thread_safety.py::TestActiveConnectionsThreadSafety` (concurrent disconnect-vs-snapshot + shutdown snapshot tests).
+
 **Current Code**: `src/communication/websocket_manager.py:178,239,304-310,446` — `broadcast_from_thread()` reads from background threads while `connect()`/`disconnect()` modify from the main thread.
 **Root Cause**: Python `set` is not thread-safe for concurrent iteration and modification; `RuntimeError: Set changed size during iteration`.
 
@@ -2776,6 +2778,8 @@ M (1-4 hours)
 ---
 
 #### BUG-CN-10: `message_count` Increment Not Atomic
+
+**Status**: ✅ Implemented (Phase 3C, 2026-04-26) — juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`. `WebSocketManager.broadcast()` now performs the early-out check, the `self.message_count += 1` increment, and the connection-set snapshot inside a single `with self._connections_lock:` block (the same lock added for BUG-CN-09). Per-connection `messages_sent` bookkeeping in `send_personal_message` and `broadcast` also moved under the lock. Verified by `src/tests/unit/test_websocket_manager_thread_safety.py::TestMessageCountAtomicity::test_broadcast_message_count_no_lost_updates` (64 concurrent broadcasts to a seeded connection must produce exactly 64 increments).
 
 **Current Code**: `src/communication/websocket_manager.py:375` — `self.message_count += 1` not thread-safe.
 **Root Cause**: Compound increment (read-modify-write) is not atomic in Python.
@@ -11742,6 +11746,8 @@ S (< 1 hour)
 
 #### CONC-08: `is_running` Reads/Writes Inconsistently Locked
 
+**Status**: ✅ Implemented (Phase 3C, 2026-04-26) — juniper-canopy branch `concurrency/phase-3c-canopy-thread-safety`. `DemoMode` now exposes a thread-safe `running` property and `_set_running` helper, both serializing through the existing `self._lock`. The previously unprotected sites — `start()` (`if self.is_running and not reset`), `stop()`/`pause()`/`resume()` (`if not self.is_running`), `reset()` (`if was_running := self.is_running`), `regenerate_dataset()` (`if self.is_running`), and the training-thread completion writes (`self.is_running = False` after stop) — now use these helpers. Sites already inside `with self._lock:` blocks (init, completion-under-lock, get_current_state) keep direct attribute access since they're already protected. Verified by `src/tests/unit/test_demo_mode_running_property.py` (5 source-level checks that always run + 5 behavioural tests that `importorskip("torch")`).
+
 **Current Code**: `demo_mode.py:1151,1293,1398,1478` — `self.is_running` checked outside lock in some paths, set inside lock in others.
 **Root Cause**: Boolean check-then-act on `is_running` is not atomic; race between check and subsequent action.
 
@@ -11805,6 +11811,8 @@ M (1-4 hours)
 ---
 
 #### CONC-09: Fire-and-Forget `asyncio.create_task` Without Stored Reference
+
+**Status**: ✅ Implemented (Phase 3C, 2026-04-26) — juniper-cascor branch `concurrency/phase-3c-conc-09-startup-task-references`. `lifespan()` now stores both auto-start tasks on `app.state.startup_tasks` (a list[asyncio.Task]) and attaches the new `_log_startup_task_exception` done-callback that logs any non-cancellation exception with `exc_info=` so failures surface at error level instead of being swallowed by the loop. Each task is also given a `name=` for debuggability. The shutdown phase cancels any in-flight startup task and awaits them with `asyncio.gather(..., return_exceptions=True)` so cancellation errors don't escape the lifespan boundary. Verified by `src/tests/unit/api/test_app_startup_tasks.py` (4 source-level checks that always run + 4 behavioural tests that `importorskip("torch")`).
 
 **Current Code**: `app.py:137,142` — `asyncio.create_task(_auto_start_training(...))` and `asyncio.create_task(_auto_start_canopy(...))` — task references not stored.
 **Root Cause**: Without stored references, task exceptions are silently swallowed and tasks can be garbage-collected.
@@ -14584,7 +14592,7 @@ Development tracks are identified by analyzing:
 |-------|-----------------------------------------------|-------|------------------------------------------------------|
 | 3A ✅ | CONC-04/BUG-JD-10 ✅, CONC-07/BUG-CN-11 ✅    | 2×S   | Async event loop blocking (closed via Phase 1D PR #45 SEC-04 shared fix), state mutation (Implemented 2026-04-26, juniper-canopy concurrency/phase-3a-track-3-conc-07-bug-cn-11) |
 | 3B ✅ | CONC-01 ✅, CONC-02/BUG-CC-16 ✅, CONC-03/BUG-CC-17 ✅ | 3×S   | Per-IP race (Implemented 2026-04-26, juniper-canopy concurrency/phase-3b-conc-01-per-ip-race), broadcast throttle + split-lock (Implemented 2026-04-26, juniper-cascor concurrency/phase-3b-conc-02-conc-03-broadcast-and-metrics) |
-| 3C    | BUG-CN-09, BUG-CN-10, CONC-08, CONC-09        | 4×S   | Thread-safe sets, atomic counters, fire-and-forget   |
+| 3C ✅ | BUG-CN-09 ✅, BUG-CN-10 ✅, CONC-08 ✅, CONC-09 ✅ | 4×S   | Thread-safe sets + atomic counters (Implemented 2026-04-26, juniper-canopy concurrency/phase-3c-canopy-thread-safety), is_running consistency (same canopy branch), fire-and-forget startup tasks (Implemented 2026-04-26, juniper-cascor concurrency/phase-3c-conc-09-startup-task-references) |
 | 3D    | CONC-10, CONC-12/BUG-JD-11, BUG-CN-01         | 3×S   | Health monitor race, access count TOCTOU, reset race |
 
 #### Track 4: Cross-Repo Alignment and Client Libraries (juniper-data-client, juniper-cascor-client, juniper-cascor-worker)
