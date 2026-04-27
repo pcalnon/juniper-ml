@@ -198,6 +198,12 @@ No repo has end-to-end metric tests across the wire (cascor → canopy WS metric
 
 ---
 
+## 4.5 CI platform coverage gap (added 2026-04-27)
+
+Surfaced during R1.3 design review: **none** of the in-scope repos run their test suites on macOS in GitHub Actions — every workflow uses `runs-on: ubuntu-latest` (verified across `juniper-cascor`, `juniper-cascor-worker`, `juniper-data`, `juniper-canopy`). Per project requirements macOS is a supported platform, so the gap is real and tracked as roadmap item **R3.7 macOS CI matrix**. The R1.3 worker `_sample_rss_mb()` platform branch is the immediate driver (Linux uses kilobytes, macOS uses bytes for `ru_maxrss`), but the gap is broader than R1.3 — anything assuming POSIX timing, signal semantics, or filesystem behavior currently ships untested on macOS.
+
+---
+
 ## 5. Inputs the review will consume
 
 This baseline document, plus:

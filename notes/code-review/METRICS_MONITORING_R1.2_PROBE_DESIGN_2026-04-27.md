@@ -72,11 +72,11 @@ Backwards-compatibility endpoint. **No semantic change.** Returns `{"status": "o
 |--------------------|----------------------------------------------------------------------------------------|:---------:|---------------|
 | `ready`            | All required dependencies healthy                                                      |    200    | `"ready"`     |
 | `degraded`         | All required deps healthy; at least one **optional** dep unhealthy or `not_configured` |    200    | `"degraded"`  |
-| `unready`          | At least one **required** dep unhealthy                                                |    503    | `"unready"`   |
+| `not_ready`        | At least one **required** dep unhealthy                                                |    503    | `"not_ready"` |
 
 **Required vs optional** is decided per service in §5.
 
-**Header:** `X-Juniper-Readiness: ready|degraded|unready` mirrors the body, so probe logs and `kubectl get pods` can surface state without curl-piping into jq.
+**Header:** `X-Juniper-Readiness: ready|degraded|not_ready` mirrors the body, so probe logs and `kubectl get pods` can surface state without curl-piping into jq.
 
 **Backwards compat:** `degraded` continues to return 200 (LB keeps traffic flowing). The breaking change is that **previously-passing `unhealthy` deps now return 503**. Helm `failureThreshold` (currently 3–5) absorbs transient blips; only sustained unhealth shifts traffic.
 
@@ -97,7 +97,7 @@ Backwards-compatibility endpoint. **No semantic change.** Returns `{"status": "o
 |-----------------|:---------:|----------------------------------------|----------------------------|
 | Dataset storage |  **Yes**  | `Path(settings.storage_path).is_dir()` | dir exists and is readable |
 
-Single-required-dep service. `degraded` is unreachable; only `ready` or `unready`.
+Single-required-dep service. `degraded` is unreachable; only `ready` or `not_ready`.
 
 ### 5.2 juniper-cascor
 
@@ -167,13 +167,13 @@ Order matters: if Helm flips first, liveness/readiness paths point at endpoints 
 
 ## 8. Backwards compatibility
 
-| Audience               | What changes                                                      | Mitigation                                                                                                                                                                   |
-|------------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| External monitoring    | `/v1/health/ready` may now return 503 instead of 200              | Documented in PR body and CHANGELOG; existing alerting rules that page on `status:"degraded"` text continue to fire because body still contains `degraded`/`unready` strings |
-| Helm chart consumers   | Probe paths corrected in `values.yaml` defaults                   | Major chart version bump; release notes call out the wiring change                                                                                                           |
-| Compose users          | No change — compose still hits `/v1/health` (ok)                  | n/a                                                                                                                                                                          |
-| Existing dashboards    | None directly — body schema preserved; status code is new info    | n/a                                                                                                                                                                          |
-| `kubectl describe pod` | New `X-Juniper-Readiness` header surfaces in probe failure detail | Reduces RCA time                                                                                                                                                             |
+| Audience               | What changes                                                      | Mitigation                                                                                                                                                                     |
+|------------------------|-------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| External monitoring    | `/v1/health/ready` may now return 503 instead of 200              | Documented in PR body and CHANGELOG; existing alerting rules that page on `status:"degraded"` text continue to fire because body still contains `degraded`/`not_ready` strings |
+| Helm chart consumers   | Probe paths corrected in `values.yaml` defaults                   | Major chart version bump; release notes call out the wiring change                                                                                                             |
+| Compose users          | No change — compose still hits `/v1/health` (ok)                  | n/a                                                                                                                                                                            |
+| Existing dashboards    | None directly — body schema preserved; status code is new info    | n/a                                                                                                                                                                            |
+| `kubectl describe pod` | New `X-Juniper-Readiness` header surfaces in probe failure detail | Reduces RCA time                                                                                                                                                               |
 
 ---
 
@@ -237,7 +237,7 @@ Each repo's PR includes its variant. After R2.1, this can be promoted to a share
 
 ## 12. Decision log
 
-- **Why `_unmatched`-style label vs `unready` body status?** Label values must be stable for Prometheus; body strings can be richer. We use `unready` (not `unhealthy`) in the body to mirror the probe contract terminology rather than the dependency-level `DependencyStatus.status` enum.
+- **Why `_unmatched`-style label vs `not_ready` body status?** Label values must be stable for Prometheus; body strings can be richer. We use `not_ready` (not `unhealthy`) in the body to mirror the probe contract terminology rather than the dependency-level `DependencyStatus.status` enum.
 - **Why 250 ms tick budget?** Headroom against the 5 s readiness `timeoutSeconds`; well below the 10 s liveness timeout. Pure in-process work should complete in < 10 ms; the 250 ms cap catches CPU starvation and event-loop stalls.
 - **Why optional vs required deps split?** Canopy must remain useful in degraded mode (operator console access during partial outage). Data and cascor are the actual data-plane services where unhealthy upstream means the pod cannot do its job.
 - **Why not implement async upstream probes here?** That's R4.2 (blocking `urlopen` in async). Slipping it in here expands blast radius. Sequencing R4.2 right after R1.2 closes the gap quickly.
