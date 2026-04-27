@@ -189,7 +189,7 @@ jobs:
           echo "╔════════════════════════════════════════════════════════════╗"
           echo "║       juniper-ml - Documentation Link Validation          ║"
           echo "╚════════════════════════════════════════════════════════════╝"
-          python scripts/check_doc_links.py --exclude templates --exclude history --exclude DEVELOPER_CHEATSHEET-ORIGINAL.md --cross-repo skip
+          python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Security: pip-audit for dependency vulnerabilities
