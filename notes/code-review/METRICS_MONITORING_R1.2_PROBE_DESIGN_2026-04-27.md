@@ -53,6 +53,7 @@ Backwards-compatibility endpoint. **No semantic change.** Returns `{"status": "o
 **Purpose:** Detect a wedged process the orchestrator should restart.
 
 **Behavior:**
+
 - Run a per-service "liveness tick" (see §5 per-service paths) with a strict timeout.
 - If the tick completes successfully within budget → **HTTP 200**, body `{"status": "alive", "tick": "<service>", "duration_ms": <int>}`.
 - If the tick fails or times out → **HTTP 503**, body `{"status": "unresponsive", "tick": "<service>", "error": "<short reason>", "duration_ms": <int>}`.
@@ -67,11 +68,11 @@ Backwards-compatibility endpoint. **No semantic change.** Returns `{"status": "o
 
 **Status semantics:**
 
-| Internal `overall` | Meaning                                                       | HTTP code | Body `status` |
-|--------------------|---------------------------------------------------------------|:---------:|---------------|
-| `ready`            | All required dependencies healthy                             | 200       | `"ready"`     |
-| `degraded`         | All required deps healthy; at least one **optional** dep unhealthy or `not_configured` | 200       | `"degraded"`  |
-| `unready`          | At least one **required** dep unhealthy                       | 503       | `"unready"`   |
+| Internal `overall` | Meaning                                                                                | HTTP code | Body `status` |
+|--------------------|----------------------------------------------------------------------------------------|:---------:|---------------|
+| `ready`            | All required dependencies healthy                                                      |    200    | `"ready"`     |
+| `degraded`         | All required deps healthy; at least one **optional** dep unhealthy or `not_configured` |    200    | `"degraded"`  |
+| `unready`          | At least one **required** dep unhealthy                                                |    503    | `"unready"`   |
 
 **Required vs optional** is decided per service in §5.
 
@@ -86,28 +87,30 @@ Backwards-compatibility endpoint. **No semantic change.** Returns `{"status": "o
 ### 5.1 juniper-data
 
 **Liveness tick (`/v1/health/live`):**
+
 - Sync stat the storage directory configured by `settings.storage_path`. If path resolves to a directory → tick OK. (No file I/O beyond `Path.is_dir()`.)
 - Optional: also assert the FastAPI app's `state` carries `settings`, proving config injection completed.
 
 **Readiness deps:**
 
-| Dep                | Required? | Probe                            | Healthy condition                |
-|--------------------|:---------:|----------------------------------|----------------------------------|
-| Dataset storage    | **Yes**   | `Path(settings.storage_path).is_dir()` | dir exists and is readable     |
+| Dep             | Required? | Probe                                  | Healthy condition          |
+|-----------------|:---------:|----------------------------------------|----------------------------|
+| Dataset storage |  **Yes**  | `Path(settings.storage_path).is_dir()` | dir exists and is readable |
 
 Single-required-dep service. `degraded` is unreachable; only `ready` or `unready`.
 
 ### 5.2 juniper-cascor
 
 **Liveness tick (`/v1/health/live`):**
+
 - Read the `lifecycle` attribute from `request.app.state` and call a new `lifecycle.is_alive() -> bool` accessor. Implementation: returns `True` if the lifecycle manager's monotonic heartbeat counter has incremented within the last `2 × periodSeconds` (i.e., the training loop's monitor callback is firing).
 - The heartbeat counter is bumped inside `TrainingMonitor` on every state transition AND on a per-second timer tick maintained by the training loop. If both stop, liveness fails.
 
 **Readiness deps:**
 
-| Dep                | Required? | Probe                                    | Healthy condition |
-|--------------------|:---------:|------------------------------------------|-------------------|
-| Lifecycle manager  | **Yes**   | `app.state.lifecycle is not None`        | not None          |
+| Dep                                       |               Required?                | Probe                                       | Healthy condition |
+|-------------------------------------------|:--------------------------------------:|---------------------------------------------|-------------------|
+| Lifecycle manager                         |                **Yes**                 | `app.state.lifecycle is not None`           | not None          |
 | JuniperData (when `JUNIPER_DATA_URL` set) | **Yes** if URL set, **N/A** if not set | HTTP `GET /v1/health/live` with 2 s timeout | 2xx               |
 
 When `JUNIPER_DATA_URL` is unset (local dev), data dep is skipped entirely (not "optional, degraded"); `not_configured` collapses to `ready`.
@@ -115,16 +118,17 @@ When `JUNIPER_DATA_URL` is unset (local dev), data dep is skipped entirely (not 
 ### 5.3 juniper-canopy
 
 **Liveness tick (`/v1/health/live`):**
+
 - Verify the WebSocket manager's `connections_active` gauge is reachable (i.e., the manager is mounted). Pure in-process attribute fetch.
 - Verify the Dash app object is bound to `app.state.dash_app` (if Dash is the dashboard backend in current configuration).
 
 **Readiness deps:**
 
-| Dep                  | Required? | Probe                                          | Healthy condition |
-|----------------------|:---------:|------------------------------------------------|-------------------|
-| JuniperData          | Optional  | `GET <data_url>/v1/health/live` 2 s timeout    | 2xx               |
-| JuniperCascor        | Optional  | `GET <cascor_url>/v1/health/live` 2 s timeout  | 2xx               |
-| WebSocket manager    | **Yes**   | `app.state.websocket_manager is not None`      | not None          |
+| Dep               | Required? | Probe                                         | Healthy condition |
+|-------------------|:---------:|-----------------------------------------------|-------------------|
+| JuniperData       | Optional  | `GET <data_url>/v1/health/live` 2 s timeout   | 2xx               |
+| JuniperCascor     | Optional  | `GET <cascor_url>/v1/health/live` 2 s timeout | 2xx               |
+| WebSocket manager |  **Yes**  | `app.state.websocket_manager is not None`     | not None          |
 
 Canopy is a dashboard. With both data and cascor down, canopy is still useful to operators (shows cached state, logs in). So the upstreams are optional → `degraded` when unhealthy. Only the in-process WebSocket manager being unbound makes canopy actually unable to serve, so it's the sole required dep.
 
@@ -134,11 +138,11 @@ Canopy is a dashboard. With both data and cascor down, canopy is still useful to
 
 The Helm chart currently has these issues; **all must be fixed in lockstep with the app PRs.**
 
-| Service | Current liveness path | Current readiness path | Fix |
-|---------|-----------------------|------------------------|-----|
-| juniper-data | `/v1/health` | `/v1/health` | liveness → `/v1/health/live`; readiness → `/v1/health/ready` |
-| juniper-cascor | `/v1/health` | `/v1/health/ready` (correct) | liveness → `/v1/health/live` |
-| juniper-canopy | `/v1/health` | `/v1/health` | liveness → `/v1/health/live`; readiness → `/v1/health/ready` |
+| Service        | Current liveness path | Current readiness path       | Fix                                                          |
+|----------------|-----------------------|------------------------------|--------------------------------------------------------------|
+| juniper-data   | `/v1/health`          | `/v1/health`                 | liveness → `/v1/health/live`; readiness → `/v1/health/ready` |
+| juniper-cascor | `/v1/health`          | `/v1/health/ready` (correct) | liveness → `/v1/health/live`                                 |
+| juniper-canopy | `/v1/health`          | `/v1/health`                 | liveness → `/v1/health/live`; readiness → `/v1/health/ready` |
 
 `docker-compose.yml` healthchecks (line 105, 157, 238 etc.) currently hit `/v1/health` directly via `urllib.request.urlopen`. Compose has no live/ready distinction — keep these on `/v1/health` (they're effectively "is the container alive at all"). No change to compose.
 
@@ -150,12 +154,12 @@ The Helm chart currently has these issues; **all must be fixed in lockstep with 
 
 Per the roadmap rule "upstream before downstream":
 
-| Order | Repo | Branch | What ships |
-|-------|------|--------|------------|
-| 1 | juniper-data | `metrics-mon-seed-02-probe-semantics` | Liveness tick + readiness 503-on-unready |
-| 2 | juniper-cascor | `metrics-mon-seed-02-probe-semantics` | `lifecycle.is_alive()` heartbeat + liveness tick + readiness 503-on-unready |
-| 3 | juniper-canopy | `metrics-mon-seed-02-probe-semantics` | WS-manager-bound liveness tick + readiness 503-on-unready |
-| 4 | juniper-deploy | `metrics-mon-seed-02-probe-paths` | Helm chart probe-path corrections (after all three apps merged) |
+| Order | Repo           | Branch                                | What ships                                                                  |
+|-------|----------------|---------------------------------------|-----------------------------------------------------------------------------|
+| 1     | juniper-data   | `metrics-mon-seed-02-probe-semantics` | Liveness tick + readiness 503-on-unready                                    |
+| 2     | juniper-cascor | `metrics-mon-seed-02-probe-semantics` | `lifecycle.is_alive()` heartbeat + liveness tick + readiness 503-on-unready |
+| 3     | juniper-canopy | `metrics-mon-seed-02-probe-semantics` | WS-manager-bound liveness tick + readiness 503-on-unready                   |
+| 4     | juniper-deploy | `metrics-mon-seed-02-probe-paths`     | Helm chart probe-path corrections (after all three apps merged)             |
 
 Order matters: if Helm flips first, liveness/readiness paths point at endpoints whose new behavior hasn't shipped — possible probe failure on apply. Apps first, then Helm. Each app PR is independently mergeable because the existing endpoints are unchanged in path; the new endpoints (`/live` already exists as a no-op, `/ready` already returns body) just gain stricter behavior.
 
@@ -163,13 +167,13 @@ Order matters: if Helm flips first, liveness/readiness paths point at endpoints 
 
 ## 8. Backwards compatibility
 
-| Audience            | What changes                                                  | Mitigation |
-|---------------------|---------------------------------------------------------------|------------|
-| External monitoring | `/v1/health/ready` may now return 503 instead of 200          | Documented in PR body and CHANGELOG; existing alerting rules that page on `status:"degraded"` text continue to fire because body still contains `degraded`/`unready` strings |
-| Helm chart consumers | Probe paths corrected in `values.yaml` defaults               | Major chart version bump; release notes call out the wiring change |
-| Compose users       | No change — compose still hits `/v1/health` (ok)              | n/a |
-| Existing dashboards | None directly — body schema preserved; status code is new info | n/a |
-| `kubectl describe pod` | New `X-Juniper-Readiness` header surfaces in probe failure detail | Reduces RCA time |
+| Audience               | What changes                                                      | Mitigation                                                                                                                                                                   |
+|------------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| External monitoring    | `/v1/health/ready` may now return 503 instead of 200              | Documented in PR body and CHANGELOG; existing alerting rules that page on `status:"degraded"` text continue to fire because body still contains `degraded`/`unready` strings |
+| Helm chart consumers   | Probe paths corrected in `values.yaml` defaults                   | Major chart version bump; release notes call out the wiring change                                                                                                           |
+| Compose users          | No change — compose still hits `/v1/health` (ok)                  | n/a                                                                                                                                                                          |
+| Existing dashboards    | None directly — body schema preserved; status code is new info    | n/a                                                                                                                                                                          |
+| `kubectl describe pod` | New `X-Juniper-Readiness` header surfaces in probe failure detail | Reduces RCA time                                                                                                                                                             |
 
 ---
 
@@ -193,6 +197,7 @@ Each repo's PR must add tests covering:
 `—` = not applicable for that service.
 
 For juniper-deploy:
+
 - `helm template` snapshot test confirms each deployment's `livenessProbe.httpGet.path == "/v1/health/live"` and `readinessProbe.httpGet.path == "/v1/health/ready"`.
 - One end-to-end test (in `tests/`) asserts a deployed cascor pod with simulated upstream-data unhealthiness yields readiness 503 via `kubectl exec`.
 
@@ -200,13 +205,13 @@ For juniper-deploy:
 
 ## 10. Risks and mitigations
 
-| Risk                                                                 | Likelihood | Mitigation |
-|----------------------------------------------------------------------|:----------:|------------|
-| Liveness 503 trips Helm `failureThreshold` and pods restart-loop     | Medium     | Stage in `values-demo.yaml` first; widen `failureThreshold` to 6 if production observes flap; tick budget 250 ms is conservative |
-| Readiness 503 takes pods out of LB rotation when a transient upstream blip occurs | Medium | `failureThreshold: 3` already requires 30 s sustained failure (10 s period) before traffic withdrawal — same as today's body-based monitoring |
-| Helm path correction lands before app PRs merge                      | Low        | Merge order enforced (apps first, Helm last); juniper-deploy PR explicitly references all three app PRs as merged |
-| Heartbeat coupling adds new failure mode in cascor                   | Low        | Heartbeat is a single counter increment per loop iteration; failure mode is "counter not incrementing" which IS the symptom we want to detect |
-| New `X-Juniper-Readiness` header collides with existing custom header | Negligible | Header name is service-specific |
+| Risk                                                                              | Likelihood | Mitigation                                                                                                                                    |
+|-----------------------------------------------------------------------------------|:----------:|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| Liveness 503 trips Helm `failureThreshold` and pods restart-loop                  |   Medium   | Stage in `values-demo.yaml` first; widen `failureThreshold` to 6 if production observes flap; tick budget 250 ms is conservative              |
+| Readiness 503 takes pods out of LB rotation when a transient upstream blip occurs |   Medium   | `failureThreshold: 3` already requires 30 s sustained failure (10 s period) before traffic withdrawal — same as today's body-based monitoring |
+| Helm path correction lands before app PRs merge                                   |    Low     | Merge order enforced (apps first, Helm last); juniper-deploy PR explicitly references all three app PRs as merged                             |
+| Heartbeat coupling adds new failure mode in cascor                                |    Low     | Heartbeat is a single counter increment per loop iteration; failure mode is "counter not incrementing" which IS the symptom we want to detect |
+| New `X-Juniper-Readiness` header collides with existing custom header             | Negligible | Header name is service-specific                                                                                                               |
 
 ---
 
@@ -239,12 +244,12 @@ Each repo's PR includes its variant. After R2.1, this can be promoted to a share
 
 ---
 
-## 13. Open questions before kickoff
+## 13. Open questions before kickoff — RESOLVED 2026-04-27
 
-1. Confirm canopy's required-dep choice — is `app.state.websocket_manager` the right liveness anchor, or should we use the Dash app object instead? (Depends on which one is "load bearing" for serving requests.)
-2. Confirm cascor's heartbeat plumbing — does `TrainingMonitor` already expose a monotonic counter we can reuse, or do we add a fresh `_liveness_counter: int` on `lifecycle`?
-3. Is juniper-deploy's chart version bump from this change a major or minor? (Major if probe-path defaults change; minor if a values override is sufficient.)
-4. Do we want to back-port a release note or `CHANGELOG` entry per repo, or do a single ecosystem-level note?
+1. **Canopy liveness anchor:** `app.state.websocket_manager` is the required dep. (Confirmed; design unchanged.)
+2. **Cascor heartbeat plumbing:** `TrainingMonitor` does **not** expose a usable monotonic counter. Add a fresh `_liveness_counter: int` on the lifecycle object, incremented on (a) every `TrainingMonitor` state transition and (b) a per-second timer tick maintained by the training loop. `lifecycle.is_alive()` consults the counter timestamp.
+3. **juniper-deploy chart version bump:** **Major** — `values.yaml` defaults change for `livenessProbe.httpGet.path` and (for data + canopy) `readinessProbe.httpGet.path`. Operators with overridden `values-*.yaml` files are unaffected; operators relying on chart defaults must re-render.
+4. **Change notices:** Per-repo `CHANGELOG.md` entry under each repo's "Unreleased" section. Wording cross-references the design doc and the four PR numbers (one per repo) so readers can follow the rollout.
 
 ---
 
