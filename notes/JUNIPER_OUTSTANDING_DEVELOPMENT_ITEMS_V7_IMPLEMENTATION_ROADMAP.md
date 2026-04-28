@@ -9089,6 +9089,23 @@ S
 | DEPLOY-11 | **LOW**    | `JUNIPER_DATA_API_KEYS` defaults to empty — auth disabled by default                                                             | Empty default means API key auth is effectively off         |
 | DEPLOY-12 | **LOW**    | `wait_for_services.sh` uses hardcoded ports instead of env vars                                                                  | Port numbers hardcoded in health check script               |
 
+##### 13.1.1 Implementation Status — table 13.1 items (2026-04-28)
+
+| ID        | Status                                                                                                                                                                                                                                |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEPLOY-01 | ✅ Implemented — juniper-deploy PR [#34](https://github.com/pcalnon/juniper-deploy/pull/34) (Track 5A, 2026-04-27) — secret renamed `juniper_data_api_key` → `juniper_data_api_keys` to match `JUNIPER_DATA_API_KEYS_FILE` consumer    |
+| DEPLOY-02 | ✅ Implemented — juniper-deploy PR [#34](https://github.com/pcalnon/juniper-deploy/pull/34) (Track 5A, 2026-04-27) — `prom/alertmanager:v0.27.0` service added under `observability` profile, `/-/healthy` healthcheck                 |
+| DEPLOY-03 | ✅ Implemented — juniper-deploy PR [#34](https://github.com/pcalnon/juniper-deploy/pull/34) (Track 5A, 2026-04-27) — volume mount changed from single-file to `./prometheus:/etc/prometheus:ro` (also closes DEPLOY-14)                |
+| DEPLOY-04 | 🔴 Outstanding — Helm canopy env-vars                                                                                                                                                                                                  |
+| DEPLOY-05 | ✅ Implemented — juniper-deploy PR [#39](https://github.com/pcalnon/juniper-deploy/pull/39) (Track 5B/5C-critical, 2026-04-27) — `redis.auth.enabled: true` w/ placeholder password + `existingSecret` indirection; helper template embeds password into `REDIS_URL` |
+| DEPLOY-06 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — placeholder default + `admin.existingSecret`/`admin.userKey`/`admin.passwordKey`                       |
+| DEPLOY-07 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — three `x-resources-{heavy,light,tiny}` YAML anchors with `RESOURCES_*` env-var overrides                |
+| DEPLOY-08 | ✅ Implemented — juniper-deploy PR [#39](https://github.com/pcalnon/juniper-deploy/pull/39) (Track 5B/5C-critical, 2026-04-27) — `BIND_HOST` env var (default `127.0.0.1`) governs every published port                               |
+| DEPLOY-09 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — plain `CASCOR_AUTH_TOKEN` env var removed, `*_FILE` only                                                |
+| DEPLOY-10 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — demo profile services now ship with rate-limit-on defaults                                              |
+| DEPLOY-11 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — plain `JUNIPER_*_API_KEY{,S}` env vars removed across data/cascor/canopy, `*_FILE` only                |
+| DEPLOY-12 | ✅ Implemented — juniper-deploy PRs [#40](https://github.com/pcalnon/juniper-deploy/pull/40) + [#42](https://github.com/pcalnon/juniper-deploy/pull/42) (Track 5C-hardening + follow-up, 2026-04-27/28) — `JUNIPER_{DATA,CASCOR,CANOPY}_PORT` added to `scripts/config.sh` and propagated to `wait_for_services.sh`, `health_check.sh`, `test_health_enhanced.sh`, `test_demo_profile.sh` |
+
 #### 13.2 New infrastructure issues (v4)
 
 | ID        | Severity   | Description                                                                                                       | Evidence                                                                                      |
@@ -9107,6 +9124,17 @@ S
 | DEPLOY-24 | **HIGH**   | Helm values.yaml missing `JUNIPER_DATA_URL` and `CASCOR_SERVICE_URL` for canopy — K8s canopy can't reach services | `values.yaml` canopy env section — only SERVER, RATE_LIMIT, LOG, SENTRY, METRICS set (v5 new) |
 | DEPLOY-25 | **HIGH**   | Helm values.yaml missing `CASCOR_SERVER_URL` for worker — worker fails to start in K8s                            | `values.yaml` worker env — only `CASCOR_HEARTBEAT_INTERVAL` set (v5 new)                      |
 | DEPLOY-26 | **MEDIUM** | Helm values.yaml missing `JUNIPER_DATA_URL` for cascor — cascor can't locate data service in K8s                  | `values.yaml` cascor env — `main.py` treats missing `JUNIPER_DATA_URL` as fatal (v5 new)      |
+
+##### 13.2.1 Implementation Status — table 13.2 items (2026-04-28)
+
+| ID        | Status                                                                                                                                                                          |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DEPLOY-13 | ✅ Implemented — juniper-deploy PR [#39](https://github.com/pcalnon/juniper-deploy/pull/39) (Track 5B/5C-critical, 2026-04-27) — `juniper-canopy-dev` joins `backend`+`data` networks |
+| DEPLOY-14 | ✅ Implemented — same fix as DEPLOY-03 (juniper-deploy PR [#34](https://github.com/pcalnon/juniper-deploy/pull/34))                                                              |
+| DEPLOY-15 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — Helm tags pinned: data 0.6.0, cascor 0.4.0, canopy 0.4.0, worker 0.3.0 |
+| DEPLOY-16 | ✅ Implemented — juniper-deploy PR [#40](https://github.com/pcalnon/juniper-deploy/pull/40) (Track 5C-hardening, 2026-04-27) — `kube-prometheus-stack.grafana.adminPassword` placeholder + `admin.existingSecret` indirection |
+| DEPLOY-17..23 | 🔴 Outstanding — covered by Track 5D/5E backlog (CI compose stubs, healthchecks, Redis/Dockerfile pinning, helm lint) — see §[Track 5 Open Items](#track-5-open-items-2026-04-28) |
+| DEPLOY-24..26 | 🔴 Outstanding — Helm K8s env-var wiring (canopy/worker/cascor service-discovery URLs)                                                                                       |
 
 #### 13.3 Unimplemented Roadmap Items (carried from v3)
 
@@ -12709,20 +12737,44 @@ Issues identified through cross-cutting test coverage and CI analysis across all
 | CI-SEC-01 | **HIGH**   | Security CI  | cascor-client  | No weekly security scan — supply chain vulnerability window for widely-consumed lib |
 | CI-SEC-02 | **LOW**    | Security CI  | juniper-deploy | No security scanning at all (shell scripts, Python helpers unaudited)               |
 
-### Cross-Repo CI Feature Matrix
+#### Implementation Status — Section 19 items (2026-04-28)
+
+| ID        | Status                                                                                                                                                                                                                                                                  |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CI-01     | ✅ Implemented — juniper-cascor-client PR [#25](https://github.com/pcalnon/juniper-cascor-client/pull/25) (Phase 4D+4E, 2026-04-26) — `python-version: ["3.11", "3.12", "3.13", "3.14"]` matrix; absorbed into Phase 4 ahead of Track 5B                                  |
+| CI-02     | ✅ Implemented — juniper-cascor-worker PR [#33](https://github.com/pcalnon/juniper-cascor-worker/pull/33) (Phase 4C, 2026-04-26) — `python-version: ["3.12", "3.13", "3.14"]` matrix + `PYTHON_TEST_VERSION: "3.14"`; absorbed into Phase 4 ahead of Track 5B             |
+| CI-03     | ✅ Implemented — juniper-deploy PR [#39](https://github.com/pcalnon/juniper-deploy/pull/39) (Track 5B/5C-critical, 2026-04-27) — new `tests` job runs `pytest tests/`; live-service tests skip via `require_*` fixtures; added to `required-checks` quality gate         |
+| CI-04     | ✅ Implemented — juniper-cascor-client PR [#27](https://github.com/pcalnon/juniper-cascor-client/pull/27) (Track 5B partial, 2026-04-27) — weekly `security-scan.yml` workflow added (pip-audit, OIDC)                                                                   |
+| CI-05     | ✅ Implemented — juniper-cascor-client PR [#27](https://github.com/pcalnon/juniper-cascor-client/pull/27) (Track 5B partial, 2026-04-27) — `lockfile-update.yml` workflow added                                                                                          |
+| CI-06     | 🔴 Outstanding — Track 5D                                                                                                                                                                                                                                                |
+| CI-07     | 🔴 Outstanding — Track 5D                                                                                                                                                                                                                                                |
+| COV-01    | 🔴 Outstanding — Track 5D                                                                                                                                                                                                                                                |
+| COV-02    | 🔴 Outstanding — Track 5D                                                                                                                                                                                                                                                |
+| COV-04    | 🔴 Outstanding — Track 5D                                                                                                                                                                                                                                                |
+| TQ-01..05 | 🔴 Outstanding — Track 5E                                                                                                                                                                                                                                                |
+| CI-SEC-01 | 🔴 Outstanding — Track 5E (NB: partially mitigated by CI-04 weekly pip-audit on cascor-client)                                                                                                                                                                            |
+| CI-SEC-02 | 🔴 Outstanding — Track 5E                                                                                                                                                                                                                                                |
+
+### Cross-Repo CI Feature Matrix (refreshed 2026-04-28)
 
 | Feature              | cascor | canopy | data | data-client | cascor-client | cascor-worker | deploy | juniper-ml |
 |----------------------|--------|--------|------|-------------|---------------|---------------|--------|------------|
 | Pre-commit           | ✅     | ✅     | ✅   | ✅          | ✅            | ✅            | ✅     | ✅         |
-| Unit Tests in CI     | ✅     | ✅     | ✅   | ✅          | ✅            | ✅            | ❌     | ✅         |
-| Coverage Gate        | 80%    | 80%    | 80%+ | 80%         | 80%           | 80%           | ❌     | —          |
+| Unit Tests in CI     | ✅     | ✅     | ✅   | ✅          | ✅            | ✅            | ✅[^a] | ✅         |
+| Coverage Gate        | 80%    | 80%    | 80%+ | 80%         | 80%           | 80%           | ❌[^b] | —          |
 | Per-Module Coverage  | —      | ❌     | ✅   | —           | —             | —             | —      | —          |
-| Python 3.14 CI       | ✅     | ✅     | ✅   | ✅          | ❌            | ❌            | —      | —          |
+| Python 3.14 CI       | ✅     | ✅     | ✅   | ✅          | ✅[^c]        | ✅[^d]        | —      | —          |
 | Gitleaks             | ✅     | ✅     | ✅   | ✅          | ✅            | ✅            | —      | —          |
 | Bandit SAST          | ✅     | ✅     | ✅   | ✅          | ✅            | ✅            | —      | —          |
 | pip-audit            | ✅     | ✅     | ✅   | ✅          | ✅            | ✅            | —      | —          |
-| Weekly security-scan | ✅     | ✅     | ✅   | ✅          | ❌            | ✅            | —      | ✅         |
+| Weekly security-scan | ✅     | ✅     | ✅   | ✅          | ✅[^e]        | ✅            | —      | ✅         |
 | Docker smoke test    | ✅     | ✅     | ✅   | —           | —             | —             | —      | —          |
+
+[^a]: Wired by Track 5B/5C-critical (juniper-deploy PR [#39](https://github.com/pcalnon/juniper-deploy/pull/39)) — closes CI-03.
+[^b]: Track 5D outstanding (CI-06 / COV-01).
+[^c]: Wired by Phase 4D+4E (juniper-cascor-client PR [#25](https://github.com/pcalnon/juniper-cascor-client/pull/25)) — closes CI-01.
+[^d]: Wired by Phase 4C (juniper-cascor-worker PR [#33](https://github.com/pcalnon/juniper-cascor-worker/pull/33)) — closes CI-02.
+[^e]: Wired by Track 5B partial (juniper-cascor-client PR [#27](https://github.com/pcalnon/juniper-cascor-client/pull/27)) — closes CI-04 + CI-SEC-01 partially.
 
 ### Issue Remediations, Section 19
 
@@ -14684,14 +14736,79 @@ Development tracks are identified by analyzing:
 **Estimated effort**: ~64 hours
 **Dependencies**: Tracks 1-4 should be substantially complete
 
-| Phase | Items                                | Scope  | Description                                   |
-|-------|--------------------------------------|--------|-----------------------------------------------|
-| 5A    | DEPLOY-01, DEPLOY-02, DEPLOY-03      | 3×S    | Critical: AlertManager, alert rules, secrets  |
-| 5B    | CI-01, CI-02, CI-03, CI-04, CI-05    | 5×S    | Python 3.14 CI, deploy tests, security scans  |
-| 5C    | DEPLOY-05..DEPLOY-16                 | 12×S-M | Docker Compose improvements, health checks    |
-| 5D    | CI-06, CI-07, COV-01, COV-02, COV-04 | 5×S-M  | Coverage config, consistent Actions versions  |
-| 5E    | TQ-01..TQ-05, CI-SEC-01, CI-SEC-02   | 7×S-M  | Test quality improvements, deploy scanning    |
-| 5F    | HSK-01..HSK-24                       | 24×S   | Housekeeping batch — file deletions, cleanups |
+| Phase | Items                                | Scope  | Description                                   | Status                                                                                                  |
+|-------|--------------------------------------|--------|-----------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| 5A    | DEPLOY-01, DEPLOY-02, DEPLOY-03      | 3×S    | Critical: AlertManager, alert rules, secrets  | ✅ Implemented (juniper-deploy PR [#34](https://github.com/pcalnon/juniper-deploy/pull/34), 2026-04-27) |
+| 5B    | CI-01, CI-02, CI-03, CI-04, CI-05    | 5×S    | Python 3.14 CI, deploy tests, security scans  | ✅ Implemented — see per-item PR refs below                                                             |
+| 5C    | DEPLOY-05..DEPLOY-16                 | 12×S-M | Docker Compose improvements, health checks    | ✅ Implemented — see per-item PR refs below                                                             |
+| 5D    | CI-06, CI-07, COV-01, COV-02, COV-04 | 5×S-M  | Coverage config, consistent Actions versions  | 🔴 Outstanding                                                                                          |
+| 5E    | TQ-01..TQ-05, CI-SEC-01, CI-SEC-02   | 7×S-M  | Test quality improvements, deploy scanning    | 🔴 Outstanding                                                                                          |
+| 5F    | HSK-01..HSK-24                       | 24×S   | Housekeeping batch — file deletions, cleanups | 🔴 Outstanding                                                                                          |
+
+**Track 5 progress (2026-04-28)**: Phases 5A/5B/5C complete (20 items shipped across juniper-deploy PRs [#34](https://github.com/pcalnon/juniper-deploy/pull/34), [#39](https://github.com/pcalnon/juniper-deploy/pull/39), [#40](https://github.com/pcalnon/juniper-deploy/pull/40), [#42](https://github.com/pcalnon/juniper-deploy/pull/42); juniper-cascor-client PRs [#25](https://github.com/pcalnon/juniper-cascor-client/pull/25), [#27](https://github.com/pcalnon/juniper-cascor-client/pull/27); juniper-cascor-worker PR [#33](https://github.com/pcalnon/juniper-cascor-worker/pull/33)). Phases 5D/5E/5F (36 items: coverage, test quality, deploy security CI, housekeeping) remain open and tracked under §[Track 5 Open Items](#track-5-open-items-2026-04-28) below.
+
+##### Track 5 Open Items (2026-04-28)
+
+The remaining 36 items, prioritized for incremental landing. Track 5D should ship next because it closes coverage blind spots that the new juniper-deploy `tests` job (CI-03) created — without `--cov` wiring, regressions show up only as failed assertions, not coverage drops. Track 5E follows because deploy security CI (CI-SEC-02) is the only repo without a security-scan workflow. Track 5F is mechanical and parallelizable.
+
+###### Phase 5D — Coverage and Actions consistency (5 items, ~6h)
+
+**Recommended ordering** within 5D: COV-04 first (10-min doc fix, removes a public misclaim), then COV-01 (unblocks per-module gating), then CI-06 (consumes COV-01), then COV-02 (canopy per-module — needs canopy module audit), then CI-07 (mechanical bump pass).
+
+| ID     | Severity   | Repo           | Description                                                           | Dependency / blocker                                          | Recommended approach                                                                                              |
+|--------|------------|----------------|-----------------------------------------------------------------------|---------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| COV-04 | **LOW**    | juniper-data   | Coverage gate mismatch — CI says 95%, `COVERAGE_FAIL_UNDER` is 80%    | None — pure doc fix                                           | Update CI workflow comment to match the real 80% gate (or bump the gate to 85% to match juniper-data convention). |
+| COV-01 | **MEDIUM** | juniper-deploy | Tests exist but zero coverage infra (no `[tool.coverage]`, no `--cov`) | None                                                          | Add `[tool.coverage.run]` + `[tool.coverage.report]` to `pyproject.toml`; require `--cov=tests --cov-fail-under=80` in CI.  |
+| CI-06  | **MEDIUM** | juniper-deploy | No coverage configuration — tests exist but coverage never measured   | Blocked-by COV-01                                             | Wire `pytest --cov` into the `tests` job added in CI-03; upload coverage XML artifact.                            |
+| COV-02 | **MEDIUM** | juniper-canopy | No per-module coverage gate (juniper-data enforces 85% per-module)    | None — needs canopy module triage to pick fair per-module floor | Mirror juniper-data's pattern in `pyproject.toml`; expect 1–3 follow-up modules to need test backfill.            |
+| CI-07  | **LOW**    | cascor, worker | Inconsistent GitHub Actions artifact upload/cache versions across repos | None                                                          | Audit `.github/workflows/*.yml` across all 8 repos; pin to one set of action versions; let dependabot handle from there. |
+
+###### Phase 5E — Test quality and deploy security CI (7 items, ~14h)
+
+**Recommended ordering** within 5E: CI-SEC-02 first (immediately closes the only repo without security CI), then CI-SEC-01 (note: cascor-client weekly security scan already shipped via CI-04 — CI-SEC-01's "weekly" requirement is met but the broader supply-chain coverage may need a `gitleaks` add), then TQ-04/TQ-05 (smaller fixes), then TQ-01/TQ-02/TQ-03 (substantial rewrites).
+
+| ID        | Severity   | Repo           | Description                                                                | Recommended approach                                                                                                                                                                          |
+|-----------|------------|----------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CI-SEC-02 | **LOW**    | juniper-deploy | No security scanning at all (shell scripts, Python helpers unaudited)      | Add `security-scan.yml` mirroring juniper-ml's: weekly schedule, `bandit -r scripts/ tests/ util/`, `pip-audit -r requirements-test.txt`, plus shellcheck SARIF upload to GitHub Security.    |
+| CI-SEC-01 | **HIGH**   | cascor-client  | No weekly security scan — supply chain vulnerability window for widely-consumed lib | Already partially closed by CI-04 (weekly pip-audit). Audit whether gitleaks/bandit are also weekly; if not, extend `security-scan.yml`.                                                       |
+| TQ-04     | **LOW**    | juniper-cascor | 139 `hasattr` guards in tests (similar to canopy's 226 tracked in BUG-CN-03) | Mechanical — replace with explicit fixtures or `pytest.MonkeyPatch` setup; track with a one-off PR per test module.                                                                            |
+| TQ-05     | **LOW**    | juniper-canopy | 10 unit tests import httpx — actually integration-level tests              | Move to `tests/integration/` and gate behind a new `integration` pytest marker matching the existing convention.                                                                              |
+| TQ-03     | **MEDIUM** | cascor-worker  | Config validation tests have no assertions — pass as long as no exception | Add `assert config.<field> == expected` calls; failing test names will identify which validation paths need new assertion coverage.                                                            |
+| TQ-01     | **MEDIUM** | juniper-cascor | 10+ tests with no assertions — fire-and-forget test methods inflate counts | Catalog the offenders via `grep -L 'assert\\|pytest.raises' src/tests/`; for each, decide between adding assertions or deleting the test if it duplicates existing coverage.                  |
+| TQ-02     | **MEDIUM** | juniper-canopy | 149 `time.sleep` calls in tests — excessive hard-coded waits, flakiness risk | Largest scope item in 5E. Replace `time.sleep(N)` with `pytest-asyncio` `wait_for` patterns or polling helpers; consider a shared `tests/helpers/wait.py`.                                  |
+
+###### Phase 5F — Housekeeping batch (24 items, ~12h)
+
+**Recommended ordering** within 5F: P2 items first (HSK-02, HSK-03, HSK-11, HSK-16, HSK-20 — 5 items), then P3 batches grouped by repo to minimize context-switch cost. P2 items are largely DELETE operations (stale dirs, dead code, dangerous defaults) — high-confidence, low-blast-radius cleanups. P3 items are version-header fixes, doc tidy-ups, and dead-comment removal — bulk-mergeable via a single sweep PR per repo.
+
+| Priority | IDs            | Description                                                                                          |
+|----------|----------------|------------------------------------------------------------------------------------------------------|
+| **P2**   | HSK-02         | juniper-cascor `src/remote_client/` superseded by cascor-worker — delete 3 files                     |
+| **P2**   | HSK-03         | juniper-cascor `src/spiral_problem/check.py` — 600-line stale duplicate                              |
+| **P2**   | HSK-04         | juniper-cascor 32 test files with hardcoded `sys.path.append` to old monorepo paths                  |
+| **P2**   | HSK-11         | juniper-ml `wake_the_claude.bash` `DEBUG="${TRUE}"` hardcoded ON — noisy output                      |
+| **P2**   | HSK-16         | juniper-ml `util/kill_all_pythons.bash` uses `sudo kill -9` indiscriminately — make opt-in           |
+| **P2**   | HSK-20         | juniper-ml `claude_interactive.bash:17` `DEBUG="${TRUE}"` forces `--dangerously-skip-permissions`    |
+| **P3**   | HSK-01         | juniper-canopy 3 broken symlinks in `notes/development/`                                              |
+| **P3**   | HSK-05, HSK-07 | cascor-client AGENTS.md / file-header version mismatches                                              |
+| **P3**   | HSK-06         | juniper-data AGENTS.md version mismatch                                                              |
+| **P3**   | HSK-08         | data-client `tests/conftest.py` version-header mismatch                                              |
+| **P3**   | HSK-09         | cascor-client dead code: `_STATE_TO_FSM`, `_STATE_TO_PHASE`                                          |
+| **P3**   | HSK-10, HSK-12, HSK-15, HSK-17–19, HSK-21–22 | juniper-ml script cleanups (test.bash, NOHUP fork status, no-op global_text_replace, worktree_new branch, worktree_close hardcoded, stale repo files, debug_log TODO, model param TODO) |
+| **P3**   | HSK-13         | juniper-canopy 169 hardcoded ThemeColors (deferred until MED-026 fixed)                              |
+| **P3**   | HSK-14         | juniper-ml `resume_session.bash` hardcoded session UUID                                              |
+| **P3**   | HSK-23         | juniper-ml `scripts/juniper-all-ctl:38` cascor port 8200 vs 8201 host port                           |
+| **P3**   | HSK-24         | cascor-client unused constants: `ERROR_PRONE_INITIAL_HIDDEN_UNITS`, `ERROR_PRONE_INITIAL_EPOCH`      |
+
+###### Track 5 Open Items — summary
+
+| Phase | Items | Severity mix      | Repo concentration     | Recommended PR count            |
+|-------|-------|-------------------|------------------------|---------------------------------|
+| 5D    | 5     | 1 LOW + 4 MEDIUM  | deploy (3), data, canopy, cascor+worker | 3 PRs (deploy coverage; canopy coverage; CI bump pass)   |
+| 5E    | 7     | 1 LOW × 2 + 1 MED + 2 MED + 1 HIGH | deploy, cascor-client, cascor, canopy, worker | 4 PRs (deploy security CI; cascor-client security audit; cascor TQ; canopy TQ) |
+| 5F    | 24    | 6 P2 + 18 P3      | juniper-ml dominates (12 of 24) | ≤8 PRs (one P2 deletion sweep + repo-grouped P3 sweeps)  |
+
+**Total remaining Track 5 effort**: ~32 hours; ~15 PRs; no blocking dependencies on Track 6.
 
 #### Track 6: Features, Performance, and Dashboard (juniper-canopy, juniper-cascor)
 
