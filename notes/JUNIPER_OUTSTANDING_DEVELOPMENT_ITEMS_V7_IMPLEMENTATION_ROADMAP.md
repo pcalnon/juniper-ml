@@ -5089,13 +5089,13 @@ S (< 1 hour)
 
 #### 7.1 Critical and High-Priority Enhancements (v3.0.0)
 
-| ID           | Severity     | Description                                                                        | Status                                                                   |
-|--------------|--------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| CAN-CRIT-001 | **CRITICAL** | Decision boundary non-functional in production/service mode                        | ⚠️ Partially resolved — core logic present but not wired in service mode |
-| CAN-CRIT-002 | **CRITICAL** | Save/Load snapshot in adapter — prevents training session recovery in service mode | ⚠️ Scope reduced — blocked on `/v1/snapshots/*` API                      |
-| CAN-HIGH-005 | **MEDIUM**   | Remote worker status dashboard                                                     | 🔴 NOT STARTED                                                           |
-| KL-1         | **MEDIUM**   | Dataset scatter plot empty in service mode (known limitation)                      | 🔴 Known limitation                                                      |
-| CAN-DEF-008  | **LOW**      | Advanced 3D node interactions                                                      | 🔵 Deferred                                                              |
+| ID           | Severity     | Description                                                                        | Status                                                                                                                                                                                                                                                                                                                                                |
+|--------------|--------------|------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CAN-CRIT-001 | **CRITICAL** | Decision boundary non-functional in production/service mode                        | ✅ Implemented — `GET /v1/decision-boundary` endpoint shipped via juniper-cascor PR [#101](https://github.com/pcalnon/juniper-cascor/pull/101) (CR-021/022/064 — async decision-boundary pipeline) and `CascorServiceAdapter.get_decision_boundary()` in `src/backend/cascor_service_adapter.py:1021` normalizes `grid_x/grid_y/predictions` → `xx/yy/Z`. |
+| CAN-CRIT-002 | **CRITICAL** | Save/Load snapshot in adapter — prevents training session recovery in service mode | ⚠️ Scope reduced — blocked on `/v1/snapshots/*` API                                                                                                                                                                                                                                                                                                   |
+| CAN-HIGH-005 | **MEDIUM**   | Remote worker status dashboard                                                     | 🔴 NOT STARTED                                                                                                                                                                                                                                                                                                                                         |
+| KL-1         | **MEDIUM**   | Dataset scatter plot empty in service mode (known limitation)                      | ✅ Implemented — `GET /v1/dataset/data` cascor endpoint (commit 57df9de) and `CascorServiceAdapter.get_dataset_data()` in `src/backend/cascor_service_adapter.py:989` return the full training arrays for the scatter plot.                                                                                                                            |
+| CAN-DEF-008  | **LOW**      | Advanced 3D node interactions                                                      | 🔵 Deferred                                                                                                                                                                                                                                                                                                                                            |
 
 #### 7.2 Canopy Enhancement Backlog (CAN-000 through CAN-021)
 
@@ -5144,42 +5144,21 @@ All items 🔴 NOT STARTED unless otherwise noted. (Full table unchanged from v3
 
 **Recommended**: Approach A because decision boundary is a critical dashboard feature.
 
-##### Implementation
+##### Implementation Status
 
-```python
-# File: juniper-canopy/src/backend/cascor_service_adapter.py — add method
-async def get_decision_boundary_data(self, resolution: int = 50) -> dict | None:
-    """Fetch network weights and compute decision boundary grid via cascor API."""
-    try:
-        network_data = await self.get_network()
-        if network_data is None:
-            return None
-        dataset = await self.get_dataset_data()
-        if dataset is None:
-            return None
+✅ **Implemented (2026-04-28 review).** The skeleton in this section was superseded by the actual landing, which evolved during code review (CR-021/022/064) into a server-side meshgrid evaluation rather than a client-side `predict_batch` round-trip. The shipping pieces are:
 
-        x_min, x_max = dataset["X_train"][:, 0].min() - 0.5, dataset["X_train"][:, 0].max() + 0.5
-        y_min, y_max = dataset["X_train"][:, 1].min() - 0.5, dataset["X_train"][:, 1].max() + 0.5
+- **Cascor side** — `juniper-cascor` PR [#101](https://github.com/pcalnon/juniper-cascor/pull/101) added `GET /v1/decision-boundary` at `src/api/routes/decision_boundary.py:10`, backed by `lifecycle.get_decision_boundary()` in `src/api/lifecycle/manager.py:936`. Computation runs server-side using `network.forward()` against a 2D meshgrid; the route is `async` and the lifecycle method offloads the heavy compute path to a thread per the CR-022 review.
+- **Cascor-client side** — `juniper-cascor-client/juniper_cascor_client/client.py:267` exposes `get_decision_boundary(resolution=DEFAULT_DECISION_BOUNDARY_RESOLUTION)`.
+- **Canopy adapter** — `CascorServiceAdapter.get_decision_boundary(resolution=50)` at `src/backend/cascor_service_adapter.py:1021` calls the client and renames `grid_x`/`grid_y`/`predictions` to the `xx`/`yy`/`Z` shape the existing `DecisionBoundary` Plotly contour callback expects (`src/frontend/components/decision_boundary.py:181`).
+- **Canopy backend route** — `ServiceBackend.get_decision_boundary()` at `src/backend/service_backend.py:202` exposes the adapter via `/api/decision_boundary?resolution=N` (`src/main.py:1091`), which `dashboard_manager._update_boundary_store_handler()` (`src/frontend/dashboard_manager.py:2794`) drives at the standard interval.
+- **Tests** — `src/tests/integration/test_decision_boundary_service_mode.py` covers the full pipeline (skipped in environments without `juniper-cascor-client[testing]`); `src/tests/unit/backend/test_cascor_service_adapter_boundary.py` exercises the adapter shape transformation with mocks.
 
-        xx, yy = np.meshgrid(
-            np.linspace(x_min, x_max, resolution),
-            np.linspace(y_min, y_max, resolution),
-        )
-        grid_points = np.c_[xx.ravel(), yy.ravel()].astype(np.float32)
-
-        # Delegate prediction to cascor service
-        response = await self._client.predict_batch(grid_points)
-        zz = np.array(response["predictions"]).reshape(xx.shape)
-
-        return {"xx": xx.tolist(), "yy": yy.tolist(), "zz": zz.tolist()}
-    except Exception:
-        self.logger.warning("Failed to compute decision boundary data", exc_info=True)
-        return None
-```
+The original "service mode returns None" failure mode that motivated CAN-CRIT-001 is gated behind cascor's `lifecycle.get_decision_boundary()` preconditions: a network must exist, training data must be loaded, and the input must be 2D. When those preconditions fail the route returns 404, which the canopy adapter passes through as `None` and the boundary panel renders an empty placeholder. This is now intentional UI behavior rather than a missing-feature bug.
 
 ##### Verification Status
 
-⚠️ Feature not yet implemented — skeleton provided for service adapter wiring.
+✅ Verified — implemented and wired end-to-end.
 
 ##### Severity
 
@@ -5382,9 +5361,22 @@ async def get_dataset_preview(self, n: int = 1000) -> dict | None:
         return None
 ```
 
+##### Implementation Status
+
+✅ **Implemented (2026-04-28 review).** The roadmap's `get_dataset_preview(n=1000)` skeleton was superseded by a simpler design that returns the full training arrays and lets the consumer subsample if needed:
+
+- **Cascor side** — commit `57df9de` ("feat: add GET /v1/dataset/data endpoint for dataset array visualization") in juniper-cascor added `GET /v1/dataset/data` at `src/api/routes/dataset.py:24`, backed by `lifecycle.get_dataset_data()` in `src/api/lifecycle/manager.py:803` returning `{"train_x": [...], "train_y": [...]}`.
+- **Cascor-client side** — `juniper-cascor-client/juniper_cascor_client/client.py:263` exposes `get_dataset_data()`.
+- **Canopy adapter** — `CascorServiceAdapter.get_dataset_data()` at `src/backend/cascor_service_adapter.py:989` returns `{"inputs": [...], "targets": [...]}` after coercing the cascor response shape.
+- **Canopy backend route** — `ServiceBackend.get_dataset()` at `src/backend/service_backend.py:176` exposes the adapter via `/api/dataset` (`src/main.py:999`), which `dashboard_manager._update_dataset_store_handler()` (`src/frontend/dashboard_manager.py:2775`) drives.
+
+The "service mode returns empty" failure mode is now distinguishable from the trained-but-no-data case at the cascor level: `lifecycle.get_dataset_data()` returns `None` when no dataset is loaded, the cascor route returns 404, and the canopy handler renders an empty scatter — same intentional UI as for the decision boundary.
+
+The `get_dataset_preview(n=1000)` subsample-on-the-server idea was not adopted; client-side subsampling lives in the scatter plot's render path, which is sufficient for the current 1000–10000 point datasets in use. Re-evaluate if dataset sizes grow into the millions.
+
 ##### Verification Status
 
-⚠️ Known limitation — skeleton provided. Requires cascor dataset endpoint to serve raw arrays.
+✅ Verified — implemented and wired end-to-end.
 
 ##### Severity
 
@@ -14817,14 +14809,16 @@ The remaining 36 items, prioritized for incremental landing. Track 5D should shi
 **Estimated effort**: ~120 hours
 **Dependencies**: Tracks 1-3 should be complete; Track 5 CI improvements
 
-| Phase | Items                                  | Scope  | Description                                      |
-|-------|----------------------------------------|--------|--------------------------------------------------|
-| 6A    | GAP-WS-16, GAP-WS-14, GAP-WS-15        | 3×L    | Critical: bandwidth reduction, extendTraces, rAF |
-| 6B    | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M  | Performance: dict sizes, computation caching     |
-| 6C    | CAN-CRIT-001, KL-1                     | 2×L    | Dashboard: decision boundary, scatter plot       |
-| 6D    | CAN-000..CAN-021                       | 22×S-M | Dashboard enhancement backlog                    |
-| 6E    | CAS-002..CAS-009                       | 8×M-XL | CasCor algorithm enhancements                    |
-| 6F    | Phase E..H, remaining GAP-WS           | 8×M-L  | WebSocket migration remaining phases             |
+| Phase | Items                                  | Scope  | Description                                      | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+|-------|----------------------------------------|--------|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 6A    | GAP-WS-16, GAP-WS-14, GAP-WS-15        | 3×L    | Critical: bandwidth reduction, extendTraces, rAF | 🟡 Partial — GAP-WS-15 ✅ (juniper-canopy PR [#186](https://github.com/pcalnon/juniper-canopy/pull/186)), GAP-WS-14 ✅ (juniper-canopy PR [#187](https://github.com/pcalnon/juniper-canopy/pull/187)). GAP-WS-16 deferred — large cross-repo (cascor server WS delta + canopy client subscription + REST polling retirement).                                                                                                                                                                                                                                                                |
+| 6B    | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M  | Performance: dict sizes, computation caching     | ✅ Implemented — PERF-CC-03 absorbed into juniper-cascor PR [#142](https://github.com/pcalnon/juniper-cascor/pull/142) (concurrency lock); PERF-CC-01/02 via juniper-cascor PR [#151](https://github.com/pcalnon/juniper-cascor/pull/151); PERF-CN-02 via juniper-canopy PR [#188](https://github.com/pcalnon/juniper-canopy/pull/188); PERF-CN-01 via juniper-canopy PR [#189](https://github.com/pcalnon/juniper-canopy/pull/189). Phase complete 2026-04-28.                                                                                                                                                       |
+| 6C    | CAN-CRIT-001, KL-1                     | 2×L    | Dashboard: decision boundary, scatter plot       | ✅ Implemented (closed during 2026-04-28 review) — both items had landed prior to Track 6 work as part of CR-021/022/064 (juniper-cascor PR [#101](https://github.com/pcalnon/juniper-cascor/pull/101) added `/v1/decision-boundary`) and the dataset-data endpoint commit `57df9de` in juniper-cascor. Adapter wiring (`CascorServiceAdapter.get_decision_boundary` / `get_dataset_data`) and frontend callbacks were already in place; the roadmap entries were stale relative to shipping reality. Per-item details in §[CAN-CRIT-001](#can-crit-001-decision-boundary-non-functional-in-productionservice-mode) and §[KL-1](#kl-1-dataset-scatter-plot-empty-in-service-mode). |
+| 6D    | CAN-000..CAN-021                       | 22×S-M | Dashboard enhancement backlog                    | 🔴 Outstanding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 6E    | CAS-002..CAS-009                       | 8×M-XL | CasCor algorithm enhancements                    | 🔴 Outstanding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 6F    | Phase E..H, remaining GAP-WS           | 8×M-L  | WebSocket migration remaining phases             | 🔴 Outstanding (subsumes deferred GAP-WS-16 from 6A)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+
+**Track 6 progress (2026-04-28)**: Phases 6B and 6C complete; 6A 2/3 (GAP-WS-16 deferred to 6F). Next on the critical path: 6D (dashboard enhancement backlog, 22 items, S-M scope, all in juniper-canopy) or 6F's GAP-WS-16 (large cross-repo, ~99% bandwidth reduction).
 
 ### 25.3 Track Dependency Graph
 
