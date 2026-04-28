@@ -268,14 +268,14 @@ Prometheus scrape compat: each consumer adds a test that scrapes `/metrics` post
 
 ---
 
-## 10. Open questions before kickoff
+## 10. Open questions before kickoff — RESOLVED 2026-04-28
 
-1. **Build layout — split `pyproject.toml` or monorepo subdir?** The juniper-ml meta-package's `publish.yml` workflow publishes one distribution today. Option A: extend it to publish two from the same `pyproject.toml` (PEP 621 multi-package, requires hatch / setuptools update). Option B: subdirectory `juniper-ml/juniper-observability/` with its own `pyproject.toml` and a separate publish workflow. **Recommendation: Option B (subdirectory).** It keeps the existing meta-package wholly unchanged and lets the shared lib have its own publish cadence. Option A is reversible later if both ship in lockstep.
-2. **Initial version — `0.1.0a0` (alpha) or jump to `0.1.0` stable?** Alpha first allows a rapid-iteration period during the first consumer (juniper-data) migration without committing to stable contract. **Recommendation: alpha first, stable after data migration soaks.**
-3. **Should the shared lib expose `MetricsAuthMiddleware` (juniper-data's SEC-16 IP allowlist)?** Currently single-repo. **Recommendation: keep service-specific for now.** R5.x SLO/scrape work may revisit.
-4. **Naming: `juniper-observability` vs `juniper-platform-obs` vs `juniper-platform`?** Going with **`juniper-observability`** as the most descriptive and the name implied in the roadmap.
-5. **Should the worker (`juniper-cascor-worker`) eventually adopt this lib?** The worker's `http_health.py` deliberately uses no FastAPI/Starlette to keep the image slim. Adopting the shared lib would pull Starlette in. **Recommendation: defer.** R2.x can revisit if the cost of the slim worker becomes painful.
-6. **CI integration: should the shared lib's tests run in each consumer's PR?** Probably not — each consumer pins a version, so the shared lib's contract is what matters. **Recommendation: shared lib has its own CI; consumers verify via wire-compat snapshot tests.**
+1. **Build layout:** **Subdirectory** `juniper-ml/juniper-observability/` with its own `pyproject.toml` and dedicated publish workflow. The existing meta-package and its publish workflow are untouched.
+2. **Initial version:** **Alpha first** — `0.1.0a0` to TestPyPI then PyPI; promote to stable `0.1.0` after the juniper-data migration soaks for one release cycle.
+3. **`MetricsAuthMiddleware` in shared lib:** **Keep service-specific for now.** Documentation gating — this question is raised as a **gating issue during R5** (SLO/scrape config phase). When R5 designs the per-service scrape allowlist strategy, evaluate whether `MetricsAuthMiddleware` belongs in the shared lib.
+4. **Naming:** **`juniper-observability`** confirmed.
+5. **Worker adoption of shared lib:** **Deferred for now.** Documentation gating — raised as a **gating issue during R2** (specifically during R2 exit-gate evaluation). Before declaring R2 complete, evaluate whether the worker's `http_health.py` should adopt the shared lib's primitives or stay slim.
+6. **CI integration:** **Shared lib has its own CI** (matching all juniper repos' CI patterns). Consumer migrations verify the contract via wire-compat snapshot tests rather than re-running the lib's unit suite.
 
 ---
 
