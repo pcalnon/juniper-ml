@@ -106,6 +106,8 @@ Total estimate: **26–39 engineer-days** if executed sequentially. R3 and R4 ha
 
 **Phase R2 gating issue (raised 2026-04-28 from R2.1 design Q5):** Before declaring R2 complete, evaluate whether **`juniper-cascor-worker` should adopt the shared `juniper-observability` lib** (currently the worker's `http_health.py` uses no FastAPI/Starlette to keep the image slim). Decision criteria: (a) is Starlette's transitive footprint acceptable in the worker container? (b) does the worker stand to benefit from the shared `RequestIdMiddleware` / `JuniperJsonFormatter` consistency? (c) would adopting the lib simplify any cross-cutting bug fixes that have already had to land twice (worker + servers)? Document the decision in a follow-up note in `notes/code-review/`.
 
+**Resolution (2026-04-29):** ✅ Decided — **do not migrate now**. Worker uses 2 of the lib's 20 public symbols (both contract constants); the other 18 are HTTP-server machinery the worker structurally does not need (no FastAPI app, no `/metrics` mount, no Sentry, no upstream deps to probe, no incoming HTTP business flow). None of the R2.1 cross-cutting fixes (BUG-JD-06 tz-aware timestamp, SEC-15 Sentry hook, R1.1 cardinality bound) required a parallel worker patch. Re-evaluation triggers documented for the future. Optional follow-up: replace the two duplicated literals (`LIVENESS_TICK_BUDGET_MS`, `READINESS_HEADER`) with shared-lib imports under a separate ≤ 10-line PR. Full analysis: [`METRICS_MONITORING_R2_EXIT_GATE_WORKER_ADOPTION_2026-04-29.md`](METRICS_MONITORING_R2_EXIT_GATE_WORKER_ADOPTION_2026-04-29.md).
+
 ---
 
 ## 6. Phase R3 — Test-coverage and correctness gap closure
