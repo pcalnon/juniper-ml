@@ -221,7 +221,15 @@ jobs:
           # editable install as "dependency collection failure", and --strict
           # would escalate that to a fatal error. Real vulnerabilities still
           # cause exit 1 without --strict.
-          pip-audit --desc on --skip-editable
+          #
+          # --ignore-vuln CVE-2026-3219: pip 26.0.1 (the version pre-installed
+          # on the GitHub Actions runner image) is vulnerable to the
+          # concatenated-tar/ZIP confusion issue. As of 2026-04-29 there is
+          # no fixed pip release (the advisory's "Fix Versions" column is
+          # empty), so pip-audit fails the build for a CVE we cannot
+          # remediate from this repo. Re-evaluate this ignore when pip
+          # publishes a fix and remove the flag.
+          pip-audit --desc on --skip-editable --ignore-vuln CVE-2026-3219
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Dependency Documentation: Generate pip dependency records
