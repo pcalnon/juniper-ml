@@ -75,8 +75,7 @@ juniper-ml/
 │   ├── DOCUMENTATION_OVERVIEW.md         # Navigation index for all docs
 │   ├── QUICK_START.md                    # Installation and verification guide
 │   ├── REFERENCE.md                      # Extras, compatibility, env vars, service ports
-│   ├── DEVELOPER_CHEATSHEET_JUNIPER-ML.md# Quick-reference card for development tasks
-│   └── DEVELOPER_CHEATSHEET-ORIGINAL.md  # DEPRECATED: monolithic cross-project reference
+│   └── DEVELOPER_CHEATSHEET_JUNIPER-ML.md# Quick-reference card for development tasks
 │
 ├── images/                    # Project branding (logos v0-v9 in PNG/XCF/ICO, tree photos)
 ├── logs/                      # Runtime log output (.gitkeep)
@@ -105,6 +104,7 @@ juniper-ml/
 │   ├── activate_conda_env.bash           # Conda environment management
 │   ├── resume_session.bash               # Session resume convenience wrapper
 │   ├── check_doc_links.py               # Symlink -> ../util/check_doc_links.py
+│   ├── cleanup_session_worktrees.py      # Bulk-clean Claude Code session worktrees in .claude/worktrees/
 │   ├── test.bash                         # End-to-end test harness for launcher flows
 │   ├── test_resume_file_safety.bash      # Regression: invalid --resume input safety
 │   ├── test_prompt-*.md                  # Test prompt files for launcher testing

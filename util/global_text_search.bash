@@ -62,10 +62,12 @@ EXCLUDE_DIRS+=('reports')
 EXCLUDE_DIRS+=('notes')
 EXCLUDE_DIRS+=('docs')
 EXCLUDE_DIRS+=('util')
+EXCLUDE_DIRS+=('backups')
+EXCLUDE_DIRS+=('.git')
+EXCLUDE_DIRS+=('.vscode')
 EXCLUDE_DIRS+=('*.egg-info')
 EXCLUDE_DIRS+=('.mypy_cache')
 EXCLUDE_DIRS+=('.pytest_cache')
-EXCLUDE_DIRS+=('backups')
 EXCLUDE_DIRS+=('.serena')
 echo "Post-Initialized Exclude Dirs Array Length: ${#EXCLUDE_DIRS[@]}"
 for DIRNAME in "${EXCLUDE_DIRS[@]}"; do
@@ -115,7 +117,10 @@ fi
 
 echo "Executing grep command for search term in source code files."
 
-echo "grep ${EXCLUDE_DIR_PARAMS} ${EXCLUDE_FILE_PARAMS} ${GREP_PARAMS_DIR_RECURSE} ${GREP_PARAMS_LINE_NUMBER} ${GREP_PARAMS_SKIP_BINARY} ${SEARCH_TERM} ${SEARCH_LOCATION}"
+echo -ne "\ngrep ${EXCLUDE_DIR_PARAMS} ${EXCLUDE_FILE_PARAMS} ${GREP_PARAMS_DIR_RECURSE} ${GREP_PARAMS_LINE_NUMBER} ${GREP_PARAMS_SKIP_BINARY} ${SEARCH_TERM} ${SEARCH_LOCATION}\n"
+echo -ne "======================================================================================================\n\n"
+
 grep ${EXCLUDE_DIR_PARAMS} ${EXCLUDE_FILE_PARAMS} ${GREP_PARAMS_DIR_RECURSE} ${GREP_PARAMS_LINE_NUMBER} ${GREP_PARAMS_SKIP_BINARY} "${SEARCH_TERM}" ${SEARCH_LOCATION}
 
-echo "Completed Executing grep command for search term in source code files."
+echo -ne "\n======================================================================================================\n"
+echo -ne "Completed Executing grep command for search term in source code files.\n\n"
