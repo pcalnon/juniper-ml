@@ -196,7 +196,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
 - [juniper-ml REFERENCE](REFERENCE.md) -- package metadata, extras, version history
-- [Deprecated Master Cheatsheet](DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference
+- [Deprecated Master Cheatsheet](../notes/history/DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference (relocated to `notes/history/` in 2026-04)
 - [Worktree Setup](../notes/WORKTREE_SETUP_PROCEDURE.md) | [Worktree Cleanup V2](../notes/WORKTREE_CLEANUP_PROCEDURE_V2.md)
 - [SOPS Usage Guide](../notes/SOPS_USAGE_GUIDE.md) -- complete secrets management reference
 

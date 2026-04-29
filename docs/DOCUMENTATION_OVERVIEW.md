@@ -43,7 +43,10 @@
 | **QUICK_START.md** | ~70 | Tutorial | Install Juniper packages in under a minute |
 | **REFERENCE.md** | ~90 | Reference | Complete extras, compatibility, and version reference |
 | **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~187 | Cheatsheet | Quick-reference card for common development tasks |
-| **DEVELOPER_CHEATSHEET-ORIGINAL.md** | ~1400 | Archive | Deprecated monolithic cheatsheet retained for reference |
+
+> The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
+> was relocated to `notes/history/` in 2026-04. Use the per-project
+> `DEVELOPER_CHEATSHEET.md` files in each repo's `docs/` directory instead.
 
 ### Root Directory
 
