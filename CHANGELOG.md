@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-04-28
+
 ### Added
 
-- **`juniper-observability` package (alpha `0.1.0a2`)** — new sibling package living under `juniper-observability/` (METRICS-MON R2.1.1, PR #155). Provides cross-cutting observability primitives shared by every Juniper server: health models (`DependencyStatus`, `ReadinessResponse`), the synchronous `probe_dependency` helper, structured-JSON logging (`JuniperJsonFormatter`, `configure_logging`) with `request_id` propagation, Starlette middlewares (`RequestIdMiddleware`, `PrometheusMiddleware` with bounded label cardinality per R1.1), pinned cross-service constants (`UNMATCHED_ENDPOINT_LABEL`, `READINESS_HEADER`, `LIVENESS_TICK_BUDGET_MS`, `LIVENESS_STALENESS_SECONDS`), Prometheus utilities (`get_prometheus_app`, `set_build_info`), and Sentry init (`configure_sentry`) with the SEC-10 `before_send` hook always installed. Optional extras: `[prometheus]`, `[sentry]`, `[all]`. Per-service metric definitions intentionally stay in their owning repos; this package only exposes cross-cutting infrastructure.
+- **`juniper-observability` package (alpha `0.1.1a`)** — new sibling package living under `juniper-observability/` (METRICS-MON R2.1.1, PR #155). Provides cross-cutting observability primitives shared by every Juniper server: health models (`DependencyStatus`, `ReadinessResponse`), the synchronous `probe_dependency` helper, structured-JSON logging (`JuniperJsonFormatter`, `configure_logging`) with `request_id` propagation, Starlette middlewares (`RequestIdMiddleware`, `PrometheusMiddleware` with bounded label cardinality per R1.1), pinned cross-service constants (`UNMATCHED_ENDPOINT_LABEL`, `READINESS_HEADER`, `LIVENESS_TICK_BUDGET_MS`, `LIVENESS_STALENESS_SECONDS`), Prometheus utilities (`get_prometheus_app`, `set_build_info`), and Sentry init (`configure_sentry`) with the SEC-10 `before_send` hook always installed. Optional extras: `[prometheus]`, `[sentry]`, `[all]`. Per-service metric definitions intentionally stay in their owning repos; this package only exposes cross-cutting infrastructure.
 - `.github/workflows/ci-observability.yml` — dedicated CI pipeline for the observability package.
 - `.github/workflows/publish-observability.yml` — OIDC trusted-publishing workflow for `juniper-observability` (TestPyPI → install verification → PyPI), triggered by tags matching `juniper-observability-v*` so it stays decoupled from the meta-package's own `v*` release tags. `workflow_dispatch` is enabled so operators can re-fire a publish against any tag.
 - Hardcoded-values refactor (Wave 3 + Wave 4): all 6 `util/get_cascor_*.bash` REST query utilities now read `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` from the environment (defaulting to `localhost` / `8201`) so a single environment override targets every utility instead of editing each script individually.
@@ -157,7 +159,9 @@ See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4
 - README with installation instructions and ecosystem overview
 - MIT License
 
-[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/pcalnon/juniper-ml/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/pcalnon/juniper-ml/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pcalnon/juniper-ml/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/pcalnon/juniper-ml/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/pcalnon/juniper-ml/compare/v0.1.0...v0.2.0
