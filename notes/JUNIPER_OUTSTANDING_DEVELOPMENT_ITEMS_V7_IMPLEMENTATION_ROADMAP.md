@@ -5560,21 +5560,21 @@ XL (combined)
 
 #### 8.3 Critical Individual Gaps (from WebSocket Architecture Review)
 
-(All 12 items unchanged from v3 — GAP-WS-16 through GAP-WS-32 + Phase B-pre-b. All 🔴 NOT STARTED.)
+**Status updated 2026-04-28** after a code-state audit against juniper-cascor and juniper-canopy `main`. Of 12 items: **8 already shipped** (5 caught only by this audit — earlier review iterations completed the work but the table was never updated), **1 in review**, **2 genuinely open**, **1 untouched**. Same recurring pattern as CAN-CRIT-001 / KL-1 / CI-01/02 / PERF-CC-03 / 6D items / CAN-013.
 
 | ID            | Priority | Description                                                                                  | Status         |
 |---------------|----------|----------------------------------------------------------------------------------------------|----------------|
 | GAP-WS-16     | **P0**   | `/api/metrics/history` polling bandwidth bomb (~3 MB/s per dashboard tab)                    | ✅ Complete — juniper-cascor [#152](https://github.com/pcalnon/juniper-cascor/pull/152) + juniper-canopy [#195](https://github.com/pcalnon/juniper-canopy/pull/195) |
-| GAP-WS-14     | **P1**   | Plotly must use `extendTraces` with `maxPoints` — full figure rebuild is 80-200ms            | 🔴 NOT STARTED |
-| GAP-WS-15     | **P1**   | Browser-side rAF coalescing needed for 50Hz candidate events                                 | 🔴 NOT STARTED |
-| GAP-WS-13     | **P1**   | Lossless reconnect via sequence numbers and replay buffer — events lost during disconnect    | 🔴 NOT STARTED |
-| GAP-WS-25     | **P1**   | WebSocket-health-aware polling toggle — both WS+REST run simultaneously causing duplicates   | 🔴 NOT STARTED |
-| GAP-WS-26     | **P1**   | Visible connection status indicator (green/yellow/red badge)                                 | 🔴 NOT STARTED |
-| GAP-WS-18     | **P1**   | Topology message can exceed 64 KB silently causing connection teardown                       | 🔴 NOT STARTED |
-| GAP-WS-21     | **P1**   | 1 Hz state throttle drops terminal transitions (correctness bug)                             | 🔴 NOT STARTED |
-| GAP-WS-28     | **P2**   | Multi-key `update_params` torn-write race                                                    | 🔴 NOT STARTED |
-| GAP-WS-31     | **P2**   | Unbounded reconnect cap — stops after 10, dashboards left open permanently stop reconnecting | 🔴 NOT STARTED |
-| GAP-WS-32     | **P2**   | Per-command timeouts and orphaned-command resolution                                         | 🔴 NOT STARTED |
+| GAP-WS-14     | **P1**   | Plotly must use `extendTraces` with `maxPoints` — full figure rebuild is 80-200ms            | ✅ Complete — juniper-canopy [#187](https://github.com/pcalnon/juniper-canopy/pull/187) |
+| GAP-WS-15     | **P1**   | Browser-side rAF coalescing needed for 50Hz candidate events                                 | ✅ Complete — juniper-canopy [#186](https://github.com/pcalnon/juniper-canopy/pull/186) |
+| GAP-WS-13     | **P1**   | Lossless reconnect via sequence numbers and replay buffer — events lost during disconnect    | ✅ Shipped — `juniper-cascor/src/api/websocket/manager.py:288–333` (seq assignment + replay buffer + bisect-optimized lookup) and `training_stream.py:237–301` (resume protocol with server_instance_id mismatch detection + ReplayOutOfRange semantics). Closed during 2026-04-28 audit. |
+| GAP-WS-25     | **P1**   | WebSocket-health-aware polling toggle — both WS+REST run simultaneously causing duplicates   | 🟡 In Review — metrics half closed by GAP-WS-16 ([#195](https://github.com/pcalnon/juniper-canopy/pull/195)); topology half via juniper-canopy [#196](https://github.com/pcalnon/juniper-canopy/pull/196). Raw-topology intentionally remains REST-only (no WS source, see [#196](https://github.com/pcalnon/juniper-canopy/pull/196) for rationale). |
+| GAP-WS-26     | **P1**   | Visible connection status indicator (green/yellow/red badge)                                 | ✅ Shipped — `juniper-canopy/src/frontend/components/connection_indicator.py:28–84` (4-state badge: connected/reconnecting/offline/demo) wired into the layout via `dashboard_manager.py:55,623`; clientside callback drains `peekConnectionStatus()` from `ws_dash_bridge.js:76–86`. Closed during 2026-04-28 audit. |
+| GAP-WS-18     | **P1**   | Topology message can exceed 64 KB silently causing connection teardown                       | 🔴 Open — no size guard on `topology` broadcasts; `juniper-cascor/src/api/websocket/messages.py:72–79` builds the envelope with no size check, no chunking. Server-side guard + warning frame is the recommended next step (chunking deferred). |
+| GAP-WS-21     | **P1**   | 1 Hz state throttle drops terminal transitions (correctness bug)                             | ✅ Shipped — `juniper-cascor/src/api/lifecycle/manager.py:209–241` (`_broadcast_training_state` checks `is_terminal = status in self._TERMINAL_STATUSES` and bypasses the throttle for terminal states; thread-safe via `_broadcast_lock`). Closed during 2026-04-28 audit. |
+| GAP-WS-28     | **P2**   | Multi-key `update_params` torn-write race                                                    | 🔴 Open (re-scoped) — race itself is closed (`juniper-cascor/src/api/lifecycle/manager.py:859–880` holds `_training_lock` across all setattr calls), but no validation-before-commit: if key #7 is invalid, keys 1–6 already applied with no rollback. Consistency improvement, not race fix. |
+| GAP-WS-31     | **P2**   | Unbounded reconnect cap — stops after 10, dashboards left open permanently stop reconnecting | ✅ Shipped — `juniper-canopy/src/frontend/assets/websocket_client.js:8,150,153–163` removes the attempt cap; `_scheduleReconnect` retries indefinitely with exponential backoff capped at 60s delay (not 10 attempts). Closed during 2026-04-28 audit. |
+| GAP-WS-32     | **P2**   | Per-command timeouts and orphaned-command resolution                                         | ✅ Shipped — `juniper-canopy/src/frontend/assets/websocket_client.js:39–40,198–201,286–334` (per-command UUID correlation, 2s default timeout, promise-based send) + `juniper-cascor/src/api/websocket/control_stream.py:129–176` (server echoes `command_id` in `command_response`). Both sides wired. Closed during 2026-04-28 audit. |
 | Phase B-pre-b | **P1**   | CSWSH/CSRF on `/ws/control` — NOT STARTED (required before Phase D default-on)               | 🔴 NOT STARTED |
 
 ### Issue Remediations, Section 8
@@ -6023,7 +6023,7 @@ async def reconnect(self):
 
 ##### Verification Status
 
-⚠️ Partially implemented server-side (cascor has `ws_replay_buffer_size: 1024`). Client-side integration missing.
+✅ Shipped (audit 2026-04-28). Both server and client are in place: `juniper-cascor/src/api/websocket/manager.py:288–333` (seq + bisect-optimized replay) and `training_stream.py:237–301` (resume protocol with `server_instance_id` mismatch detection + `ReplayOutOfRange`); canopy `websocket_client.js:78–88` sends the resume frame on reconnect with `last_seq` + `server_instance_id`.
 
 ##### Severity
 
@@ -6126,7 +6126,7 @@ def create_connection_status_badge() -> html.Div:
 
 ##### Verification Status
 
-⚠️ Not started — no connection status indicator exists in canopy dashboard.
+✅ Shipped (audit 2026-04-28). `juniper-canopy/src/frontend/components/connection_indicator.py:28–84` renders a 4-state badge (connected/reconnecting/offline/demo) wired into `dashboard_manager.py:55,623`; clientside callback drains `peekConnectionStatus()` from `ws_dash_bridge.js:76–86`.
 
 ##### Severity
 
@@ -6210,6 +6210,10 @@ M
 **Approach A**: See BUG-CN-06 remediation (always send terminal states).
 **Recommended**: See BUG-CN-06.
 
+##### Verification Status
+
+✅ Shipped (audit 2026-04-28). `juniper-cascor/src/api/lifecycle/manager.py:209–241` (`_broadcast_training_state`) checks `is_terminal = status in self._TERMINAL_STATUSES` and bypasses the 1 Hz throttle for terminal states; thread-safe via `_broadcast_lock`.
+
 ##### Severity
 
 High
@@ -6264,7 +6268,7 @@ class ParamUpdateQueue:
 
 ##### Verification Status
 
-⚠️ Not started — params currently applied without synchronization.
+🟡 Re-scoped (audit 2026-04-28). The race itself is closed: `juniper-cascor/src/api/lifecycle/manager.py:859–880` holds `_training_lock` across all setattr calls so two callers can't interleave. What remains open is the absence of validation-before-commit — if `params` contains 10 keys and key #7 is invalid, keys 1–6 are already applied with no rollback. This is a consistency improvement (all-or-nothing semantics), not a race fix. Lower urgency than originally classified.
 
 ##### Severity
 
@@ -6322,7 +6326,7 @@ async def reconnect_loop(self):
 
 ##### Verification Status
 
-⚠️ Not started — current reconnect stops after 10 attempts (confirmed in websocket_manager.py).
+✅ Shipped (audit 2026-04-28). The original `websocket_manager.py` reference is stale — the actual client is `juniper-canopy/src/frontend/assets/websocket_client.js` (a JavaScript module) which removed the cap: lines 8/150/153–163 implement `_scheduleReconnect()` with no attempt limit, exponential backoff capped at 60s delay (`maxReconnectDelay = 60000`).
 
 ##### Severity
 
@@ -6379,7 +6383,7 @@ async def send_command(self, command: dict, timeout: float = DEFAULT_COMMAND_TIM
 
 ##### Verification Status
 
-⚠️ Not started — no per-command timeout exists in canopy WS client.
+✅ Shipped (audit 2026-04-28). The original Python reference is stale — the actual implementation lives in `juniper-canopy/src/frontend/assets/websocket_client.js`. Lines 39–40 declare `_pendingCommands` Map; lines 198–201 / 286–334 wire `send()` to auto-generate a UUID `command_id`, register a per-command timeout (start=11s, set_params=2s, default=3s with scheduling slack), and resolve/reject the returned promise when `command_response` arrives. Server side: `juniper-cascor/src/api/websocket/control_stream.py:129–176` echoes the `command_id` back so the client can correlate.
 
 ##### Severity
 
