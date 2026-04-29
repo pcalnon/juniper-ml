@@ -54,9 +54,15 @@ def test_no_unexpected_public_symbols():
     assert not missing, f"juniper_observability.__all__ missing expected symbols: {missing}"
 
 
-def test_version_is_alpha_string():
-    """0.1.0a0 — the alpha publish per the R2.1 design §11."""
-    assert juniper_observability.__version__ == "0.1.0a0"
+def test_version_is_stable_string():
+    """0.1.1 — first stable promotion after the juniper-data soak (R2.1.3).
+
+    Released as the post-alpha stable. The previous alphas
+    (``0.1.0a0`` first publish, ``0.1.1a0`` post-data-migration
+    iteration) remain on PyPI for reproducibility but consumers should
+    pin ``juniper-observability>=0.1.1`` going forward.
+    """
+    assert juniper_observability.__version__ == "0.1.1"
 
 
 def test_constants_match_documented_values():

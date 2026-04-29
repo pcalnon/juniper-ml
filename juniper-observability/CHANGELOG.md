@@ -8,6 +8,18 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-04-29
+
+### Changed
+
+- **First stable promotion** (METRICS-MON R2.1.3 / seed-06). Promoted from pre-release to stable now that the first consumer (juniper-data, [pcalnon/juniper-data#60](https://github.com/pcalnon/juniper-data/pull/60)) has shipped without surfacing a wire-format regression. **No public-API changes** vs `0.1.1a` — same surface, same behavior; only the version string and trove classifier change.
+- Trove classifier moved from `Development Status :: 3 - Alpha` to `Development Status :: 4 - Beta` to reflect the 0.1.x stability commitment.
+- Consumers should pin `juniper-observability>=0.1.1` going forward. Existing pins of `>=0.1.0a0` / `>=0.1.1a` continue to resolve to the latest published version, which is now `0.1.1`.
+
+### Notes
+
+- The previous alphas (`0.1.0a0`, `0.1.1a`) remain on PyPI for reproducibility of historical builds. Yanking is intentionally avoided; consumers can downgrade in a hotfix scenario by pinning explicitly.
+
 ## [0.1.1a] - 2026-04-28
 
 ### Changed
@@ -40,5 +52,6 @@ Initial source drop, never released to PyPI / TestPyPI.
 
 - Per-service metric definitions intentionally stay in their owning repo and use the lazy-init pattern with `prometheus_client` directly. This package only exposes cross-cutting infrastructure.
 
-[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/juniper-observability-v0.1.1a...HEAD
+[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/juniper-observability-v0.1.1...HEAD
+[0.1.1]: https://github.com/pcalnon/juniper-ml/releases/tag/juniper-observability-v0.1.1
 [0.1.1a]: https://github.com/pcalnon/juniper-ml/releases/tag/juniper-observability-v0.1.1a
