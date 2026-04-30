@@ -127,6 +127,9 @@ The METRICS-MON program now turns to **Phase R3** (test-coverage gap closure) an
 
 ## 6. Phase R3 — Test-coverage and correctness gap closure
 
+**Entry plan (2026-04-30):** Open questions resolved in [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md). Headline decisions: **Q1** (R3.7) macOS leg uses `macos-latest` (ARM) with `continue-on-error: true` initial guard for 2 weeks; full unit coverage on macOS, no integration/perf/e2e on the new leg. **Q2** (R3.3) restore via **black-box dashboard layout test**, not by promoting `_create_metrics_panel` to the public API. **Q3** (R3.4) remove `importorskip("sentry_sdk")` — `sentry-sdk` is already a hard runtime dep on every server, so this only changes test installs. **Q4** (R3.6) coverage-matrix population folded into the per-track PRs (each closes its own row); residual GAPs closed in a single juniper-ml sweep PR after R3.1–R3.5 + R3.7 land. **Q5** (sequencing) **Wave 1 (parallelizable, 11 PRs)** → R3.1, R3.2, R3.3, R3.5 (single-repo) plus R3.4×3 (cascor + canopy + data) plus R3.7×4 (cascor + worker + data + canopy). **Wave 2 (gated)** → R3.6 sweep + roadmap close. ~3 working days end-to-end at the prior cadence.
+
+
 ### R3.1 Live integration test for dataset-gen metric (seed-08, BUG-JD-07)
 
 **Repo:** juniper-data
