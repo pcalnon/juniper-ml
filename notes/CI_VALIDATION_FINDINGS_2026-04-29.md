@@ -34,6 +34,8 @@ now. Every fix in Phase V3 references a finding ID from this file.
 | V24 | juniper-cascor | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
 | V25 | juniper-cascor | ci.yml | Documentation Links | docs (broken doc links) | P2 | G-CODE | **deferred** | out-of-scope |
 | V26 | all 6 Python repos with security in ci.yml | ci.yml | pip-audit step | pip-audit (CVE-2026-3219 in ci.yml too) | P1 | G-INFRA | **fixed** | canopy `d6ca33e`; cascor `f8a9d5f`; data `8a9eed4`; data-client `52f89dc`; cascor-client `0d5c648`; cascor-worker `74ad4d1` |
+| V27 | juniper-data | ci.yml | unit-tests | unit (test_metrics_endpoint_uses_route_template_for_dataset_path returns 403 instead of 200) | P1 | G-CODE | **deferred** | pre-existing test failure in test_phase_2d_metrics.py |
+| V28 | juniper-ml | ci.yml | Documentation Links | docs (6 broken links in JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md → PHASE_6E_DESIGN.md, CAN_013_INTEGRATION_MODE_DESIGN.md, etc.) | P2 | G-CODE | **deferred** | pre-existing doc drift; design docs were never landed |
 
 ---
 

@@ -148,7 +148,89 @@ consecutive green.)
    statements lets the alignment work close cleanly without
    blocking on product-side bugs.
 
-## 9. Final state-of-the-fleet snapshot
+## 9. Final state-of-the-fleet snapshot (post Phase V3)
 
-(To be filled in when the final 16-run validation completes; will
-record per-repo `ci.yml` + `security-scan.yml` final state.)
+After the Phase V3 remediation pass (commits c136dc9 through
+c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
+`security-scan.yml` on every repo:
+
+| Repo | `ci.yml` | `security-scan.yml` | Outstanding (deferred) |
+|---|---|---|---|
+| juniper-ml | ❌ | ✅ | V28 (broken doc-links to never-shipped design docs) |
+| juniper-canopy | ❌ | ✅ | V11 (Dash unit tests), V12 (lockfile drift), V18 (CROSS_REPO_DISPATCH_TOKEN) |
+| juniper-cascor | ❌ | ❌ | V20 (bandit B301/B108 — skip-list drift), V23 (pre-commit drift), V24 (lockfile drift), V25 (broken doc links), V19 (perf benchmark regression) |
+| juniper-data | ❌ | ✅ | V13 (lockfile drift), V17 (CROSS_REPO_DISPATCH_TOKEN), V27 (real test failure 403≠200) |
+| juniper-data-client | ✅ | ✅ | — |
+| juniper-cascor-client | ❌ | ✅ | V22 (gitleaks — real committed secrets need triage) |
+| juniper-cascor-worker | ✅ | ✅ | — |
+| juniper-deploy | ✅ | ✅ | — (trivy promoted to hard gate) |
+
+### Greens
+
+- **All 8 repos** have a green `security-scan.yml` except juniper-cascor.
+  cascor's failure is V20 (deferred — pre-existing bandit skip-list
+  drift between pre-commit and standalone runs).
+- **3 repos** have a fully green `ci.yml`: data-client, cascor-worker,
+  deploy.
+- **All 7 Python repos with CodeQL** have green CodeQL runs (CodeQL
+  was already green from initial deployment; no shakedown findings).
+
+### Reds
+
+- **5 repos** have a red `ci.yml`: ml, canopy, cascor, data,
+  cascor-client. Every red is traceable to an out-of-scope deferred
+  finding (V11–V13, V19–V25, V27, V28). None of the reds are caused
+  by the alignment work itself.
+
+### Soft-fail → hard-gate promotions executed
+
+- **juniper-deploy / `trivy-fs`**: promoted (`continue-on-error:
+  true` removed in `c431fd1`). Two consecutive green runs of
+  `security-scan.yml` confirmed.
+- **All 7 Python repos / CodeQL**: implicitly promoted (no soft-fail
+  flag was used; CodeQL findings flow to the Security tab, not the
+  `required-checks` aggregator).
+
+### Soft-fail → hard-gate promotions held
+
+- **data-client / cascor-client / cascor-worker `integration-tests`**:
+  held in soft-fail. The integration suites are currently empty in
+  these repos so the job is a no-op (exit-code-5 → "skip"). Promoting
+  to hard-gate now would lock in a green that doesn't actually
+  exercise anything. Plan: keep the soft-fail until each repo has at
+  least one real `@pytest.mark.integration` test.
+
+---
+
+## 10. Closeout — what to hand off
+
+1. **Out-of-scope deferred findings** (V11–V13, V17–V20, V22–V25,
+   V27, V28) — owners are the per-repo product teams. The findings
+   doc is the canonical reference.
+2. **Pending soft-fail → hard-gate promotion** for the
+   `integration-tests` jobs in data-client / cascor-client /
+   cascor-worker — promote when those repos have real integration
+   tests in their suites.
+3. **Remove `--ignore-vuln CVE-2026-3219`** when pip publishes a
+   patched 26.x release. Search across the fleet:
+
+   ```bash
+   grep -rn "CVE-2026-3219" /home/pcalnon/Development/python/Juniper/*/.github/workflows/
+   ```
+
+   …and remove the flag from every match.
+4. **Configure `CROSS_REPO_DISPATCH_TOKEN`** at the org or repo
+   level (V17, V18). Until that secret exists, the
+   `lockfile-update.yml` workflows on data and canopy will keep
+   failing on initial-trigger.
+5. **Triage the gitleaks findings on cascor-client** (V22). Either
+   allowlist test fixtures via a `.gitleaks.toml` config or rotate
+   any actually-committed credentials.
+
+---
+
+## Closed.
+
+This document, together with the alignment plan + validation
+roadmap + findings file, forms the complete record of the CI
+normalization effort across the 8 active Juniper repos.
