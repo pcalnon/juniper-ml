@@ -654,8 +654,7 @@ direct-to-`main` on its respective repo and is reachable from
 | juniper-deploy        | `dependency-docs` job,                            | No `pyproject.toml` and no pinned Python lockfile to render or refresh.                                                     |
 |                       | -- `lockfile-update.yml`                          | -- The Docker images consumed by `compose` are the actual dependency surface;                                               |
 |                       |                                                   | -- those are tracked by Dependabot's `docker` ecosystem and the `trivy` step proposed in §7.5.                              |
-| juniper-cascor-client | Python 3.11 in the matrix (and only here)         | The client is held to `>=3.11` so older deployments can integrate;                                                          |
-|                       |                                                   | -- the rest of the fleet is `>=3.12`. Do not lower other repos' minimum to match; do not raise this one's minimum to match. |
+| juniper-cascor-client | ~~Python 3.11 in the matrix (and only here)~~     | **CORRECTED 2026-04-29 per finding V10.** The original Appendix entry assumed cascor-client floored at 3.11. The actual `pyproject.toml` declares `requires-python = ">=3.12"`, so the 3.11 entry in the CI matrix produced installation failures. cascor-client now matches the rest of the fleet (`3.12 / 3.13 / 3.14`); if 3.11 support is later desired, that's a separate `requires-python` bump. |
 
 ---
 
