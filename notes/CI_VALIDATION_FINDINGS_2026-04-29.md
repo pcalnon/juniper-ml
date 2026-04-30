@@ -21,12 +21,19 @@ now. Every fix in Phase V3 references a finding ID from this file.
 | V11 | juniper-canopy | ci.yml | unit-tests | unit (real Dash test failures) | P1 | G-CODE | **deferred** | out-of-scope (canopy product owner) |
 | V12 | juniper-canopy | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
 | V13 | juniper-data | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
-| V14 | juniper-data | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CODE | **investigating** | run #25194361630 |
+| V14 | juniper-data | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CONFIG | **fixed** | data `4907da1` (markdownlint .serena exclude) |
 | V15 | juniper-canopy | ci.yml | Security Scans (Gitleaks) | gitleaks (repository_dispatch unsupported) | P2 | G-CONFIG | **fixed** | canopy `792ba89` |
 | V16 | juniper-deploy | ci.yml | Pre-commit | pre-commit (yamllint MD docstart) | P1 | G-CODE | **fixed** | deploy `926dc31`; ml `b4025fa` (template) |
 | V17 | juniper-data | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | **deferred** | depends on user-side secret config |
 | V18 | juniper-canopy | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | **deferred** | depends on user-side secret config |
 | V19 | juniper-cascor | scheduled-tests.yml | Performance Benchmarks | unit (real benchmark failure) | P2 | G-CODE | **deferred** | out-of-scope |
+| V20 | juniper-cascor | security-scan.yml + ci.yml security | bandit reports B301/B108 issues | bandit (skip-list drift) | P2 | G-CODE | **deferred** | pre-commit bandit skips B301/B108 but standalone runs don't |
+| V21 | juniper-canopy / juniper-cascor-client | security-scan.yml | pip-audit `--strict` rejects unpublished editable | pip-audit (strict + editable) | P1 | G-CONFIG | **fixed** | canopy `d6ca33e`; cascor-client `0d5c648` (`--skip-editable`, drop `--strict`) |
+| V22 | juniper-cascor-client | ci.yml | Gitleaks finds real committed secrets | gitleaks (real findings) | P1 | G-CODE | **deferred** | requires user to triage / allowlist / rotate |
+| V23 | juniper-cascor | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CODE | **deferred** | pre-existing pre-commit drift surfaced now that V01 startup_failure cleared |
+| V24 | juniper-cascor | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
+| V25 | juniper-cascor | ci.yml | Documentation Links | docs (broken doc links) | P2 | G-CODE | **deferred** | out-of-scope |
+| V26 | all 6 Python repos with security in ci.yml | ci.yml | pip-audit step | pip-audit (CVE-2026-3219 in ci.yml too) | P1 | G-INFRA | **fixed** | canopy `d6ca33e`; cascor `f8a9d5f`; data `8a9eed4`; data-client `52f89dc`; cascor-client `0d5c648`; cascor-worker `74ad4d1` |
 
 ---
 
