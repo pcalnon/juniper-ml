@@ -6,27 +6,27 @@ now. Every fix in Phase V3 references a finding ID from this file.
 
 ## Index
 
-| ID | Repo | Workflow | Job | Category | Priority | Group | Status |
-|----|------|----------|-----|----------|----------|-------|--------|
-| V01 | juniper-cascor | ci.yml | docs / security / lockfile-check | startup_failure | P0 | G-CONFIG | open |
-| V02 | juniper-cascor | lockfile-update.yml | update-lockfile | startup_failure | P0 | G-CONFIG | open |
-| V03 | juniper-cascor | security-scan.yml | security-scan | startup_failure | P0 | G-CONFIG | open |
-| V04 | juniper-canopy | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | open |
-| V05 | juniper-cascor | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | open |
-| V06 | juniper-data | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | open |
-| V07 | juniper-data-client | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | open |
-| V08 | juniper-cascor-client | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | open |
-| V09 | juniper-cascor-worker | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | open |
-| V10 | juniper-cascor-client | ci.yml | unit-tests / integration-tests (Py 3.11) | install (requires-python mismatch) | P1 | G-CONTRACT | open |
-| V11 | juniper-canopy | ci.yml | unit-tests | unit (real Dash test failures) | P1 | G-CODE | open |
-| V12 | juniper-canopy | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | open |
-| V13 | juniper-data | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | open |
-| V14 | juniper-data | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CODE | open |
-| V15 | juniper-canopy | ci.yml | Security Scans (Gitleaks) | gitleaks (repository_dispatch unsupported) | P2 | G-CONFIG | open |
-| V16 | juniper-deploy | ci.yml | Pre-commit | pre-commit (yamllint MD docstart) | P1 | G-CODE | open |
-| V17 | juniper-data | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | open |
-| V18 | juniper-canopy | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | open |
-| V19 | juniper-cascor | scheduled-tests.yml | Performance Benchmarks | unit (real benchmark failure) | P2 | G-CODE | open |
+| ID | Repo | Workflow | Job | Category | Priority | Group | Status | Fix commit |
+|----|------|----------|-----|----------|----------|-------|--------|-----------|
+| V01 | juniper-cascor | ci.yml | docs / security / lockfile-check | startup_failure | P0 | G-CONFIG | **fixed** | cascor `c136dc9` |
+| V02 | juniper-cascor | lockfile-update.yml | update-lockfile | startup_failure | P0 | G-CONFIG | **fixed** | cascor `c136dc9` |
+| V03 | juniper-cascor | security-scan.yml | security-scan | startup_failure | P0 | G-CONFIG | **fixed** | cascor `c136dc9` |
+| V04 | juniper-canopy | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | canopy `77d7308` |
+| V05 | juniper-cascor | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | cascor `8a32d19` |
+| V06 | juniper-data | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | data `53723f1` |
+| V07 | juniper-data-client | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | data-client `0bdfbeb` |
+| V08 | juniper-cascor-client | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | cascor-client `d5be2a2` |
+| V09 | juniper-cascor-worker | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | cascor-worker `1e91f5f` |
+| V10 | juniper-cascor-client | ci.yml | unit-tests / integration-tests (Py 3.11) | install (requires-python mismatch) | P1 | G-CONTRACT | **fixed** | cascor-client `99a660b`; ml `b4025fa` (Appendix A) |
+| V11 | juniper-canopy | ci.yml | unit-tests | unit (real Dash test failures) | P1 | G-CODE | **deferred** | out-of-scope (canopy product owner) |
+| V12 | juniper-canopy | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
+| V13 | juniper-data | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
+| V14 | juniper-data | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CODE | **investigating** | run #25194361630 |
+| V15 | juniper-canopy | ci.yml | Security Scans (Gitleaks) | gitleaks (repository_dispatch unsupported) | P2 | G-CONFIG | **fixed** | canopy `792ba89` |
+| V16 | juniper-deploy | ci.yml | Pre-commit | pre-commit (yamllint MD docstart) | P1 | G-CODE | **fixed** | deploy `926dc31`; ml `b4025fa` (template) |
+| V17 | juniper-data | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | **deferred** | depends on user-side secret config |
+| V18 | juniper-canopy | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | **deferred** | depends on user-side secret config |
+| V19 | juniper-cascor | scheduled-tests.yml | Performance Benchmarks | unit (real benchmark failure) | P2 | G-CODE | **deferred** | out-of-scope |
 
 ---
 
