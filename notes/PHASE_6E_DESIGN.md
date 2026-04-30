@@ -66,39 +66,62 @@ This is the only genuinely XL item in Phase 6E.
 
 ## PR plan
 
+**Updated 2026-04-29** after user direction:
+
+1. CAS-005 held for Sprint D (was Sprint C in the original plan).
+2. CAN-013 expanded to full weighted_ensemble and given its own sprint (Sprint C). Detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
+3. Multi-network architecture (CAS-008 / CAS-009 / CAN-021) lifted out into its own design doc + sprint (Sprint E). See [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md).
+
 Grouping by surface affinity (= what touches the same files / mental model), not strictly by ID order. Each row is one PR.
 
 | # | PR | Scope | Cascor changes | Canopy changes | Notes |
 |---|---|---|---|---|---|
-| 1 | **Training params epoch separation** (CAS-002 + CAS-003) | S | Verify three epoch fields are surfaced through `TrainingParams`; add `network_max_epochs` if not already aliased | Add 3 inputs in sidebar | Pure parameter additions; existing infra in cascor |
-| 2 | **Optimizer surface** (CAN-010 + ENH-006) | S–M | `optimizer_type: Literal[…]` added to `TrainingParams`; thread to `OptimizerConfig` | Dropdown in sidebar; surface in Parameters tab | Cascor side ~30 LoC; canopy ~50 LoC |
-| 3 | **Activation surface** (CAN-011) | S | `activation_function_name: Literal[…]` added to `TrainingParams`; thread to network constructor | Dropdown in sidebar | Smaller than #2; ~20 LoC each side |
-| 4 | **N-best / integration_mode (sequential, batch)** (ENH-007 + CAN-013-narrow) | M | Rename `candidates_per_layer` to `integration_mode: Literal["sequential", "batch"]` + count; expose via `TrainingParams` | Mode radio + count input | Defers `weighted_ensemble` to a follow-up |
-| 5 | **Auto-snap best** (CAS-006) | S | `_best_accuracy` tracking + `auto_snapshot_best` gate around `create_snapshot()` | Toggle in sidebar (or sticky default) | Pure cascor; canopy gets one boolean toggle |
-| 6 | **Snapshot tuning round-trip** (CAN-014) | S | Verification + tests; if any field is dropped on load, fix it | Surface "Loaded from snapshot N" indicator after restore | Mostly tests; small-but-hardening |
-| 7 | **Snapshot replay → fresh training** (CAN-015) | M | New lifecycle path `restore_for_retrain(snapshot_id)`: load weights → reset training counters → ready for new `start_training()` | Snapshots panel: "Replay" action button | Builds on #6 |
-| 8 | **CAS-005: shared-code extraction** | M-L | Move duplicated cascor↔worker code into a `juniper-core` package | None | Cross-repo cleanup; independent of others |
-| 9 | **CAN-013-extended: weighted_ensemble integration mode** | M-L | Add weighted-ensemble mode to grow_network's strategy switch | New mode option in #4's UI | Optional follow-up |
-| 10 | **CAS-008 / CAS-009 / CAN-021: multi-network architecture** | **XL** | NetworkRegistry refactor; `LifecycleManager` operates on the active network; population APIs; snapshot scoping | New "Population" tab; cross-network comparison view | Genuinely XL; design doc in its own follow-up before coding |
+| **Sprint A — small wire-throughs (5 PRs)** | | | | | |
+| A-1 | **Training params epoch separation** (CAS-002 + CAS-003) | S | Verify three epoch fields are surfaced through `TrainingParams`; add `network_max_epochs` if not already aliased | Add 3 inputs in sidebar | Pure parameter additions; existing infra in cascor |
+| A-2 | **Optimizer surface** (CAN-010 + ENH-006) | S–M | `optimizer_type: Literal[…]` added to `TrainingParams`; thread to `OptimizerConfig` | Dropdown in sidebar; surface in Parameters tab | Cascor side ~30 LoC; canopy ~50 LoC |
+| A-3 | **Activation surface** (CAN-011) | S | `activation_function_name: Literal[…]` added to `TrainingParams`; thread to network constructor | Dropdown in sidebar | Smaller than A-2; ~20 LoC each side |
+| A-4 | **Auto-snap best** (CAS-006) | S | `_best_accuracy` tracking + `auto_snapshot_best` gate around `create_snapshot()` | Toggle in sidebar (or sticky default) | Pure cascor; canopy gets one boolean toggle |
+| A-5 | **Snapshot tuning round-trip** (CAN-014) | S | Verification + tests; if any field is dropped on load, fix it | Surface "Loaded from snapshot N" indicator after restore | Mostly tests; small-but-hardening |
+| **Sprint B — snapshot replay loop (1 PR)** | | | | | |
+| B-1 | **Snapshot replay → fresh training** (CAN-015) | M | New lifecycle path `restore_for_retrain(snapshot_id)`: load weights → reset training counters → ready for new `start_training()` | Snapshots panel: "Replay" action button | Builds on A-5 |
+| **Sprint C — CAN-013 full (5 PRs, see `CAN_013_INTEGRATION_MODE_DESIGN.md`)** | | | | | |
+| C-1 | `integration_mode` config + sequential/batch wire-through | S | Add `integration_mode: Literal[…]` and `ensemble_size`; rename `candidates_per_layer` semantics | None | Tests verify default is sequential |
+| C-2 | Ensemble unit data model + forward pass | M | New unit dict schema; `_compute_hidden_outputs` switch; `α` as `torch.nn.Parameter` | None | Tests on tiny synthetic dataset; K=1 equivalence to sequential |
+| C-3 | Ensemble installation + output retraining with α | M | `_add_ensemble_unit`; α registered in optimizer; α gradients flow during output retraining | None | Frozen-weights invariant explicitly enforced |
+| C-4 | Snapshot format v2 + ensemble unit serialization | M | `format_version` on root; `unit_type` per unit; loader back-compat for v1 | None | Round-trip test |
+| C-5 | Canopy UI for integration mode | S | None | Sidebar dropdown + conditional inputs; ensemble-unit visualization | Visual marker on Network Topology; "+1 ensemble unit (K=3)" delta on Network Evolution |
+| **Sprint D — independent cleanup (1 PR)** | | | | | |
+| D-1 | **CAS-005: shared-code extraction** | M–L | Move duplicated cascor↔worker code into a `juniper-core` package | None | Held for Sprint D per user direction; mechanically independent of other sprints |
+| **Sprint E — multi-network XL (7 PRs, see `PHASE_6E_MULTI_NETWORK_DESIGN.md`)** | | | | | |
+| E-1 | `SingleNetworkLifecycleState` extraction + manager registry | cascor / **L** | Refactors 74 singular sites into per-network methods; back-compat `network` shim | — | The big one; ~600–800 LoC |
+| E-2 | New `/v1/networks/*` REST routes + back-compat aliases | cascor / M | Adds URL surface; old routes alias to active network | — | |
+| E-3 | Control WS: `network_id` in commands; broadcast: `network_id` in messages | cascor / M | Protocol change; clients without `network_id` keep working | — | |
+| E-4 | Snapshot storage layout migration | cascor / S–M | Per-network subdirectories; one-time auto-migration | — | Idempotent |
+| E-5 | Per-network training thread + max-concurrent config | cascor / S | Each `SingleNetworkLifecycleState` owns its `ThreadPoolExecutor(1)` | — | |
+| E-6 | Canopy adapter: `network_id` parameter threading | — | — | canopy / M | Adapter methods grow `network_id`; falls back to a per-instance default |
+| E-7 | Canopy UI: Networks sidebar + Population tab (CAN-021) | — | — | canopy / M–L | Reuses Network Evolution's small-multiples renderer |
 
-Ten PRs total. **PRs 1–7 are all S–M and unblock the bulk of the CAN-* surface.** PR 8 is independent code-cleanup. PR 9 is optional. PR 10 is the only genuinely XL item.
+19 PRs total across 5 sprints. Sprints A + B + C unblock the bulk of the CAN-* surface (3 wire-through + snapshot replay + full integration modes). Sprint D is independent cleanup. Sprint E is the genuinely XL multi-network refactor.
 
 ## Recommended order
 
 ```
-Sprint A (small wins, ~1 week):     1, 2, 3, 5, 6
-Sprint B (medium, ~1 week):         4, 7
-Sprint C (cleanup, optional):       8, 9
-Sprint D (XL, separate effort):     10
+Sprint A (small wins, ~1 week):           A-1, A-2, A-3, A-4, A-5
+Sprint B (medium, ~few days):             B-1
+Sprint C (CAN-013 full, ~1.5 weeks):      C-1, C-2, C-3, C-4, C-5
+Sprint D (cleanup, independent):          D-1
+Sprint E (XL, ~2+ weeks, separate):       E-1 .. E-7
 ```
 
-Sprint A delivers visible UI surfaces (optimizer / activation / epoch-separation pickers, auto-snapshot toggle) without any algorithmic risk. After A, 3 of 6 deferred CAN items are unblocked and the dashboard exposes the major training knobs.
+Sprint A delivers visible UI surfaces (optimizer / activation / epoch-separation pickers, auto-snapshot toggle, snapshot tuning capture) without any algorithmic risk. After A, 3 of 6 deferred CAN items are unblocked and the dashboard exposes the major training knobs.
 
-Sprint B closes the snapshot-replay loop (CAN-014/015) and the integration-mode picker (CAN-013).
+Sprint B closes the snapshot-replay loop (CAN-015 builds on A-5).
 
-Sprint C is independent and can ship anytime.
+Sprint C is the deepest single-feature work — full CAN-013 with the new ensemble-unit type. Five PRs walking through the layers (config → forward pass → output retraining → serialization → UI). Detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
 
-Sprint D needs its own design doc — multi-network state has cross-cutting implications for snapshot lifecycle, WS broadcast routing (per-network or merged?), and the existing "1 active training run" assumption baked into Phase D control buttons.
+Sprint D is independent and can land anytime — slotted after C only because A/B/C carry visible UI value, while CAS-005 is internal cleanup.
+
+Sprint E gets its own design doc in [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md). The user has agreed to a separate scoping pass; no Sprint E code lands until that doc lands first.
 
 ## Out of scope for Phase 6E
 
@@ -114,10 +137,17 @@ These items are bundled in §25.2 6E but warrant deferring or splitting off:
 2. **Snapshot round-trip (CAN-014)** is "verify it works" until proven otherwise. If the round-trip is broken in subtle ways (dtype downcast, missing fields, version skew), PR #6 grows.
 3. **Multi-network architecture (PR #10)** has touch points across lifecycle, WS protocol, snapshots, and the Phase D control button mapping. Will need its own design pass; do not commit to scope until that's done.
 
-## Decision points for the user
+## Decision points — resolved 2026-04-29
 
-Before PR #1 starts:
+The three open questions from the original draft were resolved in conversation with the user:
 
-1. **Sprint A vs. C ordering** — PR #8 (CAS-005 shared code) is fully independent. It could go first if you'd rather de-risk the shared-code lift now, or it could slot in any time. My lean: hold for Sprint C since the visible UI wins (Sprint A) ship faster and have higher demo value.
-2. **CAN-013 narrow vs. extended** — PR #4 ships sequential + batch modes (= rename of existing infra). PR #9 adds weighted_ensemble. Are weighted ensembles worth the extra design pass, or should we ship the rename and call CAN-013 done?
-3. **PR #10 design pass** — agree to hold off on multi-network architecture until a separate design doc lands? Or should I scope it now in this same doc?
+1. ~~Sprint A vs. C ordering — CAS-005~~ → **Held for Sprint D**. Sprint A keeps the visible UI wins; cleanup ships after the user-visible surface is complete.
+2. ~~CAN-013 narrow vs. extended~~ → **Full CAN-013 implemented**, including weighted_ensemble. Moved to its own sprint (Sprint C) with detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
+3. ~~Multi-network design pass~~ → **Separate design doc**, [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md). No Sprint E code lands until that doc reaches review.
+
+Open questions raised inside the new design docs (lower-priority, can be picked up at PR-implementation time):
+
+- CAN-013: constrained vs. unconstrained α (default unconstrained); ensemble_size default (3); UI visualization choice (one node with "K=3" label)
+- Multi-network: `max_concurrent_training_networks` default (4); REST route deprecation timeline (when canopy migrates); Sprint E sequencing (single sprint vs. split E1+E2)
+
+These are inside the per-design-doc "Decision points" sections — fold them into PR descriptions when the corresponding sprints start.
