@@ -559,48 +559,87 @@ applies):
 
 ## 10. Tracking checklist
 
-Single source of truth for plan execution. Tick boxes as PRs land.
+Single source of truth for plan execution. All execution rolled out
+**direct to `main` on each repo** (no PRs were used per session
+direction); the SHAs below are the merged commits on each repo's
+`origin/main`.
 
 ### Phase 0 — Templates
 
-- [ ] juniper-ml: commit canonical `claude.yml`, `codeql.yml`,
+- [x] juniper-ml: commit canonical `claude.yml`, `codeql.yml`,
       `scheduled-tests.yml`, `lockfile-update.yml`, `security-scan.yml`
-      (deploy variant), `dependency-docs` job snippet under
-      `notes/templates/ci/` (or `notes/proposals/ci/`).
+      (deploy variant) under `notes/templates/ci/` plus a README and
+      this plan doc — **`f9ddc06`**. The `dependency-docs` snippet
+      was dropped during validation: every applicable repo already
+      ships a `dependency-docs` job, so a stand-alone snippet would
+      have been dead weight.
 
 ### Phase 1 — Workflow file additions
 
-- [ ] juniper-canopy: add `claude.yml`, `codeql.yml`, `scheduled-tests.yml`.
-- [ ] juniper-cascor: add `claude.yml`, `codeql.yml`.
-- [ ] juniper-data: add `claude.yml`, `scheduled-tests.yml`.
-- [ ] juniper-data-client: add `claude.yml`, `codeql.yml`,
-      `scheduled-tests.yml`, `lockfile-update.yml`.
-- [ ] juniper-cascor-client: add `claude.yml`, `codeql.yml`,
-      `scheduled-tests.yml`.
-- [ ] juniper-cascor-worker: add `claude.yml`, `codeql.yml`,
-      `scheduled-tests.yml`, `lockfile-update.yml`.
-- [ ] juniper-deploy: add `claude.yml`, `security-scan.yml` (deploy
-      variant).
-- [ ] juniper-ml: add `codeql.yml`, `lockfile-update.yml`.
+- [x] juniper-canopy: add `claude.yml`, `codeql.yml`,
+      `scheduled-tests.yml` — **`6bc6150`**.
+- [x] juniper-cascor: add `claude.yml`, `codeql.yml` — **`4e409d3`**.
+- [x] juniper-data: add `claude.yml`, `scheduled-tests.yml` —
+      **`6586816`**.
+- [x] juniper-data-client: add `claude.yml`, `codeql.yml`,
+      `scheduled-tests.yml`, `lockfile-update.yml` — **`e71fdd9`**.
+- [x] juniper-cascor-client: add `claude.yml`, `codeql.yml`,
+      `scheduled-tests.yml` — **`642fce5`**.
+- [x] juniper-cascor-worker: add `claude.yml`, `codeql.yml`,
+      `scheduled-tests.yml`, `lockfile-update.yml` — **`b405f6a`**.
+- [x] juniper-deploy: add `claude.yml`, `security-scan.yml` (deploy
+      variant with `continue-on-error: true` on the `trivy-fs` job
+      for the shakedown cycle) — **`407f1bd`**.
+- [x] juniper-ml: add `codeql.yml`, `lockfile-update.yml` —
+      **`a0f14a7`**.
 
 ### Phase 2 — `ci.yml` augmentation
 
-- [ ] juniper-data-client: add `integration-tests` job.
-- [ ] juniper-cascor-client: add `integration-tests` job.
-- [ ] juniper-cascor-worker: add `integration-tests` job.
-- [ ] juniper-ml: promote `pre-commit` and `tests` jobs to a Python
-      `3.12 / 3.13 / 3.14` matrix (a dedicated `tests` job already exists).
+- [x] juniper-data-client: add `integration-tests` job (matrix
+      3.12/3.13/3.14, `pytest -m integration`, exit-code-5
+      treated-as-skip, soft-fail in `required-checks`) — **`ada9b30`**.
+- [x] juniper-cascor-client: add `integration-tests` job (matrix
+      3.11/3.12/3.13/3.14 — preserves the cascor-client 3.11 floor;
+      same shape as data-client) — **`f7b4cfd`**.
+- [x] juniper-cascor-worker: add `integration-tests` job —
+      **`a1ae19b`**.
+- [x] juniper-ml: promote `pre-commit` and `tests` jobs to a Python
+      `3.12 / 3.13 / 3.14` matrix — **`2eabb34`**.
 
 ### Phase 3 — Pre-commit additions
 
-- [ ] juniper-ml: add `black`, `isort`, `mypy` for `^(scripts|tests)/`.
-- [ ] juniper-data: add `markdownlint`.
-- [ ] juniper-deploy: add `markdownlint`.
+- [x] juniper-ml: add `black` 26.3.1 + `isort` 5.13.2 + `mypy`
+      v1.13.0 (mirrors-mypy) hooks scoped to
+      `^(scripts|tests)/.*\.py$`, plus the auto-format pass on
+      `scripts/cleanup_session_worktrees.py` and
+      `tests/test_worktree_cleanup.py` — **`ad2f5bb`**.
+- [x] juniper-data: add `markdownlint` v0.42.0 + project-local
+      `.markdownlint.yaml` (with `MD040` initially disabled so
+      pre-existing bare-fence markdown didn't churn) — **`64e6d13`**.
+- [x] juniper-deploy: add `markdownlint` v0.42.0; folded in real
+      `MD056/table-column-count` fix on `AGENTS.md` —
+      **`d8d0dc1`**.
 
 ### Phase 4 — `pyproject.toml` `[tool.*]`
 
-- [ ] juniper-ml: declare `[tool.black]`, `[tool.isort]`,
-      `[tool.mypy]`, `[tool.coverage.run]`.
+- [x] juniper-ml: declare `[tool.black]` (line-length=512,
+      target-version=py312), `[tool.isort]` (profile=black,
+      known_first_party=["scripts","tests"]), `[tool.mypy]`
+      (python_version=3.12, ignore-missing-imports,
+      no-strict-optional, files=["scripts","tests"]),
+      `[tool.coverage.run]` (branch=true, source=["scripts","tests"]),
+      `[tool.coverage.report]` (no fail-under, intentional per
+      Phase 4 framing) — **`036f747`**.
+
+---
+
+### Roll-out summary
+
+**17 commits across 8 repositories. Zero PRs.** Every commit went
+direct-to-`main` on its respective repo and is reachable from
+`origin/main` (verified by
+`git rev-list --left-right --count origin/main...HEAD` returning
+`0 0` in every repo on 2026-04-29).
 
 ---
 
