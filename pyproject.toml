@@ -53,6 +53,21 @@ Issues = "https://github.com/pcalnon/juniper-ml/issues"
 # `files:` filter in .pre-commit-config.yaml.
 # ─────────────────────────────────────────────────────────────────────
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+# Block pytest plugins that get auto-discovered from environments where
+# they (or their transitive native deps) are broken. dash.testing.plugin
+# transitively imports a non-FT-built psutil that segfaults on free-
+# threading CPython 3.14t; pytest_playwright requires `playwright` which
+# is often absent. Neither plugin is used by juniper-ml's tests.
+addopts = [
+    "-p", "no:dash",
+    "-p", "no:playwright",
+]
+
 [tool.black]
 line-length = 512
 target-version = ["py312"]
