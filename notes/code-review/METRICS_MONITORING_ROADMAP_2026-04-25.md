@@ -182,6 +182,32 @@ juniper-cascor-worker's main was already green; no Wave 0 PR was required for th
 
 **Phase R3 exit gate:** Coverage matrix has zero unjustified gaps; all suites green.
 
+### Phase R3 status (2026-05-01): ✅ COMPLETE
+
+All 7 R3 sub-tracks closed. Wall-clock: **~36 hours** start (R3 entry plan #176 merged 2026-04-30 evening) → finish (R3.6 sweep PR opened 2026-05-01 evening), against the entry plan's original 3-working-day estimate. The compression came from the Wave 1 / Wave 2 parallel-PR cadence (multiple PRs in flight simultaneously) and from R3.4 collapsing into a documentation-only audit closure once a pre-implementation grep showed seed-09's premise was stale.
+
+**Per-track outcome:**
+
+- **R3.1** (juniper-data#64) — live `/v1/datasets` integration test pinning counter +1 + histogram +1 per POST through real `/metrics` scrape. **Side-effect**: surfaced R4.5 (POST cache-hit observability gap) — captured in §7 as a follow-up.
+- **R3.2** (juniper-canopy#210) — `juniper_canopy_demo_mode_active` gauge wired in `main.lifespan` + 3-test integration suite pinning runtime-toggle propagation. Production wiring was the load-bearing change; the test pins it.
+- **R3.3** (juniper-canopy#212) — black-box `/dashboard/_dash-layout` test replaces stale `_create_metrics_panel` skip per Q2 resolution.
+- **R3.4** (juniper-ml#177) — audit closure, no remediation needed (zero `importorskip("sentry_sdk")` already, seed-09 stale).
+- **R3.5** (juniper-cascor#165) — `TestReplayBufferOverflowAtConfiguredCapacity` (3 tests at production-default capacity 1024).
+- **R3.6** (juniper-ml#<this PR>) — residual §10 matrix sweep: 29 cells filled with `file:line` references (most pointing to existing R1.x / R2.x tests that didn't update §10 at the time), 12 cells marked GAP with rationale (7 SLO-deferred to R4.1 + R5.1, 3 client-Sentry no-surface, 2 surface-deferred captured as R4.6 + R4.7).
+- **R3.7** (juniper-cascor#166, juniper-cascor-worker#39, juniper-data#61, juniper-canopy#208 + post-soak juniper-cascor#168, juniper-cascor-worker#40, juniper-data#63, juniper-canopy#211) — macOS leg added to all 4 unit-tests matrices, 2-week soak compressed by user direction, then flipped to `experimental: false` to make the macOS leg required.
+
+**Wave 0 (fix-main-first prerequisite)**: 3 PRs (juniper-cascor#167, juniper-canopy#209, juniper-data#62) restored green main on 3 of the 4 R3.7 target repos before the R3.7 PRs could be evaluated against a clean baseline. Documented in §6 R3.7's resolution paragraph.
+
+**§10 matrix population**: starts as Wave 1 (juniper-ml#181 — 4 cells), completes as Wave 2 (juniper-ml#<this PR> — remaining 29 cells + 12 GAPs).
+
+**Follow-ups surfaced during R3 execution** (captured as new R4 sub-tracks):
+
+- **R4.5** — juniper-data POST cache-hit observability gap (surfaced by R3.1).
+- **R4.6** — juniper-data-client outbound `X-Request-ID` header (surfaced by R3.6).
+- **R4.7** — cascor-worker inbound unrecognized-frame log emission test (surfaced by R3.6).
+
+**Next phase**: R4 (best-practice + ergonomic improvements) covers R4.1–R4.7. R5 (SLO catalog + scrape manifests + dashboards + alerting) gates on R3 — R3 closure unblocks R4 and R5 entry planning.
+
 ---
 
 ## 7. Phase R4 — Best-practice and ergonomic improvements
@@ -227,6 +253,31 @@ juniper-cascor-worker's main was already green; no Wave 0 PR was required for th
 Option (a) preserves observability orthogonality (request volume vs work performed vs read access) and is the recommended starting point unless R5 dashboard work surfaces a strong reason to merge POST + GET access counts.
 
 **Test:** Mirror the R3.1 live integration test pattern — POST the same params twice, assert the new POST counter increments by 2 and the generation counter increments by 1 (regression guard against the original bug).
+
+### R4.6 juniper-data-client outbound X-Request-ID header (surfaced 2026-05-01 by R3.6)
+
+**Repo:** juniper-data-client
+**Composite:** 1
+**Symptom:** `juniper_data_client._request()` does not emit an `X-Request-ID` header on outbound HTTP calls. juniper-data inherits `RequestIdMiddleware` from the shared `juniper-observability` lib (R2.1) and will *generate* a request-id when one isn't supplied, but that breaks correlation back to the caller's request chain (canopy → data-client → data, or cascor → data-client → data — the inbound canopy/cascor request-id is lost at the data-client boundary).
+
+**Approach:** Plumb a request-id propagation hook through `_request()`. Two options:
+
+- **(a)** Read `juniper_observability.request_id_var` at call time; if non-empty, copy into outbound `X-Request-ID`. Caller-side library opt-in via importing the lib at the call boundary. Smallest delta — no API change to data-client's public surface.
+- **(b)** Accept an explicit `request_id: str | None = None` kwarg on each public method; when supplied, set the header. Pushes responsibility to consumers but keeps data-client free of an observability-lib runtime dep.
+
+Option (a) is recommended — canopy and cascor both already depend on `juniper-observability` via R2.1, so the data-client opt-in is essentially free for the existing consumers.
+
+**Test:** Unit test asserts the outbound HTTP call carries `X-Request-ID: <expected>` when `request_id_var` is set in the calling thread.
+
+### R4.7 cascor-worker inbound unrecognized-frame log emission test (surfaced 2026-05-01 by R3.6)
+
+**Repo:** cascor-worker
+**Composite:** 1
+**Symptom:** Worker production code in `juniper_cascor_worker/worker.py::CascorWorkerAgent._run` emits a structured WARNING `juniper_cascor_worker_unrecognized_ws_frame{type, worker_id}` on receipt of unknown server-emitted frame types (R2.2.6 invariant). `tests/test_protocol_alignment.py:102` pins the *outbound* enum-alignment contract (worker doesn't send unknown types to server) but no test exercises the *inbound* warning emission path — i.e. server sends a frame the worker doesn't recognize, worker logs the structured WARNING.
+
+**Approach:** Drive the worker's `_run` message loop with a synthetic WebSocket message carrying an unknown `type` field; capture log records via `caplog`; assert the structured WARNING fires with the expected fields (`type=<unknown>`, `worker_id=<configured>`).
+
+**Test:** Single unit test in `tests/test_worker_agent.py::TestMessageLoopDispatch` (line 383) — the dispatch loop is already exercised there for known types, this adds the unknown-type branch.
 
 **Phase R4 exit gate:** All best-practice findings closed or accepted with documented rationale.
 
@@ -280,14 +331,21 @@ Option (a) preserves observability orthogonality (request volume vs work perform
 |        |                              |                    |             | juniper-cascor-worker#38                       |          | counter; worker single-sources `WorkerMessageType` + `BinaryFrame.encode` + emits structured log line on unknown types (no pydantic at runtime). |
 | R2.3   | seed-15 probe symmetry       | **done**           | Paul Calnon | juniper-canopy#202, juniper-deploy#44         | cleaned  | All probes already in place from R1.2 + R2.1 work; canopy regression test for upstream-down injection added (4 new tests pinning the    |
 |        |                              |                    |             |                                               |          | canopy-degraded / cascor-503 severity asymmetry); operator-facing topology + severity ref doc landed in juniper-deploy/notes/PROBE_GRAPH.md. |
-| R3.1   | seed-08 dataset-gen e2e      | not started        |             |                                               |          |                                                                                                                                         |
-| R3.2   | seed-11 demo-mode test       | not started        |             |                                               |          |                                                                                                                                         |
-| R3.3   | seed-12 restore skipped test | not started        |             |                                               |          |                                                                                                                                         |
+| R3.1   | seed-08 dataset-gen e2e      | **done**           | Paul Calnon | juniper-data#64; juniper-ml#181               | cleaned  | `TestDatasetGenerationMetricsLive` (2 tests in `juniper_data/tests/integration/test_dataset_generation_metrics_live.py`) goes end-to-end |
+|        |                              |                    |             |                                               |          | through FastAPI TestClient → real Prometheus registry → `/metrics` scrape; pins counter +1 + histogram +1 per POST. Cache-bypass        |
+|        |                              |                    |             |                                               |          | discovery (POST short-circuit on cached `dataset_id` skips `record_dataset_generation`) captured as **R4.5** follow-up.                  |
+| R3.2   | seed-11 demo-mode test       | **done**           | Paul Calnon | juniper-canopy#210; juniper-ml#181            | cleaned  | `TestDemoModeGauge` (3 tests in `src/tests/integration/test_demo_mode_gauge.py`) pins lifespan-hook wiring + runtime-toggle             |
+|        |                              |                    |             |                                               |          | propagation through `/metrics`. Production wiring added in `main.py` lifespan: `set_demo_mode_active(backend.backend_type == "demo")`. |
+| R3.3   | seed-12 restore skipped test | **done**           | Paul Calnon | juniper-canopy#212                            | cleaned  | Replaced stale `@pytest.mark.skip` on `test_create_metrics_panel` with `test_metrics_panel_appears_in_rendered_layout` — black-box      |
+|        |                              |                    |             |                                               |          | test against `dashboard.app.server.test_client().get("/_dash-layout")`, asserting `metrics-panel` + `metrics-store` markers in the      |
+|        |                              |                    |             |                                               |          | rendered layout JSON. Per Q2 resolution: doesn't grow public API.                                                                       |
 | R3.4   | seed-09 Sentry unconditional | **done**           | Paul Calnon | juniper-ml#177                                 | cleaned  | Audit closure (no remediation): pre-implementation grep across cascor/canopy/data confirmed zero `importorskip("sentry_sdk")` already.  |
 |        |                              |                    |             |                                               |          | Seed-09 premise was stale; the three planned fan-out PRs collapsed into one juniper-ml documentation PR.                                |
 | R3.5   | seed-07 replay-buffer test   | **done**           | Paul Calnon | juniper-cascor#165                             | cleaned  | `TestReplayBufferOverflowAtConfiguredCapacity` (3 tests) added to `test_websocket_seq_replay.py`: drives capacity+1 broadcasts +        |
 |        |                              |                    |             |                                               |          | far-overflow stress; reads capacity from `Settings(api_keys=()).ws_replay_buffer_size` (production default 1024). Verified locally.    |
-| R3.6   | coverage-matrix gaps         | not started        |             |                                               |          | Wave 2 (gated on Wave 1 completion).                                                                                                    |
+| R3.6   | coverage-matrix gaps         | **done**           | Paul Calnon | juniper-ml#<this PR>                          | cleaned  | Residual sweep populates every empty §10 cell with either a `file:line` reference (29 cells filled — most pointing to existing R1.x /  |
+|        |                              |                    |             |                                               |          | R2.x tests that didn't update §10 at the time) or a **GAP** rationale (12 cells: 7 SLO-deferred + 3 client-Sentry + 2 surface-deferred  |
+|        |                              |                    |             |                                               |          | with R4.6 / R4.7 follow-ups). Phase R3 closed (see §6 close note).                                                                      |
 | R3.7   | macOS CI matrix              | **done**           | Paul Calnon | juniper-cascor#166; juniper-cascor-worker#39;   | cleaned  | All 4 PRs merged 2026-05-01. Each repo's `unit-tests` job now runs a 2-D matrix `os × python-version` with `macos-latest` (Python 3.12) |
 |        |                              |                    |             | juniper-data#61; juniper-canopy#208           |          | added under `include:` and `experimental: true`. Job-level `continue-on-error: ${{ matrix.experimental == true }}` keeps the macOS leg |
 |        |                              |                    |             |                                               |          | non-blocking during the 2-week soak window (**2026-05-01 → 2026-05-15**). After the soak, flip `experimental` to `false` to make the   |
@@ -301,6 +359,10 @@ Option (a) preserves observability orthogonality (request volume vs work perform
 | R4.4   | worker training-loop instr   | not started        |             |                                               |          |                                                                                                                                         |
 | R4.5   | data POST cache-hit obs gap  | not started        |             |                                               |          | Surfaced 2026-05-01 by R3.1 implementation. POST cache-hit branch in `api/routes/datasets.create_dataset` skips both                    |
 |        |                              |                    |             |                                               |          | `record_dataset_generation` and `record_access`; deterministic re-POST traffic is invisible to all dataset-side metrics.                |
+| R4.6   | data-client X-Request-ID     | not started        |             |                                               |          | Surfaced 2026-05-01 by R3.6 sweep. `juniper_data_client._request()` does not emit `X-Request-ID` on outbound HTTP calls — breaks       |
+|        |                              |                    |             |                                               |          | request-id correlation through the canopy/cascor → data-client → data chain.                                                            |
+| R4.7   | worker unrecognized-frame log| not started        |             |                                               |          | Surfaced 2026-05-01 by R3.6 sweep. Worker production code emits structured WARNING `juniper_cascor_worker_unrecognized_ws_frame`       |
+|        |                              |                    |             |                                               |          | on inbound unknown types (R2.2.6) but no test exercises the emission path. Single test in `test_worker_agent.py::TestMessageLoopDispatch`.|
 | R5.1   | SLO catalog                  | not started        |             |                                               |          |                                                                                                                                         |
 | R5.2   | scrape manifests             | not started        |             |                                               |          |                                                                                                                                         |
 | R5.3   | Grafana dashboards           | not started        |             |                                               |          |                                                                                                                                         |
