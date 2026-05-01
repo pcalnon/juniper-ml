@@ -326,26 +326,39 @@ Provisional finding seeds (to be confirmed/expanded during Phase 3):
 
 ---
 
-## 10. Test coverage matrix (template)
+## 10. Test coverage matrix
 
-To be populated in Phase 4. Each cell either references an asserting test (file:line) or is marked **GAP**.
+Population status (2026-05-01): **Wave 1 in progress.** The R3.1 / R3.2 / R3.5 PRs each populate their own row per the R3 entry plan §3 Q4 resolution. Remaining cells are R3.6 scope (residual sweep — for each empty cell, either ship a test or write a one-line accepted-gap rationale linked to the seed finding). Cells closed by earlier R1.x / R2.x work are also empty here pending the R3.6 walk.
+
+Each populated cell references the asserting test as `path/to/file.py:LINE` (line of the class or test function); empty cells are R3.6 backlog; `—` = N/A for this repo. **GAP** marks cells the R3.6 sweep accepts as unworth covering (with a rationale alongside).
 
 | Behavior to assert                                          | cascor | canopy | data | client | worker | data-client |
-|-------------------------------------------------------------|:------:|:------:|:----:|:------:|:------:|:-----------:|
-| `/metrics` Prometheus scrape format valid                   |        |        |      |   —    |   —    |      —      |
+|-------------------------------------------------------------|--------|--------|------|--------|--------|-------------|
+| `/metrics` Prometheus scrape format valid                   |        |        | `juniper_data/tests/integration/test_dataset_generation_metrics_live.py:179` | — | — | — |
 | Cardinality bounded under unmatched routes                  |        |        |      |   —    |   —    |      —      |
 | Liveness probe checks actual code path                      |        |        |      |   —    |   —    |      —      |
 | Readiness 503 when overall degraded                         |        |        |      |   —    |   —    |      —      |
 | Sentry hook fires on uncaught exception                     |        |        |      |        |        |             |
 | RequestID propagated from HTTP to logs                      |        |        |      |   —    |   —    |             |
 | WS metric frame schema validated end-to-end                 |        |        |  —   |        |        |      —      |
-| Replay buffer overflow behavior                             |        |   —    |  —   |   —    |   —    |      —      |
+| Replay buffer overflow behavior                             | `src/tests/unit/api/test_websocket_seq_replay.py:95` |   —    |  —   |   —    |   —    |      —      |
 | Worker heartbeat / in-flight task count                     |   —    |   —    |  —   |   —    |        |      —      |
-| Dataset-gen metric live integration                         |   —    |   —    |      |   —    |   —    |      —      |
-| Demo-mode gauge drift                                       |   —    |        |  —   |   —    |   —    |      —      |
+| Dataset-gen metric live integration                         |   —    |   —    | `juniper_data/tests/integration/test_dataset_generation_metrics_live.py:154` |   —    |   —    |      —      |
+| Demo-mode gauge drift                                       |   —    | `src/tests/integration/test_demo_mode_gauge.py:72` |  —   |   —    |   —    |      —      |
 | Histogram bucket selection covers SLO target                |        |        |      |   —    |   —    |      —      |
 
-`—` = N/A for this repo.
+`—` = N/A for this repo. File paths are repo-relative (cascor → juniper-cascor, canopy → juniper-canopy, data → juniper-data).
+
+### Wave 1 row references (this PR)
+
+| Row | Repo | PR | Test reference |
+|---|---|---|---|
+| `/metrics` Prometheus scrape format valid | data | juniper-data#64 | `TestDatasetGenerationMetricsLive::test_metrics_body_exposes_help_and_type_lines` (HELP + TYPE lines for both the generations counter and the duration histogram) |
+| Replay buffer overflow behavior | cascor | juniper-cascor#165 | `TestReplayBufferOverflowAtConfiguredCapacity` (3 tests at production-default capacity 1024) |
+| Dataset-gen metric live integration | data | juniper-data#64 | `TestDatasetGenerationMetricsLive::test_counter_and_histogram_observed_after_post` (counter + histogram increment-by-one through real `/metrics` scrape) |
+| Demo-mode gauge drift | canopy | juniper-canopy#210 | `TestDemoModeGauge` (3 tests pinning lifespan-hook wiring + runtime-toggle propagation through `/metrics`) |
+
+R3.3 (juniper-canopy#212 — black-box metrics-panel test) does not map to a §10 row — §10 is scoped to Prometheus metric behaviors, and R3.3 asserts on dashboard layout rendering. R3.4 (juniper-ml#177 — Sentry audit closure) was a no-remediation closure (the `Sentry hook fires on uncaught exception` cell will be populated by R3.6 when it walks the existing per-server Sentry hook tests).
 
 ---
 
