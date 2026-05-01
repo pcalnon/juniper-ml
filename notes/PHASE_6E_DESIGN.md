@@ -16,7 +16,7 @@ A scoping pass against juniper-cascor `main` reframes that.
 | CAN-011 (activation surface) | Blocked on cascor algorithm | **Wire-through** — `_init_activation_function` reads `config.activation_function_name` from a registry |
 | CAN-014 (snapshot tuning capture) | Blocked on snapshot lifecycle | **Largely shipped** — `serializer.save_network(..., include_training_state=True)` already serializes config alongside weights |
 | CAN-013 (integration mode) | Blocked on cascor algorithm | **Partially wired** — `candidates_per_layer > 1` already routes through `add_units_as_layer`; only the multi-mode strategy pattern is greenfield |
-| CAN-015 (snapshot replay) | Blocked-on-CAN-014 | Medium — needs new "restore + retrain" lifecycle path |
+| CAN-015 (snapshot operations: Restore / Replay / Resume / Retrain) | A-5 unblocked baseline; design expanded 2026-05-01 — see [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md) | Medium-Large — four endpoints + 3 new FSM states + replay player UI; CAN-015e (replay-with-weights) and CAN-015f (weight/topology editing) deferred |
 | CAN-021 (parallel-network ensemble) | Deferred to 6E | **Genuinely XL** — single-`self.network` assumption baked into lifecycle |
 
 This isn't the recurring "shipped-but-not-marked" pattern from Tracks 5/6 audits — the CAN-* items genuinely had no UI. But the *cascor groundwork* the items were waiting for is mostly already there. Wiring it through is small-medium PRs, not the cross-repo algorithm sprint Phase 6E was originally scoped as.
@@ -82,8 +82,13 @@ Grouping by surface affinity (= what touches the same files / mental model), not
 | A-3 | **Activation surface** (CAN-011) | S | `activation_function_name: Literal[…]` added to `TrainingParams`; thread to network constructor | Dropdown in sidebar | Smaller than A-2; ~20 LoC each side |
 | A-4 | **Auto-snap best** (CAS-006) | S | `_best_accuracy` tracking + `auto_snapshot_best` gate around `create_snapshot()` | Toggle in sidebar (or sticky default) | Pure cascor; canopy gets one boolean toggle |
 | A-5 | **Snapshot tuning round-trip** (CAN-014) | S | Verification + tests; if any field is dropped on load, fix it | Surface "Loaded from snapshot N" indicator after restore | Mostly tests; small-but-hardening |
-| **Sprint B — snapshot replay loop (1 PR)** | | | | | |
-| B-1 | **Snapshot replay → fresh training** (CAN-015) | M | New lifecycle path `restore_for_retrain(snapshot_id)`: load weights → reset training counters → ready for new `start_training()` | Snapshots panel: "Replay" action button | Builds on A-5 |
+| **Sprint B — snapshot operations: Restore / Replay / Resume / Retrain (6 PRs, see [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md))** | | | | | |
+| B-1 | **Retrain endpoint** (CAN-015a) | S–M | New lifecycle path `_load_snapshot_inner(snapshot_id, mode="retrain")`: load weights + topology + meta-params, reset history/counters/FSM. `POST /v1/snapshots/{id}/retrain` | None this PR | Closest to original CAN-015 intent |
+| B-2 | **Resume endpoint + ResumeReady FSM state** (CAN-015b) | M | Load + preserve all state including history; transition to `ResumeReady`; mark `resume_point_epoch` so next training run extends history rather than resetting. `POST /v1/snapshots/{id}/resume` | None this PR | Reuses B-1's `_load_snapshot_inner` helper |
+| B-3 | **Replay infrastructure + Replaying FSM state + control endpoint** (CAN-015c) | M–L | New `Replaying` state; `POST /v1/snapshots/{id}/replay` and `/replay/control` (play/pause/seek/speed/range/stop); server-driven event emission to WS. **V1 scope: metrics + topology only** (per-epoch weights deferred to CAN-015e) | None this PR | Largest cascor PR of Sprint B |
+| B-4 | **Restore enrichment + Investigating FSM state** (CAN-015d) | S | Existing `/restore` gains `Investigating` FSM state, unified response shape; rejects training commands until the user explicitly invokes Replay/Resume/Retrain | None this PR | Backward-compatible response superset |
+| B-5 | **Canopy UX entry points: modal + dropdown + context menu** (CAN-015e) | — | — | canopy / M | All three surfaces routed to all four endpoints; sidebar reused for tune-then-train |
+| B-6 | **Canopy replay player UI** (CAN-015f, V1) | — | — | canopy / M–L | Play/Pause/speed slider (bidirectional 0.1×–10×)/scrubber/range selector; depends on B-3 |
 | **Sprint C — CAN-013 full (5 PRs, see `CAN_013_INTEGRATION_MODE_DESIGN.md`)** | | | | | |
 | C-1 | `integration_mode` config + sequential/batch wire-through | S | Add `integration_mode: Literal[…]` and `ensemble_size`; rename `candidates_per_layer` semantics | None | Tests verify default is sequential |
 | C-2 | Ensemble unit data model + forward pass | M | New unit dict schema; `_compute_hidden_outputs` switch; `α` as `torch.nn.Parameter` | None | Tests on tiny synthetic dataset; K=1 equivalence to sequential |
@@ -101,13 +106,13 @@ Grouping by surface affinity (= what touches the same files / mental model), not
 | E-6 | Canopy adapter: `network_id` parameter threading | — | — | canopy / M | Adapter methods grow `network_id`; falls back to a per-instance default |
 | E-7 | Canopy UI: Networks sidebar + Population tab (CAN-021) | — | — | canopy / M–L | Reuses Network Evolution's small-multiples renderer |
 
-19 PRs total across 5 sprints. Sprints A + B + C unblock the bulk of the CAN-* surface (3 wire-through + snapshot replay + full integration modes). Sprint D is independent cleanup. Sprint E is the genuinely XL multi-network refactor.
+24 PRs total across 5 sprints. Sprints A + B + C unblock the bulk of the CAN-* surface (3 wire-through + four-way snapshot operations + full integration modes). Sprint D is independent cleanup. Sprint E is the genuinely XL multi-network refactor.
 
 ## Recommended order
 
 ```
-Sprint A (small wins, ~1 week):           A-1, A-2, A-3, A-4, A-5
-Sprint B (medium, ~few days):             B-1
+Sprint A (small wins, ~1 week):           A-1, A-2, A-3, A-4, A-5  [shipped]
+Sprint B (medium-large, ~1.5 weeks):      B-1, B-2, B-3, B-4, B-5, B-6
 Sprint C (CAN-013 full, ~1.5 weeks):      C-1, C-2, C-3, C-4, C-5
 Sprint D (cleanup, independent):          D-1
 Sprint E (XL, ~2+ weeks, separate):       E-1 .. E-7
@@ -115,7 +120,7 @@ Sprint E (XL, ~2+ weeks, separate):       E-1 .. E-7
 
 Sprint A delivers visible UI surfaces (optimizer / activation / epoch-separation pickers, auto-snapshot toggle, snapshot tuning capture) without any algorithmic risk. After A, 3 of 6 deferred CAN items are unblocked and the dashboard exposes the major training knobs.
 
-Sprint B closes the snapshot-replay loop (CAN-015 builds on A-5).
+Sprint B grew (2026-05-01) from a single replay-loop PR to a four-endpoint snapshot-operations matrix (Restore for inspection, Replay for playback, Resume for training continuation, Retrain for fresh training). See [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md) for the full scope, FSM extensions, response shape unification, and deferred work (CAN-015e replay-with-weights, CAN-015f Restore weight/topology editing).
 
 Sprint C is the deepest single-feature work — full CAN-013 with the new ensemble-unit type. Five PRs walking through the layers (config → forward pass → output retraining → serialization → UI). Detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
 
