@@ -157,8 +157,8 @@ c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
 | Repo                      | `ci.yml`  | `security-scan.yml`  | Outstanding (deferred)                                                                                                                          |
 |---------------------------|-----------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | **juniper-ml**            | ✅        | ✅                   | — (V28 resolved upstream; design docs landed downstream)                                                                                        |
-| juniper-canopy            | ⚠ pending re-run | ✅                   | V11 fixed across two commits (canopy `e51d1f8` + `b062f2a`, 10 stale assertions across 5 files); V12 resolved upstream; V18 still deferred (user-side secret) |
-| juniper-cascor            | ⚠ pending re-run | ⚠ pending re-run | V20 fixed (cascor `53e7134`); V24 fixed (cascor `e057b4c`); V23 + V25 resolved upstream; V19 still deferred (perf bisect); V29 new (test_api_health stale mock — out-of-scope product fix) |
+| juniper-canopy            | ⚠ pending re-run | ✅                   | V11 fixed across three commits (canopy `e51d1f8` + `b062f2a` + `c10f9ae` V11-bis network_evolution mock, 11 stale assertions across 5 files); V12 resolved upstream; V18 still deferred (user-side secret); V34 deferred (DemoMode setter / Prometheus registry duplication exposed once V11-bis cleared the AttributeError gate) |
+| juniper-cascor            | ⚠ pending re-run | ⚠ pending re-run | V20 fixed (`53e7134`); V24 fixed (`e057b4c`); V29 fixed (`ab2694e` — repointed urllib patches at `juniper_observability.health.probe`); V30 fixed (`ab2694e` — `.gitleaks.toml` allowlist for `conf/temp/`, `notes/setup_config_guides/`, conda build-hash regex); V31 fixed (`ab2694e` — guarded `remote_client_0` import on archived module); V32 fixed (`7e45ff0` — `publish.yml` setup-python list-as-string); V33 fixed (`2e7c2a2` — added missing `Command` import in `test_lifecycle_manager.py:827`); V23 + V25 resolved upstream; V19 still deferred (perf bisect) |
 | **juniper-data**          | ✅        | ✅                   | — (V13 + V27 resolved upstream); V17 still deferred (user-side secret)                                                                          |
 | juniper-data-client       | ✅        | ✅                   | —                                                                                                                                               |
 | **juniper-cascor-client** | ✅        | ✅                   | — (V22 fully resolved by `9741e18`)                                                                                                             |
@@ -168,8 +168,10 @@ c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
 ### Greens
 
 - **All 8 repos** have a green `security-scan.yml` except juniper-cascor.
-  cascor's failure is V20 (deferred — pre-existing bandit skip-list
-  drift between pre-commit and standalone runs).
+  cascor's `security-scan.yml` failure was V20 (bandit skip-list drift —
+  fixed `53e7134`); the `ci.yml` Security Scans gitleaks step was V30
+  (false positives on conda lockfile build hashes / placeholder API keys
+  in setup guides — fixed via `.gitleaks.toml` in `ab2694e`).
 - **3 repos** have a fully green `ci.yml`: data-client, cascor-worker,
   deploy.
 - **All 7 Python repos with CodeQL** have green CodeQL runs (CodeQL
