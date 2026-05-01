@@ -154,6 +154,8 @@ The METRICS-MON program now turns to **Phase R3** (test-coverage gap closure) an
 **Composite:** 2
 **Approach:** Make `sentry-sdk` a hard dev-dep; remove `importorskip`. Sentry hook tests run on every CI run.
 
+**Resolution (2026-04-30):** ✅ **Already satisfied; no remediation needed.** Pre-implementation audit found **zero** `importorskip("sentry_sdk")` matches in any of the three repos' test trees — seed-09's premise is stale. The SEC-15 / SEC-10 hook tests already run unconditionally via `with patch("sentry_sdk.init")` (which fails at collection-time if `sentry-sdk` is missing — the desired loud-regression signal) and via `monkeypatch.setitem(sys.modules, "sentry_sdk", _FakeSentry)` (which runs even without real `sentry-sdk`). `sentry-sdk>=2.0.0` is also a hard runtime dep on every server. Three planned fan-out PRs collapse to one closure note. Full audit + future-proofing analysis: [`METRICS_MONITORING_R3.4_SENTRY_AUDIT_CLOSURE_2026-04-30.md`](METRICS_MONITORING_R3.4_SENTRY_AUDIT_CLOSURE_2026-04-30.md).
+
 ### R3.5 Replay-buffer overflow test (seed-07)
 
 **Repo:** cascor

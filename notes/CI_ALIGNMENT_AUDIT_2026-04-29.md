@@ -40,26 +40,26 @@ Plus 13 commits across 7 repos in the validation remediation
 (V01–V26 fixes). All on `main`; every commit verified by
 `git rev-list --left-right --count origin/main...HEAD == 0 0`.
 
-| Layer | Repos touched | Commits |
-|---|---|---|
-| Alignment plan (Phase 0–4) | 8 | 17 |
-| Validation remediation (V01–V26) | 7 | 13 |
-| Doc / template corrections during validation | ml | 4 |
-| **Total this session** | **8** | **34** |
+| Layer                                        | Repos touched | Commits |
+|----------------------------------------------|---------------|---------|
+| Alignment plan (Phase 0–4)                   | 8             | 17      |
+| Validation remediation (V01–V26)             | 7             | 13      |
+| Doc / template corrections during validation | ml            | 4       |
+| **Total this session**                       | **8**         | **34**  |
 
 ## 3. Alignment plan vs reality
 
-| Plan claim | Reality | Variance |
-|---|---|---|
-| §4.1 fleet has 7 standard workflows + publish | All 8 repos have them, modulo Appendix-A exclusions | ✓ |
-| §4.2 pre-commit hook union present | Yes — confirmed by `grep '^\s*-\s*id:'` against every repo | ✓ |
-| §4.4 required-checks aggregator | Present on every repo | ✓ |
-| §4.4 Python 3.12/3.13/3.14 matrix | Present on all repos except deploy (infra-only) | ✓ |
-| Appendix-A: cascor-client floors at 3.11 | **WRONG** — actual `requires-python` is `>=3.12`. Corrected during V10 remediation; Appendix A struck through. | corrected |
-| §9 risk register: `claude.yml` rollout reveals missing `ANTHROPIC_API_KEY` | Did not surface (no `@claude` mention to test against; `claude.yml` runs are `skipped` until a mention happens). User-side secret config is deferred-but-presumed-ok. | latent |
-| §9 risk register: trivy on deploy fails on transitive base-image CVEs | Did not fire — trivy ran clean on the first deploy security-scan. Soft-fail flag can be removed safely. | better than expected |
-| §9 risk register: First CodeQL run reveals findings | All 7 Python CodeQL workflows passed on first run. No findings to triage. | better than expected |
-| §9 risk register: New job exposes pre-existing latent failure | **CONFIRMED multiple times** — see §4 below | as expected |
+| Plan claim                                                                 | Reality                                                                                                                                                               | Variance             |
+|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
+| §4.1 fleet has 7 standard workflows + publish                              | All 8 repos have them, modulo Appendix-A exclusions                                                                                                                   | ✓                    |
+| §4.2 pre-commit hook union present                                         | Yes — confirmed by `grep '^\s*-\s*id:'` against every repo                                                                                                            | ✓                    |
+| §4.4 required-checks aggregator                                            | Present on every repo                                                                                                                                                 | ✓                    |
+| §4.4 Python 3.12/3.13/3.14 matrix                                          | Present on all repos except deploy (infra-only)                                                                                                                       | ✓                    |
+| Appendix-A: cascor-client floors at 3.11                                   | **WRONG** — actual `requires-python` is `>=3.12`. Corrected during V10 remediation; Appendix A struck through.                                                        | corrected            |
+| §9 risk register: `claude.yml` rollout reveals missing `ANTHROPIC_API_KEY` | Did not surface (no `@claude` mention to test against; `claude.yml` runs are `skipped` until a mention happens). User-side secret config is deferred-but-presumed-ok. | latent               |
+| §9 risk register: trivy on deploy fails on transitive base-image CVEs      | Did not fire — trivy ran clean on the first deploy security-scan. Soft-fail flag can be removed safely.                                                               | better than expected |
+| §9 risk register: First CodeQL run reveals findings                        | All 7 Python CodeQL workflows passed on first run. No findings to triage.                                                                                             | better than expected |
+| §9 risk register: New job exposes pre-existing latent failure              | **CONFIRMED multiple times** — see §4 below                                                                                                                           | as expected          |
 
 ## 4. Pre-existing failures the validation pass exposed
 
@@ -67,36 +67,36 @@ The alignment work itself didn't break anything. But by adding more
 checks and re-triggering pipelines, several pre-existing issues
 surfaced for the first time:
 
-| Finding | Surface | What it actually was |
-|---|---|---|
-| V11 | canopy ci.yml unit-tests | Real Dash test failures from PRs #204–#207 (Phase 6E sidebar work) — independent of alignment |
-| V12 | canopy ci.yml lockfile drift | Same Phase 6E PRs added deps without refreshing the lockfile |
-| V13 | data ci.yml lockfile drift | Same shape; pre-existing |
-| V17 | data lockfile-update.yml | Missing `CROSS_REPO_DISPATCH_TOKEN` secret — never configured |
-| V18 | canopy lockfile-update.yml | Same |
-| V19 | cascor scheduled-tests.yml Performance Benchmarks | Real perf bisect needed; pre-existing |
-| V20 | cascor security-scan + ci.yml bandit step | Pre-commit bandit skips B301/B108/B311; the standalone bandit invocations don't, so they surface long-known issues |
-| V22 | cascor-client gitleaks | Real committed secrets; needs user-side triage / allowlist / rotation |
-| V23 | cascor ci.yml pre-commit | Pre-commit drift surfaces only now that V01 startup_failure has cleared |
-| V24 | cascor ci.yml lockfile | Same |
-| V25 | cascor ci.yml docs | Same |
+| Finding | Surface                                           | What it actually was                                                                                               |
+|---------|---------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| V11     | canopy ci.yml unit-tests                          | Real Dash test failures from PRs #204–#207 (Phase 6E sidebar work) — independent of alignment                      |
+| V12     | canopy ci.yml lockfile drift                      | Same Phase 6E PRs added deps without refreshing the lockfile                                                       |
+| V13     | data ci.yml lockfile drift                        | Same shape; pre-existing                                                                                           |
+| V17     | data lockfile-update.yml                          | Missing `CROSS_REPO_DISPATCH_TOKEN` secret — never configured                                                      |
+| V18     | canopy lockfile-update.yml                        | Same                                                                                                               |
+| V19     | cascor scheduled-tests.yml Performance Benchmarks | Real perf bisect needed; pre-existing                                                                              |
+| V20     | cascor security-scan + ci.yml bandit step         | Pre-commit bandit skips B301/B108/B311; the standalone bandit invocations don't, so they surface long-known issues |
+| V22     | cascor-client gitleaks                            | Real committed secrets; needs user-side triage / allowlist / rotation                                              |
+| V23     | cascor ci.yml pre-commit                          | Pre-commit drift surfaces only now that V01 startup_failure has cleared                                            |
+| V24     | cascor ci.yml lockfile                            | Same                                                                                                               |
+| V25     | cascor ci.yml docs                                | Same                                                                                                               |
 
 All are explicitly **deferred** in the findings doc with reasoning;
 they belong to per-repo product owners, not the alignment effort.
 
 ## 5. Closed root-cause groups
 
-| Group | IDs | Result |
-|---|---|---|
-| G-CONFIG (cascor startup_failure) | V01, V02, V03 | **closed** (cascor `c136dc9`) |
-| G-INFRA (pip CVE-2026-3219) | V04–V09, V26 | **closed** (one commit per repo, plus the in-`ci.yml` mop-up) |
-| G-CONTRACT (cascor-client 3.11 mismatch) | V10 | **closed** (cascor-client `99a660b`; ml plan Appendix A struck) |
-| G-CONFIG (gitleaks repository_dispatch) | V15 | **closed** (canopy `792ba89`) |
-| G-CONFIG (deploy yamllint document-start) | V16 | **closed** (deploy `926dc31`; template `b4025fa`) |
-| G-CONFIG (data markdownlint .serena) | V14 | **closed** (data `4907da1`) |
-| G-CONFIG (canopy / cascor-client `--strict` editable) | V21 | **closed** (canopy `d6ca33e`; cascor-client `0d5c648`) |
-| G-CODE (deferred pre-existing) | V11–V13, V19, V20, V22–V25 | **deferred** (out-of-scope — owners notified via this doc) |
-| G-CONFIG (deferred user-side secret) | V17, V18 | **deferred** (`CROSS_REPO_DISPATCH_TOKEN` secret config) |
+| Group                                                 | IDs                        | Result                                                          |
+|-------------------------------------------------------|----------------------------|-----------------------------------------------------------------|
+| G-CONFIG (cascor startup_failure)                     | V01, V02, V03              | **closed** (cascor `c136dc9`)                                   |
+| G-INFRA (pip CVE-2026-3219)                           | V04–V09, V26               | **closed** (one commit per repo, plus the in-`ci.yml` mop-up)   |
+| G-CONTRACT (cascor-client 3.11 mismatch)              | V10                        | **closed** (cascor-client `99a660b`; ml plan Appendix A struck) |
+| G-CONFIG (gitleaks repository_dispatch)               | V15                        | **closed** (canopy `792ba89`)                                   |
+| G-CONFIG (deploy yamllint document-start)             | V16                        | **closed** (deploy `926dc31`; template `b4025fa`)               |
+| G-CONFIG (data markdownlint .serena)                  | V14                        | **closed** (data `4907da1`)                                     |
+| G-CONFIG (canopy / cascor-client `--strict` editable) | V21                        | **closed** (canopy `d6ca33e`; cascor-client `0d5c648`)          |
+| G-CODE (deferred pre-existing)                        | V11–V13, V19, V20, V22–V25 | **deferred** (out-of-scope — owners notified via this doc)      |
+| G-CONFIG (deferred user-side secret)                  | V17, V18                   | **deferred** (`CROSS_REPO_DISPATCH_TOKEN` secret config)        |
 
 ## 6. Soft-fail → hard-gate promotion table
 
@@ -161,7 +161,7 @@ c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
 | juniper-cascor | ❌ | ❌ | V20 (bandit B301/B108 — skip-list drift), V23 (pre-commit drift), V24 (lockfile drift), V25 (broken doc links), V19 (perf benchmark regression) |
 | juniper-data | ❌ | ✅ | V13 (lockfile drift), V17 (CROSS_REPO_DISPATCH_TOKEN), V27 (real test failure 403≠200) |
 | juniper-data-client | ✅ | ✅ | — |
-| juniper-cascor-client | ❌ | ✅ | V22 (gitleaks — real committed secrets need triage) |
+| **juniper-cascor-client** | ✅ | ✅ | — (V22 fully resolved by `9741e18`) |
 | juniper-cascor-worker | ✅ | ✅ | — |
 | juniper-deploy | ✅ | ✅ | — (trivy promoted to hard gate) |
 
