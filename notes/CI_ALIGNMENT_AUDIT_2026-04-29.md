@@ -156,10 +156,10 @@ c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
 
 | Repo                      | `ci.yml`  | `security-scan.yml`  | Outstanding (deferred)                                                                                                                          |
 |---------------------------|-----------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| juniper-ml                | ❌        | ✅                   | V28 (broken doc-links to never-shipped design docs)                                                                                             |
-| juniper-canopy            | ⚠ pending re-run | ✅                   | V11 closed (canopy `e51d1f8`, stale-test refresh — 5 assertions); V12 resolved upstream; V18 (`CROSS_REPO_DISPATCH_TOKEN`) still deferred — user-side secret |
-| juniper-cascor            | ❌        | ❌                   | V20 (bandit B301/B108 — skip-list drift), V23 (pre-commit drift), V24 (lockfile drift), V25 (broken doc links), V19 (perf benchmark regression) |
-| juniper-data              | ❌        | ✅                   | V13 (lockfile drift), V17 (CROSS_REPO_DISPATCH_TOKEN), V27 (real test failure 403≠200)                                                          |
+| **juniper-ml**            | ✅        | ✅                   | — (V28 resolved upstream; design docs landed downstream)                                                                                        |
+| juniper-canopy            | ⚠ pending re-run | ✅                   | V11 fixed across two commits (canopy `e51d1f8` + `b062f2a`, 10 stale assertions across 5 files); V12 resolved upstream; V18 still deferred (user-side secret) |
+| juniper-cascor            | ❌        | ⚠ pending re-run | V20 fixed (cascor `53e7134`); V23 + V25 resolved upstream; V24 still deferred (lockfile); V19 deferred (perf bisect); V29 new (test_api_health stale mock — out-of-scope product fix) |
+| **juniper-data**          | ✅        | ✅                   | — (V13 + V27 resolved upstream); V17 still deferred (user-side secret)                                                                          |
 | juniper-data-client       | ✅        | ✅                   | —                                                                                                                                               |
 | **juniper-cascor-client** | ✅        | ✅                   | — (V22 fully resolved by `9741e18`)                                                                                                             |
 | juniper-cascor-worker     | ✅        | ✅                   | —                                                                                                                                               |
