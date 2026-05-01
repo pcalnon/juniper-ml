@@ -4,38 +4,70 @@ Companion to `notes/CI_VALIDATION_ROADMAP_2026-04-29.md` Phase V1.
 Single source of truth for what's failing on each repo's CI right
 now. Every fix in Phase V3 references a finding ID from this file.
 
+## Status legend
+
+| Status | Meaning |
+|---|---|
+| **fixed** | Fix shipped on `main`; verifying CI run referenced. |
+| **investigating** | Triage in flight; root cause not yet confirmed. |
+| **deferred** | Not closed in the alignment / validation cycle, with a stated reason. **Subject to re-triage.** Several "deferred" findings (V14, V22) were originally classified G-CODE and assumed to be product-side defects. Once the actual SARIF / log output was pulled and inspected, both turned out to be config drift (G-CONFIG) that took a single commit to close. **Future readers: if a deferred finding becomes load-bearing, revisit the original log first — the deferral may not survive a fresh look.** |
+
+## Re-triage policy (post-V22 lesson)
+
+Before a deferred finding stays deferred, the analyst should have:
+
+1. Pulled the verbatim failing-step log from the run referenced in
+   the finding (or a fresher run if available).
+2. Confirmed the failure mode reproduces on the **current** `main`,
+   not on a stale snapshot.
+3. Categorised the root cause from {G-CONFIG, G-CODE, G-INFRA,
+   G-CONTRACT} — and only deferred if the cause is genuinely outside
+   the alignment effort's reach (real product bugs, missing user-side
+   secrets, deferred roadmap work).
+
 ## Index
 
-| ID | Repo | Workflow | Job | Category | Priority | Group | Status | Fix commit |
-|----|------|----------|-----|----------|----------|-------|--------|-----------|
-| V01 | juniper-cascor | ci.yml | docs / security / lockfile-check | startup_failure | P0 | G-CONFIG | **fixed** | cascor `c136dc9` |
-| V02 | juniper-cascor | lockfile-update.yml | update-lockfile | startup_failure | P0 | G-CONFIG | **fixed** | cascor `c136dc9` |
-| V03 | juniper-cascor | security-scan.yml | security-scan | startup_failure | P0 | G-CONFIG | **fixed** | cascor `c136dc9` |
-| V04 | juniper-canopy | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | canopy `77d7308` |
-| V05 | juniper-cascor | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | cascor `8a32d19` |
-| V06 | juniper-data | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | data `53723f1` |
-| V07 | juniper-data-client | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | data-client `0bdfbeb` |
-| V08 | juniper-cascor-client | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | cascor-client `d5be2a2` |
-| V09 | juniper-cascor-worker | security-scan.yml | (single job) | pip-audit (CVE-2026-3219) | P1 | G-INFRA | **fixed** | cascor-worker `1e91f5f` |
-| V10 | juniper-cascor-client | ci.yml | unit-tests / integration-tests (Py 3.11) | install (requires-python mismatch) | P1 | G-CONTRACT | **fixed** | cascor-client `99a660b`; ml `b4025fa` (Appendix A) |
-| V11 | juniper-canopy | ci.yml | unit-tests | unit (real Dash test failures) | P1 | G-CODE | **deferred** | out-of-scope (canopy product owner) |
-| V12 | juniper-canopy | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
-| V13 | juniper-data | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
-| V14 | juniper-data | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CONFIG | **fixed** | data `4907da1` (markdownlint .serena exclude) |
-| V15 | juniper-canopy | ci.yml | Security Scans (Gitleaks) | gitleaks (repository_dispatch unsupported) | P2 | G-CONFIG | **fixed** | canopy `792ba89` |
-| V16 | juniper-deploy | ci.yml | Pre-commit | pre-commit (yamllint MD docstart) | P1 | G-CODE | **fixed** | deploy `926dc31`; ml `b4025fa` (template) |
-| V17 | juniper-data | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | **deferred** | depends on user-side secret config |
-| V18 | juniper-canopy | lockfile-update.yml | update | secret missing (CROSS_REPO_DISPATCH_TOKEN) | P2 | G-CONFIG | **deferred** | depends on user-side secret config |
-| V19 | juniper-cascor | scheduled-tests.yml | Performance Benchmarks | unit (real benchmark failure) | P2 | G-CODE | **deferred** | out-of-scope |
-| V20 | juniper-cascor | security-scan.yml + ci.yml security | bandit reports B301/B108 issues | bandit (skip-list drift) | P2 | G-CODE | **deferred** | pre-commit bandit skips B301/B108 but standalone runs don't |
-| V21 | juniper-canopy / juniper-cascor-client | security-scan.yml | pip-audit `--strict` rejects unpublished editable | pip-audit (strict + editable) | P1 | G-CONFIG | **fixed** | canopy `d6ca33e`; cascor-client `0d5c648` (`--skip-editable`, drop `--strict`) |
-| V22 | juniper-cascor-client | ci.yml | Gitleaks "generic-api-key" rule false-positive on test fixture `"explicit-key-789"` (commit `fa942343`, tests/test_client.py:62-63) and on docstring `"client for JuniperCascor"` (juniper_cascor_client/testing/fake_ws_client.py:1) | gitleaks (false-positive on test fixture / docstring) | P1 | G-CONFIG | **fixed** | cascor-client `222b8b2` (initial rule-scoped allowlist) + `9741e18` (top-level allowlist covering both `tests/` and `juniper_cascor_client/testing/`); verified green on run 25208096316 |
-| V23 | juniper-cascor | ci.yml | pre-commit (matrix) | pre-commit | P1 | G-CODE | **deferred** | pre-existing pre-commit drift surfaced now that V01 startup_failure cleared |
-| V24 | juniper-cascor | ci.yml | Lockfile Freshness | dependency (lock drift) | P2 | G-CODE | **deferred** | out-of-scope |
-| V25 | juniper-cascor | ci.yml | Documentation Links | docs (broken doc links) | P2 | G-CODE | **deferred** | out-of-scope |
-| V26 | all 6 Python repos with security in ci.yml | ci.yml | pip-audit step | pip-audit (CVE-2026-3219 in ci.yml too) | P1 | G-INFRA | **fixed** | canopy `d6ca33e`; cascor `f8a9d5f`; data `8a9eed4`; data-client `52f89dc`; cascor-client `0d5c648`; cascor-worker `74ad4d1` |
-| V27 | juniper-data | ci.yml | unit-tests | unit (test_metrics_endpoint_uses_route_template_for_dataset_path returns 403 instead of 200) | P1 | G-CODE | **deferred** | pre-existing test failure in test_phase_2d_metrics.py |
-| V28 | juniper-ml | ci.yml | Documentation Links | docs (6 broken links in JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md → PHASE_6E_DESIGN.md, CAN_013_INTEGRATION_MODE_DESIGN.md, etc.) | P2 | G-CODE | **deferred** | pre-existing doc drift; design docs were never landed |
+| ID  | Repo                    | Workflow            | Job                                                 | Category                                                           | Priority | Group      | Status       | Fix commit                                                            |
+|-----|-------------------------|---------------------|-----------------------------------------------------|--------------------------------------------------------------------|----------|------------|--------------|-----------------------------------------------------------------------|
+| V01 | juniper-cascor          | ci.yml              | docs / security / lockfile-check                    | startup_failure                                                    | P0       | G-CONFIG   | **fixed**    | cascor `c136dc9`                                                      |
+| V02 | juniper-cascor          | lockfile-update.yml | update-lockfile                                     | startup_failure                                                    | P0       | G-CONFIG   | **fixed**    | cascor `c136dc9`                                                      |
+| V03 | juniper-cascor          | security-scan.yml   | security-scan                                       | startup_failure                                                    | P0       | G-CONFIG   | **fixed**    | cascor `c136dc9`                                                      |
+| V04 | juniper-canopy          | security-scan.yml   | (single job)                                        | pip-audit (CVE-2026-3219)                                          | P1       | G-INFRA    | **fixed**    | canopy `77d7308`                                                      |
+| V05 | juniper-cascor          | security-scan.yml   | (single job)                                        | pip-audit (CVE-2026-3219)                                          | P1       | G-INFRA    | **fixed**    | cascor `8a32d19`                                                      |
+| V06 | juniper-data            | security-scan.yml   | (single job)                                        | pip-audit (CVE-2026-3219)                                          | P1       | G-INFRA    | **fixed**    | data `53723f1`                                                        |
+| V07 | juniper-data-client     | security-scan.yml   | (single job)                                        | pip-audit (CVE-2026-3219)                                          | P1       | G-INFRA    | **fixed**    | data-client `0bdfbeb`                                                 |
+| V08 | juniper-cascor-client   | security-scan.yml   | (single job)                                        | pip-audit (CVE-2026-3219)                                          | P1       | G-INFRA    | **fixed**    | cascor-client `d5be2a2`                                               |
+| V09 | juniper-cascor-worker   | security-scan.yml   | (single job)                                        | pip-audit (CVE-2026-3219)                                          | P1       | G-INFRA    | **fixed**    | cascor-worker `1e91f5f`                                               |
+| V10 | juniper-cascor-client   | ci.yml              | unit-tests / integration-tests                      | install (requires-python mismatch)                                 | P1       | G-CONTRACT | **fixed**    | cascor-client `99a660b`; ml `b4025fa` (Appendix A)                    |
+|     |                         |                     | (Py 3.11)                                           |                                                                    |          |            |              |                                                                       |
+| V11 | juniper-canopy          | ci.yml              | unit-tests                                          | unit (stale `test_dashboard_manager_coverage.py` + `test_dashboard_manager_95.py` assertions; components count + `_init_params_from_backend_handler` `NUM_OUTPUTS` drifted post canopy#203/204/205/206) | P1 | G-CODE-test-only | **fixed**    | canopy `e51d1f8` (5 assertions refreshed across 2 files; verified local 5/5 pass) |
+| V12 | juniper-canopy          | ci.yml              | Lockfile Freshness                                  | dependency (lock drift)                                            | P2       | G-CODE     | **resolved upstream** | already passing on the latest canopy/main run (25231101579); no fix-up commit needed |
+| V13 | juniper-data            | ci.yml              | Lockfile Freshness                                  | dependency (lock drift)                                            | P2       | G-CODE     | **deferred** | out-of-scope                                                          |
+| V14 | juniper-data            | ci.yml              | pre-commit (matrix)                                 | pre-commit                                                         | P1       | G-CONFIG   | **fixed**    | data `4907da1` (markdownlint .serena exclude)                         |
+| V15 | juniper-canopy          | ci.yml              | Security Scans (Gitleaks)                           | gitleaks (repository_dispatch unsupported)                         | P2       | G-CONFIG   | **fixed**    | canopy `792ba89`                                                      |
+| V16 | juniper-deploy          | ci.yml              | Pre-commit                                          | pre-commit (yamllint MD docstart)                                  | P1       | G-CODE     | **fixed**    | deploy `926dc31`; ml `b4025fa` (template)                             |
+| V17 | juniper-data            | lockfile-update.yml | update                                              | secret missing (CROSS_REPO_DISPATCH_TOKEN)                         | P2       | G-CONFIG   | **deferred** | depends on user-side secret config                                    |
+| V18 | juniper-canopy          | lockfile-update.yml | update                                              | secret missing (CROSS_REPO_DISPATCH_TOKEN)                         | P2       | G-CONFIG   | **deferred** | depends on user-side secret config                                    |
+| V19 | juniper-cascor          | scheduled-tests.yml | Performance Benchmarks                              | unit (real benchmark failure)                                      | P2       | G-CODE     | **deferred** | out-of-scope                                                          |
+| V20 | juniper-cascor          | security-scan.yml + | bandit reports B301/B108 issues                     | bandit (skip-list drift)                                           | P2       | G-CODE     | **deferred** | pre-commit bandit skips B301/B108                                     |
+|     |                         | ci.yml security     |                                                     |                                                                    |          |            |              | but standalone runs don't                                             |
+| V21 | juniper-canopy /        | security-scan.yml   | pip-audit `--strict`                                | pip-audit (strict + editable)                                      | P1       | G-CONFIG   | **fixed**    | canopy `d6ca33e`; cascor-client `0d5c648`                             |
+|     | juniper-cascor-client   |                     | rejects unpublished editable                        |                                                                    |          |            |              | (`--skip-editable`, drop `--strict`)                                  |
+| V22 | juniper-cascor-client   | ci.yml              | Gitleaks "generic-api-key" rule false-positive,     | gitleaks (false-positive                                           | P1       | G-CONFIG   | **fixed**    | cascor-client `222b8b2` (initial rule-scoped allowlist)               |
+|     |                         |                     | test fixture `"explicit-key-789"`                   | on test fixture / docstring)                                       |          |            |              | + `9741e18` (top-level allowlist covering both `tests/`               |
+|     |                         |                     | (commit `fa942343`, tests/test_client.py:62-63)     |                                                                    |          |            |              | and `juniper_cascor_client/testing/`);                                |
+|     |                         |                     | and on docstring `"client for JuniperCascor"`       |                                                                    |          |            |              | verified green on run 25208096316                                     |
+|     |                         |                     | (juniper_cascor_client/testing/fake_ws_client.py:1) |                                                                    |          |            |              |                                                                       |
+| V23 | juniper-cascor          | ci.yml              | pre-commit (matrix)                                 | pre-commit                                                         | P1       | G-CODE     | **deferred** | pre-existing pre-commit drift surfaced w/ V01 startup_failure cleared |
+| V24 | juniper-cascor          | ci.yml              | Lockfile Freshness                                  | dependency (lock drift)                                            | P2       | G-CODE     | **deferred** | out-of-scope                                                          |
+| V25 | juniper-cascor          | ci.yml              | Documentation Links                                 | docs (broken doc links)                                            | P2       | G-CODE     | **deferred** | out-of-scope                                                          |
+| V26 | all 6 Python repos with | ci.yml              | pip-audit step                                      | pip-audit (CVE-2026-3219                                           | P1       | G-INFRA    | **fixed**    | canopy `d6ca33e`; cascor `f8a9d5f`; data `8a9eed4`; data-client       |
+|     | security in ci.yml      |                     |                                                     | in ci.yml too)                                                     |          |            |              | `52f89dc`; cascor-client `0d5c648`; cascor-worker `74ad4d1`           |
+| V27 | juniper-data            | ci.yml              | unit-tests                                          | unit (test_metrics_endpoint_uses_route_template_for_dataset_path   | P1       | G-CODE     | **deferred** | pre-existing test failure in test_phase_2d_metrics.py                 |
+| V27 | juniper-data            | ci.yml              | unit-tests                                          | returns 403 instead of 200)                                        |          |            |              |                                                                       |
+| V28 | juniper-ml              | ci.yml              | Documentation Links                                 | docs (6 broken links in                                            | P2       | G-CODE     | **deferred** | pre-existing doc drift; design docs were never landed                 |
+|     |                         |                     |                                                     | JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md |          |            |              |                                                                       |
+|     |                         |                     |                                                     | → PHASE_6E_DESIGN.md, CAN_013_INTEGRATION_MODE_DESIGN.md, etc.)    |          |            |              |                                                                       |
 
 ---
 

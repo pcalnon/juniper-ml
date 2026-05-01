@@ -100,13 +100,13 @@ they belong to per-repo product owners, not the alignment effort.
 
 ## 6. Soft-fail → hard-gate promotion table
 
-| Repo | Soft-fail surface | Status | Action |
-|---|---|---|---|
-| juniper-deploy | `trivy-fs` `continue-on-error: true` | Two consecutive green security-scan runs (after `---` fix in `claude.yml` cleared the workflow) → criterion met | **Ready to promote** — remove `continue-on-error`. |
-| juniper-data-client | `integration-tests` warning + exit-code-5 skip | Two consecutive ci.yml greens with no integration tests in the suite — criterion met (job is currently a no-op) | **Hold** — premature to promote; the job is harmless as-is. Keep soft-fail until the suite has real tests. |
-| juniper-cascor-client | same | Latest ci.yml run still failing on V22 (gitleaks real findings) — out of scope | Hold |
-| juniper-cascor-worker | same | Two greens — criterion met | **Hold** — same reason as data-client. |
-| All Python repos | First CodeQL run | All 7 CodeQL runs already green; no shakedown findings | **Already promoted** — no flag to flip; CodeQL findings live in the Security tab, not in `required-checks`. |
+| Repo                  | Soft-fail surface                              | Status                                                                                                          | Action                                                                                                      |
+|-----------------------|------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| juniper-deploy        | `trivy-fs` `continue-on-error: true`           | Two consecutive green security-scan runs (after `---` fix in `claude.yml` cleared the workflow) → criterion met | **Ready to promote** — remove `continue-on-error`.                                                          |
+| juniper-data-client   | `integration-tests` warning + exit-code-5 skip | Two consecutive ci.yml greens with no integration tests in the suite — criterion met (job is currently a no-op) | **Hold** — premature to promote; the job is harmless as-is. Keep soft-fail until the suite has real tests.  |
+| juniper-cascor-client | same                                           | Latest ci.yml run still failing on V22 (gitleaks real findings) — out of scope                                  | Hold                                                                                                        |
+| juniper-cascor-worker | same                                           | Two greens — criterion met                                                                                      | **Hold** — same reason as data-client.                                                                      |
+| All Python repos      | First CodeQL run                               | All 7 CodeQL runs already green; no shakedown findings                                                          | **Already promoted** — no flag to flip; CodeQL findings live in the Security tab, not in `required-checks`. |
 
 (Final promotion happens inline below as runs confirm the second
 consecutive green.)
@@ -154,16 +154,16 @@ After the Phase V3 remediation pass (commits c136dc9 through
 c431fd1 across 7 repos) and a full re-trigger of `ci.yml` +
 `security-scan.yml` on every repo:
 
-| Repo | `ci.yml` | `security-scan.yml` | Outstanding (deferred) |
-|---|---|---|---|
-| juniper-ml | ❌ | ✅ | V28 (broken doc-links to never-shipped design docs) |
-| juniper-canopy | ❌ | ✅ | V11 (Dash unit tests), V12 (lockfile drift), V18 (CROSS_REPO_DISPATCH_TOKEN) |
-| juniper-cascor | ❌ | ❌ | V20 (bandit B301/B108 — skip-list drift), V23 (pre-commit drift), V24 (lockfile drift), V25 (broken doc links), V19 (perf benchmark regression) |
-| juniper-data | ❌ | ✅ | V13 (lockfile drift), V17 (CROSS_REPO_DISPATCH_TOKEN), V27 (real test failure 403≠200) |
-| juniper-data-client | ✅ | ✅ | — |
-| **juniper-cascor-client** | ✅ | ✅ | — (V22 fully resolved by `9741e18`) |
-| juniper-cascor-worker | ✅ | ✅ | — |
-| juniper-deploy | ✅ | ✅ | — (trivy promoted to hard gate) |
+| Repo                      | `ci.yml`  | `security-scan.yml`  | Outstanding (deferred)                                                                                                                          |
+|---------------------------|-----------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| juniper-ml                | ❌        | ✅                   | V28 (broken doc-links to never-shipped design docs)                                                                                             |
+| juniper-canopy            | ⚠ pending re-run | ✅                   | V11 closed (canopy `e51d1f8`, stale-test refresh — 5 assertions); V12 resolved upstream; V18 (`CROSS_REPO_DISPATCH_TOKEN`) still deferred — user-side secret |
+| juniper-cascor            | ❌        | ❌                   | V20 (bandit B301/B108 — skip-list drift), V23 (pre-commit drift), V24 (lockfile drift), V25 (broken doc links), V19 (perf benchmark regression) |
+| juniper-data              | ❌        | ✅                   | V13 (lockfile drift), V17 (CROSS_REPO_DISPATCH_TOKEN), V27 (real test failure 403≠200)                                                          |
+| juniper-data-client       | ✅        | ✅                   | —                                                                                                                                               |
+| **juniper-cascor-client** | ✅        | ✅                   | — (V22 fully resolved by `9741e18`)                                                                                                             |
+| juniper-cascor-worker     | ✅        | ✅                   | —                                                                                                                                               |
+| juniper-deploy            | ✅        | ✅                   | — (trivy promoted to hard gate)                                                                                                                 |
 
 ### Greens
 
