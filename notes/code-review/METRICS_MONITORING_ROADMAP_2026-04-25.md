@@ -211,6 +211,23 @@ juniper-cascor-worker's main was already green; no Wave 0 PR was required for th
 **Composite:** 2
 **Approach:** Per-task timing, RSS reporting, GPU utilization (if applicable) emitted as part of the heartbeat frame from R1.3. No new endpoint; reuses heartbeat surface.
 
+### R4.5 juniper-data POST cache-hit observability gap (surfaced 2026-05-01 by R3.1)
+
+**Repo:** juniper-data
+**Composite:** 2
+**Symptom:** `POST /v1/datasets` short-circuits in `api/routes/datasets.create_dataset` (lines 101–108) when `dataset_id` — a deterministic hash of `generator + version + params` — is already in the store. The route returns the cached `meta` and skips both `record_dataset_generation` (the generation-counter / duration-histogram path) and `record_access` (the latter is wired only into the GET handlers per BUG-JD-08). Result: a deterministic re-POST with identical params is **invisible** to all dataset-side metrics — no counter increment, no histogram observation, no access tally.
+
+**Why it matters:** Production-shaped traffic patterns (e.g. juniper-cascor re-fetching a known `dataset_id` during retraining, a CI runner that POSTs the same spiral params on every test, or a deterministic load-test driver) will under-report request volume against the dataset surface. Capacity-planning queries against `juniper_data_dataset_generations_total` will undercount; access-pattern dashboards built on `record_access` will undercount the POST contribution; an SLO defined on either metric will be miscalibrated. The R3.1 live integration test discovered this when two identical POSTs only bumped the generation counter once (test now varies `noise` between calls to defeat the cache and exercise the metric path twice).
+
+**Approach:** Two options, no preference yet — to be decided during R4 entry planning:
+
+- **(a)** Add a new `juniper_data_dataset_post_total{generator, status, cache="hit"|"miss"}` counter bumped on every POST regardless of cache state. Keeps `record_dataset_generation` semantics unchanged (still counts only real generations); separates "request volume" from "generation work" cleanly. Smallest production-code delta.
+- **(b)** Have the cache-hit branch call `record_access(dataset_id)` so POST + GET both contribute to the existing access counter. Conflates POST and GET request types but reuses existing instrumentation.
+
+Option (a) preserves observability orthogonality (request volume vs work performed vs read access) and is the recommended starting point unless R5 dashboard work surfaces a strong reason to merge POST + GET access counts.
+
+**Test:** Mirror the R3.1 live integration test pattern — POST the same params twice, assert the new POST counter increments by 2 and the generation counter increments by 1 (regression guard against the original bug).
+
 **Phase R4 exit gate:** All best-practice findings closed or accepted with documented rationale.
 
 ---
@@ -282,6 +299,8 @@ juniper-cascor-worker's main was already green; no Wave 0 PR was required for th
 | R4.2   | seed-10 async-safe probes    | not started        |             |                                               |          |                                                                                                                                         |
 | R4.3   | seed-13 data-client hooks    | not started        |             |                                               |          |                                                                                                                                         |
 | R4.4   | worker training-loop instr   | not started        |             |                                               |          |                                                                                                                                         |
+| R4.5   | data POST cache-hit obs gap  | not started        |             |                                               |          | Surfaced 2026-05-01 by R3.1 implementation. POST cache-hit branch in `api/routes/datasets.create_dataset` skips both                    |
+|        |                              |                    |             |                                               |          | `record_dataset_generation` and `record_access`; deterministic re-POST traffic is invisible to all dataset-side metrics.                |
 | R5.1   | SLO catalog                  | not started        |             |                                               |          |                                                                                                                                         |
 | R5.2   | scrape manifests             | not started        |             |                                               |          |                                                                                                                                         |
 | R5.3   | Grafana dashboards           | not started        |             |                                               |          |                                                                                                                                         |
