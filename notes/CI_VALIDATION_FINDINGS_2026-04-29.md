@@ -50,7 +50,12 @@ Before a deferred finding stays deferred, the analyst should have:
 | V16 | juniper-deploy          | ci.yml              | Pre-commit                                          | pre-commit (yamllint MD docstart)                                  | P1       | G-CODE     | **fixed**    | deploy `926dc31`; ml `b4025fa` (template)                             |
 | V17 | juniper-data            | lockfile-update.yml | update                                              | secret missing (CROSS_REPO_DISPATCH_TOKEN)                         | P2       | G-CONFIG   | **deferred** | depends on user-side secret config                                    |
 | V18 | juniper-canopy          | lockfile-update.yml | update                                              | secret missing (CROSS_REPO_DISPATCH_TOKEN)                         | P2       | G-CONFIG   | **deferred** | depends on user-side secret config                                    |
-| V19 | juniper-cascor          | scheduled-tests.yml | Performance Benchmarks                              | unit (real benchmark failure)                                      | P2       | G-CODE     | **deferred** | out-of-scope                                                          |
+| V19 | juniper-cascor          | scheduled-tests.yml | Performance Benchmarks                              | benchmark harness drift (stale API + path bug, not a real perf     | P2       | G-CODE-test-only | **fixed (verified)** | cascor `56c5953` + `85634ee` + `f4d808c` + `7886c1b` — four-round  |
+|     |                         |                     |                                                     | regression as originally suspected)                                |          |            |              | benchmark-harness fix: (1) rename `"activation"` → `"activation_fn"`, |
+|     |                         |                     |                                                     |                                                                    |          |            |              | (2) resize `output_weights` after manual hidden-unit append,         |
+|     |                         |                     |                                                     |                                                                    |          |            |              | (3) drop stale `display_frequency` kwarg from `train_output_layer`, |
+|     |                         |                     |                                                     |                                                                    |          |            |              | (4) absolutize `--output` path before `cd "${SRC_DIR}"`. Verified    |
+|     |                         |                     |                                                     |                                                                    |          |            |              | green on workflow_dispatch run 25238422226.                          |
 | V20 | juniper-cascor          | security-scan.yml + | bandit reports B301/B108 issues                     | bandit (skip-list + scope drift)                                   | P2       | G-CONFIG   | **fixed**    | cascor `53e7134` — added `--exclude src/tests` and                    |
 |     |                         | ci.yml security     |                                                     |                                                                    |          |            |              | `--skip B101,B301,B311,B403` to standalone bandit calls               |
 |     |                         |                     |                                                     |                                                                    |          |            |              | to mirror pre-commit's source-side hook exactly                       |
@@ -313,9 +318,26 @@ Identical failure mode in all 6 Python repos that ship a
 - Run: <https://github.com/pcalnon/juniper-cascor/actions/runs/25146942006>
 - Excerpt: only the `Performance Benchmarks` job failed; slow
   unit / slow integration / long-running tests all passed.
-- **Root cause**: real benchmark / regression bisect required.
-  Out-of-scope for the alignment work.
-- **Group**: G-CODE. Defer.
+- **Original triage (2026-04-29)**: assumed real benchmark / regression
+  bisect required; deferred as out-of-scope.
+- **Re-triage under V22-pattern diligence (2026-05-01)**: pulled the
+  actual stack trace and found four sequential layers of *stale-harness*
+  drift, not a real perf regression. The benchmark code itself runs fine
+  against current production once the harness mismatches are corrected.
+  Each fix exposed the next, in classic peeling-onion fashion:
+
+  | Round | Commit | Cleared |
+  |-------|--------|---------|
+  | 1 | `56c5953` | `KeyError: 'activation_fn'` (renamed `"activation"` to canonical key in two inline-Python dict literals) |
+  | 2 | `85634ee` | `RuntimeError: mat1 and mat2 shapes (1x12 and 2x2)` — manually appended hidden_units bypassed `add_unit()` so `output_weights` stayed at the initial `(input_size, output_size)` shape; resize once after the loop |
+  | 3 | `f4d808c` | `TypeError: train_output_layer() got an unexpected keyword argument 'display_frequency'` — kwarg was removed from the public API but the harness wasn't updated |
+  | 4 | `7886c1b` | `tee: ../../../reports/benchmarks/...: No such file or directory` — script `cd`s into `${SRC_DIR}` before `tee` runs, so the workflow's relative `--output` path re-resolved two levels above the repo root; absolutize before cd |
+
+- **Group**: G-CODE-test-only (re-classified). Same stale-fixture
+  family as V11 / V13 / V14 / V20 / V22 / V24 / V27 / V28 / V29 / V31 /
+  V33. Verified green on workflow_dispatch run 25238422226 — Performance
+  Benchmarks job reports sane numbers (forward-pass μs/ms timings;
+  output-layer training in tens of ms) and exits zero.
 
 ---
 
