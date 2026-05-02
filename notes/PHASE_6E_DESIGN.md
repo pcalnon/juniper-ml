@@ -44,6 +44,7 @@ CAN-011 server side: add `activation_function_name: Literal[…]` to `TrainingPa
 `juniper-cascor/src/cascade_correlation/cascade_correlation.py:3735` — `candidates_per_layer = getattr(self, "candidates_per_layer", 1)`. If > 1, dispatches to `add_units_as_layer()` (line 3560) which adds N hidden units in one cascade step. **Already implemented**, no UI surface.
 
 CAN-013's "integration mode" semantics need more design:
+
 - Mode `"sequential"` = today's default (1 best candidate per iteration)
 - Mode `"batch"` = today's `candidates_per_layer > 1` path (N best per iteration)
 - Mode `"weighted_ensemble"` = greenfield (linear combination of top-K)
@@ -74,43 +75,87 @@ This is the only genuinely XL item in Phase 6E.
 
 Grouping by surface affinity (= what touches the same files / mental model), not strictly by ID order. Each row is one PR.
 
-| # | PR | Scope | Cascor changes | Canopy changes | Notes |
-|---|---|---|---|---|---|
-| **Sprint A — small wire-throughs (5 PRs)** | | | | | |
-| A-1 | **Training params epoch separation** (CAS-002 + CAS-003) | S | Verify three epoch fields are surfaced through `TrainingParams`; add `network_max_epochs` if not already aliased | Add 3 inputs in sidebar | Pure parameter additions; existing infra in cascor |
-| A-2 | **Optimizer surface** (CAN-010 + ENH-006) | S–M | `optimizer_type: Literal[…]` added to `TrainingParams`; thread to `OptimizerConfig` | Dropdown in sidebar; surface in Parameters tab | Cascor side ~30 LoC; canopy ~50 LoC |
-| A-3 | **Activation surface** (CAN-011) | S | `activation_function_name: Literal[…]` added to `TrainingParams`; thread to network constructor | Dropdown in sidebar | Smaller than A-2; ~20 LoC each side |
-| A-4 | **Auto-snap best** (CAS-006) | S | `_best_accuracy` tracking + `auto_snapshot_best` gate around `create_snapshot()` | Toggle in sidebar (or sticky default) | Pure cascor; canopy gets one boolean toggle |
-| A-5 | **Snapshot tuning round-trip** (CAN-014) | S | Verification + tests; if any field is dropped on load, fix it | Surface "Loaded from snapshot N" indicator after restore | Mostly tests; small-but-hardening |
-| **Sprint B — snapshot operations: Restore / Replay / Resume / Retrain (6 PRs, see [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md))** | | | | | |
-| B-1 | **Retrain endpoint** (CAN-015a) | S–M | New lifecycle path `_load_snapshot_inner(snapshot_id, mode="retrain")`: load weights + topology + meta-params, reset history/counters/FSM. `POST /v1/snapshots/{id}/retrain` | None this PR | Closest to original CAN-015 intent |
-| B-2 | **Resume endpoint + ResumeReady FSM state** (CAN-015b) | M | Load + preserve all state including history; transition to `ResumeReady`; mark `resume_point_epoch` so next training run extends history rather than resetting. `POST /v1/snapshots/{id}/resume` | None this PR | Reuses B-1's `_load_snapshot_inner` helper |
-| B-3 | **Replay infrastructure + Replaying FSM state + control endpoint** (CAN-015c) | M–L | New `Replaying` state; `POST /v1/snapshots/{id}/replay` and `/replay/control` (play/pause/seek/speed/range/stop); server-driven event emission to WS. **V1 scope: metrics + topology only** (per-epoch weights deferred to CAN-015e) | None this PR | Largest cascor PR of Sprint B |
-| B-4 | **Restore enrichment + Investigating FSM state** (CAN-015d) | S | Existing `/restore` gains `Investigating` FSM state, unified response shape; rejects training commands until the user explicitly invokes Replay/Resume/Retrain | None this PR | Backward-compatible response superset |
-| B-5 | **Canopy UX entry points: modal + dropdown + context menu** (CAN-015e) | — | — | canopy / M | All three surfaces routed to all four endpoints; sidebar reused for tune-then-train |
-| B-6 | **Canopy replay player UI** (CAN-015f, V1) | — | — | canopy / M–L | Play/Pause/speed slider (bidirectional 0.1×–10×)/scrubber/range selector; depends on B-3 |
-| **Sprint C — CAN-013 full (5 PRs, see `CAN_013_INTEGRATION_MODE_DESIGN.md`)** | | | | | |
-| C-1 | `integration_mode` config + sequential/batch wire-through | S | Add `integration_mode: Literal[…]` and `ensemble_size`; rename `candidates_per_layer` semantics | None | Tests verify default is sequential |
-| C-2 | Ensemble unit data model + forward pass | M | New unit dict schema; `_compute_hidden_outputs` switch; `α` as `torch.nn.Parameter` | None | Tests on tiny synthetic dataset; K=1 equivalence to sequential |
-| C-3 | Ensemble installation + output retraining with α | M | `_add_ensemble_unit`; α registered in optimizer; α gradients flow during output retraining | None | Frozen-weights invariant explicitly enforced |
-| C-4 | Snapshot format v2 + ensemble unit serialization | M | `format_version` on root; `unit_type` per unit; loader back-compat for v1 | None | Round-trip test |
-| C-5 | Canopy UI for integration mode | S | None | Sidebar dropdown + conditional inputs; ensemble-unit visualization | Visual marker on Network Topology; "+1 ensemble unit (K=3)" delta on Network Evolution |
-| **Sprint D — independent cleanup (1 PR)** | | | | | |
-| D-1 | **CAS-005: shared-code extraction** | M–L | Move duplicated cascor↔worker code into a `juniper-core` package | None | Held for Sprint D per user direction; mechanically independent of other sprints |
-| **Sprint E — multi-network XL (7 PRs, see `PHASE_6E_MULTI_NETWORK_DESIGN.md`)** | | | | | |
-| E-1 | `SingleNetworkLifecycleState` extraction + manager registry | cascor / **L** | Refactors 74 singular sites into per-network methods; back-compat `network` shim | — | The big one; ~600–800 LoC |
-| E-2 | New `/v1/networks/*` REST routes + back-compat aliases | cascor / M | Adds URL surface; old routes alias to active network | — | |
-| E-3 | Control WS: `network_id` in commands; broadcast: `network_id` in messages | cascor / M | Protocol change; clients without `network_id` keep working | — | |
-| E-4 | Snapshot storage layout migration | cascor / S–M | Per-network subdirectories; one-time auto-migration | — | Idempotent |
-| E-5 | Per-network training thread + max-concurrent config | cascor / S | Each `SingleNetworkLifecycleState` owns its `ThreadPoolExecutor(1)` | — | |
-| E-6 | Canopy adapter: `network_id` parameter threading | — | — | canopy / M | Adapter methods grow `network_id`; falls back to a per-instance default |
-| E-7 | Canopy UI: Networks sidebar + Population tab (CAN-021) | — | — | canopy / M–L | Reuses Network Evolution's small-multiples renderer |
+**Sprint A — small wire-throughs (5 PRs):**
+
+| #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
+|-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
+| A-1 | **Training params epoch separation**              | S              | Verify three epoch fields are surfaced through `TrainingParams`;                    | Add 3 inputs in sidebar                        | Pure parameter additions;                        |
+|     | (CAS-002 + CAS-003)                               |                | add `network_max_epochs` if not already aliased                                     |                                                | existing infra in cascor                         |
+| A-2 | **Optimizer surface** (CAN-010 + ENH-006)         | S–M            | `optimizer_type: Literal[…]` added to `TrainingParams`; thread to `OptimizerConfig` | Dropdown in sidebar; surface in Parameters tab | Cascor side ~30 LoC; canopy ~50 LoC              |
+| A-3 | **Activation surface**                            | S              | `activation_function_name: Literal[…]` added to                                     | Dropdown in sidebar                            | Smaller than A-2; ~20 LoC each side              |
+|     | (CAN-011)                                         |                | `TrainingParams`; thread to network constructor                                     | Dropdown in sidebar                            |                                                  |
+| A-4 | **Auto-snap best** (CAS-006)                      | S              | `_best_accuracy` tracking + `auto_snapshot_best` gate around `create_snapshot()`    | Toggle in sidebar (or sticky default)          | Pure cascor; canopy gets one boolean toggle      |
+| A-5 | **Snapshot tuning round-trip**                    | S              | Verification + tests; if any field                                                  | Surface "Loaded from snapshot N"               | Mostly tests; small-but-hardening                |
+|     | (CAN-014)                                         |                | is dropped on load, fix it                                                          | indicator after restore                        | Mostly tests; small-but-hardening                |
+
+
+**Sprint B — snapshot operations: Restore / Replay / Resume / Retrain (6 PRs, see [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md))**
+
+| #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
+|-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
+| B-1 | **Retrain endpoint** (CAN-015a)                   | S–M            | New lifecycle path `_load_snapshot_inner(snapshot_id, mode="retrain")`:             | None this PR                                   | Closest to original CAN-015 intent               |
+|     |                                                   |                | load weights + topology + meta-params, reset history/counters/FSM.                  |                                                |                                                  |
+|     |                                                   |                | `POST /v1/snapshots/{id}/retrain`                                                   |                                                |                                                  |
+| B-2 | **Resume endpoint** +                             | M              | Load + preserve all state including history; transition to `ResumeReady`;           | None this PR                                   | Reuses B-1's `_load_snapshot_inner` helper       |
+|     | **ResumeReady FSM state**                         |                | mark `resume_point_epoch` so next training run extends history rather than          |                                                |                                                  |
+|     | (CAN-015b)                                        |                | resetting. `POST /v1/snapshots/{id}/resume`                                         |                                                |                                                  |
+| B-3 | **Replay infrastructure + Replaying FSM state +** | M–L            | New `Replaying` state; `POST /v1/snapshots/{id}/replay` and `/replay/control`       | None this PR                                   | Largest cascor PR of Sprint B                    |
+|     | **control endpoint** (CAN-015c)                   |                | (play/pause/seek/speed/range/stop); server-driven event emission to WS.             |                                                |                                                  |
+|     |                                                   |                | **V1 scope: metrics + topology only** (per-epoch weights deferred to CAN-015e)      |                                                |                                                  |
+| B-4 | **Restore enrichment + Investigating FSM state**  | S              | Existing `/restore` gains `Investigating` FSM state,                                | None this PR                                   | Backward-compatible response superset            |
+|     | (CAN-015d)                                        |                | unified response shape; rejects training commands until                             |                                                |                                                  |
+|     |                                                   |                | the user explicitly invokes Replay/Resume/Retrain                                   |                                                |                                                  |
+| B-5 | **Canopy UX entry points:**                       | —              | —                                                                                   | canopy / M                                     | All three surfaces routed to all four            |
+|     | **modal + dropdown + context menu**               |                |                                                                                     |                                                | endpoints; sidebar reused for                    |
+|     | (CAN-015e)                                        |                |                                                                                     |                                                | tune-then-train                                  |
+| B-6 | **Canopy replay player UI**                       | —              | —                                                                                   | canopy / M–L                                   | Play/Pause/speed slider (bidirectional 0.1×–10×) |
+|     | (CAN-015f, V1)                                    |                |                                                                                     |                                                | /scrubber/range selector; depends on B-3         |
+
+**Sprint C — CAN-013 full (5 PRs, see `CAN_013_INTEGRATION_MODE_DESIGN.md`)**
+
+| #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
+|-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
+| C-1 | `integration_mode` config + h                     | S              | Add `integration_mode: Literal[…]` and `ensemble_size`;                             | None                                           | Tests verify default is sequential               |
+|     | sequential/batch wire-through                     |                | rename `candidates_per_layer` semantics                                             |                                                |                                                  |
+| C-2 | Ensemble unit data model +                        | M              | New unit dict schema; `_compute_hidden_outputs`                                     | None                                           | Tests on tiny synthetic dataset;                 |
+|     | forward pass                                      |                | switch; `α` as `torch.nn.Parameter`                                                 |                                                | K=1 equivalence to sequential                    |
+| C-3 | Ensemble installation +                           | M              | `_add_ensemble_unit`; α registered in optimizer;                                    | None                                           | Frozen-weights invariant explicitly enforced     |
+|     | output retraining with α                          |                | α gradients flow during output retraining                                           |                                                |                                                  |
+| C-4 | Snapshot format v2 +                              | M              | `format_version` on root; `unit_type` per unit;                                     | None                                           | Round-trip test                                  |
+|     | ensemble unit serialization                       |                | loader back-compat for v1                                                           |                                                |                                                  |
+| C-5 | Canopy UI for integration mode                    | S              | None                                                                                | Sidebar dropdown + conditional inputs;         | Visual marker on Network Topology;               |
+|     |                                                   |                |                                                                                     | ensemble-unit visualization                    | "+1 ensemble unit (K=3)" delta on Network        |
+
+**Sprint D — independent cleanup (1 PR):**
+
+| #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
+|-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
+| D-1 | **CAS-005: shared-code extraction**               | M–L            | Move duplicated cascor↔worker code                                                  | None                                           | Evolution Held for Sprint D per user direction;  |
+|     |                                                   |                | into a `juniper-core` package                                                       |                                                | mechanically independent of other sprints        |
+
+**Sprint E — multi-network XL (7 PRs, see `PHASE_6E_MULTI_NETWORK_DESIGN.md`)**
+
+| #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
+|-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
+| E-1 | `SingleNetworkLifecycleState` extraction +        | cascor / **L** | Refactors 74 singular sites into per-network methods;                               | —                                              | The big one; ~600–800 LoC                        |
+|     | manager registry                                  |                | back-compat `network` shim                                                          |                                                |                                                  |
+| E-2 | New `/v1/networks/*` REST routes +                | cascor / M     | Adds URL surface; old routes alias to active network                                | —                                              |                                                  |
+|     | back-compat aliases                               |                |                                                                                     |                                                |                                                  |
+| E-3 | Control WS: `network_id` in commands;             | cascor / M     | Protocol change; clients without                                                    | —                                              |                                                  |
+|     | broadcast: `network_id` in messages               |                | `network_id` keep working                                                           | —                                              |                                                  |
+| E-4 | Snapshot storage layout migration                 | cascor / S–M   | Per-network subdirectories; one-time auto-migration                                 | —                                              | Idempotent                                       |
+| E-5 | Per-network training thread +                     | cascor / S     | Each `SingleNetworkLifecycleState`                                                  | —                                              |                                                  |
+|     | max-concurrent config                             |                | owns its `ThreadPoolExecutor(1)`                                                    |                                                |                                                  |
+| E-6 | Canopy adapter: `network_id`                      | —              | —                                                                                   | canopy / M                                     | Adapter methods grow `network_id`;               |
+|     | parameter threading                               |                |                                                                                     |                                                | falls back to a per-instance default             |
+| E-7 | Canopy UI: Networks sidebar +                     | —              | —                                                                                   | canopy / M–L                                   | Reuses Network Evolution's                       |
+|     | Population tab (CAN-021)                          |                |                                                                                     |                                                | small-multiples renderer                         |
 
 24 PRs total across 5 sprints. Sprints A + B + C unblock the bulk of the CAN-* surface (3 wire-through + four-way snapshot operations + full integration modes). Sprint D is independent cleanup. Sprint E is the genuinely XL multi-network refactor.
 
 ## Recommended order
 
-```
+```bash
 Sprint A (small wins, ~1 week):           A-1, A-2, A-3, A-4, A-5  [shipped]
 Sprint B (medium-large, ~1.5 weeks):      B-1, B-2, B-3, B-4, B-5, B-6
 Sprint C (CAN-013 full, ~1.5 weeks):      C-1, C-2, C-3, C-4, C-5
