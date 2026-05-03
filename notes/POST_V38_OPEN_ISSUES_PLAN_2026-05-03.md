@@ -225,7 +225,12 @@ The cluster collapses to a single defect. ``CascadeHDF5Serializer._save_weight_h
 
 Verified locally with a 3-line h5py reproducer: ``create_dataset(..., compression="gzip")`` on a 0-d array raises with exactly that message; the same call without compression succeeds.
 
-**Fix.** In ``snapshot_common.save_numpy_array``, fall back to an uncompressed dataset when ``array.ndim == 0``. Compression behaviour for every 1+-d call site is unchanged. Two-line diff. Documented schema (``bias/0050  (float32 dataset, [])  — scalar``) is preserved.
+**Fix.** Two coordinated patches:
+
+1. **Save side** (``snapshot_common.save_numpy_array``): fall back to an uncompressed dataset when ``array.ndim == 0``. Compression behaviour for every 1+-d call site is unchanged. Documented schema (``bias/0050  (float32 dataset, [])  — scalar``) is preserved.
+2. **Load side** (``snapshot_common.load_numpy_array``): the helper was using ``dataset[:]`` which raises ``ValueError: Illegal slicing argument for scalar dataspace`` on 0-d datasets. After the save-side fix, ``test_meta_attrs_persist`` passed but the three round-trip tests still failed — ``_load_weight_history`` raised on the first scalar bias and ``_load_training_history`` swallowed the exception, degrading ``weight_history`` to ``None``. Use ``dataset[()]`` for 0-d, ``dataset[:]`` otherwise.
+
+Both patches required; either alone leaves the cluster broken.
 
 ### P-2 cluster B — root cause and fix
 
@@ -243,6 +248,18 @@ Originally opened as PR #182 (1-line lockfile bump, ``juniper-data-client==0.4.0
 |---|---|---|---|
 | #183 | juniper-cascor | ``fix/p2-snapshot-test-failures`` | P-2 cluster A + cluster B + P-3 |
 | #182 | juniper-cascor | ``fix/p3-lockfile-juniper-data-client-0.4.1`` | superseded by #183 |
+
+### Confirmed CI outcome
+
+After both patches landed, every Unit Tests + Coverage matrix job (Python 3.12/3.13/3.14, ubuntu/macOS) shows ``Run Unit Tests`` step = SUCCESS. The full unit suite is green (10/10 ``test_snapshot_weight_history.py``, ``test_replay_control_range`` passing). The 5 net-new failures from main are eliminated.
+
+### Newly surfaced issue: P-6 — Coverage Gate broken (pre-existing)
+
+The matrix job conclusions still show ``failure`` because the ``Enforce Coverage Gate (80%)`` step fails with ``No data to report``. This is **not introduced by this PR** — last successful main CI run was ``7ae3dccd`` on **2026-02-25**, more than two months ago. Every subsequent run failed at ``Run Unit Tests``, which masked the Coverage Gate state. With unit tests now green, the longstanding coverage-data path mismatch surfaces.
+
+Likely cause: ``pyproject.toml`` configures ``[tool.coverage.run] data_file = "src/tests/reports/.coverage"`` and ``parallel = true``, but the workflow's ``python -m coverage report --fail-under=80`` step is run from repo root and may not be combining the parallel data files first. Out of scope for this PR — captured as **P-6** for a follow-up.
+
+**P-6 — Coverage Gate / coverage data-file path mismatch.** Investigate the ``Run Unit Tests`` → ``Enforce Coverage Gate`` handoff: confirm where pytest-cov writes the per-process ``.coverage.*`` files, whether ``coverage combine`` runs implicitly, and whether the ``--cov-report=xml:reports/coverage.xml`` flag in the workflow conflicts with the ``[tool.coverage.xml] output = "src/tests/reports/coverage.xml"`` setting in ``pyproject.toml``. Severity: medium (blocks PR auto-merge across the repo, but does not affect runtime correctness or test signal).
 
 ---
 
