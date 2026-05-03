@@ -3,7 +3,7 @@
 **Author:** Paul Calnon
 **Date:** 2026-05-02
 **Cycle:** Post-V01-V37 alignment closeout (juniper-ml)
-**Status:** `CROSS_REPO_DISPATCH_TOKEN` has been provisioned (2026-05-02). Awaiting end-to-end verification on the next Dependabot `dependabot/pip/**` PR — see §2.6.
+**Status:** `CROSS_REPO_DISPATCH_TOKEN` provisioned and **end-to-end verified** (2026-05-02). V17 and V18 are closed.
 **Related findings:**
 V17 (juniper-data `lockfile-update.yml` startup_failure / missing secret),
 V18 (juniper-canopy `lockfile-update.yml` startup_failure / missing secret).
