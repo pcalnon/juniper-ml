@@ -261,6 +261,14 @@ Likely cause: ``pyproject.toml`` configures ``[tool.coverage.run] data_file = "s
 
 **P-6 — Coverage Gate / coverage data-file path mismatch.** Investigate the ``Run Unit Tests`` → ``Enforce Coverage Gate`` handoff: confirm where pytest-cov writes the per-process ``.coverage.*`` files, whether ``coverage combine`` runs implicitly, and whether the ``--cov-report=xml:reports/coverage.xml`` flag in the workflow conflicts with the ``[tool.coverage.xml] output = "src/tests/reports/coverage.xml"`` setting in ``pyproject.toml``. Severity: medium (blocks PR auto-merge across the repo, but does not affect runtime correctness or test signal).
 
+### P-6 — Implementation (2026-05-03)
+
+**Root cause confirmed.** ``pyproject.toml`` configures ``[tool.coverage.run] data_file = "src/tests/reports/.coverage"`` with ``parallel = true``. With parallel mode, pytest-cov writes per-process data files at ``src/tests/reports/.coverage.<host>.<pid>.<rand>``. ``src/tests/reports/`` is gitignored (``**/reports/`` in ``.gitignore``), so on a fresh CI checkout the directory does not exist. The ``Create required directories`` step only created ``logs src/logs reports/junit reports/htmlcov`` — ``src/tests/reports`` was missing. pytest-cov hit ``FileNotFoundError`` writing its data files, the ``-q`` addopt suppressed the warning, pytest exited 0 (cov errors are non-fatal), no XML/HTML report was emitted, and the downstream ``coverage report`` step found no data file to read.
+
+**Fix.** Add ``src/tests/reports`` to the ``mkdir -p`` line in ``ci.yml`` (unit-tests job) and ``scheduled-tests.yml`` (slow-unit-tests job). Inline comments explain why so future contributors don't strip it as redundant. ``ci-protocol.yml`` is unaffected — it uses ``--cov`` for terminal reporting only (``--cov-fail-under`` enforced inside pytest), no persistent data file needed.
+
+**Delivery.** PR #186 (``fix/p6-coverage-gate-data-file-dir``). Two-line workflow change plus comments. The ``src/tests/reports/`` convention used by local developer workflows (documented in ``AGENTS.md`` and 7+ docs files) is preserved.
+
 ---
 
 ## 5. Decision Log
