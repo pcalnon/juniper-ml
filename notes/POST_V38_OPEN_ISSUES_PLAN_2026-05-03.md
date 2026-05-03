@@ -263,11 +263,25 @@ Likely cause: ``pyproject.toml`` configures ``[tool.coverage.run] data_file = "s
 
 ### P-6 — Implementation (2026-05-03)
 
-**Root cause confirmed.** ``pyproject.toml`` configures ``[tool.coverage.run] data_file = "src/tests/reports/.coverage"`` with ``parallel = true``. With parallel mode, pytest-cov writes per-process data files at ``src/tests/reports/.coverage.<host>.<pid>.<rand>``. ``src/tests/reports/`` is gitignored (``**/reports/`` in ``.gitignore``), so on a fresh CI checkout the directory does not exist. The ``Create required directories`` step only created ``logs src/logs reports/junit reports/htmlcov`` — ``src/tests/reports`` was missing. pytest-cov hit ``FileNotFoundError`` writing its data files, the ``-q`` addopt suppressed the warning, pytest exited 0 (cov errors are non-fatal), no XML/HTML report was emitted, and the downstream ``coverage report`` step found no data file to read.
+**Initial hypothesis (wrong).** First guess was that ``pyproject.toml``'s ``[tool.coverage.run] data_file = "src/tests/reports/.coverage"`` plus ``parallel = true`` was failing because ``src/tests/reports/`` is gitignored and didn't exist on a fresh CI checkout. Iteration 1 added ``mkdir -p src/tests/reports`` to the workflow's ``Create required directories`` step. That alone did not fix the gate.
 
-**Fix.** Add ``src/tests/reports`` to the ``mkdir -p`` line in ``ci.yml`` (unit-tests job) and ``scheduled-tests.yml`` (slow-unit-tests job). Inline comments explain why so future contributors don't strip it as redundant. ``ci-protocol.yml`` is unaffected — it uses ``--cov`` for terminal reporting only (``--cov-fail-under`` enforced inside pytest), no persistent data file needed.
+**Real root cause.** ``src/tests/conftest.py`` had a ``scope="session"`` autouse fixture ``_force_clean_exit`` that called ``os._exit(0)`` from its teardown body whenever non-daemon threads were still alive at session end (which happens reliably in CI from API integration tests' training threads). Fixture teardown runs *before* pytest's ``pytest_sessionfinish`` (writes JUnit XML, lets pytest-cov save the ``.coverage`` data file) and ``pytest_terminal_summary`` (prints the summary line and the coverage report). ``os._exit(0)`` bypasses *all* Python finalization — no atexit, no buffered I/O flush, no plugin teardown — so JUnit XML, ``coverage.xml``, ``.coverage``, the terminal summary, and the HTML report were silently dropped on every run since the fixture landed. Diagnostic step in iteration 2 confirmed empirically: pytest exited 0, but ``reports/junit/``, ``src/tests/reports/``, and the entire workspace contained zero ``.coverage*`` files.
 
-**Delivery.** PR #186 (``fix/p6-coverage-gate-data-file-dir``). Two-line workflow change plus comments. The ``src/tests/reports/`` convention used by local developer workflows (documented in ``AGENTS.md`` and 7+ docs files) is preserved.
+The bug had been masked for months by the upstream test-step failures keeping the gate skipped; PR #183 (P-2) made unit tests green again, surfacing the dropped-reports symptom.
+
+**Fix.** Convert the fixture into a ``pytest_unconfigure(trylast=True)`` hook. ``pytest_unconfigure`` runs *after* ``pytest_sessionfinish`` and ``pytest_terminal_summary``; ``trylast=True`` ensures it's the last unconfigure hook (so pytest-cov's coverage finalize runs first). All reports land on disk before the conditional force-exit fires. Kept the ``mkdir src/tests/reports`` from iteration 1 — pytest-cov genuinely does write there per pyproject's ``data_file`` setting, and the dir is gitignored.
+
+**Surfaced regression.** With pytest's terminal summary now reaching disk, a second test failure that PR #183's ``os._exit(0)`` had been hiding for two PRs surfaced: ``test_replay_control_seek_speed_range`` in ``test_lifecycle_manager.py`` was asserting the old ``range`` dict shape (``{start, end}``) while the sibling ``test_replay_control_range`` in ``test_snapshot_route_coverage.py`` was asserting the new ``{start, end, time_index}`` contract. Updated the lifecycle-manager test to match the new contract; both tests now agree on the same shape across the two API surfaces.
+
+**Delivery.** PR #186 (``fix/p6-coverage-gate-data-file-dir``).
+
+| Change | File |
+|---|---|
+| Move force-exit from fixture teardown to ``pytest_unconfigure(trylast=True)`` | ``src/tests/conftest.py`` |
+| Add ``src/tests/reports`` to ``Create required directories`` | ``.github/workflows/ci.yml``, ``scheduled-tests.yml`` |
+| Update ``test_replay_control_seek_speed_range`` to new range-dict contract | ``src/tests/unit/api/test_lifecycle_manager.py`` |
+
+After the conftest fix, every Unit Tests + Coverage matrix job (Python 3.12/3.13/3.14 × ubuntu/macOS) is green, and the Coverage Gate enforces the actual 80%+ threshold. Final unit-test summary on the matrix: ``3115 passed, 15 skipped, 103 deselected``; Coverage TOTAL = ``92.38%``.
 
 ---
 
