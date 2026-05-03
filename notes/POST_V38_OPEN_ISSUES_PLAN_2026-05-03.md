@@ -3,7 +3,7 @@
 **Author:** Paul Calnon
 **Date:** 2026-05-03
 **Cycle:** Post-V01-V38 alignment closeout (juniper-ml)
-**Status:** Plan; implementation begins immediately on completion.
+**Status:** P-2 + P-3 implementations landed in cascor PR #183 (open, awaiting CI).
 **Priority items:** P-2 + P-3 (net-new cascor main failures from PRs #177-180).
 
 ---
@@ -214,6 +214,35 @@ This plan is followed by immediate execution per the user directive. Implementat
 6. Update the deferred-items list in `notes/CI_ALIGNMENT_AUDIT_2026-04-29.md` (and findings doc) to mark P-2 and P-3 as closed; the cascor-side post-V38 backlog reduces to P-1 only.
 
 P-1, P-4, P-5 remain documented here as future-cycle items.
+
+---
+
+## 4a. Implementation Results (2026-05-03)
+
+### P-2 cluster A — root cause and fix
+
+The cluster collapses to a single defect. ``CascadeHDF5Serializer._save_weight_history`` writes per-sample hidden-unit bias as a 0-d ndarray (``np.asarray(float_value, dtype=np.float32)``), and the generic ``snapshot_common.save_numpy_array`` helper was unconditionally requesting ``compression=gzip`` for every dataset. h5py rejects chunk/filter options on scalar datasets with ``TypeError: Scalar datasets don't support chunk/filter options``, and because the writer is called inside ``save_network``'s try/except, the entire save returns False mid-flight. Every downstream round-trip assertion then fails because ``loaded.weight_history`` is None.
+
+Verified locally with a 3-line h5py reproducer: ``create_dataset(..., compression="gzip")`` on a 0-d array raises with exactly that message; the same call without compression succeeds.
+
+**Fix.** In ``snapshot_common.save_numpy_array``, fall back to an uncompressed dataset when ``array.ndim == 0``. Compression behaviour for every 1+-d call site is unchanged. Two-line diff. Documented schema (``bias/0050  (float32 dataset, [])  — scalar``) is preserved.
+
+### P-2 cluster B — root cause and fix
+
+The ``range`` action handler in ``TrainingLifecycleManager.replay_control`` discarded the dict returned by ``session.set_range(start, end)`` (which carries the re-clamped ``time_index``) and instead returned ``session.state_summary()``, whose ``range`` field is ``{start, end}`` only.
+
+**Fix.** Capture ``set_range``'s return value and merge it into ``state_summary`` so the route response carries ``{start, end, time_index}``. Five-line diff.
+
+### P-3 — cherry-picked into the P-2 branch
+
+Originally opened as PR #182 (1-line lockfile bump, ``juniper-data-client==0.4.0`` → ``0.4.1``). PR #182's CI failed on the same P-2 unit-test failures, so the lockfile bump was cherry-picked into the P-2 branch to keep CI green and form one self-consistent merge unit. PR #182 will be closed superseded once #183 lands.
+
+### Final delivery
+
+| PR | Repo | Branch | Scope |
+|---|---|---|---|
+| #183 | juniper-cascor | ``fix/p2-snapshot-test-failures`` | P-2 cluster A + cluster B + P-3 |
+| #182 | juniper-cascor | ``fix/p3-lockfile-juniper-data-client-0.4.1`` | superseded by #183 |
 
 ---
 
