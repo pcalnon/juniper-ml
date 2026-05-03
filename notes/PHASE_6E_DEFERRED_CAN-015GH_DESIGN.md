@@ -33,6 +33,16 @@ top of a stable serializer).
 > B-4 (#171) appear to have merged into stacked parent branches
 > rather than `main`, and canopy B-6 (#214) is still open. **Resolve
 > the prerequisite block before starting CAN-015g/h work.**
+>
+> **Revision 2026-05-03**: g-1 (#180), g-2 (#184), and g-3 (#187)
+> have been opened against cascor as a stacked PR series and run
+> green locally in JuniperCascor1 env. Implementation surfaced one
+> gap not in the original draft — nothing in the cascor training
+> loop currently *populates* `network.weight_history`, so the V2
+> protocol can play back ad-hoc fixtures but not real training
+> runs. **g-6** (this revision) adds the live-capture path. See
+> §"Live capture during training (g-6)" and the revised
+> §"PR breakdown — CAN-015g".
 
 ---
 
@@ -250,6 +260,87 @@ A new `dcc.Store(id="replay-weight-buffer")` holds the most-recent
 1000 weight events (LRU-evicted older entries) so scrubber moves
 within the buffer window are local — no round-trips to cascor.
 
+### Live capture during training (g-6)
+
+> Added 2026-05-03 after g-1/g-2/g-3 implementation surfaced that
+> the V2 protocol could *play back* a `weight_history` but nothing
+> in the training loop was actually *populating* it. This
+> subsection and the g-6 PR row close that gap. Without g-6, V2
+> replay only works against snapshots written by ad-hoc test
+> fixtures or hand-constructed payloads — production training runs
+> would still produce V1-only snapshots even after g-1..g-5 land.
+
+The lifecycle's training loop must populate `network.weight_history`
+as training progresses so that `save_snapshot` (existing path)
+captures a meaningful V2 payload. Three trigger points cover the
+**adaptive subsampling** strategy chosen in §"Storage strategy":
+
+1. **Every Nth epoch** (default `N=50`, configurable per network
+   via `config.weight_history_sampling_interval`). The training
+   monitor's `on_epoch_end` hook is the natural attach point — it
+   already fires once per epoch and runs in the training thread so
+   it can read `network.output_weights` / per-unit weights without
+   cross-thread locking.
+2. **Every cascade-grow event** — the existing cascade-add code
+   path appends to `network.history["hidden_units_added"]`; g-6
+   appends a parallel record to `network.weight_history` capturing
+   the post-grow state. Critical because cascade-grow is the most
+   visually interesting moment.
+3. **Final epoch of training** — fires from `start_training`'s
+   completion path so the last sample reflects the truly-terminal
+   weights even when training stops mid-interval.
+
+#### Trigger ordering and idempotency
+
+A single epoch can fire two triggers simultaneously (e.g. epoch
+50 is both "Nth-epoch" and the same epoch as a cascade-add).
+g-6's append helper deduplicates by `time_index` — a sample for a
+given epoch is recorded at most once, with the latest tensors
+winning if both fire. This matches the read-side cache assumption
+that `sample_indices` is strictly monotonic.
+
+#### Memory ceiling
+
+Per the parent design's 400 GB risk, in-memory weight history must
+not grow unboundedly in long runs. g-6 enforces a soft cap of
+**1000 samples** by default (configurable via
+`config.weight_history_max_samples`); on overflow it follows a
+"keep recent + cascade events" policy:
+
+- All cascade-add samples are retained (they're the narrative
+  anchors).
+- Inter-cascade samples are decimated by 2× whenever the count
+  would exceed the cap, doubling the *effective* sampling
+  interval.
+
+The cap is conservative — at 1000 samples × ~10 KB/sample for a
+small network, memory cost is ~10 MB. Production-sized networks
+(100+ MB per sample) will hit the cap in tens of samples and
+that's fine: V2 still produces a usable history even with
+aggressive decimation, and the user can always lower N via config
+to capture more density at the cost of memory.
+
+#### Configuration surface
+
+Two new fields on `CascadeCorrelationConfig`:
+
+| Field | Default | Purpose |
+|---|---|---|
+| `weight_history_sampling_interval` | `50` | N for the every-Nth-epoch trigger. Set to `1` to capture every epoch (Option A behaviour). Set to `0` to disable the periodic trigger entirely (cascade-grow only — Option D). |
+| `weight_history_max_samples` | `1000` | Soft cap before decimation kicks in. `0` means unbounded (use with care). |
+
+Both are runtime-tunable via the existing PATCH `/v1/training/params`
+flow (no new endpoint needed). Changes mid-training take effect at
+the next `on_epoch_end` hook.
+
+#### Backward compatibility
+
+Networks created before g-6 lands won't have a `weight_history`
+attribute initialized. The append helper does `getattr(network,
+"weight_history", None) or _init_weight_history(network)` so
+pre-g-6 networks pick up V2 capture seamlessly the first time they
+hit a trigger.
+
 ### PR breakdown — CAN-015g
 
 | PR | Repo | Title | Touches |
@@ -259,10 +350,18 @@ within the buffer window are local — no round-trips to cascor.
 | g-3 | cascor | `feat(replay): emit weight payloads on sample-boundary events (CAN-015g)` | `lifecycle/monitor.py`, replay driver thread |
 | g-4 | canopy | `feat(replay): consume weight payloads in decision-boundary + network-evolution (CAN-015g)` | `replay_player_panel.py`, `decision_boundary.py`, `network_evolution.py`, dashboard wiring |
 | g-5 | both | `docs(snapshot): schema v2 migration notes + interpolation behaviour FAQ` | docs + small README updates |
+| g-6 | cascor | `feat(training): capture per-sample weight history during training (CAN-015g)` | `lifecycle/manager.py` training loop, `lifecycle/monitor.py` epoch hook, `cascade_correlation.py` cascade-add hook, `cascade_correlation_config.py` two new tunables |
 
 Order is dependency-driven: g-1 lands the file format, g-2 wires
 the read path, g-3 adds emission, g-4 lands canopy. g-5 is
-documentation and can land alongside any of g-1..g-4.
+documentation and can land alongside any of g-1..g-4. **g-6**
+depends only on g-1 (the schema it writes into) and is otherwise
+independent — it can land in parallel with g-2/g-3/g-4 in any
+order. Recommended to land g-6 *before* g-4 so the canopy
+acceptance test can exercise a snapshot produced by an actual
+training run rather than a synthetic fixture; the inverse is also
+viable because g-4's tests can synthesize `weight_history`
+directly.
 
 ### Risks — CAN-015g
 
@@ -273,6 +372,10 @@ documentation and can land alongside any of g-1..g-4.
 | Float drift between save and load | Low | Use float32 throughout; document that NaN/Inf in weights produce `weights_available: false` for the affected sample (graceful degradation). |
 | Older canopy clients receive V2 events | Low | Events are additive — old clients ignore the unknown `weights` block. Verify with a B-6-only canopy regression test. |
 | Sampling interval too sparse for short runs | Low | Loader emits a WARNING when fewer than 10 samples exist for a snapshot >100 epochs; expose `weight_sampling.num_samples` in `/v1/snapshots/{id}` metadata for ops. |
+| g-6 capture overhead slows training (per-epoch tensor copy) | Med | Benchmark in g-6 fixture: 1000-epoch toy run with `N=50` adds ≤ 5% wall-clock to training. Fail merge if the regression exceeds the budget. Offload the copy via `torch.no_grad()` + `.detach().cpu().numpy()` to skip autograd graph retention. |
+| g-6 in-memory growth blows memory on long runs | Med | `weight_history_max_samples` cap (default 1000) + decimation policy (cascade-add samples retained; inter-cascade decimated 2× on overflow). Add a chaos test that runs a 100k-epoch synthetic loop and asserts memory stays bounded. |
+| g-6 capture races with concurrent replay session | Low | Capture is a thread-local mutation on `network.weight_history`; replay sessions read from a snapshot-loaded copy. The training thread writes; the replay driver thread reads from a *different* network instance (rehydrated from disk). No shared mutation. |
+| g-6 trigger fires during cascade-add mid-update (partial weights) | Low | The cascade-add hook fires *after* the new unit is fully installed (same point in the loop where `hidden_units_added` is appended today). The Nth-epoch hook fires from `on_epoch_end` which is after the optimizer step. Both are quiescent points. |
 
 ---
 
@@ -506,9 +609,22 @@ mutation-endpoint surface is naturally more granular.
   on every sample-boundary epoch and **only** on those.
 - **g-4 (canopy)**: replay player updates decision-boundary at
   scrubber moves; weights store stays under 1000 entries.
-- **End-to-end**: cascor live + canopy headless — start replay,
-  scrub to mid-run, verify decision-boundary frame matches a
-  pre-recorded reference plot (image diff with tolerance).
+- **g-6**: capture trigger test — train a 1000-epoch toy run with
+  `N=50` and assert `network.weight_history["sample_indices"]`
+  matches `[0, 50, 100, ..., 999_terminal]`. Cascade-add trigger
+  test — train a run that produces a known cascade-grow event at
+  epoch 17 and assert sample 17 is present even though it's
+  not on the Nth-epoch grid. Decimation test — run with
+  `weight_history_max_samples=10` and `N=1` over 100 epochs;
+  assert final sample count ≤ 10 + cascade-add count, and that
+  every cascade-add sample is retained. Wall-clock benchmark:
+  `N=50` adds ≤ 5% overhead vs. a baseline run with capture
+  disabled (`N=0`).
+- **End-to-end**: cascor live + canopy headless — start replay
+  on a snapshot **produced by g-6 (real training run, not a
+  fixture)**, scrub to mid-run, verify decision-boundary frame
+  matches a pre-recorded reference plot (image diff with
+  tolerance).
 
 ### CAN-015h
 
