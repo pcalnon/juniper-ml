@@ -75,18 +75,23 @@ Both findings are flagged in `notes/CI_VALIDATION_FINDINGS_2026-04-29.md` as "de
 
 The current canonical pattern is to provision the secret at **each repo** that has a `lockfile-update.yml` workflow. As of 2026-05-02:
 
-| Repo                    | Has `lockfile-update.yml`? | Needs the secret? |
-|-------------------------|----------------------------|-------------------|
-| juniper-data            | Yes                        | **Yes** (V17)     |
-| juniper-canopy          | Yes                        | **Yes** (V18)     |
-| juniper-cascor          | Yes                        | Yes (latent)      |
-| juniper-data-client     | Yes                        | Yes (latent)      |
-| juniper-cascor-client   | Yes                        | Yes (latent)      |
-| juniper-cascor-worker   | Yes                        | Yes (latent)      |
-| juniper-ml              | No (uses ci.yml only)      | No                |
-| juniper-deploy          | No                         | No                |
+| Repo                    | Has `lockfile-update.yml`? | Pattern                                | Needs the secret? |
+|-------------------------|----------------------------|----------------------------------------|-------------------|
+| juniper-data            | Yes                        | Dependabot-push                        | **Yes** (V17)     |
+| juniper-canopy          | Yes                        | Dependabot-push                        | **Yes** (V18)     |
+| juniper-cascor          | Yes                        | Dependabot-push                        | Yes (latent)      |
+| juniper-cascor-client   | Yes                        | Dependabot-push                        | Yes (latent)      |
+| juniper-cascor-worker   | Yes (post-`8c9b01a`)       | Dependabot-push                        | Yes (latent)      |
+| juniper-data-client     | Yes (post-`61c334a`)       | Dependabot-push (no-lockfile-guarded)  | Yes (latent)      |
+| juniper-ml              | No (uses ci.yml only)      | —                                      | No                |
+| juniper-deploy          | No                         | —                                      | No                |
 
-V17/V18 are the two repos that are *currently active* with Dependabot PRs; the other four repos with `lockfile-update.yml` will hit the same issue the first time Dependabot opens a Python PR there.
+V17/V18 were originally the two repos active with Dependabot PRs at the time the findings were filed.
+Since then, juniper-cascor-worker (`8c9b01a`) and juniper-data-client (`61c334a`) have been migrated from a dead-on-arrival weekly cron template
+(which referenced a `util/generate_dep_docs.sh` script that doesn't exist in either repo)
+to the same canonical Dependabot-push pattern,
+so all six repos with Python dependencies are now structurally aligned.
+The `CROSS_REPO_DISPATCH_TOKEN` secret was provisioned and validated end-to-end on 2026-05-02, closing both V17 and V18 and the four latent equivalents.
 
 If you provision the secret at the **organization level** (see §3.4) you cover all six repos in one step, plus any future repos that adopt the same workflow.
 
