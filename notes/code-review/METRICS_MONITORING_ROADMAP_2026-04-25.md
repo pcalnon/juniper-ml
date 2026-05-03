@@ -1,6 +1,9 @@
 # Juniper Metrics & Monitoring — Development Roadmap
 
-**Status:** PROPOSED (consumes findings produced by the review plan)
+> **STATUS: PROGRAM CLOSED 2026-05-03 — see [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) for closure summary.**
+> All five phases R1–R5 ✅ COMPLETE. 78 PRs across 8 repos in 9 calendar days. Residuals carried forward (TRAIN-ARCH-01, alertmanager `tickets` receiver, R5.6 throttle removal, 30-day soak calibration) tracked in the close note §6.
+
+**Status:** ✅ CLOSED 2026-05-03 (was: PROPOSED)
 **Owner:** Paul Calnon (project)
 **Date:** 2026-04-25
 **Scope:** Metrics, monitoring, observability, telemetry, health surface
@@ -468,3 +471,7 @@ The roadmap is **closed** when:
 - All phases R1–R5 are done.
 - A retrospective document `notes/code-review/METRICS_MONITORING_RETROSPECTIVE_<date>.md` is written summarizing what shipped, what slipped, and what should be added to the next review's baseline.
 - The next review's baseline document is opened (or this document is re-baselined for an incremental review).
+
+### Roadmap status (2026-05-03): ✅ CLOSED
+
+All five phases R1–R5 shipped between 2026-04-25 (this roadmap's authoring) and 2026-05-03 (program-close PR), spanning **9 calendar days**, **78 PRs**, and **8 repos** (juniper-ml, juniper-cascor, juniper-canopy, juniper-data, juniper-deploy, juniper-data-client, juniper-cascor-worker, juniper-cascor-client). The program-close note at [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) replaces the planned `METRICS_MONITORING_RETROSPECTIVE_<date>.md` retrospective: it summarizes what shipped per-phase, captures the cross-cutting outcomes (33 metrics shipped, cardinality discipline enforced, 3-consumer adoption of `juniper-observability`, 4-consumer adoption of `juniper-cascor-protocol`, every WS frame validated), records production posture (SLO catalog, burn-rate alerts, dashboards, scrape configs, 30-day soak window), surfaces honest learnings (TRAIN-ARCH-01 absence vs regression, SLI 3.4 granularity rename, Wave 0 fix-main-first prerequisite), and carries 8 residual follow-ups forward — none program-blocking; the two soft-blockers (alertmanager `tickets` receiver wiring, SLO target re-calibration) are time-bound to the 30-day soak (closes 2026-06-02). No incremental-review re-baselining is opened: subsequent observability work moves to ad-hoc follow-up PRs or a new program.
