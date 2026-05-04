@@ -9,7 +9,6 @@ import time
 import unittest
 from pathlib import Path
 
-
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "reap_pytest_orphans.bash"
 SCRIPT_TIMEOUT_SECONDS = 30
 
