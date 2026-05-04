@@ -30,6 +30,7 @@ pip install -e ".[all]"        # everything
 python3 -m unittest -v tests/test_wake_the_claude.py
 python3 -m unittest -v tests/test_check_doc_links.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
+python3 -m unittest -v tests/test_reap_pytest_orphans.py
 bash scripts/test_resume_file_safety.bash
 
 # Run pre-commit hooks
