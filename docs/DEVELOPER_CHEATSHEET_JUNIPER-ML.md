@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.1
-**Date**: 2026-03-29
+**Version**: 1.0.2
+**Date**: 2026-05-04
 **Project**: juniper-ml
 
 ---
@@ -117,6 +117,21 @@ This behavior is regression-tested in `tests/test_wake_the_claude.py`:
 3. For juniper-ml: update extra version pins, release new meta-package version
 4. Merge order: data-client, cascor-client, cascor-worker, then juniper-ml
 
+### juniper-observability Release
+
+`juniper-observability` is a subpackage in this repository with its own CI and publish lifecycle.
+
+| Task | Command / Procedure |
+|------|---------------------|
+| Local package tests | `cd juniper-observability && python -m pytest --cov=juniper_observability --cov-report=term-missing --cov-fail-under=90` |
+| Local build check | `cd juniper-observability && python -m build --sdist --wheel && twine check dist/*` |
+| Publish | Push tag `juniper-observability-vX.Y.Z` to trigger `.github/workflows/publish-observability.yml` |
+| Retry publish | Use `workflow_dispatch` on `.github/workflows/publish-observability.yml` against the existing tag |
+
+Publish flow: build uploads `juniper-observability-dist` for seven days, TestPyPI downloads and publishes it with OIDC, TestPyPI install is retried for index lag, then PyPI downloads the same artifact after TestPyPI verification succeeds.
+
+Constraint: publish jobs currently run on GitHub-hosted `ubuntu-latest` runners with SHA-pinned artifact actions. If switching to self-hosted runners, verify compatibility with the pinned `actions/upload-artifact` and `actions/download-artifact` versions before tagging a release.
+
 ---
 
 ## Git Worktrees
@@ -161,13 +176,16 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 | Task                   | Command / Procedure                                                                         |
 |------------------------|---------------------------------------------------------------------------------------------|
 | Pre-commit             | `pre-commit run --all-files`                                                                |
-| Publish to PyPI        | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish observability  | Push `juniper-observability-vX.Y.Z` tag (OIDC trusted publishing)                           |
 | Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
 | Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
 
-Pipeline: pre-commit, unit-tests, integration-tests, build, security, lockfile-check, docs, required-checks, notify.
+Meta-package publish flow: build + `twine check`, TestPyPI upload with attestations, TestPyPI install verification, then PyPI upload.
+
+`juniper-observability` publish flow: build from `juniper-observability/`, TestPyPI upload with `verbose: true`, retry install verification to tolerate index lag, then PyPI upload. The workflow reads the version from `juniper-observability/pyproject.toml`; keep it aligned with `juniper-observability/juniper_observability/_version.py`.
 
 ---
 
@@ -202,6 +220,6 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 ---
 
-**Last Updated:** 2026-03-29
-**Version:** 1.0.1
+**Last Updated:** 2026-05-04
+**Version:** 1.0.2
 **Maintainer:** Paul Calnon
