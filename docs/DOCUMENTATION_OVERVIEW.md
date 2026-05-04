@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.1
+**Version:** 0.2.2
 **Status:** Active
-**Last Updated:** March 3, 2026
+**Last Updated:** May 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -42,7 +42,7 @@
 | **DOCUMENTATION_OVERVIEW.md** | ~80 | Overview | This file -- navigation index |
 | **QUICK_START.md** | ~70 | Tutorial | Install Juniper packages in under a minute |
 | **REFERENCE.md** | ~90 | Reference | Complete extras, compatibility, and version reference |
-| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~187 | Cheatsheet | Quick-reference card for common development tasks |
+| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~230 | Cheatsheet | Quick-reference card for common development tasks |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
 > was relocated to `notes/history/` in 2026-04. Use the per-project
@@ -100,6 +100,6 @@ juniper-ml[all]     ──installs──> all three packages above
 
 ---
 
-**Last Updated:** March 26, 2026
-**Version:** 0.2.1
+**Last Updated:** May 4, 2026
+**Version:** 0.2.2
 **Maintainer:** Paul Calnon
