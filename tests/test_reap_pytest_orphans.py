@@ -19,6 +19,7 @@ class ReapPytestOrphansTests(unittest.TestCase):
         proc_entries: dict[int, tuple[int, str]],
         proc_dirs: set[int] | None = None,
         args: list[str] | None = None,
+        extra_env: dict[str, str] | None = None,
     ) -> subprocess.CompletedProcess[str]:
         temp_path = Path(temp_dir)
         bin_dir = temp_path / "bin"
@@ -61,6 +62,8 @@ class ReapPytestOrphansTests(unittest.TestCase):
         env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
         env["FAKE_PS_OUTPUT"] = str(fake_ps_output)
         env["JUNIPER_REAP_PROC_ROOT"] = str(proc_root)
+        if extra_env:
+            env.update(extra_env)
 
         return subprocess.run(
             ["bash", str(SCRIPT_PATH), *(args or [])],
@@ -82,6 +85,17 @@ class ReapPytestOrphansTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
         self.assertIn("No Juniper python processes found.", result.stdout)
 
+    def test_ignores_juniper_python_processes_owned_by_other_users(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output="424200 otheruser /home/test/miniconda/envs/JuniperCascor/bin/python worker.py\n",
+                proc_entries={},
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn("No Juniper python processes found.", result.stdout)
+
     def test_dry_run_reaps_init_reparented_juniper_python_process(self) -> None:
         pid = 424242
         cmdline = "/home/test/miniconda/envs/JuniperCascor/bin/python worker.py"
@@ -96,6 +110,35 @@ class ReapPytestOrphansTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
         self.assertIn(f"WOULD REAP pid={pid} ppid=1", result.stdout)
         self.assertIn("Dry-run summary: 1 would be reaped, 0 kept (live parent), 0 skipped.", result.stdout)
+
+    def test_non_dry_run_sends_sigkill_to_orphan(self) -> None:
+        pid = 424250
+        cmdline = "/home/test/miniconda/envs/JuniperCascor/bin/python worker.py"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            kill_log = Path(temp_dir) / "kill.log"
+            fake_kill = Path(temp_dir) / "fake-kill"
+            fake_kill.write_text(
+                "#!/usr/bin/env bash\n"
+                'printf "%s\\n" "$*" >> "$KILL_LOG"\n',
+                encoding="utf-8",
+            )
+            fake_kill.chmod(0o755)
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output=f"{pid} tester {cmdline}\n",
+                proc_entries={pid: (1, cmdline)},
+                extra_env={
+                    "JUNIPER_REAP_KILL_COMMAND": str(fake_kill),
+                    "KILL_LOG": str(kill_log),
+                },
+            )
+
+            kill_invocation = kill_log.read_text(encoding="utf-8").strip()
+
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn(f"REAP       pid={pid} ppid=1", result.stdout)
+        self.assertEqual(kill_invocation, f"-KILL {pid}")
+        self.assertIn("Summary: 1 reaped, 0 kept (live parent), 0 skipped.", result.stdout)
 
     def test_verbose_dry_run_keeps_juniper_python_process_with_live_parent(self) -> None:
         parent_pid = 424300
