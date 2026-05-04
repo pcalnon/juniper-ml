@@ -36,6 +36,16 @@ For full-stack Docker deployment and integration tests, see `juniper-deploy`.
 | [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | HTTP/WebSocket client for the JuniperCascor neural network training service | `pip install juniper-cascor-client` |
 | [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Remote candidate training worker for distributed CasCor training            | `pip install juniper-cascor-worker` |
 
+## Sibling Package
+
+This repository also contains [`juniper-observability`](juniper-observability/README.md), a separately versioned package for shared health models, request-ID logging, Starlette middleware, Prometheus helpers, and Sentry setup. It is not installed by `juniper-ml[all]`; install it directly when a service needs the shared observability primitives:
+
+```bash
+pip install "juniper-observability[all]"
+```
+
+`juniper-observability` publishes from `.github/workflows/publish-observability.yml` when a `juniper-observability-vX.Y.Z` tag is pushed. See the package README for the release checklist and workflow constraints.
+
 ## Extras
 
 | Extra     | Packages Included                              |

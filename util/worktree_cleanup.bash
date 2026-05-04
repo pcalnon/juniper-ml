@@ -258,7 +258,7 @@ generate_worktree_name() {
     # Use Claude Code's worktree naming if not provided
     if [[ -z "${NEW_BRANCH}" ]]; then
         local random_suffix
-        random_suffix="$(od -An -N4 -tx1 /dev/urandom | tr -d ' \n')"
+        random_suffix="$(head -c 4 /dev/urandom | od -An -tx1 | tr -d ' \n')"
         NEW_BRANCH="worktree-cleanup-${random_suffix}"
     fi
 

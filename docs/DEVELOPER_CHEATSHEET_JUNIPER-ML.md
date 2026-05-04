@@ -1,6 +1,6 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.2
+**Version**: 1.0.3
 **Date**: 2026-05-04
 **Project**: juniper-ml
 
@@ -15,8 +15,8 @@
 | `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
 | `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
 | `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
-| `python scripts/check_doc_links.py --cross-repo skip`  | Validate doc links (CI-parity mode)             |
-| `./cly`                                                | Launch default interactive Claude session       |
+| `python3 scripts/check_doc_links.py --cross-repo skip` | Validate doc links (CI-parity mode)             |
+| `./claudey`                                            | Launch default interactive Claude session       |
 
 ---
 
@@ -46,9 +46,9 @@
 
 | Entry Point                             | Behavior                                                      |
 |-----------------------------------------|---------------------------------------------------------------|
-| `./cly`                                 | Default interactive session (`--id --worktree --effort high`) |
-| `./cly --prompt "..."`                  | Custom prompt, default flags                                  |
-| `CLAUDE_SKIP_PERMISSIONS=1 ./cly`       | Adds `--dangerously-skip-permissions`                         |
+| `./claudey`                             | Default interactive session (`--id --worktree --effort high`) |
+| `./claudey --prompt "..."`              | Custom prompt, default flags                                  |
+| `CLAUDE_SKIP_PERMISSIONS=1 ./claudey`   | Adds `--dangerously-skip-permissions`                         |
 | `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control                        |
 
 The wrapper does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set.
@@ -152,7 +152,7 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME" && cd "$WORKTREE_DIR"
 3. PR (not direct merge): `gh pr create --base main --head "$OLD_BRANCH" --title "..." --body "..."`
 4. After merge: `git worktree remove "$OLD_WORKTREE_DIR" && git branch -d "$OLD_BRANCH" && git worktree prune`
 
-**Automated**: `scripts/worktree_cleanup.bash --old-worktree "$DIR" --old-branch "$BRANCH" --parent-branch main`
+**Automated**: `util/worktree_cleanup.bash --old-worktree "$DIR" --old-branch "$BRANCH" --parent-branch main`
 
 ---
 
@@ -176,13 +176,16 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 | Task                   | Command / Procedure                                                                         |
 |------------------------|---------------------------------------------------------------------------------------------|
 | Pre-commit             | `pre-commit run --all-files`                                                                |
-| Publish to PyPI        | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish observability  | Push `juniper-observability-vX.Y.Z` tag (OIDC trusted publishing)                           |
 | Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
 | Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
 
-Pipeline: pre-commit, unit-tests, integration-tests, build, security, lockfile-check, docs, required-checks, notify.
+Meta-package publish flow: build + `twine check`, TestPyPI upload with attestations, TestPyPI install verification, then PyPI upload.
+
+`juniper-observability` publish flow: build from `juniper-observability/`, TestPyPI upload with `verbose: true`, retry install verification to tolerate index lag, then PyPI upload. The workflow reads the version from `juniper-observability/pyproject.toml`; keep it aligned with `juniper-observability/juniper_observability/_version.py`.
 
 ---
 
@@ -218,5 +221,5 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 ---
 
 **Last Updated:** 2026-05-04
-**Version:** 1.0.2
+**Version:** 1.0.3
 **Maintainer:** Paul Calnon

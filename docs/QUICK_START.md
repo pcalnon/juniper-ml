@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **Status:** Active
-**Last Updated:** March 3, 2026
+**Last Updated:** May 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -43,9 +43,19 @@ pip install juniper-ml[all]
 
 | Extra | Packages |
 |-------|----------|
-| `clients` | `juniper-data-client>=0.3.0`, `juniper-cascor-client>=0.1.0` |
-| `worker` | `juniper-cascor-worker>=0.1.0` |
+| `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
+| `worker` | `juniper-cascor-worker>=0.3.0` |
 | `all` | All three packages above |
+
+### Shared Observability Package
+
+`juniper-observability` is a sibling package in this repository, not part of `juniper-ml[all]`. Install it directly when a service needs the shared health models, request-ID middleware/logging, Prometheus helpers, or Sentry setup:
+
+```bash
+pip install "juniper-observability[all]"
+```
+
+See [`../juniper-observability/README.md`](../juniper-observability/README.md) for its public surface and independent release workflow.
 
 ---
 
@@ -59,10 +69,10 @@ pip list | grep juniper
 Expected output (with `[all]`):
 
 ```
-juniper-cascor-client    0.1.0
-juniper-cascor-worker    0.1.0
-juniper-data-client      0.3.1
-juniper-ml               0.2.0
+juniper-cascor-client    0.3.x
+juniper-cascor-worker    0.3.x
+juniper-data-client      0.4.x
+juniper-ml               0.4.1
 ```
 
 ```python
@@ -78,12 +88,13 @@ from juniper_cascor_worker import CandidateTrainingWorker
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
+- [juniper-observability README](../juniper-observability/README.md) -- shared observability primitives
 - [juniper-data-client Quick Start](https://github.com/pcalnon/juniper-data-client) -- dataset client usage
 - [juniper-cascor-client Quick Start](https://github.com/pcalnon/juniper-cascor-client) -- training client usage
 - [juniper-cascor-worker Quick Start](https://github.com/pcalnon/juniper-cascor-worker) -- worker setup
 
 ---
 
-**Last Updated:** March 3, 2026
-**Version:** 0.2.0
+**Last Updated:** May 4, 2026
+**Version:** 0.2.1
 **Status:** Active
