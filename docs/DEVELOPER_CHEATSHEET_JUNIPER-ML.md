@@ -1,6 +1,6 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.2
+**Version**: 1.0.3
 **Date**: 2026-05-04
 **Project**: juniper-ml
 
@@ -16,7 +16,7 @@
 | `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
 | `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
 | `python scripts/check_doc_links.py --cross-repo skip`  | Validate doc links (CI-parity mode)             |
-| `./cly`                                                | Launch default interactive Claude session       |
+| `./claudey`                                            | Launch default interactive Claude session       |
 
 ---
 
@@ -46,9 +46,9 @@
 
 | Entry Point                             | Behavior                                                      |
 |-----------------------------------------|---------------------------------------------------------------|
-| `./cly`                                 | Default interactive session (`--id --worktree --effort high`) |
-| `./cly --prompt "..."`                  | Custom prompt, default flags                                  |
-| `CLAUDE_SKIP_PERMISSIONS=1 ./cly`       | Adds `--dangerously-skip-permissions`                         |
+| `./claudey`                             | Default interactive session (`--id --worktree --effort high`) |
+| `./claudey --prompt "..."`              | Custom prompt, default flags                                  |
+| `CLAUDE_SKIP_PERMISSIONS=1 ./claudey`   | Adds `--dangerously-skip-permissions`                         |
 | `bash scripts/wake_the_claude.bash ...` | Direct launcher with full flag control                        |
 
 The wrapper does **not** include `--dangerously-skip-permissions` unless `CLAUDE_SKIP_PERMISSIONS=1` is set.
@@ -137,7 +137,7 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME" && cd "$WORKTREE_DIR"
 3. PR (not direct merge): `gh pr create --base main --head "$OLD_BRANCH" --title "..." --body "..."`
 4. After merge: `git worktree remove "$OLD_WORKTREE_DIR" && git branch -d "$OLD_BRANCH" && git worktree prune`
 
-**Automated**: `scripts/worktree_cleanup.bash --old-worktree "$DIR" --old-branch "$BRANCH" --parent-branch main`
+**Automated**: `util/worktree_cleanup.bash --old-worktree "$DIR" --old-branch "$BRANCH" --parent-branch main`
 
 ---
 
@@ -174,7 +174,7 @@ Pipeline: pre-commit, regression tests, build, documentation links, security, de
 
 > Source: `.github/workflows/claude.yml`
 
-The Claude Code workflow is an on-demand repository automation, not part of the required CI gate. It listens for issue comments, PR review comments, PR review submissions, and opened or assigned issues, then runs only when the triggering text contains `@claude`.
+The Claude Code workflow is an on-demand repository automation, not part of the required CI gate. It listens for issue comments, PR review comments, PR review submissions, and opened or assigned issues, then runs only when the triggering text contains `@claude`. It does not run for PR descriptions, ordinary pushes, or CI-only failures without a supported comment/review/issue event.
 
 | Area | Current Behavior |
 |------|------------------|
@@ -226,5 +226,5 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 ---
 
 **Last Updated:** 2026-05-04
-**Version:** 1.0.2
+**Version:** 1.0.3
 **Maintainer:** Paul Calnon
