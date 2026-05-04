@@ -117,6 +117,21 @@ This behavior is regression-tested in `tests/test_wake_the_claude.py`:
 3. For juniper-ml: update extra version pins, release new meta-package version
 4. Merge order: data-client, cascor-client, cascor-worker, then juniper-ml
 
+### juniper-observability Release
+
+`juniper-observability` is a subpackage in this repository with its own CI and publish lifecycle.
+
+| Task | Command / Procedure |
+|------|---------------------|
+| Local package tests | `cd juniper-observability && python -m pytest --cov=juniper_observability --cov-report=term-missing --cov-fail-under=90` |
+| Local build check | `cd juniper-observability && python -m build --sdist --wheel && twine check dist/*` |
+| Publish | Push tag `juniper-observability-vX.Y.Z` to trigger `.github/workflows/publish-observability.yml` |
+| Retry publish | Use `workflow_dispatch` on `.github/workflows/publish-observability.yml` against the existing tag |
+
+Publish flow: build uploads `juniper-observability-dist` for seven days, TestPyPI downloads and publishes it with OIDC, TestPyPI install is retried for index lag, then PyPI downloads the same artifact after TestPyPI verification succeeds.
+
+Constraint: publish jobs currently run on GitHub-hosted `ubuntu-latest` runners with SHA-pinned artifact actions. If switching to self-hosted runners, verify compatibility with the pinned `actions/upload-artifact` and `actions/download-artifact` versions before tagging a release.
+
 ---
 
 ## Git Worktrees
@@ -158,39 +173,19 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 
 ## CI/CD
 
-| Task                    | Command / Procedure                                                                                 |
-|-------------------------|-----------------------------------------------------------------------------------------------------|
-| Pre-commit              | `pre-commit run --all-files`                                                                        |
-| Publish to PyPI         | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                                   |
-| Doc links (CI parity)   | `python3 scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip`        |
-| Doc links (full local)  | `python3 scripts/check_doc_links.py --exclude templates --exclude history --cross-repo check`       |
-| Claude Code automation  | Mention `@claude` in a supported issue, PR comment, PR review, or PR review comment                 |
+| Task                   | Command / Procedure                                                                         |
+|------------------------|---------------------------------------------------------------------------------------------|
+| Pre-commit             | `pre-commit run --all-files`                                                                |
+| Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish observability  | Push `juniper-observability-vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
+| Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
 
-Pipeline: pre-commit, regression tests, build, documentation links, security, dependency-docs, required-checks.
+Meta-package publish flow: build + `twine check`, TestPyPI upload with attestations, TestPyPI install verification, then PyPI upload.
 
-### Claude Code GitHub Action
-
-> Source: `.github/workflows/claude.yml`
-
-The Claude Code workflow is an on-demand repository automation, not part of the required CI gate. It listens for issue comments, PR review comments, PR review submissions, and opened or assigned issues, then runs only when the triggering text contains `@claude`. It does not run for PR descriptions, ordinary pushes, or CI-only failures without a supported comment/review/issue event.
-
-| Area | Current Behavior |
-|------|------------------|
-| Trigger text | `@claude` in the issue title/body, issue comment, PR review body, or PR review comment |
-| Runner | `ubuntu-latest` |
-| Checkout | `actions/checkout` with `fetch-depth: 1` |
-| Action | `anthropics/claude-code-action` pinned by commit SHA, with a version comment for readability |
-| Secret | `ANTHROPIC_API_KEY` |
-| Permissions | `contents: write`, `pull-requests: write`, `issues: write`, `id-token: write`, `actions: read` |
-
-Operational constraints:
-
-- Review Dependabot updates by checking that the pinned SHA and trailing version comment move together.
-- Keep the `if:` guard in sync with any new event type; adding an event under `on:` is not enough to make it run.
-- Keep write permissions explicit. If a future task only needs read access, reduce the corresponding permission instead of broadening the default token.
-- Do not add this workflow to required checks. It depends on a repository secret and user prompt text, so normal PR validation belongs in `ci.yml`.
+`juniper-observability` publish flow: build from `juniper-observability/`, TestPyPI upload with `verbose: true`, retry install verification to tolerate index lag, then PyPI upload. The workflow reads the version from `juniper-observability/pyproject.toml`; keep it aligned with `juniper-observability/juniper_observability/_version.py`.
 
 ---
 
