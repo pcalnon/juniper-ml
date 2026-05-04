@@ -29,6 +29,18 @@ This package intentionally exposes only **cross-cutting** observability infrastr
 
 See [`notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) in the parent juniper-ml repo for the full design and the 5-PR migration sequence.
 
+## Release workflow
+
+`juniper-observability` publishes independently from the root `juniper-ml` meta-package.
+
+1. Update `juniper-observability/pyproject.toml` and `juniper-observability/CHANGELOG.md` for the new package version.
+2. Push a tag named `juniper-observability-vX.Y.Z` to run `.github/workflows/publish-observability.yml`.
+3. The workflow builds the sdist and wheel from this subdirectory, validates them with `twine check`, and uploads the `juniper-observability-dist` artifact for seven days.
+4. The TestPyPI job downloads that artifact, publishes with OIDC trusted publishing, retries installation while the TestPyPI index catches up, and imports `juniper_observability` to verify the release.
+5. The PyPI job downloads the same artifact and publishes it to PyPI after the TestPyPI verification job succeeds.
+
+Use `workflow_dispatch` on `publish-observability.yml` only to re-fire an existing tag. The workflow uses GitHub-hosted `ubuntu-latest` runners and SHA-pinned actions; if it is moved to self-hosted runners, verify runner compatibility with the pinned `actions/upload-artifact` and `actions/download-artifact` versions before releasing.
+
 ## License
 
 MIT — see [LICENSE](../LICENSE).
