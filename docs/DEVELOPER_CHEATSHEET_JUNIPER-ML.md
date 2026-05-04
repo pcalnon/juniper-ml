@@ -161,13 +161,16 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 | Task                   | Command / Procedure                                                                         |
 |------------------------|---------------------------------------------------------------------------------------------|
 | Pre-commit             | `pre-commit run --all-files`                                                                |
-| Publish to PyPI        | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
+| Publish observability  | Push `juniper-observability-vX.Y.Z` tag (OIDC trusted publishing)                           |
 | Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
 | Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
 
-Pipeline: pre-commit, unit-tests, integration-tests, build, security, lockfile-check, docs, required-checks, notify.
+Meta-package publish flow: build + `twine check`, TestPyPI upload with attestations, TestPyPI install verification, then PyPI upload.
+
+`juniper-observability` publish flow: build from `juniper-observability/`, TestPyPI upload with `verbose: true`, retry install verification to tolerate index lag, then PyPI upload. The workflow reads the version from `juniper-observability/pyproject.toml`; keep it aligned with `juniper-observability/juniper_observability/_version.py`.
 
 ---
 
