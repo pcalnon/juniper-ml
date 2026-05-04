@@ -38,7 +38,7 @@ set -euo pipefail
 DRY_RUN=0
 VERBOSE=0
 PROC_ROOT="${JUNIPER_REAP_PROC_ROOT:-/proc}"
-KILL_CMD="${JUNIPER_REAP_KILL_CMD:-kill}"
+KILL_COMMAND="${JUNIPER_REAP_KILL_COMMAND:-kill}"
 
 usage() {
     cat <<EOF
@@ -144,7 +144,7 @@ for pid in "${CANDIDATES[@]}"; do
             echo "WOULD REAP pid=${pid} ppid=${ppid} cmd=${cmd_summary}"
         else
             echo "REAP       pid=${pid} ppid=${ppid} cmd=${cmd_summary}"
-            "${KILL_CMD}" -KILL "${pid}" 2>/dev/null || true
+            "${KILL_COMMAND}" -KILL "${pid}" 2>/dev/null || true
         fi
         REAPED=$((REAPED + 1))
     else

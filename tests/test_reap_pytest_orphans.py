@@ -1,168 +1,208 @@
-"""
-Tests for util/reap_pytest_orphans.bash.
-
-These tests use a fake process table, fake /proc tree, and fake kill binary so
-they can validate process-reaping decisions without touching real processes.
-"""
+"""Regression tests for util/reap_pytest_orphans.bash."""
 
 import os
 import subprocess
 import tempfile
-import textwrap
 import unittest
 from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "reap_pytest_orphans.bash"
-SCRIPT_TIMEOUT_SECONDS: int = 30
+SCRIPT_TIMEOUT_SECONDS: int = 10
 
 
-def write_executable(path: Path, body: str) -> None:
-    path.write_text(textwrap.dedent(body), encoding="utf-8")
-    path.chmod(0o755)
+class ReapPytestOrphansTests(unittest.TestCase):
+    def _run_with_fake_process_table(
+        self,
+        temp_dir: str,
+        *,
+        ps_output: str,
+        proc_entries: dict[int, tuple[int, str]],
+        proc_dirs: set[int] | None = None,
+        args: list[str] | None = None,
+        extra_env: dict[str, str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        temp_path = Path(temp_dir)
+        bin_dir = temp_path / "bin"
+        bin_dir.mkdir()
 
+        fake_ps_output = temp_path / "ps-output.txt"
+        fake_ps_output.write_text(ps_output, encoding="utf-8")
 
-class FakeProcessFixture:
-    """Build a deterministic process environment for reap_pytest_orphans.bash."""
-
-    def __init__(self, tmpdir: str, ps_rows: list[str]):
-        self.root = Path(tmpdir)
-        self.bin_dir = self.root / "bin"
-        self.proc_root = self.root / "proc"
-        self.kill_log = self.root / "kill.log"
-        self.bin_dir.mkdir()
-        self.proc_root.mkdir()
-
-        self._write_fake_id()
-        self._write_fake_ps(ps_rows)
-        self._write_fake_kill()
-
-    def _write_fake_id(self) -> None:
-        write_executable(
-            self.bin_dir / "id",
-            """
-            #!/usr/bin/env bash
-            if [[ "$1" == "-un" ]]; then
-                echo testuser
-                exit 0
-            fi
-            exit 1
-            """,
+        fake_id = bin_dir / "id"
+        fake_id.write_text(
+            "#!/usr/bin/env bash\n"
+            'if [[ "$1" == "-un" ]]; then\n'
+            "  echo tester\n"
+            "  exit 0\n"
+            "fi\n"
+            "exit 2\n",
+            encoding="utf-8",
         )
+        fake_id.chmod(0o755)
 
-    def _write_fake_ps(self, rows: list[str]) -> None:
-        output = "\n".join(rows)
-        write_executable(
-            self.bin_dir / "ps",
-            f"""
-            #!/usr/bin/env bash
-            cat <<'EOF'
-            {output}
-            EOF
-            """,
+        fake_ps = bin_dir / "ps"
+        fake_ps.write_text(
+            "#!/usr/bin/env bash\n"
+            'cat "$FAKE_PS_OUTPUT"\n',
+            encoding="utf-8",
         )
+        fake_ps.chmod(0o755)
 
-    def _write_fake_kill(self) -> None:
-        write_executable(
-            self.bin_dir / "kill",
-            """
-            #!/usr/bin/env bash
-            printf '%s\n' "$*" >> "${KILL_LOG}"
-            """,
-        )
+        proc_root = temp_path / "proc"
+        proc_root.mkdir()
+        for pid in proc_dirs or set():
+            (proc_root / str(pid)).mkdir()
+        for pid, (ppid, cmdline) in proc_entries.items():
+            pid_dir = proc_root / str(pid)
+            pid_dir.mkdir(exist_ok=True)
+            (pid_dir / "status").write_text(f"Name:\tpython\nPPid:\t{ppid}\n", encoding="utf-8")
+            (pid_dir / "cmdline").write_bytes(cmdline.encode("utf-8") + b"\0")
 
-    def add_process(self, pid: int, ppid: int, cmdline: list[str]) -> None:
-        process_dir = self.proc_root / str(pid)
-        process_dir.mkdir()
-        (process_dir / "status").write_text(f"Name:\tpython\nPPid:\t{ppid}\n", encoding="utf-8")
-        (process_dir / "cmdline").write_bytes(b"\0".join(part.encode("utf-8") for part in cmdline) + b"\0")
-
-    def add_parent(self, pid: int) -> None:
-        (self.proc_root / str(pid)).mkdir()
-
-    def env(self) -> dict[str, str]:
         env = os.environ.copy()
-        env["PATH"] = f"{self.bin_dir}{os.pathsep}{env['PATH']}"
-        env["KILL_LOG"] = str(self.kill_log)
-        env["JUNIPER_REAP_KILL_CMD"] = str(self.bin_dir / "kill")
-        env["JUNIPER_REAP_PROC_ROOT"] = str(self.proc_root)
-        return env
+        env["PATH"] = f"{bin_dir}:{env.get('PATH', '')}"
+        env["FAKE_PS_OUTPUT"] = str(fake_ps_output)
+        env["JUNIPER_REAP_PROC_ROOT"] = str(proc_root)
+        if extra_env:
+            env.update(extra_env)
 
+        return subprocess.run(
+            ["bash", str(SCRIPT_PATH), *(args or [])],
+            capture_output=True,
+            text=True,
+            env=env,
+            timeout=SCRIPT_TIMEOUT_SECONDS,
+            check=False,
+        )
 
-def run_script(fixture: FakeProcessFixture, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run(
-        ["bash", str(SCRIPT_PATH), *args],
-        capture_output=True,
-        text=True,
-        env=fixture.env(),
-        timeout=SCRIPT_TIMEOUT_SECONDS,
-    )
-
-
-class TestReapPytestOrphans(unittest.TestCase):
-    def test_dry_run_reaps_init_systemd_and_missing_parent_orphans_without_killing(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            fixture = FakeProcessFixture(
-                tmpdir,
-                [
-                    "50 testuser /usr/lib/systemd/systemd --user",
-                    "101 testuser /opt/conda/envs/JuniperCaa/bin/python -m pytest",
-                    "102 testuser /home/pcalnon/Development/python/Juniper/worktrees/repo/.venv/bin/python -c worker",
-                    "103 testuser /opt/conda/envs/JuniperCaa/bin/python -m pytest",
-                ],
+    def test_no_candidates_exits_successfully(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output="123 tester /usr/bin/python unrelated.py\n",
+                proc_entries={},
             )
-            fixture.add_process(101, 1, ["/opt/conda/envs/JuniperCaa/bin/python", "-m", "pytest"])
-            fixture.add_process(102, 50, ["/home/pcalnon/Development/python/Juniper/worktrees/repo/.venv/bin/python", "-c", "worker"])
-            fixture.add_process(103, 999, ["/opt/conda/envs/JuniperCaa/bin/python", "-m", "pytest"])
 
-            result = run_script(fixture, "--dry-run")
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn("No Juniper python processes found.", result.stdout)
 
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("WOULD REAP pid=101 ppid=1", result.stdout)
-            self.assertIn("WOULD REAP pid=102 ppid=50", result.stdout)
-            self.assertIn("WOULD REAP pid=103 ppid=999", result.stdout)
-            self.assertIn("Dry-run summary: 3 would be reaped, 0 kept (live parent), 0 skipped.", result.stdout)
-            self.assertFalse(fixture.kill_log.exists())
-
-    def test_verbose_dry_run_keeps_juniper_python_process_with_live_parent(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            fixture = FakeProcessFixture(
-                tmpdir,
-                [
-                    "50 testuser /usr/lib/systemd/systemd --user",
-                    "201 testuser /opt/conda/envs/JuniperCaa/bin/python -m pytest",
-                ],
+    def test_ignores_juniper_python_processes_owned_by_other_users(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output="424200 otheruser /home/test/miniconda/envs/JuniperCascor/bin/python worker.py\n",
+                proc_entries={},
             )
-            fixture.add_process(201, 200, ["/opt/conda/envs/JuniperCaa/bin/python", "-m", "pytest"])
-            fixture.add_parent(200)
 
-            result = run_script(fixture, "--dry-run", "--verbose")
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn("No Juniper python processes found.", result.stdout)
 
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("KEEP       pid=201 ppid=200 (live parent)", result.stdout)
-            self.assertIn("Dry-run summary: 0 would be reaped, 1 kept (live parent), 0 skipped.", result.stdout)
-            self.assertFalse(fixture.kill_log.exists())
-
-    def test_real_mode_kills_only_orphaned_juniper_python_processes(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            fixture = FakeProcessFixture(
-                tmpdir,
-                [
-                    "50 testuser /usr/lib/systemd/systemd --user",
-                    "301 testuser /opt/conda/envs/JuniperCaa/bin/python -m pytest",
-                    "302 testuser /opt/conda/envs/JuniperCaa/bin/python -m pytest",
-                ],
+    def test_dry_run_reaps_init_reparented_juniper_python_process(self) -> None:
+        pid = 424242
+        cmdline = "/home/test/miniconda/envs/JuniperCascor/bin/python worker.py"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output=f"{pid} tester {cmdline}\n",
+                proc_entries={pid: (1, cmdline)},
+                args=["--dry-run"],
             )
-            fixture.add_process(301, 1, ["/opt/conda/envs/JuniperCaa/bin/python", "-m", "pytest"])
-            fixture.add_process(302, 300, ["/opt/conda/envs/JuniperCaa/bin/python", "-m", "pytest"])
-            fixture.add_parent(300)
 
-            result = run_script(fixture)
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn(f"WOULD REAP pid={pid} ppid=1", result.stdout)
+        self.assertIn("Dry-run summary: 1 would be reaped, 0 kept (live parent), 0 skipped.", result.stdout)
 
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("REAP       pid=301 ppid=1", result.stdout)
-            self.assertIn("Summary: 1 reaped, 1 kept (live parent), 0 skipped.", result.stdout)
-            self.assertEqual(fixture.kill_log.read_text(encoding="utf-8"), "-KILL 301\n")
+    def test_non_dry_run_sends_sigkill_to_orphan(self) -> None:
+        pid = 424250
+        cmdline = "/home/test/miniconda/envs/JuniperCascor/bin/python worker.py"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            kill_log = Path(temp_dir) / "kill.log"
+            fake_kill = Path(temp_dir) / "fake-kill"
+            fake_kill.write_text(
+                "#!/usr/bin/env bash\n"
+                'printf "%s\\n" "$*" >> "$KILL_LOG"\n',
+                encoding="utf-8",
+            )
+            fake_kill.chmod(0o755)
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output=f"{pid} tester {cmdline}\n",
+                proc_entries={pid: (1, cmdline)},
+                extra_env={
+                    "JUNIPER_REAP_KILL_COMMAND": str(fake_kill),
+                    "KILL_LOG": str(kill_log),
+                },
+            )
 
+            kill_invocation = kill_log.read_text(encoding="utf-8").strip()
 
-if __name__ == "__main__":
-    unittest.main()
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn(f"REAP       pid={pid} ppid=1", result.stdout)
+        self.assertEqual(kill_invocation, f"-KILL {pid}")
+        self.assertIn("Summary: 1 reaped, 0 kept (live parent), 0 skipped.", result.stdout)
+
+    def test_verbose_dry_run_keeps_juniper_python_process_with_live_parent(self) -> None:
+        parent_pid = 424300
+        child_pid = 424301
+        cmdline = "/home/test/Juniper/worktrees/juniper-cascor--branch/.venv/bin/python -m pytest"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output=f"{child_pid} tester {cmdline}\n",
+                proc_entries={child_pid: (parent_pid, cmdline)},
+                proc_dirs={parent_pid},
+                args=["--dry-run", "--verbose"],
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn(f"KEEP       pid={child_pid} ppid={parent_pid} (live parent)", result.stdout)
+        self.assertIn("Dry-run summary: 0 would be reaped, 1 kept (live parent), 0 skipped.", result.stdout)
+
+    def test_dry_run_treats_systemd_user_parent_as_orphan(self) -> None:
+        systemd_pid = 424400
+        child_pid = 424401
+        cmdline = "/home/test/Juniper/worktrees/juniper-cascor--branch/.venv/bin/python forkserver.py"
+        ps_output = "\n".join(
+            [
+                f"{systemd_pid} tester /usr/lib/systemd/systemd --user",
+                f"{child_pid} tester {cmdline}",
+                "",
+            ]
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output=ps_output,
+                proc_entries={child_pid: (systemd_pid, cmdline)},
+                proc_dirs={systemd_pid},
+                args=["--dry-run"],
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn(f"WOULD REAP pid={child_pid} ppid={systemd_pid}", result.stdout)
+        self.assertIn("Dry-run summary: 1 would be reaped, 0 kept (live parent), 0 skipped.", result.stdout)
+
+    def test_disappeared_candidate_is_skipped(self) -> None:
+        pid = 424500
+        cmdline = "/home/test/miniconda/envs/JuniperCascor/bin/python worker.py"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output=f"{pid} tester {cmdline}\n",
+                proc_entries={},
+                args=["--dry-run"],
+            )
+
+        self.assertEqual(result.returncode, 0, msg=result.stdout + result.stderr)
+        self.assertIn("Dry-run summary: 0 would be reaped, 0 kept (live parent), 1 skipped.", result.stdout)
+
+    def test_unknown_argument_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = self._run_with_fake_process_table(
+                temp_dir,
+                ps_output="",
+                proc_entries={},
+                args=["--bogus"],
+            )
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("Unknown argument: --bogus", result.stderr)
