@@ -37,6 +37,7 @@ set -euo pipefail
 
 DRY_RUN=0
 VERBOSE=0
+PROC_ROOT="${JUNIPER_REAP_PROC_ROOT:-/proc}"
 
 usage() {
     cat <<EOF
@@ -109,20 +110,20 @@ SKIPPED=0
 
 for pid in "${CANDIDATES[@]}"; do
     # Skip if the process disappeared between the ps and now.
-    if [[ ! -d "/proc/${pid}" ]]; then
+    if [[ ! -d "${PROC_ROOT}/${pid}" ]]; then
         SKIPPED=$((SKIPPED + 1))
         continue
     fi
 
     # Read parent PID from /proc/<pid>/status.
-    ppid=$(awk '/^PPid:/ {print $2}' "/proc/${pid}/status" 2>/dev/null || echo "")
+    ppid=$(awk '/^PPid:/ {print $2}' "${PROC_ROOT}/${pid}/status" 2>/dev/null || echo "")
     if [[ -z "${ppid}" ]]; then
         SKIPPED=$((SKIPPED + 1))
         continue
     fi
 
     # Read a short cmdline summary for logging.
-    cmd_summary=$(tr '\0' ' ' <"/proc/${pid}/cmdline" 2>/dev/null | head -c 120 || echo "")
+    cmd_summary=$(tr '\0' ' ' <"${PROC_ROOT}/${pid}/cmdline" 2>/dev/null | head -c 120 || echo "")
 
     # Decide: orphan if parent is PID 1 (init), parent is the user's
     # ``systemd --user`` (the implicit reaper for orphaned user
@@ -133,7 +134,7 @@ for pid in "${CANDIDATES[@]}"; do
         is_orphan=1
     elif [[ -n "${SYSTEMD_USER_PID}" && "${ppid}" == "${SYSTEMD_USER_PID}" ]]; then
         is_orphan=1
-    elif [[ ! -d "/proc/${ppid}" ]]; then
+    elif [[ ! -d "${PROC_ROOT}/${ppid}" ]]; then
         is_orphan=1
     fi
 
