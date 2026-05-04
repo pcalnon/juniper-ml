@@ -30,6 +30,7 @@ pip install -e ".[all]"        # everything
 python3 -m unittest -v tests/test_wake_the_claude.py
 python3 -m unittest -v tests/test_check_doc_links.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
+python3 -m unittest -v tests/test_reap_pytest_orphans.py
 bash scripts/test_resume_file_safety.bash
 
 # Run pre-commit hooks
@@ -114,7 +115,8 @@ juniper-ml/
 ├── tests/                     # Regression test suites (Python unittest)
 │   ├── test_wake_the_claude.py           # Launcher script regression (1470 lines)
 │   ├── test_check_doc_links.py           # Doc link validator regression (283 lines)
-│   └── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
+│   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
+│   └── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
 │
 └── util/                      # Utility scripts and tools
     ├── check_doc_links.py                # Doc link validator (v0.6.0) — used in CI/CD
@@ -170,6 +172,7 @@ juniper-ml/
 ### Utilities
 
 - `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). The `MAIN_REPO` path is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) with an optional `JUNIPER_ML_MAIN_REPO` environment override for test fixtures and unusual layouts. Supports `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`.
+- `util/reap_pytest_orphans.bash` -- Safely reaps orphaned Juniper pytest multiprocessing children. Supports `JUNIPER_REAP_PROC_ROOT` and `JUNIPER_REAP_KILL_CMD` test hooks for deterministic regression tests.
 - `util/check_doc_links.py` -- Documentation link validator (v0.6.0) for internal markdown links; used in CI/CD pipelines
 - `util/generate_dep_docs.sh` -- Generates `requirements_ci.txt` and `conda_environment_ci.yaml` for CI
 - `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` but can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com util/juniper_plant_all.bash`).
@@ -181,6 +184,7 @@ juniper-ml/
 - `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 - `tests/test_check_doc_links.py` -- Regression tests for `util/check_doc_links.py` documentation link validation
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling
+- `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
 - `scripts/test.bash` -- Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` -- Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 
