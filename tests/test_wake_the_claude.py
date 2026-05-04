@@ -681,6 +681,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             prompt_tokens = [token.strip('"') for token in last_invocation_args[effort_index + 2 :]]
             self.assertEqual(" ".join(prompt_tokens), "Hello World, Claude!")
 
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can write to chmod read-only directories")
     def test_non_writable_cwd_falls_back_to_home_log_and_still_launches(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
@@ -710,6 +711,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             last_invocation_args = self._extract_args(invocations[-1])
             self.assertEqual(last_invocation_args, ["--resume", VALID_UUID, "--print", "hello"])
 
+    @unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root can write to chmod read-only directories")
     def test_no_writable_log_location_fails_without_silent_success(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             invocations_log, env = self._install_fake_claude(temp_dir)
