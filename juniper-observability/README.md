@@ -31,15 +31,22 @@ See [`notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026
 
 ## Release workflow
 
-`juniper-observability` publishes independently from the root `juniper-ml` meta-package.
+`juniper-observability` is versioned and published independently from the root `juniper-ml` meta-package.
 
-1. Update `juniper-observability/pyproject.toml` and `juniper-observability/CHANGELOG.md` for the new package version.
-2. Push a tag named `juniper-observability-vX.Y.Z` to run `.github/workflows/publish-observability.yml`.
-3. The workflow builds the sdist and wheel from this subdirectory, validates them with `twine check`, and uploads the `juniper-observability-dist` artifact for seven days.
-4. The TestPyPI job downloads that artifact, publishes with OIDC trusted publishing, retries installation while the TestPyPI index catches up, and imports `juniper_observability` to verify the release.
-5. The PyPI job downloads the same artifact and publishes it to PyPI after the TestPyPI verification job succeeds.
+| Package | Tag pattern | Workflow | Build root |
+|---------|-------------|----------|------------|
+| `juniper-ml` | `v*` GitHub releases | `.github/workflows/publish.yml` | repository root |
+| `juniper-observability` | `juniper-observability-v*` tag pushes | `.github/workflows/publish-observability.yml` | `juniper-observability/` |
 
-Use `workflow_dispatch` on `publish-observability.yml` only to re-fire an existing tag. The workflow uses GitHub-hosted `ubuntu-latest` runners and SHA-pinned actions; if it is moved to self-hosted runners, verify runner compatibility with the pinned `actions/upload-artifact` and `actions/download-artifact` versions before releasing.
+The observability workflow builds an sdist and wheel from this subdirectory, publishes first to TestPyPI through OIDC trusted publishing, retries installation from TestPyPI to tolerate index lag, imports `juniper_observability` as the smoke test, then promotes the same artifact to PyPI after the `pypi` environment gate.
+
+Operational constraints:
+
+- Trusted publishers must be configured on both TestPyPI and PyPI for project `juniper-observability`, workflow `.github/workflows/publish-observability.yml`, and environments `testpypi` / `pypi`.
+- The publish steps set `verbose: true` on `pypa/gh-action-pypi-publish` so upload failures include the package-index response body.
+- Keep `pyproject.toml` and `juniper_observability/_version.py` in sync before tagging; the workflow's import smoke test prints `__version__`, but it does not compare it to the built artifact version.
+
+See [`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) for the full release runbook and trusted-publisher troubleshooting notes.
 
 ## License
 

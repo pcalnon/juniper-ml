@@ -2,7 +2,7 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.3.0
+**Version:** 0.4.1
 **Status:** Active
 **Last Updated:** May 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
@@ -65,9 +65,9 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-| juniper-ml | juniper-data | juniper-cascor | juniper-canopy |
-|------------|-------------|----------------|----------------|
-| 0.4.x | 0.4.x | 0.3.x | 0.2.x |
+| juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-observability |
+|------------|-------------|----------------|----------------|-----------------------|
+| 0.4.x | 0.4.x | 0.3.x | 0.2.x | >=0.1.1 |
 
 ### Service Ports
 
@@ -128,15 +128,38 @@ Publish and CI constraints:
 python -m build
 ```
 
-### CI/CD Pipeline
+### Meta-Package Publish Pipeline
 
-The `publish.yml` GitHub Actions workflow runs on release events:
+The `.github/workflows/publish.yml` workflow publishes the `juniper-ml` meta-package. It runs when a GitHub Release is published and also supports manual `workflow_dispatch` reruns against a tag:
 
-1. **Build** -- Creates wheel and sdist
-2. **TestPyPI** -- Uploads and verifies install with `--no-deps`
-3. **PyPI** -- Uploads after manual reviewer approval
+```bash
+gh workflow run publish.yml --repo pcalnon/juniper-ml --ref <tag>
+```
 
-Both upload steps use trusted publishing (OIDC) with `attestations: false`.
+Release flow:
+
+1. **Build and Validate** -- checks out the tag, installs `build` and `twine`, runs `python -m build`, validates with `twine check dist/*`, and uploads the `dist/` artifact.
+2. **Publish to TestPyPI** -- downloads the artifact, publishes to TestPyPI with OIDC trusted publishing, and enables PyPI attestations.
+3. **Verify TestPyPI Install** -- installs `juniper-ml==${VERSION}` from TestPyPI with PyPI as the extra index for dependencies, then verifies the installed distribution through `importlib.metadata`.
+4. **Publish to PyPI** -- runs only after TestPyPI verification and publishes the same artifact with OIDC trusted publishing and attestations enabled.
+
+### Observability Package Publish Pipeline
+
+The `.github/workflows/publish-observability.yml` workflow publishes the sibling `juniper-observability` package from the `juniper-observability/` subdirectory. It is intentionally decoupled from the meta-package release tags:
+
+| Package | Tag Pattern | Workflow | Build Directory |
+|---------|-------------|----------|-----------------|
+| `juniper-ml` | `v*` GitHub releases | `.github/workflows/publish.yml` | repository root |
+| `juniper-observability` | `juniper-observability-v*` tag pushes | `.github/workflows/publish-observability.yml` | `juniper-observability/` |
+
+Observability release flow:
+
+1. **Build and Validate** -- runs `python -m build --sdist --wheel` in `juniper-observability/`, validates with `twine check dist/*`, and uploads `juniper-observability/dist/`.
+2. **Publish to TestPyPI** -- downloads the artifact into `dist/`, publishes with `packages-dir: dist/`, `repository-url: https://test.pypi.org/legacy/`, and `verbose: true` so trusted-publisher or upload errors include the server response body.
+3. **Verify TestPyPI Install** -- sparse-checks out `juniper-observability/pyproject.toml`, reads the package version, retries the TestPyPI install up to five times to tolerate index lag, then imports `juniper_observability` and prints `juniper_observability.__version__`.
+4. **Publish to PyPI** -- runs only after TestPyPI install verification and publishes the same artifact with `packages-dir: dist/` and `verbose: true`.
+
+Both publish workflows require GitHub Actions environments named `testpypi` and `pypi`, plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file, environment, owner, repository, and project name. See `notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md` for the full release runbook and trusted-publisher troubleshooting notes.
 
 ---
 
@@ -158,5 +181,5 @@ These variables are used by consumer applications when juniper-ml extras are ins
 ---
 
 **Last Updated:** May 4, 2026
-**Version:** 0.3.0
+**Version:** 0.4.1
 **Maintainer:** Paul Calnon
