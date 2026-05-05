@@ -34,20 +34,51 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
 
     def __init__(self, app: object, service_name: str = "juniper-service", namespace: str = "juniper") -> None:
         super().__init__(app)
-        from prometheus_client import Counter, Histogram
+        from prometheus_client import REGISTRY, Counter, Histogram
 
         prefix = f"{namespace}_" if namespace else ""
-        self._request_count = Counter(
+
+        # Idempotent metric registration. ``Counter`` / ``Histogram``
+        # construction registers the collector with the global
+        # ``REGISTRY`` and raises ``ValueError`` if the timeseries name
+        # is already present. That happens whenever ``PrometheusMiddleware``
+        # is instantiated more than once in the same Python process —
+        # most commonly during pytest sessions that build multiple
+        # ``TestClient(app)`` instances (each ``build_middleware_stack``
+        # constructs a fresh middleware), but also after any in-process
+        # restart of a service. On the duplicate, re-fetch the existing
+        # collector instead of crashing the whole app startup.
+        #
+        # Same shape as the canopy fix in
+        # ``juniper-canopy/src/observability.py:_ensure_canopy_metrics``
+        # (cascor PR #205 / canopy V34a). The lookup uses the name as
+        # passed to the factory; ``prometheus_client`` registers under
+        # both the bare name and the suffixed sample names (``_total``,
+        # ``_created``, ``_bucket``, ``_sum``, ``_count``), all pointing
+        # at the same collector object.
+        def _get_or_create(factory, name, *args, **kwargs):
+            try:
+                return factory(name, *args, **kwargs)
+            except ValueError:
+                existing = REGISTRY._names_to_collectors.get(name)
+                if existing is None:
+                    raise
+                return existing
+
+        self._request_count = _get_or_create(
+            Counter,
             f"{prefix}http_requests_total",
             "Total HTTP requests",
             ["method", "endpoint", "status"],
         )
-        self._request_duration = Histogram(
+        self._request_duration = _get_or_create(
+            Histogram,
             f"{prefix}http_request_duration_seconds",
             "HTTP request duration in seconds",
             ["method", "endpoint"],
         )
-        self._unmatched_count = Counter(
+        self._unmatched_count = _get_or_create(
+            Counter,
             f"{prefix}http_unmatched_requests_total",
             "HTTP requests not matching any registered route template",
             ["method"],
