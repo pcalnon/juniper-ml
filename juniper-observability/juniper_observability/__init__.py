@@ -32,6 +32,12 @@ from juniper_observability.logging import (
 )
 from juniper_observability.middleware import PrometheusMiddleware, RequestIdMiddleware, request_id_var
 from juniper_observability.prometheus import get_prometheus_app, set_build_info
+from juniper_observability.prometheus_helpers import (
+    lazy_register_or_reuse,
+    register_fresh,
+    register_info_or_update,
+    register_or_reuse,
+)
 from juniper_observability.sentry import DEFAULT_SENTRY_TRACES_SAMPLE_RATE, configure_sentry
 
 __all__ = [
@@ -59,6 +65,11 @@ __all__ = [
     # Prometheus utilities
     "get_prometheus_app",
     "set_build_info",
+    # Prometheus collector helpers (idempotent registration patterns)
+    "lazy_register_or_reuse",
+    "register_fresh",
+    "register_info_or_update",
+    "register_or_reuse",
     # Sentry
     "DEFAULT_SENTRY_TRACES_SAMPLE_RATE",
     "configure_sentry",

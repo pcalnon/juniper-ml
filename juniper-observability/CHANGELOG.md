@@ -8,6 +8,43 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+### Added
+
+- ``juniper_observability.prometheus_helpers`` — four idempotent
+  ``prometheus_client`` collector helpers retiring the ~10 inline
+  copies of the same try/except pattern that had accumulated in
+  consumer repos through 2026-05-04. Public API:
+  - ``register_or_reuse(factory, name, *args, **kwargs)`` —
+    adopt-existing on duplicate (the default choice for almost every
+    call site; samples preserved, latest call's args ignored).
+  - ``register_fresh(factory, name, *args, **kwargs)`` —
+    drop-and-recreate on duplicate (samples discarded, latest call's
+    args take effect). Use only when test fixtures or migrations
+    intentionally want different buckets/labels.
+  - ``register_info_or_update(name, description, **info_labels)`` —
+    sugar over ``register_or_reuse`` for the ``Info`` collector type.
+  - ``lazy_register_or_reuse(factory, name, *args, **kwargs)`` —
+    cached ``register_or_reuse`` for the lazy-init sentinel pattern;
+    process-wide module-private cache keyed by metric name.
+  All four lazy-import ``prometheus_client`` so callers without the
+  optional dependency only pay the import cost on the path that
+  actually needs the SDK.
+- ``juniper_observability.testing`` (new sub-module) —
+  ``reset_prometheus_registry`` pytest fixture replacing the file-
+  scoped autouse fixtures consumer test suites had been hand-rolling.
+  Function-scoped, opt-in; consumers wire it autouse in their own
+  ``conftest.py``. Caused the juniper-data ``TestSEC16MetricsAppIntegration``
+  failure on 2026-05-04 because the file-scoped variant only saw
+  collectors registered during its own tests.
+
+### Notes
+
+- See
+  ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+  in the juniper-ml repo for the full analysis, design rationale,
+  trade-off comparison vs cascor's pre-existing ``_register_or_reuse``,
+  and the phased migration plan for the 11 production call sites.
+
 ## [0.1.1] - 2026-04-29
 
 ### Changed
