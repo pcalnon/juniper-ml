@@ -59,7 +59,7 @@ Most affected tests are runnable in isolation but fail in the full suite, becaus
 - File-local autouse fixtures that snapshot REGISTRY before/after each test only see collectors registered *during* their tests; pollution from earlier tests (in other files) is invisible.
 - Module-level metric construction runs once per process, so the file that first imports the module wins; subsequent imports are no-ops, but any test that explicitly re-creates the app via `create_app()` re-runs the middleware constructors.
 
-This is the same shape as the "stdout buffer + `os._exit`" bug class in [`project_cascor_pytest_summary_truncation_2026-05-03`](../../../../.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml/memory/project_cascor_pytest_summary_truncation_2026-05-03.md) — production-clean code that turns hostile under pytest's session-spanning process model.
+This is the same shape as the "stdout buffer + `os._exit`" bug class tracked in auto-memory entry `project_cascor_pytest_summary_truncation_2026-05-03` — production-clean code that turns hostile under pytest's session-spanning process model.
 
 ---
 
@@ -394,4 +394,4 @@ Phase 2 is one ~30-line PR per consumer.
 - juniper-cascor PR #216 — `control_stream._get_command_counter`
 - juniper-cascor-client PR #37 — `_ensure_counter`
 - juniper-cascor `src/api/observability.py:174` — pre-existing `_register_or_reuse` (drop + recreate)
-- Memory: [`project_cascor_orphan_forkserver_workers_2026-05-03`](../../../../.claude/projects/-home-pcalnon-Development-python-Juniper-juniper-ml/memory/project_cascor_orphan_forkserver_workers_2026-05-03.md) — analogous "production-clean code goes hostile under pytest's process model" pattern
+- Auto-memory entry `project_cascor_orphan_forkserver_workers_2026-05-03` — analogous "production-clean code goes hostile under pytest's process model" pattern
