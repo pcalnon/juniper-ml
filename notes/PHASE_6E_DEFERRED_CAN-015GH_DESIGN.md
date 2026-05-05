@@ -1,6 +1,6 @@
 # Phase 6E Deferred Work: CAN-015g + CAN-015h Design
 
-**Owner**: Paul Calnon • **Status**: Draft • **Created**: 2026-05-02
+**Owner**: Paul Calnon • **Status**: Implemented (h-6 in review) • **Created**: 2026-05-02 • **Last updated**: 2026-05-04
 **Tracks**: `CAN-015g` (Replay V2 — per-epoch weight history),
 `CAN-015h` (Restore editing — weight + topology modification)
 **Parent design**: [`PHASE_6E_SPRINT_B_DESIGN.md`](./PHASE_6E_SPRINT_B_DESIGN.md) §10
@@ -43,6 +43,91 @@ top of a stable serializer).
 > runs. **g-6** (this revision) adds the live-capture path. See
 > §"Live capture during training (g-6)" and the revised
 > §"PR breakdown — CAN-015g".
+>
+> **Revision 2026-05-04 — sprint complete**: every CAN-015g item
+> has merged to `main`; every CAN-015h item except **h-6** has
+> merged to `main`; h-6 is open as canopy #235 and in review at
+> the time of writing. The Sprint B prerequisite block resolved
+> on its own — cascor #171/#173 made it onto `main` (commits
+> `b84cf6c` and `e9d51ea`) and canopy #214 merged. Two stacked-
+> branch incidents during the sprint (g-2/g-3 merged into a parent
+> branch; cascor #198–#201 stacked PR chain) were resolved with
+> retarget PRs (cascor #189/#190) and admin merges where stacked
+> ancestors had already landed. Per-PR delivery is captured in
+> §"Delivery log" below; the original PR-breakdown tables retain
+> the as-designed sequencing for posterity but are now annotated
+> with merged-PR + commit-SHA columns.
+
+---
+
+## Delivery log (2026-05-04)
+
+The sprint shipped as 12 PRs across cascor + canopy plus 2 plan
+revisions in juniper-ml. CAN-015g landed in two waves (cascor
+serializer/replay-engine first, then canopy renderers) and the
+g-2/g-3 retargets had to be opened against `main` after the
+original stacked PRs merged into the wrong parent branch.
+CAN-015h followed the designed sequence — h-0 prep refactor, then
+the three cascor mutation endpoints (h-1/h-2/h-3 stacked), then
+the canopy adapter (h-4), the panel + tab (h-5), and finally the
+destructive-op modal + snapshot-first prompt (h-6, in review).
+
+### Plan revisions (juniper-ml)
+
+| Item | PR | Merge SHA | Title |
+|---|---|---|---|
+| Plan v1 | [#185](https://github.com/pcalnon/juniper-ml/pull/185) | `c4d35c7c` | docs(notes): design plan for deferred CAN-015g + CAN-015h |
+| g-6 addition | [#188](https://github.com/pcalnon/juniper-ml/pull/188) | `33034f79` | docs(notes): add g-6 — training-loop weight capture |
+
+### CAN-015g — Replay V2 delivery
+
+| PR | Repo | Merged | SHA | Notes |
+|---|---|---|---|---|
+| g-1 | cascor [#180](https://github.com/pcalnon/juniper-cascor/pull/180) | 2026-05-03 | `e68f7fe3` | Schema v2 + adaptive sampling; per-unit bias written as length-1 array (h5py rejects compression on 0-d). |
+| g-2 | cascor [#184](https://github.com/pcalnon/juniper-cascor/pull/184) → [#189](https://github.com/pcalnon/juniper-cascor/pull/189) | 2026-05-03 | `f0bdbe38` (#184), `b1d19948` (#189 retarget) | Original landed into stacked parent branch; reopened against `main` as #189. |
+| g-3 | cascor [#187](https://github.com/pcalnon/juniper-cascor/pull/187) → [#190](https://github.com/pcalnon/juniper-cascor/pull/190) | 2026-05-03 | `d85c9ddd` (#187), `dbc25277` (#190 retarget) | Same stacked-branch issue as g-2; reopened as #190. |
+| g-4 | canopy [#220](https://github.com/pcalnon/juniper-canopy/pull/220) | 2026-05-03 | `e56b6c29` | Replay player V2 weight buffer + WS bridge. |
+| g-5a | cascor [#196](https://github.com/pcalnon/juniper-cascor/pull/196) | 2026-05-03 | `8f90276f` | docs: schema v2 migration + interpolation FAQ. |
+| g-5b | canopy [#221](https://github.com/pcalnon/juniper-canopy/pull/221) | 2026-05-03 | `0e777f7d` | docs: V2 indicator badges + snap-to-sample. |
+| g-6 | cascor [#191](https://github.com/pcalnon/juniper-cascor/pull/191) | 2026-05-03 | `8e3c3064` | Live capture in training loop — periodic + cascade-add + terminal triggers; decimation policy. |
+| g-7 | canopy [#222](https://github.com/pcalnon/juniper-canopy/pull/222) | 2026-05-03 | `ccbd1492` | Decision-boundary + network-evolution renderers consume V2 weight payloads. |
+
+### CAN-015h — Restore editing delivery
+
+| PR | Repo | Merged | SHA | Notes |
+|---|---|---|---|---|
+| h-0 | cascor [#198](https://github.com/pcalnon/juniper-cascor/pull/198) | 2026-05-03 | `16db3827` | `_install_hidden_unit` + `_resize_output_layer_for_new_units` extraction; bit-identity test on a fixed-seed run. |
+| h-1 | cascor [#199](https://github.com/pcalnon/juniper-cascor/pull/199) | 2026-05-03 | `de126f4c` | `PATCH /v1/network/weights`; optimizer-state zero-out runs *before* parameter reassignment, skips 0-d tensors so Adam's `step` survives. |
+| h-2 | cascor [#200](https://github.com/pcalnon/juniper-cascor/pull/200) | 2026-05-03 | `f009063b` | `POST /v1/network/hidden-units`; tail-only V1; output column forced to zero so the new unit contributes nothing until trained or patched. |
+| h-3 | cascor [#201](https://github.com/pcalnon/juniper-cascor/pull/201) | 2026-05-03 | `0f67d114` | `DELETE /v1/network/hidden-units/{idx}`; cascade rebuild drops weight at `input_size + idx` from each subsequent unit. |
+| h-4 | canopy [#223](https://github.com/pcalnon/juniper-canopy/pull/223) | 2026-05-03 | `4bac02ff` | Adapter pass-throughs over the three cascor endpoints. |
+| h-5 | canopy [#224](https://github.com/pcalnon/juniper-canopy/pull/224) | 2026-05-03 | `c63d4f8b` | Network Editor panel + tab + idle/active state polled from `/api/status`. |
+| h-6 | canopy [#235](https://github.com/pcalnon/juniper-canopy/pull/235) | **OPEN** | — | Destructive-op confirm modal + snapshot-first prompt; in review at the time of writing. |
+
+### Deltas from the original plan
+
+- **g-5 split into g-5a/g-5b**. The plan had a single docs PR
+  spanning both repos; in practice docs landed as cascor #196
+  (schema migration + interpolation FAQ) and canopy #221
+  (V2 indicator badges + snap-to-sample FAQ). Repo-local docs
+  are the right home for repo-local UX behaviour.
+- **g-7 split off from g-4**. The plan had g-4 covering both
+  the WS-buffer plumbing and the renderer integration. They
+  ended up split: g-4 (#220) lands the buffer/badge/snap, and
+  g-7 (#222) lands the decision-boundary + network-evolution
+  consumers. Splitting kept review-scope manageable.
+- **h-2/h-3 use the h-0 helper as designed**. No surprises in the
+  cascade-rebuild code path. The post-delete forward-pass shape
+  invariant test (h-3) caught one off-by-one in the column-drop
+  logic before the PR opened.
+- **Canopy proxy routes for h-4/h-5**. The plan implied the
+  adapter would be reachable from a canopy proxy without
+  spelling out the route surface. In practice h-5 added three
+  thin proxy routes to `main.py` — `PATCH /api/v1/network/weights`,
+  `POST /api/v1/network/hidden-units`,
+  `DELETE /api/v1/network/hidden-units/{idx}` — each with a
+  pydantic body schema mirroring the cascor request models and
+  the same demo-mode 501 short-circuit B-5 uses.
 
 ---
 
@@ -52,6 +137,11 @@ CAN-015g consumes the Replay V1 infrastructure (B-3) and CAN-015h
 consumes the `Investigating` FSM state and unified response shape
 (B-4). Neither item can begin until both are confirmed on their
 respective `main` branches.
+
+> **Resolved 2026-05-03**: cascor `b84cf6c` (B-4) and `e9d51ea`
+> (B-3) made it onto `origin/main` after a retarget pass; canopy
+> #214 (B-6) merged the same day. Sprint kicked off shortly
+> after. The table below is retained for the audit trail.
 
 | Prereq | Repo | PR | Verification command | Expected | Risk if unmet |
 |---|---|---|---|---|---|
@@ -343,14 +433,19 @@ hit a trigger.
 
 ### PR breakdown — CAN-015g
 
-| PR | Repo | Title | Touches |
-|---|---|---|---|
-| g-1 | cascor | `feat(snapshot): persist per-sample weights with adaptive sampling (CAN-015g)` | `snapshots/snapshot_serializer.py`, schema_version bump, fixture |
-| g-2 | cascor | `feat(replay): wire weight cache into _ReplaySession + extend control response (CAN-015g)` | `lifecycle/manager.py`, `routes/snapshots.py`, route schemas |
-| g-3 | cascor | `feat(replay): emit weight payloads on sample-boundary events (CAN-015g)` | `lifecycle/monitor.py`, replay driver thread |
-| g-4 | canopy | `feat(replay): consume weight payloads in decision-boundary + network-evolution (CAN-015g)` | `replay_player_panel.py`, `decision_boundary.py`, `network_evolution.py`, dashboard wiring |
-| g-5 | both | `docs(snapshot): schema v2 migration notes + interpolation behaviour FAQ` | docs + small README updates |
-| g-6 | cascor | `feat(training): capture per-sample weight history during training (CAN-015g)` | `lifecycle/manager.py` training loop, `lifecycle/monitor.py` epoch hook, `cascade_correlation.py` cascade-add hook, `cascade_correlation_config.py` two new tunables |
+> *As-designed table; see "Delivery log" §above for the actual
+> PR numbers and merge SHAs. g-5 split into g-5a/g-5b (one docs
+> PR per repo), and g-4 split off a g-7 follow-up that landed
+> the renderer consumers separately from the WS buffer.*
+
+| PR | Repo | Title | Touches | Shipped as |
+|---|---|---|---|---|
+| g-1 | cascor | `feat(snapshot): persist per-sample weights with adaptive sampling (CAN-015g)` | `snapshots/snapshot_serializer.py`, schema_version bump, fixture | cascor #180 ✅ |
+| g-2 | cascor | `feat(replay): wire weight cache into _ReplaySession + extend control response (CAN-015g)` | `lifecycle/manager.py`, `routes/snapshots.py`, route schemas | cascor #184 → #189 (retarget) ✅ |
+| g-3 | cascor | `feat(replay): emit weight payloads on sample-boundary events (CAN-015g)` | `lifecycle/monitor.py`, replay driver thread | cascor #187 → #190 (retarget) ✅ |
+| g-4 | canopy | `feat(replay): consume weight payloads in decision-boundary + network-evolution (CAN-015g)` | `replay_player_panel.py`, `decision_boundary.py`, `network_evolution.py`, dashboard wiring | canopy #220 (buffer/badge/snap) + canopy #222 (g-7: renderers) ✅ |
+| g-5 | both | `docs(snapshot): schema v2 migration notes + interpolation behaviour FAQ` | docs + small README updates | cascor #196 (g-5a) + canopy #221 (g-5b) ✅ |
+| g-6 | cascor | `feat(training): capture per-sample weight history during training (CAN-015g)` | `lifecycle/manager.py` training loop, `lifecycle/monitor.py` epoch hook, `cascade_correlation.py` cascade-add hook, `cascade_correlation_config.py` two new tunables | cascor #191 ✅ |
 
 Order is dependency-driven: g-1 lands the file format, g-2 wires
 the read path, g-3 adds emission, g-4 lands canopy. g-5 is
@@ -555,15 +650,19 @@ permitted_commands = {
 
 ### PR breakdown — CAN-015h
 
-| PR | Repo | Title | Touches |
-|---|---|---|---|
-| h-0 | cascor | `refactor(network): extract _install_hidden_unit helper (no behaviour change) (CAN-015h prep)` | `cascade_correlation.py`, fixed-seed bit-identity test |
-| h-1 | cascor | `feat(network): PATCH /v1/network/weights with shape + NaN validation (CAN-015h)` | `routes/network.py`, FSM extension, optimizer state zero-out |
-| h-2 | cascor | `feat(network): POST /v1/network/hidden-units with cascade rebuild (CAN-015h)` | `routes/network.py`, `cascade_correlation.py` (uses h-0) |
-| h-3 | cascor | `feat(network): DELETE /v1/network/hidden-units/{idx} with cascade rebuild (CAN-015h)` | same as h-2 |
-| h-4 | canopy | `feat(network-editor): adapter wrappers for the three mutation endpoints (CAN-015h)` | `cascor_service_adapter.py` + adapter tests |
-| h-5 | canopy | `feat(network-editor): network editor panel + tab + Investigating-state gating (CAN-015h)` | new component, dashboard wiring |
-| h-6 | canopy | `test(network-editor): integration with B-5 confirm modal + Investigating FSM gating` | snapshot panel + new component glue tests |
+> *As-designed table; see "Delivery log" §above for the actual
+> PR numbers and merge SHAs. h-5 also added three canopy proxy
+> routes in `main.py` not called out in this row.*
+
+| PR | Repo | Title | Touches | Shipped as |
+|---|---|---|---|---|
+| h-0 | cascor | `refactor(network): extract _install_hidden_unit helper (no behaviour change) (CAN-015h prep)` | `cascade_correlation.py`, fixed-seed bit-identity test | cascor #198 ✅ |
+| h-1 | cascor | `feat(network): PATCH /v1/network/weights with shape + NaN validation (CAN-015h)` | `routes/network.py`, FSM extension, optimizer state zero-out | cascor #199 ✅ |
+| h-2 | cascor | `feat(network): POST /v1/network/hidden-units with cascade rebuild (CAN-015h)` | `routes/network.py`, `cascade_correlation.py` (uses h-0) | cascor #200 ✅ |
+| h-3 | cascor | `feat(network): DELETE /v1/network/hidden-units/{idx} with cascade rebuild (CAN-015h)` | same as h-2 | cascor #201 ✅ |
+| h-4 | canopy | `feat(network-editor): adapter wrappers for the three mutation endpoints (CAN-015h)` | `cascor_service_adapter.py` + adapter tests | canopy #223 ✅ |
+| h-5 | canopy | `feat(network-editor): network editor panel + tab + Investigating-state gating (CAN-015h)` | new component, dashboard wiring, `main.py` proxy routes | canopy #224 ✅ |
+| h-6 | canopy | `test(network-editor): integration with B-5 confirm modal + Investigating FSM gating` | snapshot panel + new component glue tests | canopy #235 — **OPEN, in review** |
 
 Order: h-0 → (h-1, h-2, h-3 parallelizable) → h-4 → (h-5, h-6
 parallelizable). Total of seven PRs vs. CAN-015g's five — the
