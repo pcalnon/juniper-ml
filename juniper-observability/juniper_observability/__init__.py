@@ -10,8 +10,8 @@ Per-service metric definitions (training-loop counters, dataset-gen
 histograms, websocket gauges, etc.) intentionally stay in their owning
 repo — only cross-cutting infrastructure lives here.
 
-See ``notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md``
-in juniper-ml for the design and migration plan.
+See ``notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md``
+in juniper-ml for the design and migration plan (archived 2026-05-05).
 """
 
 from juniper_observability._version import __version__

@@ -83,7 +83,7 @@ Initial source drop, never released to PyPI / TestPyPI.
 - **Prometheus utilities** — `get_prometheus_app` (mountable ASGI app) and `set_build_info` (for setting the `*_build_info` gauge from `pyproject.toml` metadata).
 - **Sentry init** — `configure_sentry` with the SEC-10 `before_send` hook always installed.
 - **Package extras** — `[prometheus]`, `[sentry]`, `[all]`.
-- **Docs** — design + 5-PR migration sequence in `notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md` (parent juniper-ml repo).
+- **Docs** — design + 5-PR migration sequence in `notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md` (parent juniper-ml repo; archived to `notes/legacy/` 2026-05-05).
 
 ### Notes
 

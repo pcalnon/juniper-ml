@@ -9,6 +9,11 @@
 
 ---
 
+
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+
+---
+
 ## 1. Purpose
 
 Phase R2 closed 2026-04-30 (juniper-ml#175): three Juniper servers share `juniper-observability`, the WS protocol surface is single-sourced via `juniper-cascor-protocol`, probe topology is a documented DAG, and worker stays Pydantic-free at runtime. Phase R3 turns to **test-coverage gap closure**: enumerated holes in the existing observability test surface that the R2 implementation itself surfaced, plus a few standing gaps inherited from the original review (seeds 07–12).

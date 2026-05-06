@@ -9,7 +9,21 @@ audit findings across 8 repos.
 **Author**: Paul Calnon
 **Version**: 0.1.0
 **License**: MIT
-**Status**: ACTIVE — receiving audit findings
+**Status**: ACTIVE — superseded as the canonical post-program tracker by `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR `docs/post-metrics-mon-tracker`); retained here as the audit-finding reference.
+
+---
+
+> **STATUS 2026-05-05:** This document remains ACTIVE but is no longer the canonical post-program issue tracker. Residual triage / sequencing has migrated to `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (in-flight on a parallel PR). This doc is preserved as the **canonical audit-findings reference** — the 27 findings tabulated in §4 + §5 are the source of truth that the new tracker indexes into. Do not add new issues here; add them to the new tracker and (if they expand audit coverage) cross-link back to the relevant §4 dimension.
+>
+> **Per-section status:**
+>
+> - §3 Seed residuals (3.1 SLO calibration / 3.2 alertmanager tickets / 3.3 TRAIN-ARCH-01) — all still OPEN. 3.2 partially analysed in `notes/observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`; awaiting OBS-ROUTE-01 sub-track. 3.1 awaiting 2026-06-02 soak review. 3.3 user-deferred.
+> - §4 Audit findings (Dim A–E, 27 items) — partially closed by OBS-WIRE-01 (juniper-cascor#204) which addressed A.1–A.6. Remaining items still OPEN; tracked in the new tracker.
+> - §5 Consolidated action items — OPEN list, now mirrored in the new tracker.
+>
+> **Forward pointer:** New tracker (`POST_METRICS_MON_TRACKER_2026-05-05.md`) for live status; OBS-WIRE-02 / OBS-ROUTE-01 entry plans (when written) for the A.9 + 3.2 work; `JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` for the snapshot view.
+>
+> **Path to COMPLETED:** This doc moves to `notes/legacy/` once every §3 / §4 item it tabulates is closed (resolved or explicitly deferred-with-tracking-link). Triggering condition: post-program tracker reaches "all items terminal".
 
 ---
 
@@ -18,7 +32,7 @@ audit findings across 8 repos.
 The METRICS-MON program shipped 78 PRs across 8 repos in 9 calendar days, closing
 all 5 phases (R1 cardinality / R2 shared-lib / R3 test-coverage / R4 ergonomic /
 R5 SLO + dashboards + alerts). The program-close note
-([`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md))
+([`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md))
 recorded 6+ residual follow-ups carried forward.
 
 This document is the **post-program issue tracker**. Its purpose is to:
@@ -424,8 +438,8 @@ small juniper-deploy PR.
 
 ### Primary
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR juniper-ml#192)
-- [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR juniper-ml#192)
+- [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](../legacy/METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03)
 - juniper-deploy `notes/SLO_CATALOG_2026-05-03.md` (cross-repo) — SLI/SLO authority
 - juniper-deploy `prometheus/alert_rules.yml` (cross-repo) — alert authority
 - juniper-deploy `alertmanager/alertmanager.yml` (cross-repo) — routing authority
@@ -433,17 +447,17 @@ small juniper-deploy PR.
 
 ### Per-phase entry plans
 
-- [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
-- [`METRICS_MONITORING_R4_ENTRY_PLAN_2026-05-01.md`](METRICS_MONITORING_R4_ENTRY_PLAN_2026-05-01.md)
-- [`METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md`](METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md)
+- [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](../legacy/METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
+- [`METRICS_MONITORING_R4_ENTRY_PLAN_2026-05-01.md`](../legacy/METRICS_MONITORING_R4_ENTRY_PLAN_2026-05-01.md)
+- [`METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md`](../legacy/METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md)
 
 ### Design docs
 
-- [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
-- [`METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md`](METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md)
-- [`METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md)
-- [`METRICS_MONITORING_R2.2_WS_FRAME_SCHEMA_DESIGN_2026-04-29.md`](METRICS_MONITORING_R2.2_WS_FRAME_SCHEMA_DESIGN_2026-04-29.md)
-- [`METRICS_MONITORING_MINI_BATCH_INSTRUMENTATION_DESIGN_2026-05-03.md`](METRICS_MONITORING_MINI_BATCH_INSTRUMENTATION_DESIGN_2026-05-03.md)
+- [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
+- [`METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md`](../legacy/METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md)
+- [`METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md)
+- [`METRICS_MONITORING_R2.2_WS_FRAME_SCHEMA_DESIGN_2026-04-29.md`](../legacy/METRICS_MONITORING_R2.2_WS_FRAME_SCHEMA_DESIGN_2026-04-29.md)
+- [`METRICS_MONITORING_MINI_BATCH_INSTRUMENTATION_DESIGN_2026-05-03.md`](../legacy/METRICS_MONITORING_MINI_BATCH_INSTRUMENTATION_DESIGN_2026-05-03.md)
 
 ---
 

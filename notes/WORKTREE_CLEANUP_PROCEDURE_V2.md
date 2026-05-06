@@ -326,4 +326,4 @@ git push origin "$OLD_BRANCH" --force-with-lease
 ## Supersedes
 
 This procedure replaces `notes/WORKTREE_CLEANUP_PROCEDURE.md` (V1).
-The V1 file has been moved to `notes/history/WORKTREE_CLEANUP_PROCEDURE.md`.
+The V1 file has been moved to `notes/legacy/WORKTREE_CLEANUP_PROCEDURE.md` (consolidated from `notes/history/` 2026-05-05).

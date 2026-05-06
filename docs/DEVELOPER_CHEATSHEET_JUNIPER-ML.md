@@ -178,7 +178,7 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 | Pre-commit             | `pre-commit run --all-files`                                                                |
 | Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
 | Publish observability  | Push `juniper-observability-vX.Y.Z` tag (OIDC trusted publishing)                           |
-| Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo skip` |
+| Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo skip` |
 | Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
@@ -214,7 +214,7 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
 - [juniper-ml REFERENCE](REFERENCE.md) -- package metadata, extras, version history
-- [Deprecated Master Cheatsheet](../notes/history/DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference (relocated to `notes/history/` in 2026-04)
+- [Deprecated Master Cheatsheet](../notes/legacy/DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference (relocated to `notes/history/` in 2026-04, consolidated into `notes/legacy/` 2026-05-05)
 - [Worktree Setup](../notes/WORKTREE_SETUP_PROCEDURE.md) | [Worktree Cleanup V2](../notes/WORKTREE_CLEANUP_PROCEDURE_V2.md)
 - [SOPS Usage Guide](../notes/SOPS_USAGE_GUIDE.md) -- complete secrets management reference
 

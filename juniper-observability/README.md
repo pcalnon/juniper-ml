@@ -27,7 +27,7 @@ This package intentionally exposes only **cross-cutting** observability infrastr
 
 ## Design + migration
 
-See [`notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) in the parent juniper-ml repo for the full design and the 5-PR migration sequence.
+See [`notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) in the parent juniper-ml repo for the full design and the 5-PR migration sequence (archived to `notes/legacy/` 2026-05-05 after the METRICS-MON program closed).
 
 ## Release workflow
 
