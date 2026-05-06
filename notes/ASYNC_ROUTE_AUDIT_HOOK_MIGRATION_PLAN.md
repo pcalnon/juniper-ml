@@ -260,6 +260,31 @@ Per repo:
 
 ## 10. Open questions
 
+> **Resolved 2026-05-06.** Q1/Q2/Q3 below carry the user's answers and the resulting plan adjustments. Original questions retained for the audit trail.
+
 1. **Phase 0 timing**: should the violation enumeration happen now (before approving the rest of the plan), or after the plan is approved and we proceed in earnest? Doing it now adds 30 minutes but makes the scope of Phase 3 concrete.
+
+   **Answer (2026-05-06)**: enumeration runs now. **Done** — see [`ASYNC_ROUTE_VIOLATIONS_2026-05-06.md`](./ASYNC_ROUTE_VIOLATIONS_2026-05-06.md). Headline: 27 total violations across 4 in-scope repos (15 production, 12 test); Phase 3 effort revised down to **~2.5 hours total** of code work. Worker is already clean.
+
 2. **Phase 4 enforcement order**: the proposed order (data → cascor → canopy → worker) optimises for blast radius. Alternative: enforce on the smallest first (worker → canopy → data → cascor) for confidence-building. Pick one.
+
+   **Answer (2026-05-06)**: **proposed order** (data → cascor → canopy → worker). The Phase-0 enumeration confirms the proposed order is also the ascending-cleanup-effort order (data: 30 min → cascor: 15 min → canopy: 1.5 hrs → worker: 0), so blast-radius ordering doesn't conflict with confidence-building.
+
 3. **Custom deny-list home**: live in `juniper-ml/util/` (centralised) or copy per-repo (autonomous)? Centralising means one update point but cross-repo dependency at lint time; per-repo means duplication but no coupling. Default to centralised unless that creates CI bootstrapping pain.
+
+   **Answer (2026-05-06)**: **centralised** in `juniper-ml/util/`. Revisit if it causes problems. The CI-bootstrapping concern is mitigable via `pip install juniper-ml` in each repo's CI bootstrap (already a dependency in some contexts via the `juniper-ml[all]` meta-package); per-repo copies can always be added later if cross-repo coupling becomes painful.
+
+### 10.1 Resolved-question impact on the plan
+
+| Original plan section | Update from answers |
+|---|---|
+| §4 Phase 3 effort ("varies — 1 hr to 1 day") | **Revised to ~2.5 hours total** based on Phase 0 enumeration |
+| §5.2 deny-list home | **Centralised** in `juniper-ml/util/check_async_routes.py` |
+| §7 effort estimate (1–3 person-days) | **Revised to ~1 person-day** ecosystem-wide |
+| §4 Phase 4 enforcement order | **Confirmed**: data → cascor → canopy → worker |
+
+Phase 1 (wiring in disabled state) is the next concrete step, with each in-scope repo getting:
+- Ruff config addition (or `pyproject.toml` extension where ruff is already in use)
+- Pre-commit hook entry, stage-restricted to `manual` (so it doesn't fire on commit until Phase 2)
+- Per-file-ignore drafts based on Phase 0 enumeration (cascor `service_launcher.py`; canopy test files + discovery / health / adapter `# noqa` sites)
+- Stub `juniper-ml/util/check_async_routes.py` to be wired in Phase 1 alongside ruff
