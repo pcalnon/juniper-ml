@@ -135,10 +135,13 @@ async-route-audit:
     - uses: actions/setup-python@v5
       with: { python-version: "3.13" }
     - run: pip install "ruff>=0.5"
-    - run: ruff check --select ASYNC --output-format=github .
+    # --exit-zero is required (see "Lesson learned" below).
+    - run: ruff check --select ASYNC --exit-zero --output-format=github .
 ```
 
 **Effect**: every PR shows the violation list as a CI annotation but doesn't block merge. Owners get visibility without disruption.
+
+> **Lesson learned (2026-05-06, juniper-data PR #94 first run)**: the original plan command omitted `--exit-zero`. Without it, ruff exits 1 when violations are present, the step fails, and the `async-route-audit` job displays as red on the PR — even with `continue-on-error: true` on the job. The job-level flag prevents the workflow from failing as a whole, but does not suppress the visual red indicator on the step. Adding `--exit-zero` makes the step exit 0 (so the job stays green) while `--output-format=github` still renders the violations as PR annotations. Belt and suspenders alongside `continue-on-error: true`. Phase 4 will drop both flags simultaneously to flip enforcement on.
 
 ### Phase 3 — Cleanup PRs (per repo, owner-scoped)
 
