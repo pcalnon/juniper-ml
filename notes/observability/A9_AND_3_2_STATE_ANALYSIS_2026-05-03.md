@@ -15,6 +15,21 @@ left open, and proposes concrete next sub-tracks.
 
 ---
 
+> **STATUS 2026-05-05:** ACTIVE. The two findings this doc re-verifies (A.9 dead `cascor_ws_*` metrics, 3.2 alertmanager `tickets` placeholder) are still OPEN against `origin/main`. OBS-WIRE-01 (juniper-cascor#204) closed A.1–A.6 but explicitly punted A.9; juniper-deploy#51 added the `tickets` route but left the receiver as a placeholder.
+>
+> **Per-section status:**
+>
+> - §1–§4 Re-verification of A.9 + 3.2 against current `main` — STABLE; reflects the world as of 2026-05-03 / 2026-05-04 merges. Cross-thread sync table (§2) may not reflect any new merges since 2026-05-04.
+> - §5 OBS-WIRE-02 proposal (A.9 cleanup sub-track) — OPEN; entry plan not yet written, no PR yet.
+> - §6 OBS-ROUTE-01 proposal (alertmanager tickets receiver) — OPEN; entry plan not yet written, no PR yet.
+> - §7 Open questions for both sub-tracks — UNRESOLVED; awaiting user decision.
+>
+> **Forward pointer:** Live tracking via the new post-program tracker `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). Closing this doc requires OBS-WIRE-02 entry plan + PR (A.9) and OBS-ROUTE-01 entry plan + PR (3.2) to merge — at which point this analysis becomes purely historical and moves to `notes/legacy/`.
+>
+> **Path to COMPLETED:** Both sub-tracks shipped or formally cancelled.
+
+---
+
 ## 1. Purpose
 
 Two of the post-METRICS-MON audit findings sit at a state-of-the-world boundary
@@ -572,8 +587,8 @@ ship OBS-ROUTE-01 now.**
 
 ### Audit and prior-art docs
 - juniper-ml#195 — [`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](../code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) — the parent audit doc; §4.1 + §5 (A.9 row), §3.2
-- juniper-ml#192 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../code-review/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — METRICS-MON close, identifies 6 residuals
-- juniper-ml#187 — [`METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md`](../code-review/METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md) — Q-style entry-plan format reference
+- juniper-ml#192 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — METRICS-MON close, identifies 6 residuals
+- juniper-ml#187 — [`METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md`](../legacy/METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md) — Q-style entry-plan format reference
 - [`SOPS_USAGE_GUIDE.md`](../SOPS_USAGE_GUIDE.md) — SOPS pattern referenced in §4.4
 
 ### Cross-thread merges (A.9-relevant)

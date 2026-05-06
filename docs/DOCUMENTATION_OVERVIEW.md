@@ -46,7 +46,8 @@
 | **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~220 | Cheatsheet | Quick-reference card for common development tasks |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
-> was relocated to `notes/history/` in 2026-04. Use the per-project
+> was relocated to `notes/history/` in 2026-04 and consolidated into
+> `notes/legacy/` in 2026-05. Use the per-project
 > `DEVELOPER_CHEATSHEET.md` files in each repo's `docs/` directory instead.
 
 ### Root Directory

@@ -9,6 +9,11 @@
 
 ---
 
+
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+
+---
+
 ## 1. Purpose
 
 Phase R3 closed 2026-05-01 (juniper-ml#182): every documented metric, probe, and frame is exercised by an asserting test or has an accepted-gap rationale linked to a follow-up. R3.6's coverage-matrix sweep surfaced two implementation gaps (R4.6, R4.7) that join the four pre-planned R4 sub-tracks (R4.1–R4.4) and the R3.1-surfaced R4.5, for **7 sub-tracks total**.

@@ -37,10 +37,10 @@ bash scripts/test_resume_file_safety.bash
 pre-commit run --all-files
 
 # Validate documentation links
-python util/check_doc_links.py --exclude templates --exclude history
+python util/check_doc_links.py --exclude templates --exclude history --exclude legacy
 
 # Validate documentation links (including cross-repo)
-python util/check_doc_links.py --exclude templates --exclude history --cross-repo check
+python util/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo check
 ```
 
 ## Publishing

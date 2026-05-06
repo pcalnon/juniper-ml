@@ -9,6 +9,11 @@
 
 ---
 
+
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+
+---
+
 ## 1. Purpose
 
 Phase R4 closed 2026-05-02 (juniper-ml#186): every histogram has documented per-boundary rationale, the data-client surface is observable through Prometheus closures, the worker heartbeat carries training-loop instrumentation, and the request-id chain spans the canopy/cascor → data-client → data hop. Phase R5 is the **production-observability deliverable** — turning the metric / probe / log surface that R1–R4 built into a usable operator experience: explicit SLOs, validated scrape configuration, working Grafana dashboards, and burn-rate alerting tied to the SLOs.

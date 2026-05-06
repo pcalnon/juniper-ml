@@ -12,6 +12,21 @@ bug pattern has one fix point instead of N copy-pasted inline guards.
 
 ---
 
+> **STATUS 2026-05-05:** ACTIVE — newly authored design doc (today). The recurring "Duplicated timeseries" bug pattern has now surfaced in ~10 production sites across 4 repos with two divergent implementations; this doc is the consolidation proposal. No code work has begun.
+>
+> **Per-section status:**
+>
+> - §1–§4 Bug analysis + implementation comparison — STABLE; reflects the audited state of the 10 call sites.
+> - §5 Proposed `juniper_observability.register_or_reuse(...)` API — PROPOSAL; awaiting review.
+> - §6 Phased migration plan — PROPOSAL; sequencing depends on user approval of §5 API shape.
+> - §7 Open questions — UNRESOLVED; needs user decision before entry plan.
+>
+> **Forward pointer:** OBS-COLLECTOR-IDEMPOTENT entry plan (not yet written). Once written, it will land in `notes/code-review/` and supersede this design doc as the implementation authority. Tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR).
+>
+> **Path to COMPLETED:** This doc moves to `notes/legacy/` once (a) the helper lands in `juniper-observability` and (b) the migration PRs against the ~10 call sites all merge, OR the proposal is formally rejected.
+
+---
+
 ## 1. TL;DR
 
 Between 2026-05-02 and 2026-05-04, the same `prometheus_client.REGISTRY` duplicated-timeseries bug surfaced and was fixed in five different code paths across four repos (canopy V34a, juniper-data #87, juniper-ml #211 + #214, juniper-cascor #216, juniper-cascor-client #37, juniper-canopy #240).
