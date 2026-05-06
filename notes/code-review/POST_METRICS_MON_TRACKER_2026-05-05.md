@@ -13,7 +13,7 @@
 
 **Source documents (must read first when picking this up):**
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 (residual follow-ups)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 (residual follow-ups)
 - [`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) §5 (consolidated action items)
 - [`../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`](../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md) §4 (3.2 state)
 - juniper-deploy `notes/SLO_CATALOG_2026-05-03.md` §2.6, §6 Q6 (cross-repo)
@@ -49,9 +49,11 @@ When an item closes, log it in §5 with the closing PR + date and remove the row
 | **R5.6-THROTTLE** | Cascor 25-epoch emit throttle removal | P3 | juniper-cascor | No date — coupled to Q4 of TRAIN-ARCH-01 | TRAIN-ARCH-01 (sequencing) | deferred | Single-line gate change in `cascade_correlation.py:1655` (the `epoch % 25 == 0 or epoch == epochs - 1` guard) + adjust the histogram-count assertions in test code. Useful as a separate small PR once per-step granularity is in scope. |
 | **R1.3.4-FLAG** | Helm chart `worker.healthcheck.enabled` default flip | P3 | juniper-deploy | After staging confirms worker image ≥ 0.4.0 stable in production-shaped traffic | (none) | deferred | Bump `worker.healthcheck.enabled` default to `true`, chart `1.1.0 → 1.2.0` per Helm chart version convention; carried forward from R1 phase. |
 | **R2-WORKER-DEDUP** | juniper-cascor-worker contract-constant dedup | P3 | juniper-cascor-worker | No date — opportunistic | (none) | deferred | Replace the worker's two duplicated literals (`LIVENESS_TICK_BUDGET_MS`, `READINESS_HEADER`) with shared-lib imports under a ≤ 10-line PR. Decline if no maintenance pressure surfaces. |
-| **WORKER-PENDING-TASKS** | `juniper_cascor_pending_tasks` worker→Prometheus bridge gap | P3 | juniper-cascor | No date — independent | (none) | open | Wire a `pending_tasks` gauge into `WorkerRegistryCollector` (`juniper-cascor/src/api/workers/metrics.py`); the §4.2 SLI catalog alert is already shipped guarded by `absent_over_time(...) == 0` so it stays inert until the gauge appears. |
+| **WORKER-PENDING-TASKS** | `juniper_cascor_pending_tasks` worker→Prometheus bridge gap | P3 | juniper-cascor | No date — independent | (none) | **closed (juniper-cascor#218)** | Bridge shipped 2026-05-04: `WorkerRegistryCollector` extended with optional `coordinator=` kwarg; `pending_tasks_count()` accessor on `WorkerCoordinator`; gauge silently skipped when no coordinator wired (back-compat). Closed via 6 new tests in `TestPendingTasksGaugeAudit_4_2`. |
+| **DATA-CACHED-WIRE** | `juniper_data_datasets_cached` Gauge has no production caller | P2 | juniper-data | In flight 2026-05-06 — sister PR | (none) | in-flight | Wire `set_datasets_cached(len(cache))` at every cache mutation site in juniper-data's cache layer. Surfaced by post-METRICS-MON state report (juniper-ml#223 §15) — audit Dim A missed this dead metric. **Wire, do NOT remove** (user-directed 2026-05-06). |
+| **DASHBOARD-STALE-PANELS** | 7 stale panels in juniper-deploy Grafana dashboards | P1 (operational) | juniper-deploy | In flight 2026-05-06 — sister PR | (none) | in-flight | (a) Remove 3 cascor `juniper_cascor_inference_*` panels — those metrics were REMOVED by OBS-WIRE-01 (juniper-cascor#204) but dashboards still query them ("no data" overlays). (b) Replace 4 worker-bridge "pending" placeholder text panels with real PromQL panels — the bridge actually shipped via juniper-cascor#188 + #218. Surfaced by state report juniper-ml#223 §15. |
 
-**Severity tally**: P1 = 2 · P2 = 1 · P3 = 7 · Total = **10**.
+**Severity tally** (open + in-flight): P1 = 3 · P2 = 2 · P3 = 6 · **Total = 11** (1 closed: WORKER-PENDING-TASKS).
 
 ---
 
@@ -277,7 +279,13 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 
 ### 3.10 WORKER-PENDING-TASKS — `juniper_cascor_pending_tasks` worker→Prometheus bridge gap
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** open
+**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+
+> **STATUS UPDATE 2026-05-06:** This item was tracked as open in the
+> 2026-05-05 first-cut tracker but had actually been closed the day
+> prior. The tracker agent missed the recent merge during inventory.
+> Detail section preserved for ≥ 30-day historical visibility per
+> §4.1; will be pruned in a doc-cleanup PR after 2026-06-04.
 
 **Background.** `SLO_CATALOG_2026-05-03.md` §4.2 (cascor pending-task queue depth) references `juniper_cascor_pending_tasks` which **does not yet exist**. The §4.2 alert in `prometheus/alert_rules.yml` is shipped guarded by `absent_over_time(...) == 0` so it stays harmlessly inert until the metric appears. R5.4-pre (juniper-cascor#188) shipped `WorkerRegistryCollector` at `juniper-cascor/src/api/workers/metrics.py` exposing worker heartbeat fields as Prometheus gauges; pending-task queue depth is the remaining §4.2 gap.
 
@@ -293,6 +301,67 @@ The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_
 **Cross-references.** Catalog §4.2, §6 Q3 · juniper-cascor#188 (`WorkerRegistryCollector` introduction).
 
 **Trigger / due date.** None — independent small sub-track. Useful at any time; pairs naturally with WS metric wire-ups already shipped via OBS-WIRE-01.
+
+---
+
+### 3.11 DATA-CACHED-WIRE — `juniper_data_datasets_cached` Gauge has no production caller
+
+**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
+
+**Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found that `juniper_data_datasets_cached` Gauge is defined in `juniper_data/api/observability.py` and the helper `set_datasets_cached(n: int)` is mock-tested in `juniper_data/tests/unit/test_observability.py::TestDatasetMetrics::test_set_datasets_cached`, but **no production code path calls it**. Audit Dim A's dead-metric inventory missed this case (the audit grepped for unwired training/WS metrics in cascor/canopy more aggressively than for the data-side cache surface).
+
+User direction (2026-05-06): **wire, do NOT remove**.
+
+**Concrete actions.**
+
+1. Locate juniper-data's dataset cache layer. Most likely candidate: `juniper_data/data/cached_store.py` or a similar module behind the dataset-store abstraction. Verify by grep'ing for `cached_store`, `CachedStore`, `dataset.*cache`.
+2. At every cache mutation site (insert, evict, clear, batch update), call `set_datasets_cached(len(self._cache))` (or whatever the count-of-cached-datasets accessor is on the cache class).
+3. Add unit tests covering at least: insert advances the gauge, evict decreases it, post-clear the gauge reads 0.
+4. The metric is unlabelled (single series) per the helper signature `set_datasets_cached(n: int)`.
+
+**Verification — closed when:** the cache mutation tests assert gauge values match `len(cache)` after each operation, and the closing PR cites the cache-layer files touched.
+
+**Cross-references.**
+
+- Sister PR in flight: branch `audit-fixup/wire-datasets-cached-gauge` in juniper-data.
+- State report: juniper-ml#223 §15.
+- Existing helper test: `juniper_data/tests/unit/test_observability.py::TestDatasetMetrics::test_set_datasets_cached`.
+
+**Trigger / due date.** Sister PR in flight; closes when that PR merges.
+
+---
+
+### 3.12 DASHBOARD-STALE-PANELS — 7 stale Grafana panels post audit-close
+
+**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
+
+**Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found two clusters of stale panels in `juniper-deploy/grafana/provisioning/dashboards/`:
+
+**Cluster 1 — 3 cascor inference panels (REMOVE).** OBS-WIRE-01 (juniper-cascor#204) removed the entire `juniper_cascor_inference_*` metric family (no production caller; user chose REMOVE on audit finding A.5). The cascor dashboard still has 3 panels querying those removed metrics — operators see "no data" overlays where panels should not exist.
+
+**Cluster 2 — 4 worker-bridge "pending" placeholder panels (REPLACE).** When R5.3 originally shipped (juniper-deploy#46), the worker-bridge metrics didn't exist on `/metrics` yet (R4.4 only emitted them via JSON `/v1/workers`). R5.3 added 4 placeholder text panels documenting the gap. Subsequent work CLOSED that gap (juniper-cascor#188 shipped `WorkerRegistryCollector`; juniper-cascor#218 added the pending-tasks gauge), but the placeholders never got replaced with real PromQL panels.
+
+**Concrete actions.**
+
+1. Cluster 1: delete the 3 cascor inference panels from the cascor dashboard JSON. Renumber sibling panel `id:` if convention requires.
+2. Cluster 2: replace each placeholder text panel with a real `timeseries` / `stat` panel. Likely mappings:
+   - "Worker heartbeat freshness" → `juniper_cascor_worker_heartbeat_age_seconds{worker_id}` (timeseries by worker)
+   - "Worker GPU utilization" → `juniper_cascor_worker_gpu_utilization_pct{worker_id}`
+   - "Worker recent task duration p50/p95" → `juniper_cascor_worker_recent_task_duration_seconds_p{50,95}{worker_id}`
+   - "Pending tasks / queue depth" → `juniper_cascor_pending_tasks` (unlabelled)
+3. Bump `version:` field on each touched dashboard from 3 → 4.
+4. `jq empty` validation on each touched JSON file.
+5. promtool-validate the new PromQL expressions via the synthetic-rules-file pattern established in juniper-deploy#46.
+
+**Verification — closed when:** all 4 dashboards remain valid JSON, `promtool check rules` passes on the synthetic rules file, and the operator (visiting the cascor + overview dashboards) sees real data instead of "no data" overlays / placeholder text.
+
+**Cross-references.**
+
+- Sister PR in flight: branch `audit-fixup/stale-dashboard-panels` in juniper-deploy.
+- State report: juniper-ml#223 §15.
+- Source-of-truth metric definitions: juniper-cascor `src/api/workers/metrics.py` (lines 75-87 — bridge metric names).
+
+**Trigger / due date.** Sister PR in flight; closes when that PR merges.
 
 ---
 
@@ -331,7 +400,7 @@ Retirement procedure: `git mv notes/code-review/POST_METRICS_MON_TRACKER_2026-05
 
 | Item ID | Closed by PR | Closed on | Verification | Notes |
 |---------|--------------|-----------|--------------|-------|
-| _(none yet)_ | | | | |
+| WORKER-PENDING-TASKS | [juniper-cascor#218](https://github.com/pcalnon/juniper-cascor/pull/218) | 2026-05-04 | 6 new tests in `TestPendingTasksGaugeAudit_4_2`; `WorkerRegistryCollector` extended with `coordinator=` kwarg; `pending_tasks_count()` accessor on `WorkerCoordinator`; gauge silently skipped when no coordinator wired (back-compat) | Catalog §4.2 SLI now computable; alert's `absent_over_time(...) == 0` guard becomes inert at scrape time. |
 
 ---
 
@@ -339,7 +408,7 @@ Retirement procedure: `git mv notes/code-review/POST_METRICS_MON_TRACKER_2026-05
 
 ### Primary
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
 - [`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) §5 — consolidated action items (juniper-ml#195)
 - [`../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`](../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md) §4 — finding 3.2 state and Option B recommendation (juniper-ml#197)
 
