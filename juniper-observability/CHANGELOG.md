@@ -8,6 +8,15 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+### Changed
+
+- ``PrometheusMiddleware.__init__`` and ``set_build_info`` now use the
+  canonical ``register_or_reuse`` / ``register_info_or_update`` helpers
+  introduced in ``0.2.0`` instead of inlining the try/except + REGISTRY-
+  lookup pattern. Pure internal refactor — production behaviour and the
+  collectors' wire format are unchanged. Phase 1 of the migration plan
+  in ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``.
+
 ## [0.2.0] - 2026-05-05
 
 Minor bump for additive new public API surface. No breaking changes vs `0.1.1`; existing consumers of `PrometheusMiddleware`, `set_build_info`, `configure_logging`, etc. continue to work unchanged. Recommended pin for new consumers: `juniper-observability>=0.2.0`.
