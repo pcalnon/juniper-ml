@@ -71,7 +71,7 @@ jobs:
 
       - name: Install pre-commit
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade "pip>=26.1.1"
           pip install pre-commit
 
       - name: Cache pre-commit hooks
@@ -220,6 +220,7 @@ jobs:
           echo "╔════════════════════════════════════════════════════════════╗"
           echo "║       juniper-ml - pip-audit Security Scan                ║"
           echo "╚════════════════════════════════════════════════════════════╝"
+          python -m pip install --upgrade "pip>=26.1.1"
           pip install pip-audit
           pip install -e .
           # --skip-editable so the meta-package itself (installed as editable)
@@ -230,15 +231,7 @@ jobs:
           # editable install as "dependency collection failure", and --strict
           # would escalate that to a fatal error. Real vulnerabilities still
           # cause exit 1 without --strict.
-          #
-          # --ignore-vuln CVE-2026-3219: pip 26.0.1 (the version pre-installed
-          # on the GitHub Actions runner image) is vulnerable to the
-          # concatenated-tar/ZIP confusion issue. As of 2026-04-29 there is
-          # no fixed pip release (the advisory's "Fix Versions" column is
-          # empty), so pip-audit fails the build for a CVE we cannot
-          # remediate from this repo. Re-evaluate this ignore when pip
-          # publishes a fix and remove the flag.
-          pip-audit --desc on --skip-editable --ignore-vuln CVE-2026-3219
+          pip-audit --desc on --skip-editable
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Dependency Documentation: Generate pip dependency records
@@ -259,7 +252,7 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade "pip>=26.1.1"
           pip install -e .
 
       - name: Generate Dependency Documentation
