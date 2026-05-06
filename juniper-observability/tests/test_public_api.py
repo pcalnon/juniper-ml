@@ -33,6 +33,11 @@ EXPECTED_PUBLIC_SYMBOLS = {
     # Prometheus utils
     "get_prometheus_app",
     "set_build_info",
+    # Prometheus collector helpers (idempotent registration patterns)
+    "lazy_register_or_reuse",
+    "register_fresh",
+    "register_info_or_update",
+    "register_or_reuse",
     # Sentry
     "DEFAULT_SENTRY_TRACES_SAMPLE_RATE",
     "configure_sentry",
