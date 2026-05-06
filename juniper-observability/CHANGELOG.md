@@ -8,6 +8,10 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-05-05
+
+Minor bump for additive new public API surface. No breaking changes vs `0.1.1`; existing consumers of `PrometheusMiddleware`, `set_build_info`, `configure_logging`, etc. continue to work unchanged. Recommended pin for new consumers: `juniper-observability>=0.2.0`.
+
 ### Added
 
 - ``juniper_observability.prometheus_helpers`` — four idempotent
