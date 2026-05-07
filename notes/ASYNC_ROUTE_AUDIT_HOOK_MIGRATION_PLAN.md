@@ -37,9 +37,9 @@
 3. (Pending first regression) — the next BUG-JD-10-class introduction will be caught in PR.
 4. (Pending 2026-11) — semi-annual `# noqa: ASYNC*` audit.
 
-**Open follow-ups** (deferred, not blocking):
-- Branch-protection rule additions: each repo's "Require status checks" list still needs the new `Async-route audit (BUG-JD-10 class)` lane added (GitHub UI-only, no code change).
-- Centralised deny-list (§5.2 / Q3) — the `juniper-ml/util/check_async_routes.py` script for project-internal blocking calls (`store.get_meta`, etc.) has not been written. Phase 0 found that ruff's stdlib coverage caught 27 sites without it; revisit if a future BUG-JD-10-class slips through.
+**Open follow-ups** (deferred, not blocking) — tracked in [`FOLLOWUP_ASYNC_ROUTE_AUDIT.md`](./FOLLOWUP_ASYNC_ROUTE_AUDIT.md):
+- Item 1: branch-protection rule additions — each repo's "Require status checks" list still needs the new `Async-route audit (BUG-JD-10 class)` lane added (GitHub UI-only, no code change).
+- Item 2: centralised deny-list (§5.2 / Q3) — the `juniper-ml/util/check_async_routes.py` script for project-internal blocking calls (`store.get_meta`, etc.) has not been written. Phase 0 found that ruff's stdlib coverage caught all 27 sites without it; revisit if a future BUG-JD-10-class slips through.
 - Doc-link hygiene: this plan is now referenced from inline comments in 4 repos' `ci.yml` and `.pre-commit-config.yaml`; if it ever moves, update those comments.
 
 The rest of this document remains as written for the audit trail.
