@@ -252,6 +252,67 @@ class TestEnvOverridesDocumented(unittest.TestCase):
     def test_cascor_auth_token_documented(self) -> None:
         self.assertIn("CASCOR_AUTH_TOKEN", SCRIPT_TEXT)
 
+    def test_data_host_documented(self) -> None:
+        # Pass 2 fix #7 + #9 — JUNIPER_DATA_HOST is a documented override.
+        self.assertIn("JUNIPER_DATA_HOST", SCRIPT_TEXT)
+
+
+class TestDataHostHonorsOverride(unittest.TestCase):
+    """Audit fix #7 + #9 — JUNIPER_DATA_HOST respects caller value."""
+
+    def test_data_host_uses_default_expansion(self) -> None:
+        self.assertIn(
+            'JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-0.0.0.0}"',
+            SCRIPT_TEXT,
+        )
+
+    def test_legacy_unconditional_data_host_removed(self) -> None:
+        # The prior `JUNIPER_DATA_HOST="0.0.0.0"` (unconditional, ignored
+        # caller value) must not still be present.
+        self.assertNotIn(
+            'JUNIPER_DATA_HOST="0.0.0.0"\n',
+            SCRIPT_TEXT,
+        )
+
+
+class TestUvicornPreflightDeferred(unittest.TestCase):
+    """Audit fix #8 — uvicorn dropped from global pre-flight."""
+
+    def test_uvicorn_not_in_command_check_loop(self) -> None:
+        # The for-loop that checks required commands must no longer include
+        # uvicorn (which lives inside conda envs, not the launcher PATH).
+        self.assertNotIn("for cmd in curl ss uvicorn", SCRIPT_TEXT)
+        self.assertIn("for cmd in curl ss", SCRIPT_TEXT)
+
+
+class TestCascorHostExported(unittest.TestCase):
+    """Audit fix #4 — JUNIPER_CASCOR_HOST exported to cascor process."""
+
+    def test_cascor_invocation_exports_host(self) -> None:
+        # The nohup line for cascor must front-load JUNIPER_CASCOR_HOST.
+        self.assertIn(
+            'JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST}"',
+            SCRIPT_TEXT,
+        )
+
+
+class TestPidFileFormat(unittest.TestCase):
+    """Audit fix #10 — pid file written as `name=pid`."""
+
+    def test_pid_file_uses_equals_format(self) -> None:
+        self.assertIn('echo "juniper-data=${JUNIPER_DATA_PID}"', SCRIPT_TEXT)
+        self.assertIn('echo "juniper-cascor=${JUNIPER_CASCOR_PID}"', SCRIPT_TEXT)
+        self.assertIn('echo "juniper-canopy=${JUNIPER_CANOPY_PID}"', SCRIPT_TEXT)
+        self.assertIn(
+            'echo "juniper-cascor-worker=${JUNIPER_WORKER_PID}"',
+            SCRIPT_TEXT,
+        )
+
+    def test_legacy_colon_format_removed_from_writer(self) -> None:
+        # Plant must not still emit the legacy "name: pid" format.
+        self.assertNotIn('echo "juniper-data:', SCRIPT_TEXT)
+        self.assertNotIn('echo "juniper-cascor:', SCRIPT_TEXT)
+
 
 if __name__ == "__main__":
     unittest.main()

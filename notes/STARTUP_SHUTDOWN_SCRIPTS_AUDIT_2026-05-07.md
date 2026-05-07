@@ -2,7 +2,7 @@
 
 **Author:** Paul Calnon
 **Subject:** Audit and refresh of `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
-**Status:** Pass 1 — implemented (validation + tests pending). Pass 2 — pending.
+**Status:** Pass 1 — shipped (PR #235). Pass 2 — implemented (validation + tests pending).
 **Branches:**
 
 - Pass 1: `fix/startup-scripts-pass1` (BROKEN + DEGRADED items)
@@ -237,12 +237,27 @@ In-scope items: **#4, #7, #8, #9, #10, #11**. (#12 stays as-is.)
 
 | Item | Severity | Status |
 | ---- | -------- | ------ |
-| #4 cascor host export | 🟡 DEGRADED | pending |
-| #7 data host honors override | 🟢 NIT | pending |
-| #8 uvicorn preflight | 🟢 NIT | pending |
-| #9 data-host shadowing | 🟢 NIT | pending |
-| #10 pid file format | 🟢 NIT | pending |
-| #11 worker grep tightening | 🟢 NIT | pending |
+| #4 cascor host export | 🟡 DEGRADED | implemented |
+| #7 data host honors override | 🟢 NIT | implemented |
+| #8 uvicorn preflight | 🟢 NIT | implemented |
+| #9 data-host shadowing | 🟢 NIT | implemented |
+| #10 pid file format | 🟢 NIT | implemented |
+| #11 worker grep tightening | 🟢 NIT | implemented |
+
+**Pass 2 implementation summary:** ~25-line diff across both scripts.
+
+- `JUNIPER_DATA_HOST` now respects caller-provided value (`${JUNIPER_DATA_HOST:-0.0.0.0}`).
+- `uvicorn` removed from the global pre-flight `command -v` set; it lives inside each
+  conda env and is picked up by `safe_conda_activate`.
+- Cascor invocation now exports both `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` to
+  the cascor process so the docstring's documented host override actually rebinds.
+- Plant writes pid file as `name=pid` (one per line). Chop accepts both `=` and legacy
+  `:` delimiters during the transition window — verified with both formats.
+- Chop's worker-cleanup grep tightened from
+  `juniper.cascor.worker\|juniper_cascor_worker\|cascor.*worker\|<term>` to
+  `juniper-cascor-worker\|juniper_cascor_worker\|<term>`.
+
+`bash -n` and `shellcheck` clean on both files.
 
 ### Pass 2 testing plan
 

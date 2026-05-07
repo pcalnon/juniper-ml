@@ -9,6 +9,7 @@
 # Environment overrides:
 #   JUNIPER_PROJECT_DIR        — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
 #   JUNIPER_CONDA_DIR          — Miniforge/conda install dir (default: /opt/miniforge3)
+#   JUNIPER_DATA_HOST          — juniper-data bind host (default: 0.0.0.0)
 #   JUNIPER_DATA_PORT          — juniper-data listen port (default: 8100)
 #   JUNIPER_CASCOR_HOST        — juniper-cascor bind host (default: localhost)
 #   JUNIPER_CASCOR_PORT        — juniper-cascor listen port (default: 8201)
@@ -90,7 +91,7 @@ JUNIPER_DATA_DIR="${JUNIPER_PROJECT_DIR}/juniper-data"
 JUNIPER_DATA_LOG_DIR="${JUNIPER_DATA_DIR}/logs"
 JUNIPER_DATA_LOGNAME="juniper-data_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_DATA_LOG="${JUNIPER_DATA_LOG_DIR}/${JUNIPER_DATA_LOGNAME}"
-JUNIPER_DATA_HOST="0.0.0.0"
+JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-0.0.0.0}"
 JUNIPER_DATA_PORT="${JUNIPER_DATA_PORT:-8100}"
 JUNIPER_DATA_CONDA="JuniperData"
 
@@ -293,8 +294,10 @@ fi
 ###########################################################################################################################################################################################################
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Pre-flight Checks ==="
 
-# Validate required external commands
-for cmd in curl ss uvicorn; do
+# Validate required external commands. Note: uvicorn intentionally NOT listed
+# here — it lives inside each service's conda env, not on the launcher's PATH.
+# The per-env conda activation step picks it up automatically.
+for cmd in curl ss; do
     if ! command -v "${cmd}" >/dev/null 2>&1; then
         echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ERROR: Required command '${cmd}' not found in PATH"
         exit 1
@@ -392,8 +395,12 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CASCOR_SRC_DIR}\""
 cd "${JUNIPER_CASCOR_SRC_DIR}" || exit 1
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CASCOR_CONDA}\""
 safe_conda_activate "${JUNIPER_CASCOR_CONDA}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${JUNIPER_CASCOR_PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
-JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT}" nohup "${JUNIPER_CASCOR_PYTHON}" "${JUNIPER_CASCOR_MODULE}" >"${JUNIPER_CASCOR_LOG}" 2>&1 &
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_HOST=\"${JUNIPER_CASCOR_HOST}\" JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${JUNIPER_CASCOR_PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
+# Export both HOST and PORT so the documented JUNIPER_CASCOR_HOST override
+# actually rebinds the cascor server (cascor's settings default host=127.0.0.1).
+JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST}" \
+    JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT}" \
+    nohup "${JUNIPER_CASCOR_PYTHON}" "${JUNIPER_CASCOR_MODULE}" >"${JUNIPER_CASCOR_LOG}" 2>&1 &
 JUNIPER_CASCOR_PID=$!
 STARTED_PIDS+=("${JUNIPER_CASCOR_PID}")
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PID=\"${JUNIPER_CASCOR_PID}\""
@@ -461,11 +468,13 @@ set -u
 trap - ERR
 
 : > "${JUNIPER_PROJECT_PID_FILE}"
+# Format: one `name=pid` per line. Chop's parser also accepts the legacy
+# `name: pid` format for backward compatibility.
 {
-    echo "juniper-data:           ${JUNIPER_DATA_PID}"
-    echo "juniper-cascor:         ${JUNIPER_CASCOR_PID}"
-    echo "juniper-canopy:         ${JUNIPER_CANOPY_PID}"
-    echo "juniper-cascor-worker:  ${JUNIPER_WORKER_PID}"
+    echo "juniper-data=${JUNIPER_DATA_PID}"
+    echo "juniper-cascor=${JUNIPER_CASCOR_PID}"
+    echo "juniper-canopy=${JUNIPER_CANOPY_PID}"
+    echo "juniper-cascor-worker=${JUNIPER_WORKER_PID}"
 } >> "${JUNIPER_PROJECT_PID_FILE}"
 
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PID file written to ${JUNIPER_PROJECT_PID_FILE}:"
