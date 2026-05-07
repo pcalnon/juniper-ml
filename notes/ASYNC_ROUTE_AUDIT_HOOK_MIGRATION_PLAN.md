@@ -2,8 +2,47 @@
 
 **Owner**: Paul Calnon
 **Created**: 2026-05-05
-**Status**: Draft (proposal)
+**Status**: **Complete (2026-05-06)** — all four phases shipped across the four in-scope repos.
 **Source audit**: [`ROADMAP_AUDIT_2026-05-05.md`](./ROADMAP_AUDIT_2026-05-05.md) §9.4
+
+---
+
+## 0. Migration ledger (closed 2026-05-06)
+
+| Phase | Repo | PR | Result |
+|---|---|---|---|
+| 0 (discovery) | all 4 | [`ASYNC_ROUTE_VIOLATIONS_2026-05-06.md`](./ASYNC_ROUTE_VIOLATIONS_2026-05-06.md) | 27 violations enumerated; worker clean |
+| 1 (wiring, disabled) | juniper-data | data#92 | merged |
+| 1 (wiring, disabled) | juniper-cascor | cascor#231 | merged |
+| 1 (wiring, disabled) | juniper-canopy | canopy#243 | merged |
+| 1 (wiring, disabled) | juniper-cascor-worker | worker#55 | merged |
+| 2 (soft-fail visibility) | juniper-data | data#94 | merged (with `--exit-zero` lesson learned) |
+| 2 (soft-fail visibility) | juniper-cascor | cascor#232 | merged |
+| 2 (soft-fail visibility) | juniper-canopy | canopy#244 | merged |
+| 2 (soft-fail visibility) | juniper-cascor-worker | worker#56 | merged |
+| 3 (cleanup) | juniper-data | data#96 (3 fixes) | merged — `_probe_storage` helper |
+| 3 (cleanup) | juniper-cascor | (no-op — Phase 1 per-file-ignore covered all 4 sites) | n/a |
+| 3 (cleanup) | juniper-canopy | canopy#247 (5 fixes) | merged — `_load_snapshot_history` / `_find_snapshot_file` helpers + 2 noqas |
+| 3 (cleanup) | juniper-cascor-worker | (no-op — clean from Phase 0) | n/a |
+| 4 (enforce) | juniper-data | data#98 | merged |
+| 4 (enforce) | juniper-cascor | cascor#235 | merged |
+| 4 (enforce) | juniper-canopy | canopy#248 | merged |
+| 4 (enforce) | juniper-cascor-worker | worker#57 | merged |
+
+**Total elapsed**: ~36 hours wall-clock from Phase 0 enumeration to final Phase 4 merge (2026-05-06 morning → 2026-05-06 evening). Code-time was much lower; the gating factor was sequencing the four-repo PR train per phase.
+
+**Outcome vs success criteria** (§8):
+1. ✅ Every in-scope repo has a green enforced `async-route-audit` CI lane.
+2. ✅ `git grep -nE "ruff check.*--select ASYNC"` returns hits in all 4 repos' `.github/workflows/ci.yml`.
+3. (Pending first regression) — the next BUG-JD-10-class introduction will be caught in PR.
+4. (Pending 2026-11) — semi-annual `# noqa: ASYNC*` audit.
+
+**Open follow-ups** (deferred, not blocking):
+- Branch-protection rule additions: each repo's "Require status checks" list still needs the new `Async-route audit (BUG-JD-10 class)` lane added (GitHub UI-only, no code change).
+- Centralised deny-list (§5.2 / Q3) — the `juniper-ml/util/check_async_routes.py` script for project-internal blocking calls (`store.get_meta`, etc.) has not been written. Phase 0 found that ruff's stdlib coverage caught 27 sites without it; revisit if a future BUG-JD-10-class slips through.
+- Doc-link hygiene: this plan is now referenced from inline comments in 4 repos' `ci.yml` and `.pre-commit-config.yaml`; if it ever moves, update those comments.
+
+The rest of this document remains as written for the audit trail.
 
 ---
 
