@@ -119,12 +119,18 @@ returns `{"status":"ok","version":"0.4.0"}` immediately.
 
 ---
 
-## 5. Open follow-ups (not blockers)
+## 5. Follow-ups
 
-- **Install `juniper-cascor-worker` into `JuniperCascor1`** so the worker
-  default can flip to `JuniperCascor1` and the legacy env can be retired.
-- **Rebuild or reinstall torch in `JuniperCascor`** (or simply delete and
-  recreate the env on Python 3.13 to mirror `JuniperCascor1`). Until then,
-  `JuniperCascor` remains broken for any cascor module that imports torch.
-- **Document the env split** in `juniper-cascor/AGENTS.md` if it remains
-  long-lived.
+- **DONE 2026-05-07**: `juniper-cascor-worker` installed editable into
+  `JuniperCascor1` from
+  `/home/pcalnon/Development/python/Juniper/juniper-cascor-worker`.
+  `JUNIPER_WORKER_CONDA` default flipped to `JuniperCascor1` in commit
+  `b4fd09d` and the comment block above the assignment was tidied to
+  match in this PR. The legacy `JuniperCascor` env is no longer required
+  by `juniper_plant_all.bash`.
+- **Open**: rebuild or reinstall torch in `JuniperCascor` (or simply
+  delete and recreate the env on Python 3.13 to mirror `JuniperCascor1`).
+  Until then, `JuniperCascor` remains broken for any cascor module that
+  imports torch and should be considered deprecated.
+- **Open**: document the env split (or its retirement) in
+  `juniper-cascor/AGENTS.md` if useful for future contributors.
