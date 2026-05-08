@@ -119,6 +119,81 @@ returns `{"status":"ok","version":"0.4.0"}` immediately.
 
 ---
 
+## 4a. Secondary failure: activate-hook pipefail interaction (2026-05-08)
+
+After §3.1–§3.2 shipped and `juniper-cascor` was confirmed healthy, a
+follow-up `juniper_plant_all.bash` run still aborted **silently** during
+the `juniper-canopy` activation step. The script log ended at:
+
+```
+[juniper_plant_all.bash:439] conda activate "JuniperCanopy1"
+```
+
+with `exit_code=1` and no further output (the ERR-trap cleanup message
+also did not fire — the shell was already in a corrupted state).
+
+**Reproducer** (run under the same shell flags as the script):
+
+```bash
+$ bash -c 'set -euo pipefail
+  source /opt/miniforge3/etc/profile.d/conda.sh
+  set +u; conda activate JuniperCanopy1; set -u'
+/opt/miniforge3/etc/profile.d/conda.sh: line 52: pop_var_context: head of shell_variables not a function context
+environment: line 3: pop_var_context: head of shell_variables not a function context
+```
+
+**Root cause.** Both LIBTORCH-strip activate hooks
+(`/opt/miniforge3/envs/JuniperCanopy1/etc/conda/activate.d/00_isolate_from_tch_rs.sh`
+and the `JuniperCascor` mirror added in §3.2) used a pipeline of:
+
+```bash
+cleaned=$(printf '%s' "${LD_LIBRARY_PATH}" | tr ':' '\n' | grep -v '/rust_mudgeon/' | paste -sd ':' -)
+```
+
+When `LD_LIBRARY_PATH` contains *only* a rust_mudgeon segment — which is
+exactly the state set by `~/.bashrc` (`LD_LIBRARY_PATH=${LIBTORCH}/lib:`)
+— `grep -v '/rust_mudgeon/'` exits 1 (no matching lines). Under bash's
+`pipefail`, the whole pipeline returns 1; under `set -e`, the activate
+hook is aborted mid-execution. Conda's variable-context bookkeeping is
+left inconsistent, the `pop_var_context` error fires on the next shell
+operation that uses scoped variables, and `safe_conda_activate` returns
+non-zero. The `juniper_plant_all.bash` ERR trap fires but its cleanup
+output is itself swallowed by the corrupted state.
+
+**Fix.** Replaced the `grep -v | paste` pipeline in both hooks with a
+pure-bash split that has no subprocess that can fail under pipefail:
+
+```bash
+_saved_ifs="${IFS:-$' \t\n'}"
+IFS=':' read -ra _segs <<<"${LD_LIBRARY_PATH}"
+IFS="${_saved_ifs}"; unset _saved_ifs
+cleaned=""
+for _seg in "${_segs[@]}"; do
+    if [ -n "${_seg}" ] && [[ "${_seg}" != */rust_mudgeon/* ]]; then
+        cleaned="${cleaned:+${cleaned}:}${_seg}"
+    fi
+done
+unset _seg _segs
+```
+
+Both hooks now safely activate under `set -euo pipefail`. After the
+fix, `juniper_plant_all.bash` runs end-to-end with all four services
+healthy:
+
+| Service | Port | Health |
+|---|---|---|
+| juniper-data | 8100 | `{"status":"ok","version":"0.6.0"}` |
+| juniper-cascor | 8201 | `{"status":"ok","version":"0.4.0"}` |
+| juniper-canopy | 8050 | `{"status":"healthy",…,"juniper_data_available":true}` |
+| juniper-cascor-worker | 8210 | `{"status":"ready","service":"juniper-cascor-worker"}` |
+
+These hook files live outside the repo, so the change is documented
+here rather than committed. Future env rebuilds should reinstate the
+pure-bash split — not the grep pipeline — to keep the hooks safe under
+strict callers.
+
+---
+
 ## 5. Follow-ups
 
 - **DONE 2026-05-07**: `juniper-cascor-worker` installed editable into
