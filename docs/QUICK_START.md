@@ -41,11 +41,11 @@ pip install juniper-ml[all]
 
 ### What Each Extra Installs
 
-| Extra | Packages |
-|-------|----------|
+| Extra     | Packages                                                     |
+|-----------|--------------------------------------------------------------|
 | `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
-| `worker` | `juniper-cascor-worker>=0.3.0` |
-| `all` | All three packages above |
+| `worker`  | `juniper-cascor-worker>=0.3.0`                               |
+| `all`     | All three packages above                                     |
 
 ### Shared Observability Package
 
@@ -68,7 +68,7 @@ pip list | grep juniper
 
 Expected output (with `[all]`):
 
-```
+```bash
 juniper-cascor-client    0.3.x
 juniper-cascor-worker    0.3.x
 juniper-data-client      0.4.x
