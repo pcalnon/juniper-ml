@@ -155,7 +155,7 @@ JUNIPER_WORKER_LOG="${JUNIPER_WORKER_LOG_DIR}/${JUNIPER_WORKER_LOGNAME}"
 # The juniper-cascor-worker pip wheel currently lives only in the JuniperCascor
 # env. If you also install it into JuniperCascor1 (recommended for env unity),
 # point this override at JuniperCascor1 to retire the legacy env entirely.
-JUNIPER_WORKER_CONDA="${JUNIPER_WORKER_CONDA:-JuniperCascor}"
+JUNIPER_WORKER_CONDA="${JUNIPER_WORKER_CONDA:-JuniperCascor1}"
 JUNIPER_WORKER_BIN="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_WORKER_CONDA}/bin/juniper-cascor-worker"
 # Worker connects to cascor's WebSocket endpoint. Required env var, no default in worker config.
 JUNIPER_WORKER_SERVER_URL="${CASCOR_SERVER_URL:-ws://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}/ws/v1/workers}"
