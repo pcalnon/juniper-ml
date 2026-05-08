@@ -13,10 +13,17 @@
 #   JUNIPER_DATA_PORT          — juniper-data listen port (default: 8100)
 #   JUNIPER_CASCOR_HOST        — juniper-cascor bind host (default: localhost)
 #   JUNIPER_CASCOR_PORT        — juniper-cascor listen port (default: 8201)
+#   JUNIPER_CASCOR_CONDA       — Conda env for juniper-cascor (default: JuniperCascor1
+#                                 — Py 3.13 + torch 2.11.0 known-working; the
+#                                 legacy 'JuniperCascor' env has a torch wheel
+#                                 layout bug under Py 3.14 that crashes server.py)
 #   JUNIPER_CANOPY_PORT        — juniper-canopy listen port (default: 8050)
 #   JUNIPER_CANOPY_CONDA       — Conda env for juniper-canopy (default: JuniperCanopy1
 #                                 — has LIBTORCH-strip activate hook; use 'JuniperCanopy'
 #                                 only if you know your shell does not export LIBTORCH)
+#   JUNIPER_WORKER_CONDA       — Conda env for juniper-cascor-worker (default:
+#                                 JuniperCascor — the only env where the
+#                                 worker pip wheel is currently installed)
 #   JUNIPER_WORKER_HEALTH_HOST — juniper-cascor-worker health bind (default: 127.0.0.1)
 #   JUNIPER_WORKER_HEALTH_PORT — juniper-cascor-worker health port (default: 8210)
 #   CASCOR_AUTH_TOKEN          — Optional auth token forwarded to juniper-cascor-worker
@@ -108,7 +115,15 @@ JUNIPER_CASCOR_MODULE="server.py"
 JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST:-localhost}"
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8201}"
 JUNIPER_CASCOR_URL="http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
-JUNIPER_CASCOR_CONDA="JuniperCascor"
+# JuniperCascor1 (Python 3.13 + torch 2.11.0) is the working env. The legacy
+# JuniperCascor env (Python 3.14 + torch 2.9.1) has a wheel layout bug where
+# ``torch/_C/`` (a stub-only namespace package) shadows ``_C.cpython-314-...so``
+# at import time, leaving server.py crashing immediately on ``import torch``
+# and the /v1/health endpoint never coming up. Both envs now also carry
+# matching activate.d/deactivate.d hooks that strip the rust_mudgeon LIBTORCH
+# bleed-through (see juniper-ml/notes/CASCOR_CONDA_ENV_FIX_2026-05-07.md).
+# Override JUNIPER_CASCOR_CONDA only if you have a known-good alternative env.
+JUNIPER_CASCOR_CONDA="${JUNIPER_CASCOR_CONDA:-JuniperCascor1}"
 JUNIPER_CASCOR_PYTHON="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_CASCOR_CONDA}/bin/python"
 
 
@@ -137,7 +152,10 @@ JUNIPER_WORKER_DIR="${JUNIPER_PROJECT_DIR}/juniper-cascor-worker"
 JUNIPER_WORKER_LOG_DIR="${JUNIPER_WORKER_DIR}/logs"
 JUNIPER_WORKER_LOGNAME="juniper-cascor-worker_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_WORKER_LOG="${JUNIPER_WORKER_LOG_DIR}/${JUNIPER_WORKER_LOGNAME}"
-JUNIPER_WORKER_CONDA="JuniperCascor"
+# The juniper-cascor-worker pip wheel currently lives only in the JuniperCascor
+# env. If you also install it into JuniperCascor1 (recommended for env unity),
+# point this override at JuniperCascor1 to retire the legacy env entirely.
+JUNIPER_WORKER_CONDA="${JUNIPER_WORKER_CONDA:-JuniperCascor}"
 JUNIPER_WORKER_BIN="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_WORKER_CONDA}/bin/juniper-cascor-worker"
 # Worker connects to cascor's WebSocket endpoint. Required env var, no default in worker config.
 JUNIPER_WORKER_SERVER_URL="${CASCOR_SERVER_URL:-ws://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}/ws/v1/workers}"
