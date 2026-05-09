@@ -323,7 +323,7 @@ Location: `juniper-deploy/prometheus/alert_rules.yml` (1147 lines).
 | `juniper_infrastructure`         | `NoWebSocketConnections`                                                  | Info                       |
 | `juniper_slo_*` (5 groups)       | Burn-rate alerts (MWMBR): fast-burn 14.4× pages, slow-burn 6× tickets     | SLO routing                |
 | `juniper_threshold_*` (4 groups) | `CascorWorkerHeartbeatStale` (>60 s for 2 m), `JuniperServiceScrapeDown`  | Threshold                  |
-|                                  | -- (>2 m), `CascorPendingTasksSaturated`, per-service 5xx                    |                            |
+|                                  | -- (>2 m), `CascorPendingTasksSaturated`, per-service 5xx                 |                            |
 
 Recording rules (lines 1-63) precompute request rates, error ratios, p50/p95/p99
 latency and epoch rates so that dashboards do not pay raw-histogram cost on
@@ -344,10 +344,8 @@ Provisioning provider config: `dashboard-providers.yml` in the same directory.
 
 ### 4.5 Network isolation
 
-Prometheus joins the `backend`, `data`, `frontend`, and `monitoring` Docker
-networks so it can reach every service. Grafana and AlertManager are confined
-to the `monitoring` network — they cannot directly reach service containers and
-must read through Prometheus.
+Prometheus joins the `backend`, `data`, `frontend`, and `monitoring` Docker networks so it can reach every service.
+Grafana and AlertManager are confined to the `monitoring` network — they cannot directly reach service containers and must read through Prometheus.
 
 ---
 
@@ -355,32 +353,30 @@ must read through Prometheus.
 
 ### 5.1 Grafana dashboards
 
-See §4.4. Grafana is the production observability surface for operators and
-on-call. It reads exclusively from Prometheus.
+See §4.4. Grafana is the production observability surface for operators and on-call. It reads exclusively from Prometheus.
 
 ### 5.2 Canopy dashboards (Dash UI)
 
-Canopy renders a tabbed Dash dashboard at `/dashboard`. Tabs are mounted in
-`dbc.Tabs(active_tab="metrics")` at `dashboard_manager.py:1331-1411`. Each
-component inherits `BaseComponent` and lives in `src/frontend/components/`.
+Canopy renders a tabbed Dash dashboard at `/dashboard`. Tabs are mounted in `dbc.Tabs(active_tab="metrics")` at `dashboard_manager.py:1331-1411`.
+Each component inherits `BaseComponent` and lives in `src/frontend/components/`.
 
-| Tab | Component file | Data source | Description |
-|-----|----------------|-------------|-------------|
-| Training Metrics | `metrics_panel.py` | `/api/metrics` (1 s polling) | Loss / accuracy / learning-rate / phase indicators |
-| Candidate Metrics | `candidate_metrics_panel.py` | Cascor WS | Candidate-unit training progress and curves |
-| Network Topology | `network_visualizer.py` | Cascor WS | Force-directed graph of neurons + synapses |
-| Network Evolution | `network_evolution.py` | Cascor WS | Small-multiples timeline of cascade growth |
-| Decision Boundary | `decision_boundary.py` | Cascor WS | 2-D classifier surface |
-| Dataset View | `dataset_plotter.py` | Dataset snapshots | Scatter / contour with predictions |
-| Workers | `worker_panel.py` | `/api/workers` | Remote worker status + utilization |
-| Parameters | `parameters_panel.py` | `/api/params` | Live parameter controls |
-| Snapshots | `hdf5_snapshots_panel.py` | `/api/v1/snapshots` | Stored checkpoints; replay POST |
-| Replay | `replay_player_panel.py` | HDF5 replay store | Frame-by-frame snapshot playback |
-| Network Editor | `network_editor_panel.py` | `/api/v1/network/*` | Surgical network mutations (FSM = Investigating) |
-| Redis | `redis_panel.py` | `/api/v1/redis/metrics` | Key cardinality, memory, evictions |
-| Cassandra | `cassandra_panel.py` | `/api/v1/cassandra/metrics` | Partitions, R/W latency, compactions |
-| Tutorial | `tutorial_panel.py` | Static | Walkthrough |
-| About | `about_panel.py` | Static | Version / license / credits |
+| Tab               | Component file               | Data source                  | Description                                        |
+|-------------------|------------------------------|------------------------------|----------------------------------------------------|
+| Training Metrics  | `metrics_panel.py`           | `/api/metrics` (1 s polling) | Loss / accuracy / learning-rate / phase indicators |
+| Candidate Metrics | `candidate_metrics_panel.py` | Cascor WS                    | Candidate-unit training progress and curves        |
+| Network Topology  | `network_visualizer.py`      | Cascor WS                    | Force-directed graph of neurons + synapses         |
+| Network Evolution | `network_evolution.py`       | Cascor WS                    | Small-multiples timeline of cascade growth         |
+| Decision Boundary | `decision_boundary.py`       | Cascor WS                    | 2-D classifier surface                             |
+| Dataset View      | `dataset_plotter.py`         | Dataset snapshots            | Scatter / contour with predictions                 |
+| Workers           | `worker_panel.py`            | `/api/workers`               | Remote worker status + utilization                 |
+| Parameters        | `parameters_panel.py`        | `/api/params`                | Live parameter controls                            |
+| Snapshots         | `hdf5_snapshots_panel.py`    | `/api/v1/snapshots`          | Stored checkpoints; replay POST                    |
+| Replay            | `replay_player_panel.py`     | HDF5 replay store            | Frame-by-frame snapshot playback                   |
+| Network Editor    | `network_editor_panel.py`    | `/api/v1/network/*`          | Surgical network mutations (FSM = Investigating)   |
+| Redis             | `redis_panel.py`             | `/api/v1/redis/metrics`      | Key cardinality, memory, evictions                 |
+| Cassandra         | `cassandra_panel.py`         | `/api/v1/cassandra/metrics`  | Partitions, R/W latency, compactions               |
+| Tutorial          | `tutorial_panel.py`          | Static                       | Walkthrough                                        |
+| About             | `about_panel.py`             | Static                       | Version / license / credits                        |
 
 WebSocket consumption flows in `communication/websocket_manager.py`:
 
@@ -394,36 +390,28 @@ WebSocket consumption flows in `communication/websocket_manager.py`:
 
 ### 6.1 Adding a new metric (creation path)
 
-The path varies slightly depending on whether the metric is a routine
-service-internal counter/gauge or one that an operator dashboard / alert / SLO
-will consume.
+The path varies slightly depending on whether the metric is a routine service-internal counter/gauge or one that an operator dashboard / alert / SLO will consume.
 
 #### Step-by-step
 
 1. **Choose the right helper.**
-   - Default: `register_or_reuse(...)` (adopt-existing on duplicate, samples
-     preserved across in-process re-init).
-   - Hot path with module-level `_metric: Optional[Counter] = None` sentinel:
-     `lazy_register_or_reuse(...)`.
+   - Default: `register_or_reuse(...)` (adopt-existing on duplicate, samples preserved across in-process re-init).
+   - Hot path with module-level `_metric: Optional[Counter] = None` sentinel: `lazy_register_or_reuse(...)`.
    - Test/migration intentionally changing buckets or labels: `register_fresh`.
    - Build/version metadata: `register_info_or_update` or `set_build_info`.
 
 2. **Pick a name** that follows the ecosystem convention:
-   `<service_namespace>_<subsystem>_<unit>` (e.g.
-   `juniper_cascor_training_loss`, `juniper_data_dataset_generations_total`).
-   Counters end in `_total`; durations end in `_seconds`; ratios end in `_ratio`
-   or `_pct`. Keep `cascor_ws_*` for cascor's WebSocket subsystem (legacy
-   prefix, retained for dashboard continuity).
+   `<service_namespace>_<subsystem>_<unit>` (e.g.  `juniper_cascor_training_loss`, `juniper_data_dataset_generations_total`).
+   Counters end in `_total`; durations end in `_seconds`; ratios end in `_ratio` or `_pct`.
+   Keep `cascor_ws_*` for cascor's WebSocket subsystem (legacy prefix, retained for dashboard continuity).
 
-3. **Bound the cardinality.** Labels must come from a closed enum or a
-   pre-validated set. The pattern across the ecosystem is to declare a tuple
-   like `_VALID_COMMANDS = (...)` and validate before incrementing. Never label
-   on user input, request body fields, or open-ended IDs — use a custom
-   collector (cf. cascor's `WorkerCollector`) when per-entity gauges are
-   needed.
+3. **Bound the cardinality.**
+   Labels must come from a closed enum or a pre-validated set.
+   The pattern across the ecosystem is to declare a tuple like `_VALID_COMMANDS = (...)` and validate before incrementing.
+   Never label on user input, request body fields, or open-ended IDs — use a custom collector (cf. cascor's `WorkerCollector`) when per-entity gauges are needed.
 
-4. **Define the metric** in the owning service. Add it to the lazy-init dict in
-   the relevant `obs.py` / `observability.py` module:
+4. **Define the metric** in the owning service.
+   Add it to the lazy-init dict in the relevant `obs.py` / `observability.py` module:
 
    ```python
    _METRICS["my_thing"] = register_or_reuse(
@@ -434,57 +422,50 @@ will consume.
    )
    ```
 
-5. **Wire the emission** at the call site. Prefer a thin helper
-   (`inc_my_thing(label_a, label_b)`) over scattering `_METRICS["my_thing"].labels(...).inc()`
-   across the codebase — easier to grep, easier to delete.
+5. **Wire the emission** at the call site.
+   Prefer a thin helper (`inc_my_thing(label_a, label_b)`) over scattering `_METRICS["my_thing"].labels(...).inc()` across the codebase — easier to grep, easier to delete.
 
-6. **Add tests.** Use the `reset_prometheus_registry` fixture from
-   `juniper_observability.testing`. Assert on the metric value via
-   `prometheus_client.REGISTRY.get_sample_value(...)`.
+6. **Add tests.**
+   Use the `reset_prometheus_registry` fixture from `juniper_observability.testing`.
+   Assert on the metric value via `prometheus_client.REGISTRY.get_sample_value(...)`.
 
-7. **Add a Grafana panel** if the metric is operator-facing. Edit the
-   appropriate `juniper-deploy/grafana/provisioning/dashboards/<svc>.json`
-   panel JSON and commit. Grafana picks up the change on next provisioning
-   reload (container restart or `SIGHUP`).
+7. **Add a Grafana panel** if the metric is operator-facing.
+   Edit the appropriate `juniper-deploy/grafana/provisioning/dashboards/<svc>.json` panel JSON and commit.
+   Grafana picks up the change on next provisioning reload (container restart or `SIGHUP`).
 
-8. **Add a recording / alert rule** if the metric drives an SLO or page. Edit
-   `juniper-deploy/prometheus/alert_rules.yml`. Reload Prometheus
-   (`POST /-/reload` or container restart). Page rules go in `juniper_slo_*`
-   groups; threshold-only rules in `juniper_threshold_*`; informational rules
-   in the topical group.
+8. **Add a recording / alert rule** if the metric drives an SLO or page.
+   Edit `juniper-deploy/prometheus/alert_rules.yml`.
+   Reload Prometheus (`POST /-/reload` or container restart).
+   Page rules go in `juniper_slo_*` groups; threshold-only rules in `juniper_threshold_*`; informational rules in the topical group.
 
-9. **Document.** Add the metric to §3 of this document and to the relevant
-   service's README / AGENTS.md if the metric is operator-facing.
+9. **Document.**
+   Add the metric to §3 of this document and to the relevant service's README / AGENTS.md if the metric is operator-facing.
 
 #### Special: adding a Canopy dashboard tab
 
 A Canopy "dashboard" in the UI sense is a tab. Steps:
 
-1. Create `src/frontend/components/my_panel.py` inheriting `BaseComponent`,
-   implementing `get_layout()` and any `@self.app.callback`s.
-2. Instantiate in `DashboardManager._initialize_components()`
-   (`dashboard_manager.py:437-505`):
+1. Create `src/frontend/components/my_panel.py` inheriting `BaseComponent`, implementing `get_layout()` and any `@self.app.callback`s.
+2. Instantiate in `DashboardManager._initialize_components()` (`dashboard_manager.py:437-505`):
+
    ```python
    self.my_panel = MyPanel(self.config.get("my_panel", {}), component_id="my-panel")
    self.register_component(self.my_panel)
    ```
-3. Add `dbc.Tab(self.my_panel.get_layout(), label="My Panel", tab_id="my-panel")`
-   to the `dbc.Tabs` list (`dashboard_manager.py:1328-1411`).
-4. Wire data callbacks against the canopy backend (`/api/...`) or via the
-   existing `WebSocketManager` for cascor live data.
 
-There is no tab-registry file — adding a tab is purely an inline edit to
-`dashboard_manager.py`. Dashboard layout is rebuilt on every
-`DashboardManager` instantiation (`main.py:338`).
+3. Add `dbc.Tab(self.my_panel.get_layout(), label="My Panel", tab_id="my-panel")` to the `dbc.Tabs` list (`dashboard_manager.py:1328-1411`).
+4. Wire data callbacks against the canopy backend (`/api/...`) or via the existing `WebSocketManager` for cascor live data.
+
+There is no tab-registry file — adding a tab is purely an inline edit to `dashboard_manager.py`.
+Dashboard layout is rebuilt on every `DashboardManager` instantiation (`main.py:338`).
 
 ### 6.2 Removing / renaming a metric (delete path)
 
-Deleting a Prometheus metric is operationally disruptive — every dashboard,
-recording rule, and alert that references it will go silent. Follow this
-sequence:
+Deleting a Prometheus metric is operationally disruptive — every dashboard, recording rule, and alert that references it will go silent.
+Follow this sequence:
 
-1. **Audit consumers.** Grep across the ecosystem (and operator-side
-   `juniper-deploy/`) for the metric name and any of its label values:
+1. **Audit consumers.**
+   Grep across the ecosystem (and operator-side `juniper-deploy/`) for the metric name and any of its label values:
 
    ```bash
    util/search_file_in_all_repos_and_worktrees.bash juniper_<svc>_<metric_name>
@@ -493,49 +474,38 @@ sequence:
      juniper-deploy/prometheus
    ```
 
-2. **Migrate consumers first.** If renaming, add the new metric (emit both
-   old and new in parallel for at least one release). Update Grafana panels
-   and Prometheus rules to reference the new metric. Confirm the new metric
-   is being scraped and showing data in Grafana before proceeding.
+2. **Migrate consumers first.**
+   If renaming, add the new metric (emit both old and new in parallel for at least one release).
+   Update Grafana panels and Prometheus rules to reference the new metric.
+   Confirm the new metric is being scraped and showing data in Grafana before proceeding.
 
-3. **Delete the emission site.** Remove the `register_or_reuse(...)` call,
-   the lazy-init dict entry, and any helper functions that referenced it.
-   Do not leave a stub that no longer registers — that creates a silent
-   "this collector exists with zero samples" state.
+3. **Delete the emission site.**
+   Remove the `register_or_reuse(...)` call, the lazy-init dict entry, and any helper functions that referenced it.
+   Do not leave a stub that no longer registers — that creates a silent "this collector exists with zero samples" state.
 
 4. **Delete dashboard panels and alert rules** that reference the metric.
-   Empty Grafana panels and silently-firing-on-`absent()` alerts are common
-   leftovers.
+   Empty Grafana panels and silently-firing-on-`absent()` alerts are common leftovers.
 
-5. **Delete recording rules** that derive from the metric. These are easy
-   to miss because they live in `alert_rules.yml` but look like normal
-   metrics from the consumer side.
+5. **Delete recording rules** that derive from the metric.
+   These are easy to miss because they live in `alert_rules.yml` but look like normal metrics from the consumer side.
 
-6. **Reload Prometheus and Grafana.** Either restart the containers or
-   `POST /-/reload` to Prometheus.
+6. **Reload Prometheus and Grafana.**
+   Either restart the containers or `POST /-/reload` to Prometheus.
 
-7. **Remove tests** that asserted on the old metric. The
-   `reset_prometheus_registry` fixture will *not* fail if you leave
-   assertions referencing a metric that's no longer registered — they will
-   read `None` and silently pass `assert value == 0` when the test author
-   meant `value > 0`.
+7. **Remove tests** that asserted on the old metric.
+   The `reset_prometheus_registry` fixture will *not* fail if you leave assertions referencing a metric that's no longer registered — they will read `None` and silently pass `assert value == 0` when the test author meant `value > 0`.
 
 8. **Update §3 of this document** so the inventory remains accurate.
 
 #### Notes on safety
 
-- **Counters cannot be reset by deleting the metric.** Prometheus retains the
-  series for 30 days (the deploy retention). Scrapes after deletion will see
-  `absent(metric)` go to 1; alerts using `absent()` as a guard need updating
-  before the deletion lands.
-- **Histograms with bucket changes** must use `register_fresh` (drop+recreate)
-  rather than `register_or_reuse`, otherwise the existing collector's buckets
-  are silently retained. Bucket changes are functionally a delete-and-add
-  from the Prometheus storage perspective — the old `_bucket{le=...}` series
-  go stale; the new series start at zero.
-- **Renaming is preferred to deletion** for any metric that is referenced by
-  a public dashboard or alert. Run the dual-emit period on the order of one
-  full release cycle.
+- **Counters cannot be reset by deleting the metric.**
+  - Prometheus retains the series for 30 days (the deploy retention).
+  - Scrapes after deletion will see `absent(metric)` go to 1; alerts using `absent()` as a guard need updating before the deletion lands.
+- **Histograms with bucket changes** must use `register_fresh` (drop+recreate) rather than `register_or_reuse`, otherwise the existing collector's buckets are silently retained.
+  - Bucket changes are functionally a delete-and-add from the Prometheus storage perspective — the old `_bucket{le=...}` series go stale; the new series start at zero.
+- **Renaming is preferred to deletion** for any metric that is referenced by a public dashboard or alert.
+  - Run the dual-emit period on the order of one full release cycle.
 
 ---
 
@@ -543,19 +513,13 @@ sequence:
 
 ### 7.1 The `reset_prometheus_registry` fixture
 
-Source: `juniper-observability/juniper_observability/testing.py:44-95`.
-Function-scoped, snapshots collectors before each test, unregisters anything
-new after, clears the `lazy_register_or_reuse` cache. Wire it in `conftest.py`
-as `autouse=True` whenever the test module touches Prometheus collectors.
+Source: `juniper-observability/juniper_observability/testing.py:44-95`.  Function-scoped, snapshots collectors before each test, unregisters anything new after, clears the `lazy_register_or_reuse` cache.
+Wire it in `conftest.py` as `autouse=True` whenever the test module touches Prometheus collectors.
 
 ### 7.2 Pre-commit
 
-The cross-repo `Async-route audit (BUG-JD-10 class)` ruff hook (`ASYNC*`
-codes) catches sync-in-async footguns that would manifest as latency-metric
-regressions. The async-route audit lane is wired in all four service repos
-(`juniper-cascor`, `juniper-data`, `juniper-canopy`, `juniper-cascor-worker`)
-and in `juniper-ml`'s pre-commit config — see
-`notes/FOLLOWUP_ASYNC_ROUTE_AUDIT.md`.
+The cross-repo `Async-route audit (BUG-JD-10 class)` ruff hook (`ASYNC*` codes) catches sync-in-async footguns that would manifest as latency-metric regressions.
+The async-route audit lane is wired in all four service repos (`juniper-cascor`, `juniper-data`, `juniper-canopy`, `juniper-cascor-worker`) and in `juniper-ml`'s pre-commit config — see `notes/FOLLOWUP_ASYNC_ROUTE_AUDIT.md`.
 
 ---
 
@@ -571,21 +535,21 @@ and in `juniper-ml`'s pre-commit config — see
 
 ## Appendix A: Quick metric count per service
 
-| Service | Service-defined metrics | HTTP middleware metrics | Build info | Total |
-|---------|------------------------:|------------------------:|-----------:|------:|
-| juniper-cascor | 29 | 3 | 1 | 33 |
-| juniper-data | 4 | 3 | 1 | 8 |
-| juniper-canopy | 8 | 3 | 1 | 12 |
-| juniper-cascor-worker | 0 (bridged via cascor) | 0 | 0 | 0 |
+| Service               | Service-defined metrics | HTTP middleware metrics | Build info | Total |
+|-----------------------|------------------------:|------------------------:|-----------:|------:|
+| juniper-cascor        |                      29 |                       3 |          1 |    33 |
+| juniper-data          |                       4 |                       3 |          1 |     8 |
+| juniper-canopy        |                       8 |                       3 |          1 |    12 |
+| juniper-cascor-worker |  0 (bridged via cascor) |                       0 |          0 |     0 |
 
 ## Appendix B: Service / port / path summary
 
-| Service | Host port | Container port | Metrics path | Auth |
-|---------|----------:|---------------:|--------------|------|
-| juniper-data | 8100 | 8100 | `/metrics` | `MetricsAuthMiddleware` (IP allowlist) |
-| juniper-cascor | 8201 | 8200 | `/metrics` | None (internal) |
-| juniper-canopy | 8050 | 8050 | `/metrics` | None (internal) |
-| juniper-cascor-worker | 8210 | 8210 | (none — heartbeat only) | localhost-only |
-| Prometheus | 9090 | 9090 | `/metrics` | None (loopback bind) |
-| Grafana | 3000 | 3000 | n/a | Login required |
-| AlertManager | 9093 | 9093 | n/a | None (loopback bind) |
+| Service               | Host port | Container port | Metrics path            | Auth                                   |
+|-----------------------|----------:|---------------:|-------------------------|----------------------------------------|
+| juniper-data          |      8100 |           8100 | `/metrics`              | `MetricsAuthMiddleware` (IP allowlist) |
+| juniper-cascor        |      8201 |           8200 | `/metrics`              | None (internal)                        |
+| juniper-canopy        |      8050 |           8050 | `/metrics`              | None (internal)                        |
+| juniper-cascor-worker |      8210 |           8210 | (none — heartbeat only) | localhost-only                         |
+| Prometheus            |      9090 |           9090 | `/metrics`              | None (loopback bind)                   |
+| Grafana               |      3000 |           3000 | n/a                     | Login required                         |
+| AlertManager          |      9093 |           9093 | n/a                     | None (loopback bind)                   |
