@@ -177,9 +177,11 @@ class TestPreflightFailureSmoke(unittest.TestCase):
     """End-to-end: missing worker binary aborts pre-flight before any launch.
 
     Builds a synthetic JUNIPER_PROJECT_DIR / JUNIPER_CONDA_DIR layout where:
-      - All four conda envs exist with stub `python` binaries (so
-        validate_conda_env passes).
-      - JuniperCascor env is missing the `juniper-cascor-worker` binary.
+      - All required conda envs exist with stub `python` binaries (so
+        validate_conda_env passes for JuniperData, JuniperCascor1, and
+        JuniperCanopy1 — the post-2026-05-07 defaults).
+      - JuniperCascor1 (which is also the worker's default env per
+        JUNIPER_WORKER_CONDA) is missing the `juniper-cascor-worker` binary.
     Asserts the script fails with the pre-flight error message and the
     expected non-zero exit code, without touching any service ports.
     """
@@ -208,9 +210,12 @@ class TestPreflightFailureSmoke(unittest.TestCase):
             conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
             conda_sh.write_text("#!/usr/bin/env bash\n" "conda() { :; }\n" "export -f conda\n")
 
+            # Post-2026-05-07: JuniperCascor1 is the unified server+worker env
+            # (legacy JuniperCascor deprecated). The worker binary is omitted
+            # from JuniperCascor1's bin/ to exercise the missing-binary path.
             for env_name, with_bin in (
                 ("JuniperData", False),
-                ("JuniperCascor", False),  # <-- no worker binary
+                ("JuniperCascor1", False),  # <-- no worker binary; also cascor server env
                 ("JuniperCanopy1", False),
             ):
                 self._make_env(conda_dir, env_name, with_worker_bin=with_bin)
@@ -237,6 +242,99 @@ class TestPreflightFailureSmoke(unittest.TestCase):
             self.assertIn("juniper-cascor-worker binary not found", combined)
             # Must abort BEFORE any service launch — no worker URL or health probe should appear.
             self.assertNotIn("Starting juniper-cascor-worker", combined)
+
+    def test_missing_worker_conda_env_aborts_preflight(self) -> None:
+        """Regression: if JUNIPER_WORKER_CONDA env doesn't exist, abort with
+        a conda-env error before reaching the worker-binary check.
+
+        This pins the failure mode the original (now-fixed) test was
+        accidentally hitting — guarding against future env-name drift between
+        the script defaults and this test fixture.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project_dir = root / "Juniper"
+            conda_dir = root / "miniforge3"
+
+            for sub in ("juniper-data", "juniper-cascor/src", "juniper-canopy/src", "juniper-cascor-worker"):
+                (project_dir / sub).mkdir(parents=True, exist_ok=True)
+
+            (conda_dir / "etc" / "profile.d").mkdir(parents=True, exist_ok=True)
+            conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
+            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() { :; }\n" "export -f conda\n")
+
+            # Only JuniperData and JuniperCanopy1 exist; both cascor + worker
+            # envs are absent.
+            for env_name in ("JuniperData", "JuniperCanopy1"):
+                self._make_env(conda_dir, env_name, with_worker_bin=False)
+
+            env = os.environ.copy()
+            env["JUNIPER_PROJECT_DIR"] = str(project_dir)
+            env["JUNIPER_CONDA_DIR"] = str(conda_dir)
+            env["JUNIPER_DATA_PORT"] = "65020"
+            env["JUNIPER_CASCOR_PORT"] = "65021"
+            env["JUNIPER_CANOPY_PORT"] = "65022"
+            env["JUNIPER_WORKER_HEALTH_PORT"] = "65023"
+            env["PATH"] = env.get("PATH", "") + os.pathsep + str(conda_dir / "envs" / "JuniperData" / "bin")
+
+            result = subprocess.run(
+                ["bash", str(SCRIPT_PATH)],
+                capture_output=True,
+                text=True,
+                env=env,
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            combined = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Conda environment 'JuniperCascor1' not found", combined)
+            self.assertNotIn("Starting juniper-cascor-worker", combined)
+
+    def test_worker_binary_check_uses_overridden_worker_conda(self) -> None:
+        """JUNIPER_WORKER_CONDA override is honored by the binary check.
+
+        Guards against the binary-check path silently using a different env
+        than validate_conda_env does.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            project_dir = root / "Juniper"
+            conda_dir = root / "miniforge3"
+
+            for sub in ("juniper-data", "juniper-cascor/src", "juniper-canopy/src", "juniper-cascor-worker"):
+                (project_dir / sub).mkdir(parents=True, exist_ok=True)
+
+            (conda_dir / "etc" / "profile.d").mkdir(parents=True, exist_ok=True)
+            conda_sh = conda_dir / "etc" / "profile.d" / "conda.sh"
+            conda_sh.write_text("#!/usr/bin/env bash\n" "conda() { :; }\n" "export -f conda\n")
+
+            # Stage a non-default worker env name; validate_conda_env passes
+            # for it but no worker binary exists.
+            for env_name in ("JuniperData", "JuniperCascor1", "JuniperCanopy1", "CustomWorkerEnv"):
+                self._make_env(conda_dir, env_name, with_worker_bin=False)
+
+            env = os.environ.copy()
+            env["JUNIPER_PROJECT_DIR"] = str(project_dir)
+            env["JUNIPER_CONDA_DIR"] = str(conda_dir)
+            env["JUNIPER_WORKER_CONDA"] = "CustomWorkerEnv"
+            env["JUNIPER_DATA_PORT"] = "65030"
+            env["JUNIPER_CASCOR_PORT"] = "65031"
+            env["JUNIPER_CANOPY_PORT"] = "65032"
+            env["JUNIPER_WORKER_HEALTH_PORT"] = "65033"
+            env["PATH"] = env.get("PATH", "") + os.pathsep + str(conda_dir / "envs" / "JuniperData" / "bin")
+
+            result = subprocess.run(
+                ["bash", str(SCRIPT_PATH)],
+                capture_output=True,
+                text=True,
+                env=env,
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            combined = result.stdout + result.stderr
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("juniper-cascor-worker binary not found", combined)
+            self.assertIn("envs/CustomWorkerEnv/bin/juniper-cascor-worker", combined)
 
 
 class TestEnvOverridesDocumented(unittest.TestCase):
