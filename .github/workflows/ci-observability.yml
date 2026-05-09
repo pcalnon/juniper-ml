@@ -1,0 +1,86 @@
+---
+#####################################################################################################################################################################################################
+# Project:       Juniper
+# Application:   juniper-observability (subdirectory of juniper-ml)
+# File Name:     ci-observability.yml
+# Author:        Paul Calnon
+#
+# Date Created:  2026-04-28
+#
+# License:       MIT License
+# Copyright:     Copyright (c) 2024-2026 Paul Calnon
+#
+# Description:
+#    CI pipeline for the juniper-observability shared library
+#    (METRICS-MON R2.1 / seed-06). Runs on PRs and pushes that touch
+#    the package or its tests. The juniper-ml meta-package's own ci.yml
+#    continues to gate the meta-package; this workflow handles the
+#    shared-lib lifecycle independently per design §10 Q6.
+#
+#####################################################################################################################################################################################################
+
+name: CI — juniper-observability
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "juniper-observability/**"
+      - ".github/workflows/ci-observability.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "juniper-observability/**"
+      - ".github/workflows/ci-observability.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: juniper-observability
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package + test extras
+        run: pip install --upgrade "pip>=26.1.1" && pip install -e ".[test]"
+
+      - name: Run unit tests with coverage
+        run: |
+          python -m pytest --cov=juniper_observability --cov-report=term-missing --cov-fail-under=90
+
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    needs: test
+    defaults:
+      run:
+        working-directory: juniper-observability
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: pip install --upgrade build twine
+
+      - name: Build sdist + wheel
+        run: python -m build --sdist --wheel
+
+      - name: Validate distribution metadata
+        run: twine check dist/*

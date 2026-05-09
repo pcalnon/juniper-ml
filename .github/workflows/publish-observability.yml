@@ -1,0 +1,130 @@
+---
+#####################################################################################################################################################################################################
+# Project:       Juniper
+# Application:   juniper-observability (subdirectory of juniper-ml)
+# File Name:     publish-observability.yml
+# Author:        Paul Calnon
+#
+# Date Created:  2026-04-28
+#
+# License:       MIT License
+# Copyright:     Copyright (c) 2024-2026 Paul Calnon
+#
+# Description:
+#    GitHub Actions publish pipeline for the juniper-observability package
+#    (METRICS-MON R2.1 / seed-06). Triggered by tags matching
+#    ``juniper-observability-v*`` so it stays decoupled from the juniper-ml
+#    meta-package's own ``v*`` release tags. Publishes to TestPyPI first
+#    (with install verification), then PyPI, via OIDC trusted publishing.
+#
+#####################################################################################################################################################################################################
+
+name: Publish juniper-observability to PyPI
+
+on:
+  push:
+    tags:
+      - "juniper-observability-v*"
+  # Manual dispatch so operators can re-fire a publish against any tag.
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Build + validate the package before publishing
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  build:
+    name: Build and Validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: juniper-observability
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: pip install --upgrade build twine
+
+      - name: Build sdist + wheel
+        run: python -m build --sdist --wheel
+
+      - name: Validate distribution metadata
+        run: twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: juniper-observability-dist
+          path: juniper-observability/dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Publish to TestPyPI first; verify install before promoting to PyPI
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/juniper-observability
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0
+        with:
+          name: juniper-observability-dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc  # v1.12.4
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/
+          verbose: true
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          sparse-checkout: |
+            juniper-observability/pyproject.toml
+
+      - name: Verify install from TestPyPI
+        run: |
+          set -euo pipefail
+          version=$(grep '^version' juniper-observability/pyproject.toml | head -1 | sed -E 's/version = "(.+)"/\1/')
+          for attempt in 1 2 3 4 5; do
+            if pip install \
+              --index-url https://test.pypi.org/simple/ \
+              --extra-index-url https://pypi.org/simple/ \
+              "juniper-observability==${version}"; then
+              break
+            fi
+            echo "TestPyPI index lag — retrying in 10s (attempt ${attempt}/5)"
+            sleep 10
+          done
+          python -c "import juniper_observability; print('TestPyPI install OK', juniper_observability.__version__)"
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/juniper-observability
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0
+        with:
+          name: juniper-observability-dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc  # v1.12.4
+        with:
+          packages-dir: dist/
+          verbose: true

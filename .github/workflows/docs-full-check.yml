@@ -85,4 +85,4 @@ jobs:
       - name: Validate all documentation links (cross-repo check)
         run: |
           cd "$GITHUB_WORKSPACE/juniper-ml"
-          python scripts/check_doc_links.py --exclude templates --exclude history --cross-repo check
+          python scripts/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo check

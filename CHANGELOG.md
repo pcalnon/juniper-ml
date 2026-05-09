@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-04-28
+
 ### Added
 
+- **`juniper-observability` package (alpha `0.1.1a`)** — new sibling package living under `juniper-observability/` (METRICS-MON R2.1.1, PR #155). Provides cross-cutting observability primitives shared by every Juniper server: health models (`DependencyStatus`, `ReadinessResponse`), the synchronous `probe_dependency` helper, structured-JSON logging (`JuniperJsonFormatter`, `configure_logging`) with `request_id` propagation, Starlette middlewares (`RequestIdMiddleware`, `PrometheusMiddleware` with bounded label cardinality per R1.1), pinned cross-service constants (`UNMATCHED_ENDPOINT_LABEL`, `READINESS_HEADER`, `LIVENESS_TICK_BUDGET_MS`, `LIVENESS_STALENESS_SECONDS`), Prometheus utilities (`get_prometheus_app`, `set_build_info`), and Sentry init (`configure_sentry`) with the SEC-10 `before_send` hook always installed. Optional extras: `[prometheus]`, `[sentry]`, `[all]`. Per-service metric definitions intentionally stay in their owning repos; this package only exposes cross-cutting infrastructure.
+- `.github/workflows/ci-observability.yml` — dedicated CI pipeline for the observability package.
+- `.github/workflows/publish-observability.yml` — OIDC trusted-publishing workflow for `juniper-observability` (TestPyPI → install verification → PyPI), triggered by tags matching `juniper-observability-v*` so it stays decoupled from the meta-package's own `v*` release tags. `workflow_dispatch` is enabled so operators can re-fire a publish against any tag.
 - Hardcoded-values refactor (Wave 3 + Wave 4): all 6 `util/get_cascor_*.bash` REST query utilities now read `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` from the environment (defaulting to `localhost` / `8201`) so a single environment override targets every utility instead of editing each script individually.
 - `util/juniper_plant_all.bash` `JUNIPER_CASCOR_HOST` is now an env-var override (`JUNIPER_CASCOR_HOST=${JUNIPER_CASCOR_HOST:-localhost}`) — useful for orchestrating remote services from a control host.
 - New regression test suite `tests/test_worktree_cleanup.py` covering argument parsing, dry-run output, error handling, and the critical safety property that the new worktree is created before the old one is removed (CWD-trap prevention).
+- Metrics-monitoring roadmap and design notes under `notes/code-review/` covering R1.1–R1.3 contracts and the R2.1 shared-observability migration sequence; ongoing Track 1–6 status sweeps marking shipped/blocked/open work across the ecosystem.
 
 ### Changed
 
+- `.github/workflows/publish-observability.yml` — `verbose: true` enabled on both the TestPyPI and PyPI `pypa/gh-action-pypi-publish` steps so upload failures surface the underlying response body instead of twine's bare `Bad Request` line.
 - Hardcoded-values refactor (Wave 3): `util/worktree_cleanup.bash` `MAIN_REPO` is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) instead of being hardcoded to `/home/pcalnon/Development/python/Juniper/juniper-ml`. An optional `JUNIPER_ML_MAIN_REPO` environment variable overrides the derived path for test fixtures and unusual layouts. This makes the script portable across machines and CI runners.
 - Test timeout constants extracted in `tests/test_wake_the_claude.py` and `tests/test_worktree_cleanup.py` (`SCRIPT_TIMEOUT_SECONDS`) instead of inline `subprocess.run(..., timeout=30)` calls.
 - AGENTS.md "Utilities" section updated to document the new env-var overrides for `worktree_cleanup.bash`, `juniper_plant_all.bash`, and the `get_cascor_*.bash` utilities.
@@ -23,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - All 88 unittest tests pass plus the bash `test_resume_file_safety.bash` regression script; pre-commit (17 hooks: flake8, bandit, shellcheck, markdownlint, yamllint, sops-check) is clean.
 - This branch is on `feature/hardcoded-values-wave3` rather than `wave1` because juniper-ml had no Wave 1 task in the master roadmap (the meta-package owns no application code that needed a constants module).
+- `juniper-observability` is not yet wired into the `juniper-ml[all]` extras. It will be added once the alpha graduates and downstream services start importing from it as part of the R2.1 migration.
 
 ## [0.4.0] - 2026-04-09
 
@@ -151,7 +159,9 @@ See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4
 - README with installation instructions and ecosystem overview
 - MIT License
 
-[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/pcalnon/juniper-ml/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/pcalnon/juniper-ml/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/pcalnon/juniper-ml/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/pcalnon/juniper-ml/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/pcalnon/juniper-ml/compare/v0.1.0...v0.2.0

@@ -39,9 +39,7 @@ Utilize all available resources in the performance of tasks including, but not l
 
 ## Background
 
-The following juniper project applications are currently experiencing failures in their test suites:
-
--
+The juniper project applications listed above are currently experiencing failures in their test suites.
 
 These failing tests are blocking further progress for these applications:
 
