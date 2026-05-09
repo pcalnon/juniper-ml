@@ -22,14 +22,52 @@ DEBUG="${TRUE}"
 # Define Script Environment Constants
 ########################################################################################################################################################################################################
 SCRIPT_PATH="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+WAKE_THE_CLAUDE_SCRIPT_NAME="wake_the_claude.bash"
+WAKE_THE_CLAUDE_SCRIPT="${SCRIPT_PATH}/${WAKE_THE_CLAUDE_SCRIPT_NAME}"
 
 
 ########################################################################################################################################################################################################
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
-DEFAULT_PROMPT="Hello World, Claude!"
+export HIGH="high"
+export MEDIUM="medium"
+export LOW="low"
+export DEFAULT_EFFORT="${HIGH}"
+export DEFAULT_PROMPT="Hello World, Claude!"
+
+
+########################################################################################################################################################################################################
+# Define Script Constants for Claude Code interaction
+########################################################################################################################################################################################################
 CLAUDE_SKIP_PERMISSIONS="${CLAUDE_SKIP_PERMISSIONS:-${FALSE}}"
-CLAUDE_ARGS=(--id --worktree --effort high --prompt "${DEFAULT_PROMPT}")
+CLAUDE_REMOTE_CONTROL="${CLAUDE_REMOTE_CONTROL:-${TRUE}}"
+CLAUDE_EFFORT="${CLAUDE_EFFORT:-${DEFAULT_EFFORT}}"
+CLAUDE_ID="${CLAUDE_ID:-${TRUE}}"
+CLAUDE_WORKTREE="${CLAUDE_WORKTREE:-${TRUE}}"
+CLAUDE_PROMPT="${CLAUDE_PROMPT:-${DEFAULT_PROMPT}}"
+
+
+########################################################################################################################################################################################################
+# Define Claude Code Command Line Flags for Interactive Session Arguments
+########################################################################################################################################################################################################
+export CLAUDE_SKIP_PERMISSIONS_FLAG="--dangerously-skip-permissions"
+export CLAUDE_REMOTE_CONTROL_FLAG="--remote-control"
+export CLAUDE_WORKTREE_FLAG="--worktree"
+export CLAUDE_PROMPT_FLAG="--prompt"
+export CLAUDE_EFFORT_FLAG="--effort"
+export CLAUDE_SEPERATOR_FLAG="--"
+export CLAUDE_ID_FLAG="--id"
+
+
+########################################################################################################################################################################################################
+# Define the default arguments for the Claude Code interactive session
+########################################################################################################################################################################################################
+CLAUDE_ARGS=""
+CLAUDE_ARGS+="${CLAUDE_ID_FLAG} "
+CLAUDE_ARGS+="${CLAUDE_WORKTREE_FLAG} "
+CLAUDE_ARGS+="${CLAUDE_EFFORT_FLAG} ${CLAUDE_EFFORT} "
+CLAUDE_ARGS+="${CLAUDE_PROMPT_FLAG} \\\"${CLAUDE_PROMPT}\\\" "
+CLAUDE_ARGS+="${CLAUDE_SEPERATOR_FLAG} "
 
 
 ########################################################################################################################################################################################################
@@ -44,8 +82,15 @@ fi
 # Opt in to --dangerously-skip-permissions only when explicitly requested
 ########################################################################################################################################################################################################
 if [[ "${CLAUDE_SKIP_PERMISSIONS}" == "${TRUE}" ]]; then
-    CLAUDE_ARGS+=(--)
-    CLAUDE_ARGS+=(--dangerously-skip-permissions)
+    CLAUDE_ARGS+="${CLAUDE_SKIP_PERMISSIONS_FLAG} "
+fi
+
+
+########################################################################################################################################################################################################
+# Opt in to --remote-control when requested
+########################################################################################################################################################################################################
+if [[ "${CLAUDE_REMOTE_CONTROL}" == "${TRUE}" ]]; then
+    CLAUDE_ARGS+="${CLAUDE_REMOTE_CONTROL_FLAG} "
 fi
 
 
@@ -59,9 +104,10 @@ fi
 ########################################################################################################################################################################################################
 # Call Wake The Claude script with params
 echo "Launching Default Interactive session with Claude Code"
-echo "\"${SCRIPT_PATH}/wake_the_claude.bash\" ${CLAUDE_ARGS[*]}"
-"${SCRIPT_PATH}/wake_the_claude.bash" "${CLAUDE_ARGS[@]}"
-# "${SCRIPT_PATH}/wake_the_claude.bash" "${CLAUDE_ARGS[*]}"
+echo "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)"
+
+eval "${WAKE_THE_CLAUDE_SCRIPT} $(echo "${CLAUDE_ARGS[*]}" | xargs)"
+
 echo "Closed Default Interactive session with Claude Code"
 
 exit 0

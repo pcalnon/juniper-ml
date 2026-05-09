@@ -36,18 +36,30 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         from prometheus_client import Counter, Histogram
 
+        from juniper_observability.prometheus_helpers import register_or_reuse
+
         prefix = f"{namespace}_" if namespace else ""
-        self._request_count = Counter(
+
+        # ``register_or_reuse`` adopts the existing collector on
+        # duplicate registration (test sessions that re-create the app,
+        # in-process service restarts) instead of crashing app startup
+        # with ``ValueError: Duplicated timeseries``. See
+        # ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+        # in juniper-ml for the full rationale.
+        self._request_count = register_or_reuse(
+            Counter,
             f"{prefix}http_requests_total",
             "Total HTTP requests",
             ["method", "endpoint", "status"],
         )
-        self._request_duration = Histogram(
+        self._request_duration = register_or_reuse(
+            Histogram,
             f"{prefix}http_request_duration_seconds",
             "HTTP request duration in seconds",
             ["method", "endpoint"],
         )
-        self._unmatched_count = Counter(
+        self._unmatched_count = register_or_reuse(
+            Counter,
             f"{prefix}http_unmatched_requests_total",
             "HTTP requests not matching any registered route template",
             ["method"],

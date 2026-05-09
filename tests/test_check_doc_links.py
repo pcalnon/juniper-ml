@@ -215,6 +215,31 @@ class ValidateFileBehaviorTests(unittest.TestCase):
             self.assertTrue(any("null byte in link target" in error for error in errors))
             self.assertTrue(any("link resolves outside repository boundary" in error for error in errors))
 
+    def test_find_markdown_files_dedupes_symlinks_to_same_realpath(self):
+        # Without dedupe, a file reachable both directly and via a symlinked
+        # directory is scanned twice. The two scans use different relative-path
+        # resolution roots, producing spurious "broken link" reports for any
+        # link that resolves correctly from one location but not the other.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "repo"
+            repo_root.mkdir()
+            notes = repo_root / "notes"
+            notes.mkdir()
+            (notes / "ROADMAP.md").write_text("# roadmap", encoding="utf-8")
+            (notes / "PHASE_DESIGN.md").write_text("# design", encoding="utf-8")
+            dev = notes / "development"
+            dev.mkdir()
+            # Symlink notes/development/ROADMAP.md -> ../ROADMAP.md
+            (dev / "ROADMAP.md").symlink_to(Path("..") / "ROADMAP.md")
+
+            files = check_doc_links._find_markdown_files([repo_root], repo_root)
+
+            # The roadmap file should appear exactly once even though it is
+            # reachable both directly (notes/ROADMAP.md) and via the symlink
+            # under notes/development/ROADMAP.md.
+            real_paths = {f.resolve() for f in files}
+            self.assertEqual(len(files), len(real_paths), files)
+
 
 class EcosystemDiscoveryAndCliTests(unittest.TestCase):
     def test_discover_ecosystem_root_uses_git_common_dir_result(self):
