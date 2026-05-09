@@ -228,7 +228,18 @@ def _find_markdown_files(search_paths: list[Path], repo_root: Path, exclude_dirs
         Sorted list of markdown file paths.
     """
     skip = _SKIP_DIRS | (exclude_dirs or set()) | _EXCLUDE_DIRS
-    md_files = set()
+    md_files: dict[Path, Path] = {}  # realpath -> first display path encountered
+
+    def _add(display_path: Path) -> None:
+        # Dedupe by resolved (real) path so a file reachable both directly and
+        # via a symlink is only validated once. Without this, a file like
+        # ``notes/development/<name>.md`` that is a symlink to ``notes/<name>.md``
+        # gets scanned twice with two different relative-path resolution roots,
+        # producing spurious "broken link" reports for any link that happens to
+        # resolve correctly from one location but not the other.
+        real = display_path.resolve()
+        if real not in md_files:
+            md_files[real] = display_path
 
     for path in search_paths:
         if path.is_file() and path.suffix in _DOC_EXTENSIONS:
@@ -239,9 +250,9 @@ def _find_markdown_files(search_paths: list[Path], repo_root: Path, exclude_dirs
             try:
                 rel = path.relative_to(repo_root)
                 if not any(part in skip for part in rel.parts):
-                    md_files.add(path)
+                    _add(path)
             except ValueError:
-                md_files.add(path)
+                _add(path)
         elif path.is_dir():
             for ext in _DOC_EXTENSIONS:
                 for f in path.rglob(f"*{ext}"):
@@ -251,12 +262,12 @@ def _find_markdown_files(search_paths: list[Path], repo_root: Path, exclude_dirs
                     try:
                         rel = f.relative_to(repo_root)
                         if not any(part in skip for part in rel.parts):
-                            md_files.add(f)
+                            _add(f)
                     except ValueError:
                         if not any(part in skip for part in f.parts):
-                            md_files.add(f)
+                            _add(f)
 
-    return sorted(md_files)
+    return sorted(md_files.values())
 
 
 def _validate_cross_repo_structure(file_part: str) -> str | None:

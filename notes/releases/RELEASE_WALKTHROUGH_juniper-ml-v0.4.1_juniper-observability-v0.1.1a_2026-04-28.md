@@ -476,7 +476,8 @@ curl -sS https://pypi.org/pypi/juniper-observability/0.1.1a0/json | jq -r '.info
 # Install in a throwaway venv
 python -m venv /tmp/jm_v041 && source /tmp/jm_v041/bin/activate
 pip install --upgrade juniper-ml==0.4.1
-python -c "import importlib.metadata as m; print(m.version('juniper-ml'))"
+python -c "import importlib.metadata as m; print(m.version('juniper-ml'))───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+❯"
 
 deactivate && python -m venv /tmp/jo_v011a && source /tmp/jo_v011a/bin/activate
 pip install --pre juniper-observability==0.1.1a

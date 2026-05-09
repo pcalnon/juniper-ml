@@ -1,8 +1,8 @@
 # Juniper Project — Outstanding Development Items: Implementation Roadmap
 
-- **Date**: 2026-04-23
-- **Version**: 7.0.0
-- **Status**: Current — Complete implementation roadmap with verified code solutions, severity classification, parallel development tracks, and multi-phased execution schedule for all ~300 identified items
+- **Date**: 2026-05-05 (v7.0.1) — was 2026-04-23 (v7.0.0)
+- **Version**: 7.0.1
+- **Status**: Current — Complete implementation roadmap with verified code solutions, severity classification, parallel development tracks, and multi-phased execution schedule for all ~300 identified items. **v7.0.1 hotfix update** flips the silent-fix entries surfaced by the 2026-05-05 audit, folds in the post-2026-04-23 work (CAN-015g/h delivery, observability audit phase, METRICS-MON / obs-wire / obs-route, CVE-2026-3219 ecosystem response) into a new [§28 Recently Shipped](#28-recently-shipped-post-2026-04-23-v701-delta), and adds [§2.1](#21-v700--v701-deltas) summarizing the changes from v7.0.0. See [`ROADMAP_AUDIT_2026-05-05.md`](./ROADMAP_AUDIT_2026-05-05.md) for the audit that drove this revision.
 - **Scope**: All incomplete development work across the Juniper ecosystem, with verified implementation code for each recommended remediation, severity/priority/scope classification, dependency analysis, parallel development tracks, and a phased execution roadmap
 - **Sources**:
   - v6.0.0 remediation analysis document (5-agent remediation analysis with 1-3 approaches per item)
@@ -43,6 +43,7 @@
 - [25. Parallel Development Tracks](#25-parallel-development-tracks)
 - [26. Multi-Phased Development Roadmap](#26-multi-phased-development-roadmap)
 - [27. Roadmap Validation](#27-roadmap-validation)
+- [28. Recently Shipped (post-2026-04-23, v7.0.1 delta)](#28-recently-shipped-post-2026-04-23-v701-delta)
 
 ---
 
@@ -111,6 +112,36 @@ See [Section 24](#24-severity-classification-and-priority-matrix) through [Secti
 | Configuration/Deps (v5 new)   | —       | —        | —             | +16         | 16            |
 | API/Protocol (v5 new)         | —       | —        | —             | +10         | 10            |
 | **Grand total (v5)**          | **~230**| **0**    | **~230**      | **+~70**    | **~300**      |
+
+---
+
+### 2.1 v7.0.0 → v7.0.1 deltas
+
+> **Audit-driven**: see [`ROADMAP_AUDIT_2026-05-05.md`](./ROADMAP_AUDIT_2026-05-05.md) for the parallel five-agent audit + validation pass that surfaced these deltas.
+
+The v7.0.0 roadmap (2026-04-23) drifted ~12 days behind the codebase before this hotfix update. Three classes of change account for the v7.0.1 deltas:
+
+| Class | Items affected | Roadmap action |
+|---|---|---|
+| **Silent fixes** in §5 since 2026-04-23 | 9 of 11 sampled bugs (82%) | Rows annotated with `✅ Fixed in <PR>` prefix in §5 |
+| **Major delivery** post-2026-04-23 | CAN-015g + CAN-015h (was deferred per line ~5121) | New [§28.1](#281-can-015g--can-015h--phase-6e-deferred-shipped-end-to-end) |
+| **Unmapped tracks** | Observability audit, METRICS-MON R4.x, obs-wire-01/02, obs-route-01, CVE-2026-3219 | New [§28.2](#282-observability-audit-phase) – [§28.5](#285-cve-2026-3219-ecosystem-mitigation) |
+
+Rolled-up totals after v7.0.1:
+
+| Section | v7.0.0 | v7.0.1 | Δ |
+|---|---|---|---|
+| §5 (Active Bugs) — open | 78 | ~69 | −9 (silently fixed) |
+| Recently shipped (§28) | n/a | 18 PRs catalogued | +18 |
+| Observability audit items | 0 tracked | 27 (6 P1) | +27 |
+| Hotfix archaeology (P-1..P-9) | 0 | 6 entries | +6 |
+
+**Two STILL-PRESENT bugs** remained at audit time and have since been addressed by the v7.0.1 hotfix wave:
+
+- BUG-CC-12 (`utils.py` yaml-vs-torch loader) — [juniper-cascor #228](https://github.com/pcalnon/juniper-cascor/pull/228)
+- BUG-JD-10 (sync I/O in `batch_update_tags` async route) — [juniper-data #90](https://github.com/pcalnon/juniper-data/pull/90)
+
+A separate **async-route audit hook migration plan** ([juniper-ml #222](https://github.com/pcalnon/juniper-ml/pull/222), to land at `notes/ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md`) addresses the BUG-JD-10 bug class going forward.
 
 ---
 
@@ -1326,7 +1357,7 @@ S (< 1 hour)
 |-----------|------------|------------------------------------------------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | BUG-CC-01 | **MEDIUM** | `create_topology_message()` not fully implemented:                     | `src/api/websocket/messages.py:72`                                 | Defined and exported but zero production callers                                                              |
 |           |            | -- topology changes never broadcast via WS                             |                                                                    |                                                                                                               |
-| BUG-CC-02 | **MEDIUM** | `cascade_add` correlation hardcoded to `0.0`                           | `src/api/lifecycle/manager.py:427-430`                             | `monitor.on_cascade_add(hidden_unit_index=i, correlation=0.0)` — actual correlation is lost                   |
+| BUG-CC-02 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `cascade_add` correlation hardcoded to `0.0`                           | `src/api/lifecycle/manager.py:1591` (was 427-430)                             | Now `actual_correlation = float(getattr(unit, "best_correlation", 0.0) or 0.0)` — verified by 2026-05-05 audit |
 | BUG-CC-03 | **MEDIUM** | `or` fallback bugs for falsy values in spiral_problem.py               | `src/spiral_problem/spiral_problem.py:600-608,1250-1262,1411-1419` | `self.clockwise = clockwise or self.clockwise or DEFAULT` — falsy `False`/`0` silently overridden             |
 | BUG-CC-04 | **LOW**    | Version strings inconsistent across file headers                       | `src/main.py` (0.3.1), `cascade_correlation.py` (0.3.2),           | All three disagree                                                                                            |
 |           |            |                                                                        | -- `pyproject.toml` (0.4.0)                                        |                                                                                                               |
@@ -1337,22 +1368,20 @@ S (< 1 hour)
 | BUG-CC-09 | **MEDIUM** | `validate_training_results` uninitialized variable when `max_epochs=0` | Training validation                                                | Causes crash when `max_epochs=0` — variable referenced before assignment                                      |
 | BUG-CC-10 | **MEDIUM** | `validate_training`: `value_output`/`value_loss`/`value_accuracy`      | `src/cascade_correlation/cascade_correlation.py:4444`              | Variables only assigned inside `if x_val is not None` branch;                                                 |
 |           |            | -- not initialized for no-validation-data path                         |                                                                    | -- verbose log at L4444 references them on else path — `UnboundLocalError` at VERBOSE log level               |
-| BUG-CC-11 | **MEDIUM** | `_init_content_list` walrus operator precedence bug in `utils.py`      | `src/utils/utils.py:208`                                           | `content := _init_content_list(...) is not None` assigns `True`/`False` to `content`,                         |
-|           |            |                                                                        |                                                                    | -- not the list — subsequent `.append()` raises `AttributeError`                                              |
-| BUG-CC-12 | **MEDIUM** | `load_dataset` uses `yaml.safe_load` instead of `torch.load`           | `src/utils/utils.py:90-92`                                         | Changed from `torch.load` to `yaml.safe_load` but expects torch tensor keys: function is broken.              |
-|           |            |                                                                        |                                                                    | -- This is **NOT** dead code. This code hasn't yet been fully implemented and/or integrated.                  |
+| BUG-CC-11 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `_init_content_list` walrus operator precedence bug in `utils.py`      | `src/utils/utils.py:208`                                           | Walrus parenthesized; verified by 2026-05-05 audit                         |
+| BUG-CC-12 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1, [cascor #228](https://github.com/pcalnon/juniper-cascor/pull/228))** — `load_dataset` uses `yaml.safe_load` instead of `torch.load`           | `src/utils/utils.py:78-91`                                         | Now uses `torch.load(weights_only=True)`; round-trip test added              |
 | BUG-CC-13 | **MEDIUM** | `RateLimiter._counters` never pruned — unbounded memory growth         | `src/api/security.py:107`                                          | No expired entries cleaned; `ConnectionRateLimiter` has `_maybe_cleanup`, `RateLimiter` does not              |
 | BUG-CC-14 | **LOW**    | `HandshakeCooldown._rejections` never pruned for non-blocked IPs       | `src/api/websocket/control_security.py:88,108-114`                 | Entries persist forever if IPs fail & never reach block threshold: minor mem leak                             |
-| BUG-CC-15 | **MEDIUM** | `RequestBodyLimitMiddleware` reads full body before size check         | `src/api/middleware.py:86`                                         | `body = await request.body()`: body in mem before check `len(body) > self._max_bytes`: SEC-08 partial         |
+| BUG-CC-15 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `RequestBodyLimitMiddleware` reads full body before size check         | `src/api/middleware.py:91-98` (was :86)                                         | Now stream-read with early abort + comment documenting fix; verified by 2026-05-05 audit       |
 | BUG-CC-16 | **MEDIUM** | `_last_state_broadcast_time` unprotected cross-thread R/W              | `src/api/lifecycle/manager.py:151-155`                             | Two concurrent callers can both pass throttle check and broadcast simultaneously (v5 new)                     |
 | BUG-CC-17 | **MEDIUM** | `_extract_and_record_metrics()` split-lock — duplicate metric emission | `src/api/lifecycle/manager.py:453-495`                             | Lock released between reading and writing high-water-mark; duplicate metrics possible (v5 new)                |
-| BUG-CC-18 | **HIGH**   | Dummy candidate results on double training failure — silent corruption | `src/cascade_correlation/cascade_correlation.py:1930-1962`         | When parallel AND sequential fallback both fail, dummy zero-correlation candidate installed silently (v5 new) |
+| BUG-CC-18 ✅ | **HIGH**   | ✅ **Fixed (v7.0.1)** — Dummy candidate results on double training failure — silent corruption | `src/cascade_correlation/cascade_correlation.py:1976-1989` (was 1930-1962)         | Now raises `CandidateTrainingError` instead of installing dummies; verified by 2026-05-05 audit |
 
 #### 5.2 juniper-canopy
 
 | ID        | Severity   | Description                                             | File(s)                                                      | Evidence                                                                                                                      |
 |-----------|------------|---------------------------------------------------------|--------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| BUG-CN-01 | **HIGH**   | `_stop.clear()` race: `_perform_reset()` w/o lock       | `src/demo_mode.py:1614-1618`                                 | `_stop.clear()` at L1617 and `_pause.clear()` at L1618 outside lock block (lock covers L1615-1616)                            |
+| BUG-CN-01 ✅ | **HIGH**   | ✅ **Fixed (v7.0.1)** — `_stop.clear()` race: `_perform_reset()` w/o lock       | `src/demo_mode.py:1656-1668` (was 1614-1618)                                 | `_stop.clear()` and `_pause.clear()` now under `with self._lock`; verified by 2026-05-05 audit                           |
 | BUG-CN-02 | **HIGH**   | DashboardManager god class (3,232 lines)                | `src/frontend/dashboard_manager.py`                          | 3,232 lines, 81 `def` functions — still growing                                                                               |
 | BUG-CN-03 | **MEDIUM** | 226 `hasattr` guards, tests skip test logic             | `src/tests/` (226 occurrences)                               | Verified exact count: 226                                                                                                     |
 | BUG-CN-04 | **MEDIUM** | `_api_base_url` hardcoded to `127.0.0.1`                | `cascor_service_adapter.py`                                  | Breaks in Docker/remote deployments                                                                                           |
@@ -1360,9 +1389,9 @@ S (< 1 hour)
 | BUG-CN-06 | **MEDIUM** | 1 Hz state throttle drops terminal transitions          | State update handling                                        | Fast Started→Failed→Stopped leaves dashboard showing Started forever                                                          |
 | BUG-CN-07 | **LOW**    | Duplicate `APP_VERSION` assignment in module            | `src/main.py:90-93` and `src/main.py:110-113`                | Two identical `try/except` blocks for version extraction — copy-paste error                                                   |
 | BUG-CN-08 | **MEDIUM** | `_demo_snapshots` list grows unbounded: demo mode       | `src/main.py:1345, 1444`                                     | `insert(0, snapshot)` with no cap or eviction — memory leak proportional to snapshot frequency                                |
-| BUG-CN-09 | **MEDIUM** | `WebSocketManager.active_connections` not thread safe   | `src/communication/websocket_manager.py:178,239,304-310,446` | `broadcast_from_thread()` reads bg threads, `connect()`/`disconnect()` mod: `RuntimeError: Set changed size during iteration` |
+| BUG-CN-09 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `WebSocketManager.active_connections` not thread safe   | `src/communication/websocket_manager.py:615-640` (was 178,239,304-310,446) | `broadcast_from_thread()` now snapshots `active_connections` under `_connections_lock`; explicit `# BUG-CN-09 (Phase 3C)` comment in code documents fix |
 | BUG-CN-10 | **LOW**    | `message_count` increment not atomic                    | `src/communication/websocket_manager.py:375`                 | `self.message_count += 1` not thread-safe — inaccurate statistics under concurrent broadcasts                                 |
-| BUG-CN-11 | **MEDIUM** | `regenerate_dataset` mutates state without lock         | `src/demo_mode.py:1660-1676`                                 | train_x, train_y, epoch, loss mutated without `_lock` — training thread sees partial state (v5 new)                           |
+| BUG-CN-11 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `regenerate_dataset` mutates state without lock         | `src/demo_mode.py:1698-1733` (was 1660-1676)                                 | State mutations now atomic under `_lock`; verified by 2026-05-05 audit                           |
 | BUG-CN-12 | **LOW**    | `config_manager._load_config()` returns {} on any error | `src/config_manager.py:147-149`                              | Catches all exceptions including programming errors, returns empty config silently (v5 new)                                   |
 
 #### 5.3 juniper-data
@@ -1370,15 +1399,15 @@ S (< 1 hour)
 | ID        | Severity   | Description                                                        | File(s)                          | Evidence                                                                                                                     |
 |-----------|------------|--------------------------------------------------------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | BUG-JD-01 | **MEDIUM** | `batch_export` builds entire ZIP in memory — OOM risk              | `api/routes/datasets.py:416-434` | Large dataset exports accumulate entire ZIP in memory before sending response                                                |
-| BUG-JD-02 | **MEDIUM** | `delete()` TOCTOU race condition — non-atomic check-then-unlink    | `storage/local_fs.py`            | Time-of-check to time-of-use race between existence check and file deletion                                                  |
-| BUG-JD-03 | **MEDIUM** | `update_meta` writes without temp file — partial data exposure     | `storage/local_fs.py:221-226`    | Confirmed: `meta_path.write_text(...)` directly, while `save()` uses atomic temp-file-replace at L80-101                     |
+| BUG-JD-02 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `delete()` TOCTOU race condition — non-atomic check-then-unlink    | `storage/local_fs.py:221-239`            | Idempotent unlink replaces check-then-unlink; verified by 2026-05-05 audit                                                  |
+| BUG-JD-03 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `update_meta` writes without temp file — partial data exposure     | `storage/local_fs.py:262-291` (was 221-226)    | Now uses temp-file-then-replace pattern (atomic); verified by 2026-05-05 audit                     |
 | BUG-JD-04 | **MEDIUM** | Deterministic IDs with `seed=None` → stale cache returns           | `core/dataset_id.py`             | When seed is None, generated dataset ID is deterministic causing stale cache hits                                            |
 | BUG-JD-05 | **LOW**    | `_version_lock` is class variable — won't work across workers      | `storage/base.py:23`             | Confirmed: `_version_lock = threading.Lock()` at class level — per-process, not per-cluster                                  |
 | BUG-JD-06 | **LOW**    | `ReadinessResponse.timestamp` uses naive `datetime.now()`          | `api/models/health.py:24`        | All other timestamps use `datetime.now(UTC)`; this one produces local-time timestamps                                        |
-| BUG-JD-07 | **MEDIUM** | `record_dataset_generation()` defined but never called             | `api/observability.py:218-229`   | Prometheus metrics `dataset_generations_total` and `generation_duration_seconds` never recorded from route handlers          |
+| BUG-JD-07 ✅ | **MEDIUM** | ✅ **Fixed (v7.0.1)** — `record_dataset_generation()` defined but never called             | `api/routes/datasets.py:144, 154`   | Now called from both error and success paths in batch_create route; verified by 2026-05-05 audit          |
 | BUG-JD-08 | **LOW**    | `record_access()` defined but never called from API layer          | `storage/base.py:125-135`        | `access_count` and `last_accessed_at` fields never populated; TTL-based expiration by access won't work                      |
 | BUG-JD-09 | **MEDIUM** | High-cardinality Prometheus labels from parameterized routes       | `api/observability.py:98`        | `endpoint = request.url.path` captures full path with dataset IDs — unbounded label cardinality; Prometheus OOM risk         |
-| BUG-JD-10 | **HIGH**   | ALL storage operations block async event loop (extends JD-PERF-01) | `api/routes/datasets.py:98-424`  | get_meta, save, batch_export, batch_update_tags — all synchronous in async handlers; blocks ALL concurrent requests (v5 new) |
+| BUG-JD-10 ⚠️ | **HIGH**   | ⚠️ **Partially fixed (v7.0.1, [data #90](https://github.com/pcalnon/juniper-data/pull/90))** — `batch_update_tags` now uses `await asyncio.to_thread(...)`. Other routes (`get_meta`, `save`, `batch_export`) **still synchronous**; tracked for follow-up via async-route audit hook ([juniper-ml #222](https://github.com/pcalnon/juniper-ml/pull/222)). | `api/routes/datasets.py:98-424`  | Per-route fix for `batch_update_tags`; remaining routes flagged for migration plan Phase 3 cleanup |
 | BUG-JD-11 | **LOW**    | `record_access` TOCTOU race on access_count increment              | `storage/base.py:125-135`        | Two concurrent requests read same count, both increment, one lost (v5 new)                                                   |
 
 ### Issue Remediations, Section 5
@@ -5099,7 +5128,7 @@ S (< 1 hour)
 
 #### 7.2 Canopy Enhancement Backlog (CAN-000 through CAN-021)
 
-**Status updated 2026-04-28** after a code-state audit against juniper-canopy main, refined during the Phase 1 + Phase 2 implementation passes. Of 22 items: **10 already implemented**, **5 blocked on missing cascor API / algorithm surface**, **7 genuinely open**. The audit follows the same recurring pattern observed in CAN-CRIT-001 / KL-1 / CI-01/02 / PERF-CC-03 — V7 roadmap entries described work that was actually shipped during earlier review iterations. CAN-013 was re-classified from open to blocked once cascor's `grow_network` was inspected during the Phase-2 implementation pass.
+**Status updated 2026-04-29** after the Phase 3 implementation pass. Of 22 items: **16 implemented** (the original 10 from the 2026-04-28 audit + Phase 3's CAN-016b/019/020), **5 blocked on missing cascor algorithm surface** (CAN-010 / CAN-011 / CAN-013 / CAN-014 / CAN-015 — bundled into Phase 6E), **1 deferred to 6E** (CAN-021's true parallel-network ensemble; the temporal alternative shipped as Network Evolution juniper-canopy [#203](https://github.com/pcalnon/juniper-canopy/pull/203)). The audit follows the recurring "shipped-but-not-marked" pattern observed throughout this roadmap. Phase 6D is now **complete-modulo-blockers**.
 
 | ID       | Module            | Description                                                               | Priority | Status                                                                                                                                                                  |
 |----------|-------------------|---------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -5117,26 +5146,26 @@ S (< 1 hour)
 | CAN-011  | Meta Param Tuning | Activation function meta parameter                                        | P3       | 🚧 Blocked — TrainingParams has no `activation_function` field; `CascadeCorrelationNetwork` uses fixed Tanh. Architecture change required                                |
 | CAN-012  | Meta Param Tuning | Number of top candidate nodes to select                                   | P3       | ✅ Implemented — `cn-top-candidates-input` + `selected_candidates` (`parameters_panel.py:75`, `dashboard_manager.py:1135`)                                              |
 | CAN-013  | Meta Param Tuning | Candidate node integration mode                                           | P3       | 🚧 **Blocked on cascor algorithm work** (re-classified 2026-04-28). Inspection during Phase-2 implementation showed the cascor training loop installs the single best candidate per grow iteration. The proposed `integration_mode: Literal["replace", "ensemble", "additive"]` is not a TrainingParams field + sidebar radio — each mode would require a different network-topology path in `CascadeCorrelationNetwork.grow_network()`. Same blocker bucket as CAN-010 / CAN-011: canopy can't ship a meaningful UI surface until cascor exposes the integration semantics. |
-| CAN-014  | Training Metrics  | Snapshot captures tuning values throughout training                       | P3       | 🚧 Blocked — `POST /v1/snapshots` exists but does not capture tuning state; need snapshot-side metadata API                                                              |
-| CAN-015  | Training Metrics  | Snapshot replay with live tuning → new training session                   | P3       | 🚧 Blocked-on-CAN-014 — replay workflow depends on snapshot params capture                                                                                              |
+| CAN-014  | Training Metrics  | Snapshot captures tuning values throughout training                       | P3       | ✅ Implemented (Phase 6E Sprint A-5) — juniper-cascor [#164](https://github.com/pcalnon/juniper-cascor/pull/164). `_save_configuration` persists 8 missing tunables (`epochs_max`, `max_iterations`, `output_epochs`, `candidate_patience`, `candidate_epochs`, `convergence_threshold`, `candidate_convergence_threshold`, `init_output_weights`); new `_load_config_to_network` restores them with legacy-snapshot tolerance; `POST /v1/snapshots/{id}/restore` response now includes `training_params`. |
+| CAN-015 ✅ | Training Metrics  | Snapshot operations: Restore / Replay / Resume / Retrain (was: replay with live tuning) | P3 | ✅ **Shipped end-to-end (v7.0.1, 2026-05-03 to 2026-05-05)**. Phase 6E Sprint B + g/h shipped — see new [§28.1](#281-can-015g--can-015h--phase-6e-deferred-shipped-end-to-end). 8 PRs for Sprint B (CAN-015a..f), 8 PRs for CAN-015g (Replay V2 with per-epoch weight history), 7 PRs for CAN-015h (Restore weight + topology editing endpoints), plus 5 hardening-pass follow-up PRs. Full design in [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md) and [`PHASE_6E_DEFERRED_CAN-015GH_DESIGN.md`](PHASE_6E_DEFERRED_CAN-015GH_DESIGN.md). |
 | CAN-016a | All               | Save/Load dashboard layout state                                          | P3       | 🔴 Open (M) — extend the existing `dcc.Store(id="dark-mode-store", storage_type="local")` pattern to tab/sidebar/theme persistence                                      |
-| CAN-016b | Dataset           | Import/Generate new dataset (file, URL, REST)                             | P3       | 🔴 Open (L) — file-upload + URL loader + REST form in `dataset_plotter.py`; cascor side already supports inline + juniper-data                                          |
+| CAN-016b | Dataset           | Import/Generate new dataset (file, URL, REST)                             | P3       | ✅ Implemented — juniper-canopy [#198](https://github.com/pcalnon/juniper-canopy/pull/198). Three tabs (Generate / Upload File / Fetch URL) in the dataset modal; CSV parser with header auto-detection + 10 MB / 50k rows / 100 features caps; `DemoMode.import_dataset` mirrors `regenerate_dataset`'s lock discipline. Demo-mode-only — service-mode follow-up needs cascor inline-dataset endpoint. |
 | CAN-017  | All               | Tooltips on all dashboard controls                                        | P3       | ✅ Implemented — `CONTROL_TOOLTIPS` dict in `frontend/tooltips.py` covers 20+ control IDs (Sprint 5, commit `9d92bfe`)                                                  |
 | CAN-018  | All               | Right-click tutorial descriptions with doc links                          | P4       | 🔴 Open (S) — context-menu via clientside callback; populate from same `CONTROL_TOOLTIPS` source + link to Tutorial tab                                                 |
-| CAN-019  | All               | Walk-through style tutorial with highlighted steps                        | P4       | 🔴 Open (L) — interactive overlay with step navigation + clientside highlight JS; tutorial_panel.py extension                                                            |
-| CAN-020  | All               | Show network at specific hierarchy level                                  | P4       | 🔴 Open (M) — depth/layer slider in `network_visualizer.py`; filter nodes by hierarchy                                                                                  |
-| CAN-021  | All               | Show network in population (ensemble view)                                | P4       | 🔴 Open (L) — ensemble visualization mode; multi-network rendering; data model for population                                                                            |
+| CAN-019  | All               | Walk-through style tutorial with highlighted steps                        | P4       | ✅ Implemented — juniper-canopy [#201](https://github.com/pcalnon/juniper-canopy/pull/201). Spotlight overlay with floating tooltip card; 8-step tour driven by Python step config (`frontend/walkthrough_steps.py`); `Esc`/Skip persists completion in localStorage; launches from a "Take a guided tour" button on the Tutorial tab. |
+| CAN-020  | All               | Show network at specific hierarchy level                                  | P4       | ✅ Implemented — juniper-canopy [#200](https://github.com/pcalnon/juniper-canopy/pull/200). `dcc.Slider` filters the network visualizer to the first K cascade-order hidden units; pure `_apply_hierarchy_filter` static helper drops connections to filtered units; clientside callback bumps the slider's `max` as the cascade grows while preserving the user's pick. |
+| CAN-021  | All               | Show network in population (ensemble view)                                | P4       | 🚧 **Deferred to Phase 6E** (2026-04-29). The "true ensemble" reading — multiple parallel-trained networks compared side-by-side — requires cascor multi-network support that doesn't exist today (lifecycle owns one `network`). Bundled with CAS-002..009 since the algorithm work is on the cascor side. **Adjacent feature shipped**: Network Evolution (juniper-canopy [#203](https://github.com/pcalnon/juniper-canopy/pull/203)) gives a *temporal* timeline (one network's growth over time as a small-multiples grid) — covers some of the same "see multiple network states at once" need without the cross-repo dependency. |
 
-##### 6D Open-items recommended PR ordering (2026-04-28)
+##### 6D Open-items recommended PR ordering (status 2026-04-29)
 
-| Phase | Items | Why first |
-|-------|-------|-----------|
-| **Phase 1 — quick wins (~2h, low risk)** | CAN-000, CAN-018 | After re-audit, CAN-002 and CAN-007 turned out to also be shipped (custom window-size input + `cn-training-iterations-input` alias to `candidate_epochs`). The remaining Phase 1 work is CAN-000 (interval pause during Apply — only P2 in the batch) and CAN-018 (right-click context menus reusing the shipped `CONTROL_TOOLTIPS` source). |
-| **Phase 2 — medium (~4h)** | CAN-005, CAN-016a | Power-user / workflow improvements after Phase 1 stabilizes. CAN-013 was originally in this slot but moved to the Blocked bucket once cascor's grow_network was inspected — it needs algorithmic work, not a TrainingParams field. |
-| **Phase 3 — large (~12h)** | CAN-016b, CAN-019, CAN-020, CAN-021 | Substantial UI/data work; defer until post-Phase 6F. CAN-019 / CAN-021 are P4 polish items with low ROI. |
-| **Blocked — needs cascor API work first** | CAN-010, CAN-011, CAN-014, CAN-015 | Cross-repo prerequisites in `TrainingParams` (optimizer/activation) and snapshot lifecycle (parameter capture). |
+| Phase | Items | Status |
+|-------|-------|--------|
+| **Phase 1 — quick wins** | CAN-000, CAN-018 | ✅ Shipped (juniper-canopy #190 / #191 from prior cycle) |
+| **Phase 2 — medium** | CAN-005, CAN-016a | ✅ Shipped (juniper-canopy #192 / #193 from prior cycle) |
+| **Phase 3 — large** | CAN-016b, CAN-019, CAN-020, CAN-021 | 3/4 shipped (#198 / #200 / #201); **CAN-021 deferred to 6E** — see row above. Adjacent feature **Network Evolution** (#203) ships a temporal cascade-growth timeline that covers some of the same need without cross-repo dependencies. |
+| **Blocked — needs cascor API work first** | CAN-010, CAN-011, CAN-013, CAN-014, CAN-015 | Cross-repo prerequisites in `TrainingParams` (optimizer/activation/integration mode) and snapshot lifecycle (parameter capture). Roll into Phase 6E. |
 
-**Total remaining 6D effort**: 8 open items, ~18h, ~6 PRs (Phase 1 pair + 3 medium + 4 large). Phase 1 + 2 land entirely in juniper-canopy; Phase 3 may also touch juniper-data (CAN-016b dataset import). Phase 6D becomes complete-modulo-blockers when Phases 1–3 land; the four blocked items roll into a follow-up roadmap entry once cascor surfaces the missing APIs.
+**6D status (2026-04-29)**: **complete-modulo-blockers**. All non-blocked items shipped. Five items (CAN-010 / CAN-011 / CAN-013 / CAN-014 / CAN-015) are blocked on cascor algorithm work and have been bundled into Phase 6E; CAN-021's "true ensemble" view joins them since it has the same cross-repo cascor-multi-network dependency.
 
 ### Issue Remediations, Section 7
 
@@ -5560,7 +5589,7 @@ XL (combined)
 
 #### 8.3 Critical Individual Gaps (from WebSocket Architecture Review)
 
-**Status updated 2026-04-29** (initial audit 2026-04-28). Of 12 items: **10 shipped** (5 caught by the audit + GAP-WS-16/14/15 already merged from Phase 6A + GAP-WS-25 and GAP-WS-18 landed during the post-audit cleanup), **1 in review** (GAP-WS-28 — atomic update_params rollback), **1 untouched** (Phase B-pre-b CSWSH/CSRF). Same recurring "shipped-but-not-marked" pattern as CAN-CRIT-001 / KL-1 / CI-01/02 / PERF-CC-03 / 6D items / CAN-013.
+**Status updated 2026-04-29** (initial audit 2026-04-28). Of 12 items: **11 shipped** (5 caught by the initial audit + GAP-WS-16/14/15 already merged from Phase 6A + GAP-WS-25 and GAP-WS-18 landed during post-audit cleanup + Phase B-pre-b confirmed shipped during a 2026-04-29 deep-check), **1 in review** (GAP-WS-28 — atomic update_params rollback). Same recurring "shipped-but-not-marked" pattern observed throughout this audit cycle.
 
 | ID            | Priority | Description                                                                                  | Status         |
 |---------------|----------|----------------------------------------------------------------------------------------------|----------------|
@@ -5575,7 +5604,7 @@ XL (combined)
 | GAP-WS-28     | **P2**   | Multi-key `update_params` torn-write race                                                    | 🟡 In Review — [juniper-cascor #154](https://github.com/pcalnon/juniper-cascor/pull/154) adds capture-then-revert atomicity: snapshot pre-call values, attempt the setattr loop, on any exception walk the applied list in reverse and restore each key. Re-raises the original exception so callers see the failure. |
 | GAP-WS-31     | **P2**   | Unbounded reconnect cap — stops after 10, dashboards left open permanently stop reconnecting | ✅ Shipped — `juniper-canopy/src/frontend/assets/websocket_client.js:8,150,153–163` removes the attempt cap; `_scheduleReconnect` retries indefinitely with exponential backoff capped at 60s delay (not 10 attempts). Closed during 2026-04-28 audit. |
 | GAP-WS-32     | **P2**   | Per-command timeouts and orphaned-command resolution                                         | ✅ Shipped — `juniper-canopy/src/frontend/assets/websocket_client.js:39–40,198–201,286–334` (per-command UUID correlation, 2s default timeout, promise-based send) + `juniper-cascor/src/api/websocket/control_stream.py:129–176` (server echoes `command_id` in `command_response`). Both sides wired. Closed during 2026-04-28 audit. |
-| Phase B-pre-b | **P1**   | CSWSH/CSRF on `/ws/control` — NOT STARTED (required before Phase D default-on)               | 🔴 NOT STARTED |
+| Phase B-pre-b | **P1**   | CSWSH/CSRF on `/ws/control` — required before Phase D default-on                              | ✅ Shipped — `juniper-canopy/src/main.py:528–595` implements all four security gates on `/ws/control`: API key auth (line 538), Origin validation (lines 546–558, M-SEC-01b), per-IP connection cap (lines 561–563, M-SEC-04), and CSRF first-frame auth (lines 568–595, M-SEC-02 — 5s timeout, type+token validation, audit-logged via `log_ws_csrf_rejected` on every reject path). Token-issuing endpoint at `main.py:366–377` (`/api/csrf`); `CsrfTokenStore` with TTL/eviction/constant-time compare in `juniper-canopy/src/csrf.py`. Coverage: `src/tests/unit/test_phase_b_pre_b_csrf.py` (20+ tests across `TestCsrfTokenStore`, `TestCsrfEndpoint`, `TestWsControlCsrfAuth`, `TestAuditLogCsrf`, `TestAdapterValidation`). Cascor-side `/ws/control` shipped Origin validation + per-origin cooldown + leaky bucket + idle timeout + kill switch (`control_stream.py:100–123`); CSRF token validation N/A on cascor since it isn't browser-facing in standard deployments. Closed during 2026-04-29 deep-check. |
 
 ### Issue Remediations, Section 8
 
@@ -6404,6 +6433,10 @@ M
 **Cross-References**: Related to SEC-05.
 **Approach A**: Apply same Origin validation as SEC-05 fix specifically to `/ws/control`.
 **Recommended**: Implement alongside SEC-05.
+
+##### Verification Status
+
+✅ Shipped (deep-check 2026-04-29). Canopy ships all four `/ws/control` security gates: API key auth, Origin validation (M-SEC-01b), per-IP connection cap (M-SEC-04), and CSRF first-frame auth (M-SEC-02) — see `juniper-canopy/src/main.py:528–595`. Token-issuing endpoint at `main.py:366–377` (`/api/csrf`); `CsrfTokenStore` with TTL/eviction/constant-time compare in `juniper-canopy/src/csrf.py`. CSRF rejection paths (missing frame, invalid token, timeout, malformed) all close with code 1008 and audit-log via `log_ws_csrf_rejected`. Coverage: 20+ tests in `src/tests/unit/test_phase_b_pre_b_csrf.py` (`TestCsrfTokenStore`, `TestCsrfEndpoint`, `TestWsControlCsrfAuth`, `TestAuditLogCsrf`, `TestAdapterValidation`). Cascor-side `/ws/control` shipped Origin validation + per-origin cooldown + leaky bucket + idle timeout + kill switch (`control_stream.py:100–123`); CSRF token validation N/A on cascor since it isn't browser-facing in standard deployments. Phase D default-on gate is now satisfied.
 
 ##### Severity
 
@@ -14829,11 +14862,11 @@ The remaining 36 items, prioritized for incremental landing. Track 5D should shi
 | 6A    | GAP-WS-16, GAP-WS-14, GAP-WS-15        | 3×L    | Critical: bandwidth reduction, extendTraces, rAF | ✅ Complete — GAP-WS-15 ✅ (juniper-canopy PR [#186](https://github.com/pcalnon/juniper-canopy/pull/186)), GAP-WS-14 ✅ (juniper-canopy PR [#187](https://github.com/pcalnon/juniper-canopy/pull/187)), GAP-WS-16 ✅ (juniper-cascor PR [#152](https://github.com/pcalnon/juniper-cascor/pull/152) + juniper-canopy PR [#195](https://github.com/pcalnon/juniper-canopy/pull/195) — initial_metrics burst + subscribe_metrics + REST switchover gate + `/v1/metrics/transport` bandwidth instrumentation). Phase complete 2026-04-28. |
 | 6B    | PERF-CN-01, PERF-CN-02, PERF-CC-01..03 | 5×S-M  | Performance: dict sizes, computation caching     | ✅ Implemented — PERF-CC-03 absorbed into juniper-cascor PR [#142](https://github.com/pcalnon/juniper-cascor/pull/142) (concurrency lock); PERF-CC-01/02 via juniper-cascor PR [#151](https://github.com/pcalnon/juniper-cascor/pull/151); PERF-CN-02 via juniper-canopy PR [#188](https://github.com/pcalnon/juniper-canopy/pull/188); PERF-CN-01 via juniper-canopy PR [#189](https://github.com/pcalnon/juniper-canopy/pull/189). Phase complete 2026-04-28.                                                                                                                                                       |
 | 6C    | CAN-CRIT-001, KL-1                     | 2×L    | Dashboard: decision boundary, scatter plot       | ✅ Implemented (closed during 2026-04-28 review) — both items had landed prior to Track 6 work as part of CR-021/022/064 (juniper-cascor PR [#101](https://github.com/pcalnon/juniper-cascor/pull/101) added `/v1/decision-boundary`) and the dataset-data endpoint commit `57df9de` in juniper-cascor. Adapter wiring (`CascorServiceAdapter.get_decision_boundary` / `get_dataset_data`) and frontend callbacks were already in place; the roadmap entries were stale relative to shipping reality. Per-item details in §[CAN-CRIT-001](#can-crit-001-decision-boundary-non-functional-in-productionservice-mode) and §[KL-1](#kl-1-dataset-scatter-plot-empty-in-service-mode). |
-| 6D    | CAN-000..CAN-021                       | 22×S-M | Dashboard enhancement backlog                    | 🟡 Partial — code-state audit on 2026-04-28 + Phase 1/2 implementation passes found 10 items shipped (CAN-001/002/003/004/006/007/008/009/012/017), 5 blocked on missing cascor APIs (CAN-010 optimizer, CAN-011 activation, **CAN-013 integration mode**, CAN-014/015 snapshot params), 7 genuinely open (4 Phase-3 + 3 closed via #190/#191/#192/#193 from Phase 1/2). See §[7.2 Canopy Enhancement Backlog](#72-canopy-enhancement-backlog-can-000-through-can-021) for the per-item table and the recommended Phase 1/2/3 PR ordering.                                                            |
-| 6E    | CAS-002..CAS-009                       | 8×M-XL | CasCor algorithm enhancements                    | 🔴 Outstanding                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| 6F    | Phase E..H, remaining GAP-WS           | 8×M-L  | WebSocket migration remaining phases             | 🟡 Mostly drained — the 2026-04-28 audit + post-audit cleanup landed 10 of 12 §8.3 GAP-WS items (✅ GAP-WS-13/14/15/16/18/21/25/26/31/32). GAP-WS-28 in review ([juniper-cascor #154](https://github.com/pcalnon/juniper-cascor/pull/154)). Only Phase B-pre-b (CSWSH/CSRF on /ws/control) and Phase E..H backpressure pump tasks remain. |
+| 6D    | CAN-000..CAN-021                       | 22×S-M | Dashboard enhancement backlog                    | ✅ Complete-modulo-blockers (2026-04-29) — 16 of 22 items shipped. Phase 3 closed via [#198](https://github.com/pcalnon/juniper-canopy/pull/198) (CAN-016b dataset import), [#200](https://github.com/pcalnon/juniper-canopy/pull/200) (CAN-020 hierarchy slider), [#201](https://github.com/pcalnon/juniper-canopy/pull/201) (CAN-019 walkthrough). CAN-021 deferred to 6E (true ensemble needs cascor multi-network). Adjacent feature **Network Evolution** ([#203](https://github.com/pcalnon/juniper-canopy/pull/203)) ships a temporal cascade-growth timeline — covers some of CAN-021's "see multiple network states" need without the cross-repo dependency. See §[7.2 Canopy Enhancement Backlog](#72-canopy-enhancement-backlog-can-000-through-can-021). |
+| 6E    | CAS-002..009 + 6 deferred CAN items    | 5 sprints / 19 PRs | CasCor algorithm enhancements + cross-repo CAN-* | 🔴 Outstanding — three design docs landed 2026-04-29: [`PHASE_6E_DESIGN.md`](PHASE_6E_DESIGN.md) (master plan), [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md) (full integration modes incl. weighted_ensemble unit type), [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md) (multi-network refactor for CAS-008/009/CAN-021). Sprint plan: A (5 wire-through PRs, ~1 wk) → B (snapshot replay, 1 PR) → **C (full CAN-013 incl. ensemble unit, 5 PRs, ~1.5 wk)** → D (CAS-005 cleanup, 1 PR) → E (multi-network, 7 PRs, ~2 wk). 3 of 6 deferred CAN items are wire-through (CAN-010 / 011 / 014); CAN-013 expanded to full weighted_ensemble per user direction. |
+| 6F    | Phase E..H, remaining GAP-WS           | 8×M-L  | WebSocket migration remaining phases             | 🟡 Drained — the 2026-04-28 audit + post-audit cleanup + 2026-04-29 deep-check landed 11 of 12 §8.3 GAP-WS items (✅ GAP-WS-13/14/15/16/18/21/25/26/31/32 + Phase B-pre-b). GAP-WS-28 in review ([juniper-cascor #154](https://github.com/pcalnon/juniper-cascor/pull/154)). Only Phase E..H backpressure pump tasks remain (those are conditional on telemetry data per §8 — not currently triggered). |
 
-**Track 6 progress (2026-04-29)**: Phases 6A, 6B, 6C complete (3/6). 6D in flight (Phase 1/2 shipped via #190/#191/#192/#193, 4 Phase-3 items + 5 cross-repo blocked items remain). 6F mostly drained — only Phase B-pre-b CSWSH/CSRF + Phase E..H backpressure pump tasks left. 6E (CasCor algorithm enhancements) untouched and unlocks 5 blocked CAN-* items downstream. Next on the critical path: 6D Phase 3 (canopy-only, S-M), 6E (cross-repo, M-XL — high downstream value), or Phase B-pre-b (P1 security gate).
+**Track 6 progress (2026-04-29 — deep design pass)**: Phases 6A, 6B, 6C, 6D complete (4/6). 6F drained (only conditional Phase E..H backpressure pump tasks left). **6E now has three design docs**: [`PHASE_6E_DESIGN.md`](PHASE_6E_DESIGN.md) is the master plan, [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md) covers the full weighted_ensemble unit type (per user direction), and [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md) covers the registry-pattern refactor for CAS-008/009/CAN-021. Three "blocked" CAN items (CAN-010 / 011 / 014) turn out to be wire-through. Plan: 5 sprints / 19 PRs total — A (5 wire-throughs) → B (snapshot replay) → C (full CAN-013) → D (CAS-005 cleanup) → E (multi-network XL). Adjacent **Network Evolution** ([juniper-canopy #203](https://github.com/pcalnon/juniper-canopy/pull/203)) already covers part of CAN-021's "see multiple network states" intent without waiting for Sprint E.
 
 ### 25.3 Track Dependency Graph
 
@@ -15058,4 +15091,130 @@ All phases are within capacity constraints with significant buffer for unexpecte
 
 ---
 
-*End of outstanding development items document (v7.0.0 — complete implementation roadmap with verified code solutions, severity/priority/scope classification, 6 parallel development tracks, and 4-phase execution schedule across 12 weeks for ~300 items in 8 repositories).*
+## 28. Recently Shipped (post-2026-04-23, v7.0.1 delta)
+
+This section catalogs the work that landed in the ~12-day window between v7.0.0 (2026-04-23) and v7.0.1 (2026-05-05). The classification is "shipped on `main`" not "tracked in §1–§21" — the v7.0.0 roadmap structure didn't have a home for these items, so they're collected here.
+
+**Source**: 2026-05-05 multi-agent audit (see [`ROADMAP_AUDIT_2026-05-05.md`](./ROADMAP_AUDIT_2026-05-05.md) §5) cross-referenced against `git log --since="2026-04-23"` per repo. Total shipped: **654 commits across 8 repos in 12 days**.
+
+### 28.1 CAN-015g + CAN-015h — Phase 6E deferred, shipped end-to-end
+
+The original v7.0.0 roadmap (line ~5121, since updated to `✅ Shipped`) flagged these as **deferred to dedicated post-Phase-6E sprints**. Both shipped in full between 2026-05-03 and 2026-05-05.
+
+#### CAN-015g — Replay V2 with per-epoch weight history (8 PRs)
+
+| Sub-task | PR | What shipped | Merge SHA |
+|---|---|---|---|
+| g-1 | [cascor #180](https://github.com/pcalnon/juniper-cascor/pull/180) | Schema v2 + adaptive sampling | `e68f7fe3` |
+| g-2 | [cascor #189](https://github.com/pcalnon/juniper-cascor/pull/189) (retarget of #184) | Replay session weight cache | `b1d19948` |
+| g-3 | [cascor #190](https://github.com/pcalnon/juniper-cascor/pull/190) (retarget of #187) | Sample-boundary weight emission | `dbc25277` |
+| g-4 | [canopy #220](https://github.com/pcalnon/juniper-canopy/pull/220) | Replay player V2 buffer + WS bridge | `e56b6c29` |
+| g-5a | [cascor #196](https://github.com/pcalnon/juniper-cascor/pull/196) | Schema-v2 migration FAQ | `8f90276f` |
+| g-5b | [canopy #221](https://github.com/pcalnon/juniper-canopy/pull/221) | V2 indicator badges + snap-to-sample FAQ | `0e777f7d` |
+| g-6 | [cascor #191](https://github.com/pcalnon/juniper-cascor/pull/191) | Live capture in training loop | `8e3c3064` |
+| g-7 | [canopy #222](https://github.com/pcalnon/juniper-canopy/pull/222) | Decision-boundary + network-evolution renderers | `ccbd1492` |
+
+#### CAN-015h — Restore-state weight + topology editing (7 PRs)
+
+| Sub-task | PR | What shipped | Merge SHA |
+|---|---|---|---|
+| h-0 | [cascor #198](https://github.com/pcalnon/juniper-cascor/pull/198) | `_install_hidden_unit` extraction | `16db3827` |
+| h-1 | [cascor #199](https://github.com/pcalnon/juniper-cascor/pull/199) | `PATCH /v1/network/weights` | `de126f4c` |
+| h-2 | [cascor #214](https://github.com/pcalnon/juniper-cascor/pull/214) (retarget of #200) | `POST /v1/network/hidden-units` | (per `git log`) |
+| h-3 | [cascor #215](https://github.com/pcalnon/juniper-cascor/pull/215) (retarget of #201) | `DELETE /v1/network/hidden-units/{idx}` | (per `git log`) |
+| h-4 | [canopy #223](https://github.com/pcalnon/juniper-canopy/pull/223) | Adapter pass-throughs | `4bac02ff` |
+| h-5 | [canopy #224](https://github.com/pcalnon/juniper-canopy/pull/224) | Network Editor panel + tab | `c63d4f8b` |
+| h-6 | [canopy #235](https://github.com/pcalnon/juniper-canopy/pull/235) | Destructive-op confirm modal + snapshot-first prompt | (per `git log`) |
+
+#### CAN-015h hardening pass (5 follow-up PRs, 2026-05-04..05)
+
+Surfaced by the round-trip integration test:
+
+- [cascor #219](https://github.com/pcalnon/juniper-cascor/pull/219) + [cascor #222](https://github.com/pcalnon/juniper-cascor/pull/222) — pydantic-core numpy-scalar serialization (narrow then envelope-level)
+- [canopy #239](https://github.com/pcalnon/juniper-canopy/pull/239) — Network Editor PATCH target schema mismatch (drift between `output_weights` dropdown value and `target ∈ {output, hidden_unit}` cascor schema)
+- [cascor #225](https://github.com/pcalnon/juniper-cascor/pull/225) — round-trip integration test (snapshot → restore → mutate → re-snapshot → resume → train)
+- [juniper-ml #212](https://github.com/pcalnon/juniper-ml/pull/212) — `PHASE_6E_DEFERRED_CAN-015GH_DESIGN.md` annotated with delivery state
+
+#### v7.0.1 hotfix-wave for the audit's STILL-PRESENT bugs
+
+- [cascor #228](https://github.com/pcalnon/juniper-cascor/pull/228) — BUG-CC-12: `load_dataset` uses `torch.load(weights_only=True)` instead of `yaml.safe_load`
+- [data #90](https://github.com/pcalnon/juniper-data/pull/90) — BUG-JD-10: `batch_update_tags` wraps `store.get_meta` / `update_meta` in `await asyncio.to_thread(...)`
+
+### 28.2 Observability audit phase
+
+Launched after the v7.0.0 freeze. Documented in juniper-ml — `notes/OBSERVABILITY_AUDIT_2026-05-03.md` and follow-ups via [juniper-ml #194/#195](https://github.com/pcalnon/juniper-ml/pull/194). **27 new items, 6 P1**.
+
+| Theme | Repos affected | Status |
+|---|---|---|
+| `set_build_info` idempotency | juniper-ml, deploy | Fixed via [juniper-ml #211](https://github.com/pcalnon/juniper-ml/pull/211) |
+| `PrometheusMiddleware` registration idempotent | data, canopy | Fixed via [data #88](https://github.com/pcalnon/juniper-data/pull/88), canopy V34 |
+| Control-stream `Counter` registration idempotent | cascor | Fixed via [cascor #216](https://github.com/pcalnon/juniper-cascor/pull/216) |
+| Pytest REGISTRY isolation | data, canopy | Fixed; tracked alongside tests for fixture isolation |
+| `register_or_reuse` design | juniper-ml | Documented in [juniper-ml #194](https://github.com/pcalnon/juniper-ml/pull/194) and helpers landed in [juniper-ml #216](https://github.com/pcalnon/juniper-ml/pull/216) |
+
+**Action for v7.1**: fold the 27 audit items into a dedicated track (Phase 6F candidate).
+
+### 28.3 METRICS-MON R4.x — observability instrumentation
+
+Multi-PR program shipping observability hooks across the ecosystem:
+
+| Item | Repo | Theme |
+|---|---|---|
+| R3.1 / R4.5 | juniper-data | Cache-hit observability + cardinality bound |
+| R4.3 | juniper-data-client | `on_request` hook |
+| R4.4 | juniper-cascor-worker | Heartbeat instrumentation |
+| R4.6 | juniper-data-client | `X-Request-ID` propagation |
+| R4.7 | juniper-cascor-worker | Unrecognized-frame log |
+| r5-4-pre | juniper-cascor [#188](https://github.com/pcalnon/juniper-cascor/pull/188) | Training counters + train-step histogram + worker→Prometheus bridge |
+| r5-1 / r5-2 / r5-3 / r5-4 | juniper-deploy | SLO catalog (5+8 SLIs), scrape manifests, Grafana dashboards, burn-rate / health alerts |
+| r2-3 | juniper-data, juniper-canopy, juniper-deploy | Probe semantics, probe-graph topology |
+
+### 28.4 obs-wire-01/02 + obs-route-01
+
+| PR | Repo | What shipped |
+|---|---|---|
+| obs-wire-02 cascor [#211](https://github.com/pcalnon/juniper-cascor/pull/211) | cascor | Wire 9 `ws_*` metrics + Q3 manager refactor + E.2/E.4 bundles |
+| obs-wire-02 canopy [#236](https://github.com/pcalnon/juniper-canopy/pull/236) | canopy | seq_gap metric (Q1) + A.8 closed-set bundles |
+| obs-wire-02 cascor [#218](https://github.com/pcalnon/juniper-cascor/pull/218) | cascor | Wire `juniper_cascor_pending_tasks` gauge via `WorkerRegistryCollector` |
+| obs-route-01 deploy [#60](https://github.com/pcalnon/juniper-deploy/pull/60) | deploy | Alertmanager tickets receiver + severity routing |
+
+### 28.5 CVE-2026-3219 ecosystem mitigation
+
+Coordinated `pip-audit --ignore-vuln CVE-2026-3219` workaround across **6 of 8 repos** between 2026-04-24 and 2026-05-02 (then dropped 2026-05-04..05 once the upstream pip fix released, with `pip>=26.1.1` pin):
+
+| Repo | Workaround landed | Workaround dropped |
+|---|---|---|
+| juniper-cascor-client | 2026-04-24 (#d5be2a2) | (per repo logs) |
+| juniper-data | 2026-04-25..29 (multiple PRs) | [data #89](https://github.com/pcalnon/juniper-data/pull/89) (`pip>=26.1.1`) |
+| juniper-data-client | 2026-04-26..28 | (per repo logs) |
+| juniper-cascor-worker | 2026-04-27 | (per repo logs) |
+| juniper-canopy | 2026-04-29 | (per repo logs) |
+| juniper-cascor | 2026-04-30 | [cascor #227](https://github.com/pcalnon/juniper-cascor/pull/227) (`pip>=26.1.1`) |
+
+**Action for v7.1**: add an "Ecosystem Incident Response" tracking section to the roadmap template so future cross-repo CVE responses get a home rather than going dark in commit messages.
+
+### 28.6 Hotfix archaeology — P-1 through P-9 audit markers
+
+Discoveries from the implementation pass that were tagged with `P-N` markers in commit messages but never back-ported into v7.0.0:
+
+| Tag | PR | Bug class |
+|---|---|---|
+| P-1 | [cascor #203](https://github.com/pcalnon/juniper-cascor/pull/203) | Parallelism RC-4 race (candidate-training) |
+| P-9, P-23 | [cascor #206](https://github.com/pcalnon/juniper-cascor/pull/206) | Validation-loss gauge index bug |
+| (replay) | [cascor #195](https://github.com/pcalnon/juniper-cascor/pull/195) | Replay `set_range` overwrite leak |
+
+**Action for v7.1**: add a "Hotfix archaeology" sub-section to the periodic roadmap update so P-N tags don't stay invisible to roadmap readers.
+
+### 28.7 Process recommendations from the v7.0.0 → v7.0.1 drift
+
+The 12-day staleness wasn't anyone's fault — it's a missing process. Three lightweight changes prevent it from recurring:
+
+1. **PR template hook**: add a "Closes roadmap item: …" field that, if filled, requires the same PR to flip the corresponding row to `✅`. Single source of truth, easier to review than a separate sweep.
+2. **"Recently shipped" auto-section**: a small CI job that walks merged-since-last-roadmap-update PRs and produces a draft delta block for the next roadmap revision. Maintainer accepts/edits.
+3. **Roadmap freshness SLO**: target ≤ 7 days between major delivery and roadmap reflection. Track it via a check that compares `git log -1 --since` of the roadmap to ecosystem-wide `git log -1 --since` of `main`.
+
+These would have caught the v7.0.0 → v7.0.1 drift before it grew to ~654 commits.
+
+---
+
+*End of outstanding development items document (v7.0.1 — complete implementation roadmap with verified code solutions, severity/priority/scope classification, 6 parallel development tracks, 4-phase execution schedule across 12 weeks for ~300 items in 8 repositories, plus the new [§28 Recently Shipped](#28-recently-shipped-post-2026-04-23-v701-delta) cataloguing the post-2026-04-23 work folded in by the v7.0.1 hotfix update).*

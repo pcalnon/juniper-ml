@@ -8,6 +8,56 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+### Changed
+
+- ``PrometheusMiddleware.__init__`` and ``set_build_info`` now use the
+  canonical ``register_or_reuse`` / ``register_info_or_update`` helpers
+  introduced in ``0.2.0`` instead of inlining the try/except + REGISTRY-
+  lookup pattern. Pure internal refactor — production behaviour and the
+  collectors' wire format are unchanged. Phase 1 of the migration plan
+  in ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``.
+
+## [0.2.0] - 2026-05-05
+
+Minor bump for additive new public API surface. No breaking changes vs `0.1.1`; existing consumers of `PrometheusMiddleware`, `set_build_info`, `configure_logging`, etc. continue to work unchanged. Recommended pin for new consumers: `juniper-observability>=0.2.0`.
+
+### Added
+
+- ``juniper_observability.prometheus_helpers`` — four idempotent
+  ``prometheus_client`` collector helpers retiring the ~10 inline
+  copies of the same try/except pattern that had accumulated in
+  consumer repos through 2026-05-04. Public API:
+  - ``register_or_reuse(factory, name, *args, **kwargs)`` —
+    adopt-existing on duplicate (the default choice for almost every
+    call site; samples preserved, latest call's args ignored).
+  - ``register_fresh(factory, name, *args, **kwargs)`` —
+    drop-and-recreate on duplicate (samples discarded, latest call's
+    args take effect). Use only when test fixtures or migrations
+    intentionally want different buckets/labels.
+  - ``register_info_or_update(name, description, **info_labels)`` —
+    sugar over ``register_or_reuse`` for the ``Info`` collector type.
+  - ``lazy_register_or_reuse(factory, name, *args, **kwargs)`` —
+    cached ``register_or_reuse`` for the lazy-init sentinel pattern;
+    process-wide module-private cache keyed by metric name.
+  All four lazy-import ``prometheus_client`` so callers without the
+  optional dependency only pay the import cost on the path that
+  actually needs the SDK.
+- ``juniper_observability.testing`` (new sub-module) —
+  ``reset_prometheus_registry`` pytest fixture replacing the file-
+  scoped autouse fixtures consumer test suites had been hand-rolling.
+  Function-scoped, opt-in; consumers wire it autouse in their own
+  ``conftest.py``. Caused the juniper-data ``TestSEC16MetricsAppIntegration``
+  failure on 2026-05-04 because the file-scoped variant only saw
+  collectors registered during its own tests.
+
+### Notes
+
+- See
+  ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+  in the juniper-ml repo for the full analysis, design rationale,
+  trade-off comparison vs cascor's pre-existing ``_register_or_reuse``,
+  and the phased migration plan for the 11 production call sites.
+
 ## [0.1.1] - 2026-04-29
 
 ### Changed
@@ -46,7 +96,7 @@ Initial source drop, never released to PyPI / TestPyPI.
 - **Prometheus utilities** — `get_prometheus_app` (mountable ASGI app) and `set_build_info` (for setting the `*_build_info` gauge from `pyproject.toml` metadata).
 - **Sentry init** — `configure_sentry` with the SEC-10 `before_send` hook always installed.
 - **Package extras** — `[prometheus]`, `[sentry]`, `[all]`.
-- **Docs** — design + 5-PR migration sequence in `notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md` (parent juniper-ml repo).
+- **Docs** — design + 5-PR migration sequence in `notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md` (parent juniper-ml repo; archived to `notes/legacy/` 2026-05-05).
 
 ### Notes
 
