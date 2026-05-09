@@ -7,15 +7,30 @@
 # applicable). Writes PIDs to a pidfile for use by juniper_chop_all.bash.
 #
 # Environment overrides:
-#   JUNIPER_PROJECT_DIR     — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
-#   JUNIPER_CONDA_DIR       — Miniforge/conda install dir (default: /opt/miniforge3)
-#   JUNIPER_DATA_PORT       — juniper-data listen port (default: 8100)
-#   JUNIPER_CASCOR_HOST     — juniper-cascor bind host (default: localhost)
-#   JUNIPER_CASCOR_PORT     — juniper-cascor listen port (default: 8201)
-#   JUNIPER_CANOPY_PORT     — juniper-canopy listen port (default: 8050)
-#   HEALTH_CHECK_TIMEOUT    — Max seconds to wait for each service health (default: 60)
-#   HEALTH_CHECK_INTERVAL   — Seconds between health polls (default: 2)
-#   USE_SYSTEMD             — Set to "1" to use systemctl instead of nohup (default: 0)
+#   JUNIPER_PROJECT_DIR        — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
+#   JUNIPER_CONDA_DIR          — Miniforge/conda install dir (default: /opt/miniforge3)
+#   JUNIPER_DATA_HOST          — juniper-data bind host (default: 0.0.0.0)
+#   JUNIPER_DATA_PORT          — juniper-data listen port (default: 8100)
+#   JUNIPER_CASCOR_HOST        — juniper-cascor bind host (default: localhost)
+#   JUNIPER_CASCOR_PORT        — juniper-cascor listen port (default: 8201)
+#   JUNIPER_CASCOR_CONDA       — Conda env for juniper-cascor (default: JuniperCascor1
+#                                 — Py 3.13 + torch 2.11.0 known-working; the
+#                                 legacy 'JuniperCascor' env has a torch wheel
+#                                 layout bug under Py 3.14 that crashes server.py)
+#   JUNIPER_CANOPY_PORT        — juniper-canopy listen port (default: 8050)
+#   JUNIPER_CANOPY_CONDA       — Conda env for juniper-canopy (default: JuniperCanopy1
+#                                 — has LIBTORCH-strip activate hook; use 'JuniperCanopy'
+#                                 only if you know your shell does not export LIBTORCH)
+#   JUNIPER_WORKER_CONDA       — Conda env for juniper-cascor-worker (default:
+#                                 JuniperCascor1 — same env as the cascor
+#                                 server; worker is installed editable from
+#                                 /home/pcalnon/Development/python/Juniper/juniper-cascor-worker)
+#   JUNIPER_WORKER_HEALTH_HOST — juniper-cascor-worker health bind (default: 127.0.0.1)
+#   JUNIPER_WORKER_HEALTH_PORT — juniper-cascor-worker health port (default: 8210)
+#   CASCOR_AUTH_TOKEN          — Optional auth token forwarded to juniper-cascor-worker
+#   HEALTH_CHECK_TIMEOUT       — Max seconds to wait for each service health (default: 60)
+#   HEALTH_CHECK_INTERVAL      — Seconds between health polls (default: 2)
+#   USE_SYSTEMD                — Set to "1" to use systemctl instead of nohup (default: 0)
 #
 # Flags:
 #   --systemd               — Same as USE_SYSTEMD=1
@@ -84,7 +99,7 @@ JUNIPER_DATA_DIR="${JUNIPER_PROJECT_DIR}/juniper-data"
 JUNIPER_DATA_LOG_DIR="${JUNIPER_DATA_DIR}/logs"
 JUNIPER_DATA_LOGNAME="juniper-data_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_DATA_LOG="${JUNIPER_DATA_LOG_DIR}/${JUNIPER_DATA_LOGNAME}"
-JUNIPER_DATA_HOST="0.0.0.0"
+JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-0.0.0.0}"
 JUNIPER_DATA_PORT="${JUNIPER_DATA_PORT:-8100}"
 JUNIPER_DATA_CONDA="JuniperData"
 
@@ -101,7 +116,15 @@ JUNIPER_CASCOR_MODULE="server.py"
 JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST:-localhost}"
 JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT:-8201}"
 JUNIPER_CASCOR_URL="http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
-JUNIPER_CASCOR_CONDA="JuniperCascor"
+# JuniperCascor1 (Python 3.13 + torch 2.11.0) is the working env. The legacy
+# JuniperCascor env (Python 3.14 + torch 2.9.1) has a wheel layout bug where
+# ``torch/_C/`` (a stub-only namespace package) shadows ``_C.cpython-314-...so``
+# at import time, leaving server.py crashing immediately on ``import torch``
+# and the /v1/health endpoint never coming up. Both envs now also carry
+# matching activate.d/deactivate.d hooks that strip the rust_mudgeon LIBTORCH
+# bleed-through (see juniper-ml/notes/CASCOR_CONDA_ENV_FIX_2026-05-07.md).
+# Override JUNIPER_CASCOR_CONDA only if you have a known-good alternative env.
+JUNIPER_CASCOR_CONDA="${JUNIPER_CASCOR_CONDA:-JuniperCascor1}"
 JUNIPER_CASCOR_PYTHON="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_CASCOR_CONDA}/bin/python"
 
 
@@ -115,7 +138,11 @@ JUNIPER_CANOPY_LOGNAME="juniper-canopy_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_CANOPY_LOG="${JUNIPER_CANOPY_LOG_DIR}/${JUNIPER_CANOPY_LOGNAME}"
 JUNIPER_CANOPY_MODULE="main.py"
 JUNIPER_CANOPY_PORT="${JUNIPER_CANOPY_PORT:-8050}"
-JUNIPER_CANOPY_CONDA="JuniperCanopy"
+# JuniperCanopy1 has the LIBTORCH-strip activate hook
+# (/opt/miniforge3/envs/JuniperCanopy1/etc/conda/activate.d/00_isolate_from_tch_rs.sh)
+# that prevents the rust_mudgeon LIBTORCH from preempting the env's torch.
+# Override JUNIPER_CANOPY_CONDA only if you know your shell does not export LIBTORCH.
+JUNIPER_CANOPY_CONDA="${JUNIPER_CANOPY_CONDA:-JuniperCanopy1}"
 JUNIPER_CANOPY_PYTHON="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_CANOPY_CONDA}/bin/python"
 
 
@@ -126,8 +153,19 @@ JUNIPER_WORKER_DIR="${JUNIPER_PROJECT_DIR}/juniper-cascor-worker"
 JUNIPER_WORKER_LOG_DIR="${JUNIPER_WORKER_DIR}/logs"
 JUNIPER_WORKER_LOGNAME="juniper-cascor-worker_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_WORKER_LOG="${JUNIPER_WORKER_LOG_DIR}/${JUNIPER_WORKER_LOGNAME}"
-JUNIPER_WORKER_CONDA="JuniperCascor"
+# juniper-cascor-worker is installed editable in JuniperCascor1 from
+# /home/pcalnon/Development/python/Juniper/juniper-cascor-worker (2026-05-07).
+# Both the cascor server and the worker now run from the same env, so the
+# legacy JuniperCascor env is no longer required by this script. Override
+# JUNIPER_WORKER_CONDA only if you have a known-good alternative.
+JUNIPER_WORKER_CONDA="${JUNIPER_WORKER_CONDA:-JuniperCascor1}"
 JUNIPER_WORKER_BIN="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_WORKER_CONDA}/bin/juniper-cascor-worker"
+# Worker connects to cascor's WebSocket endpoint. Required env var, no default in worker config.
+JUNIPER_WORKER_SERVER_URL="${CASCOR_SERVER_URL:-ws://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}/ws/v1/workers}"
+# Worker exposes its own HTTP health listener (separate from the WebSocket connection to cascor).
+JUNIPER_WORKER_HEALTH_HOST="${JUNIPER_WORKER_HEALTH_HOST:-127.0.0.1}"
+JUNIPER_WORKER_HEALTH_PORT="${JUNIPER_WORKER_HEALTH_PORT:-8210}"
+JUNIPER_WORKER_HEALTH_URL="http://${JUNIPER_WORKER_HEALTH_HOST}:${JUNIPER_WORKER_HEALTH_PORT}/v1/health/ready"
 
 
 ###########################################################################################################################################################################################################
@@ -254,12 +292,10 @@ if [[ "${USE_SYSTEMD}" == "1" ]]; then
 
     echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Starting juniper-cascor-worker..."
     systemctl --user start juniper-cascor-worker.service
-    # Worker has no HTTP endpoint — verify process started via systemd
-    sleep 2
-    if systemctl --user is-active juniper-cascor-worker.service >/dev/null 2>&1; then
-        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] juniper-cascor-worker is active"
-    else
-        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: juniper-cascor-worker failed to start"
+    # Worker exposes its own HTTP health listener; probe /v1/health/ready.
+    wait_for_health "juniper-cascor-worker" "http://${JUNIPER_WORKER_HEALTH_HOST}:${JUNIPER_WORKER_HEALTH_PORT}/v1/health/ready"
+    if ! systemctl --user is-active juniper-cascor-worker.service >/dev/null 2>&1; then
+        echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: juniper-cascor-worker reports healthy but systemd unit not active"
         systemctl --user status juniper-cascor-worker.service --no-pager || true
     fi
 
@@ -279,8 +315,10 @@ fi
 ###########################################################################################################################################################################################################
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Pre-flight Checks ==="
 
-# Validate required external commands
-for cmd in curl ss uvicorn; do
+# Validate required external commands. Note: uvicorn intentionally NOT listed
+# here — it lives inside each service's conda env, not on the launcher's PATH.
+# The per-env conda activation step picks it up automatically.
+for cmd in curl ss; do
     if ! command -v "${cmd}" >/dev/null 2>&1; then
         echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ERROR: Required command '${cmd}' not found in PATH"
         exit 1
@@ -298,11 +336,23 @@ fi
 validate_conda_env "${JUNIPER_DATA_CONDA}"
 validate_conda_env "${JUNIPER_CASCOR_CONDA}"
 validate_conda_env "${JUNIPER_CANOPY_CONDA}"
+validate_conda_env "${JUNIPER_WORKER_CONDA}"
+
+# Validate worker console-script binary is present in its env. The worker is installed
+# into the JuniperCascor env via `pip install juniper-cascor-worker`; if that wheel was
+# never installed (e.g., env rebuild without re-running the worker install) the binary
+# will be missing and the launcher would otherwise silently no-op.
+if [[ ! -x "${JUNIPER_WORKER_BIN}" ]]; then
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] ERROR: juniper-cascor-worker binary not found or not executable at ${JUNIPER_WORKER_BIN}"
+    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}]   Try: conda activate ${JUNIPER_WORKER_CONDA} && pip install juniper-cascor-worker"
+    exit 1
+fi
 
 # Check all required ports are available
 check_port_available "${JUNIPER_DATA_PORT}" "juniper-data"
 check_port_available "${JUNIPER_CASCOR_PORT}" "juniper-cascor"
 check_port_available "${JUNIPER_CANOPY_PORT}" "juniper-canopy"
+check_port_available "${JUNIPER_WORKER_HEALTH_PORT}" "juniper-cascor-worker (health listener)"
 
 # Ensure log directories exist
 ensure_dir "${JUNIPER_DATA_LOG_DIR}"
@@ -366,8 +416,12 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CASCOR_SRC_DIR}\""
 cd "${JUNIPER_CASCOR_SRC_DIR}" || exit 1
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CASCOR_CONDA}\""
 safe_conda_activate "${JUNIPER_CASCOR_CONDA}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${JUNIPER_CASCOR_PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
-JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT}" nohup "${JUNIPER_CASCOR_PYTHON}" "${JUNIPER_CASCOR_MODULE}" >"${JUNIPER_CASCOR_LOG}" 2>&1 &
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_HOST=\"${JUNIPER_CASCOR_HOST}\" JUNIPER_CASCOR_PORT=\"${JUNIPER_CASCOR_PORT}\" nohup \"${JUNIPER_CASCOR_PYTHON}\" \"${JUNIPER_CASCOR_MODULE}\" >\"${JUNIPER_CASCOR_LOG}\" 2>&1 &"
+# Export both HOST and PORT so the documented JUNIPER_CASCOR_HOST override
+# actually rebinds the cascor server (cascor's settings default host=127.0.0.1).
+JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST}" \
+    JUNIPER_CASCOR_PORT="${JUNIPER_CASCOR_PORT}" \
+    nohup "${JUNIPER_CASCOR_PYTHON}" "${JUNIPER_CASCOR_MODULE}" >"${JUNIPER_CASCOR_LOG}" 2>&1 &
 JUNIPER_CASCOR_PID=$!
 STARTED_PIDS+=("${JUNIPER_CASCOR_PID}")
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CASCOR_PID=\"${JUNIPER_CASCOR_PID}\""
@@ -384,8 +438,11 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_CANOPY_SRC_DIR}\""
 cd "${JUNIPER_CANOPY_SRC_DIR}" || exit 1
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CANOPY_CONDA}\""
 safe_conda_activate "${JUNIPER_CANOPY_CONDA}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" nohup \"${JUNIPER_CANOPY_PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
-CASCOR_SERVICE_URL="${JUNIPER_CASCOR_URL}" nohup "${JUNIPER_CANOPY_PYTHON}" "${JUNIPER_CANOPY_MODULE}" >"${JUNIPER_CANOPY_LOG}" 2>&1 &
+JUNIPER_DATA_URL_FOR_CANOPY="${JUNIPER_DATA_URL:-http://localhost:${JUNIPER_DATA_PORT}}"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" JUNIPER_CANOPY_JUNIPER_DATA_URL=\"${JUNIPER_DATA_URL_FOR_CANOPY}\" nohup \"${JUNIPER_CANOPY_PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
+JUNIPER_CANOPY_CASCOR_SERVICE_URL="${JUNIPER_CASCOR_URL}" \
+    JUNIPER_CANOPY_JUNIPER_DATA_URL="${JUNIPER_DATA_URL_FOR_CANOPY}" \
+    nohup "${JUNIPER_CANOPY_PYTHON}" "${JUNIPER_CANOPY_MODULE}" >"${JUNIPER_CANOPY_LOG}" 2>&1 &
 JUNIPER_CANOPY_PID=$!
 STARTED_PIDS+=("${JUNIPER_CANOPY_PID}")
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_PID=${JUNIPER_CANOPY_PID}"
@@ -401,19 +458,21 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === Starting juniper-cascor-worker ==="
 ensure_dir "${JUNIPER_WORKER_LOG_DIR}"
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_WORKER_CONDA}\""
 safe_conda_activate "${JUNIPER_WORKER_CONDA}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] nohup \"${JUNIPER_WORKER_BIN}\" >\"${JUNIPER_WORKER_LOG}\" 2>&1 &"
-nohup "${JUNIPER_WORKER_BIN}" >"${JUNIPER_WORKER_LOG}" 2>&1 &
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] CASCOR_SERVER_URL=\"${JUNIPER_WORKER_SERVER_URL}\" CASCOR_WORKER_HEALTH_PORT=\"${JUNIPER_WORKER_HEALTH_PORT}\" CASCOR_WORKER_HEALTH_BIND=\"${JUNIPER_WORKER_HEALTH_HOST}\" nohup \"${JUNIPER_WORKER_BIN}\" >\"${JUNIPER_WORKER_LOG}\" 2>&1 &"
+CASCOR_SERVER_URL="${JUNIPER_WORKER_SERVER_URL}" \
+    CASCOR_AUTH_TOKEN="${CASCOR_AUTH_TOKEN:-}" \
+    CASCOR_WORKER_HEALTH_PORT="${JUNIPER_WORKER_HEALTH_PORT}" \
+    CASCOR_WORKER_HEALTH_BIND="${JUNIPER_WORKER_HEALTH_HOST}" \
+    nohup "${JUNIPER_WORKER_BIN}" >"${JUNIPER_WORKER_LOG}" 2>&1 &
 JUNIPER_WORKER_PID=$!
 STARTED_PIDS+=("${JUNIPER_WORKER_PID}")
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_WORKER_PID=${JUNIPER_WORKER_PID}"
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Log: ${JUNIPER_WORKER_LOG}"
-# Worker has no HTTP health endpoint — verify process started
-sleep 2
-if kill -0 "${JUNIPER_WORKER_PID}" 2>/dev/null; then
-    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] juniper-cascor-worker process started (PID ${JUNIPER_WORKER_PID})"
-else
-    echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] WARNING: juniper-cascor-worker process exited immediately — check ${JUNIPER_WORKER_LOG}"
-fi
+# Worker exposes an HTTP health listener (default 127.0.0.1:8210). Probe its
+# /v1/health/ready endpoint — this catches config validation failures
+# (CASCOR_SERVER_URL missing/invalid), WS reconnect wedges, and registration
+# failures that the prior 2-second `kill -0` check missed.
+wait_for_health "juniper-cascor-worker" "${JUNIPER_WORKER_HEALTH_URL}"
 
 
 ###########################################################################################################################################################################################################
@@ -430,11 +489,13 @@ set -u
 trap - ERR
 
 : > "${JUNIPER_PROJECT_PID_FILE}"
+# Format: one `name=pid` per line. Chop's parser also accepts the legacy
+# `name: pid` format for backward compatibility.
 {
-    echo "juniper-data:           ${JUNIPER_DATA_PID}"
-    echo "juniper-cascor:         ${JUNIPER_CASCOR_PID}"
-    echo "juniper-canopy:         ${JUNIPER_CANOPY_PID}"
-    echo "juniper-cascor-worker:  ${JUNIPER_WORKER_PID}"
+    echo "juniper-data=${JUNIPER_DATA_PID}"
+    echo "juniper-cascor=${JUNIPER_CASCOR_PID}"
+    echo "juniper-canopy=${JUNIPER_CANOPY_PID}"
+    echo "juniper-cascor-worker=${JUNIPER_WORKER_PID}"
 } >> "${JUNIPER_PROJECT_PID_FILE}"
 
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PID file written to ${JUNIPER_PROJECT_PID_FILE}:"
@@ -445,4 +506,4 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] === All Juniper services started succes
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}]   juniper-data          : PID ${JUNIPER_DATA_PID}   @ http://localhost:${JUNIPER_DATA_PORT}"
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}]   juniper-cascor        : PID ${JUNIPER_CASCOR_PID} @ http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}]   juniper-canopy        : PID ${JUNIPER_CANOPY_PID} @ http://localhost:${JUNIPER_CANOPY_PORT}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}]   juniper-cascor-worker : PID ${JUNIPER_WORKER_PID} (WebSocket client)"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}]   juniper-cascor-worker : PID ${JUNIPER_WORKER_PID} @ ${JUNIPER_WORKER_HEALTH_URL}"

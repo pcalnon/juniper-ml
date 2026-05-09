@@ -27,7 +27,26 @@ This package intentionally exposes only **cross-cutting** observability infrastr
 
 ## Design + migration
 
-See [`notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/code-review/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) in the parent juniper-ml repo for the full design and the 5-PR migration sequence.
+See [`notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) in the parent juniper-ml repo for the full design and the 5-PR migration sequence (archived to `notes/legacy/` 2026-05-05 after the METRICS-MON program closed).
+
+## Release workflow
+
+`juniper-observability` is versioned and published independently from the root `juniper-ml` meta-package.
+
+| Package | Tag pattern | Workflow | Build root |
+|---------|-------------|----------|------------|
+| `juniper-ml` | `v*` GitHub releases | `.github/workflows/publish.yml` | repository root |
+| `juniper-observability` | `juniper-observability-v*` tag pushes | `.github/workflows/publish-observability.yml` | `juniper-observability/` |
+
+The observability workflow builds an sdist and wheel from this subdirectory, publishes first to TestPyPI through OIDC trusted publishing, retries installation from TestPyPI to tolerate index lag, imports `juniper_observability` as the smoke test, then promotes the same artifact to PyPI after the `pypi` environment gate.
+
+Operational constraints:
+
+- Trusted publishers must be configured on both TestPyPI and PyPI for project `juniper-observability`, workflow `.github/workflows/publish-observability.yml`, and environments `testpypi` / `pypi`.
+- The publish steps set `verbose: true` on `pypa/gh-action-pypi-publish` so upload failures include the package-index response body.
+- Keep `pyproject.toml` and `juniper_observability/_version.py` in sync before tagging; the workflow's import smoke test prints `__version__`, but it does not compare it to the built artifact version.
+
+See [`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) for the full release runbook and trusted-publisher troubleshooting notes.
 
 ## License
 

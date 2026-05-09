@@ -12,6 +12,11 @@
 
 ---
 
+
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+
+---
+
 ## 1. Purpose
 
 Establish a **rigorous, repeatable, evidence-based code review** of the metrics and monitoring surface across the six in-scope Juniper applications, ahead of release. The review must:
@@ -326,26 +331,55 @@ Provisional finding seeds (to be confirmed/expanded during Phase 3):
 
 ---
 
-## 10. Test coverage matrix (template)
+## 10. Test coverage matrix
 
-To be populated in Phase 4. Each cell either references an asserting test (file:line) or is marked **GAP**.
+Population status (2026-05-01): **complete (R3.6 sweep).** Every cell is populated with a `file:line` reference, marked `—` (N/A for repo), or marked **GAP** with an inline rationale. Per R3 entry plan §3 Q4 resolution, R3.1 / R3.2 / R3.5 populated their own rows in Wave 1; R3.6 (this PR) walked the remaining cells, referencing existing tests where they exist (the R1.x / R2.x work shipped tests but didn't populate this matrix at the time) and accepting gaps with rationale where production code does not yet support the assertion.
+
+Each populated cell references the asserting test as `path/to/file.py:LINE` (line of the class or test function); `—` = N/A for this repo; **GAP** marks cells where coverage is deferred (rationale alongside; gaps flagged for R4.x or R5.x land in §9).
 
 | Behavior to assert                                          | cascor | canopy | data | client | worker | data-client |
-|-------------------------------------------------------------|:------:|:------:|:----:|:------:|:------:|:-----------:|
-| `/metrics` Prometheus scrape format valid                   |        |        |      |   —    |   —    |      —      |
-| Cardinality bounded under unmatched routes                  |        |        |      |   —    |   —    |      —      |
-| Liveness probe checks actual code path                      |        |        |      |   —    |   —    |      —      |
-| Readiness 503 when overall degraded                         |        |        |      |   —    |   —    |      —      |
-| Sentry hook fires on uncaught exception                     |        |        |      |        |        |             |
-| RequestID propagated from HTTP to logs                      |        |        |      |   —    |   —    |             |
-| WS metric frame schema validated end-to-end                 |        |        |  —   |        |        |      —      |
-| Replay buffer overflow behavior                             |        |   —    |  —   |   —    |   —    |      —      |
-| Worker heartbeat / in-flight task count                     |   —    |   —    |  —   |   —    |        |      —      |
-| Dataset-gen metric live integration                         |   —    |   —    |      |   —    |   —    |      —      |
-| Demo-mode gauge drift                                       |   —    |        |  —   |   —    |   —    |      —      |
-| Histogram bucket selection covers SLO target                |        |        |      |   —    |   —    |      —      |
+|-------------------------------------------------------------|--------|--------|------|--------|--------|-------------|
+| `/metrics` Prometheus scrape format valid                   | **GAP**¹ | **GAP**¹ | `juniper_data/tests/integration/test_dataset_generation_metrics_live.py:179` | — | — | — |
+| Cardinality bounded under unmatched routes                  | `src/tests/unit/test_api_observability.py:250` | `src/tests/unit/test_observability.py:267` | `juniper_data/tests/unit/test_phase_2d_metrics.py:164` | — | — | — |
+| Liveness probe checks actual code path                      | `src/tests/unit/api/test_api_health.py:58` | **GAP**² | `juniper_data/tests/unit/test_health_enhanced.py:126` | — | — | — |
+| Readiness 503 when overall degraded                         | `src/tests/unit/api/test_api_health.py:124` | `src/tests/unit/test_health.py:161` | `juniper_data/tests/unit/test_health_enhanced.py:110` | — | — | — |
+| Sentry hook fires on uncaught exception                     | `src/tests/unit/api/test_phase1c_security.py:127` | `src/tests/unit/test_r2_1_5_wire_compat.py:130` | `juniper_data/tests/unit/test_phase1d_security.py:116` | **GAP**³ | **GAP**³ | **GAP**³ |
+| RequestID propagated from HTTP to logs                      | `src/tests/unit/test_api_observability.py:36` | `src/tests/unit/test_observability.py:49` | **GAP**⁴ | — | — | **GAP (R4.6)**⁵ |
+| WS metric frame schema validated end-to-end                 | `src/tests/unit/api/test_messages_wire_compat.py:166` | `src/tests/unit/test_inbound_frame_validation.py:144` | — | `tests/test_inbound_validation.py:85` | `tests/test_protocol_alignment.py:102` (partial)⁶ | — |
+| Replay buffer overflow behavior                             | `src/tests/unit/api/test_websocket_seq_replay.py:95` |   —    |  —   |   —    |   —    |      —      |
+| Worker heartbeat / in-flight task count                     |   —    |   —    |  —   |   —    | `tests/test_worker_r1_3.py:129` |      —      |
+| Dataset-gen metric live integration                         |   —    |   —    | `juniper_data/tests/integration/test_dataset_generation_metrics_live.py:154` |   —    |   —    |      —      |
+| Demo-mode gauge drift                                       |   —    | `src/tests/integration/test_demo_mode_gauge.py:72` |  —   |   —    |   —    |      —      |
+| Histogram bucket selection covers SLO target                | **GAP (R4.1 + R5.1)**⁷ | **GAP (R4.1 + R5.1)**⁷ | **GAP (R4.1 + R5.1)**⁷ |   —    |   —    |      —      |
 
-`—` = N/A for this repo.
+`—` = N/A for this repo. File paths are repo-relative (cascor → juniper-cascor, canopy → juniper-canopy, data → juniper-data).
+
+### GAP rationales
+
+¹ **`/metrics` scrape format valid (cascor, canopy)** — only the data-side analogue ships a HELP+TYPE assertion (R3.1's `test_metrics_body_exposes_help_and_type_lines`). The cascor- and canopy-side `test_api_observability.py::test_returns_asgi_app` and equivalent assert the ASGI mount + counter registration but not the wire-format exposition. Authoring schema-identical HELP+TYPE smoke tests for cascor and canopy is straightforward but does not protect any active SLO today. Re-evaluate during R5.1 when the SLO catalog assigns alerts to specific metric names — at that point a missing HELP+TYPE line would silently break alerting and the test becomes load-bearing.
+
+² **Liveness probe checks actual code path (canopy)** — canopy's `/v1/health/live` returns hardcoded `{"status": "alive"}` because canopy is a Dash-frontend that proxies to cascor + data; it has no in-process work to liveness-check (no training loop, no dataset generator). The existing `test_health.py:103::test_liveness` asserts 200 + JSON shape but the implementation has nothing to probe. Closing this requires R4.2 (async-safe health probes, seed-10) work to decide whether canopy should liveness-check the Dash event-loop responsiveness or accept that the readiness probe (which already exercises upstream reachability) is sufficient signal. Accept-gap pending R4.2 design.
+
+³ **Sentry hook fires on uncaught exception (client, worker, data-client)** — none of these processes configures Sentry. cascor-client and data-client are HTTP / WebSocket client libraries (consumed in-process by canopy / cascor / external); cascor-worker is a long-running background process whose exception surface is the worker→server WebSocket failure path (already covered by reconnection tests). Adding Sentry to a client library is unusual: the consuming application owns the Sentry installation and gets traceback context for free when the client raises. **Accept-gap — no Sentry surface to test in these repos**; the SEC-15 hook coverage on cascor / canopy / data exhausts the production exception surface where Sentry is configured.
+
+⁴ **RequestID propagated (data)** — juniper-data inherits `RequestIdMiddleware` from the shared `juniper-observability` lib (R2.1). The data repo verifies the re-export shim at `test_observability.py:55` but no per-server test asserts the propagation actually works through the FastAPI app. Coverage is owned by `juniper-observability`'s own test suite (which the lib pinned for all 3 servers under R2.1.3 — promotion to stable). Accept-gap — duplicating the lib's coverage in each consumer would be a maintenance liability.
+
+⁵ **RequestID propagated (data-client)** — `juniper-data-client._request()` does not emit `X-Request-ID` on outbound calls. This is a real instrumentation gap (juniper-data cannot correlate inbound requests back to the canopy / cascor caller's request-id chain). Captured as **R4.6** in the roadmap (companion follow-up to R4.5 surfaced by R3.1).
+
+⁶ **WS metric frame schema validated (worker, partial)** — `tests/test_protocol_alignment.py:102::test_worker_does_not_emit_message_types_unknown_to_server` is a static guard: the worker's outbound `WorkerMessageType` enum must be a subset of the cascor server's `MessageType` enum. This pins the no-drift contract for outbound frames. **Partial because** there is no test for the inbound-side behavior — `worker.py` emits a structured `juniper_cascor_worker_unrecognized_ws_frame` warning on unknown server-emitted types, but no test exercises that emission path. The R2.2.6 invariant (no Pydantic at runtime) is pinned by `tests/test_no_pydantic_at_runtime.py` (6 subprocess-isolated tests) which is adjacent coverage but does not assert log emission. Accept-partial — full inbound-side coverage is captured as **R4.7** in the roadmap.
+
+⁷ **Histogram bucket selection covers SLO target (cascor, canopy, data)** — until R4.1 (seed-14 — bucket rationales) defines the SLO each bucket boundary serves and R5.1 ships the SLO catalog, there is no ground truth to assert against. Accept-gap pending R4.1 + R5.1 — the test will become load-bearing the moment SLOs reference these buckets.
+
+### Wave 1 row references
+
+| Row | Repo | PR | Test reference |
+|---|---|---|---|
+| `/metrics` Prometheus scrape format valid | data | juniper-data#64 | `TestDatasetGenerationMetricsLive::test_metrics_body_exposes_help_and_type_lines` (HELP + TYPE lines for both the generations counter and the duration histogram) |
+| Replay buffer overflow behavior | cascor | juniper-cascor#165 | `TestReplayBufferOverflowAtConfiguredCapacity` (3 tests at production-default capacity 1024) |
+| Dataset-gen metric live integration | data | juniper-data#64 | `TestDatasetGenerationMetricsLive::test_counter_and_histogram_observed_after_post` (counter + histogram increment-by-one through real `/metrics` scrape) |
+| Demo-mode gauge drift | canopy | juniper-canopy#210 | `TestDemoModeGauge` (3 tests pinning lifespan-hook wiring + runtime-toggle propagation through `/metrics`) |
+
+R3.3 (juniper-canopy#212 — black-box metrics-panel test) does not map to a §10 row — §10 is scoped to Prometheus metric behaviors, and R3.3 asserts on dashboard layout rendering. R3.4 (juniper-ml#177 — Sentry audit closure) was a no-remediation closure; the actual Sentry-hook tests it referenced (`test_phase1c_security.py:127` etc.) are now populated in this matrix by R3.6.
 
 ---
 

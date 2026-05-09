@@ -76,11 +76,7 @@ class CleanupReport:
         )
 
     def summary_line(self) -> str:
-        return (
-            f"Summary: removed={len(self.removed)} kept_dirty={len(self.kept_dirty)} "
-            f"kept_unmerged={len(self.kept_unmerged)} skipped_self={len(self.skipped_self)} "
-            f"failed={len(self.skipped_remove_failed)} (total={self.total()})"
-        )
+        return f"Summary: removed={len(self.removed)} kept_dirty={len(self.kept_dirty)} " f"kept_unmerged={len(self.kept_unmerged)} skipped_self={len(self.skipped_self)} " f"failed={len(self.skipped_remove_failed)} (total={self.total()})"
 
 
 # ─── Git helpers ─────────────────────────────────────────────────────────────
