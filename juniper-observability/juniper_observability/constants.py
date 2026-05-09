@@ -7,9 +7,9 @@ future contract change happens in one place and ripples to every
 consumer at version-bump time.
 
 References:
-- juniper-ml notes/code-review/METRICS_MONITORING_R1.1_*: cardinality
-- juniper-ml notes/code-review/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md
-- juniper-ml notes/code-review/METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md
+- juniper-ml notes/legacy/METRICS_MONITORING_R1.1_*: cardinality (archived 2026-05-05)
+- juniper-ml notes/legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md (archived 2026-05-05)
+- juniper-ml notes/legacy/METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md (archived 2026-05-05)
 """
 
 from typing import Final

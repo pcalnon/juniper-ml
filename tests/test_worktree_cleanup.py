@@ -12,7 +12,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "worktree_cleanup.bash"
 
 # Subprocess timeout for worktree_cleanup.bash invocations (seconds).
@@ -62,8 +61,10 @@ class TestArgumentParsing(unittest.TestCase):
 
     def test_nonexistent_worktree_dir_fails(self):
         result = run_script(
-            "--old-worktree", "/nonexistent/path/to/worktree",
-            "--old-branch", "test-branch",
+            "--old-worktree",
+            "/nonexistent/path/to/worktree",
+            "--old-branch",
+            "test-branch",
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("does not exist", result.stderr)
@@ -80,9 +81,12 @@ class TestDryRun(unittest.TestCase):
     def test_dry_run_shows_git_commands(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
-                "--parent-branch", "main",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--parent-branch",
+                "main",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -94,10 +98,14 @@ class TestDryRun(unittest.TestCase):
     def test_dry_run_outputs_new_worktree_path(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
-                "--new-worktree", "/tmp/test-new-worktree",
-                "--new-branch", "worktree-test-new",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--new-worktree",
+                "/tmp/test-new-worktree",
+                "--new-branch",
+                "worktree-test-new",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -107,9 +115,12 @@ class TestDryRun(unittest.TestCase):
     def test_dry_run_with_custom_parent_branch(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "feature-branch",
-                "--parent-branch", "develop",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "feature-branch",
+                "--parent-branch",
+                "develop",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -118,8 +129,10 @@ class TestDryRun(unittest.TestCase):
     def test_dry_run_default_parent_is_main(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -132,8 +145,10 @@ class TestFlags(unittest.TestCase):
     def test_skip_pr_flag_accepted(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -142,8 +157,10 @@ class TestFlags(unittest.TestCase):
     def test_skip_remote_delete_flag_accepted(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
                 "--skip-pr",
                 "--skip-remote-delete",
                 "--dry-run",
@@ -153,9 +170,12 @@ class TestFlags(unittest.TestCase):
     def test_custom_new_branch_used(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
-                "--new-branch", "worktree-custom-name",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--new-branch",
+                "worktree-custom-name",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -164,10 +184,14 @@ class TestFlags(unittest.TestCase):
     def test_custom_new_worktree_path_used(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
-                "--new-worktree", "/tmp/my-custom-worktree",
-                "--new-branch", "worktree-custom",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--new-worktree",
+                "/tmp/my-custom-worktree",
+                "--new-branch",
+                "worktree-custom",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -181,8 +205,10 @@ class TestPhaseOrdering(unittest.TestCase):
     def test_phases_execute_in_order(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -209,8 +235,10 @@ class TestPhaseOrdering(unittest.TestCase):
         """The critical safety property: new worktree add happens before old worktree remove."""
         with tempfile.TemporaryDirectory() as tmpdir:
             result = run_script(
-                "--old-worktree", tmpdir,
-                "--old-branch", "test-branch",
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
                 "--skip-pr",
                 "--dry-run",
             )
@@ -220,8 +248,7 @@ class TestPhaseOrdering(unittest.TestCase):
 
             self.assertGreater(add_pos, -1, "worktree add not found in dry-run output")
             self.assertGreater(remove_pos, -1, "worktree remove not found in dry-run output")
-            self.assertLess(add_pos, remove_pos,
-                            "worktree add MUST happen before worktree remove (CWD safety)")
+            self.assertLess(add_pos, remove_pos, "worktree add MUST happen before worktree remove (CWD safety)")
 
 
 if __name__ == "__main__":

@@ -273,7 +273,7 @@ pwd && git worktree list && git branch && git status
 The procedure above can be automated using:
 
 ```bash
-NEW_WORKTREE="$(scripts/worktree_cleanup.bash \
+NEW_WORKTREE="$(util/worktree_cleanup.bash \
   --old-worktree "$OLD_WORKTREE_DIR" \
   --old-branch "$OLD_BRANCH" \
   --parent-branch "$PARENT_BRANCH" \
@@ -285,7 +285,7 @@ cd "$NEW_WORKTREE"
 
 Use `--skip-remote-delete` when a PR was created, since the remote branch is needed for the PR. The PR merge process (on GitHub) will handle remote branch cleanup.
 
-See `scripts/worktree_cleanup.bash --help` for full options and `--dry-run` support.
+See `util/worktree_cleanup.bash --help` for full options and `--dry-run` support.
 
 ---
 
@@ -301,7 +301,7 @@ gh pr list --head "$OLD_BRANCH" --state open
 
 ### Multiple Worktrees Needing Cleanup
 
-Run `scripts/worktree_cleanup.bash` for each, or use `scripts/cleanup_open_worktrees.bash` for batch operations.
+Run `util/worktree_cleanup.bash` for each, or use `util/cleanup_open_worktrees.bash` for batch operations.
 
 ### Worktree Removal Fails
 
@@ -326,4 +326,4 @@ git push origin "$OLD_BRANCH" --force-with-lease
 ## Supersedes
 
 This procedure replaces `notes/WORKTREE_CLEANUP_PROCEDURE.md` (V1).
-The V1 file has been moved to `notes/history/WORKTREE_CLEANUP_PROCEDURE.md`.
+The V1 file has been moved to `notes/legacy/WORKTREE_CLEANUP_PROCEDURE.md` (consolidated from `notes/history/` 2026-05-05).

@@ -11,6 +11,11 @@
 
 ---
 
+
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+
+---
+
 ## 1. Problem statement
 
 The R1.1 / R1.2 / R1.3 work proved that drift across the three server repos is real, costly, and continues to accumulate:
@@ -281,15 +286,27 @@ Prometheus scrape compat: each consumer adds a test that scrapes `/metrics` post
 
 ## 11. Implementation sequence (PR list)
 
-| # | Repo | Branch | What | Tests |
-|---|---|---|---|---|
-| 1 | juniper-ml | `metrics-mon-seed-06-shared-obs-init` | Create `juniper-observability` package, populate from juniper-data's modules (most-correct timestamp + Sentry shape), publish `0.1.0a0` to TestPyPI then PyPI | Unit suite for every public symbol; >= 95% coverage |
-| 2 | juniper-data | `metrics-mon-seed-06-migrate-data` | Replace duplicated code with `juniper-observability` import; delete duplicated code; add wire-compat snapshot | Existing tests pass + new snapshot test |
-| 3 | juniper-ml | `metrics-mon-seed-06-shared-obs-stable` | Promote `0.1.0a0` → `0.1.0` after data soaks | Same unit suite |
-| 4 | juniper-cascor | `metrics-mon-seed-06-migrate-cascor` | Same as #2; **also** fixes BUG-JD-06-equivalent naive-tz drift | Existing tests + snapshot |
-| 5 | juniper-canopy | `metrics-mon-seed-06-migrate-canopy` | Same as #2 | Existing tests + snapshot |
+> **Status: ✅ Complete (2026-04-29).** All 5 PRs merged. The shared
+> `juniper-observability` package serves all three Juniper servers
+> (data, cascor, canopy) with one source of truth.
 
-**Total: 5 PRs.** PRs #2, #4, #5 each delete net Python LOC from their respective repos.
+| # | Repo | Branch | What | Tests | Status |
+|---|---|---|---|---|---|
+| 1 | juniper-ml | `metrics-mon-seed-06-shared-obs-init` | Create `juniper-observability` package, populate from juniper-data's modules (most-correct timestamp + Sentry shape), publish `0.1.0a0` to TestPyPI then PyPI | Unit suite for every public symbol; >= 95% coverage | **shipped** — juniper-ml#155 |
+| 2 | juniper-data | `metrics-mon-seed-06-migrate-data` | Replace duplicated code with `juniper-observability` import; delete duplicated code; add wire-compat snapshot | Existing tests pass + new snapshot test | **shipped** — juniper-data#60 |
+| 3 | juniper-ml | `metrics-mon-seed-06-shared-obs-stable` | Promote alpha → `0.1.1` stable after data soaks (note: bumped to `0.1.1` rather than `0.1.0` because PyPI already had `0.1.0a0` and `0.1.1a0` from publish-pipeline iteration; monotonic ordering preserved) | Same unit suite + version pin test | **shipped** — juniper-ml#164 |
+| 4 | juniper-cascor | `metrics-mon-seed-06-migrate-cascor` | Same as #2; **also** fixes BUG-JD-06-equivalent naive-tz drift | Existing tests + snapshot | **shipped** — juniper-cascor#155 |
+| 5 | juniper-canopy | `metrics-mon-seed-06-migrate-canopy` | Same as #2; **bonus**: gains the SEC-15 `before_send` Sentry hook (canopy's previous local `configure_sentry` did not install it) | Existing tests + snapshot | **shipped** — juniper-canopy#199 |
+
+**Total: 5 PRs, all merged.** PRs #2, #4, #5 each deleted net Python LOC from their respective repos (-227, +79 net at the cascor leg, -51 net at canopy when accounting for new test additions).
+
+**Outcomes vs. design:**
+
+- ✅ Three consumers on one lib; future cross-cutting changes happen in one place.
+- ✅ Wire-compat snapshot tests landed in every consumer PR (`test_r2_1_2_wire_compat.py`, `test_r2_1_4_wire_compat.py`, `test_r2_1_5_wire_compat.py`).
+- ✅ tz-aware UTC `ReadinessResponse.timestamp` is now the cross-service standard (closes BUG-JD-06 in juniper-data and the equivalent latent drift in cascor + canopy).
+- ✅ SEC-15 `before_send` Sentry hook is now installed unconditionally across all three servers (canopy gained it as a defense-in-depth upgrade during R2.1.5).
+- ✅ Versioning resolved: published as `0.1.1` (stable) on PyPI 2026-04-29 via OIDC trusted publishing; no API tokens in CI.
 
 ---
 

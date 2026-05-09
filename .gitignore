@@ -70,6 +70,14 @@ logs/nohup.out
 *.temp
 .~lock.*
 
+# PID files
+*.pid
+**/*.pid
+JuniperProject.pid
+./JuniperProject.pid
+*/JuniperProject.pid
+**/JuniperProject.pid
+
 # Jupyter
 .ipynb_checkpoints/
 

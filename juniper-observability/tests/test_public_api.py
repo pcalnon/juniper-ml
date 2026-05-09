@@ -33,6 +33,11 @@ EXPECTED_PUBLIC_SYMBOLS = {
     # Prometheus utils
     "get_prometheus_app",
     "set_build_info",
+    # Prometheus collector helpers (idempotent registration patterns)
+    "lazy_register_or_reuse",
+    "register_fresh",
+    "register_info_or_update",
+    "register_or_reuse",
     # Sentry
     "DEFAULT_SENTRY_TRACES_SAMPLE_RATE",
     "configure_sentry",
@@ -54,9 +59,16 @@ def test_no_unexpected_public_symbols():
     assert not missing, f"juniper_observability.__all__ missing expected symbols: {missing}"
 
 
-def test_version_is_alpha_string():
-    """0.1.0a0 — the alpha publish per the R2.1 design §11."""
-    assert juniper_observability.__version__ == "0.1.0a0"
+def test_version_is_stable_string():
+    """0.2.0 — additive minor bump for the ``register_or_reuse`` helpers
+    (``register_or_reuse`` / ``register_fresh`` /
+    ``register_info_or_update`` / ``lazy_register_or_reuse``) and the
+    ``juniper_observability.testing.reset_prometheus_registry``
+    pytest fixture. No breaking changes vs ``0.1.1``; consumers
+    should pin ``juniper-observability>=0.2.0`` going forward to
+    pull the new API.
+    """
+    assert juniper_observability.__version__ == "0.2.0"
 
 
 def test_constants_match_documented_values():

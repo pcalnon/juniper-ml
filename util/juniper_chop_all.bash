@@ -208,8 +208,13 @@ function orphaned_worker_cleanup() {
             cmdline="$(echo "${line}" | cut -d' ' -f2-)"
             echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cmdline: ${cmdline}"
 
-            # Only match actual worker processes, not greps or log viewers
-            if echo "${cmdline}" | grep -q "juniper.cascor.worker\|juniper_cascor_worker\|cascor.*worker\|${WORKER_SEARCH_TERM}"; then
+            # Only match actual worker processes, not greps or log viewers.
+            # The dash and underscore variants cover both the console-script
+            # (`juniper-cascor-worker`) and the import path
+            # (`juniper_cascor_worker.cli`); the prior `cascor.*worker`
+            # alternative was over-greedy (matched unrelated dev shell
+            # processes containing both tokens).
+            if echo "${cmdline}" | grep -q "juniper-cascor-worker\|juniper_cascor_worker\|${WORKER_SEARCH_TERM}"; then
                 WORKER_PIDS+=("${worker_pid}")
                 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Found worker process: PID ${worker_pid} — ${cmdline:0:120}"
             fi
@@ -296,11 +301,20 @@ for ((i=0; i<${#JUNIPER_PIDS[*]}; i++)); do
 
     # echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDFILE_LINE}\""
     echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] Juniper Pidfile Line: \"${JUNIPER_PIDS[${i}]}\""
-    # Format: "juniper-data:   12345" — split on colon, then trim whitespace from PID
-    # JUNIPER_APPLICATION_NAME="${JUNIPER_PIDFILE_LINE%%:*}"
-    JUNIPER_APPLICATION_NAME="${JUNIPER_PIDS[${i}]%%:*}"
-    # JUNIPER_APPLICATION_PID="$(echo "${JUNIPER_PIDFILE_LINE#*:}" | tr -d ' ')"
-    JUNIPER_APPLICATION_PID="$(echo "${JUNIPER_PIDS[${i}]#*:}" | tr -d ' ')"
+    # Accept both the new "name=pid" format (post-2026-05-07) and the legacy
+    # "name: pid" format. Pick the first delimiter present (`=` preferred,
+    # `:` as legacy fallback) and split on it.
+    JUNIPER_PIDFILE_LINE_RAW="${JUNIPER_PIDS[${i}]}"
+    if [[ "${JUNIPER_PIDFILE_LINE_RAW}" == *=* ]]; then
+        JUNIPER_APPLICATION_NAME="${JUNIPER_PIDFILE_LINE_RAW%%=*}"
+        JUNIPER_APPLICATION_PID="${JUNIPER_PIDFILE_LINE_RAW#*=}"
+    else
+        JUNIPER_APPLICATION_NAME="${JUNIPER_PIDFILE_LINE_RAW%%:*}"
+        JUNIPER_APPLICATION_PID="$(echo "${JUNIPER_PIDFILE_LINE_RAW#*:}" | tr -d ' ')"
+    fi
+    # Trim any leading/trailing whitespace from the parsed name (defensive).
+    JUNIPER_APPLICATION_NAME="${JUNIPER_APPLICATION_NAME## }"
+    JUNIPER_APPLICATION_NAME="${JUNIPER_APPLICATION_NAME%% }"
 
     # Validate PID is numeric
     # if ! [[ "${JUNIPER_APPLICATION_PID}" =~ ^[0-9]+$ ]]; then
