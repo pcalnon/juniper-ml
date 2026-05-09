@@ -30,21 +30,35 @@ pip install -e ".[all]"        # everything
 python3 -m unittest -v tests/test_wake_the_claude.py
 python3 -m unittest -v tests/test_check_doc_links.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
+python3 -m unittest -v tests/test_reap_pytest_orphans.py
 bash scripts/test_resume_file_safety.bash
 
 # Run pre-commit hooks
 pre-commit run --all-files
 
 # Validate documentation links
-python util/check_doc_links.py --exclude templates --exclude history
+python util/check_doc_links.py --exclude templates --exclude history --exclude legacy
 
 # Validate documentation links (including cross-repo)
-python util/check_doc_links.py --exclude templates --exclude history --cross-repo check
+python util/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo check
 ```
 
 ## Publishing
 
 Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The workflow is triggered by a GitHub release event and publishes first to TestPyPI (with install verification), then to PyPI. Both environments use trusted publishing (OIDC, no API tokens).
+
+The shared `juniper-observability` package is published separately from the same repo (subdirectory `juniper-observability/`) by `.github/workflows/publish-observability.yml`, triggered by tags matching `juniper-observability-v*`.
+
+## Shared Observability Helpers
+
+`juniper-observability` (this repo's `juniper-observability/` subdirectory, published as a standalone PyPI package) is the canonical home for cross-service observability primitives — middlewares, the build-info `Info` metric helper, structured-JSON logging, and **idempotent `prometheus_client` collector helpers**. Any new `Counter` / `Gauge` / `Histogram` / `Summary` / `Info` / `Enum` registration in any Juniper service should go through:
+
+- `register_or_reuse(factory, name, *args, **kwargs)` — adopt-existing on duplicate (preserves accumulated samples; **default choice for almost every call site**).
+- `register_fresh(factory, name, *args, **kwargs)` — drop-and-recreate (use only when test fixtures or migrations intentionally want different buckets/labels).
+- `register_info_or_update(name, description, **info_labels)` — sugar for the `Info` two-step register-then-`.info({...})` pattern.
+- `lazy_register_or_reuse(factory, name, *args, **kwargs)` — like `register_or_reuse` but caches the result in a module-private dict; for the lazy-init-with-`None`-sentinel pattern.
+
+Tests touching these collectors should use `juniper_observability.testing.reset_prometheus_registry`. Minimum pin: `juniper-observability>=0.2.0`. See [`notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) for the design rationale and the migration history.
 
 ## Repository Structure
 
@@ -114,7 +128,8 @@ juniper-ml/
 ├── tests/                     # Regression test suites (Python unittest)
 │   ├── test_wake_the_claude.py           # Launcher script regression (1470 lines)
 │   ├── test_check_doc_links.py           # Doc link validator regression (283 lines)
-│   └── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
+│   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
+│   └── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
 │
 └── util/                      # Utility scripts and tools
     ├── check_doc_links.py                # Doc link validator (v0.6.0) — used in CI/CD
@@ -170,6 +185,7 @@ juniper-ml/
 ### Utilities
 
 - `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). The `MAIN_REPO` path is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) with an optional `JUNIPER_ML_MAIN_REPO` environment override for test fixtures and unusual layouts. Supports `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`.
+- `util/reap_pytest_orphans.bash` -- Safely reaps orphaned Juniper pytest multiprocessing children. Supports `JUNIPER_REAP_PROC_ROOT` and `JUNIPER_REAP_KILL_CMD` test hooks for deterministic regression tests.
 - `util/check_doc_links.py` -- Documentation link validator (v0.6.0) for internal markdown links; used in CI/CD pipelines
 - `util/generate_dep_docs.sh` -- Generates `requirements_ci.txt` and `conda_environment_ci.yaml` for CI
 - `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` but can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com util/juniper_plant_all.bash`).
@@ -181,6 +197,7 @@ juniper-ml/
 - `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 - `tests/test_check_doc_links.py` -- Regression tests for `util/check_doc_links.py` documentation link validation
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling
+- `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
 - `scripts/test.bash` -- Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` -- Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 

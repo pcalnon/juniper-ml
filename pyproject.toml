@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "juniper-ml"
-version = "0.4.0"
+version = "0.4.1"
 description = "Juniper - Cascade Correlation Neural Network Research Platform"
 readme = "README.md"
 license = "MIT"
@@ -44,3 +44,60 @@ packages = []
 Homepage = "https://github.com/pcalnon/juniper-ml"
 Repository = "https://github.com/pcalnon/juniper-ml"
 Issues = "https://github.com/pcalnon/juniper-ml/issues"
+
+# ─────────────────────────────────────────────────────────────────────
+# Tool configuration — aligned with the rest of the Juniper fleet per
+# notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md (§5.4 / §6.1 / Phase 4).
+# Scoped to scripts/ + tests/ since juniper-ml has no importable
+# package; the hooks themselves enforce the same scope via their
+# `files:` filter in .pre-commit-config.yaml.
+# ─────────────────────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+# Block pytest plugins that get auto-discovered from environments where
+# they (or their transitive native deps) are broken. dash.testing.plugin
+# transitively imports a non-FT-built psutil that segfaults on free-
+# threading CPython 3.14t; pytest_playwright requires `playwright` which
+# is often absent. Neither plugin is used by juniper-ml's tests.
+addopts = [
+    "-p", "no:dash",
+    "-p", "no:playwright",
+]
+
+[tool.black]
+line-length = 512
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 512
+known_first_party = ["scripts", "tests"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+no_strict_optional = true
+files = ["scripts", "tests"]
+
+[tool.coverage.run]
+# Coverage tracks the regression surface — the bash-launching scripts
+# and the doc-link / worktree validation utilities. The cleanup script
+# under scripts/cleanup_session_worktrees.py and the regression test
+# files under tests/ are the meaningful units.
+branch = true
+source = ["scripts", "tests"]
+omit = [
+    "tests/test_prompt-*.md",
+    "*/backups/*",
+]
+
+[tool.coverage.report]
+# No fail-under for the meta-package — the regression suite is
+# narrow and a strict % gate would be more noise than signal. Per
+# the alignment plan §10 Phase 4, this is intentional.
+show_missing = true
+skip_covered = false

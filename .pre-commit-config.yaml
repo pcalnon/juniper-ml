@@ -88,6 +88,34 @@ repos:
         name: Detect private keys
 
   # ═══════════════════════════════════════════════════════════════════════════
+  # Python Formatting - Black (Scripts and Tests)
+  # Alignment plan Phase 3: aligns juniper-ml with the rest of the
+  # fleet's black + isort + mypy stack on its Python surface
+  # (scripts/ + tests/ — no importable package).
+  # ═══════════════════════════════════════════════════════════════════════════
+  - repo: https://github.com/psf/black
+    rev: 26.3.1
+    hooks:
+      - id: black
+        name: Format with Black
+        args:
+          - --line-length=512
+        files: ^(scripts|tests)/.*\.py$
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Python Import Sorting - isort (Scripts and Tests)
+  # ═══════════════════════════════════════════════════════════════════════════
+  - repo: https://github.com/pycqa/isort
+    rev: 8.0.1
+    hooks:
+      - id: isort
+        name: Sort imports with isort
+        args:
+          - --profile=black
+          - --line-length=512
+        files: ^(scripts|tests)/.*\.py$
+
+  # ═══════════════════════════════════════════════════════════════════════════
   # Python Linting - Flake8 (Scripts and Tests)
   # juniper-ml has no importable package, but has Python scripts and tests
   # ═══════════════════════════════════════════════════════════════════════════
@@ -106,6 +134,23 @@ repos:
           - flake8-comprehensions>=3.14.0
           - flake8-simplify>=0.21.0
         files: ^(scripts|tests)/.*\.py$
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # Python Type Checking - MyPy (Scripts and Tests)
+  # Lenient config to match the rest of the fleet's gradual typing
+  # posture — ignore-missing-imports + no-strict-optional.
+  # ═══════════════════════════════════════════════════════════════════════════
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.13.0
+    hooks:
+      - id: mypy
+        name: Type check with MyPy
+        args:
+          - --ignore-missing-imports
+          - --no-strict-optional
+          - --python-version=3.12
+        files: ^(scripts|tests)/.*\.py$
+        additional_dependencies: []
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Security Scanning - Bandit (Python scripts)
