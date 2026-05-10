@@ -1,9 +1,9 @@
 # Grafana Dashboards — State, Gaps, and Remediation Options
 
-**Author**: Paul Calnon
-**Date**: 2026-05-10
-**Scope**: Full picture of Grafana dashboards (and their wiring) across the Juniper ecosystem, derived from `notes/` references in `juniper-ml`.
-**Source corpus**: 48 markdown files under `juniper-ml/notes/` containing the substring `grafana` (case-insensitive). Most authoritative inputs: `JUNIPER_METRICS_DOCUMENTATION.md`, `code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md`, `code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`, `observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`, `code-review/POST_METRICS_MON_TRACKER_2026-05-05.md`, `legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, `JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`.
+- **Author**: Paul Calnon
+- **Date**: 2026-05-10
+- **Scope**: Full picture of Grafana dashboards (and their wiring) across the Juniper ecosystem, derived from `notes/` references in `juniper-ml`.
+- **Source corpus**: 48 markdown files under `juniper-ml/notes/` containing the substring `grafana` (case-insensitive). Most authoritative inputs: `JUNIPER_METRICS_DOCUMENTATION.md`, `code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md`, `code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`, `observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`, `code-review/POST_METRICS_MON_TRACKER_2026-05-05.md`, `legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, `JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`.
 
 > ⚠️ This document is a snapshot of `notes/` claims. It does **not** verify by reading `juniper-deploy/` directly. Treat all named files/paths in `juniper-deploy/` as load-bearing claims to spot-check before acting.
 
@@ -13,29 +13,41 @@
 
 ### 1.1 Provisioned Dashboards
 
-Four Grafana dashboards are claimed to ship in
-`juniper-deploy/grafana/provisioning/dashboards/`:
+Four Grafana dashboards are claimed to ship in `juniper-deploy/grafana/provisioning/dashboards/`:
 
-| File | Purpose | Recent additions |
-|------|---------|------------------|
-| `juniper-overview.json` | Cross-service home dashboard; SLO burn-rate headline tiles keyed off R5.4 alert expressions. | 4 SLO burn tiles (R5.4) |
-| `juniper-cascor.json` | Training service: epochs, loss, accuracy, hidden units, candidate correlation, WS health, worker registry. | R4.4 worker training-loop fields (`last_task_duration_seconds`, `recent_task_durations_seconds`, `gpu_utilization_pct`) — `juniper-deploy#46` |
-| `juniper-canopy.json` | Dashboard service: HTTP, render, data-client closure metrics. | R4.3 data-client closure panels (`juniper_canopy_data_client_requests_total{method,status_class,error_type}` + duration histogram) — `juniper-deploy#46` |
-| `juniper-data.json` | Dataset generation service: HTTP, generation latency, cache size, error rate. | R4.5 POST cache-hit panel (`juniper_data_dataset_post_total{cache="hit"|"miss"}`) |
+| File                    | Purpose                                                 | Recent additions                                                                 |
+|-------------------------|---------------------------------------------------------|----------------------------------------------------------------------------------|
+| `juniper-overview.json` | Cross-service home dashboard; SLO burn-rate headline    | 4 SLO burn tiles (R5.4)                                                          |
+|                         | -- tiles keyed off R5.4 alert expressions.              |                                                                                  |
+| `juniper-cascor.json`   | Training service: epochs, loss, accuracy, hidden units, | R4.4 worker training-loop fields (`last_task_duration_seconds`,                  |
+|                         | -- candidate correlation, WS health, worker registry.   | -- `recent_task_durations_seconds`, `gpu_utilization_pct`) — `juniper-deploy#46` |
+| `juniper-canopy.json`   | Dashboard service: HTTP, render, data-client closure    | R4.3 data-client closure panels                                                  |
+|                         | -- metrics.                                             | -- (`juniper_canopy_data_client_requests_total{method,status_class,error_type}`  |
+|                         |                                                         | -- + duration histogram) — `juniper-deploy#46`                                   |
+| `juniper-data.json`     | Dataset generation service: HTTP, generation latency,   | R4.5 POST cache-hit panel                                                        |
+|                         | -- cache size, error rate.                              | -- (`juniper_data_dataset_post_total{cache="hit"\|"miss"}`)                      |
 
 Provisioning mechanism: `dashboard-providers.yml` in the same directory; reload on container restart or SIGHUP.
 
+#### 1.1.1 Dashboard Access
+
+1. Open your web browser and go to [Grafana Local Dashboards](http://localhost:3000/).
+    - The default HTTP port that Grafana listens to is 3000 unless you have configured a different port.
+2. On the sign-in page, enter admin for both the username and password.
+    - Click Sign in.
+    - If successful, you’ll see a prompt to change the password.
+3. Click OK on the prompt and change your password.
+
 ### 1.2 Prometheus Scrape Wiring
 
-Configured in `juniper-deploy/prometheus/prometheus.yml`. Globals:
-`scrape_interval=15s`, `evaluation_interval=15s`, `scrape_timeout=10s`, 30-day retention.
+Configured in `juniper-deploy/prometheus/prometheus.yml`. Globals: `scrape_interval=15s`, `evaluation_interval=15s`, `scrape_timeout=10s`, 30-day retention.
 
-| Job | Target | Interval | Auth |
-|-----|--------|----------|------|
-| `juniper-data` | `juniper-data:8100/metrics` | 10s | IP-allowlist via `MetricsAuthMiddleware` |
-| `juniper-cascor` | `juniper-cascor:8200/metrics` | 10s | None (internal network) |
-| `juniper-canopy` | `juniper-canopy:8050/metrics` | 15s | None (internal network) |
-| `prometheus` | self at :9090 | default | — |
+| Job              | Target                        | Interval | Auth                                     |
+|------------------|-------------------------------|----------|------------------------------------------|
+| `juniper-data`   | `juniper-data:8100/metrics`   | 10s      | IP-allowlist via `MetricsAuthMiddleware` |
+| `juniper-cascor` | `juniper-cascor:8200/metrics` | 10s      | None (internal network)                  |
+| `juniper-canopy` | `juniper-canopy:8050/metrics` | 15s      | None (internal network)                  |
+| `prometheus`     | self at :9090                 | default  | —                                        |
 
 `juniper-cascor-worker` is **not** scraped directly; it is bridged through cascor's `/v1/workers` endpoint via `WorkerRegistryCollector`.
 
@@ -133,11 +145,18 @@ For each gap above, this section enumerates 2–4 options, weighs them, and reco
 
 ### G1. Stale dashboard panels — Options
 
-| # | Option | Effort | Strengths | Weaknesses | Risks | Guardrails |
-|---|--------|--------|-----------|------------|-------|------------|
-| A | Land in-flight `audit-fixup/stale-dashboard-panels` PR: replace 3 inference panels with current `cascor_ws_*` panels (where wired) and replace 4 placeholder texts with real PromQL bridged from `WorkerRegistryCollector`. | S | Single PR, single revert, fixes the visible-to-operators bug fast. | Re-uses the same dashboard JSON ergonomics; no structural cleanup. | Wrong PromQL ships and no one notices until incident. | Add a **dashboard-lint** check (jsonschema + `promtool query instant`) in CI for `juniper-deploy/grafana/**/*.json`. |
-| B | Delete the stale panels; defer replacement until OBS-WIRE-02 wires the real metrics. | XS | Removes operator confusion immediately. | Loses dashboard real-estate; signals retreat. | Operators chase removed signals during incidents. | Note removal in dashboard description block. |
-| C | Convert the 7 panels into Grafana Alert/State panels keyed off the recording rules instead of raw metrics. | M | Single source of truth (recording rules), survives metric renames. | Larger change surface; recording rule maturity varies. | Breaks unrelated panels if recording-rule names drift. | Mirror the panel set in a staging dashboard first. |
+| # | Option                                                   | Effort | Strengths              | Weaknesses             | Risks                  | Guardrails                                 |
+|---|----------------------------------------------------------|--------|------------------------|------------------------|------------------------|--------------------------------------------|
+| A | Land in-flight `audit-fixup/stale-dashboard-panels` PR:  | S      | Single PR, single      | Re-uses same dashboard | Wrong PromQL ships     | Add a **dashboard-lint** check             |
+|   | -- replace 3 inference panels with current `cascor_ws_*` |        | -- revert, fast fix    | -- JSON ergonomics; no | -- & one notices       | -- (jsonschema + `promtool query instant`) |
+|   | -- panels (if wired), replace 4 place-holder texts with  |        | -- for visible bug.    | -- structural cleanup. | -- until incident.     | --  in CI for                              |
+|   | -- real PromQL bridged from `WorkerRegistryCollector`.   |        |                        |                        |                        | -- `juniper-deploy/grafana/**/*.json`.     |
+| B | Delete the stale panels; defer replacement until         | XS     | Removes operator       | Loses dashboard        | Operators chase        | Note removal in dashboard description      |
+|   | -- OBS-WIRE-02 wires the real metrics.                   |        | -- confusion           | -- real-estate;        | -- removed signals     | --  block.                                 |
+|   |                                                          |        | -- immediately.        | -- signals retreat.    | -- during incidents.   |                                            |
+| C | Convert the 7 panels into Grafana Alert/State panels     | M      | Single source of truth | Larger change surface; | Breaks unrelated       | Mirror the panel set in a staging          |
+|   | -- keyed off recording rules instead of raw metrics.     |        | -- (recording rules),  | -- recording rule      | -- panels if recording | -- dashboard first.                        |
+|   |                                                          |        | -- survive  rename.    | -- maturity varies.    | -- rule names drift.   |                                            |
 
 **Recommendation: A.** It's already in flight and fixes the actual bug. Pair with the CI guardrail below to prevent regression. C is correct long-term but out of scope for "fix what is currently broken."
 
@@ -177,11 +196,16 @@ For each gap above, this section enumerates 2–4 options, weighs them, and reco
 
 ### G5. Canopy middleware order — Options
 
-| # | Option | Effort | Strengths | Weaknesses | Risks | Guardrails |
-|---|--------|--------|-----------|------------|-------|------------|
-| A | Swap `add_middleware` order at `main.py:312` so `PrometheusMiddleware` is added first, `RequestIdMiddleware` last. | XS | One-line fix; aligns canopy with cascor and data. | None notable. | Subtle: any code relying on the current ordering breaks. | Add a unit test that asserts request-id header is present in metric labels for an exemplar request. |
-| B | Read request-id explicitly inside `PrometheusMiddleware` rather than via ContextVar. | S | Decouples ordering. | Duplicates request-id parsing logic. | Drift between header parsers. | Extract a single parsing helper into `juniper-observability`. |
-| C | Defer; document the limitation in the SLO catalogue. | XS | No code change. | Metrics keep mis-labelling. | Incident triage harder. | None. |
+| # | Option                                         | Effort | Strengths            | Weaknesses            | Risks                           | Guardrails                       |
+|---|------------------------------------------------|--------|----------------------|-----------------------|---------------------------------|----------------------------------|
+| A | Swap `add_middleware` order at                 | XS     | One-line fix; aligns | None notable.         | Subtle: any code relying on the | Add unit test: assert request-id |
+|   | -- `main.py:312` so `PrometheusMiddleware`     |        | -- canopy with       |                       | -- current ordering breaks.     | -- header is present in metric   |
+|   | -- is added first, `RequestIdMiddleware` last. |        | -- cascor and data.  |                       |                                 | -- labels for exemplar request.  |
+| B | Read request-id explicitly inside              | S      | Decouples ordering.  | Duplicates request-id | Drift between header parsers.   | Extract a single parsing helper  |
+|   | -- `PrometheusMiddleware` rather than          |        |                      | -- parsing logic.     |                                 | -- into `juniper-observability`. |
+|   | -- via ContextVar.                             |        |                      | -- parsing logic.     |                                 |                                  |
+| C | Defer; document the limitation                 | XS     | No code change.      | Metrics keep          | Incident triage harder.         | None.                            |
+|   | -- in the SLO catalogue.                       |        |                      | -- mis-labelling      |                                 |                                  |
 
 **Recommendation: A.** Trivial fix; matches the other services; the test prevents future regression.
 
@@ -197,11 +221,15 @@ For each gap above, this section enumerates 2–4 options, weighs them, and reco
 
 ### G7. WS-handler histogram buckets — Options
 
-| # | Option | Effort | Strengths | Weaknesses | Risks | Guardrails |
-|---|--------|--------|-----------|------------|-------|------------|
-| A | Re-bucket `cascor_ws_command_handler_seconds` with one or two extra steps between 50 ms and 100 ms (e.g., 60, 75, 90). | S | Better breach-detection precision around the SLO target. | Histogram cardinality grows slightly. | Older series in TSDB lose bucket-comparable history at the boundary. | Note bucket change in `HISTOGRAM_BUCKETS_RATIONALE.md`; pair with a recording-rule rename so dashboards switch over cleanly. |
-| B | Defer to R5.1c post-soak calibration as planned. | XS | Calibrated against real traffic. | Operates with a known precision gap until soak ends. | If the SLO is breached during soak, root-cause is fuzzy. | Document the precision gap in the `juniper-overview` panel description. |
-| C | Switch to a `Summary` (client-side quantiles). | M | Direct quantile readings. | Summaries don't aggregate across instances; loses breach attribution per replica. | Misleading aggregate in multi-replica deploys. | None. |
+| # | Option                                           | Effort | Strengths                         | Weaknesses                                  | Risks                                          | Guardrails                                              |
+|---|--------------------------------------------------|--------|-----------------------------------|---------------------------------------------|------------------------------------------------|---------------------------------------------------------|
+| A | Re-bucket `cascor_ws_command_handler_seconds`    | S      | Better breach-detection precision | Histogram cardinality grows slightly.       | Older series in TSDB lose bucket-comparable    | Note bucket change in `HISTOGRAM_BUCKETS_RATIONALE.md`; |
+|   | -- with one or two extra steps between 50 ms     |        | -- around the SLO target.         |                                             | -- history at the boundary.                    | -- pair with a recording-rule rename so dashboards      |
+|   | -- and 100 ms (e.g., 60, 75, 90).                |        |                                   |                                             |                                                | -- switch over cleanly.                                 |
+| B | Defer to R5.1c post-soak calibration as planned. | XS     | Calibrated against real traffic.  | Operates with a known precision gap.        | If the SLO is breached during soak,            | Document the precision gap in the `juniper-overview`    |
+|   |                                                  |        |                                   | -- until soak ends.                         | -- root-cause is fuzzy.                        | -- panel description.                                   |
+| C | Switch to a `Summary` (client-side quantiles).   | M      | Direct quantile readings.         | Summaries don't aggregate across instances; | Misleading aggregate in multi-replica deploys. | None.                                                   |
+|   |                                                  |        |                                   | -- loses breach attribution per replica.    |                                                |                                                         |
 
 **Recommendation: B.** Calibration against real traffic (per the rationale doc's §5.4 acceptance) beats an ungrounded re-bucket. Promote this to A only if the soak surfaces a mis-classification.
 
@@ -220,18 +248,18 @@ These apply regardless of which per-gap option you pick.
 
 ## 5. Status snapshot (as of 2026-05-09 per source notes)
 
-| Component | Status | Operationally blocking? | Target |
-|-----------|--------|--------------------------|--------|
-| 4 provisioned dashboards | Live; R5.3 refresh shipped | No | — |
-| Prometheus scrape wiring (4 jobs) | Live | No | — |
-| Recording + R5.4 burn-rate alert rules | Live | No | SLO calibration at soak-close 2026-06-02 |
-| Cascor WS metrics (A.9) — 9 helpers dead | Open | No | OBS-WIRE-02 (recommended G4-A) |
-| Alertmanager `default`/`tickets` receivers | Placeholder, silently dropping | **Yes (soft, by 2026-06-02)** | OBS-ROUTE-01 (recommended G2-A) |
-| Stale dashboard panels (7) | In-flight fix | **Yes (operational)** | `audit-fixup/stale-dashboard-panels` (recommended G1-A) |
-| `juniper_data_datasets_cached` dead Gauge | In-flight wire | No | Sister PR (recommended G3-A) |
-| Canopy middleware order (request-id) | Open | No | C.1 PR (recommended G5-A) |
-| Training-step `phase` label discrepancy | Open | No | A.6 PR (recommended G6-B) |
-| WS-handler bucket precision | Open, deferred | No | R5.1c post-soak (recommended G7-B) |
+| Component                                  | Status                         | Operationally blocking?       | Target                                                  |
+|--------------------------------------------|--------------------------------|-------------------------------|---------------------------------------------------------|
+| 4 provisioned dashboards                   | Live; R5.3 refresh shipped     | No                            | —                                                       |
+| Prometheus scrape wiring (4 jobs)          | Live                           | No                            | —                                                       |
+| Recording + R5.4 burn-rate alert rules     | Live                           | No                            | SLO calibration at soak-close 2026-06-02                |
+| Cascor WS metrics (A.9) — 9 helpers dead   | Open                           | No                            | OBS-WIRE-02 (recommended G4-A)                          |
+| Alertmanager `default`/`tickets` receivers | Placeholder, silently dropping | **Yes (soft, by 2026-06-02)** | OBS-ROUTE-01 (recommended G2-A)                         |
+| Stale dashboard panels (7)                 | In-flight fix                  | **Yes (operational)**         | `audit-fixup/stale-dashboard-panels` (recommended G1-A) |
+| `juniper_data_datasets_cached` dead Gauge  | In-flight wire                 | No                            | Sister PR (recommended G3-A)                            |
+| Canopy middleware order (request-id)       | Open                           | No                            | C.1 PR (recommended G5-A)                               |
+| Training-step `phase` label discrepancy    | Open                           | No                            | A.6 PR (recommended G6-B)                               |
+| WS-handler bucket precision                | Open, deferred                 | No                            | R5.1c post-soak (recommended G7-B)                      |
 
 ---
 
