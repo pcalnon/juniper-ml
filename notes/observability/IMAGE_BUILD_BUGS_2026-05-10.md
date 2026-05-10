@@ -151,9 +151,10 @@ The `juniper-canopy` scrape target shows `down` only because of Bug 1, and the w
 
 | Bug | Repo | Fix path | Status |
 |---|---|---|---|
-| Bug 1 — canopy missing `prometheus_client` | juniper-canopy | promote dep to required + rebuild | **PR pcalnon/juniper-canopy#261 open** (verified locally: container healthy, `/metrics` served) |
-| Bug 2 — worker missing `juniper-cascor-protocol` | juniper-cascor-worker | regenerate `requirements-cpu.lock` + rebuild | **MERGED** as `pcalnon/juniper-cascor-worker#58` (worker container now healthy) |
+| Bug 1 — canopy missing `prometheus_client` | juniper-canopy | promote dep to required + rebuild | **MERGED** as `pcalnon/juniper-canopy#261` (`7924b22`) |
+| Bug 2 — worker missing `juniper-cascor-protocol` | juniper-cascor-worker | regenerate `requirements-cpu.lock` + rebuild | **MERGED** as `pcalnon/juniper-cascor-worker#58` (`7757c38`) |
 | CI gap — CPU lockfile freshness check | juniper-cascor-worker | new pyproject-deps-in-lockfile assertion in `lockfile-check` job | **MERGED** with worker PR #58 |
+| Bug 3 — canopy `/metrics` API-key gated | juniper-canopy | add `/metrics` to `EXEMPT_PATH_PREFIXES` (prefix form, see below) | **MERGED** as `pcalnon/juniper-canopy#262` (`6d1c81b`) |
 
 ---
 
@@ -178,3 +179,24 @@ The canopy API-key middleware applies to *all* routes including `/metrics`. The 
 Recommendation: **Option 1** — keep the convention of "metrics endpoints are scraper-network-private, all other auth applies". Document the choice in canopy's middleware code and update the deploy-side memory note so the scrape-wiring claim becomes accurate.
 
 This is a separate ticket from Bugs 1 & 2; it's a code change in `juniper-canopy` (not a deploy or worker change) and doesn't block merging the canopy PR for Bug 1.
+
+### Resolution (2026-05-10, juniper-canopy PR #262, merged as `6d1c81b`)
+
+Shipped Option 1 with one implementation refinement: the exemption was added to `EXEMPT_PATH_PREFIXES` (prefix form), **not** the exact-match `EXEMPT_PATHS` set, because `app.mount("/metrics", get_prometheus_app())` triggers a Starlette 307 redirect from `/metrics` to `/metrics/`. With exact-match exemption only, `GET /metrics` got the 307 (exempt) but the redirect target `/metrics/` re-entered the API-key middleware and 401'd. Prefix-form exemption covers `/metrics`, `/metrics/`, and any sub-paths future `prometheus_client` versions add.
+
+Verified end-to-end:
+
+```bash
+$ curl -sSL http://127.0.0.1:8050/metrics | head -3
+# HELP python_gc_objects_collected_total Objects collected during gc
+# TYPE python_gc_objects_collected_total counter
+python_gc_objects_collected_total{generation="0"} 248.0
+
+$ curl -sS http://127.0.0.1:9090/api/v1/targets | jq -r '.data.activeTargets[] | "\(.labels.job): \(.health)"'
+juniper-canopy: up
+juniper-cascor: up
+juniper-data: up
+prometheus: up
+```
+
+All four scrape targets are now `up`.
