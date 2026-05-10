@@ -22,8 +22,8 @@ Tracks progress executing the §6 / §7 remediation list. All four §6 / §7 blo
 | 6 | Run `gitleaks detect --log-opts="--all"` against full history | §6.3 | ✅ Done | 134 commits, 0 findings under both `.gitleaks.toml` and gitleaks defaults. Sanity-tested with a bogus GitHub PAT — gitleaks correctly fires on a real-shaped leak. |
 | 7 | Confirm `ANTHROPIC_API_KEY` org-secret access scope on a public repo | §6.4 | ⏸ User action | Manual GitHub-org settings check; no code change needed. |
 | 8 | Document `secrets/grafana_admin_password.txt` rotation in `docs/SECRETS_ONBOARDING.md` | §6.1 | ⏸ Optional | The merged README callout (item #4) already enumerates this file. A deeper `SECRETS_ONBOARDING.md` update is optional polish, not a blocker. |
-| 9 | **Flip repo visibility on GitHub** | — | ⏸ User action — **all blockers cleared** | Settings → General → Danger Zone → "Change visibility". After this, `gh repo view pcalnon/juniper-deploy` will report `"isPrivate": false`. |
-| 10 | Re-run `juniper-ml/.github/workflows/docs-full-check.yml` post-flip | §7.4 | ⏸ Post-flip | Auto-heals; manual dispatch validates cross-repo links once `juniper-deploy` is clonable from a fresh checkout. |
+| 9 | **Flip repo visibility on GitHub** | — | ✅ Done — **2026-05-10** | `gh repo edit pcalnon/juniper-deploy --visibility public --accept-visibility-change-consequences`. `gh repo view pcalnon/juniper-deploy --json visibility` now reports `"PUBLIC"`. All 8 Juniper repos are public; the ecosystem is symmetric. |
+| 10 | Re-run `juniper-ml/.github/workflows/docs-full-check.yml` post-flip | §7.4 | ▶ Triggered | Manual workflow_dispatch fired on 2026-05-10; run [`25620623508`](https://github.com/pcalnon/juniper-ml/actions/runs/25620623508) — once green it confirms cross-repo links into juniper-deploy resolve from a fresh checkout. |
 
 ---
 
