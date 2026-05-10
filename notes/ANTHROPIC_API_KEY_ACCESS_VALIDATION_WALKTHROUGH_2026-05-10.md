@@ -269,16 +269,18 @@ Exit codes: `0` clean, `1` finding, `2` usage / I/O error.
 
 The validator's own unit tests (`tests/test_validate_claude_yaml_access.py`, 8 cases covering the happy path, both L2 trigger variants, both L3 variants, the directory-argument resolver, and the usage-error path) run inside the existing Python regression matrix on Python 3.12 / 3.13 / 3.14.
 
-### Cross-repo coverage (follow-up)
+### Cross-repo coverage — ALSO SHIPPED
 
-Today's CI gate covers only `juniper-ml`'s own `claude.yml`. To audit all 8 repos in CI, extend `juniper-ml/.github/workflows/docs-full-check.yml` (which already clones every sibling repo on a weekly schedule) by adding a step that invokes:
+`juniper-ml/.github/workflows/docs-full-check.yml` (weekly schedule + `workflow_dispatch`) now runs the validator across all 8 sibling repos after the existing cross-repo doc-link check. It clones the 7 siblings into `$GITHUB_WORKSPACE`, then invokes:
 
 ```bash
 JUNIPER_ROOT="$GITHUB_WORKSPACE" \
-  juniper-ml/util/validate_claude_yaml_access.bash
+  bash juniper-ml/util/validate_claude_yaml_access.bash
 ```
 
-That keeps the per-PR cycle fast (single-repo audit) while still catching cross-repo drift weekly.
+The job blocks (exits non-zero) on any structural finding in any cloned repo. Because the workflow is schedule/dispatch only — never on PRs — developer velocity is unaffected even when a sibling repo introduces a regression. Either fix the sibling and re-dispatch, or open a triage issue on the affected repo.
+
+The result: the per-PR `claude-yaml-audit` job in juniper-ml's `ci.yml` catches local regressions on every push; the weekly `docs-full-check` job catches cross-repo drift in every sibling. Both feed off the same `util/validate_claude_yaml_access.bash` so a fix applied to the validator propagates everywhere.
 
 ---
 

@@ -13,13 +13,21 @@
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Description:
-#    Scheduled full documentation link validation including cross-repo links.
-#    Clones all Juniper ecosystem sibling repos into the workspace and runs
-#    check_doc_links.py with --cross-repo check to validate cross-repo links
-#    that are skipped during normal PR CI.
+#    Scheduled cross-repo audits that the per-PR pipelines cannot run on
+#    their own. Clones all Juniper ecosystem sibling repos into the
+#    workspace and runs:
+#      1. check_doc_links.py --cross-repo check
+#         — validates cross-repo markdown links skipped during normal PR CI.
+#      2. validate_claude_yaml_access.bash (JUNIPER_ROOT mode)
+#         — fans out the L2/L3 claude.yml safeguard audit (no
+#           pull_request_target/workflow_run, @claude if-guard) across
+#           every Juniper repo, catching drift in sibling repos that
+#           juniper-ml's per-PR claude-yaml-audit job cannot see.
 #
-#    This is a non-blocking, informational workflow. It runs on a weekly
-#    schedule and on manual dispatch only -- it does NOT run on PRs.
+#    Runs on a weekly schedule and on manual dispatch only -- it does
+#    NOT run on PRs. Both audits are blocking (exit non-zero on any
+#    finding); the schedule/dispatch trigger keeps developer velocity
+#    unaffected.
 #
 # Security Notes:
 #    - Runs on schedule/dispatch only (not on PRs or forks)
@@ -29,6 +37,7 @@
 #
 # References:
 #    - CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md (Phase 2)
+#    - notes/ANTHROPIC_API_KEY_ACCESS_VALIDATION_WALKTHROUGH_2026-05-10.md (§7)
 #####################################################################################################################################################################################################
 
 name: Docs Full Check
@@ -86,3 +95,15 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE/juniper-ml"
           python scripts/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo check
+
+      - name: Audit claude.yml access safeguards (cross-repo, L2/L3)
+        # JUNIPER_ROOT mode discovers every <root>/<repo>/.github/workflows/
+        # claude.yml under the canonical Juniper repo list and validates each
+        # in turn. Any repo that fails to clone above is silently skipped
+        # by the validator (the `[ -f "$f" ]` guard in default_targets()),
+        # so a transient clone failure doesn't mask a structural drift
+        # finding in another repo.
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          JUNIPER_ROOT="$GITHUB_WORKSPACE" \
+            bash juniper-ml/util/validate_claude_yaml_access.bash
