@@ -252,59 +252,33 @@ Spend changes in dollars/hour, not in PR-cycles. After flipping juniper-deploy p
 
 ---
 
-## 7. One-shot validation script
+## 7. One-shot validation script — SHIPPED
 
-Save this as `util/validate_claude_yaml_access.sh` (suggested) for reproducible audits:
+The validator lives at [`util/validate_claude_yaml_access.bash`](../util/validate_claude_yaml_access.bash) in juniper-ml. It performs the L2 / L3a / L3b checks from §3-§4 and exits non-zero on any finding. Behaviors:
+
+- `util/validate_claude_yaml_access.bash` — defaults to `juniper-ml/.github/workflows/claude.yml`.
+- `util/validate_claude_yaml_access.bash <file-or-dir> ...` — explicit targets (a directory is resolved to `<dir>/.github/workflows/claude.yml`).
+- `JUNIPER_ROOT=/path/to/Juniper util/validate_claude_yaml_access.bash` — fans out across all 8 canonical sibling repos.
+- `VERBOSE=1` — emits per-file trace lines.
+
+Exit codes: `0` clean, `1` finding, `2` usage / I/O error.
+
+### CI integration — also SHIPPED
+
+`juniper-ml/.github/workflows/ci.yml` now has a dedicated `claude-yaml-audit` job (`needs: [pre-commit]`) that runs the validator against the live `.github/workflows/claude.yml` on every push and PR. It is wired into `required-checks`, so a regression in the workflow blocks merge.
+
+The validator's own unit tests (`tests/test_validate_claude_yaml_access.py`, 8 cases covering the happy path, both L2 trigger variants, both L3 variants, the directory-argument resolver, and the usage-error path) run inside the existing Python regression matrix on Python 3.12 / 3.13 / 3.14.
+
+### Cross-repo coverage (follow-up)
+
+Today's CI gate covers only `juniper-ml`'s own `claude.yml`. To audit all 8 repos in CI, extend `juniper-ml/.github/workflows/docs-full-check.yml` (which already clones every sibling repo on a weekly schedule) by adding a step that invokes:
 
 ```bash
-#!/usr/bin/env bash
-# Validate that claude.yml in every Juniper repo is safe for a public repo.
-# Exits non-zero on any finding. Run after every claude.yml edit.
-
-set -euo pipefail
-JUNIPER_ROOT="${JUNIPER_ROOT:-/home/pcalnon/Development/python/Juniper}"
-REPOS=(juniper-cascor juniper-data juniper-data-client juniper-cascor-client
-       juniper-cascor-worker juniper-ml juniper-canopy juniper-deploy)
-
-fail=0
-
-for repo in "${REPOS[@]}"; do
-  f="$JUNIPER_ROOT/$repo/.github/workflows/claude.yml"
-  if [ ! -f "$f" ]; then
-    echo "SKIP   $repo (no claude.yml)"
-    continue
-  fi
-
-  if grep -qE '^\s*(pull_request_target|workflow_run):' "$f"; then
-    echo "FAIL   $repo: dangerous trigger present"
-    fail=1
-    continue
-  fi
-
-  if ! awk '
-      /^\s*claude:/   {in_job=1}
-      in_job && /^\s*if:/ {found_if=1}
-      in_job && /^\s*runs-on:/ {exit}
-      END {exit found_if?0:1}
-    ' "$f"; then
-    echo "FAIL   $repo: claude job missing if-guard"
-    fail=1
-    continue
-  fi
-
-  if ! grep -qE "contains\(.*'@claude'\)" "$f"; then
-    echo "FAIL   $repo: if-guard does not contain '@claude'"
-    fail=1
-    continue
-  fi
-
-  echo "OK     $repo"
-done
-
-exit "$fail"
+JUNIPER_ROOT="$GITHUB_WORKSPACE" \
+  juniper-ml/util/validate_claude_yaml_access.bash
 ```
 
-CI integration: drop a job that runs this script in `juniper-ml`'s `ci.yml`. Failure is a merge-blocker for any PR that touches a `claude.yml`.
+That keeps the per-PR cycle fast (single-repo audit) while still catching cross-repo drift weekly.
 
 ---
 
@@ -320,7 +294,7 @@ Run through each item once after `juniper-deploy` flips public, and again after 
 - [ ] §5.3 (gold-standard): fork-PR test confirms no fork-side workflow receives the secret. (Optional but recommended once.)
 - [ ] §6.1: Anthropic Console hard-cap is set; soft-alert wired to email.
 - [ ] §6.3: baseline spend recorded ($/day) so a future anomaly is detectable.
-- [ ] §7 script committed (or scheduled to be).
+- [x] §7 script committed and wired into juniper-ml CI as `claude-yaml-audit` (2026-05-10).
 
 If every box is checked, you can close item #7 of the public-release analysis as
 **Validated 2026-05-10 (or whatever date you ran this)** and move on.
