@@ -7,6 +7,28 @@
 
 ---
 
+## Implementation Status (live)
+
+Tracks progress executing the §6 / §7 remediation list. Work happens on `pcalnon/juniper-deploy` branch
+[`chore/prep-public-release`](https://github.com/pcalnon/juniper-deploy/pull/new/chore/prep-public-release).
+
+| # | Item | Section | Status | Evidence |
+|---|------|---------|--------|----------|
+| 1 | Worktree set up for prep work | — | ✅ Done | `worktrees/juniper-deploy--chore--prep-public-release--20260509-2322--8b35750c` |
+| 2 | Elide `AKIAIOSFODNN7EXAMPLE` from `notes/SECURITY_REMEDIATION_PLAN.md` | §6.3 | ✅ Done | juniper-deploy commit `6d9079b` |
+| 3 | Standardize `secrets.example/` placeholders to `CHANGE_BEFORE_PRODUCTION_USE` | §6.2 | ✅ Done | juniper-deploy commit `6770159` (8 files) |
+| 4 | "Before deploying" callout at top of `README.md` listing files in `secrets/` to populate, with pointer to `docs/SECRETS_ONBOARDING.md` | §6.6 | ✅ Done | juniper-deploy commit `6c6adfb` |
+| 5 | Add `gitleaks` job to `ci.yml` and wire into `required-checks` quality gate | §7.2 / §7.3 | ✅ Done | juniper-deploy commit `237fa39` (gitleaks-action v2.3.9 SHA-pinned, FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true override) |
+| 6 | Run `gitleaks detect --log-opts="--all"` against full history | §6.3 | ✅ Done | 134 commits, 0 findings; default rules also clean (the canonical AWS example is in gitleaks' built-in allowlist). Sanity-tested with a bogus GitHub PAT — gitleaks correctly fires on a real-shaped leak. |
+| 7 | Confirm `ANTHROPIC_API_KEY` org-secret access scope on a public repo | §6.4 | ⏸ User action | Manual GitHub-org settings check; no code change needed. |
+| 8 | Document `secrets/grafana_admin_password.txt` rotation in `docs/SECRETS_ONBOARDING.md` | §6.1 | ⏸ Pending | The existing README callout (item #4 above) already enumerates this file; deeper SECRETS_ONBOARDING.md update is optional. |
+| 9 | Flip repo visibility on GitHub | — | ⏸ User action | Awaits review of branch + (optionally) merging it before flipping. |
+| 10 | Re-run `juniper-ml/.github/workflows/docs-full-check.yml` post-flip | §7.4 | ⏸ Post-flip | Auto-heals; manual dispatch validates cross-repo links once `juniper-deploy` is clonable. |
+
+`gh repo view pcalnon/juniper-deploy` will report `"isPrivate": false` once item #9 lands.
+
+---
+
 ## 0. TL;DR
 
 | Question                                   | Recommendation                                                                                                                                                                                | Confidence |
