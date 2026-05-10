@@ -9,23 +9,21 @@
 
 ## Implementation Status (live)
 
-Tracks progress executing the §6 / §7 remediation list. Work happens on `pcalnon/juniper-deploy` branch
-[`chore/prep-public-release`](https://github.com/pcalnon/juniper-deploy/pull/new/chore/prep-public-release).
+Tracks progress executing the §6 / §7 remediation list. All four §6 / §7 blocking items have **shipped to `pcalnon/juniper-deploy:main`** (PR [#63](https://github.com/pcalnon/juniper-deploy/pull/63), squash-merged as `9fda7dc`; PR [#64](https://github.com/pcalnon/juniper-deploy/pull/64) cleanup, squash-merged as `f5cce3d`).
 
 | # | Item | Section | Status | Evidence |
 |---|------|---------|--------|----------|
-| 1 | Worktree set up for prep work | — | ✅ Done | `worktrees/juniper-deploy--chore--prep-public-release--20260509-2322--8b35750c` |
-| 2 | Elide `AKIAIOSFODNN7EXAMPLE` from `notes/SECURITY_REMEDIATION_PLAN.md` | §6.3 | ✅ Done | juniper-deploy commit `6d9079b` |
-| 3 | Standardize `secrets.example/` placeholders to `CHANGE_BEFORE_PRODUCTION_USE` | §6.2 | ✅ Done | juniper-deploy commit `6770159` (8 files) |
-| 4 | "Before deploying" callout at top of `README.md` listing files in `secrets/` to populate, with pointer to `docs/SECRETS_ONBOARDING.md` | §6.6 | ✅ Done | juniper-deploy commit `6c6adfb` |
-| 5 | Add `gitleaks` job to `ci.yml` and wire into `required-checks` quality gate | §7.2 / §7.3 | ✅ Done | juniper-deploy commit `237fa39` (gitleaks-action v2.3.9 SHA-pinned, FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true override) |
-| 6 | Run `gitleaks detect --log-opts="--all"` against full history | §6.3 | ✅ Done | 134 commits, 0 findings; default rules also clean (the canonical AWS example is in gitleaks' built-in allowlist). Sanity-tested with a bogus GitHub PAT — gitleaks correctly fires on a real-shaped leak. |
+| 1 | Worktree set up for prep work | — | ✅ Done & cleaned up | `chore/prep-public-release` branch + worktree merged via PR #63, then removed and `git worktree prune`'d. |
+| 2 | Elide `AKIAIOSFODNN7EXAMPLE` from `notes/SECURITY_REMEDIATION_PLAN.md` | §6.3 | ✅ Merged | juniper-deploy main `9fda7dc` (squash) — pre-merge commit `6d9079b`. |
+| 3 | Standardize `secrets.example/` placeholders to `CHANGE_BEFORE_PRODUCTION_USE` | §6.2 | ✅ Merged | juniper-deploy main `9fda7dc` — 8 files unified; pre-merge commit `6770159`. |
+| 4 | "Before deploying" callout at top of `README.md` listing files in `secrets/` to populate, with pointer to `docs/SECRETS_ONBOARDING.md` | §6.6 | ✅ Merged | juniper-deploy main `9fda7dc` — pre-merge commit `6c6adfb`. |
+| 5 | Add `gitleaks` job to `ci.yml` and wire into `required-checks` quality gate | §7.2 / §7.3 | ✅ Merged & green on main | juniper-deploy main `9fda7dc` — pre-merge commit `237fa39`. CI run `25620490009` on main: Gitleaks **success**, all jobs **success**. |
+| 5a | yamllint follow-up: `comments-indentation` on the new gitleaks block | — | ✅ Merged | PR #64 → juniper-deploy main `f5cce3d`. Validated locally with the exact CI invocation (`yamllint --strict -d '{extends: default, rules: {line-length: {max: 512}, truthy: disable}}'`). |
+| 6 | Run `gitleaks detect --log-opts="--all"` against full history | §6.3 | ✅ Done | 134 commits, 0 findings under both `.gitleaks.toml` and gitleaks defaults. Sanity-tested with a bogus GitHub PAT — gitleaks correctly fires on a real-shaped leak. |
 | 7 | Confirm `ANTHROPIC_API_KEY` org-secret access scope on a public repo | §6.4 | ⏸ User action | Manual GitHub-org settings check; no code change needed. |
-| 8 | Document `secrets/grafana_admin_password.txt` rotation in `docs/SECRETS_ONBOARDING.md` | §6.1 | ⏸ Pending | The existing README callout (item #4 above) already enumerates this file; deeper SECRETS_ONBOARDING.md update is optional. |
-| 9 | Flip repo visibility on GitHub | — | ⏸ User action | Awaits review of branch + (optionally) merging it before flipping. |
-| 10 | Re-run `juniper-ml/.github/workflows/docs-full-check.yml` post-flip | §7.4 | ⏸ Post-flip | Auto-heals; manual dispatch validates cross-repo links once `juniper-deploy` is clonable. |
-
-`gh repo view pcalnon/juniper-deploy` will report `"isPrivate": false` once item #9 lands.
+| 8 | Document `secrets/grafana_admin_password.txt` rotation in `docs/SECRETS_ONBOARDING.md` | §6.1 | ⏸ Optional | The merged README callout (item #4) already enumerates this file. A deeper `SECRETS_ONBOARDING.md` update is optional polish, not a blocker. |
+| 9 | **Flip repo visibility on GitHub** | — | ⏸ User action — **all blockers cleared** | Settings → General → Danger Zone → "Change visibility". After this, `gh repo view pcalnon/juniper-deploy` will report `"isPrivate": false`. |
+| 10 | Re-run `juniper-ml/.github/workflows/docs-full-check.yml` post-flip | §7.4 | ⏸ Post-flip | Auto-heals; manual dispatch validates cross-repo links once `juniper-deploy` is clonable from a fresh checkout. |
 
 ---
 
