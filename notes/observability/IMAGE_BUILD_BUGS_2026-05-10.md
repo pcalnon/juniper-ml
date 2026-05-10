@@ -155,6 +155,7 @@ The `juniper-canopy` scrape target shows `down` only because of Bug 1, and the w
 | Bug 2 — worker missing `juniper-cascor-protocol` | juniper-cascor-worker | regenerate `requirements-cpu.lock` + rebuild | **MERGED** as `pcalnon/juniper-cascor-worker#58` (`7757c38`) |
 | CI gap — CPU lockfile freshness check | juniper-cascor-worker | new pyproject-deps-in-lockfile assertion in `lockfile-check` job | **MERGED** with worker PR #58 |
 | Bug 3 — canopy `/metrics` API-key gated | juniper-canopy | add `/metrics` to `EXEMPT_PATH_PREFIXES` (prefix form, see below) | **MERGED** as `pcalnon/juniper-canopy#262` (`6d1c81b`) |
+| Bug 4 — canopy dashboard self-calls 401 under prod auth | juniper-canopy | inject `X-API-Key` into all 44 dashboard self-call sites | **PR `pcalnon/juniper-canopy#265` open** (Option B; verified end-to-end). Long-term Option C refactor deferred — see [`CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md`](./CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md) |
 
 ---
 
@@ -200,3 +201,61 @@ prometheus: up
 ```
 
 All four scrape targets are now `up`.
+
+---
+
+## Bug 4 (surfaced 2026-05-10 during full-stack validation) — canopy dashboard self-calls 401 under production auth
+
+After Bugs 1-3 shipped and the full stack came up, the canopy dashboard at `http://localhost:8050/dashboard` rendered with every panel showing "Error / No data" and the WS-status badge stuck at "Reconnecting". Initial impression was a WebSocket failure between canopy and cascor — that turned out to be incorrect.
+
+### Symptom
+
+Canopy logs showed dozens of warnings every few seconds:
+
+```
+[WARNING] frontend.dashboard_manager: Status API returned 401
+[WARNING] frontend.dashboard_manager: Network stats API returned 401
+[WARNING] frontend.dashboard_manager: Metrics history API returned 401
+[WARNING] frontend.base_component.HDF5SnapshotsPanel: Snapshots API returned status 401
+[WARNING] frontend.dashboard_manager: Topology API returned 401
+```
+
+The WS connection itself was fine — `Control stream supervisor connected to ws://juniper-cascor:8200` appeared once and stayed connected. The "Reconnecting" badge was a downstream symptom of the broken status fetch.
+
+### Root cause
+
+The Dash dashboard makes server-side HTTP requests to canopy's own FastAPI routes — e.g. `requests.get(self._api_url("/api/status"))` — fired from inside Dash callback handlers. ~44 such call sites exist across `dashboard_manager.py` and 9 component modules. None carry an `X-API-Key` header.
+
+When canopy is started with a non-empty `CANOPY_API_KEY` (the deploy-stack and production default), `SecurityMiddleware` enforces the key on every non-exempt path. The dashboard's own self-calls hit the middleware and get 401'd.
+
+The fallback secret value `CHANGE_BEFORE_PRODUCTION_USE` (from `secrets.example/canopy_api_key.txt`, the compose default) is non-empty, which is enough to enable the middleware and break the dashboard.
+
+### Fix paths analysed
+
+Three options, with the rough trade-offs that drove the choice:
+
+- **Option A — env override to disable canopy auth.** Set `CANOPY_API_KEY_FILE` to point at the local empty `secrets/canopy_api_key.txt`. Auth disabled, dashboard works, ~30 second change. Not appropriate for production deployments. **Applied immediately for stack validation.**
+- **Option B — inject `X-API-Key` in dashboard self-calls.** Add a small helper that returns `{"X-API-Key": <key>}` when the key is configured; sprinkle `headers=internal_api_headers()` across all 44 sites. Closes the production auth-broken bug without changing the architecture. **Shipped as `pcalnon/juniper-canopy#265`.**
+- **Option C — drop the HTTP self-call indirection entirely.** Refactor the Dash callbacks to call the FastAPI route handlers as direct in-process Python functions, eliminating TCP loopback, full middleware traversal, JSON serialize/deserialize, and synthetic Prometheus traffic. **Deferred** — design and trigger conditions captured separately in [`CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md`](./CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md).
+
+### Why B before C
+
+Option B is mechanical and bounded: 1 helper module + 44 single-line edits. Option C is a real refactor (~3-4× the surface) that needs handler-by-handler review for async/sync impedance, FastAPI dependency injection, and middleware-derived state. The operational pain Option C solves (per-call latency, threadpool double-occupancy, metric noise) is not yet load-bearing on this single-user dashboard. B unblocks production auth today; C becomes worth the larger refactor when one of the trigger conditions in the design doc is met.
+
+### Verification (Option B)
+
+```bash
+$ printf 'test-canopy-key' > secrets/canopy_api_key.txt
+$ docker compose ... up -d --force-recreate juniper-canopy
+$ docker exec juniper-canopy curl -sS -o /dev/null -w '%{http_code}\n' \
+    http://127.0.0.1:8050/api/status
+401     # auth still enforced for outsiders
+
+$ KEY=$(cat secrets/canopy_api_key.txt)
+$ docker exec juniper-canopy curl -sS -H "X-API-Key: $KEY" -o /dev/null -w '%{http_code}\n' \
+    http://127.0.0.1:8050/api/status
+200     # authed access works
+
+$ docker logs juniper-canopy 2>&1 | grep -c 'returned 401'
+0       # was every ~2s before fix
+```
