@@ -5,6 +5,15 @@ inspect what runs during *another* test session — necessary because
 the fixture runs its scrub during teardown of the test that requested
 it, and the only place we can verify "the scrub happened correctly"
 is from the next test in the same session.
+
+``pytester.runpytest`` calls below pass ``-p no:playwright -p no:dash``
+explicitly. The parent ``pyproject.toml`` blocks autoload for the outer
+pytest invocation, but pytester spawns a fresh inner pytest from a
+temp dir and does not inherit the outer ``addopts``. In envs that have
+``pytest-playwright``/``dash.testing`` installed without their runtime
+deps (e.g. the legacy ``JuniperCascor-DEPRECATED`` env that has
+``pytest-playwright`` but no ``playwright``), autoload would crash the
+inner pytest before any test ran.
 """
 
 from __future__ import annotations
@@ -38,7 +47,7 @@ def test_fixture_scrubs_added_collectors_after_test(pytester):
             assert "test_fixture_scrub_target" not in REGISTRY._names_to_collectors
         """
     )
-    result = pytester.runpytest("-q")
+    result = pytester.runpytest("-q", "-p", "no:playwright", "-p", "no:dash")
     result.assert_outcomes(passed=2)
 
 
@@ -61,7 +70,7 @@ def test_fixture_clears_lazy_cache_after_test(pytester):
             assert "test_fixture_cache_target" not in _lazy_cache
         """
     )
-    result = pytester.runpytest("-q")
+    result = pytester.runpytest("-q", "-p", "no:playwright", "-p", "no:dash")
     result.assert_outcomes(passed=2)
 
 
@@ -88,7 +97,7 @@ def test_fixture_preserves_collectors_registered_before_yield(pytester):
             assert "test_fixture_preserves_session_metric" in REGISTRY._names_to_collectors
         """
     )
-    result = pytester.runpytest("-q")
+    result = pytester.runpytest("-q", "-p", "no:playwright", "-p", "no:dash")
     result.assert_outcomes(passed=2)
 
 
@@ -120,5 +129,5 @@ def test_fixture_is_no_op_when_prometheus_client_missing(pytester, monkeypatch):
             assert True
         """
     )
-    result = pytester.runpytest("-q")
+    result = pytester.runpytest("-q", "-p", "no:playwright", "-p", "no:dash")
     result.assert_outcomes(passed=1)
