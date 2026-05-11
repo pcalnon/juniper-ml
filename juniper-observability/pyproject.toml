@@ -55,7 +55,23 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "strict"
-addopts = ["-ra", "-q", "--strict-markers", "--strict-config"]
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+    # Block pytest plugins whose entrypoints get auto-discovered from the
+    # active env even when this project does not use them. dash.testing.plugin
+    # and pytest_playwright are autoloaded by pytest from installed
+    # distributions; in envs where their runtime deps are missing (e.g. the
+    # legacy JuniperCascor env had pytest-playwright without playwright), the
+    # import errors during pytest startup before any test can run. This block
+    # mirrors the defense already in juniper-cascor, juniper-canopy, and the
+    # parent juniper-ml pyproject. See juniper-ml memory entry "Pytest
+    # autoload SIGSEGV defense 2026-05-01".
+    "-p", "no:dash",
+    "-p", "no:playwright",
+]
 filterwarnings = ["ignore::pytest.PytestUnraisableExceptionWarning"]
 
 [tool.ruff]
