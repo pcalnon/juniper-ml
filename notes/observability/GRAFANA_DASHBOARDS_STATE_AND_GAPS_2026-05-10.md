@@ -38,6 +38,50 @@ Provisioning mechanism: `dashboard-providers.yml` in the same directory; reload 
     - If successful, you’ll see a prompt to change the password.
 3. Click OK on the prompt and change your password.
 
+#### 1.1.2 Docker Provisioning Access
+
+The pre-configured Grafana dashboards are already provisioned.
+With the deploy stack up, Grafana auto-loads them on container start.
+
+```bash
+# Option 1: flag
+docker compose --profile observability up -d
+
+# Option 2: env var
+COMPOSE_PROFILES=observability docker compose up -d
+
+# Option 3: combine with another profile
+docker compose --profile dev --profile observability up -d
+
+# Troubleshooting Startup problems:
+docker compose --profile observability logs grafana | grep -iE 'provisioning|dashboard|error'
+```
+
+#### 1.1.3 Docker provisioning backend for Grafana
+
+Live access
+
+- Grafana: <http://127.0.0.1:3001> — login admin / `REDACTED`
+- Prometheus: <http://127.0.0.1:9090>
+- Cascor API: <http://127.0.0.1:8201>
+- Data API: <http://127.0.0.1:8100>
+- Canopy dashboard: <http://127.0.0.1:8050/dashboard>
+- juniper-alertmanager on its default port
+- 4 networks created
+
+Two Grafana-volume gotchas surfaced during this validation that are noting:
+
+1. Grafana's admin password file is read once — only on first init when sqlite is empty. Subsequent restarts use the password stored in the grafana-data volume. To rotate, either docker volume rm juniper-deploy_grafana-data (destructive) or docker exec juniper-grafana grafana-cli admin reset-admin-password "$NEW_PW" (non-destructive).
+2. git rm --cached on previously-tracked-but-now-gitignored files removes them from working trees on git pull — the local secrets/*.txt files vanished after PR #66 merged. make prepare-secrets recreates the empty placeholders; the populated values must be restored from .env.secrets.enc. Worth flagging in any rotation runbook.
+
+Things you should know:
+
+1. Your existing Grafana for Juniper Project applications running as systemd services is on port :3000.
+2. The possibility of a port collision is a real concern.
+    - Both Grafanas can't bind :3000.
+    - The docker stack owns :3001
+    - The systemd service stack owns :3000
+
 ### 1.2 Prometheus Scrape Wiring
 
 Configured in `juniper-deploy/prometheus/prometheus.yml`. Globals: `scrape_interval=15s`, `evaluation_interval=15s`, `scrape_timeout=10s`, 30-day retention.
