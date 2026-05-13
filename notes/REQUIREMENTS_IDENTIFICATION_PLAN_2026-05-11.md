@@ -428,7 +428,7 @@ This section is the canonical record of where the effort stands. Update at each 
 | 3b — Gap-fill on uncited score≥50 files | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_3b-{1,2,3,4}_2026-05-11.yaml` (238 entries) | Triggered by Phase-3 coverage gap: 37 files with density score ≥50 were not cited at all, including 14 of 15 interface_proposals/ R-round files. 4 small parallel agents processed 34 of 36 high-priority gap files; ~98% score-≥50 coverage afterward. |
 | 4 — Consolidation | ✅ done | 2026-05-12 | 2026-05-12 | `notes/requirements/**`, `notes/REQUIREMENTS_INDEX.md`, `notes/requirements/id_assignments.yaml` | 1,316 candidates → 1,033 dedupe-merged entries via (owner, category, normalized-brief) bucketing. 283 duplicates collapsed. 31 markdown files + 1 YAML written (15 by-area + 8 by-repo + 7 by-status + README + index). Run via `/tmp/phase4_consolidate.py`. |
 | 5 — QA | ✅ done | 2026-05-12 | 2026-05-12 | (findings appended below) | Path/line-range validity 20/20, content fidelity 5/5 spot-check, citation-precision 4/5 (one entry's line range pointed to threat-discussion section while the actual spec was elsewhere in the same file). v1 acceptable. |
-| 6 — Ship | ☐ not started | — | — | merged to juniper-ml main | — |
+| 6 — Ship | ✅ done | 2026-05-12 | 2026-05-13 | PR #255, merge commit `5705aaff` | Merged to juniper-ml main 2026-05-13. 34 files, 45,085 insertions. See Phase-6 ship record below. |
 
 ### Decisions made during execution
 
@@ -518,15 +518,19 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 
 **Verdict**: v1 acceptable. Hallucination defenses held (no fabricated files or invalid line ranges). The two findings (citation-precision drift in #11, thin brief in #7) are Phase-4 quality issues that should be addressed in v2 iteration — not blockers for shipping v1.
 
-### Phase-6 ship record (to be filled in)
+### Phase-6 ship record (filled in 2026-05-13)
 
 | Item | Value |
 |---|---|
-| PR / merge commit | — |
-| Files added | — |
-| Files modified | — |
-| Total requirements published | — |
-| Date shipped | — |
+| PR | [#255](https://github.com/pcalnon/juniper-ml/pull/255) |
+| Merge commit | `5705aaff5b90f00cdb3592a80e5fb4654575a6b6` |
+| Source branch | `worktree-validated-weaving-pie` (commit `bbb6848`) |
+| Files added | 33 (`notes/REQUIREMENTS_INDEX.md`, `notes/requirements/README.md`, 15 `by-area/*.md`, 8 `by-repo/*.md`, 7 `by-status/*.md`, `id_assignments.yaml`) |
+| Files modified | 1 (`notes/REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`) |
+| Total requirements published | 1,033 (1,316 candidates pre-dedup; 283 collapsed) |
+| Unique source files cited | 96 |
+| Date shipped | 2026-05-13 |
+| Tracker close-out | This update (separate PR, branch `chore/req-tracker-closeout-2026-05-13`) |
 
 ---
 
