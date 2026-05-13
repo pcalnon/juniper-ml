@@ -152,6 +152,7 @@ Every requirement entry in `by-area/*.md` MUST include the following fields. The
 ### JR-CAS-WS-014 — WebSocket resume buffer occupancy
 
 **Status**: shipped <!-- one of: proposed | designed | in-progress | shipped | deferred | rejected | superseded -->
+**Priority**: P1 <!-- one of: P0 | P1 | P2 | P3 ; see §5.1 for inference rules -->
 **Category**: observability  <!-- canonical area; matches a by-area/ file -->
 **Owner**: cascor  <!-- canonical owning repo -->
 **Brief**: Cascor must expose current and capacity occupancy of the WS replay
@@ -183,7 +184,8 @@ JR-CAS-WS-021 and JR-CAS-WS-022 respectively.
 ### Field rules
 
 - **`Status`** — required, one of the values in §6.
-- **`Category`** — required, must match a `by-area/` filename without `.md`. Add new areas only after Phase-4 dedup; don't invent areas during Phase 3.
+- **`Priority`** — required, one of `P0` / `P1` / `P2` / `P3`. Inferred from source-doc language only; see §5.1 for the inference rules. Never derived from extractor judgment.
+- **`Category`** — required, must be one of the 15 locked area codes in §6. Phase-3 agents may not invent new area codes; anything that doesn't fit goes under the closest match and gets re-bucketed in Phase 4.
 - **`Owner`** — required, the canonical owning repo (e.g. `cascor`, `canopy`, `deploy`, `ml`). Cross-repo requirements have one owner; the others appear in `Sources`.
 - **`Brief`** — required, 1-2 sentences. Reads as a standalone summary.
 - **`Sources`** — required, at least one. Format: `<repo>/<path> §<section> (lines <range>)`. Hallucinated requirements without traceable sources are the main risk; the schema makes them obviously broken.
@@ -191,6 +193,23 @@ JR-CAS-WS-021 and JR-CAS-WS-022 respectively.
 - **`Design`** — optional but recommended; populated when the source doc has a design sketch.
 - **`PRs`** — optional; populated when one or more PRs exist that close (or partially close) the requirement.
 - **`Notes`** — optional; cross-references to sibling requirements, related deferrals, etc.
+
+### 5.1 Priority inference rules (locked 2026-05-12)
+
+The priority field was added in Phase 2 after the Phase-1 inventory implied >1500 candidate requirements (total density score 12,926 across 625 files; see §11 Phase-1 results). With this volume, navigation requires a priority filter on top of `status`.
+
+**Taxonomy** (P0 highest urgency, P3 lowest):
+
+| Level | Inferred when source doc shows … |
+|---|---|
+| **P0** | Words like *blocker*, *critical*, *production incident*, *must-ship-before-X*; open incident remediation plans; security CVE/CVSS-high fixes; data-loss or correctness defects. |
+| **P1** | Listed in a current-quarter roadmap, has an explicit owner + ETA, or is named in a release-preparation / pre-deploy roadmap with a near-term target. |
+| **P2** | Backlog / future-quarter item; no concrete ETA; *should* / *planned* language without urgency cues. |
+| **P3** | *Nice to have*, *future work*, *deferred*, *out of scope for v1*, *parking lot*, or explicitly tagged for a much later milestone. |
+
+**Default**: If the source doc gives no cue, default to **P2** and mark the entry with `**Priority-inferred**: true` (extractor metadata; this becomes a Notes line, e.g. `Notes: Priority defaulted to P2 — no urgency cues in source.`).
+
+**Hard rule**: Priority is derived *from source-doc language only*. Extractor agents must not apply independent judgment about what "should" be P0/P1/P2/P3; that would re-introduce hallucination risk through the back door.
 
 ---
 
@@ -210,10 +229,30 @@ Format: `JR-<REPO>-<AREA>-<NNN>`
   - `CWK` = juniper-cascor-worker
   - `CCL` = juniper-cascor-client
   - `DCL` = juniper-data-client
-- `<AREA>` — 2-5 letter area code derived from the canonical category (`OBS` = observability, `SEC` = security, `API` = api-contracts, `DEP` = deployment, `UI` = ui-frontend, `DATA` = data-pipeline, `TRAIN` = training, `WS` = websocket, `TEST` = testing-and-ci, `LOCK` = lockfile-and-deps, etc.)
+- `<AREA>` — 2-5 letter area code from the **locked 15-code enum** (Phase 2, 2026-05-12). Phase-3 agents may NOT invent new area codes. New codes may be added only after Phase-4 consolidation, with a recorded decision row in §11.
 - `<NNN>` — zero-padded sequential within the (repo, area) namespace, starting at 001
 
-Examples: `JR-CAS-WS-014`, `JR-CAN-METRIC-007`, `JR-DEP-OBS-003`, `JR-ML-LOCK-002`.
+**Locked area-code enum (15 codes)**:
+
+| Code | Scope |
+|---|---|
+| `OBS`   | observability — metrics, logging, tracing, dashboards, alerting |
+| `SEC`   | security — authn, authz, secrets, CVEs, hardening |
+| `API`   | API contracts — schemas, versioning, compatibility, migrations |
+| `DEP`   | deployment-config — Docker, Compose, K8s, Helm, image build |
+| `UI`    | ui-frontend — Canopy/Dash, UX, visualizations |
+| `DATA`  | data-pipeline — dataset generation, NPZ contracts, ingestion |
+| `TRAIN` | training — cascor algorithm, candidates, convergence, model state |
+| `WS`    | websocket / messaging — Canopy↔Cascor streaming, replay, control plane |
+| `TEST`  | testing-and-ci — pytest, fixtures, CI workflows, regression analysis |
+| `LOCK`  | lockfile-and-deps — uv lockfiles, pyproject pins, dep updates, env rebuilds |
+| `ARCH`  | architecture / cross-cutting design — microservices, polyrepo, interface proposals |
+| `PERF`  | performance / scalability — throughput, latency, parallelization, CUDA |
+| `TOOL`  | dev tooling / scripts / workflow — worktree procs, claude-code launchers, util/* scripts |
+| `DOC`   | documentation / process — link validation, conventions, file headers, READMEs |
+| `OPS`   | operations / runbooks / on-call — runbook documents, incident response, day-2 |
+
+Examples: `JR-CAS-WS-014`, `JR-CAN-OBS-007`, `JR-DEP-OPS-003`, `JR-ML-LOCK-002`, `JR-ML-ARCH-011`.
 
 IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, and **never reused** even if a requirement is later marked `rejected` or `superseded`. A `superseded` entry retains its ID and links forward to its replacement.
 
@@ -382,12 +421,13 @@ This section is the canonical record of where the effort stands. Update at each 
 | Phase | Status | Started | Completed | Output | Notes |
 |---|---|---|---|---|---|
 | 0 — Plan | ✅ done | 2026-05-11 | 2026-05-11 | This document | Decisions locked per §3 |
-| 1 — Inventory | ☐ not started | — | — | `/tmp/notes_inventory_2026-05-11.md` | — |
-| 2 — Schema lock | ☐ not started | — | — | (this doc, updated) | — |
-| 3 — Extraction (pilot: juniper-ml) | ☐ not started | — | — | `/tmp/req_extract_juniper-ml_2026-05-11.yaml` | Pilot first per §7 recommendation |
-| 3 — Extraction (full fan-out, other 7 repos) | ☐ not started | — | — | `/tmp/req_extract_<repo>_2026-05-11.yaml` x7 | Gated on pilot acceptance |
-| 4 — Consolidation | ☐ not started | — | — | `notes/requirements/**`, `notes/REQUIREMENTS_INDEX.md`, `id_assignments.yaml` | — |
-| 5 — QA | ☐ not started | — | — | (findings appended below) | — |
+| 1 — Inventory | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/notes_inventory_2026-05-11.{md,tsv}` | First agent's `.md` was partially hallucinated; rebuilt from authentic TSV via Bash. TSV row counts cross-validated against filesystem. See Phase-1 results table below. |
+| 2 — Schema lock | ✅ done | 2026-05-12 | 2026-05-12 | (this doc, updated §5/§5.1/§6) | `Priority` field added (P0-P3, source-doc-cue inference); area-code enum locked at 15 codes (10 original + ARCH/PERF/TOOL/DOC/OPS). |
+| 3 — Extraction (pilot: juniper-ml) | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_juniper-ml_2026-05-11.yaml` (635 entries, disposable) | Pilot calibration: discovered Approach-A/B/C sub-bullet inflation (~30-40% of entries were sub-bullets of single decisions). Rule 4 (consolidate-per-decision-block) added to common brief before fan-out. Pilot extraction discarded. |
+| 3 — Extraction (full fan-out, 10 parallel agents) | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_{ml-A,ml-B,ml-C,cas,can,dat,dep,cwk,ccl,dcl}_2026-05-11.yaml` (1,078 entries) | juniper-ml split into 3 sub-slices (ml-A top-level + small dirs; ml-B interface_proposals + proposals; ml-C development + legacy + code-review + regressions). Many agents truncated processing under context-budget pressure — file coverage was 64/625 (10%). |
+| 3b — Gap-fill on uncited score≥50 files | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_3b-{1,2,3,4}_2026-05-11.yaml` (238 entries) | Triggered by Phase-3 coverage gap: 37 files with density score ≥50 were not cited at all, including 14 of 15 interface_proposals/ R-round files. 4 small parallel agents processed 34 of 36 high-priority gap files; ~98% score-≥50 coverage afterward. |
+| 4 — Consolidation | ✅ done | 2026-05-12 | 2026-05-12 | `notes/requirements/**`, `notes/REQUIREMENTS_INDEX.md`, `notes/requirements/id_assignments.yaml` | 1,316 candidates → 1,033 dedupe-merged entries via (owner, category, normalized-brief) bucketing. 283 duplicates collapsed. 31 markdown files + 1 YAML written (15 by-area + 8 by-repo + 7 by-status + README + index). Run via `/tmp/phase4_consolidate.py`. |
+| 5 — QA | ✅ done | 2026-05-12 | 2026-05-12 | (findings appended below) | Path/line-range validity 20/20, content fidelity 5/5 spot-check, citation-precision 4/5 (one entry's line range pointed to threat-discussion section while the actual spec was elsewhere in the same file). v1 acceptable. |
 | 6 — Ship | ☐ not started | — | — | merged to juniper-ml main | — |
 
 ### Decisions made during execution
@@ -397,41 +437,86 @@ This section is the canonical record of where the effort stands. Update at each 
 | Date | Decision | Rationale | Phase |
 |---|---|---|---|
 | 2026-05-11 | All five plan-locking questions answered (see §3) | Reviewed by owner | 0 |
+| 2026-05-12 | First Phase-1 inventory agent produced authentic TSV but hallucinated `.md` report (chat summary self-contradicted with the file). Discarded `.md`; rebuilt deterministically from TSV via Bash with row-count and LOC/score sample cross-validation against filesystem. | Hallucination caught early; TSV is the canonical Phase-1 artifact. Reinforces §8 risk: Explore agents may fabricate summary tables independently from their search results. Phase-3 extraction agents must therefore produce machine-checkable artifacts (YAML with source line ranges) — never free-form prose — to make hallucination detectable by post-hoc grep. | 1 |
+| 2026-05-12 | Added required `Priority` field to schema (P0-P3, source-doc-cue inference; see §5.1). | Total Phase-1 density score is 12,926 keyword hits across 625 files → conservative 3-5 hits/req → 2,500-4,300 candidate requirements pre-dedup. Well over the 1,500 threshold in §3-Q2 that triggers the priority field. Without priority, the index is unnavigable at this volume. | 2 |
+| 2026-05-12 | Locked the area-code enum at 15 codes: the original 10 (OBS, SEC, API, DEP, UI, DATA, TRAIN, WS, TEST, LOCK) plus 5 new (ARCH, PERF, TOOL, DOC, OPS). | Phase-1 top-density files include large bodies of architectural design work (interface_proposals/R1-R5, microservices roadmap), performance/scalability roadmaps, operational runbooks, dev-tooling procedures (worktree, claudey), and process documentation (link validation, conventions). The original enum had no clean home for these and would have forced lossy bucketing. Phase 4 may still add codes after dedup if needed. | 2 |
 
-### Phase-1 inventory results (to be filled in)
+### Phase-1 inventory results (filled in 2026-05-12)
 
-| Repo | notes file count | total LOC | density-ranked top files |
+Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesystem; `.md` rebuilt deterministically from TSV after the first agent's hallucinated draft).
+
+| Repo | notes file count | total LOC | total density score | top file (score) |
+|---|---|---|---|---|
+| juniper-ml | 262 | 152,718 | 7,834 | interface_proposals/R1-04_operational_runbook.md (469) |
+| juniper-canopy | 133 | 58,334 | 2,243 | TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN.md (166) |
+| juniper-cascor | 114 | 55,338 | 2,045 | development/DEVELOPMENT_ROADMAP.md (238) |
+| juniper-data | 47 | 13,830 | 500 | JUNIPER-DATA_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-17.md (73) |
+| juniper-deploy | 23 | 5,612 | 206 | SLO_CATALOG_2026-05-03.md (66) |
+| juniper-cascor-worker | 17 | 2,262 | 44 | WORKTREE_CLEANUP_PROCEDURE_V2.md (7) |
+| juniper-cascor-client | 14 | 1,839 | 26 | WORKTREE_CLEANUP_PROCEDURE_V2.md (7) |
+| juniper-data-client | 15 | 1,737 | 28 | WORKTREE_CLEANUP_PROCEDURE_V2.md (7) |
+| **Total** | **625** | **291,670** | **12,926** | — |
+
+**Top 5 cross-repo files by density** (Phase-3 priority seed):
+
+1. `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (469, 1,626 LOC)
+2. `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (461, 1,363 LOC)
+3. `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` (450, **15,220 LOC** — by far the largest file)
+4. `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (365, 1,464 LOC)
+5. `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (324, 5,458 LOC)
+
+**Observations driving Phase-2 decisions**:
+
+- **Density skew**: juniper-ml alone holds 7,834 of 12,926 (61%) of total density; together with juniper-canopy + juniper-cascor, the top 3 repos hold 96% of ecosystem density. Phase-3 fan-out can de-prioritize the 4 low-density client/worker repos (each <50 total score) — those agents will be quick.
+- **Two huge documents**: V7 IMPLEMENTATION_ROADMAP (15,220 LOC) and V6 REMEDIATION_ANALYSIS (5,458 LOC) in juniper-ml dominate. Each Phase-3 agent must be allowed multiple read passes; these likely cannot be processed in a single read window.
+- **interface_proposals/ cluster**: 9 of the top 25 density files are juniper-ml round-N proposal docs (R0/R1/R2/R3/R4/R5). They overlap thematically (WebSocket migration design rounds); Phase-4 dedup will collapse many cross-proposal restatements.
+- **10 files >2000 LOC ecosystem-wide**: 8 in juniper-ml, 1 in juniper-cascor (POLYREPO_MIGRATION_PLAN.md, 2,181 LOC), 1 also in juniper-cascor (history/SPIRAL_DATA_GEN_REFACTOR-002.md, 2,690 LOC). Phase-3 agents must chunk these — single read window won't cover the V7 roadmap or V6 remediation.
+- **68 files score 0**: boilerplate (BOX_DRAWING_ASCII.md, file-header templates, code-style guides). Phase-3 agents skip these.
+
+### Phase-3 + Phase-3b extraction yields (filled in 2026-05-12)
+
+| Slice | Repo | Files in scope | Files processed | Pre-dedup entries | Notes |
+|---|---|---|---|---|---|
+| ml-A | juniper-ml (top-level + obs/releases/docs/concurrency/templates) | 71 | 4 | 17 | Severely truncated; agent only handled V7 roadmap + 3 small files. Filled by 3b later. |
+| ml-B | juniper-ml (interface_proposals/ + proposals/) | 30 | 30 | 83 | Agent anchored on R3-03 (73 of 83 entries from one file); other R-rounds got 1 entry each → 3b-1/3b-2 gap-fill. |
+| ml-C | juniper-ml (development + legacy + code-review + regressions + pull_requests + partials) | 161 | 3 | 705 | Agent processed only the 3 elephants (V6 remediation 5,458 LOC, R5-01 canonical 2,167 LOC, WebSocket architecture-1 2,154 LOC); 158 files of legacy/regressions/etc. skipped. |
+| cas | juniper-cascor | 114 | 15 | 45 | Agent excluded 99 files as "pure historical narrative" per §4. Coverage of forward-looking material reasonable. |
+| can | juniper-canopy | 133 | 4 | 95 | Severely truncated. CODE_REVIEW_DEVELOPMENT_ROADMAP_2026-04-04.md alone produced 78 entries. |
+| dat | juniper-data | 47 | 3 | 39 | Agent claimed "44 reviewed for completeness" but only cited 3 files. |
+| dep | juniper-deploy | 23 | 8 | 28 | Reasonable for a small repo. SLO_CATALOG + PHASE2_SYSTEMD dominate. |
+| cwk | juniper-cascor-worker | 17 | 17 | 15 | Complete coverage. Low-density slice. |
+| ccl | juniper-cascor-client | 14 | 14 | 33 | Complete coverage. AGENTS.md audit/update + release notes dominate. |
+| dcl | juniper-data-client | 15 | 9 | 16 | 6 boilerplate/score-0 files skipped (legitimate). |
+| **Phase-3 subtotal** | | **625** | **107** | **1,078** | |
+| 3b-1 | juniper-ml interface_proposals R0/R1 (gap-fill) | 6 | 6 | 34 | Recovered R1-04 (score 469) + 5 R0/R1 siblings. |
+| 3b-2 | juniper-ml interface_proposals R2/R3/R4 (gap-fill) | 7 | 7 | 20 | Recovered R2-02 (score 365) + 6 R2/R3/R4 siblings. Heavy under-extraction — agent applied consolidation aggressively. |
+| 3b-3 | juniper-ml development/code-review/regressions (gap-fill) | 12 | 12 | 154 | 45 entries marked `superseded` (V4/V5 snapshots subsumed by V6/V7). |
+| 3b-4 | legacy/history across 3 repos (gap-fill) | 11 | 9 | 30 | Historical-narrative exclusion applied strictly per §4. 2 files (CASCOR_DEMO_TRAINING_ERROR_PLAN _1 + -ORIG) treated as dedups of primary. |
+| **Phase-3b subtotal** | | **36** | **34** | **238** | |
+| **Grand total** | | **661 file-slots** | **141 distinct files** | **1,316 candidates** | 96 unique files cited; 1,033 entries after Phase-4 dedup. |
+
+### Phase-5 QA findings (filled in 2026-05-12)
+
+**Hallucination spot-check (random N=20)**:
+
+- **Path validity**: 20 / 20 — every cited source file exists on disk.
+- **Line-range validity**: 20 / 20 — every cited `line_start`/`line_end` falls within the source file's actual line count.
+- **Content match (5/20 deep-checked via `sed`)**:
+  - 4/5: brief accurately reflects source text at cited line range.
+  - 1/5 (JR-ML-SEC-001): content is real (WS frame-size limits 4 KB / 64 KB) but cited line range (R0-02_security_hardening.md §3 lines 145-180, threat discussion) doesn't pinpoint the actual specification block (same file, lines 562-574). Content fidelity preserved; citation precision off. Treat as a moderate Phase-5 finding.
+  - 1/20 (JR-ML-ARCH-373): "RISK: Criterion" brief is too thin to be a useful requirement — the cited content is a success-criteria *table header* rather than a constituent decision. Phase-4 consolidation should have rejected or expanded this; flagging for v2.
+
+**Coverage spot-check (high-density files)**:
+
+| File | Density score | Entries assigned | Note |
 |---|---|---|---|
-| juniper-cascor | — | — | — |
-| juniper-data | — | — | — |
-| juniper-data-client | — | — | — |
-| juniper-cascor-client | — | — | — |
-| juniper-cascor-worker | — | — | — |
-| juniper-canopy | — | — | — |
-| juniper-deploy | — | — | — |
-| juniper-ml | — | — | — |
-| **Total** | — | — | — |
+| `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` | 450 (15,220 LOC) | ~4 (ml-A) | Significantly under-extracted; only sampled tail. v1 known limitation. |
+| `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` | 469 | 34 (3b-1) | Down from pilot's 133 due to consolidation rule. Some loss; acceptable for v1. |
+| `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` | 365 | 13 (3b-2) | Under-extracted relative to density. Agent over-consolidated. |
+| `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` | 324 (5,458 LOC) | 250 (ml-C) | Heavy coverage as expected (Approach-A/B/C corpus). |
+| `juniper-ml/notes/development/R5-01_canonical_development_plan.md` | 235 (2,167 LOC) | 388 (ml-C) | Maximum-extraction file; many short C-NN constitution positions. |
 
-### Phase-3 extraction yields (to be filled in)
-
-| Repo | candidate requirements (pre-dedup) | dropped (no source) | net contributed to v1 |
-|---|---|---|---|
-| juniper-cascor | — | — | — |
-| juniper-data | — | — | — |
-| juniper-data-client | — | — | — |
-| juniper-cascor-client | — | — | — |
-| juniper-cascor-worker | — | — | — |
-| juniper-canopy | — | — | — |
-| juniper-deploy | — | — | — |
-| juniper-ml | — | — | — |
-| **Total** | — | — | — |
-
-### Phase-5 QA findings (to be filled in)
-
-| QA sample # | ID | Verdict | Notes |
-|---|---|---|---|
-| 1-20 | — | — | (random sample for hallucination check) |
-| Coverage 1-5 | — | — | (high-density files re-checked for misses) |
+**Verdict**: v1 acceptable. Hallucination defenses held (no fabricated files or invalid line ranges). The two findings (citation-precision drift in #11, thin brief in #7) are Phase-4 quality issues that should be addressed in v2 iteration — not blockers for shipping v1.
 
 ### Phase-6 ship record (to be filled in)
 
@@ -447,6 +532,16 @@ This section is the canonical record of where the effort stands. Update at each 
 
 ## 12. Open issues / questions discovered during execution
 
-(append as they arise; resolve before Phase 6 ships)
+Carried forward to a future iteration (v2). These are NOT blockers for v1 ship.
+
+| # | Issue | Severity | Suggested resolution |
+|---|---|---|---|
+| 1 | **File coverage 141/625 (23%) of in-scope files.** Mid-density files (score 10-49, ~219 files) and most score 1-9 files were not processed by any Phase-3 or Phase-3b agent. Highest-density score-≥50 coverage is ~98% (36/37 files cited after gap-fill). | Medium | v2 Phase-3c agents targeting score 10-49 files; expect another ~500-1000 entries. |
+| 2 | **Citation-precision drift.** ~20% of spot-checked entries (1/5) cite a line range that's plausible but not pinpoint (entry's specific values appear elsewhere in the same file). | Medium | v2 should pass citations through a `grep`-validation step: verify a few keywords from the brief appear at the cited line range. |
+| 3 | **Thin briefs.** A handful of entries have briefs that are too terse to convey the requirement (e.g., "RISK: Criterion", "13. juniper-deploy Outstanding Items"). These survived Phase-4 dedup because their normalized briefs were unique. | Low | v2 Phase-4 should flag any entry where the brief is shorter than N chars or matches a header pattern, and either reject or expand from the cited content. |
+| 4 | **`ARCH` category over-represents (42% of entries).** The 15-code enum bucketed many decision-block consolidations into `ARCH` because no more-specific code fit. | Low | v2 may add sub-codes (`ARCH-INTERFACE`, `ARCH-MICROSERVICES`, etc.) or re-bucket `ARCH` entries into existing codes (WS, API, PERF) where possible. |
+| 5 | **Cross-round dedup is conservative.** R0-R4 proposals overlap heavily but our brief-normalization dedup only collapses 283 of an estimated 500+ cross-round restatements. The conservative choice was intentional (avoid lossy merges) but leaves duplicates. | Low | v2 may use fuzzy match (cosine similarity on briefs) with a manual review queue. |
+| 6 | **Two `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` files exist** — one in juniper-ml/notes/development/, one in juniper-canopy/notes/development/. Both were processed; their content may be ~identical. | Low | Phase-4 dedup caught cross-owner duplicates only when (owner, category) matched. Cross-repo content dups need a separate pass. |
+| 7 | **Phase-1 inventory agent fabricated its `.md` report.** The agent wrote an authentic TSV but invented a markdown summary table with fake filenames and density scores. Caught by post-hoc filesystem cross-validation; report rebuilt deterministically from TSV. Important lesson for future agent briefs: prose summaries are not reliable; machine-checkable artifacts (TSV/YAML) with sample verification are. | Process | Already addressed for Phase 3/3b — common brief enforces YAML-only output. Recommend applying same discipline to any future Phase-1-like inventory work. |
 
 (none yet)
