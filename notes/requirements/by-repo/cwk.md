@@ -6,7 +6,7 @@
 
 **By priority**: P0=1 | P1=8 | P2=6 | P3=2
 
-**By category**: ARCH=4 | SEC=3 | DOC=3 | TOOL=3 | TEST=3 | DEP=1
+**By category**: SEC=4 | DOC=3 | WS=3 | TOOL=3 | TEST=3 | DEP=1
 
 ---
 
@@ -80,9 +80,9 @@ setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit 
 
 Docker: multi-stage Dockerfile, CPU-only PyTorch, non-root user, requirements.lock via `uv pip compile` for reproducible builds, .dockerignore. Systemd: scripts/juniper-cascor-worker.service user service unit, scripts/juniper-cascor-worker-ctl management CLI for host-level deployment.
 
-### JR-CWK-ARCH-001 — v0.3.0 major rewrite: WebSocket-based CascorWorkerAgent replaces BaseManager-based CandidateTrainingWorker as default, with TLS/mTLS support and async event loop.
+### JR-CWK-WS-001 — v0.3.0 major rewrite: WebSocket-based CascorWorkerAgent replaces BaseManager-based CandidateTrainingWorker as default, with TLS/mTLS support and async event loop.
 
-**Status**: shipped  **Priority**: P1  **Category**: ARCH  **Owner**: cwk
+**Status**: shipped  **Priority**: P1  **Category**: WS  **Owner**: cwk
 
 **Sources**:
 - `juniper-cascor-worker/notes/releases/RELEASE_NOTES_v0.3.0.md` (lines 10-39)
@@ -93,7 +93,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 **Notes**:
 
-Backward-compatible at deployment level via --legacy. Operators may continue legacy mode during migration window. Default mode changed; no fallback default.
+[v2 ARCH→WS re-bucket] Backward-compatible at deployment level via --legacy. Operators may continue legacy mode during migration window. Default mode changed; no fallback default.
 
 ### JR-CWK-TOOL-001 — Worktree cleanup procedure with CWD continuity: create new worktree before removing old one to avoid trapping Claude Code sessions in invalid paths.
 
@@ -173,9 +173,9 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 
 Root cause: auth_token field matches Bandit regex (RE_WORDS includes "token") introduced in WebSocket Phase 2 refactoring after pre-commit config finalized. Original api_key didn't trigger B105 ("key" not in word list). 11 B105 false positives across 3 test files (test_cli.py:4, test_config.py:6, test_worker_agent.py:1) — all test fixtures using dummy credentials. Solution: Add B105 to --skip in .pre-commit-config.yaml test Bandit hook (line 195), maintaining numerical order (--skip=B101,B104,B105,B108,B110,B311). Source Bandit hook unaffected; detect-private-key hook catches real secrets.
 
-### JR-CWK-ARCH-002 — Hardcoded values refactoring: create juniper_cascor_worker/constants.py to consolidate ~50 hardcoded values (protocol messages, activation functions, training defaults, WebSocket config, validation bounds).
+### JR-CWK-WS-002 — Hardcoded values refactoring: create juniper_cascor_worker/constants.py to consolidate ~50 hardcoded values (protocol messages, activation functions, training defaults, WebSocket config, validation bounds).
 
-**Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: cwk
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: cwk
 
 **Sources**:
 - `juniper-cascor-worker/notes/HARDCODED_VALUES_ANALYSIS.md` (lines 1-50)
@@ -183,6 +183,10 @@ Root cause: auth_token field matches Bandit regex (RE_WORDS includes "token") in
 **Detail**:
 
 ~50 hardcoded values across 7 source files. Existing infrastructure: config.py WorkerConfig dataclass (8 field defaults, partial coverage). Gaps: protocol message type strings (7), activation function names (3), training hyperparameters (6 — epochs, learning rate, display frequency, value scales), WebSocket config (4), config duplicates across config.py/cli.py/env defaults (6), validation constants (2), error handling (2). Coverage summary: ~3 covered (partial), ~47 not covered. Proposed solution: create constants.py with sections for protocol types, activation functions, training defaults, WebSocket, config defaults, validation, error handling. Update config.py, cli.py, worker.py, task_executor.py, ws_connection.py to import from constants.py. Key benefit: eliminates 3-way duplication between config.py, cli.py, env var defaults.
+
+**Notes**:
+
+[v2 ARCH→WS re-bucket]
 
 ### JR-CWK-TEST-003 — Test warning elimination: suppress DeprecationWarnings in test_worker.py (expected legacy API tests), RuntimeWarnings for unawaited CascorWorkerAgent coroutines, enforce warnings-as-errors baseline in pyproject.toml.
 
@@ -195,9 +199,9 @@ Root cause: auth_token field matches Bandit regex (RE_WORDS includes "token") in
 
 DeprecationWarnings (23): CandidateTrainingWorker.__init__() emits at worker.py:326; test_worker.py exercises deprecated legacy API. Solution: module-level pytestmark filterwarnings in test_worker.py. RuntimeWarnings (3): unawaited CascorWorkerAgent.run() coroutines during mock-based test cleanup. Solution: targeted filterwarnings in pyproject.toml for coroutine pattern. Baseline: filterwarnings = ["error", ...] in pytest config treats all warnings as errors by default with explicit exceptions for known, intentional warnings. Prevents silent warning accumulation; new unexpected warnings cause test failures.
 
-### JR-CWK-ARCH-003 — v0.3.0 deprecations: CandidateTrainingWorker (legacy), --api-key CLI flag, CASCOR_API_KEY env var; migrate to CascorWorkerAgent and --auth-token before next major release.
+### JR-CWK-SEC-004 — v0.3.0 deprecations: CandidateTrainingWorker (legacy), --api-key CLI flag, CASCOR_API_KEY env var; migrate to CascorWorkerAgent and --auth-token before next major release.
 
-**Status**: shipped  **Priority**: P3  **Category**: ARCH  **Owner**: cwk
+**Status**: shipped  **Priority**: P3  **Category**: SEC  **Owner**: cwk
 
 **Sources**:
 - `juniper-cascor-worker/notes/releases/RELEASE_NOTES_v0.3.0.md` (lines 113-122)
@@ -206,14 +210,22 @@ DeprecationWarnings (23): CandidateTrainingWorker.__init__() emits at worker.py:
 
 CandidateTrainingWorker (legacy): use --legacy to opt in; emits DeprecationWarning. --api-key CLI flag (old flag still parsed, deprecated). CASCOR_API_KEY env var (old var still read as fallback, deprecated). Plan migration to CascorWorkerAgent and --auth-token before next major release.
 
-### JR-CWK-ARCH-004 — Hardcoded values refactor implementation plan: Phase 1 create constants module, Phase 2 refactor source files, Phase 3 validate test suite and pre-commit, Phase 4 documentation update.
+**Notes**:
 
-**Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: cwk
+[v2 ARCH→SEC re-bucket]
+
+### JR-CWK-WS-003 — Hardcoded values refactor implementation plan: Phase 1 create constants module, Phase 2 refactor source files, Phase 3 validate test suite and pre-commit, Phase 4 documentation update.
+
+**Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: cwk
 
 **Sources**:
-- `juniper-cascor-worker/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 1-80)
+- `juniper-cascor-worker/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 1-79)
 
 **Detail**:
 
 Phase 1 (HIGH priority): Create constants.py (~30 constants in 7 sections), eliminate config duplication. Phase 2 (HIGH priority): Refactor worker.py (10 protocol strings), task_executor.py (12 training defaults/activation names), ws_connection.py (4 WebSocket strings), config.py (8 dataclass field defaults + 8 env var defaults), cli.py (4 argparse defaults). Phase 3 (HIGH priority): Run full pytest suite, run pre-commit hooks, verify protocol message type strings match cascor server. Phase 4 (MEDIUM priority): Update AGENTS.md, update CHANGELOG.md, create release description. Risk: protocol string mismatch with server (very low, mitigated by constants matching exact current strings + integration test); training defaults change behavior (very low, constants preserve exact values); config duplication elimination error (low, mitigated by unit test); import cycle (very low, constants.py has no imports from other worker modules).
+
+**Notes**:
+
+[v2 ARCH→WS re-bucket]
 

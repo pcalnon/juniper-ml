@@ -6,7 +6,7 @@
 
 **By priority**: P0=3 | P1=4 | P2=8 | P3=1
 
-**By category**: DOC=10 | ARCH=4 | SEC=1 | TEST=1
+**By category**: DOC=10 | ARCH=3 | SEC=1 | DATA=1 | TEST=1
 
 ---
 
@@ -241,9 +241,9 @@ migrated to constants.py. This refactor depends on dcl-010 (creation of constant
 testing/fake_client.py contains ~20 hardcoded values (URLs, training defaults, worker data) that must be
 migrated to constants.py. Depends on dcl-010.
 
-### JR-DCL-ARCH-004 — Refactor testing/generators.py to import from constants.py (~30 replacements).
+### JR-DCL-DATA-001 — Refactor testing/generators.py to import from constants.py (~30 replacements).
 
-**Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: dcl
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: dcl
 
 **Sources**:
 - `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 46-49)
@@ -252,6 +252,10 @@ migrated to constants.py. Depends on dcl-010.
 
 testing/generators.py contains ~30 hardcoded values (math constants, dataset defaults) for spiral, xor,
 circle, and moon generators that must be migrated to constants.py. Depends on dcl-010.
+
+**Notes**:
+
+[v2 ARCH→DATA re-bucket]
 
 ### JR-DCL-TEST-001 — Run full test suite and pre-commit hooks after constants refactor to validate no behavioral changes.
 
@@ -271,7 +275,7 @@ pytest tests/ -v, (2) Pre-commit hooks with pre-commit run --all-files, (3) Veri
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: dcl
 
 **Sources**:
-- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 160-164)
+- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 160-163)
 
 **Detail**:
 

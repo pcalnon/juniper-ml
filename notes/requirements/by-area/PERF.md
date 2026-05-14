@@ -2,13 +2,13 @@
 
 **Area**: performance / scalability — throughput, latency, parallelization, CUDA
 
-**Total entries**: 18
+**Total entries**: 36
 
-**By status**: proposed=17 | deferred=1
+**By status**: proposed=32 | deferred=2 | superseded=2
 
-**By priority**: P0=2 | P1=2 | P2=12 | P3=2
+**By priority**: P0=3 | P1=8 | P2=21 | P3=4
 
-**By owner**: ml=12 | can=3 | cas=2 | dat=1
+**By owner**: ml=25 | cas=6 | can=4 | dat=1
 
 ---
 
@@ -30,6 +30,22 @@ Ensures memory is bounded even if drain callback is never called or crashes.
 
 R0-01 §3.2.5 load-bearing. Non-negotiable. Phase B (Day 8). Memory safety for long-running dashboards.
 
+### JR-CAS-PERF-001 — Optimize tensor serialization overhead in parallel candidate training via shared memory blocks.
+
+**Status**: proposed  **Priority**: P0  **Category**: PERF  **Owner**: cas
+
+**Sources**:
+- `juniper-cascor/notes/development/OPT5_SHARED_MEMORY_PLAN.md` (lines 1-32)
+
+**Detail**:
+
+OPT-5 eliminates redundant tensor serialization by sharing training tensors via
+named POSIX shared memory. Currently each of N candidates sends same tensors through
+queue. ForkingPickler already sends handles (~340 bytes) but GET-side reconstruction
+costs ~320us (same-process) to ~9ms (cross-process). For 16 candidates, ~100-145ms
+overhead per round. Using multiprocessing.shared_memory.SharedMemory creates named
+block, workers attach by name. Expected improvement: 5-20% total round time reduction.
+
 ### JR-CAN-PERF-001 — Rate limiter must evict expired entries periodically to prevent memory leak.
 
 **Status**: proposed  **Priority**: P0  **Category**: PERF  **Owner**: can
@@ -42,12 +58,48 @@ R0-01 §3.2.5 load-bearing. Non-negotiable. Phase B (Day 8). Memory safety for l
 Issue 0.1.4: Add _evict_expired() method with periodic cleanup.
 Emergency size cap: 10,000 entries. File: src/security.py
 
-### JR-ML-PERF-002 — Cascor WebSocket send must timeout at 0.5s to prevent indefinite client stalls during backpressure.
+### JR-ML-PERF-002 — C-15: Phase E default backpressure = `drop_oldest_progress_only` (overrides source doc `block`).
 
 **Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_replay_buffer_design.md` (lines 1-100)
+- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 271-272)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+*Merged from 4 extraction candidates (slices: ml-C).*
+
+### JR-ML-PERF-003 — C-35: Latency tests are recording-only in CI; strict assertions local-only.
+
+**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 284-285)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+*Merged from 5 extraction candidates (slices: ml-C).*
+
+### JR-ML-PERF-004 — CasCor remote workers must maintain zero regression in local-only throughput and limit remote overhead to < 5% of task execution.
+
+**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/legacy/CASCOR_CONCURRENCY_PLAN.md` (lines 361-369)
+
+**Detail**:
+
+PR-2: Zero regression in local-only throughput. PR-3: Remote overhead < 5% task time.
+
+### JR-ML-PERF-005 — Cascor WebSocket send must timeout at 0.5s to prevent indefinite client stalls during backpressure.
+
+**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
+
+**Sources**:
 - `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 286-292)
 
 **Detail**:
@@ -62,7 +114,36 @@ Phase E may upgrade to full pump-task backpressure if production telemetry shows
 
 RISK-04 quick-fix. Phase E (Day 12) full backpressure deferred per R0-03 §7.2 unless production data warrants.
 
-### JR-ML-PERF-003 — Phase E: Per-client pump tasks + bounded queues + policy matrix; default drop_oldest_progress_only.
+### JR-ML-PERF-006 — D-6: Phase E backpressure default (D-19).
+
+**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 123-124)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+### JR-ML-PERF-007 — D-**Browser memory leak** (RISK-10): Medium-High.
+
+**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 132-133)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+### JR-ML-PERF-008 — Fix BUG-JD-10: wrap sync storage I/O in asyncio.to_thread in juniper-data batch_update_tags.
+
+**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/ROADMAP_AUDIT_2026-05-05.md` (lines 79-84)
+
+### JR-ML-PERF-009 — Phase E: Per-client pump tasks + bounded queues + policy matrix; default drop_oldest_progress_only.
 
 **Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
 
@@ -73,7 +154,43 @@ RISK-04 quick-fix. Phase E (Day 12) full backpressure deferred per R0-03 §7.2 u
 
 Phase E major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-CAS-PERF-001 — Add GPU/CUDA support for all tensor operations and training.
+### JR-ML-PERF-010 — 16. Performance Issues (v4 new section).
+
+**Status**: superseded  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 607-634)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 667-696)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
+
+---
+
+Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
+
+*Merged from 2 extraction candidates (slices: 3b-3).*
+
+### JR-ML-PERF-011 — V6 Partial — Agent D: Quality, Housekeeping, Performance, Configuration.
+
+**Status**: superseded  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/partials/v6_partial_agent_d_quality_housekeeping_perf_config.md` (lines 1-100)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket] v6 partial agent output; pre-dates V6_REMEDIATION_ANALYSIS — likely subsumed by V6/V7 entries already captured by ml-C
+
+### JR-ML-PERF-012 — 9.3 Inhibit rules.
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 569-574)
+
+### JR-CAS-PERF-002 — Add GPU/CUDA support for all tensor operations and training.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: cas
 
@@ -93,7 +210,75 @@ Issue 3.4.1: Default API timeout too long for frequently-polled endpoints.
 Set shorter timeout (2-5s) for metrics/state endpoints, keep longer (10s) for
 heavy operations like dataset upload.
 
-### JR-CAN-PERF-003 — Parameter retry logic must not use blocking time.sleep().
+### JR-ML-PERF-013 — CW-02: `requirements.lock` Includes CUDA Packages (~2-4GB Bloat).
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3923-3937)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+### JR-ML-PERF-014 — CW-08: Top-Level `import torch` — First-Task Latency.
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4026-4040)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+### JR-CAN-PERF-003 — Dashboard HTTP polling ignores WebSocket relay; switch to WS for real-time metrics updates.
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_d7dcbd5a-667d-48ba-8d3a-f11893105c6a.md` (lines 293-310)
+
+**Detail**:
+
+ISS-03 LOW. Dashboard has WebSocket relay (cascor_service_adapter.py relay loop) but does NOT consume WebSocket messages. Relies entirely on HTTP polling via dcc.Interval: fast-update-interval 1000ms, slow-update-interval 5000ms. websocket-data div defined at dashboard_manager.py:876 but zero Input("websocket-data",...) Dash callback bindings exist. Performance/UX issue, not functional blocker (ISS-01 format mismatch applies to WebSocket data anyway, and ISS-11 unnormalized field names would become active bug if this fixed).
+
+### JR-CAS-PERF-003 — Fix _roll_sequence_number memory issue in CascadeCorrelationNetwork using same optimization as CandidateUnit.
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: cas
+
+**Sources**:
+- `juniper-cascor/notes/history/INTEGRATION_ROADMAP-01.md` (lines 456-468)
+
+**Detail**:
+
+Line 775: list comprehension stores all discarded values. Unlike CandidateUnit version
+(fixed in CASCOR-P1-008), this version still has OOM risk. Apply same fix: simple
+for-loop with MAX_ROLL_COUNT cap.
+
+### JR-ML-PERF-015 — Implement performance optimizations from training analysis.
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/legacy/TRAINING_PERFORMANCE_ANALYSIS_2026-03-20.md` (lines 1-100)
+
+**Notes**:
+
+Throughput and latency improvements.
+
+### JR-ML-PERF-016 — Latency instrumentation hooks for set_params round-trip measurement.
+
+**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 539-590)
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket]
+
+### JR-CAN-PERF-004 — Parameter retry logic must not use blocking time.sleep().
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 
@@ -105,56 +290,56 @@ heavy operations like dataset upload.
 Issue 3.3.4: Blocking sleep in parameter retry callback blocks event loop.
 Use asyncio.sleep() or defer via callback scheduling instead.
 
-### JR-ML-PERF-004 — PERF-CC-01: Blocking `torch.save`/`torch.load` in Async-Adjacent Code Paths.
+### JR-ML-PERF-017 — PERF-CC-01: Blocking `torch.save`/`torch.load` in Async-Adjacent Code Paths.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4109-4123)
 
-### JR-ML-PERF-005 — PERF-CC-02: `replay_since` Scans Entire Replay Buffer O(n).
+### JR-ML-PERF-018 — PERF-CC-02: `replay_since` Scans Entire Replay Buffer O(n).
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4126-4140)
 
-### JR-ML-PERF-006 — PERF-CC-03: `_broadcast_training_state` Uses `hasattr` Check.
+### JR-ML-PERF-019 — PERF-CC-03: `_broadcast_training_state` Uses `hasattr` Check.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4143-4157)
 
-### JR-ML-PERF-007 — PERF-CN-01: 33 of 50 Dash Callbacks Missing `prevent_initial_call=True`.
+### JR-ML-PERF-020 — PERF-CN-01: 33 of 50 Dash Callbacks Missing `prevent_initial_call=True`.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4075-4089)
 
-### JR-ML-PERF-008 — PERF-CN-02: f-string Logging in Hot Paths (71 Occurrences).
+### JR-ML-PERF-021 — PERF-CN-02: f-string Logging in Hot Paths (71 Occurrences).
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4092-4106)
 
-### JR-ML-PERF-009 — PERF-JD-01: Readiness Probe Does Filesystem Glob on Every Call.
+### JR-ML-PERF-022 — PERF-JD-01: Readiness Probe Does Filesystem Glob on Every Call.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4160-4182)
 
-### JR-ML-PERF-010 — PERF-JD-02: High-Cardinality Prometheus Labels.
+### JR-ML-PERF-023 — PERF-JD-02: High-Cardinality Prometheus Labels.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4185-4193)
 
-### JR-ML-PERF-011 — Phase E (conditional): Per-client pump tasks + bounded queues + backpressure policy matrix.
+### JR-ML-PERF-024 — Phase E (conditional): Per-client pump tasks + bounded queues + backpressure policy matrix.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -186,7 +371,7 @@ Conditional phase: enters if RISK-04 (backpressure issue) observed in production
 May not ship if Phase B load testing shows slow-client impact acceptable. Exit: 5 tests green, load test (50 clients,
 1 slow) → fast clients <=200ms p95, dropped counters visible. Priority P2 (default), conditional entry makes it potentially deferred.
 
-### JR-ML-PERF-012 — Phase E default backpressure = drop_oldest_progress_only.
+### JR-ML-PERF-025 — Phase E default backpressure = drop_oldest_progress_only.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -196,6 +381,17 @@ May not ship if Phase B load testing shows slow-client impact acceptable. Exit: 
 **Notes**:
 
 Settled position C-15 from R3-03 table; cross-round consensus consolidation
+
+### JR-CAS-PERF-004 — Create baseline performance profiles using py-spy for regression detection.
+
+**Status**: deferred  **Priority**: P3  **Category**: PERF  **Owner**: cas
+
+**Sources**:
+- `juniper-cascor/notes/history/INTEGRATION_ROADMAP-01.md` (lines 635-645)
+
+**Detail**:
+
+Baseline py-spy profiles for key operations enable performance regression detection.
 
 ### JR-DAT-PERF-001 — GPU acceleration (CuPy, JAX, PyTorch) deferred until >1M points or >30s generation time.
 
@@ -208,7 +404,22 @@ Settled position C-15 from R3-03 table; cross-round consensus consolidation
 
 RD-016 (DATA-019). Deferred. PyTorch no longer a dependency. CUDA not in CI.
 
-### JR-CAS-PERF-002 — Process-based async plotting to avoid blocking training.
+### JR-CAS-PERF-005 — Infrastructure enhancements: GPU/CUDA support, continuous profiling (Grafana Pyroscope), large file refactoring, auto-generated API docs.
+
+**Status**: proposed  **Priority**: P3  **Category**: PERF  **Owner**: cas
+
+**Sources**:
+- `juniper-cascor/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 253-267)
+
+**Detail**:
+
+P3-NEW-003: GPU/CUDA support (XL, 2-4 weeks, 🔴 NOT STARTED). P3-NEW-004: Continuous profiling with Grafana Pyroscope (🔵 DEFERRED, L effort). Large file refactoring (no file > 2000 lines, 🔴 NOT STARTED, L effort). Auto-generated API docs (MkDocs/Sphinx, 🔴 NOT STARTED, M effort). Documentation link checking in CI (🔴 NOT STARTED, S effort). Documentation search functionality (🔴 NOT STARTED, M effort). All marked future work or deferred.
+
+**Notes**:
+
+[v2 ARCH→PERF re-bucket] [v2 remap: AR→ARCH]
+
+### JR-CAS-PERF-006 — Process-based async plotting to avoid blocking training.
 
 **Status**: proposed  **Priority**: P3  **Category**: PERF  **Owner**: cas
 
