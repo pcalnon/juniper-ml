@@ -1,12 +1,12 @@
 # Requirements — juniper-data (dat)
 
-**Total entries**: 39
+**Total entries**: 44
 
-**By status**: proposed=12 | shipped=24 | deferred=3
+**By status**: proposed=14 | shipped=27 | deferred=3
 
-**By priority**: P0=10 | P1=15 | P2=8 | P3=6
+**By priority**: P0=10 | P1=18 | P2=10 | P3=6
 
-**By category**: TEST=11 | OBS=7 | API=6 | DATA=4 | SEC=3 | TOOL=2 | DOC=2 | LOCK=1 | DEP=1 | PERF=1 | ARCH=1
+**By category**: TEST=13 | DATA=7 | OBS=7 | API=6 | SEC=3 | TOOL=2 | DOC=2 | LOCK=1 | DEP=1 | PERF=1 | WS=1
 
 ---
 
@@ -241,6 +241,27 @@ DATA-011 complete.
 
 RD-009 complete 2026-02-25. tests/performance/ with 21+20 benchmarks. --benchmark-disable default.
 
+### JR-DAT-DATA-005 — Phase 2 partial refactor PR for juniper-data.
+
+**Status**: shipped  **Priority**: P1  **Category**: DATA  **Owner**: dat
+
+**Sources**:
+- `juniper-data/notes/history/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 1-50)
+
+### JR-DAT-DATA-006 — Phase 3 Wave 1 PR for juniper-data enhancements.
+
+**Status**: shipped  **Priority**: P1  **Category**: DATA  **Owner**: dat
+
+**Sources**:
+- `juniper-data/notes/history/pull_requests/PR_DESCRIPTION_PHASE3-WAVE-1_2026-01-09.md` (lines 1-50)
+
+### JR-DAT-DATA-007 — Post-refactor v0.24.0 PR for juniper-data.
+
+**Status**: shipped  **Priority**: P1  **Category**: DATA  **Owner**: dat
+
+**Sources**:
+- `juniper-data/notes/history/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 1-50)
+
 ### JR-DAT-OBS-002 — Prometheus histogram juniper_data_dataset_generation_duration_seconds buckets: 0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, +inf.
 
 **Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: dat
@@ -381,6 +402,20 @@ INF-004 MEDIUM (P2). ci.yml:320.
 
 INF-003 MEDIUM (P2).
 
+### JR-DAT-TEST-010 — Test suite CI/CD enhancement plan (Claude version).
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: dat
+
+**Sources**:
+- `juniper-data/notes/history/test_suite_audit/TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN_CLAUDE.md` (lines 1-50)
+
+### JR-DAT-TEST-011 — TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN for juniper-data.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: dat
+
+**Sources**:
+- `juniper-data/notes/history/test_suite_audit/TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN_AMP.md` (lines 1-50)
+
 ### JR-DAT-OBS-007 — Continuous profiling (Grafana Pyroscope, Prometheus, OpenTelemetry) deferred until production deployment.
 
 **Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: dat
@@ -403,16 +438,16 @@ RD-017 (DATA-020). Deferred. Partially addressed with Prometheus + Sentry in com
 
 RD-016 (DATA-019). Deferred. PyTorch no longer a dependency. CUDA not in CI.
 
-### JR-DAT-ARCH-001 — IPC architecture (gRPC, message queue, shared memory, WebSocket) deferred until REST bottleneck or >100MB datasets.
+### JR-DAT-WS-001 — IPC architecture (gRPC, message queue, shared memory, WebSocket) deferred until REST bottleneck or >100MB datasets.
 
-**Status**: deferred  **Priority**: P3  **Category**: ARCH  **Owner**: dat
+**Status**: deferred  **Priority**: P3  **Category**: WS  **Owner**: dat
 
 **Sources**:
 - `juniper-data/notes/JUNIPER-DATA_POST-RELEASE_DEVELOPMENT-ROADMAP.md` (lines 438-465)
 
 **Notes**:
 
-RD-015 (DATA-018). Deferred. REST migration success reduced urgency.
+[v2 ARCH→WS re-bucket] RD-015 (DATA-018). Deferred. REST migration success reduced urgency.
 
 ### JR-DAT-DOC-002 — AGENTS.md must document current project structure, components, security, dependencies (15+ entries for components).
 
@@ -425,7 +460,7 @@ RD-015 (DATA-018). Deferred. REST migration success reduced urgency.
 
 D-001 through D-050 catalogued. 5 CRITICAL issues (version, security, line length, directory, middleware).
 
-### JR-DAT-TEST-010 — Pre-commit hooks should include pyupgrade for syntax modernization.
+### JR-DAT-TEST-012 — Pre-commit hooks should include pyupgrade for syntax modernization.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: dat
 
@@ -436,7 +471,7 @@ D-001 through D-050 catalogued. 5 CRITICAL issues (version, security, line lengt
 
 L-01 LOW (P3).
 
-### JR-DAT-TEST-011 — Pre-commit hooks should include shellcheck for shell script validation.
+### JR-DAT-TEST-013 — Pre-commit hooks should include shellcheck for shell script validation.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: dat
 

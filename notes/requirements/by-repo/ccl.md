@@ -6,7 +6,7 @@
 
 **By priority**: P0=2 | P1=22 | P2=9
 
-**By category**: DOC=13 | ARCH=6 | TEST=4 | API=4 | LOCK=2 | OPS=2 | SEC=2
+**By category**: DOC=13 | TEST=4 | API=4 | ARCH=4 | LOCK=2 | OPS=2 | SEC=2 | TRAIN=2
 
 ---
 
@@ -250,9 +250,9 @@ Alternative: split into constants.py (production) and testing/constants.py (test
 
 Part of hardcoded-values refactor (HIGH priority)
 
-### JR-CCL-ARCH-002 — Create testing constants module juniper_cascor_client/testing/constants.py with ~65 constants (hyperparams, scenario params, topology, worker sim).
+### JR-CCL-TRAIN-001 — Create testing constants module juniper_cascor_client/testing/constants.py with ~65 constants (hyperparams, scenario params, topology, worker sim).
 
-**Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
+**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ccl
 
 **Sources**:
 - `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 23-37)
@@ -266,7 +266,7 @@ Dataset Configuration.
 
 **Notes**:
 
-Part of hardcoded-values refactor (HIGH priority)
+[v2 ARCH→TRAIN re-bucket] Part of hardcoded-values refactor (HIGH priority)
 
 ### JR-CCL-DOC-007 — Expand AGENTS.md Key Files table with 15+ missing entries (testing submodule, py.typed, CHANGELOG.md, docs/, scripts/, notes/, CI/CD files).
 
@@ -286,7 +286,7 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 
 High severity: agents cannot orient themselves or find major code components
 
-### JR-CCL-ARCH-003 — Refactor client.py to use constants module (~20 replacements of hardcoded values).
+### JR-CCL-ARCH-002 — Refactor client.py to use constants module (~20 replacements of hardcoded values).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
 
@@ -297,7 +297,7 @@ High severity: agents cannot orient themselves or find major code components
 
 Part of hardcoded-values refactor (HIGH priority)
 
-### JR-CCL-ARCH-004 — Refactor testing/fake_client.py to use testing constants (~40 replacements of hardcoded values).
+### JR-CCL-ARCH-003 — Refactor testing/fake_client.py to use testing constants (~40 replacements of hardcoded values).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
 
@@ -308,9 +308,9 @@ Part of hardcoded-values refactor (HIGH priority)
 
 Part of hardcoded-values refactor (HIGH priority)
 
-### JR-CCL-ARCH-005 — Refactor testing/scenarios.py to use testing constants (~50 replacements of hardcoded values).
+### JR-CCL-TRAIN-002 — Refactor testing/scenarios.py to use testing constants (~50 replacements of hardcoded values).
 
-**Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
+**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ccl
 
 **Sources**:
 - `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 54-56)
@@ -322,9 +322,9 @@ decision boundary generation constants.
 
 **Notes**:
 
-Part of hardcoded-values refactor (HIGH priority)
+[v2 ARCH→TRAIN re-bucket] Part of hardcoded-values refactor (HIGH priority)
 
-### JR-CCL-ARCH-006 — Refactor ws_client.py to use constants module (~4 replacements of hardcoded values).
+### JR-CCL-ARCH-004 — Refactor ws_client.py to use constants module (~4 replacements of hardcoded values).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
 
@@ -415,7 +415,6 @@ Medium severity: supports local quality enforcement
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ccl
 
 **Sources**:
-- `juniper-cascor-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md`
 - `juniper-cascor-client/notes/AGENTS_MD_UPDATE_PLAN_2026-04-02.md` (lines 78-79)
 
 **Notes**:
@@ -439,7 +438,6 @@ Medium severity: documents security tooling
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ccl
 
 **Sources**:
-- `juniper-cascor-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md`
 - `juniper-cascor-client/notes/AGENTS_MD_UPDATE_PLAN_2026-04-02.md` (lines 66-69)
 
 **Notes**:

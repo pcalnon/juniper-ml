@@ -1,12 +1,12 @@
 # Requirements — juniper-deploy (dep)
 
-**Total entries**: 28
+**Total entries**: 29
 
-**By status**: proposed=25 | shipped=2 | deferred=1
+**By status**: proposed=26 | shipped=2 | deferred=1
 
-**By priority**: P0=5 | P1=15 | P2=8
+**By priority**: P0=5 | P1=15 | P2=9
 
-**By category**: OBS=12 | DEP=5 | SEC=5 | OPS=2 | TOOL=2 | TEST=2
+**By category**: OBS=12 | DEP=6 | SEC=5 | OPS=2 | TOOL=2 | TEST=2
 
 ---
 
@@ -377,6 +377,13 @@ Timers fire every 30 seconds (OnActiveSec=30, OnUnitActiveSec=30, AccuracySec=5s
 One-shot units run health_check_systemd.sh, query /v1/health/ready endpoint, parse JSON,
 output structured results to journal. Non-zero exit enables OnFailure= triggers.
 
+### JR-DEP-DEP-005 — Docker Python 3.14 migration plan for juniper-deploy.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: dep
+
+**Sources**:
+- `juniper-deploy/notes/history/DOCKER_PYTHON_314_MIGRATION_PLAN.md` (lines 1-50)
+
 ### JR-DEP-TEST-002 — Extend compose validation to cover observability and production profiles.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: dep
@@ -390,7 +397,7 @@ Phase 4. validate-compose job in ci.yml already validates full, demo, dev profil
 Extend to validate observability and production profiles as added. Add JSON schema
 validation for Grafana dashboard files (Phase 1 output).
 
-### JR-DEP-DEP-005 — Implement native systemd user-unit deployment mode alongside Docker Compose.
+### JR-DEP-DEP-006 — Implement native systemd user-unit deployment mode alongside Docker Compose.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: dep
 

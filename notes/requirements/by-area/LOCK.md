@@ -2,13 +2,13 @@
 
 **Area**: lockfile-and-deps — uv lockfiles, pyproject pins, dep updates, env rebuilds
 
-**Total entries**: 10
+**Total entries**: 12
 
-**By status**: proposed=6 | shipped=4
+**By status**: proposed=8 | shipped=4
 
-**By priority**: P0=2 | P1=2 | P2=1 | P3=5
+**By priority**: P0=2 | P1=2 | P2=3 | P3=5
 
-**By owner**: can=5 | cas=2 | ccl=2 | dat=1
+**By owner**: can=5 | cas=3 | ccl=2 | dat=1 | ml=1
 
 ---
 
@@ -64,6 +64,29 @@ Issue 2.1.4: Missing dev extra for development dependencies. Define
 
 Shipped in v0.2.0 (2026-03-21)
 
+### JR-ML-LOCK-001 — 2.8 juniper-ml.
+
+**Status**: proposed  **Priority**: P2  **Category**: LOCK  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 369-381)
+
+**Detail**:
+
+| ML-01 | **Medium** | `scripts/wake_the_claude.bash` | 37      | `DEBUG="${TRUE}"` hardcoded ON in production — all invocations emit debug output               |
+
+### JR-CAS-LOCK-002 — Move dill to test-only dependencies or add proper import guard - currently undeclared runtime dep.
+
+**Status**: proposed  **Priority**: P2  **Category**: LOCK  **Owner**: cas
+
+**Sources**:
+- `juniper-cascor/notes/history/INTEGRATION_ROADMAP-01.md` (lines 532-544)
+
+**Detail**:
+
+check_object_pickleability in src/utils/utils.py:248 imports dill (not in dependencies).
+Will crash with ModuleNotFoundError if called. Move to test dependencies or add guard.
+
 ### JR-CAN-LOCK-002 — Black code formatter must have py314 in target-version.
 
 **Status**: proposed  **Priority**: P3  **Category**: LOCK  **Owner**: can
@@ -112,7 +135,7 @@ with PyTorch CPU variant and document usage.
 Issue 5.4.3: pre-commit hooks may be outdated. Run `pre-commit autoupdate`
 to refresh all hook versions and update .pre-commit-config.yaml.
 
-### JR-CAS-LOCK-002 — Reconcile version across pyproject.toml, file headers, and API response metadata.
+### JR-CAS-LOCK-003 — Reconcile version across pyproject.toml, file headers, and API response metadata.
 
 **Status**: proposed  **Priority**: P3  **Category**: LOCK  **Owner**: cas
 
