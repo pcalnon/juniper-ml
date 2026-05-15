@@ -2,13 +2,13 @@
 
 **Area**: deployment-config — Docker, Compose, K8s, Helm, image build
 
-**Total entries**: 63
+**Total entries**: 65
 
-**By status**: proposed=53 | designed=4 | shipped=5 | deferred=1
+**By status**: proposed=53 | designed=6 | shipped=5 | deferred=1
 
-**By priority**: P0=6 | P1=18 | P2=31 | P3=8
+**By priority**: P0=6 | P1=20 | P2=31 | P3=8
 
-**By owner**: ml=48 | dep=6 | can=6 | dat=1 | cwk=1 | cas=1
+**By owner**: ml=50 | dep=6 | can=6 | dat=1 | cwk=1 | cas=1
 
 ---
 
@@ -27,21 +27,7 @@
 
 [v3 brief repaired from cited content; was: '3.4 LIFT-01 — R5.4 alert log-only-severity gate lift']
 
-### JR-ML-DEP-002 — 9.1 Completed Phases.
-
-**Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 280-289)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 216-225)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-DEP-003 — Aggregate Results.
+### JR-ML-DEP-002 — Aggregate Results.
 
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
@@ -52,22 +38,36 @@
 
 | juniper-ml            | 0.3.0   | 88 pass          | N/A (meta) | 16/16 pass   | 1        | 4      | 3      | 8      |
 
-### JR-ML-DEP-004 — PyPI packages can be yanked (not deleted) if critical issues found post-release.
+### JR-ML-DEP-003 — Critical startup/shutdown fixes (plant/chop scripts).
 
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 394-412)
-
-**Detail**:
-
-- All git tags can be deleted and recreated: `git tag -d v<VERSION> && git push --delete origin v<VERSION>`
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 280-289)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 216-225)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Rollback Plan']
+[v4 brief repaired; was: '9.1 Completed Phases']
 
-### JR-ML-DEP-005 — **Status**: open — operational gap.
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-DEP-004 — **Deployment artifacts**: None (no Dockerfile, no systemd, no scripts).
+
+**Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 127-152)
+
+**Detail**:
+
+- **Type**: Pure HTTP client library
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.2 Per-Client/Worker Inventory']
+
+### JR-ML-DEP-005 — **File**: [`alertmanager/alertmanager.yml`](https://github.com/pcalnon/juniper-deploy/blob/main/alertmanager/alertmanager.yml) (cross-repo).
 
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
@@ -82,20 +82,20 @@
 
 [v3 brief repaired from cited content; was: '3.2 Alertmanager `tickets` receiver placeholder']
 
-### JR-ML-DEP-006 — **Type**: Pure HTTP client library.
+### JR-ML-DEP-006 — PyPI packages can be yanked (not deleted) if critical issues found post-release.
 
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 127-152)
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 394-412)
 
 **Detail**:
 
-- **Type**: Pure HTTP client library
+- All git tags can be deleted and recreated: `git tag -d v<VERSION> && git push --delete origin v<VERSION>`
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '2.2 Per-Client/Worker Inventory']
+[v3 brief repaired from cited content; was: 'Rollback Plan']
 
 ### JR-DAT-DEP-001 — Dockerfile implements multi-stage build, python:3.11-slim, non-root UID 1000, port 8100, HEALTHCHECK.
 
@@ -126,7 +126,22 @@ DATA-006 complete. .dockerignore excludes development artifacts.
 
 Docker: multi-stage Dockerfile, CPU-only PyTorch, non-root user, requirements.lock via `uv pip compile` for reproducible builds, .dockerignore. Systemd: scripts/juniper-cascor-worker.service user service unit, scripts/juniper-cascor-worker-ctl management CLI for host-level deployment.
 
-### JR-ML-DEP-008 — Final resolution**: **MODERATE**. This issue affects deployment portability in Docker, reverse proxy, and non-standard port scenarios — all….
+### JR-ML-DEP-008 — CASCOR_SERVER_URL: ws://juniper-cascor:8200/ws/v1/workers.
+
+**Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 689-714)
+
+**Detail**:
+
+context: ../juniper-cascor-worker
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '9.9 Detailed Design: Worker in Docker Compose']
+
+### JR-ML-DEP-009 — Final resolution**: **MODERATE**. This issue affects deployment portability in Docker, reverse proxy, and non-standard port scenarios — all….
 
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
@@ -137,7 +152,18 @@ Docker: multi-stage Dockerfile, CPU-only PyTorch, non-root user, requirements.lo
 
 [v2 ARCH→DEP re-bucket] [v3 brief repaired from cited content; was: '7.5 Hardcoded URLs Severity: MODERATE vs LOW']
 
-### JR-ML-DEP-009 — FROM python:3.14-slim AS builder.
+### JR-ML-DEP-010 — Phase 2 gaps**: Did not examine topology path, parameter mapping, state sync normalization, deployment portability, cross-repo bugs, or….
+
+**Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 196-207)
+
+**Notes**:
+
+[v2 ARCH→DEP re-bucket] [v3 brief repaired from cited content; was: '3.2 Phase 2: Correct but Too Narrow']
+
+### JR-ML-DEP-011 — RUN pip install --no-cache-dir -r requirements.lock.
 
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
@@ -152,20 +178,16 @@ FROM python:3.14-slim AS builder
 
 [v3 brief repaired from cited content; was: '9.8 Detailed Design: Worker Dockerfile']
 
-### JR-ML-DEP-010 — juniper-cascor-worker:.
+### JR-ML-DEP-012 — ├── P5-RC-11  MODERATE: Hardcoded deployment URLs.
 
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 689-714)
-
-**Detail**:
-
-context: ../juniper-cascor-worker
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1220-1258)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '9.9 Detailed Design: Worker in Docker Compose']
+[v2 ARCH→DEP re-bucket] [v3 brief repaired from cited content; was: '8.4 Root Cause Dependency Graph']
 
 ### JR-DEP-DEP-001 — Add juniper-cascor-worker service to docker-compose.yml under full profile.
 
@@ -196,7 +218,7 @@ juniper-cascor.service depends on data (MemoryMax=8G, CPUQuota=400%). juniper-ca
 wants cascor softly (falls back to demo mode). All use ExecStartPost wait_for_health.sh gate.
 Security hardening: NoNewPrivileges=true, ProtectSystem=strict, ProtectHome=read-only.
 
-### JR-ML-DEP-011 — All items 🔴 NOT STARTED.
+### JR-ML-DEP-013 — All items 🔴 NOT STARTED.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
@@ -211,7 +233,7 @@ Security hardening: NoNewPrivileges=true, ProtectSystem=strict, ProtectHome=read
 
 [v3 brief repaired from cited content; was: '9.3 Microservices Architecture Roadmap (Phases 5–9)']
 
-### JR-ML-DEP-012 — All items 🔴 NOT STARTED unless otherwise noted.
+### JR-ML-DEP-014 — All items 🔴 NOT STARTED unless otherwise noted.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
@@ -288,56 +310,26 @@ document production override env vars (API_BASE, CASCOR_HOST, etc).
 Issue 2.3.3: HEALTHCHECK instruction uses http://localhost:8000/health
 but app may be configured differently. Use env vars or expose-port-agnostic probe.
 
-### JR-ML-DEP-013 — Fix image build bugs: observability images not inheriting base image labels correctly.
+### JR-ML-DEP-015 — Fix image build bugs: observability images not inheriting base image labels correctly.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/observability/IMAGE_BUILD_BUGS_2026-05-10.md` (lines 1-50)
 
-### JR-ML-DEP-014 — juniper-deploy P0: define SECRETS_DIR and SECRETS_FILES variables in Makefile.
+### JR-ML-DEP-016 — juniper-deploy P0: define SECRETS_DIR and SECRETS_FILES variables in Makefile.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md` (lines 47-60)
 
-### JR-ML-DEP-015 — Release readiness checklist: pre-commit compliance, test pass, version sync across 6 applications.
+### JR-ML-DEP-017 — Release readiness checklist: pre-commit compliance, test pass, version sync across 6 applications.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 1-50)
-
-### JR-ML-DEP-016 — 2.2.1 n_spirals fallback** (`datasets.py:114`):.
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 171-188)
-
-**Detail**:
-
-**2.2.1 n_spirals fallback** (`datasets.py:114`):
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '2.2 juniper-data: Code Fixes']
-
-### JR-ML-DEP-017 — 6.5 Low: Version Header Drift (Multiple Repos).
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 353-363)
-
-**Detail**:
-
-| Repo           | `pyproject.toml` | `AGENTS.md` header | File headers   |
-
-**Notes**:
-
-[v3 thin-brief flagged]
 
 ### JR-ML-DEP-018 — A.2 Container/Deploy Files.
 
@@ -350,18 +342,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 
 | `docker-compose.yml`                  | juniper-deploy | Primary orchestration | Active     |
 
-### JR-ML-DEP-019 — Add a `demo` profile to `juniper-deploy/docker-compose.yml` that runs real CasCor with auto-start configuration.
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 3294-3494)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Phase 7:']
-
-### JR-ML-DEP-020 — Add `FakeCascorClient` to the `juniper-cascor-client` package that implements the same interface as `JuniperCascorClient` with configurable….
+### JR-ML-DEP-019 — Add `FakeCascorClient` to the `juniper-cascor-client` package that implements the same interface as `JuniperCascorClient` with configurable….
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -372,7 +353,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 
 [v3 brief repaired from cited content; was: 'Phase 6:']
 
-### JR-ML-DEP-021 — Background.** The R5.1 SLO catalog (juniper-deploy `notes/SLO_CATALOG_2026-05-03.md`) deliberately picked conservative initial targets….
+### JR-ML-DEP-020 — Background.** The R5.1 SLO catalog (juniper-deploy `notes/SLO_CATALOG_2026-05-03.md`) deliberately picked conservative initial targets….
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -386,6 +367,21 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.1 CALIB-01 — T+30d SLO target calibration']
+
+### JR-ML-DEP-021 — Cascor listens on container port 8200 but is mapped to host port 8201 in Docker. The client default `base_url` is `http://localhost:8200`….
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 409-420)
+
+**Detail**:
+
+**Repositories**: juniper-cascor, juniper-deploy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.4 Port Mapping Inconsistency']
 
 ### JR-DEP-DEP-004 — Create systemd health timer and one-shot units for periodic service health checks.
 
@@ -416,18 +412,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 
 [v3 brief repaired from cited content; was: '2.1 juniper-cascor bind address']
 
-### JR-ML-DEP-023 — Define a `BackendProtocol` (`typing.Protocol`) that captures the full set of operations `main.py` calls on either `DemoMode` or….
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 2348-2548)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Phase 5:']
-
-### JR-ML-DEP-024 — Define each Juniper service as a systemd unit running natively on the host with the `JuniperPython` conda environment.
+### JR-ML-DEP-023 — Deployment choice**: User units (`~/.config/systemd/user/`) vs system units (`/etc/systemd/system/`).
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -438,25 +423,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 
 [v3 brief repaired from cited content; was: 'Phase 2:']
 
-### JR-ML-DEP-025 — Deploy the full Juniper platform on Kubernetes using k3s (lightweight distribution).
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 1472-1672)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Phase 4:']
-
-### JR-DEP-DEP-005 — Docker Python 3.14 migration plan for juniper-deploy.
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: dep
-
-**Sources**:
-- `juniper-deploy/notes/history/DOCKER_PYTHON_314_MIGRATION_PLAN.md` (lines 1-50)
-
-### JR-ML-DEP-026 — Enhance `/v1/health/ready` on all three services to report dependency health status.
+### JR-ML-DEP-024 — Deprecate JuniperCanopy's non-standard `/health` and `/api/health` routes.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -467,18 +434,25 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 
 [v3 brief repaired from cited content; was: 'Phase 8:']
 
-### JR-ML-DEP-027 — Extend the Phase 1 Docker Compose file with profiles for distinct operational modes.
+### JR-ML-DEP-025 — Docker Compose V2 is required because the Phase 1 Compose file uses `depends_on: condition: service_healthy`, which is V2-only syntax.….
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 1040-1240)
+- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 198-398)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 3:']
+[v3 brief repaired from cited content; was: 'Phase 1:']
 
-### JR-ML-DEP-028 — Fix the existing `juniper_plant_all.bash` and `juniper_chop_all.bash` scripts with health checks, error handling, and configurability. Add….
+### JR-DEP-DEP-005 — Docker Python 3.14 migration plan for juniper-deploy.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: dep
+
+**Sources**:
+- `juniper-deploy/notes/history/DOCKER_PYTHON_314_MIGRATION_PLAN.md` (lines 1-50)
+
+### JR-ML-DEP-026 — Fix the existing `juniper_plant_all.bash` and `juniper_chop_all.bash` scripts with health checks, error handling, and configurability. Add….
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -507,6 +481,28 @@ ISS-10 MODERATE. Multiple metrics_panel.py locations use hardcoded http://localh
 **Notes**:
 
 Identified by v4. Validation found 4 additional hardcoded localhost URLs beyond initial 2 identified.
+
+### JR-ML-DEP-027 — Image availability**: k3s uses containerd, not Docker. Images built with Docker must be imported:.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 1472-1672)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Phase 4:']
+
+### JR-ML-DEP-028 — Implement auto-start configuration for JuniperCascor: create network, load dataset, begin training on startup.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 3294-3494)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Phase 7:']
 
 ### JR-DEP-DEP-006 — Implement native systemd user-unit deployment mode alongside Docker Compose.
 
@@ -577,7 +573,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 
 [v3 brief repaired from cited content; was: '5.1 Current State']
 
-### JR-ML-DEP-033 — Phase 1 (Immediate):  Refactor Option 1 — unify DemoMode and CascorServiceAdapter.
+### JR-ML-DEP-033 — Phase 2 (Near-term):  Adopt Option 3 — add FakeCascorClient and FakeDataClient to.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -603,18 +599,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 
 | 2.1  | `juniper-data.service` systemd unit                          | ❌ Not in juniper-deploy scripts/ (may be in individual repos) |
 
-### JR-ML-DEP-035 — Provide a single-command developer interface to start, stop, and inspect the full Juniper platform.
-
-**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 198-398)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Phase 1:']
-
-### JR-ML-DEP-036 — Recommendation**: Continue with direct URL configuration (`JUNIPER_DATA_URL`, `CASCOR_SERVICE_URL`). Docker Compose DNS will handle….
+### JR-ML-DEP-035 — Recommendation**: Continue with direct URL configuration (`JUNIPER_DATA_URL`, `CASCOR_SERVICE_URL`). Docker Compose DNS will handle….
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -629,14 +614,14 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 
 [v3 brief repaired from cited content; was: '4.2 Discovery Approach Evaluation']
 
-### JR-ML-DEP-037 — Release Order Risks.
+### JR-ML-DEP-036 — Release Order Risks.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 386-394)
 
-### JR-ML-DEP-038 — Remediation Summary.
+### JR-ML-DEP-037 — Remediation Summary.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -647,29 +632,25 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 
 1. Synchronize all version references to target release (0.6.0 recommended given post-0.5.0 features)
 
-### JR-ML-DEP-039 — Repositories**: juniper-cascor, juniper-deploy.
+### JR-ML-DEP-038 — Security benefit**: JuniperCanopy cannot directly reach JuniperData on the `backend` network. All data requests from Canopy go through….
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 409-420)
-
-**Detail**:
-
-**Repositories**: juniper-cascor, juniper-deploy
+- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 1040-1240)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '3.4 Port Mapping Inconsistency']
+[v3 brief repaired from cited content; was: 'Phase 3:']
 
-### JR-ML-DEP-040 — Tally by severity.
+### JR-ML-DEP-039 — Tally by severity.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 412-421)
 
-### JR-ML-DEP-041 — There is no unified multi-service startup mechanism. Each service is started independently:.
+### JR-ML-DEP-040 — There is no unified multi-service startup mechanism. Each service is started independently:.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
@@ -683,6 +664,17 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Notes**:
 
 [v3 brief repaired from cited content; was: '2.1 Current State']
+
+### JR-ML-DEP-041 — Training control** (called from `/ws/control` handler and Dash callbacks):.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 2348-2548)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Phase 5:']
 
 ### JR-ML-DEP-042 — Update juniper-ml extras version requirements to match released versions.
 
@@ -699,7 +691,37 @@ There is no unified multi-service startup mechanism. Each service is started ind
 
 [v3 brief repaired from cited content; was: '5.3 Post-Release']
 
-### JR-ML-DEP-043 — Background.** Carried forward from R1; never closed (deferred for burn-in). The healthcheck implementation shipped in worker image ≥ 0.4.0;….
+### JR-ML-DEP-043 — Update `org.opencontainers.image.version` to match release version.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 171-188)
+
+**Detail**:
+
+**2.2.1 n_spirals fallback** (`datasets.py:114`):
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.2 juniper-data: Code Fixes']
+
+### JR-ML-DEP-044 — | Repo           | `pyproject.toml` | `AGENTS.md` header | File headers   |.
+
+**Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 353-363)
+
+**Detail**:
+
+| Repo           | `pyproject.toml` | `AGENTS.md` header | File headers   |
+
+**Notes**:
+
+[v4 brief repaired; was: '6.5 Low: Version Header Drift (Multiple Repos)']
+
+### JR-ML-DEP-045 — Background.** Carried forward from R1; never closed (deferred for burn-in). The healthcheck implementation shipped in worker image ≥ 0.4.0;….
 
 **Status**: shipped  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
@@ -714,7 +736,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 
 [v3 brief repaired from cited content; was: '3.8 R1.3.4-FLAG — Helm chart `worker.healthcheck.enabled` de']
 
-### JR-ML-DEP-044 — Phase 3: Worker Deployment & Container Integration (P1) -- Short-Term ✅ COMPLETED.
+### JR-ML-DEP-046 — Phase 3: Worker Deployment & Container Integration (P1) -- Short-Term ✅ COMPLETED.
 
 **Status**: designed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
@@ -725,7 +747,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 
 **Goal**: Enable containerized deployment of the distributed worker.
 
-### JR-ML-DEP-045 — 9.4 Recommended Approach.
+### JR-ML-DEP-047 — **Primary: Approach A (Incremental Fix)** with elements of Approach C for systemd units.
 
 **Status**: deferred  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
@@ -738,7 +760,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '9.4 Recommended Approach']
 
 ### JR-CAN-DEP-006 — Docker health check should consider curl-based approach.
 
@@ -752,7 +774,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 Issue 5.4.1: Current health check may not be reliable. Consider switch to
 curl-based probe (add curl to base image) for more flexible checks.
 
-### JR-ML-DEP-046 — Phase 1 (Immediate):  Makefile as developer interface + Docker Compose as orchestration engine.
+### JR-ML-DEP-048 — Phase 4 (Intermediate):  Kubernetes via k3s when multi-machine or production scale is required.
 
 **Status**: proposed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
@@ -767,7 +789,7 @@ curl-based probe (add curl to base image) for more flexible checks.
 
 [v3 brief repaired from cited content; was: '2.4 Recommendation']
 
-### JR-ML-DEP-047 — Phase 4: Kubernetes Helm Chart — ✅ COMPLETE.
+### JR-ML-DEP-049 — Phase 4: Kubernetes Helm Chart — ✅ COMPLETE.
 
 **Status**: proposed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
@@ -778,7 +800,7 @@ curl-based probe (add curl to base image) for more flexible checks.
 
 | 4.1  | Chart scaffolding (`Chart.yaml`, `_helpers.tpl`) | ✅ Implemented |
 
-### JR-ML-DEP-048 — Phase 4: Kubernetes Support (P2) -- DONE.
+### JR-ML-DEP-050 — Phase 4: Kubernetes Support (P2) -- DONE.
 
 **Status**: proposed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 

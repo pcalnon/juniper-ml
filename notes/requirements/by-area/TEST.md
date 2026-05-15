@@ -2,13 +2,13 @@
 
 **Area**: testing-and-ci — pytest, fixtures, CI workflows, regression analysis
 
-**Total entries**: 123
+**Total entries**: 130
 
-**By status**: proposed=101 | in-progress=1 | shipped=19 | deferred=1 | superseded=1
+**By status**: proposed=105 | designed=2 | in-progress=1 | shipped=20 | deferred=1 | superseded=1
 
-**By priority**: P0=6 | P1=55 | P2=53 | P3=9
+**By priority**: P0=6 | P1=58 | P2=58 | P3=8
 
-**By owner**: ml=42 | can=38 | cas=19 | dat=13 | ccl=5 | cwk=3 | dep=2 | dcl=1
+**By owner**: can=44 | ml=43 | cas=19 | dat=13 | ccl=5 | cwk=3 | dep=2 | dcl=1
 
 ---
 
@@ -52,7 +52,7 @@ RD-006 complete 2026-02-24. 41 tests across 5 classes. Documents path traversal 
 
 TST-001 CRITICAL (P0). Status shipped per migration. Fixes provided in section 3.1.
 
-### JR-ML-TEST-001 — 4.1 Bugs.
+### JR-ML-TEST-001 — `batch_update_tags`: `if add_tags:` truthiness check means `add_tags=[]` (empty list) omits key from payload. Server may interpret absence d.
 
 **Status**: proposed  **Priority**: P0  **Category**: TEST  **Owner**: ml
 
@@ -65,7 +65,7 @@ TST-001 CRITICAL (P0). Status shipped per migration. Fixes provided in section 3
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '4.1 Bugs']
 
 ### JR-ML-TEST-002 — Critical Issues.
 
@@ -260,7 +260,25 @@ docstrings. Epic 4.3: Re-enabled 9 MyPy codes (call-arg, override, no-redef, etc
 reduced disabled codes from 15 to 7. Epic 4.4: Reviewed contextlib.suppress patterns,
 added clarifying comments.
 
-### JR-CAN-TEST-006 — Test suite remediation: fix 67 non-passing tests (54 ERROR, 10 FAILED, 3 XFAIL) → 3,215 passed, 37 skipped.
+### JR-CAN-TEST-006 — Test suite must achieve 2908 tests passing with 99% pass rate and 93%+ coverage across all components.
+
+**Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 50-80)
+
+**Detail**:
+
+34 roadmap items (Phases 0-3) verified complete with 2908 tests passed, 34 skipped, 0 failed.
+Coverage by component: redis_panel 100%, redis_client 97%, cassandra_client 97%, cassandra_panel 99%,
+websocket_manager 100%, statistics 100%, dashboard_manager 95%, training_monitor 95%,
+training_state_machine 96%, hdf5_snapshots_panel 95%, about_panel 100%, main.py 84%.
+
+**Notes**:
+
+v0.24.0 shipped; main.py gap noted as requiring real CasCor backend or uvicorn runtime.
+
+### JR-CAN-TEST-007 — Test suite remediation: fix 67 non-passing tests (54 ERROR, 10 FAILED, 3 XFAIL) → 3,215 passed, 37 skipped.
 
 **Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -284,7 +302,29 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 
 Prerequisite for other canopy development items.
 
-### JR-ML-TEST-004 — 05: Playwright misses real-cascor regression.
+### JR-ML-TEST-004 — **Keeps Proposal B's issue coverage** where it prevents omissions (P5-RC-08, P5-RC-09, P5-RC-10, P5-RC-12b).
+
+**Status**: designed  **Priority**: P1  **Category**: TEST  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1674-1682)
+
+**Notes**:
+
+[v2 ARCH→TEST re-bucket] [v3 brief repaired from cited content; was: '16.2 Key Reconciliation Decisions']
+
+### JR-ML-TEST-005 — pytest tests/integration/ -v -m "not requires_cascor".
+
+**Status**: designed  **Priority**: P1  **Category**: TEST  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1486-1504)
+
+**Notes**:
+
+[v2 ARCH→TEST re-bucket] [v3 brief repaired from cited content; was: '14.1 Automated Tests']
+
+### JR-ML-TEST-006 — 05: Playwright misses real-cascor regression.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -295,7 +335,7 @@ Prerequisite for other canopy development items.
 
 [v2 ARCH→TEST re-bucket]
 
-### JR-CAN-TEST-007 — Add browser-automation UI test sub-suite with dedicated CI lane.
+### JR-CAN-TEST-008 — Add browser-automation UI test sub-suite with dedicated CI lane.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -310,7 +350,7 @@ in Phase 4 step 1, full coverage in Phase 4 step 2.
 
 **PRs**: PR-4.1 (skeleton with basic page loads), {'PR-4.2 (full coverage': 'param Apply, dataset swap, snapshot restore)'}
 
-### JR-CAN-TEST-008 — Add integration test suite for real CasCor backend code paths with mocked CascorIntegration.
+### JR-CAN-TEST-009 — Add integration test suite for real CasCor backend code paths with mocked CascorIntegration.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -325,7 +365,7 @@ conftest.py forces CASCOR_DEMO_MODE=1 for all tests; no test exercises cascor_in
 
 Phase 2 high priority; must test control, topology, metrics, statistics, decision boundary, snapshots
 
-### JR-ML-TEST-005 — Add macOS CI matrix leg to all repos for cross-platform coverage (rss_mb sampling, POSIX assumptions).
+### JR-ML-TEST-007 — Add macOS CI matrix leg to all repos for cross-platform coverage (rss_mb sampling, POSIX assumptions).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -340,14 +380,14 @@ R3.7 Resolution: Use macos-latest (ARM); run all unit tests (not integration/per
 
 macOS-13 (Intel) removed as deprecated.
 
-### JR-ML-TEST-006 — Align CI/pre-commit across 8 repos to common baseline: same union of workflows, hooks, pre-commit config.
+### JR-ML-TEST-008 — Align CI/pre-commit across 8 repos to common baseline: same union of workflows, hooks, pre-commit config.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md` (lines 28-42)
 
-### JR-CAN-TEST-009 — Bandit configuration must be consolidated to single file.
+### JR-CAN-TEST-010 — Bandit configuration must be consolidated to single file.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -359,7 +399,7 @@ macOS-13 (Intel) removed as deprecated.
 Issue 2.2.1: Multiple bandit config files (.bandit, .pre-commit hook, CI).
 Consolidate to .bandit and reference from all invocation points.
 
-### JR-CAN-TEST-010 — Bandit invocations across all CI workflows must be consistent.
+### JR-CAN-TEST-011 — Bandit invocations across all CI workflows must be consistent.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -371,7 +411,7 @@ Consolidate to .bandit and reference from all invocation points.
 Issue 2.2.2: bandit runs in pre-commit, CI, and manual invocations with
 varying flags. Standardize command and flags across all paths.
 
-### JR-ML-TEST-007 — C-32: Chromium-only Playwright for v1.
+### JR-ML-TEST-009 — C-32: Chromium-only Playwright for v1.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -384,7 +424,7 @@ varying flags. Standardize command and flags across all paths.
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
-### JR-ML-TEST-008 — C-34: Contract-test pytest marker `contract` runs on every PR in all 3 repos.
+### JR-ML-TEST-010 — C-34: Contract-test pytest marker `contract` runs on every PR in all 3 repos.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -397,7 +437,7 @@ varying flags. Standardize command and flags across all paths.
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
-### JR-CAN-TEST-011 — CI must upload coverage reports to Codecov.
+### JR-CAN-TEST-012 — CI must upload coverage reports to Codecov.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -409,7 +449,7 @@ varying flags. Standardize command and flags across all paths.
 Issue 2.1.5: .github/workflows/ci.yml missing Codecov step. Add upload
 after test run for coverage tracking and status badges.
 
-### JR-ML-TEST-009 — Comprehensive testing strategy for WebSocket migration.
+### JR-ML-TEST-011 — Comprehensive testing strategy for WebSocket migration.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -437,7 +477,7 @@ Phase 3 concurrency scaling, Phase 4 end-to-end profiling, Phase 5 optimization.
 Goals: establish baselines, identify bottlenecks, quantify scaling, produce
 recommendations, create regression-safe CI/CD integration.
 
-### JR-CAN-TEST-012 — FakeCascorClient.update_params snapshots _network_config to _training_params['params'] at init but update_params does not sync updates, causing verify-roundtrip mismatches.
+### JR-CAN-TEST-013 — FakeCascorClient.update_params snapshots _network_config to _training_params['params'] at init but update_params does not sync updates, causing verify-roundtrip mismatches.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -454,7 +494,7 @@ When update_params({'learning_rate': 0.005}) is called, _network_config is updat
 
 Upstream fix pending in juniper-cascor-client. Test currently uses idle scenario workaround.
 
-### JR-ML-TEST-010 — Fix cross-project regression issues with remediation plan.
+### JR-ML-TEST-012 — Fix cross-project regression issues with remediation plan.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -465,14 +505,14 @@ Upstream fix pending in juniper-cascor-client. Test currently uses idle scenario
 
 Active investigation status.
 
-### JR-ML-TEST-011 — Fix regressions identified in 2026-04-03 analysis.
+### JR-ML-TEST-013 — Fix regressions identified in 2026-04-03 analysis.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/REGRESSION_ANALYSIS_2026-04-03.md` (lines 1-100)
 
-### JR-CAN-TEST-013 — GitHub Actions workflow must fix lockfile extras mismatch.
+### JR-CAN-TEST-014 — GitHub Actions workflow must fix lockfile extras mismatch.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -484,7 +524,7 @@ Active investigation status.
 Issue 2.1.1: .github/workflows/lockfile-update.yml extras specification
 conflicts with pyproject.toml. Align definitions.
 
-### JR-CAN-TEST-014 — GitHub publish workflow must add contents:read permission.
+### JR-CAN-TEST-015 — GitHub publish workflow must add contents:read permission.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -510,7 +550,7 @@ permissions. Add contents:read for artifact access.
 
 [v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: owners=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
-### JR-ML-TEST-012 — Make sentry-sdk a hard runtime dependency and remove importorskip guards in tests.
+### JR-ML-TEST-014 — Make sentry-sdk a hard runtime dependency and remove importorskip guards in tests.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -525,7 +565,7 @@ R3.4 Resolution (b): Move sentry-sdk to hard runtime dep across cascor/canopy/da
 
 Security-critical test coverage.
 
-### JR-CAN-TEST-015 — MyPy strict_optional setting conflict must be resolved.
+### JR-CAN-TEST-016 — MyPy strict_optional setting conflict must be resolved.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -537,7 +577,7 @@ Security-critical test coverage.
 Issue 2.2.3: MyPy configuration has conflicting strict_optional directives
 in different sections. Consolidate to single authoritative setting.
 
-### JR-CAN-TEST-016 — No real UI test sub-suite; browser-automation harness does not exist; no acceptance criterion for UI correctness.
+### JR-CAN-TEST-017 — No real UI test sub-suite; browser-automation harness does not exist; no acceptance criterion for UI correctness.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -552,7 +592,7 @@ Fix: new pytest sub-suite + CI lane. Add Selenium or Playwright-based browser au
 
 Quality gate missing; manual testing only.
 
-### JR-CAN-TEST-017 — Phase 2 CI/CD Infrastructure Reliability (12 tasks).
+### JR-CAN-TEST-018 — Phase 2 CI/CD Infrastructure Reliability (12 tasks).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -568,7 +608,7 @@ fix mypy strict_optional conflict.
 Step 2.3 (4 Docker tasks): Create prod config, pin deps via lockfile,
 fix service URLs, change log handler to append mode.
 
-### JR-CAN-TEST-018 — Phase 4 Addendum—6 test quality fixes (context suppression, schema tests, coverage gaps).
+### JR-CAN-TEST-019 — Phase 4 Addendum—6 test quality fixes (context suppression, schema tests, coverage gaps).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -584,7 +624,7 @@ fix service URLs, change log handler to append mode.
 4.3.5: Add dedicated tests for parameters_panel.py (55.3% gap).
 4.3.6: Expand candidate_metrics_panel.py callback tests (65.6% gap).
 
-### JR-CAN-TEST-019 — pip-audit in CI must scan full dependency tree, not just top-level.
+### JR-CAN-TEST-020 — pip-audit in CI must scan full dependency tree, not just top-level.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -596,14 +636,14 @@ fix service URLs, change log handler to append mode.
 Issue 2.1.3: pip-audit command in .github/workflows/ci.yml is incomplete.
 Must specify report file and scan transitive dependencies.
 
-### JR-ML-TEST-013 — Remediate cross-project regression issues identified in 2026-04-03 analysis.
+### JR-ML-TEST-015 — Remediate cross-project regression issues identified in 2026-04-03 analysis.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/REGRESSION_REMEDIATION_PLAN_2026-04-03.md` (lines 1-100)
 
-### JR-CAN-TEST-020 — Replace 8 always-passing assert True tests with real assertions using pytest.raises().
+### JR-CAN-TEST-021 — Replace 8 always-passing assert True tests with real assertions using pytest.raises().
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -618,7 +658,7 @@ Tests in performance and integration suites use assert True in both success and 
 
 Category A: 8 critical test issues; Phase 1 critical
 
-### JR-ML-TEST-014 — Resolve CI validation findings: categorize, root-cause, fix per priority (P0/P1/P2/P3).
+### JR-ML-TEST-016 — Resolve CI validation findings: categorize, root-cause, fix per priority (P0/P1/P2/P3).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -679,7 +719,7 @@ P1 HIGH issues. 34 total violations currently undetected.
 
 Two tests fail when run in JuniperCascor conda environment where cascade_correlation package is installed: (1) test_connect_without_cascor_raises expects ImportError handler but import succeeds, code attempts real TCP connection to manager (127.0.0.1:50000), gets ConnectionRefusedError wrapped as WorkerConnectionError, regex match fails. (2) test_start_without_cascor_raises bypasses "Not connected" guard, import succeeds, code spawns real forkserver processes, returns normally without raising. Fix: wrap both tests' calls to worker.connect()/start() in patch.dict(sys.modules, {"cascade_correlation": None, "cascade_correlation.cascade_correlation": None}), forcing ImportError on import statement. Matches existing pattern in 6 other tests (lines 87, 115, 134, 161, 186, 307). Setting sys.modules key to None causes Python's import machinery to raise ImportError: import of <module> halted; None in sys.modules.
 
-### JR-CAN-TEST-021 — Test Suite & CI/CD Enhancements (16 epics, 145 total hours).
+### JR-CAN-TEST-022 — Test Suite & CI/CD Enhancements (16 epics, 145 total hours).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -710,7 +750,7 @@ Phase 1 (critical): Force sequential training via conftest autouse fixture patch
 
 [v2 remap: TI→TEST]
 
-### JR-ML-TEST-015 — testing/fake_ws_client.py: on_command(name, handler) auto-scaffold command_response reply.
+### JR-ML-TEST-017 — testing/fake_ws_client.py: on_command(name, handler) auto-scaffold command_response reply.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -721,28 +761,28 @@ Phase 1 (critical): Force sequential training via conftest autouse fixture patch
 
 Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
-### JR-ML-TEST-016 — Unit tests for apply_params() routing and feature flag.
+### JR-ML-TEST-018 — Unit tests for apply_params() routing and feature flag.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 252-261)
 
-### JR-ML-TEST-017 — Unit tests for seq numbers, replay buffer, and resume protocol.
+### JR-ML-TEST-019 — Unit tests for seq numbers, replay buffer, and resume protocol.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 171-207)
 
-### JR-ML-TEST-018 — Unit tests for set_params() method and concurrent correlation.
+### JR-ML-TEST-020 — Unit tests for set_params() method and concurrent correlation.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 212-237)
 
-### JR-ML-TEST-019 — Validate CI pipeline: every workflow runs green, soft-fail jobs promoted per-repo to hard gates after shakedown.
+### JR-ML-TEST-021 — Validate CI pipeline: every workflow runs green, soft-fail jobs promoted per-repo to hard gates after shakedown.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
@@ -764,7 +804,7 @@ Test suite runs in 45+ minutes; target ≤5 minutes. This is a deferred medium-p
 
 Deferred optimization; developer productivity; noted in doc status
 
-### JR-ML-TEST-020 — Issues identified through cross-cutting test coverage and CI analysis across all repositories.
+### JR-ML-TEST-022 — Issues identified through cross-cutting test coverage and CI analysis across all repositories.
 
 **Status**: superseded  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -775,18 +815,7 @@ Deferred optimization; developer productivity; noted in doc status
 
 [v2 ARCH→TEST re-bucket] [v3 brief repaired from cited content; was: '19. Testing and CI/CD Gaps (v5 new)'] Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
-### JR-ML-TEST-021 — 7.1 Breaking Changes.
-
-**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 414-423)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-CAN-TEST-022 — 9+ skipped/placeholder tests contain only pass or skip decorator without real test logic.
+### JR-CAN-TEST-023 — 9+ skipped/placeholder tests contain only pass or skip decorator without real test logic.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -813,7 +842,7 @@ Identified in test audit; blocks coverage.
 CI/CD coverage gates not enforced. Add `coverage report --fail-under=80` to CI,
 configure per-module thresholds, add coverage badge to README.
 
-### JR-ML-TEST-022 — Add integration test for Canopy demo mode toggle with juniper_canopy_demo_mode_active metric.
+### JR-ML-TEST-023 — Add integration test for Canopy demo mode toggle with juniper_canopy_demo_mode_active metric.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -824,7 +853,7 @@ configure per-module thresholds, add coverage badge to README.
 
 R3.2: Toggle demo mode; assert metric reflects within one update tick.
 
-### JR-CAN-TEST-023 — Add integration tests for async/sync boundary with WebSocket responsiveness during training.
+### JR-CAN-TEST-024 — Add integration tests for async/sync boundary with WebSocket responsiveness during training.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -839,7 +868,7 @@ No integration tests verify WebSocket responsiveness during active training; sch
 
 Phase 2 high priority; training callbacks are registered but untested in integration context
 
-### JR-ML-TEST-023 — Add live integration test for juniper-data dataset generation with metrics assertion.
+### JR-ML-TEST-024 — Add live integration test for juniper-data dataset generation with metrics assertion.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -850,7 +879,7 @@ Phase 2 high priority; training callbacks are registered but untested in integra
 
 R3.1: POST /v1/datasets, scrape /metrics, assert juniper_data_dataset_generations_total counter and duration histogram.
 
-### JR-ML-TEST-024 — Add replay buffer overflow test for CasCor with eviction verification.
+### JR-ML-TEST-025 — Add replay buffer overflow test for CasCor with eviction verification.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -886,6 +915,22 @@ weekly against main to detect upstream breakage. Notify on failure via GitHub Ac
 TST-001: tests in test_training_workflow.py:186-204 always pass. Real test logic
 required to validate behavior.
 
+### JR-CAN-TEST-025 — Async/sync boundary (ThreadPoolExecutor fit_async, start_training_background) must have dedicated test coverage.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 157-168)
+
+**Detail**:
+
+No tests for concurrent start requests, executor shutdown during training, exception propagation across boundary.
+Estimated scope: 1-2 test files, 200-300 lines.
+
+**Notes**:
+
+CAN-HIGH-003; HIGH priority post-release item.
+
 ### JR-CAS-TEST-012 — Backward compatibility testing with old serialized snapshots.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: cas
@@ -904,7 +949,7 @@ required to validate behavior.
 
 Root cause: auth_token field matches Bandit regex (RE_WORDS includes "token") introduced in WebSocket Phase 2 refactoring after pre-commit config finalized. Original api_key didn't trigger B105 ("key" not in word list). 11 B105 false positives across 3 test files (test_cli.py:4, test_config.py:6, test_worker_agent.py:1) — all test fixtures using dummy credentials. Solution: Add B105 to --skip in .pre-commit-config.yaml test Bandit hook (line 195), maintaining numerical order (--skip=B101,B104,B105,B108,B110,B311). Source Bandit hook unaffected; detect-private-key hook catches real secrets.
 
-### JR-ML-TEST-025 — Chromium-only Playwright for v1.
+### JR-ML-TEST-026 — Chromium-only Playwright for v1.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -915,7 +960,7 @@ Root cause: auth_token field matches Bandit regex (RE_WORDS includes "token") in
 
 Settled position C-32 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-TEST-026 — CI-06: juniper-deploy No Coverage Configuration.
+### JR-ML-TEST-027 — CI-06: juniper-deploy No Coverage Configuration.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -926,7 +971,7 @@ Settled position C-32 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→TEST re-bucket]
 
-### JR-CAN-TEST-024 — CI/CD configuration disables 15+ MyPy type checking codes and excludes tests from flake8/mypy, hiding type errors.
+### JR-CAN-TEST-026 — CI/CD configuration disables 15+ MyPy type checking codes and excludes tests from flake8/mypy, hiding type errors.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -941,7 +986,7 @@ Settled position C-32 from R3-03 table; cross-round consensus consolidation
 
 Allows type errors to ship.
 
-### JR-CAN-TEST-025 — Consolidate duplicate conftest.py fixtures into single configuration file.
+### JR-CAN-TEST-027 — Consolidate duplicate conftest.py fixtures into single configuration file.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -956,14 +1001,14 @@ Two conftest.py files (445 + 224 lines) contain overlapping fixtures. Consolidat
 
 Category D: Duplicate fixtures; DRY principle violation
 
-### JR-ML-TEST-027 — Consolidated regression remediation plan.
+### JR-ML-TEST-028 — Consolidated regression remediation plan.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/regressions/CONSOLIDATED_REMEDIATION_PLAN.md` (lines 1-50)
 
-### JR-ML-TEST-028 — Contract-test pytest marker contract runs on every PR, NOT nightly.
+### JR-ML-TEST-029 — Contract-test pytest marker contract runs on every PR, NOT nightly.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -974,7 +1019,7 @@ Category D: Duplicate fixtures; DRY principle violation
 
 Settled position C-34 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-TEST-029 — COV-01: Deploy Tests Exist but Zero Coverage.
+### JR-ML-TEST-030 — COV-01: Deploy Tests Exist but Zero Coverage.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -985,7 +1030,7 @@ Settled position C-34 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→TEST re-bucket]
 
-### JR-ML-TEST-030 — COV-02: Canopy No Per-Module Coverage Gate.
+### JR-ML-TEST-031 — COV-02: Canopy No Per-Module Coverage Gate.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -996,7 +1041,7 @@ Settled position C-34 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→TEST re-bucket]
 
-### JR-ML-TEST-031 — COV-04: Coverage Gate Mismatch — CI Comment 95% vs Actual 80%.
+### JR-ML-TEST-032 — COV-04: Coverage Gate Mismatch — CI Comment 95% vs Actual 80%.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1044,7 +1089,7 @@ Line 83: `os.environ.get("JUNIPER_FAST_SLOW") == "0"` triggers fast-slow mode wh
 env var is "0", semantically opposite. test_spiral_problem.py:_is_fast_mode() checks == "1".
 Align condition to use consistent semantics.
 
-### JR-ML-TEST-032 — For each application (in dependency order):.
+### JR-ML-TEST-033 — For each application (in dependency order):.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1059,7 +1104,7 @@ Align condition to use consistent semantics.
 
 [v3 brief repaired from cited content; was: '5.2 Per-Application Release Steps']
 
-### JR-ML-TEST-033 — For each radio group, associated inputs are indented (`ms-3` or `ms-4`) and conditionally disabled:.
+### JR-ML-TEST-034 — For each radio group, associated inputs are indented (`ms-3` or `ms-4`) and conditionally disabled:.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1074,22 +1119,22 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 
 [v3 brief repaired from cited content; was: '6.2 Radio Button Sub-field Pattern']
 
-### JR-ML-TEST-034 — `from_env()` doesn't wrap ValueError for invalid env vars.
+### JR-ML-TEST-035 — Handler returns `dash.no_update` for the triggering component.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 317-324)
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 423-431)
 
 **Detail**:
 
-- Sigmoid derivative evaluates `torch.sigmoid` twice per call
+The `sync_multi_node_checkboxes` callback has components as both Input and Output. This is safe because:
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Low Issues']
+[v3 brief repaired from cited content; was: '7.2 Circular Dependency Risk']
 
-### JR-ML-TEST-035 — HSK-08: data-client `tests/conftest.py` Version Header Says 0.3.1.
+### JR-ML-TEST-036 — HSK-08: data-client `tests/conftest.py` Version Header Says 0.3.1.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1100,7 +1145,7 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 
 [v2 ARCH→TEST re-bucket]
 
-### JR-ML-TEST-036 — HSK-12: `NOHUP_STATUS=$?` Captures Fork Status (Always 0).
+### JR-ML-TEST-037 — HSK-12: `NOHUP_STATUS=$?` Captures Fork Status (Always 0).
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1118,7 +1163,7 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 **Sources**:
 - `juniper-cascor/notes/history/PRE-DEPLOYMENT_ROADMAP.md` (lines 543-589)
 
-### JR-CAN-TEST-026 — Integration tests use time.sleep(0.2)-based timing for synchronization across multiple files; fragile and platform-dependent.
+### JR-CAN-TEST-028 — Integration tests use time.sleep(0.2)-based timing for synchronization across multiple files; fragile and platform-dependent.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1133,7 +1178,7 @@ Three sites hardened in PR #264; more remain. Sleep-based timing should be repla
 
 Audit recommended for codebase-wide cleanup.
 
-### JR-ML-TEST-037 — Latency tests are recording-only in CI (latency_recording marker); strict assertions local-only.
+### JR-ML-TEST-038 — Latency tests are recording-only in CI (latency_recording marker); strict assertions local-only.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1144,7 +1189,23 @@ Audit recommended for codebase-wide cleanup.
 
 Settled position C-35 from R3-03 table; cross-round consensus consolidation
 
-### JR-CAN-TEST-027 — Move 5 non-test files (scripts, manual verifiers) out of test directory to util/.
+### JR-CAN-TEST-029 — main.py test coverage must increase from 84% to 95% target for critical paths.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 234-246)
+
+**Detail**:
+
+Gap is primarily in real-backend code paths and error handling branches not exercised in demo mode.
+Estimated scope: 1-2 test files, 200-300 lines.
+
+**Notes**:
+
+CAN-HIGH-008; HIGH priority post-release item.
+
+### JR-CAN-TEST-030 — Move 5 non-test files (scripts, manual verifiers) out of test directory to util/.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1159,14 +1220,14 @@ Files like test_yaml.py, test_dashboard_init.py are print-based scripts with no 
 
 Category B: 5 files; Phase 1 high priority
 
-### JR-ML-TEST-038 — Multiple regression analysis documents for training defects (01-09).
+### JR-ML-TEST-039 — Multiple regression analysis documents for training defects (01-09).
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/regressions/REGRESSION_ANALYSIS_03_2026-04-02.md` (lines 1-50)
 
-### JR-CAN-TEST-028 — Multiple test files contain 25+ exception suppressions (try/except pass) that hide real errors and should be replaced with proper assertions.
+### JR-CAN-TEST-031 — Multiple test files contain 25+ exception suppressions (try/except pass) that hide real errors and should be replaced with proper assertions.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1181,7 +1242,7 @@ Suppressions mask failures and prevent test failures from surfacing. Must audit 
 
 Identified in test audit as 25+ suppression sites.
 
-### JR-CAN-TEST-029 — Phase 1 test coverage gap: characterization tests validate flat output, not dashboard nested consumption (ISS-19).
+### JR-CAN-TEST-032 — Phase 1 test coverage gap: characterization tests validate flat output, not dashboard nested consumption (ISS-19).
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1200,7 +1261,7 @@ Add dashboard contract tests validating that normalized flat output can be trans
 
 Identified by v5, v7. Reflects Phase 1 boundary assumption error.
 
-### JR-CAN-TEST-030 — Phase 4 Test Coverage Expansion (14 tasks).
+### JR-CAN-TEST-033 — Phase 4 Test Coverage Expansion (14 tasks).
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1214,7 +1275,7 @@ secrets_util (SOPS paths), middleware edge cases (malformed headers).
 Step 4.2 (4 new types): Security tests (auth, injection, CORS), WebSocket load,
 circuit breaker resilience, API contract validation.
 
-### JR-ML-TEST-039 — Phase G (integration tests): 15 cascor `/ws/control` set_params tests via FastAPI TestClient + contract lane.
+### JR-ML-TEST-040 — Phase G (integration tests): 15 cascor `/ws/control` set_params tests via FastAPI TestClient + contract lane.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
@@ -1239,7 +1300,7 @@ No design sketch needed (test-only phase).
 Exit: all 15 pass, `pytest -m contract` lane green in cascor + canopy. Rollback: n/a (test-only).
 Dedup candidate with R3-03. / Phase G major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-CAN-TEST-031 — Re-enable MyPy error codes currently disabled (15 codes); fix underlying type issues.
+### JR-CAN-TEST-034 — Re-enable MyPy error codes currently disabled (15 codes); fix underlying type issues.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1266,14 +1327,63 @@ Category H: 15 codes disabled; type safety issue
 TST-004: test_comprehensive_serialization.py:41-42 has critical deterministic test
 marked as skip. Remove skip decorator and enable test.
 
-### JR-ML-TEST-040 — Regression analysis and remediation for model training defects.
+### JR-CAN-TEST-035 — Real backend code paths in main.py and CascorIntegration must have integration test coverage.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 170-182)
+
+**Detail**:
+
+All current tests run with CASCOR_DEMO_MODE=1; no integration tests for real backend.
+Should gate behind CASCOR_BACKEND_AVAILABLE environment variable.
+Estimated scope: 2-3 test files, 400-600 lines.
+
+**Notes**:
+
+CAN-HIGH-004; HIGH priority post-release item.
+
+### JR-ML-TEST-041 — `reconnect_backoff_max` not validated against `reconnect_backoff_base`.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 317-324)
+
+**Detail**:
+
+- Sigmoid derivative evaluates `torch.sigmoid` twice per call
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Low Issues']
+
+### JR-ML-TEST-042 — Regression analysis and remediation for model training defects.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/regressions/REGRESSION_ANALYSIS_2026-04-03.md` (lines 1-50)
 
-### JR-CAN-TEST-032 — Remove || true suppression from Bandit security scan in CI pipeline.
+### JR-CAN-TEST-036 — RemoteWorkerClient integration must have test coverage and verified integration path.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 184-197)
+
+**Detail**:
+
+RemoteWorkerClient integration referenced in architecture docs but has no test coverage or verified path.
+Distributed training via remote workers is planned capability.
+Estimated scope: 2-3 files, 300-500 lines; depends on RemoteWorkerClient in JuniperCascor.
+
+**Notes**:
+
+[v2 ARCH→TEST re-bucket] CAN-HIGH-005; HIGH priority post-release item.
+
+### JR-CAN-TEST-037 — Remove || true suppression from Bandit security scan in CI pipeline.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1335,7 +1445,7 @@ pytest tests/ -v, (2) Pre-commit hooks with pre-commit run --all-files, (3) Veri
 
 INF-003 MEDIUM (P2).
 
-### JR-CAN-TEST-033 — Test non-test files exist in test directory; test_yaml.py, test_config.py, test_dashboard_init.py, test_and_verify_button_layout.py, implementation_script.py should be moved or removed.
+### JR-CAN-TEST-038 — Test non-test files exist in test directory; test_yaml.py, test_config.py, test_dashboard_init.py, test_and_verify_button_layout.py, implementation_script.py should be moved or removed.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1357,7 +1467,7 @@ Identified in test audit.
 **Sources**:
 - `juniper-data/notes/history/test_suite_audit/TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN_CLAUDE.md` (lines 1-50)
 
-### JR-CAN-TEST-034 — Test suite contains 9 false-positive tests (assert True only) masking actual test failures.
+### JR-CAN-TEST-039 — Test suite contains 9 false-positive tests (assert True only) masking actual test failures.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1390,33 +1500,36 @@ DeprecationWarnings (23): CandidateTrainingWorker.__init__() emits at worker.py:
 **Sources**:
 - `juniper-data/notes/history/test_suite_audit/TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN_AMP.md` (lines 1-50)
 
-### JR-ML-TEST-041 — The `sync_multi_node_checkboxes` callback has components as both Input and Output. This is safe because:.
+### JR-ML-TEST-043 — Update all tests; map `convergence_enabled` from `nn_growth_trigger == "convergence"`.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 423-431)
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 414-423)
+
+**Notes**:
+
+[v4 brief repaired; was: '7.1 Breaking Changes']
+
+### JR-CAN-TEST-040 — WebSocket tests marked with requires_server must be converted to work with TestClient interface.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 213-232)
 
 **Detail**:
 
-The `sync_multi_node_checkboxes` callback has components as both Input and Output. This is safe because:
+Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py, 
+test_main_ws.py (subset), test_websocket_state.py (subset).
+Convert to TestClient WebSocket interface for CI compatibility.
+Estimated scope: 4 files, 200-300 lines modified.
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '7.2 Circular Dependency Risk']
+CAN-HIGH-007; HIGH priority post-release item; identified in TEST_SUITE_AUDIT.
 
-### JR-ML-TEST-042 — [ ] **Task 6.1.1**: Run complete cascor test suite.
-
-**Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 190-220)
-
-**Notes**:
-
-[v2 ARCH→TEST re-bucket] [v3 brief repaired from cited content; was: 'Phase 6:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
-
-### JR-CAN-TEST-035 — apply_params verify-roundtrip has no retry mechanism on stale reads, could surface as spurious user-facing errors.
+### JR-CAN-TEST-041 — apply_params verify-roundtrip has no retry mechanism on stale reads, could surface as spurious user-facing errors.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -1431,7 +1544,7 @@ Verify logic does not retry stale reads; timing-sensitive assertion could fail i
 
 Risk of spurious test failures and user-facing errors.
 
-### JR-CAN-TEST-036 — Codebase contains 60+ skipped tests using 'Method _X not exposed as public API' rationale, papering over real coverage gaps.
+### JR-CAN-TEST-042 — Codebase contains 60+ skipped tests using 'Method _X not exposed as public API' rationale, papering over real coverage gaps.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -1480,7 +1593,7 @@ L-01 LOW (P3).
 
 L-02 LOW (P3).
 
-### JR-CAN-TEST-037 — Pytest tests use CWD-relative paths instead of fixture-based or absolute paths, causing Docker-environment failures.
+### JR-CAN-TEST-043 — Pytest tests use CWD-relative paths instead of fixture-based or absolute paths, causing Docker-environment failures.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -1495,7 +1608,7 @@ One file fixed; codebase-wide audit not done. CWD-relative paths fail in contain
 
 One file fixed; more audit needed.
 
-### JR-CAN-TEST-038 — Shellcheck severity level should align with ecosystem convention.
+### JR-CAN-TEST-044 — Shellcheck severity level should align with ecosystem convention.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 

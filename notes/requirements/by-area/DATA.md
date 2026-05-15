@@ -2,13 +2,13 @@
 
 **Area**: data-pipeline — dataset generation, NPZ contracts, ingestion
 
-**Total entries**: 50
+**Total entries**: 52
 
-**By status**: proposed=38 | shipped=8 | deferred=2 | rejected=2
+**By status**: proposed=40 | shipped=8 | deferred=2 | rejected=2
 
-**By priority**: P0=7 | P1=9 | P2=33 | P3=1
+**By priority**: P0=7 | P1=10 | P2=34 | P3=1
 
-**By owner**: ml=41 | dat=7 | can=2
+**By owner**: ml=41 | dat=7 | can=4
 
 ---
 
@@ -56,21 +56,7 @@ DATA-016 complete.
 
 Foundational data contract enforced by E2E tests.
 
-### JR-ML-DATA-001 — 15.2 juniper-data-client.
-
-**Status**: proposed  **Priority**: P0  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 479-488)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 387-396)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-DATA-002 — 8.1 Critical (Fix Immediately).
+### JR-ML-DATA-001 — Add missing generator constants: `gaussian`, `checkerboard`, `csv_import`, `mnist`, `arc_agi`.
 
 **Status**: proposed  **Priority**: P0  **Category**: DATA  **Owner**: ml
 
@@ -83,7 +69,21 @@ Foundational data contract enforced by E2E tests.
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '8.1 Critical (Fix Immediately)']
+
+### JR-ML-DATA-002 — `FakeDataClient` masks generator name bugs — accepts invalid names.
+
+**Status**: proposed  **Priority**: P0  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 479-488)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 387-396)
+
+**Notes**:
+
+[v4 brief repaired; was: '15.2 juniper-data-client']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
 
 ### JR-ML-DATA-003 — Impact**: `FakeDataClient` masks this — unit tests pass but real server requests fail with 400.
 
@@ -134,25 +134,7 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 **Sources**:
 - `juniper-data/notes/history/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 1-50)
 
-### JR-ML-DATA-004 — 14.3 Deferred Roadmap Items.
-
-**Status**: deferred  **Priority**: P1  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 453-466)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 364-377)
-
-**Detail**:
-
-## 15. Client Library Outstanding Items
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-DATA-005 — Deferred items**: RD-008 (SIM117 test fixes), RD-015 (IPC/ZeroMQ), RD-016 (GPU), RD-017 (continuous profiling).
+### JR-ML-DATA-004 — Deferred items**: RD-008 (SIM117 test fixes), RD-015 (IPC/ZeroMQ), RD-016 (GPU), RD-017 (continuous profiling).
 
 **Status**: deferred  **Priority**: P1  **Category**: DATA  **Owner**: ml
 
@@ -167,6 +149,24 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 
 [v3 brief repaired from cited content; was: '7.3 juniper-data — Constants Refactor ✅; Roadmap Items Defer']
 
+### JR-ML-DATA-005 — IPC Architecture (ZeroMQ/shared-memory).
+
+**Status**: deferred  **Priority**: P1  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 453-466)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 364-377)
+
+**Detail**:
+
+## 15. Client Library Outstanding Items
+
+**Notes**:
+
+[v4 brief repaired; was: '14.3 Deferred Roadmap Items']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
 ### JR-ML-DATA-006 — Task 2 (Dataset).
 
 **Status**: rejected  **Priority**: P1  **Category**: DATA  **Owner**: ml
@@ -174,7 +174,23 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 **Sources**:
 - `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 374-381)
 
-### JR-ML-DATA-007 — dbc.Card (className="mb-3").
+### JR-CAN-DATA-002 — CascorIntegration must implement save_snapshot() and load_snapshot() for persistence and recovery.
+
+**Status**: proposed  **Priority**: P1  **Category**: DATA  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 96-115)
+
+**Detail**:
+
+CascorIntegration lacks snapshot serialization methods; prevents session recovery and checkpoint-based resumption.
+HDF5 snapshot creation exists in main.py but only for demo mode state.
+
+**Notes**:
+
+[v2 ARCH→DATA re-bucket] CAN-CRIT-002; CRITICAL priority post-release item; validation confirmed not implemented.
+
+### JR-ML-DATA-007 — nn-growth-preset-epochs-input (disabled=True; convergence is default).
 
 **Status**: proposed  **Priority**: P1  **Category**: DATA  **Owner**: ml
 
@@ -204,7 +220,7 @@ dbc.Card (className="mb-3")
 
 [v3 brief repaired from cited content; was: '2.1 Documents in `notes/development/`']
 
-### JR-ML-DATA-009 — 2.6 juniper-data-client.
+### JR-ML-DATA-009 — Generator names `"circle"`/`"moon"` don't match server's `"circles"` — no `"moon"` generator on server.
 
 **Status**: rejected  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -217,39 +233,24 @@ dbc.Card (className="mb-3")
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '2.6 juniper-data-client']
 
-### JR-ML-DATA-010 — 15.1 juniper-cascor-client.
-
-**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 466-479)
-
-**Detail**:
-
-| CC-04 | **LOW**    | `set_params()` method not documented in AGENTS.md Architecture                                | 🔴 Open            |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-DATA-011 — 2.1 Neural Network Subsection (12 inputs).
+### JR-ML-DATA-010 — """cascade_add WebSocket message must trigger topology broadcast.""".
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 39-56)
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 775-794)
 
 **Detail**:
 
-| 3  | Learning Rate         | `nn-learning-rate-input`                | number (float) | 0.01            | RENAMED (was `learning-rate-input`)           |
+# test_websocket_topology_push.py — New integration test
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v3 brief repaired from cited content; was: 'Phase 3 Tests']
 
-### JR-ML-DATA-012 — 2.4.1 Fix `wait_for_ready()`** (`client.py:86`):.
+### JR-ML-DATA-011 — 2.4.1 Fix `wait_for_ready()`** (`client.py:86`):.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -264,51 +265,7 @@ dbc.Card (className="mb-3")
 
 [v3 brief repaired from cited content; was: '2.4 juniper-cascor-client: Semantic & Coverage Fixes']
 
-### JR-ML-DATA-013 — 4.1 Create Missing Retroactive Tags.
-
-**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 305-314)
-
-**Detail**:
-
-| juniper-ml            | v0.2.1, v0.3.0 | Identify from git log |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-DATA-014 — 7.4 juniper-data-client — Constants Refactor ✅ COMPLETE.
-
-**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 402-409)
-
-**Detail**:
-
-| Hardcoded values refactor (~89 values → `constants.py`) | ✅ Complete        |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-DATA-015 — 8.2 Phases Still Incomplete.
-
-**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 248-257)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 203-216)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-CAN-DATA-002 — Architecture adapter must handle dataset-triggered shape changes: equal-dim (no-op), grow-only (append nodes), shrink (prepend adapter layer).
+### JR-CAN-DATA-003 — Architecture adapter must handle dataset-triggered shape changes: equal-dim (no-op), grow-only (append nodes), shrink (prepend adapter layer).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: can
 
@@ -323,7 +280,7 @@ Method: adapt_for_dataset_swap(network, before_dims, after_dims) → ArchChanges
 
 [v2 ARCH→DATA re-bucket] Returns ArchChanges struct for training history persistence.
 
-### JR-ML-DATA-016 — Canopy metrics normalization must maintain dual-format backward compatibility (nested + flat metric keys).
+### JR-ML-DATA-012 — Canopy metrics normalization must maintain dual-format backward compatibility (nested + flat metric keys).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -341,22 +298,7 @@ Explicit recommendation: do NOT remove either format without landing this test f
 
 RISK-01. Phase H (Day 12) regression gate. Must not ship Phase B without test in place.
 
-### JR-ML-DATA-017 — class TestWebSocketTopologyPush:.
-
-**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 775-794)
-
-**Detail**:
-
-# test_websocket_topology_push.py — New integration test
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Phase 3 Tests']
-
-### JR-ML-DATA-018 — DC-04: `FakeDataClient` Masks Generator Name Bugs.
+### JR-ML-DATA-013 — DC-04: `FakeDataClient` Masks Generator Name Bugs.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -367,7 +309,7 @@ RISK-01. Phase H (Day 12) regression gate. Must not ship Phase B without test in
 
 [v2 ARCH→DATA re-bucket]
 
-### JR-ML-DATA-019 — DC-05: `FakeDataClient` Missing Lifecycle Methods.
+### JR-ML-DATA-014 — DC-05: `FakeDataClient` Missing Lifecycle Methods.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -378,7 +320,7 @@ RISK-01. Phase H (Day 12) regression gate. Must not ship Phase B without test in
 
 [v2 ARCH→DATA re-bucket]
 
-### JR-ML-DATA-020 — DEFAULT_MAX_ITERATIONS: Final[int] = 1000.
+### JR-ML-DATA-015 — DEFAULT_MAX_ITERATIONS: Final[int] = 1000.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -393,7 +335,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 [v3 brief repaired from cited content; was: '3.2 New Neural Network Constants']
 
-### JR-ML-DATA-021 — Duplicate pytest configuration in `pyproject.toml` and `pytest.ini`.
+### JR-ML-DATA-016 — Duplicate pytest configuration in `pyproject.toml` and `pytest.ini`.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -408,7 +350,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 [v3 brief repaired from cited content; was: 'Low Issues']
 
-### JR-ML-DATA-022 — File header version drift (testing modules say 0.3.1).
+### JR-ML-DATA-017 — `FakeDataClient.close()` doesn't prevent subsequent operations.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -423,7 +365,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 [v3 brief repaired from cited content; was: 'Low Issues']
 
-### JR-ML-DATA-023 — H-JDC-1: Real client HTTP tests missing for 6 methods.
+### JR-ML-DATA-018 — H-JDC-2: PATCH excluded from retry allowed_methods** (`client.py:101`).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -438,63 +380,122 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 [v3 brief repaired from cited content; was: 'High Issues']
 
-### JR-ML-DATA-024 — JD-PERF-01: Sync `generator.generate()` Blocks Event Loop.
+### JR-ML-DATA-019 — Hardcoded values refactor (~89 values → `constants.py`).
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 402-409)
+
+**Detail**:
+
+| Hardcoded values refactor (~89 values → `constants.py`) | ✅ Complete        |
+
+**Notes**:
+
+[v4 brief repaired; was: '7.4 juniper-data-client — Constants Refactor ✅ COMPLETE']
+
+### JR-ML-DATA-020 — Identify from git log.
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 305-314)
+
+**Detail**:
+
+| juniper-ml            | v0.2.1, v0.3.0 | Identify from git log |
+
+**Notes**:
+
+[v4 brief repaired; was: '4.1 Create Missing Retroactive Tags']
+
+### JR-ML-DATA-021 — Integration tests (cascor `set_params` via WS).
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 248-257)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 203-216)
+
+**Notes**:
+
+[v4 brief repaired; was: '8.2 Phases Still Incomplete']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-DATA-022 — JD-PERF-01: Sync `generator.generate()` Blocks Event Loop.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3534-3538)
 
-### JR-ML-DATA-025 — JD-PERF-02: `filter_datasets`/`get_stats` Load ALL Metadata.
+### JR-ML-DATA-023 — JD-PERF-02: `filter_datasets`/`get_stats` Load ALL Metadata.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3541-3555)
 
-### JR-ML-DATA-026 — JD-PERF-03: `list_versions` Loads All Metadata.
+### JR-ML-DATA-024 — JD-PERF-03: `list_versions` Loads All Metadata.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3558-3569)
 
-### JR-ML-DATA-027 — JD-PERF-04: No Connection Pooling for Postgres.
+### JR-ML-DATA-025 — JD-PERF-04: No Connection Pooling for Postgres.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3572-3586)
 
-### JR-ML-DATA-028 — JD-PERF-05: Readiness Probe Filesystem Glob.
+### JR-ML-DATA-026 — JD-PERF-05: Readiness Probe Filesystem Glob.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3589-3593)
 
-### JR-ML-DATA-029 — JD-SEC-01: Path Traversal via `dataset_id` in Filesystem Paths.
+### JR-ML-DATA-027 — JD-SEC-01: Path Traversal via `dataset_id` in Filesystem Paths.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3485-3507)
 
-### JR-ML-DATA-030 — JD-SEC-02: API Key Comparison Not Constant-Time (data).
+### JR-ML-DATA-028 — JD-SEC-02: API Key Comparison Not Constant-Time (data).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3510-3518)
 
-### JR-ML-DATA-031 — JD-SEC-03: Rate Limiter Memory Unbounded (data).
+### JR-ML-DATA-029 — JD-SEC-03: Rate Limiter Memory Unbounded (data).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3521-3529)
 
-### JR-ML-DATA-032 — M-ML-1: `test_worktree_cleanup.py` not run in CI** (`ci.yml:109-110`).
+### JR-ML-DATA-030 — `juniper_data_client/__init__.py` — update `__version__` to `"0.4.0"`.
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 63-73)
+
+**Detail**:
+
+- `pyproject.toml` — bump version to `0.4.0`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.3 juniper-data-client: Version Alignment']
+
+### JR-ML-DATA-031 — M-ML-1: `test_worktree_cleanup.py` not run in CI** (`ci.yml:109-110`).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -509,7 +510,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 [v3 brief repaired from cited content; was: 'Medium Issues']
 
-### JR-ML-DATA-033 — Methods catching only `JuniperCascorClientError` (not yet broadened):.
+### JR-ML-DATA-032 — Methods catching only `JuniperCascorClientError` (not yet broadened):.
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
@@ -520,20 +521,51 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 [v3 brief repaired from cited content; was: 'Evidence']
 
-### JR-ML-DATA-034 — `pyproject.toml` — bump version to `0.4.0`.
+### JR-ML-DATA-033 — NEW (replaces `convergence-enabled-checkbox`).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 63-73)
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 39-56)
 
 **Detail**:
 
-- `pyproject.toml` — bump version to `0.4.0`
+| 3  | Learning Rate         | `nn-learning-rate-input`                | number (float) | 0.01            | RENAMED (was `learning-rate-input`)           |
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '1.3 juniper-data-client: Version Alignment']
+[v4 brief repaired; was: '2.1 Neural Network Subsection (12 inputs)']
+
+### JR-CAN-DATA-004 — NPZ dataset loading must validate dtype and shape of all arrays beyond key existence checks.
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 141-154)
+
+**Detail**:
+
+Current implementation only verifies required keys exist; does not validate array dtypes or shapes.
+Malformed data causes cryptic errors downstream during training.
+
+**Notes**:
+
+CAN-HIGH-002; HIGH priority post-release item; marked PARTIALLY IMPLEMENTED.
+
+### JR-ML-DATA-034 — `_recv_loop` catches bare `Exception` — swallows programming errors, pending futures time out.
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 466-479)
+
+**Detail**:
+
+| CC-04 | **LOW**    | `set_params()` method not documented in AGENTS.md Architecture                                | 🔴 Open            |
+
+**Notes**:
+
+[v4 brief repaired; was: '15.1 juniper-cascor-client']
 
 ### JR-ML-DATA-035 — Remediation Summary.
 
@@ -617,7 +649,7 @@ Several `CascorServiceAdapter` methods catch only `JuniperCascorClientError`, wh
 
 [v2 ARCH→DATA re-bucket]
 
-### JR-ML-DATA-041 — 9.3 juniper-cascor-client (Phase 4 only).
+### JR-ML-DATA-041 — `juniper_cascor_client/client.py`.
 
 **Status**: proposed  **Priority**: P3  **Category**: DATA  **Owner**: ml
 
@@ -630,5 +662,5 @@ Several `CascorServiceAdapter` methods catch only `JuniperCascorClientError`, wh
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '9.3 juniper-cascor-client (Phase 4 only)']
 

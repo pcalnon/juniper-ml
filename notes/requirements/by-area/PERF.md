@@ -2,13 +2,13 @@
 
 **Area**: performance / scalability — throughput, latency, parallelization, CUDA
 
-**Total entries**: 34
+**Total entries**: 35
 
-**By status**: proposed=30 | deferred=2 | superseded=2
+**By status**: proposed=30 | shipped=1 | deferred=2 | superseded=2
 
-**By priority**: P0=3 | P1=7 | P2=20 | P3=4
+**By priority**: P0=3 | P1=8 | P2=20 | P3=4
 
-**By owner**: ml=23 | cas=6 | can=4 | dat=1
+**By owner**: ml=23 | cas=6 | can=5 | dat=1
 
 ---
 
@@ -57,6 +57,22 @@ block, workers attach by name. Expected improvement: 5-20% total round time redu
 
 Issue 0.1.4: Add _evict_expired() method with periodic cleanup.
 Emergency size cap: 10,000 entries. File: src/security.py
+
+### JR-CAN-PERF-002 — Rate limiter memory leak must be fixed with periodic eviction of expired counters.
+
+**Status**: shipped  **Priority**: P1  **Category**: PERF  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 89-93)
+
+**Detail**:
+
+HIGH-003 HTTP-level rate limiter: Add periodic eviction to prevent unbounded memory growth.
+Note: R5-01 Phase B adds separate WS-level single-bucket rate limiter (10 tokens, 10 cmd/sec) - do not delete HTTP limiter.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; shipped with HTTP rate limiter; WS limiter in Phase B.
 
 ### JR-ML-PERF-002 — C-15: Phase E default backpressure = `drop_oldest_progress_only` (overrides source doc `block`).
 
@@ -179,7 +195,7 @@ RISK-04 quick-fix. Phase E (Day 12) full backpressure deferred per R0-03 §7.2 u
 **Sources**:
 - `juniper-cascor/notes/history/DEVELOPMENT_ROADMAP.md` (lines 885-912)
 
-### JR-CAN-PERF-002 — API timeout must be reduced for fast-interval callbacks.
+### JR-CAN-PERF-003 — API timeout must be reduced for fast-interval callbacks.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 
@@ -214,7 +230,7 @@ heavy operations like dataset upload.
 
 [v2 ARCH→PERF re-bucket]
 
-### JR-CAN-PERF-003 — Dashboard HTTP polling ignores WebSocket relay; switch to WS for real-time metrics updates.
+### JR-CAN-PERF-004 — Dashboard HTTP polling ignores WebSocket relay; switch to WS for real-time metrics updates.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 
@@ -260,7 +276,7 @@ Throughput and latency improvements.
 
 [v2 ARCH→PERF re-bucket]
 
-### JR-CAN-PERF-004 — Parameter retry logic must not use blocking time.sleep().
+### JR-CAN-PERF-005 — Parameter retry logic must not use blocking time.sleep().
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 

@@ -1,29 +1,29 @@
 # Requirements — status: shipped
 
-**Total entries**: 154
+**Total entries**: 168
 
-**By priority**: P0=37 | P1=79 | P2=34 | P3=4
+**By priority**: P0=37 | P1=90 | P2=37 | P3=4
 
-**By category**: TRAIN=33 | API=22 | TEST=19 | SEC=18 | OBS=16 | DATA=8 | UI=8 | TOOL=7 | DOC=6 | DEP=5 | WS=5 | LOCK=4 | OPS=3
+**By category**: TRAIN=33 | API=24 | SEC=20 | TEST=20 | OBS=16 | UI=14 | DATA=8 | DOC=7 | TOOL=7 | LOCK=5 | DEP=5 | WS=5 | OPS=3 | PERF=1
 
-**By owner**: cas=41 | ml=37 | dat=27 | can=20 | ccl=14 | cwk=12 | dep=2 | dcl=1
+**By owner**: cas=41 | ml=37 | can=34 | dat=27 | ccl=14 | cwk=12 | dep=2 | dcl=1
 
 ---
 
-### JR-ML-SEC-001 — > **REVISION HISTORY**:.
+### JR-ML-OBS-001 — A.5 was tracked but its dashboard half was not explicitly carried.
 
-**Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
+**Status**: shipped  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 216-266)
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 826-876)
 
 **Detail**:
 
-> - 2026-04-10 second revision: NEW-01 and canopy-set_params markings reverted as
+**Finding.** Four dashboard text / inference panels are stale relative
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '3.5 Phase 1 Deferred Items — STATUS UPDATE (2026-04-10, REVI']
+[v3 brief repaired from cited content; was: '15.2 4 stale dashboard panels post audit-PR closes']
 
 ### JR-CAS-LOCK-001 — Add missing PyYAML, h5py, pytest-cov, psutil dependencies to conda environment.
 
@@ -65,7 +65,7 @@ Status verified as shipped. All 8 confirmed in api/routes/generators.py. RD-001.
 
 DATA-017 complete. security.py confirmed.
 
-### JR-ML-SEC-002 — Background.** OBS-ROUTE-01 (juniper-deploy#60, merged 2026-05-05) closed audit findings 3.2 (P1) and B.1 (P3) by wiring the alertmanager….
+### JR-ML-SEC-001 — Background.** OBS-ROUTE-01 (juniper-deploy#60, merged 2026-05-05) closed audit findings 3.2 (P1) and B.1 (P3) by wiring the alertmanager….
 
 **Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -156,21 +156,6 @@ Pure NumPy generator with artifact-first API (NPZ format). Remove torch, matplot
 **Notes**:
 
 [v2 ARCH→TRAIN re-bucket] [v2 remap: AR→ARCH]
-
-### JR-ML-OBS-001 — Finding.** Four dashboard text / inference panels are stale relative.
-
-**Status**: shipped  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 826-876)
-
-**Detail**:
-
-**Finding.** Four dashboard text / inference panels are stale relative
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '15.2 4 stale dashboard panels post audit-PR closes']
 
 ### JR-CAS-TRAIN-002 — Fix 19 critical issues: type mismatches, gradient descent direction, field names, serialization gaps, multiprocessing errors.
 
@@ -356,6 +341,21 @@ Root cause RC-3; doc status indicates implementation complete
 
 DATA-016 complete.
 
+### JR-ML-SEC-002 — missed, (b) part of a not-yet-implemented WebSocket consumption pathway that.
+
+**Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 216-266)
+
+**Detail**:
+
+> - 2026-04-10 second revision: NEW-01 and canopy-set_params markings reverted as
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.5 Phase 1 Deferred Items — STATUS UPDATE (2026-04-10, REVI']
+
 ### JR-DAT-DATA-004 — NPZ contract guarantees 6 array keys with float32 dtype and one-hot label encoding.
 
 **Status**: shipped  **Priority**: P0  **Category**: DATA  **Owner**: dat
@@ -475,21 +475,6 @@ INT-P0 items: walrus operator precedence, ActivationWithDerivative duplication, 
 
 [v2 remap: BG→TRAIN]
 
-### JR-ML-SEC-050 — > **STATUS UPDATE 2026-05-06:** This item was tracked as open in the.
-
-**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 280-307)
-
-**Detail**:
-
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.10 WORKER-PENDING-TASKS — `juniper_cascor_pending_tasks` w']
-
 ### JR-CCL-LOCK-001 — Add JUNIPER_CASCOR_API_KEY environment variable fallback for API key authentication.
 
 **Status**: shipped  **Priority**: P1  **Category**: LOCK  **Owner**: ccl
@@ -570,6 +555,22 @@ Status complete 2025-10-28. BUG-001 (test random state restoration), BUG-002 (lo
 pickling error) fixed. ENH-001 through ENH-008 implemented. MVP code-complete and
 ready for testing phase. Zero breaking changes. All P0 and P1 work done.
 
+### JR-CAN-SEC-007 — API key timing attack must use hmac.compare_digest() for constant-time comparison.
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 79-83)
+
+**Detail**:
+
+HIGH-001: Replace simple set membership check with hmac.compare_digest() in both browser CSRF auth and adapter HMAC auth.
+R5-01 Section 4.1 mandates this pattern; remediation already correct per analysis.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; reinforced by R5-01 canonical pattern.
+
 ### JR-CAS-API-002 — Build FastAPI service layer for CasCor with REST endpoints and WebSocket streaming.
 
 **Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: cas
@@ -580,6 +581,22 @@ ready for testing phase. Zero breaking changes. All P0 and P1 work done.
 **Detail**:
 
 Add 19 REST endpoints across 6 route files; WebSocket endpoints for real-time training streaming (/ws/training, /ws/control); TrainingLifecycleManager with thread-safe state machine and ThreadPoolExecutor; service entry point (server.py) alongside existing CLI (main.py).
+
+### JR-CAN-UI-005 — Candidate info section must display and be collapsible with historical pool tracking.
+
+**Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase1/README.md` (lines 27-93)
+
+**Detail**:
+
+P1-1 feature: always-visible section with toggle icon, historical pools rendered as collapsed cards, top 10 pools maintained.
+Implemented in metrics_panel.py with dbc.Collapse wrapper and callback handlers.
+
+**Notes**:
+
+Phase 1 complete feature; shipped status verified from implementation notes.
 
 ### JR-CAS-WS-001 — CasCor must expose REST API for training lifecycle operations (19 endpoints).
 
@@ -673,21 +690,6 @@ Shipped in v0.2.0 (2026-03-21)
 **Notes**:
 
 Shipped in v0.2.0 (2026-03-21)
-
-### JR-ML-OBS-018 — Create a clientside callback that monitors the WebSocket message buffer for `"topology"` messages and pushes them directly into the….
-
-**Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 251-301)
-
-**Detail**:
-
-#### Approach A: Add WebSocket-to-Store bridge via clientside callback (RECOMMENDED)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Fix Approaches']
 
 ### JR-CCL-DOC-003 — Create CODEOWNERS file for PR review routing.
 
@@ -798,7 +800,7 @@ are graphed but not paging.
 SLO targets are provisional pending 30-day soak (§2.6). Burn-rate alerting uses
 Multi-Window Multi-Burn-Rate pattern. Several forward-references to R5.3/R5.4 designs.
 
-### JR-ML-TRAIN-010 — Derive candidate_pool_phase from phase_detail in Canopy adapter.
+### JR-ML-TRAIN-009 — Derive candidate_pool_phase from phase_detail in Canopy adapter.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -846,7 +848,7 @@ RD-014 complete 2026-02-25. scripts/check_doc_links.py in quality gate. 22 files
 
 DATA-008 complete. 14 E2E tests in test_e2e_workflow.py marked @pytest.mark.integration @pytest.mark.slow.
 
-### JR-ML-TRAIN-011 — Enhance grow iteration callback with top 2 candidate ID and correlation data.
+### JR-ML-TRAIN-010 — Enhance grow iteration callback with top 2 candidate ID and correlation data.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -860,6 +862,22 @@ Top candidate info never forwarded from CasCor to Canopy; TrainingResults datacl
 **Notes**:
 
 Phase 2 P1 fix; data already available in TrainingResults; doc status COMPLETE
+
+### JR-CAN-SEC-008 — Exception handler must use opaque error messages and add CRLF escaping in audit logs.
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 84-88)
+
+**Detail**:
+
+HIGH-002: Generic error messages + server-side logging per R5-01 Section 4.3 (M-SEC-06).
+Add CRLF escaping in audit logs per M-SEC-07 when logs echo client input.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; shipped with opaque messages pattern.
 
 ### JR-CAS-TRAIN-017 — Expand format validation for HDF5 snapshot files.
 
@@ -888,6 +906,22 @@ Comprehensive 7-phase plan validating RC-1 through RC-5 root causes and implemen
 **Notes**:
 
 [v2 ARCH→TRAIN re-bucket]
+
+### JR-CAN-DOC-001 — Four standardized documentation templates must be provided for roadmaps, issue tracking, PRs, and release notes.
+
+**Status**: shipped  **Priority**: P1  **Category**: DOC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 20-31)
+
+**Detail**:
+
+TEMPLATE_DEVELOPMENT_ROADMAP.md, TEMPLATE_ISSUE_TRACKING.md, TEMPLATE_PULL_REQUEST_DESCRIPTION.md, TEMPLATE_RELEASE_NOTES.md.
+All with placeholders, consistency enforcement for future documentation.
+
+**Notes**:
+
+Shipped in v0.24.0; verified as part of POST_REFACTOR_VERIFICATION report.
 
 ### JR-DAT-API-003 — Health check endpoints distinguish liveness (/v1/health/live) and readiness (/v1/health/ready).
 
@@ -1043,6 +1077,23 @@ RD-013 complete 2026-02-25. 24 files reformatted. Current value 320 per 2026-03-
 
 RD-012 complete 2026-02-25. 2 ruff hooks replace 5 pre-commit hooks. All 700 tests pass.
 
+### JR-CAN-LOCK-001 — Lockfile must include --extra observability to prevent Dependabot PR failures in CI.
+
+**Status**: shipped  **Priority**: P1  **Category**: LOCK  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-04.md` (lines 145-155)
+
+**Detail**:
+
+CRIT-003: .github/workflows/lockfile-update.yml does not pass --extra observability to pip-compile;
+causes CI failures when Dependabot updates dependencies.
+Fix: Add --extra observability flag to lockfile-update workflow.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS v0.4.0; critical CI/CD blocker for regular dependency updates.
+
 ### JR-DEP-OBS-006 — Maintain health-readiness probe topology as a DAG with asymmetric severity policies.
 
 **Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: dep
@@ -1062,6 +1113,42 @@ Document in repo readiness handlers.
 
 Closes METRICS-MON R2.3 seed-15. Operator runbook in §6.
 
+### JR-CAN-API-007 — MetricsPanel must transform flat-keyed metrics to nested format for dashboard consumption (RC-1 fix from Phase 4 analysis).
+
+**Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_66a019dc-94ba-47fb-8042-7ce8f974d071.md` (lines 123-226)
+
+**Detail**:
+
+Service backend's _normalize_metric() produces flat keys (train_loss, train_accuracy, hidden_units), 
+but dashboard MetricsPanel reads nested keys (metrics.loss, metrics.accuracy, network_topology.hidden_units).
+Fix: Add _to_dashboard_metric() transformation layer after _normalize_metric() in _ServiceTrainingMonitor.get_recent_metrics().
+
+**Design**:
+
+@staticmethod
+def _to_dashboard_metric(flat: dict) -> dict:
+  return {
+    "epoch": flat.get("epoch", 0),
+    "metrics": {
+      "loss": flat.get("train_loss"),
+      "accuracy": flat.get("train_accuracy"),
+      "val_loss": flat.get("val_loss"),
+      "val_accuracy": flat.get("val_accuracy"),
+    },
+    "network_topology": {
+      "hidden_units": flat.get("hidden_units", 0),
+    },
+    "phase": flat.get("phase"),
+    "timestamp": flat.get("timestamp"),
+  }
+
+**Notes**:
+
+Primary blocker identified by all 7 Phase 3 proposals (v1-v7) and 4 Phase 4 proposals. Verified at cascor_service_adapter.py:430-460 and metrics_panel.py lines 1091,1120-1122,1330,1449-1450,1499,1561-1562.
+
 ### JR-CAS-TEST-004 — Migrate scheduled-tests.yml from conda to pip; complete Phase 1 CI pipeline enhancement.
 
 **Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: cas
@@ -1077,7 +1164,41 @@ Phase 1 complete (2026-02-22): conda environments → pip requirements. Phases 2
 
 [v2 remap: CI→TEST]
 
-### JR-CAN-API-007 — Normalize external CasCor response envelope format (FIX-1 through FIX-14 decision blocks).
+### JR-CAN-UI-006 — Network topology visualization must support staggered hidden node layout with wave pattern positioning.
+
+**Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase1/README.md` (lines 175-244)
+
+**Detail**:
+
+P1-3 feature: staggered layout option in dropdown; first node at center, alternating outward left/right.
+Dynamic spread increases with node count (up to 3.0 max). Centered between input/output columns.
+Implemented via _compute_staggered_positions() method in network_visualizer.py.
+
+**Notes**:
+
+Phase 1 complete feature; shipped status verified.
+
+### JR-CAN-API-008 — NetworkVisualizer must accept weight-oriented topology format from CasCor and transform to graph-oriented format (RC-2 from Phase 4).
+
+**Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_66a019dc-94ba-47fb-8042-7ce8f974d071.md` (lines 232-310)
+
+**Detail**:
+
+CasCor returns topology with input_size/output_size keys and hidden_units as weight array;
+NetworkVisualizer expects input_units/output_units as integers and a graph connections structure.
+extract_network_topology() returns raw CasCor response without transformation.
+
+**Notes**:
+
+Identified by v2 and v4 Phase 3 proposals. Secondary display blocker.
+
+### JR-CAN-API-009 — Normalize external CasCor response envelope format (FIX-1 through FIX-14 decision blocks).
 
 **Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1172,7 +1293,7 @@ linting on test files with relaxed configuration.
 **Sources**:
 - `juniper-data/notes/history/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 1-50)
 
-### JR-CAN-UI-005 — Phase 2 polish features: visual indicators, image downloads, HDF5 snapshots, About tab (70 tests, 2247 passed).
+### JR-CAN-UI-007 — Phase 2 polish features: visual indicators, image downloads, HDF5 snapshots, About tab (70 tests, 2247 passed).
 
 **Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -1199,7 +1320,7 @@ Epic 3.1: Reduced in [200, 503] permissive patterns from 21 to 5. Epic 3.2: Conv
 5 exception suppression patterns. Epic 3.4: Re-enabled B905, F401, B008. Epic 3.5:
 Removed duplicate test classes. Epic 3.6: Converted bug-documenting tests to xfail.
 
-### JR-CAN-UI-006 — Phase 3 Wave 1 HDF5 snapshot capabilities: create, restore, history with validation (102 tests, 2413 passed).
+### JR-CAN-UI-008 — Phase 3 Wave 1 HDF5 snapshot capabilities: create, restore, history with validation (102 tests, 2413 passed).
 
 **Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -1286,6 +1407,22 @@ Reorganizes remediation timeline to coordinate with R5-01 Canonical Development 
 
 [v2 ARCH→WS re-bucket]
 
+### JR-CAN-PERF-002 — Rate limiter memory leak must be fixed with periodic eviction of expired counters.
+
+**Status**: shipped  **Priority**: P1  **Category**: PERF  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 89-93)
+
+**Detail**:
+
+HIGH-003 HTTP-level rate limiter: Add periodic eviction to prevent unbounded memory growth.
+Note: R5-01 Phase B adds separate WS-level single-bucket rate limiter (10 tokens, 10 cmd/sec) - do not delete HTTP limiter.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; shipped with HTTP rate limiter; WS limiter in Phase B.
+
 ### JR-ML-DEP-007 — Release juniper-ml v0.4.1 + juniper-observability v0.1.1a: document release steps, validation, tag/publish.
 
 **Status**: shipped  **Priority**: P1  **Category**: DEP  **Owner**: ml
@@ -1303,6 +1440,23 @@ Reorganizes remediation timeline to coordinate with R5-01 Canonical Development 
 **Notes**:
 
 RD-001 complete 2026-02-24. Only B008 warnings remain. v0.5.0 scope updated.
+
+### JR-CAN-UI-009 — Replay controls must support playback at variable speeds (1x, 2x, 4x) with progress slider.
+
+**Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase1/README.md` (lines 95-172)
+
+**Detail**:
+
+P1-2 feature: ⏮ go-to-start, ◀ step-back, ▶ play/pause, ⏩ step-forward, ⏭ go-to-end, speed selector.
+Replay state machine: stopped → playing → paused → stopped. Visibility controlled by training state.
+Implemented with dcc.Store for replay-state and interval timer.
+
+**Notes**:
+
+Phase 1 complete feature; shipped status verified.
 
 ### JR-CAS-API-004 — REST API and WebSocket architecture: 19 REST endpoints, 2 WS channels, Pydantic models, lifecycle management, remote workers.
 
@@ -1358,7 +1512,40 @@ Root causes: RC-1 missing JuniperData service lifecycle management, RC-2 ${VAR:d
 
 **PRs**: #146
 
-### JR-CAN-TEST-006 — Test suite remediation: fix 67 non-passing tests (54 ERROR, 10 FAILED, 3 XFAIL) → 3,215 passed, 37 skipped.
+### JR-ML-OBS-018 — Strengths**: Near-real-time topology updates, no additional REST calls, leverages existing WebSocket infrastructure.
+
+**Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 251-301)
+
+**Detail**:
+
+#### Approach A: Add WebSocket-to-Store bridge via clientside callback (RECOMMENDED)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix Approaches']
+
+### JR-CAN-TEST-006 — Test suite must achieve 2908 tests passing with 99% pass rate and 93%+ coverage across all components.
+
+**Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 50-80)
+
+**Detail**:
+
+34 roadmap items (Phases 0-3) verified complete with 2908 tests passed, 34 skipped, 0 failed.
+Coverage by component: redis_panel 100%, redis_client 97%, cassandra_client 97%, cassandra_panel 99%,
+websocket_manager 100%, statistics 100%, dashboard_manager 95%, training_monitor 95%,
+training_state_machine 96%, hdf5_snapshots_panel 95%, about_panel 100%, main.py 84%.
+
+**Notes**:
+
+v0.24.0 shipped; main.py gap noted as requiring real CasCor backend or uvicorn runtime.
+
+### JR-CAN-TEST-007 — Test suite remediation: fix 67 non-passing tests (54 ERROR, 10 FAILED, 3 XFAIL) → 3,215 passed, 37 skipped.
 
 **Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1371,7 +1558,7 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 
 **PRs**: #146
 
-### JR-ML-SEC-051 — The Appendix G work (now merged) completed:.
+### JR-ML-SEC-050 — The Appendix G work (now merged) completed:.
 
 **Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -1386,7 +1573,22 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 
 [v3 brief repaired from cited content; was: '2.1 Current State (Post-Appendix G)']
 
-### JR-ML-TRAIN-012 — Use Pearson correlation (normalized) instead of raw covariance in candidate training.
+### JR-ML-SEC-051 — Trigger / due date.** None — independent small sub-track. Useful at any time; pairs naturally with WS metric wire-ups already shipped via….
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 280-307)
+
+**Detail**:
+
+**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.10 WORKER-PENDING-TASKS — `juniper_cascor_pending_tasks` w']
+
+### JR-ML-TRAIN-011 — Use Pearson correlation (normalized) instead of raw covariance in candidate training.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -1464,21 +1666,6 @@ The V1 procedure (see notes/history/WORKTREE_CLEANUP_PROCEDURE_V1.md) removed th
 
 Phase 2 is the critical gate: CWD must move to the new worktree (Step 5) before the old one is removed (Phase 4, Step 9). The procedure enforces this with explicit verification gates in Step 6.
 
-### JR-ML-API-028 — 1.3 Code Quality.
-
-**Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 69-81)
-
-**Detail**:
-
-| ID       | Severity   | File:Line                         | Description
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
 ### JR-CAS-TRAIN-024 — 30+ critical issues identified and remediated; system transformed from non-functional to production-ready.
 
 **Status**: shipped  **Priority**: P2  **Category**: TRAIN  **Owner**: cas
@@ -1494,20 +1681,37 @@ P0 critical (10 fixed): type mismatches, field consistency, gradient descent, ma
 
 [v2 remap: BG→TRAIN]
 
-### JR-ML-UI-020 — 6.1 juniper-overview.json (14 panels, version 3, title "Juniper Overview").
+### JR-ML-SEC-106 — > bound 2 user-supporting SLIs (§4.3, §4.4) to 2 of them. Result: ≥8 dashboard.
 
-**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
+**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 310-330)
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 176-226)
 
 **Detail**:
 
-| Request Latency — p50 / p95 / p99 | timeseries | `histogram_quantile(...)` against the shared HTTP duration histogram | |
+**Scope**: Verify all metrics referenced in the R5.1 SLO catalog, `alert_rules.yml`,
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v3 brief repaired from cited content; was: '4.1 Dimension A — Metrics surface integrity']
+
+### JR-CAN-UI-018 — About tab must display version, license, credits, documentation links, and collapsible system information.
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 74-100)
+
+**Detail**:
+
+P2-3 feature: new about_panel.py component showing version 2.2.0, MIT License, author/algorithm/tech credits,
+links to docs/API/environment setup, GitHub contact, Python/platform/arch in collapsible section.
+Integrated into dashboard_manager as fifth tab.
+
+**Notes**:
+
+Phase 2 feature; shipped with 27 tests, 95%+ coverage maintained.
 
 ### JR-CWK-DOC-003 — AGENTS.md missing supplementary content: directory layout, expanded key files, test details, CI/CD, pre-commit hooks, scripts, Python version requirements, and resource location guide.
 
@@ -1520,7 +1724,7 @@ P0 critical (10 fixed): type mismatches, field consistency, gradient descent, ma
 
 Phase 3 supplementary content (medium priority): (3.1) Expand Key Files table (all Python modules, docs/, scripts/, .github/workflows/, config files). (3.2) Add directory layout tree. (3.3) Update dependencies (add websockets>=11.0). (3.4) Add CI/CD section (6-job pipeline, weekly security scan, PyPI publish, Dependabot). (3.5) Add pre-commit hooks (black, isort, flake8, mypy, bandit, shellcheck, yamllint, markdownlint, SOPS). (3.6) Add test details (6 test files, ~83 tests, fixtures, 80% coverage threshold). (3.7) Add Python version requirements (>=3.11, supported 3.11-3.14, PEP 561 py.typed). (3.8) Add docs/ section. (3.9) Add scripts/ section. Phase 4 cleanup: remove stale conf/ references, update ecosystem compatibility version. Phase 5 validation: run link checker, cross-reference CLI/env vars, test suite.
 
-### JR-ML-SEC-106 — Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found two clusters of stale panels in….
+### JR-ML-SEC-107 — Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found two clusters of stale panels in….
 
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -1535,7 +1739,7 @@ Phase 3 supplementary content (medium priority): (3.1) Expand Key Files table (a
 
 [v3 brief repaired from cited content; was: '3.12 DASHBOARD-STALE-PANELS — 7 stale Grafana panels post au']
 
-### JR-ML-OBS-048 — Closing PRs that motivated this tracker (reference only).
+### JR-ML-OBS-049 — Closing PRs that motivated this tracker (reference only).
 
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1572,6 +1776,21 @@ Completed: UUID persistence, Python/NumPy/PyTorch RNG state, config JSON seriali
 
 See histogram_rationale file for bucket selection rationale.
 
+### JR-ML-SEC-108 — emits per-worker gauges. `juniper-cascor-worker` itself does **not.
+
+**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 96-146)
+
+**Detail**:
+
+| `/metrics` URL | `http://juniper-cascor:8200/metrics` (compose) |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.2 juniper-cascor']
+
 ### JR-ML-WS-135 — GAP-WS-19 close_all lock is RESOLVED on main.
 
 **Status**: shipped  **Priority**: P2  **Category**: WS  **Owner**: ml
@@ -1582,6 +1801,23 @@ See histogram_rationale file for bucket selection rationale.
 **Notes**:
 
 Settled position C-11 from R3-03 table; cross-round consensus consolidation
+
+### JR-CAN-UI-019 — Image download from Network Topology must use timestamp-based filename (juniper_topology_YYYYMMDD_HHMMSS.png).
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 55-72)
+
+**Detail**:
+
+P2-2 feature: replaces Plotly default "newplot" with unique timestamped name.
+High resolution 2x scale for crisp PNG exports.
+Implemented via toImageButtonOptions in dcc.Graph config.
+
+**Notes**:
+
+Phase 2 feature; shipped with 4 tests.
 
 ### JR-CAS-TRAIN-026 — Implement flexible optimizer system supporting Adam, SGD, RMSprop, AdamW.
 
@@ -1620,7 +1856,7 @@ cProfile integration: ProfileContext, profile_function decorator (src/profiling/
 
 [v2 remap: SE→API]
 
-### JR-CAN-UI-014 — Must support zero-copy metadata parameter updates between Canopy and Cascor.
+### JR-CAN-UI-020 — Must support zero-copy metadata parameter updates between Canopy and Cascor.
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1654,7 +1890,24 @@ HDF5 groups: meta, config, params, arch, random, hidden_units. Backward compatib
 
 [v2 remap: SE→API]
 
-### JR-ML-API-029 — _normalize_metric dual-format contract (flat + nested) preserved forever.
+### JR-CAN-UI-021 — New node visual indicator must show pulsing glow (cyan #17a2b8, 1s period) and edge highlighting (50% opacity).
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 24-50)
+
+**Detail**:
+
+P2-1 feature: animated glow on new hidden node addition; state machine (none → active → fading → none).
+Highlight persists until different node selected; 2-second linear fade when triggered.
+Implemented via new-node-highlight dcc.Store and interval-based callback.
+
+**Notes**:
+
+Phase 2 feature; shipped with 17 tests, visual regression verification recommended.
+
+### JR-ML-API-028 — _normalize_metric dual-format contract (flat + nested) preserved forever.
 
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1665,7 +1918,7 @@ HDF5 groups: meta, config, params, arch, random, hidden_units. Backward compatib
 
 Settled position C-22 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-API-030 — Output weights transposition bug**: ALREADY FIXED (merged). `_transform_topology()` now.
+### JR-ML-API-029 — Output weights transposition bug**: ALREADY FIXED (merged). `_transform_topology()` now.
 
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1680,7 +1933,7 @@ Settled position C-22 from R3-03 table; cross-round consensus consolidation
 
 [v3 brief repaired from cited content; was: '4.1 Root Cause']
 
-### JR-ML-UI-021 — Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already configurable via environment variables from Phase 1. No….
+### JR-ML-UI-018 — Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already configurable via environment variables from Phase 1. No….
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1695,7 +1948,7 @@ Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already config
 
 [v3 brief repaired from cited content; was: '2.7 Step 2.7 (configurable paths) -- already done']
 
-### JR-CAN-UI-015 — Phase 3 Wave 1—HDF5 snapshot capabilities (create, restore, history).
+### JR-CAN-UI-022 — Phase 3 Wave 1—HDF5 snapshot capabilities (create, restore, history).
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1709,7 +1962,7 @@ timestamp names and demo mode support. P3-2: Restore endpoint with training stat
 validation and WebSocket broadcast. P3-3: History tracking (append-only JSONL log).
 Status: all complete as of 2026-01-10.
 
-### JR-CAN-UI-016 — Phase 3 Wave 2—Training Metrics Save/Load layouts and 3D topology visualization.
+### JR-CAN-UI-023 — Phase 3 Wave 2—Training Metrics Save/Load layouts and 3D topology visualization.
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1751,7 +2004,7 @@ optional integration with soft-fail on missing libraries.
 
 Shipped in v0.2.0 (2026-03-21)
 
-### JR-CAN-UI-017 — Redefine pool training metrics around correlation statistics instead of loss/accuracy.
+### JR-CAN-UI-024 — Redefine pool training metrics around correlation statistics instead of loss/accuracy.
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1766,7 +2019,7 @@ CasCor trains on correlation, not loss/accuracy; these metrics do not exist for 
 
 Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 
-### JR-ML-API-031 — REST endpoints preserved FOREVER: /api/metrics/history, /api/train/*, /api/v1/training/params, /api/topology.
+### JR-ML-API-030 — REST endpoints preserved FOREVER: /api/metrics/history, /api/train/*, /api/v1/training/params, /api/topology.
 
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1776,51 +2029,6 @@ Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 **Notes**:
 
 Settled position C-23 from R3-03 table; cross-round consensus consolidation
-
-### JR-ML-SEC-107 — Scope**: Find hidden throttles beyond the known `cascade_correlation.py:1655`,.
-
-**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 331-370)
-
-**Detail**:
-
-**Scope**: Find hidden throttles beyond the known `cascade_correlation.py:1655`,
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '4.5 Dimension E — Throttles + tech debt + race conditions']
-
-### JR-ML-SEC-108 — Scope**: Verify all metrics referenced in the R5.1 SLO catalog, `alert_rules.yml`,.
-
-**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 176-226)
-
-**Detail**:
-
-**Scope**: Verify all metrics referenced in the R5.1 SLO catalog, `alert_rules.yml`,
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '4.1 Dimension A — Metrics surface integrity']
-
-### JR-ML-SEC-109 — Service-specific metric inventory: training-domain (8 metrics).
-
-**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 96-146)
-
-**Detail**:
-
-| `/metrics` URL | `http://juniper-cascor:8200/metrics` (compose) |
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.2 juniper-cascor']
 
 ### JR-CAS-TOOL-004 — Session status and validation: 18 integration tests, 11/12 MVP criteria met, ready for testing phase.
 
@@ -1848,7 +2056,7 @@ Part 1 completed (analysis + critical fixes). Part 2 completed (validation + tes
 
 Shipped in v0.2.0 (2026-03-21); ecosystem standard convention
 
-### JR-ML-OBS-049 — Severity-1 cluster headline.
+### JR-ML-OBS-050 — Severity-1 cluster headline.
 
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1859,7 +2067,7 @@ Shipped in v0.2.0 (2026-03-21); ecosystem standard convention
 
 cause: the pre-METRICS-MON observability scaffolding in
 
-### JR-ML-OBS-050 — These four placeholders predate the bridge close.** Per the audit.
+### JR-ML-OBS-051 — Source-of-truth:** `juniper-deploy/prometheus/alert_rules.yml` (1146 lines).
 
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1873,6 +2081,36 @@ cause: the pre-METRICS-MON observability scaffolding in
 **Notes**:
 
 [v3 brief repaired from cited content; was: '6.5 Placeholder text panels (intentional gaps — OBS-WIRE-01)']
+
+### JR-ML-UI-019 — **stale label** — bridge SHIPPED via juniper-cascor#188 (`heartbeat_age_seconds`) and gpu via the same collector; this placeholder panel pre.
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 310-330)
+
+**Detail**:
+
+| Request Latency — p50 / p95 / p99 | timeseries | `histogram_quantile(...)` against the shared HTTP duration histogram | |
+
+**Notes**:
+
+[v4 brief repaired; was: '6.1 juniper-overview.json (14 panels, version 3, title "Juni']
+
+### JR-ML-API-031 — `_STATE_TO_FSM` and `_STATE_TO_PHASE` class attributes are dead code. `get_training_status()` uses a local `status_map` dict instead.
+
+**Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 69-81)
+
+**Detail**:
+
+| ID       | Severity   | File:Line                         | Description
+
+**Notes**:
+
+[v4 brief repaired; was: '1.3 Code Quality']
 
 ### JR-CWK-TOOL-002 — Thread handoff procedure: preserve context fidelity when thread compaction degrades output by proactively handing off to fresh thread before context saturation.
 
@@ -1889,6 +2127,21 @@ Thread compaction introduces information loss (subtle decisions, edge cases, par
 
 Handoff protocol: (1) Checkpoint current state (task, completed, remaining, discovered, files in play), (2) Compose concise actionable goal (be specific, include paths, state decisions, mention test status, keep <500 words), (3) Present to user via handoff() tool if available (follow=true for current thread stop, follow=false rare).
 
+### JR-ML-SEC-109 — TODO/FIXME/HACK**: 3 empty `# TODO :` banner placeholders in canopy frontend.
+
+**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 331-370)
+
+**Detail**:
+
+**Scope**: Find hidden throttles beyond the known `cascade_correlation.py:1655`,
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.5 Dimension E — Throttles + tech debt + race conditions']
+
 ### JR-ML-SEC-110 — Version**: 0.3.0 (unreleased constants refactor on main) | **Python**: ≥3.11 | **Coverage**: 91.47%.
 
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
@@ -1904,7 +2157,7 @@ Handoff protocol: (1) Checkpoint current state (task, completed, remaining, disc
 
 [v3 brief repaired from cited content; was: '1.5 CI/CD']
 
-### JR-ML-OBS-051 — What needs to happen.
+### JR-ML-OBS-052 — What needs to happen.
 
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1930,7 +2183,7 @@ Prerequisites: must be in primary directory (not already in worktree), working t
 
 Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. All worktrees in /home/pcalnon/Development/python/Juniper/worktrees/. Example: juniper-cascor-worker--feature--add-gpu-support--20260225-1430--047c3f61.
 
-### JR-ML-DEP-043 — Background.** Carried forward from R1; never closed (deferred for burn-in). The healthcheck implementation shipped in worker image ≥ 0.4.0;….
+### JR-ML-DEP-045 — Background.** Carried forward from R1; never closed (deferred for burn-in). The healthcheck implementation shipped in worker image ≥ 0.4.0;….
 
 **Status**: shipped  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
@@ -1945,7 +2198,18 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 
 [v3 brief repaired from cited content; was: '3.8 R1.3.4-FLAG — Helm chart `worker.healthcheck.enabled` de']
 
-### JR-ML-OBS-141 — Background.** Discovered during R5.4-pre when an agent looking for the missing per-step hook found there was nothing to hook into: cascor….
+### JR-ML-SEC-212 — P3 — Hygiene / future / aspirational.
+
+**Status**: shipped  **Priority**: P3  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 391-412)
+
+**Detail**:
+
+| **3.1** | juniper-deploy | SLO catalog calibration vs soak-window data | Schedule T+30d agent for 2026-06-02; open calibration PR if observed data warrant
+
+### JR-ML-OBS-143 — The design doc `juniper-cascor` PR #194 (`notes/training/MINI_BATCH_RESTORATION_DESIGN_2026-05-03.md`, merged 2026-05-03) captures two key….
 
 **Status**: shipped  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
@@ -1959,17 +2223,6 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.6 TRAIN-ARCH-01 — Cascor mini-batch restoration']
-
-### JR-ML-SEC-212 — P3 — Hygiene / future / aspirational.
-
-**Status**: shipped  **Priority**: P3  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 391-412)
-
-**Detail**:
-
-| **3.1** | juniper-deploy | SLO catalog calibration vs soak-window data | Schedule T+30d agent for 2026-06-02; open calibration PR if observed data warrant
 
 ### JR-CWK-SEC-004 — v0.3.0 deprecations: CandidateTrainingWorker (legacy), --api-key CLI flag, CASCOR_API_KEY env var; migrate to CascorWorkerAgent and --auth-token before next major release.
 

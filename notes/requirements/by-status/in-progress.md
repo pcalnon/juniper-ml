@@ -73,7 +73,7 @@ V2 revision addressing issues from initial plan.
 G3 - Dead Gauge with no production caller. Defined but never emitted.
 In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) after each operation.
 
-### JR-ML-OBS-052 — 2D. Phase Duration Display.
+### JR-ML-OBS-053 — 2D. Phase Duration Display.
 
 **Status**: in-progress  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -84,14 +84,14 @@ In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) af
 
 **File:** `src/frontend/components/metrics_panel.py`
 
-### JR-ML-UI-022 — Fix candidate training display rendering issues in Canopy.
+### JR-ML-UI-020 — Fix candidate training display rendering issues in Canopy.
 
 **Status**: in-progress  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md` (lines 1-100)
 
-### JR-ML-UI-023 — Fix Canopy dashboard display issues with layout and rendering.
+### JR-ML-UI-021 — Fix Canopy dashboard display issues with layout and rendering.
 
 **Status**: in-progress  **Priority**: P2  **Category**: UI  **Owner**: ml
 
