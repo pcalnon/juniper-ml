@@ -84,21 +84,21 @@ In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) af
 
 **File:** `src/frontend/components/metrics_panel.py`
 
-### JR-ML-UI-017 — Fix candidate training display rendering issues in Canopy.
+### JR-ML-UI-022 — Fix candidate training display rendering issues in Canopy.
 
 **Status**: in-progress  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md` (lines 1-100)
 
-### JR-ML-UI-018 — Fix Canopy dashboard display issues with layout and rendering.
+### JR-ML-UI-023 — Fix Canopy dashboard display issues with layout and rendering.
 
 **Status**: in-progress  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/CANOPY_DASHBOARD_DISPLAY_FIXES.md` (lines 1-100)
 
-### JR-ML-SEC-112 — Step 1: Workspace Setup.
+### JR-ML-SEC-111 — Step 1: Workspace Setup.
 
 **Status**: in-progress  **Priority**: P2  **Category**: SEC  **Owner**: ml
 

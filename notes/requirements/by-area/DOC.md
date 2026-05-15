@@ -2,13 +2,13 @@
 
 **Area**: documentation / process — link validation, conventions, file headers
 
-**Total entries**: 54
+**Total entries**: 52
 
-**By status**: proposed=48 | shipped=6
+**By status**: proposed=46 | shipped=6
 
-**By priority**: P0=5 | P1=16 | P2=25 | P3=8
+**By priority**: P0=5 | P1=15 | P2=24 | P3=8
 
-**By owner**: ccl=13 | ml=13 | dcl=10 | can=9 | cas=4 | cwk=3 | dat=2
+**By owner**: ccl=13 | ml=13 | can=9 | dcl=8 | cas=4 | cwk=3 | dat=2
 
 ---
 
@@ -146,6 +146,7 @@ Shipped in v0.2.0 (2026-03-21)
 **Sources**:
 - `juniper-cascor-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 152-154)
 - `juniper-cascor-client/notes/AGENTS_MD_UPDATE_PLAN_2026-04-02.md` (lines 51-56)
+- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 112-118)
 
 **Detail**:
 
@@ -155,7 +156,7 @@ exception hierarchy (7 exception classes), design patterns (context manager, cal
 
 **Notes**:
 
-High severity: agents have no guidance on codebase structure
+[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
 
 ### JR-CCL-DOC-006 — Add Directory Layout section to AGENTS.md documenting complete directory tree with annotations.
 
@@ -273,27 +274,6 @@ juniper-canopy). Must add "Testing Utilities" section documenting import paths a
 The omission of this submodule from AGENTS.md means agents are unaware of this significant API.
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.4) and AGENTS_MD_UPDATE_PLAN (Step 2.4).
 
-### JR-DCL-DOC-006 — Expand AGENTS.md Key Files table from 4 entries to ~20 entries covering all significant files.
-
-**Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 50-76)
-
-**Detail**:
-
-The Key Files table is severely incomplete. Must document: juniper_data_client/testing/ submodule
-(fake_client.py, generators.py), docs/ directory (4 files), scripts/ (check_doc_links.py, generate_dep_docs.sh),
-util/ (run_all_tests.bash), CI/CD workflows (.github/workflows/ci.yml, publish.yml, security-scan.yml),
-configuration files (.pre-commit-config.yaml, .sops.yaml, .env.example, conf/), and project meta files
-(CHANGELOG.md, py.typed, README.md, LICENSE).
-
-**Notes**:
-
-Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
-and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
-Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
-
 ### JR-CCL-DOC-007 — Expand AGENTS.md Key Files table with 15+ missing entries (testing submodule, py.typed, CHANGELOG.md, docs/, scripts/, notes/, CI/CD files).
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: ccl
@@ -301,6 +281,7 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2)
 **Sources**:
 - `juniper-cascor-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 58-77)
 - `juniper-cascor-client/notes/AGENTS_MD_UPDATE_PLAN_2026-04-02.md` (lines 23-28)
+- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 50-76)
 
 **Detail**:
 
@@ -310,7 +291,9 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 
 **Notes**:
 
-High severity: agents cannot orient themselves or find major code components
+[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
+and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
+Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
 
 ### JR-CAN-DOC-003 — Phase 3 Code Quality & Observability (18 tasks).
 
@@ -341,37 +324,7 @@ Step 3.4 (2 perf): Reduce API timeout, begin DashboardManager extraction.
 
 Phase 3 supplementary content (medium priority): (3.1) Expand Key Files table (all Python modules, docs/, scripts/, .github/workflows/, config files). (3.2) Add directory layout tree. (3.3) Update dependencies (add websockets>=11.0). (3.4) Add CI/CD section (6-job pipeline, weekly security scan, PyPI publish, Dependabot). (3.5) Add pre-commit hooks (black, isort, flake8, mypy, bandit, shellcheck, yamllint, markdownlint, SOPS). (3.6) Add test details (6 test files, ~83 tests, fixtures, 80% coverage threshold). (3.7) Add Python version requirements (>=3.11, supported 3.11-3.14, PEP 561 py.typed). (3.8) Add docs/ section. (3.9) Add scripts/ section. Phase 4 cleanup: remove stale conf/ references, update ecosystem compatibility version. Phase 5 validation: run link checker, cross-reference CLI/env vars, test suite.
 
-### JR-ML-DOC-002 — 4.1 How this tracker is updated as items close.
-
-**Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 370-378)
-
-**Detail**:
-
-1. Remove its row from §2 (or flip the `Status` column to `closed (PR #N)` if you prefer to keep historical visibility).
-
-### JR-DCL-DOC-007 — Add Architecture & Design Patterns section to AGENTS.md.
-
-**Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 112-118)
-
-**Detail**:
-
-AGENTS.md lacks architecture/design patterns section. For agents working on this codebase, understanding
-the following patterns is essential: connection management (requests.Session with HTTPAdapter), retry
-strategy (exponential backoff, retries on 429/5xx), URL normalization (scheme addition, trailing slash
-removal, /v1 suffix handling), error mapping (HTTP status codes -> specific exception types), API key
-handling (constructor param or JUNIPER_DATA_API_KEY env var), context manager pattern.
-
-**Notes**:
-
-Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
-
-### JR-DCL-DOC-008 — Add CI/CD documentation section to AGENTS.md covering 3 GitHub Actions workflows.
+### JR-DCL-DOC-006 — Add CI/CD documentation section to AGENTS.md covering 3 GitHub Actions workflows.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: dcl
 
@@ -447,7 +400,7 @@ Medium severity: clarifies compatibility constraints
 
 Medium severity: helps agents understand test conventions
 
-### JR-ML-DOC-003 — CC-04: `set_params()` Method Not Documented in AGENTS.md.
+### JR-ML-DOC-002 — CC-04: `set_params()` Method Not Documented in AGENTS.md.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -469,7 +422,7 @@ Medium severity: helps agents understand test conventions
 
 Comprehensive audit across 8 domains: Security, Concurrency, CI/CD, App Logic, Backend Services, Code Quality/Frontend, Observability/Logging, Test Quality. Registry of CRIT-001 through LOW-022 issues mapping to severity (Critical, High, Medium, Low), category, file, phase, claimed status. Most issues have proposed fixes ranging from straightforward (add lock, fix hardcoded value) to complex (restructure component, redesign exception handling).
 
-### JR-DCL-DOC-009 — Document JuniperDataClient exception hierarchy with HTTP status code mapping in AGENTS.md.
+### JR-DCL-DOC-007 — Document JuniperDataClient exception hierarchy with HTTP status code mapping in AGENTS.md.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: dcl
 
@@ -486,14 +439,14 @@ Essential context for agents working on error handling and debugging.
 
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.3) and AGENTS_MD_UPDATE_PLAN (Step 3.3).
 
-### JR-ML-DOC-004 — Documentation audit: standardize link formats, enforce cross-repo resolution, validate all links in CI.
+### JR-ML-DOC-003 — Documentation audit: standardize link formats, enforce cross-repo resolution, validate all links in CI.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/documentation/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md` (lines 1-50)
 
-### JR-ML-DOC-005 — Fix 17 broken markdown links in DEVELOPER_CHEATSHEET.md - 12 self-referencing and 5 missing intra-repo files.
+### JR-ML-DOC-004 — Fix 17 broken markdown links in DEVELOPER_CHEATSHEET.md - 12 self-referencing and 5 missing intra-repo files.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -528,7 +481,7 @@ Category C (5 links): missing files never created, should be removed or redirect
 
 Line 38 of cascade_correlation.py: 'import datetime as pd' should be 'import datetime as dt'. pd is conventionally pandas; using for datetime misleads developers.
 
-### JR-ML-DOC-006 — Fix semantic error in SECURITY_AUDIT_PLAN.md line 845 - correct deep relative path to ../CLAUDE.md.
+### JR-ML-DOC-005 — Fix semantic error in SECURITY_AUDIT_PLAN.md line 845 - correct deep relative path to ../CLAUDE.md.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -540,7 +493,7 @@ Line 38 of cascade_correlation.py: 'import datetime as pd' should be 'import dat
 Category D false-negative: ../../../CLAUDE.md resolves to wrong document via repo-root fallback.
 Should be ../CLAUDE.md to reference repo's own CLAUDE.md (symlink to AGENTS.md) containing the same #worktree-procedures-mandatory--task-isolation section.
 
-### JR-ML-DOC-007 — HSK-06: juniper-data AGENTS.md Header Version 0.5.0 vs Package 0.6.0.
+### JR-ML-DOC-006 — HSK-06: juniper-data AGENTS.md Header Version 0.5.0 vs Package 0.6.0.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -551,7 +504,7 @@ Should be ../CLAUDE.md to reference repo's own CLAUDE.md (symlink to AGENTS.md) 
 
 [v2 ARCH→DOC re-bucket]
 
-### JR-ML-DOC-008 — Keep AGENTS.md synchronized with project structure.
+### JR-ML-DOC-007 — Keep AGENTS.md synchronized with project structure.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -592,7 +545,7 @@ parameter forwarding, hit_rate format verification, theme-aware colors.
 5.4 (4 CI/CD): Docker health check, shellcheck severity, pre-commit autoupdate,
 codecov docs.
 
-### JR-ML-DOC-009 — Phase H: `_normalize_metric` dual-format regression test + consumer audit + CODEOWNERS hard gate.
+### JR-ML-DOC-008 — Phase H: `_normalize_metric` dual-format regression test + consumer audit + CODEOWNERS hard gate.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -642,7 +595,7 @@ D-050 MEDIUM priority. Current docs show direct app reference.
 
 Issue 3.2.5: Commented imports clutter code. Remove or restore with rationale.
 
-### JR-ML-DOC-010 — Stabilize CI documentation link validation by implementing cross-repo link classification and worktree directory exclusion.
+### JR-ML-DOC-009 — Stabilize CI documentation link validation by implementing cross-repo link classification and worktree directory exclusion.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
@@ -687,6 +640,21 @@ Phase 3: documentation content cleanup (Approach 2A hybrid links).
 **Notes**:
 
 Documentation & release phase (MEDIUM priority)
+
+### JR-ML-DOC-010 — When an item closes:.
+
+**Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 370-378)
+
+**Detail**:
+
+1. Remove its row from §2 (or flip the `Status` column to `closed (PR #N)` if you prefer to keep historical visibility).
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 How this tracker is updated as items close']
 
 ### JR-CAN-DOC-007 — Add deprecation warnings to remaining legacy env validators.
 
@@ -764,7 +732,7 @@ Currently no centralized design standards; sidebar width hardcoded to dbc.Col(wi
 
 Enables consistent design across application.
 
-### JR-DCL-DOC-010 — Update AGENTS.md Last Updated date and document utility scripts.
+### JR-DCL-DOC-008 — Update AGENTS.md Last Updated date and document utility scripts.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: dcl
 

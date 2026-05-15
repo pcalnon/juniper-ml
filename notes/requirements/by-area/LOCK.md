@@ -75,6 +75,10 @@ Shipped in v0.2.0 (2026-03-21)
 
 | ML-01 | **Medium** | `scripts/wake_the_claude.bash` | 37      | `DEBUG="${TRUE}"` hardcoded ON in production — all invocations emit debug output               |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 ### JR-CAS-LOCK-002 — Move dill to test-only dependencies or add proper import guard - currently undeclared runtime dep.
 
 **Status**: proposed  **Priority**: P2  **Category**: LOCK  **Owner**: cas

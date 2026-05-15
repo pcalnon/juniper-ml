@@ -2,13 +2,13 @@
 
 **Area**: ui-frontend — Canopy/Dash, UX, visualizations
 
-**Total entries**: 104
+**Total entries**: 109
 
-**By status**: proposed=83 | designed=6 | in-progress=4 | shipped=8 | deferred=1 | rejected=1 | superseded=1
+**By status**: proposed=84 | designed=11 | in-progress=4 | shipped=8 | deferred=1 | rejected=1
 
-**By priority**: P0=7 | P1=20 | P2=73 | P3=4
+**By priority**: P0=7 | P1=25 | P2=73 | P3=4
 
-**By owner**: ml=75 | can=29
+**By owner**: ml=80 | can=29
 
 ---
 
@@ -195,16 +195,38 @@ FINAL revision; check for duplicate with DEVELOPMENT_PLAN.md
 
 V2 revision addressing issues from initial plan.
 
-### JR-ML-UI-006 — 9.7 Detailed Design: systemd Units.
+### JR-ML-UI-006 — [ ] Loss chart displays live training data (not flat line at 0).
 
 **Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 630-669)
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1594-1615)
 
-**Detail**:
+**Notes**:
 
-After=network-online.target juniper-data.service
+[v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: '14.4 Visual Verification Checklist']
+
+### JR-ML-UI-007 — After Tier 0**: Metrics charts display live data. Topology renders. Dashboard is functionally usable.
+
+**Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1409-1464)
+
+**Notes**:
+
+[v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: '12. Implementation Priority and Ordering']
+
+### JR-ML-UI-008 — Final resolution**: **CRITICAL**. The network topology visualization is completely non-functional in service mode — the validation guard….
+
+**Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1110-1118)
+
+**Notes**:
+
+[v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: '7.2 Topology Severity: CRITICAL vs MODERATE']
 
 ### JR-CAN-UI-007 — Meta Parameters enhancement: rename Training Parameters to Meta Parameters with NN and Candidate Nodes subsections (22 components).
 
@@ -221,7 +243,44 @@ Restructure parameters card into two collapsible subsections: Neural Network (12
 
 Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/radio/checkbox sync, theme constants (NEW/CHANGED/REMOVED tracking). Test plan includes unit and integration tests.
 
-### JR-ML-UI-007 — 12: Background tab memory spike.
+### JR-ML-UI-009 — The Juniper Canopy system has **multiple distinct ingress paths** for data into the dashboard, each independently determining its output….
+
+**Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1191-1205)
+
+**Notes**:
+
+[v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: '8.1 The Fundamental Problem (Consensus Across All Proposals)']
+
+### JR-ML-UI-010 — The juniper-canopy dashboard fails to display metrics and topology from an external juniper-cascor instance because **the service-mode data….
+
+**Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 51-60)
+
+**Notes**:
+
+[v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: '1.1 Primary Finding']
+
+### JR-ML-UI-011 — Three new systemd user service units following canopy's pattern:.
+
+**Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 630-669)
+
+**Detail**:
+
+After=network-online.target juniper-data.service
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '9.7 Detailed Design: systemd Units']
+
+### JR-ML-UI-012 — 12: Background tab memory spike.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
@@ -231,35 +290,6 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 **Notes**:
 
 [v2 ARCH→UI re-bucket]
-
-### JR-ML-UI-008 — 3.2 Fix — Phase 1: Canopy Graceful Degradation (canopy-only).
-
-**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 137-151)
-
-**Detail**:
-
-**File:** `src/frontend/components/dataset_plotter.py`
-
-### JR-ML-UI-009 — 7.3 Long-Term (Low/Architectural).
-
-**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 549-566)
-
-**Detail**:
-
-12. **Add shared memory startup sweep**: On cascor server startup, remove stale `juniper_train_*` blocks from `/dev/shm`.
-
-### JR-ML-UI-010 — 7.5 UI Overflow.
-
-**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 448-460)
 
 ### JR-CAN-UI-008 — Accuracy plot phase band logic must be deduplicated.
 
@@ -273,7 +303,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 Issue 1.3.3: Repeated phase-band visualization logic in metrics_panel.py.
 Extract to shared helper. File: src/frontend/components/metrics_panel.py
 
-### JR-ML-UI-011 — All WebSocket JS handlers must wrap body in try-catch to prevent single exception from breaking dashboard.
+### JR-ML-UI-013 — All WebSocket JS handlers must wrap body in try-catch to prevent single exception from breaking dashboard.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
@@ -306,6 +336,21 @@ Re-evaluates 34 gaps from original audit (91 issues, 57 verified, 16 partially f
 
 [v2 ARCH→UI re-bucket] 22 REAFFIRMED gaps mostly completed via PR #146. DEFERRED gaps tracked as accepted technical debt. COORDINATED gaps require synchronization with R5-01 phase owners.
 
+### JR-ML-UI-014 — End of audit report.
+
+**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 549-566)
+
+**Detail**:
+
+12. **Add shared memory startup sweep**: On cascor server startup, remove stale `juniper_train_*` blocks from `/dev/shm`.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.3 Long-Term (Low/Architectural)']
+
 ### JR-CAN-UI-010 — Implement decision boundary visualization for real CasCor backend in Canopy dashboard.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
@@ -320,6 +365,21 @@ The /api/decision_boundary endpoint retrieves prediction function from cascor_in
 **Notes**:
 
 Dataset/Decision Boundary tab shows "No data available" when connected to real CasCor backend
+
+### JR-ML-UI-015 — In `_process_dataset_update()`, add metadata-only branch:.
+
+**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 137-151)
+
+**Detail**:
+
+**File:** `src/frontend/components/dataset_plotter.py`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.2 Fix — Phase 1: Canopy Graceful Degradation (canopy-only)']
 
 ### JR-CAN-UI-011 — Network visualizer screenshot timestamp must not be static.
 
@@ -348,7 +408,7 @@ Fix: canopy frontend component refactor. Debounce logic does not properly track 
 
 UX issue; component refactor required.
 
-### JR-ML-UI-012 — Phase 1 (canopy-only) — COMPLETE.
+### JR-ML-UI-016 — Phase 1 (canopy-only) — COMPLETE.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
@@ -359,7 +419,7 @@ UX issue; component refactor required.
 
 | Fix pre-existing test failures (5 in `test_response_normalization.py`) | ✅ Fixed       | Backlog Sprint 1 |
 
-### JR-ML-UI-013 — Phase B: Browser bridge drains /ws/training into Dash store, Plotly.extendTraces updates, polling killed, GAP-WS-24a/b latency pipe.
+### JR-ML-UI-017 — Phase B: Browser bridge drains /ws/training into Dash store, Plotly.extendTraces updates, polling killed, GAP-WS-24a/b latency pipe.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
@@ -370,7 +430,7 @@ UX issue; component refactor required.
 
 Phase B major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-UI-014 — Phase I: Asset cache busting; bump assets_url_path / hash query param.
+### JR-ML-UI-018 — Phase I: Asset cache busting; bump assets_url_path / hash query param.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
@@ -396,18 +456,18 @@ Also adds clientside blur-on-Apply and validation styling (invalid=True border).
 
 **PRs**: PR-2 (Phase 6B, Issue
 
-### JR-ML-UI-015 — 2.7 Step 2.7 (configurable paths) -- already done.
+### JR-ML-UI-019 — The Meta Parameters card will be 2-3x taller than the current Training Parameters card. Guardrails:.
 
-**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
+**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 67-107)
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 448-460)
 
-**Detail**:
+**Notes**:
 
-Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already configurable via environment variables from Phase 1. No additional work needed.
+[v3 brief repaired from cited content; was: '7.5 UI Overflow']
 
-### JR-ML-UI-016 — 6.1 juniper-overview.json (14 panels, version 3, title "Juniper Overview").
+### JR-ML-UI-020 — 6.1 juniper-overview.json (14 panels, version 3, title "Juniper Overview").
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -417,6 +477,10 @@ Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already config
 **Detail**:
 
 | Request Latency — p50 / p95 / p99 | timeseries | `histogram_quantile(...)` against the shared HTTP duration histogram | |
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 ### JR-CAN-UI-014 — Must support zero-copy metadata parameter updates between Canopy and Cascor.
 
@@ -436,6 +500,21 @@ Validation helper _validate_candidate_pool_triple() enforces 6 invariants.
 
 Shipped as part of Phase 6A remediation (Issue #1 / can-001 implementation).
 Candidate-pool semantics confirmed 2026-05-09.
+
+### JR-ML-UI-021 — Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already configurable via environment variables from Phase 1. No….
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 67-107)
+
+**Detail**:
+
+Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already configurable via environment variables from Phase 1. No additional work needed.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.7 Step 2.7 (configurable paths) -- already done']
 
 ### JR-CAN-UI-015 — Phase 3 Wave 1—HDF5 snapshot capabilities (create, restore, history).
 
@@ -481,21 +560,21 @@ CasCor trains on correlation, not loss/accuracy; these metrics do not exist for 
 
 Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 
-### JR-ML-UI-017 — Fix candidate training display rendering issues in Canopy.
+### JR-ML-UI-022 — Fix candidate training display rendering issues in Canopy.
 
 **Status**: in-progress  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md` (lines 1-100)
 
-### JR-ML-UI-018 — Fix Canopy dashboard display issues with layout and rendering.
+### JR-ML-UI-023 — Fix Canopy dashboard display issues with layout and rendering.
 
 **Status**: in-progress  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/CANOPY_DASHBOARD_DISPLAY_FIXES.md` (lines 1-100)
 
-### JR-ML-UI-019 — 2.1 Bugs.
+### JR-ML-UI-024 — 2.1 Bugs.
 
 **Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -506,18 +585,11 @@ Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 
 | ID        | Severity   | File:Line              | Description
 
-### JR-ML-UI-020 — 4.3 RequestIdMiddleware boundary placement.
+**Notes**:
 
-**Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 249-257)
-
-**Detail**:
-
-Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`
-
-### JR-ML-UI-021 — Design.
+### JR-ML-UI-025 — Add a `dbc.RadioItems` or `dbc.ButtonGroup` toggle to the NetworkVisualizer's control panel:.
 
 **Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -528,21 +600,40 @@ Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`
 
 Add a `dbc.RadioItems` or `dbc.ButtonGroup` toggle to the NetworkVisualizer's control panel:
 
-### JR-ML-UI-022 — Implement contextual menu and candidate tab design for Canopy UI.
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Design']
+
+### JR-ML-UI-026 — Implement contextual menu and candidate tab design for Canopy UI.
 
 **Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/CANOPY_CONTEXTUAL_MENU_AND_CANDIDATE_TAB_DESIGN.md` (lines 1-100)
 
-### JR-ML-UI-023 — Canopy dashboard self-call refactor: defer weight display, implement metrics playback, option C trigger conditions.
+### JR-ML-UI-027 — Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`.
+
+**Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 249-257)
+
+**Detail**:
+
+Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.3 RequestIdMiddleware boundary placement']
+
+### JR-ML-UI-028 — Canopy dashboard self-call refactor: defer weight display, implement metrics playback, option C trigger conditions.
 
 **Status**: deferred  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/observability/CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md` (lines 1-50)
 
-### JR-ML-UI-024 — 7.5 Shutdown Signal Handling.
+### JR-ML-UI-029 — All services handle signals adequately at the application level. The gap is in the orchestration scripts that don't verify shutdown….
 
 **Status**: rejected  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -553,58 +644,11 @@ Add a `dbc.RadioItems` or `dbc.ButtonGroup` toggle to the NetworkVisualizer's co
 
 All services handle signals adequately at the application level. The gap is in the orchestration scripts that don't verify shutdown completed.
 
-### JR-ML-UI-025 — 7. Dashboard Enhancements.
-
-**Status**: superseded  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 245-288)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 277-322)
-
 **Notes**:
 
-[v2 ARCH→UI re-bucket] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
+[v3 brief repaired from cited content; was: '7.5 Shutdown Signal Handling']
 
----
-
-Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
-
-*Merged from 2 extraction candidates (slices: 3b-3).*
-
-### JR-ML-UI-026 — 15.3 juniper-cascor-worker.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 488-504)
-
-**Detail**:
-
-| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | 🔴 Open |
-
-### JR-ML-UI-027 — 2.2 juniper-all.target: Wants= vs Requires=.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 26-32)
-
-**Detail**:
-
-**Decision**: Use `Wants=` (not `Requires=`).
-
-### JR-ML-UI-028 — 2.4 CLI naming convention.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 38-46)
-
-**Detail**:
-
-**Decision**: Rename canopy's `juniper-ctl` to `juniper-canopy-ctl` for consistency.
-
-### JR-ML-UI-029 — 2.4 Removed Component IDs.
+### JR-ML-UI-030 — 2.4 Removed Component IDs.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -615,16 +659,9 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 ## 3. Constants Changes (`canopy_constants.py`)
 
-### JR-ML-UI-030 — 3.4 Dependency Update When Adding Client Method.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 187-200)
-
-**Detail**:
-
-Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:
+[v3 thin-brief flagged]
 
 ### JR-ML-UI-031 — 4.2 Code Quality.
 
@@ -637,29 +674,11 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 
 | ID       | Severity   | File:Line             | Description
 
-### JR-ML-UI-032 — 4.3 Radio Button Enable/Disable Pattern.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 257-267)
-
-**Detail**:
-
-- **NN Growth Trigger**: `"preset_epochs"` enables preset-epochs-input, disables convergence-threshold-input; `"convergence"` reverses
-
-### JR-ML-UI-033 — 5.1 juniper-canopy changes (Step 2.3).
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 107-128)
-
-**Detail**:
-
-- ExecStart=/opt/miniforge3/envs/JuniperPython/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8050
-
-### JR-ML-UI-034 — 5.2 Weaknesses.
+### JR-ML-UI-032 — 5.2 Weaknesses.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -670,69 +689,22 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 
 1. **Push vs. poll architecture**: The WebSocket infrastructure exists but key events (topology changes) still require REST polling. This creates unnecessary latency and server load.
 
-### JR-ML-UI-035 — 5.3 juniper-data-ctl (Step 2.4).
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 184-195)
-
-**Detail**:
-
-**New file**: `juniper-data/scripts/juniper-data-ctl`
-
-### JR-ML-UI-036 — 5.4 Canopy Progress Indicators.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 534-543)
-
-**Detail**:
-
-**Effort**: 2 days | **Repo**: juniper-canopy
-
-### JR-ML-UI-037 — 5.5 juniper-cascor-ctl (Step 2.5).
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 253-263)
-
-**Detail**:
-
-**New file**: `juniper-cascor/scripts/juniper-cascor-ctl`
-
-### JR-ML-UI-038 — 5.6 juniper-all.target (Step 2.6).
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 263-298)
-
-**Detail**:
-
-**New file**: `juniper-ml/scripts/juniper-all.target`
-
-### JR-ML-UI-039 — 7.3 Conda Environment Mapping.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 434-444)
-
-**Detail**:
-
-**Resolved**: Previously, `juniper_plant_all.bash` used `/opt/miniforge3/envs/JuniperCanopy/bin/python` for all services. Fixed in commit `03aec86` — each service
-
-### JR-ML-UI-040 — 8.2 Unit Tests - Callback Handlers.
+### JR-ML-UI-033 — 8.2 Unit Tests - Callback Handlers.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 471-492)
 
-### JR-ML-UI-041 — A.1 Startup Scripts.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-UI-034 — A.1 Startup Scripts.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -755,49 +727,49 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 Issue 3.3.3: Broken or outdated documentation links in About panel.
 Audit all links and update URLs or remove invalid references.
 
-### JR-ML-UI-042 — CAN-000: Periodic Updates Pause When Apply Parameters Active.
+### JR-ML-UI-035 — CAN-000: Periodic Updates Pause When Apply Parameters Active.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1990-1994)
 
-### JR-ML-UI-043 — CAN-003: Retain Candidate Pool Data Per Node Addition.
+### JR-ML-UI-036 — CAN-003: Retain Candidate Pool Data Per Node Addition.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2000-2004)
 
-### JR-ML-UI-044 — CAN-CRIT-001: Decision Boundary Non-Functional in Production/Service Mode.
+### JR-ML-UI-037 — CAN-CRIT-001: Decision Boundary Non-Functional in Production/Service Mode.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1912-1926)
 
-### JR-ML-UI-045 — CAN-CRIT-002: Save/Load Snapshot in Adapter — Blocked on `/v1/snapshots/*` API.
+### JR-ML-UI-038 — CAN-CRIT-002: Save/Load Snapshot in Adapter — Blocked on `/v1/snapshots/*` API.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1929-1943)
 
-### JR-ML-UI-046 — CAN-DEF-008: Advanced 3D Node Interactions.
+### JR-ML-UI-039 — CAN-DEF-008: Advanced 3D Node Interactions.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1980-1983)
 
-### JR-ML-UI-047 — CAN-HIGH-005: Remote Worker Status Dashboard.
+### JR-ML-UI-040 — CAN-HIGH-005: Remote Worker Status Dashboard.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1946-1960)
 
-### JR-ML-UI-048 — Canopy dashboard must display WebSocket connection status badge (connected green, reconnecting yellow, offline red).
+### JR-ML-UI-041 — Canopy dashboard must display WebSocket connection status badge (connected green, reconnecting yellow, offline red).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -815,7 +787,7 @@ CSS rules in assets/styles.css.
 
 GAP-WS-26 (P2). Also mirrors demo mode parity (RISK-08, GAP-WS-33). Phase B (Day 9).
 
-### JR-ML-UI-049 — Canopy must configure Dash assets_url_path with content-hash query string to bust browser cache on new JS.
+### JR-ML-UI-042 — Canopy must configure Dash assets_url_path with content-hash query string to bust browser cache on new JS.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -852,18 +824,7 @@ submit before debounce commits value. ~10 lines of JS.
 
 Part of Issue
 
-### JR-ML-UI-050 — Consequence.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 385-389)
-
-**Detail**:
-
-In demo mode, networks with 2+ hidden units display an **incomplete topology** — missing the signature cascade connections between hidden units. The visualization appears as a standard feedforward network rather than a cascade correlation network.
-
-### JR-ML-UI-051 — Current State.
+### JR-ML-UI-043 — Current State.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -873,6 +834,10 @@ In demo mode, networks with 2+ hidden units display an **incomplete topology** �
 **Detail**:
 
 | **JuniperCanopy** | YAML config + env vars  | `src/conf/app_config.yaml` + `${VAR:default}` substitution |
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 ### JR-CAN-UI-020 — DashboardManager must be refactored for extract to <2000 lines.
 
@@ -909,7 +874,7 @@ Requires CasCor API extension (new endpoint returning data arrays) or direct int
 
 Identified by v4. Known Phase 1 limitation; architectural enhancement scope.
 
-### JR-ML-UI-052 — Debounce lives in Dash clientside callback, NOT SDK.
+### JR-ML-UI-044 — Debounce lives in Dash clientside callback, NOT SDK.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -920,7 +885,37 @@ Identified by v4. Known Phase 1 limitation; architectural enhancement scope.
 
 Settled position C-29 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-UI-053 — Demo mode must maintain parity with live WebSocket mode (connection status, metrics updates).
+### JR-ML-UI-045 — Decision**: Rename canopy's `juniper-ctl` to `juniper-canopy-ctl` for consistency.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 38-46)
+
+**Detail**:
+
+**Decision**: Rename canopy's `juniper-ctl` to `juniper-canopy-ctl` for consistency.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.4 CLI naming convention']
+
+### JR-ML-UI-046 — Decision**: Use `Wants=` (not `Requires=`).
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 26-32)
+
+**Detail**:
+
+**Decision**: Use `Wants=` (not `Requires=`).
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.2 juniper-all.target: Wants= vs Requires=']
+
+### JR-ML-UI-047 — Demo mode must maintain parity with live WebSocket mode (connection status, metrics updates).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -938,66 +933,94 @@ Connection indicator badge shows gray "demo" state.
 
 RISK-08, GAP-WS-33. Phase B (Day 9). Demo users see same UI feedback as live users.
 
-### JR-ML-UI-054 — Dependency Graph (Runtime).
+### JR-ML-UI-048 — Dependency Graph (Runtime).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 76-85)
 
-### JR-ML-UI-055 — Description.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 532-536)
-
-**Detail**:
-
-The current topology visualization is exclusively **node-centric** — showing nodes and their connections as a graph. A **weight-centric** view would display the raw weight arrays from CasCor, showing the actual numerical structure of the network.
-
-### JR-ML-UI-056 — Design and implement integrated dashboard combining Canopy and CasCor metrics.
+### JR-ML-UI-049 — Design and implement integrated dashboard combining Canopy and CasCor metrics.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/INTEGRATED_DASHBOARD_PLAN.md` (lines 1-100)
 
-### JR-ML-UI-057 — Evidence.
+### JR-ML-UI-050 — Each radio group controls `disabled` state of associated inputs:.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 257-267)
+
+**Detail**:
+
+- **NN Growth Trigger**: `"preset_epochs"` enables preset-epochs-input, disables convergence-threshold-input; `"convergence"` reverses
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.3 Radio Button Enable/Disable Pattern']
+
+### JR-ML-UI-051 — Effort**: 2 days | **Repo**: juniper-canopy.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 534-543)
+
+**Detail**:
+
+**Effort**: 2 days | **Repo**: juniper-canopy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.4 Canopy Progress Indicators']
+
+### JR-ML-UI-052 — File**: `juniper-canopy/src/backend/demo_backend.py`.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 361-385)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 479-485)
 
 **Detail**:
 
 **File**: `juniper-canopy/src/backend/demo_backend.py`
 
-*Merged from 2 extraction candidates (slices: 3c-2b).*
+**Notes**:
 
-### JR-ML-UI-058 — Fix.
+[v3 brief repaired from cited content; was: 'Evidence']
 
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 522-532)
-
-**Detail**:
-
-The `get_dataset_data()` method (line 733) already demonstrates the correct pattern: `except Exception as e` with a warning log. Apply the same pattern to the methods listed above that handle data transformation (especially `get_decis
-
-### JR-ML-UI-059 — Fix Approaches.
+### JR-ML-UI-053 — File**: `juniper-canopy/src/backend/state_sync.py` (lines 125-135) — correctly fetches and transforms topology.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 389-431)
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 479-485)
 
 **Detail**:
 
-#### Approach A: Add cascade connections to demo backend (RECOMMENDED)
+**File**: `juniper-canopy/src/backend/state_sync.py` (lines 125-135) — correctly fetches and transforms topology.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Evidence']
+
+### JR-ML-UI-054 — Fix** `scripts/juniper-canopy.service`:.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 107-128)
+
+**Detail**:
+
+- ExecStart=/opt/miniforge3/envs/JuniperPython/bin/python -m uvicorn main:app --host 0.0.0.0 --port 8050
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.1 juniper-canopy changes (Step 2.3)']
 
 ### JR-CAN-UI-022 — Hardcoded colors must be extracted to theme_constants.py for DRY.
 
@@ -1011,7 +1034,7 @@ The `get_dataset_data()` method (line 733) already demonstrates the correct patt
 Issue 3.3.1: Color strings repeated across components. Extract to
 theme_constants.py for centralized management and dark/light theme support.
 
-### JR-ML-UI-060 — High Priority.
+### JR-ML-UI-055 — High Priority.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1022,7 +1045,26 @@ theme_constants.py for centralized management and dark/light theme support.
 
 | `cascade_add` correlation           | NETWORK_TOPOLOGY_DISPLAY_ANALYSIS | Hardcoded `0.0` instead of actual best candidate correlation             |
 
-### JR-ML-UI-061 — Issue Summary Table.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-UI-056 — In demo mode, networks with 2+ hidden units display an **incomplete topology** — missing the signature cascade connections between hidden….
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 385-389)
+
+**Detail**:
+
+In demo mode, networks with 2+ hidden units display an **incomplete topology** — missing the signature cascade connections between hidden units. The visualization appears as a standard feedforward network rather than a cascade correlation network.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Consequence']
+
+### JR-ML-UI-057 — Issue Summary Table.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1033,23 +1075,12 @@ theme_constants.py for centralized management and dark/light theme support.
 
 | **OI-5** | LOW | Quality | Initial sync topology never pushed to Dash store | juniper-canopy | **FIXED** (2beea5c) — fallback in `ServiceBackend.get_network_topology()` |
 
-### JR-ML-UI-062 — KL-1: Dataset Scatter Plot Empty in Service Mode.
+### JR-ML-UI-058 — KL-1: Dataset Scatter Plot Empty in Service Mode.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1963-1977)
-
-### JR-ML-UI-063 — Low Issues.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 78-89)
-
-**Detail**:
-
-- `--slient` typo in `wake_the_claude.bash:108` (should be `--silent`)
 
 ### JR-CAN-UI-023 — Modulo toggle for theme switching must use Dash State, not module-level flag.
 
@@ -1063,7 +1094,7 @@ theme_constants.py for centralized management and dark/light theme support.
 Issue 3.3.2: Theme toggle using module-level variable instead of callback State.
 Can cause race conditions in multi-user scenarios. Use dcc.Store for theme state.
 
-### JR-ML-UI-064 — NetworkVisualizer: minimum WS wiring in Phase B; deep migration deferred if cytoscape.
+### JR-ML-UI-059 — NetworkVisualizer: minimum WS wiring in Phase B; deep migration deferred if cytoscape.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1073,6 +1104,51 @@ Can cause race conditions in multi-user scenarios. Use dcc.Store for theme state
 **Notes**:
 
 Settled position C-21 from R3-03 table; cross-round consensus consolidation
+
+### JR-ML-UI-060 — New file**: `juniper-cascor/scripts/juniper-cascor-ctl`.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 253-263)
+
+**Detail**:
+
+**New file**: `juniper-cascor/scripts/juniper-cascor-ctl`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.5 juniper-cascor-ctl (Step 2.5)']
+
+### JR-ML-UI-061 — New file**: `juniper-data/scripts/juniper-data-ctl`.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 184-195)
+
+**Detail**:
+
+**New file**: `juniper-data/scripts/juniper-data-ctl`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.3 juniper-data-ctl (Step 2.4)']
+
+### JR-ML-UI-062 — New file**: `juniper-ml/scripts/juniper-all.target`.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 263-298)
+
+**Detail**:
+
+**New file**: `juniper-ml/scripts/juniper-all.target`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.6 juniper-all.target (Step 2.6)']
 
 ### JR-CAN-UI-024 — Numeric inputs must use validation styling (red border) for out-of-range values.
 
@@ -1091,18 +1167,22 @@ immediate feedback without requiring Apply-button interaction.
 
 Part of Issue
 
-### JR-ML-UI-065 — Overview.
+### JR-ML-UI-063 — Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 41-48)
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 187-200)
 
 **Detail**:
 
-- **Version**: 0.3.0 (pyproject.toml)
+Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:
 
-### JR-ML-UI-066 — Phase 1: Foundation (Constants + Settings).
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.4 Dependency Update When Adding Client Method']
+
+### JR-ML-UI-064 — Phase 1: Foundation (Constants + Settings).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1113,7 +1193,7 @@ Part of Issue
 
 1. Update `canopy_constants.py` with all new and changed constants
 
-### JR-ML-UI-067 — Phase 2: Demo Backend Cascade Connections (OI-3) — COMPLETE.
+### JR-ML-UI-065 — Phase 2: Demo Backend Cascade Connections (OI-3) — COMPLETE.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1124,7 +1204,7 @@ Part of Issue
 
 **Repos**: juniper-canopy only
 
-### JR-ML-UI-068 — Phase 2: systemd & Service Management (P1) -- COMPLETED.
+### JR-ML-UI-066 — Phase 2: systemd & Service Management (P1) -- COMPLETED.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1135,7 +1215,7 @@ Part of Issue
 
 **Goal**: Provide OS-native service management for all three core services.
 
-### JR-ML-UI-069 — Phases C–H — ❌ NOT STARTED.
+### JR-ML-UI-067 — Phases C–H — ❌ NOT STARTED.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1146,13 +1226,14 @@ Part of Issue
 
 ## 12. Items Not Yet Implemented
 
-### JR-ML-UI-070 — rAF coalescer must be scaffolded but disabled by default in Phase B; revisit in Phase B+1 if frame pressure detected.
+### JR-ML-UI-068 — rAF coalescer must be scaffolded but disabled by default in Phase B; revisit in Phase B+1 if frame pressure detected.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 50-120)
 - `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1475-1485)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 53-53)
 
 **Detail**:
 
@@ -1163,18 +1244,7 @@ D1 resolution: rAF coalescer disabled.
 
 **Notes**:
 
-Disagreement D1 per R1-04 §14. Revisit if §5.6 instrumentation shows frame pressure. Phase B (Day 8).
-
-### JR-ML-UI-071 — rAF coalescer scaffolded but DISABLED.
-
-**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 53-53)
-
-**Notes**:
-
-Settled position C-16 from R3-03 table; cross-round consensus consolidation
+[v3 xround merge: rounds=R0-0,R1-0,R3-0, n=2] Disagreement D1 per R1-04 §14. Revisit if §5.6 instrumentation shows frame pressure. Phase B (Day 8). / Settled position C-16 from R3-03 table; cross-round consensus consolidation
 
 ### JR-CAN-UI-025 — Remove dead _create_candidate_pool_display from MetricsPanel.
 
@@ -1192,7 +1262,37 @@ File: src/frontend/components/metrics_panel.py
 
 [v2 ARCH→UI re-bucket]
 
-### JR-ML-UI-072 — Step 2: Validate Existing Fixes.
+### JR-ML-UI-069 — Resolved**: Previously, `juniper_plant_all.bash` used `/opt/miniforge3/envs/JuniperCanopy/bin/python` for all services. Fixed in commit….
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 434-444)
+
+**Detail**:
+
+**Resolved**: Previously, `juniper_plant_all.bash` used `/opt/miniforge3/envs/JuniperCanopy/bin/python` for all services. Fixed in commit `03aec86` — each service
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.3 Conda Environment Mapping']
+
+### JR-ML-UI-070 — `--slient` typo in `wake_the_claude.bash:108` (should be `--silent`).
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 78-89)
+
+**Detail**:
+
+- `--slient` typo in `wake_the_claude.bash:108` (should be `--silent`)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Low Issues']
+
+### JR-ML-UI-071 — Step 2: Validate Existing Fixes.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1203,14 +1303,89 @@ File: src/frontend/components/metrics_panel.py
 
 | B-5.1 | `_apply_parameters_handler` stores `"enabled" in (conv_enabled or [])` → correct boolean. No continuous sync. |
 
-### JR-ML-UI-073 — UI Lock and Visualization: UI locking during training and visualization improvements.
+### JR-ML-UI-072 — Strengths**: Fixes demo mode topology to match CasCor architecture.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 389-431)
+
+**Detail**:
+
+#### Approach A: Add cascade connections to demo backend (RECOMMENDED)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix Approaches']
+
+### JR-ML-UI-073 — The current topology visualization is exclusively **node-centric** — showing nodes and their connections as a graph. A **weight-centric**….
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 532-536)
+
+**Detail**:
+
+The current topology visualization is exclusively **node-centric** — showing nodes and their connections as a graph. A **weight-centric** view would display the raw weight arrays from CasCor, showing the actual numerical structure of the network.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Description']
+
+### JR-ML-UI-074 — The `get_dataset_data()` method (line 733) already demonstrates the correct pattern: `except Exception as e` with a warning log. Apply the….
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 522-532)
+
+**Detail**:
+
+The `get_dataset_data()` method (line 733) already demonstrates the correct pattern: `except Exception as e` with a warning log. Apply the same pattern to the methods listed above that handle data transformation (especially `get_decis
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix']
+
+### JR-ML-UI-075 — This document was produced by cross-referencing 34 source documents across the Juniper ecosystem:.
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 488-504)
+
+**Detail**:
+
+| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker      | 🔴 Open |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '15.3 juniper-cascor-worker']
+
+### JR-ML-UI-076 — Two collapsible subsections with 22 total input components, radio button groups for mutually exclusive options, conditional enable/disable….
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 31-39)
+
+**Detail**:
+
+## 2. Component ID Registry
+
+**Notes**:
+
+[v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: 'Target State']
+
+### JR-ML-UI-077 — UI Lock and Visualization: UI locking during training and visualization improvements.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_08_UI_LOCK_AND_VISUALIZATION.md` (lines 1-45)
 
-### JR-ML-UI-074 — v1.0.0–v2.0.0 Primary Sources.
+### JR-ML-UI-078 — v1.0.0–v2.0.0 Primary Sources.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -1221,7 +1396,22 @@ File: src/frontend/components/metrics_panel.py
 
 | 1 | `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
 
-### JR-ML-UI-075 — Work Unit 1: Worktree Developer Experience (HIGH).
+### JR-ML-UI-079 — **Version**: 0.3.0 (pyproject.toml).
+
+**Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 41-48)
+
+**Detail**:
+
+- **Version**: 0.3.0 (pyproject.toml)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Overview']
+
+### JR-ML-UI-080 — Work Unit 1: Worktree Developer Experience (HIGH).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
