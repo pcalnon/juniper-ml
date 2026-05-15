@@ -1,12 +1,12 @@
 # Requirements — juniper-cascor-client (ccl)
 
-**Total entries**: 33
+**Total entries**: 31
 
-**By status**: proposed=19 | shipped=14
+**By status**: proposed=17 | shipped=14
 
-**By priority**: P0=2 | P1=22 | P2=9
+**By priority**: P0=2 | P1=20 | P2=9
 
-**By category**: DOC=13 | TEST=4 | API=4 | ARCH=4 | LOCK=2 | OPS=2 | SEC=2 | TRAIN=2
+**By category**: DOC=13 | TEST=5 | API=4 | LOCK=2 | OPS=2 | SEC=2 | ARCH=2 | TRAIN=1
 
 ---
 
@@ -205,6 +205,7 @@ Shipped in v0.2.0 (2026-03-21)
 **Sources**:
 - `juniper-cascor-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 152-154)
 - `juniper-cascor-client/notes/AGENTS_MD_UPDATE_PLAN_2026-04-02.md` (lines 51-56)
+- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 112-118)
 
 **Detail**:
 
@@ -214,7 +215,7 @@ exception hierarchy (7 exception classes), design patterns (context manager, cal
 
 **Notes**:
 
-High severity: agents have no guidance on codebase structure
+[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents have no guidance on codebase structure / Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
 
 ### JR-CCL-DOC-006 — Add Directory Layout section to AGENTS.md documenting complete directory tree with annotations.
 
@@ -275,6 +276,7 @@ Dataset Configuration.
 **Sources**:
 - `juniper-cascor-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 58-77)
 - `juniper-cascor-client/notes/AGENTS_MD_UPDATE_PLAN_2026-04-02.md` (lines 23-28)
+- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 50-76)
 
 **Detail**:
 
@@ -284,58 +286,39 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 
 **Notes**:
 
-High severity: agents cannot orient themselves or find major code components
+[v3 xrepo fuzzy merge: owners=ccl,dcl, n=2] High severity: agents cannot orient themselves or find major code components / Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
+and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
+Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
 
-### JR-CCL-ARCH-002 — Refactor client.py to use constants module (~20 replacements of hardcoded values).
+### JR-CCL-TEST-004 — Hardcoded values refactor implementation plan: Phase 1 create constants module, Phase 2 refactor source files, Phase 3 validate test suite and pre-commit, Phase 4 documentation update.
 
-**Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
+**Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ccl
 
 **Sources**:
 - `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 42-44)
+- `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 46-48)
+- `juniper-cascor-worker/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 1-79)
+- `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 38-41)
 
 **Notes**:
 
-Part of hardcoded-values refactor (HIGH priority)
+[v2 ARCH→TEST re-bucket] [v3 xrepo fuzzy merge: owners=ccl,cwk,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
-### JR-CCL-ARCH-003 — Refactor testing/fake_client.py to use testing constants (~40 replacements of hardcoded values).
+### JR-CCL-ARCH-002 — Refactor testing/fake_client.py to use testing constants (~40 replacements of hardcoded values).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
 
 **Sources**:
 - `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 50-52)
-
-**Notes**:
-
-Part of hardcoded-values refactor (HIGH priority)
-
-### JR-CCL-TRAIN-002 — Refactor testing/scenarios.py to use testing constants (~50 replacements of hardcoded values).
-
-**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ccl
-
-**Sources**:
 - `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 54-56)
-
-**Detail**:
-
-Largest refactor: loss curve parameters, accuracy curve parameters, network topology generation,
-decision boundary generation constants.
+- `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 42-45)
+- `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 46-49)
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket] Part of hardcoded-values refactor (HIGH priority)
+[v3 xrepo fuzzy merge: owners=ccl,dcl, n=4] Part of hardcoded-values refactor (HIGH priority)
 
-### JR-CCL-ARCH-004 — Refactor ws_client.py to use constants module (~4 replacements of hardcoded values).
-
-**Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ccl
-
-**Sources**:
-- `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 46-48)
-
-**Notes**:
-
-Part of hardcoded-values refactor (HIGH priority)
-
-### JR-CCL-TEST-004 — Run full test suite validation after constants refactor to ensure scenario outputs and behaviors unchanged.
+### JR-CCL-TEST-005 — Run full test suite validation after constants refactor to ensure scenario outputs and behaviors unchanged.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ccl
 

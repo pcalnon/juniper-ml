@@ -1,12 +1,12 @@
 # Requirements — juniper-cascor (cas)
 
-**Total entries**: 123
+**Total entries**: 122
 
-**By status**: proposed=75 | designed=3 | shipped=41 | deferred=4
+**By status**: proposed=74 | designed=3 | shipped=41 | deferred=4
 
-**By priority**: P0=21 | P1=38 | P2=49 | P3=15
+**By priority**: P0=21 | P1=38 | P2=49 | P3=14
 
-**By category**: TRAIN=36 | TEST=19 | ARCH=19 | API=14 | TOOL=10 | PERF=6 | WS=6 | OBS=5 | DOC=4 | LOCK=3 | DEP=1
+**By category**: TRAIN=35 | TEST=19 | ARCH=19 | API=14 | TOOL=10 | PERF=6 | WS=6 | OBS=5 | DOC=4 | LOCK=3 | DEP=1
 
 ---
 
@@ -1431,21 +1431,6 @@ JuniperData → artifact → tensor conversion → training). All current tests 
 
 Native installer for Claude Code (no Node.js required), uvx for Serena (from GitHub), global MCP server configuration with --project-from-cwd auto-detection, validation procedures (claude doctor, /mcp status check), troubleshooting (uvx path, Serena startup, port 24282, PATH resolution). File locations: ~/.local/bin/claude, ~/.claude/settings.json, ~/.claude.json. Per-project configuration alternative. Documentation complete with 8 sections and reference tables.
 
-### JR-CAS-TRAIN-035 — Future enhancements: CAN-000 through CAN-021 (meta param menu, training metrics UI, parameter tuning tab, snapshot capture/replay).
-
-**Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: cas
-
-**Sources**:
-- `juniper-cascor/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 280-310)
-
-**Detail**:
-
-CAN-000: Meta param menu periodic update pause. CAN-001: Training Loss time window toggle. CAN-002: Custom rolling time window. CAN-003: Retain candidate pool data per node (expandable "Previous Pools"). CAN-004-005: Meta param tuning tab with pin/unpin. CAN-006-013: Network/candidate/optimizer meta parameters. CAN-014-015: Snapshot captures, replay with live tuning. CAN-016a-b: Dashboard layout save/load, dataset import/generate. CAN-017-021: Tooltips, tutorials, network hierarchy, population views. Status: 🔴 NOT STARTED for all items.
-
-**Notes**:
-
-[v2 remap: BG→TRAIN]
-
 ### JR-CAS-PERF-005 — Infrastructure enhancements: GPU/CUDA support, continuous profiling (Grafana Pyroscope), large file refactoring, auto-generated API docs.
 
 **Status**: proposed  **Priority**: P3  **Category**: PERF  **Owner**: cas
@@ -1461,7 +1446,7 @@ P3-NEW-003: GPU/CUDA support (XL, 2-4 weeks, 🔴 NOT STARTED). P3-NEW-004: Cont
 
 [v2 ARCH→PERF re-bucket] [v2 remap: AR→ARCH]
 
-### JR-CAS-TRAIN-036 — Per-instance queue management to avoid cross-instance interference.
+### JR-CAS-TRAIN-035 — Per-instance queue management to avoid cross-instance interference.
 
 **Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: cas
 

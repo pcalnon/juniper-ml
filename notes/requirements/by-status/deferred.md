@@ -10,17 +10,6 @@
 
 ---
 
-### JR-ML-SEC-006 — 15.3 juniper-cascor-worker.
-
-**Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 396-434)
-
-**Detail**:
-
-| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker | 🔴 Open |
-
 ### JR-ML-OBS-005 — 7.0 Critical and High-Priority Enhancements (v3.0.0).
 
 **Status**: deferred  **Priority**: P0  **Category**: OBS  **Owner**: ml
@@ -28,16 +17,9 @@
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 193-203)
 
-### JR-ML-SEC-007 — 9.4 Validation status.
+**Notes**:
 
-**Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 574-624)
-
-**Detail**:
-
-arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
+[v3 thin-brief flagged]
 
 ### JR-ML-OBS-006 — Additional completed work (not in original plan).
 
@@ -50,18 +32,22 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 ## 8. Critical Bug Fixes (Phase 1)
 
-### JR-ML-SEC-008 — Closing PRs.
+### JR-ML-SEC-006 — `amtool check-config` cannot run in the snap-confined `amtool`.
 
 **Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 648-676)
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 574-624)
 
 **Detail**:
 
-| **A.1 / A.2a–e (cascor training metrics dead-defined)** | juniper-cascor#204 (OBS-WIRE-01) — wired 5 emission sites |
+arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
-### JR-ML-SEC-009 — Issue Remediations, Section 13.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '9.4 Validation status']
+
+### JR-ML-SEC-007 — Issue Remediations, Section 13.
 
 **Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -86,6 +72,36 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
+### JR-ML-SEC-008 — The remaining open items are all P3 / soft-blocker items tracked in.
+
+**Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 648-676)
+
+**Detail**:
+
+| **A.1 / A.2a–e (cascor training metrics dead-defined)** | juniper-cascor#204 (OBS-WIRE-01) — wired 5 emission sites |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Closing PRs']
+
+### JR-ML-SEC-009 — This document was produced by cross-referencing:.
+
+**Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 396-434)
+
+**Detail**:
+
+| CW-01 | **MEDIUM** | `receive_json()` doesn't catch `json.JSONDecodeError` — malformed server message crashes worker | 🔴 Open |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '15.3 juniper-cascor-worker']
+
 ### JR-ML-SEC-010 — v3.0.0 Cross-Referenced Source Documents (34 total).
 
 **Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
@@ -109,9 +125,13 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 | DEPLOY-RD-01 | 0.3.0           | Production compose profile with resource limits          | 🔴 NOT DONE                                                        |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-DATA-005 — 14.3 Deferred Roadmap Items.
+### JR-ML-DATA-004 — 14.3 Deferred Roadmap Items.
 
 **Status**: deferred  **Priority**: P1  **Category**: DATA  **Owner**: ml
 
@@ -123,31 +143,13 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 ## 15. Client Library Outstanding Items
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-SEC-055 — 3.0 Phase 1 Execution Results (2026-04-09).
-
-**Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 53-82)
-
-**Detail**:
-
-| CR-006 deconflation (fit())                                            | VERIFIED             | `cascade_correlation.py:1450` routes `max_epochs` to `train_output_layer()`; `cascade_correlation.py:1476-1488` routes `max_iterations` to `grow_network()`           |
-
-### JR-ML-DATA-006 — 7.3 juniper-data — Constants Refactor ✅; Roadmap Items Deferred.
-
-**Status**: deferred  **Priority**: P1  **Category**: DATA  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 392-402)
-
-**Detail**:
-
-| HTTP status codes → `starlette.status`                            | ✅ Complete                              |
-
-### JR-ML-SEC-056 — 7.5 juniper-deploy — Multiple Plans Partially Complete.
+### JR-ML-SEC-055 — 7.5 juniper-deploy — Multiple Plans Partially Complete.
 
 **Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -158,12 +160,31 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 | Post-release roadmap: Grafana dashboards, Prometheus alerting | ✅ Done (v0.2.0)                                                         |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 ### JR-ML-API-006 — CAN-015g/h snapshot-loading endpoints: restore, replay, resume, retrain with FSM state transitions.
 
 **Status**: deferred  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/PHASE_6E_DEFERRED_CAN-015GH_DESIGN.md` (lines 1-100)
+
+### JR-ML-DATA-005 — Deferred items**: RD-008 (SIM117 test fixes), RD-015 (IPC/ZeroMQ), RD-016 (GPU), RD-017 (continuous profiling).
+
+**Status**: deferred  **Priority**: P1  **Category**: DATA  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 392-402)
+
+**Detail**:
+
+| HTTP status codes → `starlette.status`                            | ✅ Complete                              |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.3 juniper-data — Constants Refactor ✅; Roadmap Items Defer']
 
 ### JR-CAS-TRAIN-021 — Implement full IPC architecture to separate Cascor from Canopy process for production deployment.
 
@@ -183,7 +204,7 @@ management and health checks.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-SEC-057 — Issue Remediations, Section 14 — Performance and Roadmap.
+### JR-ML-SEC-056 — Issue Remediations, Section 14 — Performance and Roadmap.
 
 **Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -193,6 +214,21 @@ management and health checks.
 **Detail**:
 
 #### JD-PERF-01: Sync `generator.generate()` Blocks Event Loop
+
+### JR-ML-SEC-057 — Phase 1 was executed on branch `fix/interface-phase1-verification`. All three Tier 0.
+
+**Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 53-82)
+
+**Detail**:
+
+| CR-006 deconflation (fit())                                            | VERIFIED             | `cascade_correlation.py:1450` routes `max_epochs` to `train_output_layer()`; `cascade_correlation.py:1476-1488` routes `max_iterations` to `grow_network()`           |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.0 Phase 1 Execution Results (2026-04-09)']
 
 ### JR-DEP-OBS-007 — Replace log-only burn-rate alert severity with paging severity after 30-day soak period.
 
@@ -219,7 +255,7 @@ for §3.1, §3.2, §3.5 (which have all pre-conditions met today).
 
 Captured in POST_METRICS_MON_TRACKER; deferred after program closure.
 
-### JR-ML-UI-023 — Canopy dashboard self-call refactor: defer weight display, implement metrics playback, option C trigger conditions.
+### JR-ML-UI-028 — Canopy dashboard self-call refactor: defer weight display, implement metrics playback, option C trigger conditions.
 
 **Status**: deferred  **Priority**: P2  **Category**: UI  **Owner**: ml
 
@@ -241,7 +277,7 @@ Test suite runs in 45+ minutes; target ≤5 minutes. This is a deferred medium-p
 
 Deferred optimization; developer productivity; noted in doc status
 
-### JR-ML-SEC-118 — Per-command HMAC deferred indefinitely.
+### JR-ML-SEC-117 — Per-command HMAC deferred indefinitely.
 
 **Status**: deferred  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -252,7 +288,7 @@ Deferred optimization; developer productivity; noted in doc status
 
 Settled position C-33 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-149 — Phase E-server deferred perper-client queue and backpressure policy matrix.
+### JR-ML-WS-137 — Phase E-server deferred perper-client queue and backpressure policy matrix.
 
 **Status**: deferred  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -271,7 +307,7 @@ Settled position C-33 from R3-03 table; cross-round consensus consolidation
 G7 - 50 ms SLO target sits one bucket below 100 ms +inf cap, limiting breach-detection precision.
 Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKETS_RATIONALE.md.
 
-### JR-ML-ARCH-209 — Single-tenant v1; multi-tenant replay isolation deferred.
+### JR-ML-ARCH-193 — Single-tenant v1; multi-tenant replay isolation deferred.
 
 **Status**: deferred  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
@@ -282,29 +318,7 @@ Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKE
 
 Settled position C-24 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-OBS-139 — 2.2 Documents in `notes/`.
-
-**Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 82-105)
-
-**Detail**:
-
-| CANOPY_DASHBOARD_DISPLAY_FIXES.md          | 3 display issues (metrics, dataset, topology) | Issue 3 (output weights transposition): **FIXED** (committed in adapter). Issues 1-2: **FIXED** per CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md |
-
-### JR-ML-OBS-140 — 3.9 R2-WORKER-DEDUP — juniper-cascor-worker contract-constant dedup.
-
-**Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 264-280)
-
-**Detail**:
-
-**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
-
-### JR-ML-TRAIN-099 — 6.1 juniper-cascor — Stale Code Removal.
+### JR-ML-TRAIN-102 — 6.1 juniper-cascor — Stale Code Removal.
 
 **Status**: deferred  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
@@ -316,9 +330,43 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 
 | CLN-CC-02 | **P2**   | Delete stale `check.py` duplicate (600 lines) — copy of spiral_problem.py                        | `src/spiral_problem/check.py`                                                            | 10 min      |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-API-093 — 7.3 The 25-epoch throttle caveat.
+### JR-ML-DEP-045 — 9.4 Recommended Approach.
+
+**Status**: deferred  **Priority**: P3  **Category**: DEP  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 591-603)
+
+**Detail**:
+
+**Primary: Approach A (Incremental Fix)** with elements of Approach C for systemd units.
+
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-OBS-144 — Background.** Optional follow-up from R2 exit-gate decision: the worker has two duplicated literals (`LIVENESS_TICK_BUDGET_MS`,….
+
+**Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 264-280)
+
+**Detail**:
+
+**Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.9 R2-WORKER-DEDUP — juniper-cascor-worker contract-constan']
+
+### JR-ML-API-087 — `CascorTrainStepLatencyFastBurn` and `CascorTrainStepLatencySlowBurn`.
 
 **Status**: deferred  **Priority**: P3  **Category**: API  **Owner**: ml
 
@@ -329,16 +377,9 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 
 annotation `description` blocks (`alert_rules.yml:751`, `:819`). The
 
-### JR-ML-DEP-043 — 9.4 Recommended Approach.
+**Notes**:
 
-**Status**: deferred  **Priority**: P3  **Category**: DEP  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 591-603)
-
-**Detail**:
-
-**Primary: Approach A (Incremental Fix)** with elements of Approach C for systemd units.
+[v3 brief repaired from cited content; was: '7.3 The 25-epoch throttle caveat']
 
 ### JR-DAT-OBS-007 — Continuous profiling (Grafana Pyroscope, Prometheus, OpenTelemetry) deferred until production deployment.
 
@@ -362,7 +403,7 @@ RD-017 (DATA-020). Deferred. Partially addressed with Prometheus + Sentry in com
 
 Baseline py-spy profiles for key operations enable performance regression detection.
 
-### JR-ML-OBS-141 — Defer full worker migration; adopt only R1.2 probe contract constants.
+### JR-ML-OBS-145 — Defer full worker migration; adopt only R1.2 probe contract constants.
 
 **Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
@@ -373,7 +414,7 @@ Baseline py-spy profiles for key operations enable performance regression detect
 
 Decided: no full migration now. Use contract constants only.
 
-### JR-ML-API-094 — Ecosystem-Wide Patterns.
+### JR-ML-API-088 — Ecosystem-Wide Patterns.
 
 **Status**: deferred  **Priority**: P3  **Category**: API  **Owner**: ml
 
@@ -406,7 +447,7 @@ RD-016 (DATA-019). Deferred. PyTorch no longer a dependency. CUDA not in CI.
 
 [v2 ARCH→WS re-bucket] RD-015 (DATA-018). Deferred. REST migration success reduced urgency.
 
-### JR-ML-SEC-216 — Phase 3: WebSocket Topology Push (OI-2) — COMPLETE.
+### JR-ML-SEC-215 — Phase 3: WebSocket Topology Push (OI-2) — COMPLETE.
 
 **Status**: deferred  **Priority**: P3  **Category**: SEC  **Owner**: ml
 
@@ -417,7 +458,7 @@ RD-016 (DATA-019). Deferred. PyTorch no longer a dependency. CUDA not in CI.
 
 **Repos**: juniper-canopy only
 
-### JR-ML-SEC-217 — Phase 4: Weight-Centric Topology Toggle (OF-1) — COMPLETE.
+### JR-ML-SEC-216 — Phase 4: Weight-Centric Topology Toggle (OF-1) — COMPLETE.
 
 **Status**: deferred  **Priority**: P3  **Category**: SEC  **Owner**: ml
 
@@ -440,7 +481,22 @@ RD-016 (DATA-019). Deferred. PyTorch no longer a dependency. CUDA not in CI.
 Dual-path (legacy + JuniperData) creates maintenance burden. Once JuniperData stable,
 remove legacy spiral generator from spiral_problem.py.
 
-### JR-ML-SEC-218 — Worker security modules (mTLS, anomaly detection, rate limiting, audit) are not integrated into runtime.
+### JR-ML-OBS-146 — The following issues were identified through cross-referencing all prior documents against the current codebase. Issues are ordered by….
+
+**Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 82-105)
+
+**Detail**:
+
+| CANOPY_DASHBOARD_DISPLAY_FIXES.md          | 3 display issues (metrics, dataset, topology) | Issue 3 (output weights transposition): **FIXED** (committed in adapter). Issues 1-2: **FIXED** per CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.2 Documents in `notes/`']
+
+### JR-ML-SEC-217 — Worker security modules (mTLS, anomaly detection, rate limiting, audit) are not integrated into runtime.
 
 **Status**: deferred  **Priority**: P3  **Category**: SEC  **Owner**: ml
 

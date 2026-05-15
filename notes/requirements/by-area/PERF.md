@@ -2,13 +2,13 @@
 
 **Area**: performance / scalability — throughput, latency, parallelization, CUDA
 
-**Total entries**: 36
+**Total entries**: 34
 
-**By status**: proposed=32 | deferred=2 | superseded=2
+**By status**: proposed=30 | deferred=2 | superseded=2
 
-**By priority**: P0=3 | P1=8 | P2=21 | P3=4
+**By priority**: P0=3 | P1=7 | P2=20 | P3=4
 
-**By owner**: ml=25 | cas=6 | can=4 | dat=1
+**By owner**: ml=23 | cas=6 | can=4 | dat=1
 
 ---
 
@@ -143,18 +143,7 @@ RISK-04 quick-fix. Phase E (Day 12) full backpressure deferred per R0-03 §7.2 u
 **Sources**:
 - `juniper-ml/notes/ROADMAP_AUDIT_2026-05-05.md` (lines 79-84)
 
-### JR-ML-PERF-009 — Phase E: Per-client pump tasks + bounded queues + policy matrix; default drop_oldest_progress_only.
-
-**Status**: proposed  **Priority**: P1  **Category**: PERF  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-98)
-
-**Notes**:
-
-Phase E major milestone from R3-03 Phase index (§2); orchestrates implementation effort
-
-### JR-ML-PERF-010 — 16. Performance Issues (v4 new section).
+### JR-ML-PERF-009 — Issues identified through deep code analysis that impact runtime performance.
 
 **Status**: superseded  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -164,15 +153,15 @@ Phase E major milestone from R3-03 Phase index (§2); orchestrates implementatio
 
 **Notes**:
 
-[v2 ARCH→PERF re-bucket] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
+[v2 ARCH→PERF re-bucket] [v3 brief repaired from cited content; was: '16. Performance Issues (v4 new section)'] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
 
 ---
 
-Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
+[v3 brief repaired from cited content; was: '16. Performance Issues (v4 new section)'] Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
-### JR-ML-PERF-011 — V6 Partial — Agent D: Quality, Housekeeping, Performance, Configuration.
+### JR-ML-PERF-010 — V6 Partial — Agent D: Quality, Housekeeping, Performance, Configuration.
 
 **Status**: superseded  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -182,13 +171,6 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Notes**:
 
 [v2 ARCH→PERF re-bucket] v6 partial agent output; pre-dates V6_REMEDIATION_ANALYSIS — likely subsumed by V6/V7 entries already captured by ml-C
-
-### JR-ML-PERF-012 — 9.3 Inhibit rules.
-
-**Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 569-574)
 
 ### JR-CAS-PERF-002 — Add GPU/CUDA support for all tensor operations and training.
 
@@ -210,7 +192,7 @@ Issue 3.4.1: Default API timeout too long for frequently-polled endpoints.
 Set shorter timeout (2-5s) for metrics/state endpoints, keep longer (10s) for
 heavy operations like dataset upload.
 
-### JR-ML-PERF-013 — CW-02: `requirements.lock` Includes CUDA Packages (~2-4GB Bloat).
+### JR-ML-PERF-011 — CW-02: `requirements.lock` Includes CUDA Packages (~2-4GB Bloat).
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -221,7 +203,7 @@ heavy operations like dataset upload.
 
 [v2 ARCH→PERF re-bucket]
 
-### JR-ML-PERF-014 — CW-08: Top-Level `import torch` — First-Task Latency.
+### JR-ML-PERF-012 — CW-08: Top-Level `import torch` — First-Task Latency.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -256,7 +238,7 @@ Line 775: list comprehension stores all discarded values. Unlike CandidateUnit v
 (fixed in CASCOR-P1-008), this version still has OOM risk. Apply same fix: simple
 for-loop with MAX_ROLL_COUNT cap.
 
-### JR-ML-PERF-015 — Implement performance optimizations from training analysis.
+### JR-ML-PERF-013 — Implement performance optimizations from training analysis.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -267,7 +249,7 @@ for-loop with MAX_ROLL_COUNT cap.
 
 Throughput and latency improvements.
 
-### JR-ML-PERF-016 — Latency instrumentation hooks for set_params round-trip measurement.
+### JR-ML-PERF-014 — Latency instrumentation hooks for set_params round-trip measurement.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
@@ -290,61 +272,63 @@ Throughput and latency improvements.
 Issue 3.3.4: Blocking sleep in parameter retry callback blocks event loop.
 Use asyncio.sleep() or defer via callback scheduling instead.
 
-### JR-ML-PERF-017 — PERF-CC-01: Blocking `torch.save`/`torch.load` in Async-Adjacent Code Paths.
+### JR-ML-PERF-015 — PERF-CC-01: Blocking `torch.save`/`torch.load` in Async-Adjacent Code Paths.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4109-4123)
 
-### JR-ML-PERF-018 — PERF-CC-02: `replay_since` Scans Entire Replay Buffer O(n).
+### JR-ML-PERF-016 — PERF-CC-02: `replay_since` Scans Entire Replay Buffer O(n).
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4126-4140)
 
-### JR-ML-PERF-019 — PERF-CC-03: `_broadcast_training_state` Uses `hasattr` Check.
+### JR-ML-PERF-017 — PERF-CC-03: `_broadcast_training_state` Uses `hasattr` Check.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4143-4157)
 
-### JR-ML-PERF-020 — PERF-CN-01: 33 of 50 Dash Callbacks Missing `prevent_initial_call=True`.
+### JR-ML-PERF-018 — PERF-CN-01: 33 of 50 Dash Callbacks Missing `prevent_initial_call=True`.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4075-4089)
 
-### JR-ML-PERF-021 — PERF-CN-02: f-string Logging in Hot Paths (71 Occurrences).
+### JR-ML-PERF-019 — PERF-CN-02: f-string Logging in Hot Paths (71 Occurrences).
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4092-4106)
 
-### JR-ML-PERF-022 — PERF-JD-01: Readiness Probe Does Filesystem Glob on Every Call.
+### JR-ML-PERF-020 — PERF-JD-01: Readiness Probe Does Filesystem Glob on Every Call.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4160-4182)
 
-### JR-ML-PERF-023 — PERF-JD-02: High-Cardinality Prometheus Labels.
+### JR-ML-PERF-021 — PERF-JD-02: High-Cardinality Prometheus Labels.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4185-4193)
 
-### JR-ML-PERF-024 — Phase E (conditional): Per-client pump tasks + bounded queues + backpressure policy matrix.
+### JR-ML-PERF-022 — Phase E: Per-client pump tasks + bounded queues + policy matrix; default drop_oldest_progress_only.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 867-921)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 52-52)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-98)
 
 **Detail**:
 
@@ -367,20 +351,20 @@ Progress events droppable, state events flow or close (prevent silent loss).
 
 **Notes**:
 
-Conditional phase: enters if RISK-04 (backpressure issue) observed in production. Entry: Phase 0-cascor in main.
+[v3 xround merge: rounds=R2-0,R3-0, n=3] Conditional phase: enters if RISK-04 (backpressure issue) observed in production. Entry: Phase 0-cascor in main.
 May not ship if Phase B load testing shows slow-client impact acceptable. Exit: 5 tests green, load test (50 clients,
-1 slow) → fast clients <=200ms p95, dropped counters visible. Priority P2 (default), conditional entry makes it potentially deferred.
+1 slow) → fast clients <=200ms p95, dropped counters visible. Priority P2 (default), conditional entry makes it potentially deferred. / Settled position C-15 from R3-03 table; cross-round consensus consolidation / Phase E major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-PERF-025 — Phase E default backpressure = drop_oldest_progress_only.
+### JR-ML-PERF-023 — `ServiceDown` suppresses `HighErrorRate*` / `HighLatency*` for the same.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 52-52)
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 569-574)
 
 **Notes**:
 
-Settled position C-15 from R3-03 table; cross-round consensus consolidation
+[v3 brief repaired from cited content; was: '9.3 Inhibit rules']
 
 ### JR-CAS-PERF-004 — Create baseline performance profiles using py-spy for regression detection.
 

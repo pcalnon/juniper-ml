@@ -2,13 +2,13 @@
 
 **Area**: websocket / messaging — Canopy↔Cascor streaming, replay, control plane
 
-**Total entries**: 190
+**Total entries**: 173
 
-**By status**: proposed=167 | designed=15 | shipped=5 | deferred=2 | superseded=1
+**By status**: proposed=155 | designed=11 | shipped=5 | deferred=2
 
-**By priority**: P0=14 | P1=137 | P2=34 | P3=5
+**By priority**: P0=14 | P1=125 | P2=30 | P3=4
 
-**By owner**: ml=176 | cas=6 | can=4 | cwk=3 | dat=1
+**By owner**: ml=160 | cas=6 | can=4 | cwk=2 | dat=1
 
 ---
 
@@ -26,6 +26,8 @@
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 233-299)
 - `juniper-ml/notes/interface_proposals/R1-03_maximalist_comprehensive.md` (lines 352-420)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 39-39)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 112-112)
 
 **Detail**:
 
@@ -45,7 +47,7 @@ ReplayOutOfRange raised when last_seq < oldest_available - 1.
 
 **Notes**:
 
-GAP-WS-13. Carved out from Phase B per R0-03. Phase A-server (Days 2-3 of runbook). Request_id field is additive per R0-04 §12.2.
+[v3 xround merge: rounds=R1-0,R3-0, n=3] GAP-WS-13. Carved out from Phase B per R0-03. Phase A-server (Days 2-3 of runbook). Request_id field is additive per R0-04 §12.2. / Settled position C-02 from R3-03 table; cross-round consensus consolidation / Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 ### JR-ML-WS-003 — Cascor replay_since() method for lossless reconnect protocol.
 
@@ -102,6 +104,11 @@ GAP-WS-13, GAP-WS-21, GAP-WS-22, GAP-WS-29. R0-03 §8 scenario handling. Phase A
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 407-453)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 45-45)
+
+**Notes**:
+
+[v3 xround merge: rounds=R0-0,R3-0, n=2] Settled position C-08 from R3-03 table; cross-round consensus consolidation
 
 ### JR-ML-WS-008 — Cascor WebSocketManager emit monotonic sequence numbers on every message.
 
@@ -117,6 +124,13 @@ GAP-WS-13, GAP-WS-21, GAP-WS-22, GAP-WS-29. R0-03 §8 scenario handling. Phase A
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 98-103)
 - `juniper-ml/notes/interface_proposals/R1-03_maximalist_comprehensive.md` (lines 159-170)
+- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 1-50)
+- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1482-1492)
+- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 243-331)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 40-40)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-92)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 114-114)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 217-217)
 
 **Detail**:
 
@@ -133,7 +147,8 @@ Preserves existing command() API. Includes latency instrumentation via _client_l
 
 **Notes**:
 
-GAP-WS-01. Cross-round dup with ml-B/R3-03 which would have surfaced this. Phase A (Day 1 of runbook).
+[v3 xround merge: rounds=R0-0,R1-0,R2-0,R3-0, n=7] GAP-WS-01. Cross-round dup with ml-B/R3-03 which would have surfaced this. Phase A (Day 1 of runbook). / Disagreement D2 per R1-04 §14. Rationale: user experience during parameter adjustment. / Parallel with Phase 0-cascor. Loose entry gate (SDK ships independent of cascor). Gated by 
+`test_set_params_caller_cancellation_cleans_correlation_map` passing. Rollback: PyPI yank or flag-off. / Settled position C-03 from R3-03 table; cross-round consensus consolidation / Phase A-SDK major milestone from R3-03 Phase index (§2); orchestrates implementation effort / Phase 0-cascor checklist item from R3-03 §3.1 deliverables / Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
 ### JR-ML-WS-010 — Day-1 verification procedure: 5 greps + baseline measurement before any Phase B deploy.
 
@@ -160,7 +175,7 @@ Pre-flight checks (must complete before Phase B PR): (1) Confirm ecosystem clean
 
 [v2 ARCH→WS re-bucket] Gate on Phase B entry. Dedup with R4-02, R3-03.
 
-### JR-ML-WS-011 — High Issues.
+### JR-ML-WS-011 — H-JCW-1: `worker.py` at 68.23% coverage.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
@@ -170,6 +185,10 @@ Pre-flight checks (must complete before Phase B PR): (1) Confirm ecosystem clean
 **Detail**:
 
 **H-JCW-1: `worker.py` at 68.23% coverage**
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'High Issues']
 
 ### JR-ML-WS-012 — Phase A-server cascor prerequisites for browser WebSocket migration.
 
@@ -330,40 +349,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v2 ARCH→WS re-bucket] Backward-compatible at deployment level via --legacy. Operators may continue legacy mode during migration window. Default mode changed; no fallback default.
 
-### JR-ML-WS-015 — 0. Document Conventions.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 46-77)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-016 — 0.2 Table of Contents.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 21-45)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-017 — 1. Executive Summary.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 78-79)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-018 — 10. Risk Register.
+### JR-ML-WS-015 — 10. Risk Register.
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -372,86 +358,20 @@ WebSocket/messaging architecture gap or design
 
 **Notes**:
 
-WebSocket/messaging architecture gap or design
+[v3 thin-brief flagged] WebSocket/messaging architecture gap or design
 
-### JR-ML-WS-019 — 11. Open Questions for Human Review.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1898-1915)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-020 — 12. References.
+### JR-ML-WS-016 — [§0 Document Conventions](#0-document-conventions).
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1925-1926)
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 21-45)
 
 **Notes**:
 
-WebSocket/messaging architecture gap or design
+[v3 brief repaired from cited content; was: '0.2 Table of Contents'] WebSocket/messaging architecture gap or design
 
-### JR-ML-WS-021 — 2. WebSocket Surface Inventory.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 150-151)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-022 — 3. Bidirectional Message Contract.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 437-440)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-023 — 4. Nested vs Flat Data Structure Analysis.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 757-758)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-024 — 5. Latency Tolerance Matrix.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 815-823)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-025 — 6. Transport Split Design.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 974-977)
-
-**Notes**:
-
-WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-026 — 7. Missing / Broken Pieces (Enumerated).
+### JR-ML-WS-017 — Each item below has: a unique ID, severity (P0-P3), location, current state, target state, and a remediation hook.
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -460,20 +380,75 @@ WebSocket/messaging architecture gap or design
 
 **Notes**:
 
-WebSocket/messaging architecture gap or design
+[v3 brief repaired from cited content; was: '7. Missing / Broken Pieces (Enumerated)'] WebSocket/messaging architecture gap or design
 
-### JR-ML-WS-027 — 8. Browser-Side Verification Strategy.
+### JR-ML-WS-018 — Final resolution**: **LOW (latent)**. The bug is currently inactive because the dashboard doesn't consume WebSocket data (P5-RC-05). The….
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1426-1427)
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1174-1182)
 
 **Notes**:
 
-WebSocket/messaging architecture gap or design
+[v2 ARCH→WS re-bucket] [v3 brief repaired from cited content; was: '7.9 Relay Raw Metrics Severity: MODERATE vs LOW']
 
-### JR-ML-WS-028 — /ws/control handler returns protocol-error envelopes, echoes command_id, NO seq on command_response.
+### JR-ML-WS-019 — Given the latency tolerance matrix, here is the recommended transport for every operation in scope.
+
+**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 974-977)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6. Transport Split Design'] WebSocket/messaging architecture gap or design
+
+### JR-ML-WS-020 — `juniper-cascor` — cascor server (FastAPI, async).
+
+**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 46-77)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '0. Document Conventions'] WebSocket/messaging architecture gap or design
+
+### JR-ML-WS-021 — The original draft had 8 open questions; several have been resolved into recommendations during integration. Remaining genuinely-open….
+
+**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1898-1915)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '11. Open Questions for Human Review'] WebSocket/messaging architecture gap or design
+
+### JR-ML-WS-022 — This section documents every message type that crosses each repo boundary. **Asterisks (*) mark fields that are required**; all others are….
+
+**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 437-440)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3. Bidirectional Message Contract'] WebSocket/messaging architecture gap or design
+
+### JR-ML-WS-023 — This section tabulates every editable canopy UI element with its latency requirements and the recommended transport.
+
+**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 815-823)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5. Latency Tolerance Matrix'] WebSocket/messaging architecture gap or design
+
+### JR-ML-WS-024 — /ws/control handler returns protocol-error envelopes, echoes command_id, NO seq on command_response.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -484,7 +459,7 @@ WebSocket/messaging architecture gap or design
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-ML-WS-029 — 15: **CSWSH attack**.
+### JR-ML-WS-025 — 15: **CSWSH attack**.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -495,7 +470,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-030 — Add async set_params() method to CascorControlStream for WebSocket parameter control.
+### JR-ML-WS-026 — Add async set_params() method to CascorControlStream for WebSocket parameter control.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -521,7 +496,7 @@ ISS-02 MODERATE. WebSocket relay state callback (cascor_service_adapter.py:218-2
 
 Currently latent because status bar makes fresh REST calls. Mitigating factor masks the bug in production but architectural risk remains.
 
-### JR-ML-WS-031 — Adopt WebSocket-based remote worker architecture (Approach A) with phased rollout through Phase 4.
+### JR-ML-WS-027 — Adopt WebSocket-based remote worker architecture (Approach A) with phased rollout through Phase 4.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -536,7 +511,7 @@ Phases: 1a security fixes, 1b WebSocket endpoint, 2 remote agent, 3 unified dist
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-032 — Background _recv_task started on connect; parses inbound, pops future by command_id, set_result(envelope).
+### JR-ML-WS-028 — Background _recv_task started on connect; parses inbound, pops future by command_id, set_result(envelope).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -547,14 +522,14 @@ Phases: 1a security fixes, 1b WebSocket endpoint, 2 remote agent, 3 unified dist
 
 Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
-### JR-ML-WS-033 — BROKEN: - MISSING — feature does not exist.
+### JR-ML-WS-029 — BROKEN: - MISSING — feature does not exist.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 61-62)
 
-### JR-ML-WS-034 — Browser must send ping frame every 30s; expect pong within 5s; close and reconnect on timeout.
+### JR-ML-WS-030 — Browser must send ping frame every 30s; expect pong within 5s; close and reconnect on timeout.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -572,7 +547,7 @@ Cascor training_stream_handler inbound dispatcher already handles ping → pong 
 
 GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticated session).
 
-### JR-ML-WS-035 — C-02: `command_response` has NO `seq` field; `/ws/control` has no replay buffer.
+### JR-ML-WS-031 — C-02: `command_response` has NO `seq` field; `/ws/control` has no replay buffer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -583,7 +558,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-036 — C-05: Replay buffer = 1024 entries, env-configurable via `JUNIPER_WS_REPLAY_BUFFER_SIZE`.
+### JR-ML-WS-032 — C-05: Replay buffer = 1024 entries, env-configurable via `JUNIPER_WS_REPLAY_BUFFER_SIZE`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -596,7 +571,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
-### JR-ML-WS-037 — C-11: GAP-WS-19 `close_all` lock is RESOLVED on main; regression test only.
+### JR-ML-WS-033 — C-11: GAP-WS-19 `close_all` lock is RESOLVED on main; regression test only.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -609,7 +584,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
-### JR-ML-WS-038 — C-18: `ws-metrics-buffer` store shape = `{events, gen, last_drain_ms}` (NOT bare array).
+### JR-ML-WS-034 — C-18: `ws-metrics-buffer` store shape = `{events, gen, last_drain_ms}` (NOT bare array).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -622,7 +597,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
-### JR-ML-WS-039 — C-20: GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy `/api/ws_latency` + histogram), both in.
+### JR-ML-WS-035 — C-20: GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy `/api/ws_latency` + histogram), both in.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -635,7 +610,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-WS-040 — C-41: `emitted_at_monotonic: float` on every `/ws/training` broadcast envelope.
+### JR-ML-WS-036 — C-41: `emitted_at_monotonic: float` on every `/ws/training` broadcast envelope.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -646,7 +621,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-041 — Caller-cancellation cleans correlation map entry in finally.
+### JR-ML-WS-037 — Caller-cancellation cleans correlation map entry in finally.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -657,7 +632,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 
 Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
-### JR-ML-WS-042 — Canopy adapter must split apply_params into hot (WebSocket) and cold (REST) paths; route hot params via CascorControlStream.set_params.
+### JR-ML-WS-038 — Canopy adapter must split apply_params into hot (WebSocket) and cold (REST) paths; route hot params via CascorControlStream.set_params.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -680,7 +655,7 @@ Surface server error (do NOT fall back) on JuniperCascorClientError.
 
 Phase C (Day 10). Feature flag default False per R0-04 §5.6 ack-vs-effect analysis. Flag remains False in Phase C release.
 
-### JR-ML-WS-043 — Canopy must implement _control_stream_supervisor task that maintains persistent WebSocket connection to cascor.
+### JR-ML-WS-039 — Canopy must implement _control_stream_supervisor task that maintains persistent WebSocket connection to cascor.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -700,48 +675,28 @@ Latency instrumentation: read envelope["_client_latency_ms"] from set_params ack
 
 Enables Phase C and Phase D. Separate from metrics relay (Day 7). Histogram buckets per R0-04 §7.
 
-### JR-ML-WS-044 — Canopy training control buttons (start/stop/pause/resume/reset) must route over WebSocket with REST fallback.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 250-350)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1278-1355)
-
-**Detail**:
-
-Replace REST POST callback body with clientside callback calling window.cascorControlWS.send({command, command_id: uuidv4()}).
-Fallback: if window.cascorControlWS not connected, POST to /api/train/{command}.
-Add command_id generation in ws_dash_bridge.js.
-Track pending commands in JS map; mark button "pending verification" until command_response or matching state event.
-Cascor: accept optional command_id in inbound frames; echo in command_response (pass-through string, no validation).
-
-**Notes**:
-
-GAP-WS-32, RISK-13. Cascor Day 3 verify command_id echo. Phase D (Day 11). BLOCKED on Phase B-pre in production ≥24h.
-
-### JR-ML-WS-045 — Cascor /ws/control protocol error responses per GAP-WS-22.
+### JR-ML-WS-040 — Cascor /ws/control protocol error responses per GAP-WS-22.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 916-928)
 
-### JR-ML-WS-046 — Cascor backpressure handling with 0.5s per-send timeout (quick fix).
+### JR-ML-WS-041 — Cascor backpressure handling with 0.5s per-send timeout (quick fix).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 454-525)
 
-### JR-ML-WS-047 — Cascor command_id echo in control responses for per-command correlation.
+### JR-ML-WS-042 — Cascor command_id echo in control responses for per-command correlation.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 821-915)
 
-### JR-ML-WS-048 — Cascor Phase 0-cascor: sequence numbers, replay buffer, resume protocol, state coalescer fix.
+### JR-ML-WS-043 — Cascor Phase 0-cascor: sequence numbers, replay buffer, resume protocol, state coalescer fix.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -775,36 +730,7 @@ one-resume guard prevents replay amplification. Atomic snapshot_seq under seq_lo
 Parallel with Phase A-SDK. Entry: cascor main clean, GAP-WS-19 verified. Exit: 20 tests pass, 
 seq monotonic in staging, 24h soak zero gaps. Rollback: git revert (15 min TTF).
 
-### JR-ML-WS-049 — CascorControlStream.set_params default timeout must be 1.0s (not 5.0s) to prevent visible UI hang.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 1-50)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1482-1492)
-
-**Detail**:
-
-Disagreement D2: R0-04 §12.1 (1.0s) vs arch doc §7.1 (5.0s).
-Runbook picks 1.0s (R0-04 wins). Matches GAP-WS-32 per-command table; 5s slider hang is visibly bad.
-Callers override explicitly if needed.
-
-**Notes**:
-
-Disagreement D2 per R1-04 §14. Rationale: user experience during parameter adjustment.
-
-### JR-ML-WS-050 — CascorControlStream.set_params(params, *, timeout=1.0, command_id=None) -> dict.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 217-217)
-
-**Notes**:
-
-Phase A-SDK checklist item from R3-03 §4.1 deliverables
-
-### JR-ML-WS-051 — Constitution: 42+ settled positions on wire format, protocol behavior, security, phase order, observability, effort.
+### JR-ML-WS-044 — Constitution: 42+ settled positions on wire format, protocol behavior, security, phase order, observability, effort.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -839,7 +765,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 
 [v2 ARCH→WS re-bucket] Source of truth. All items settled; re-litigation via formal decision change only. Used by Phase 0-cascor through Phase I.
 
-### JR-ML-WS-052 — D-**CSWSH attack** (RISK-15): High.
+### JR-ML-WS-045 — D-**CSWSH attack** (RISK-15): High.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -850,7 +776,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-053 — D-Security: CSWSH closed: `canopy_ws_origin_rejected_total` page alert functional.
+### JR-ML-WS-046 — D-Security: CSWSH closed: `canopy_ws_origin_rejected_total` page alert functional.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -861,7 +787,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-054 — disconnect() cancels recv task, drains pending with set_exception(JuniperCascorConnectionError).
+### JR-ML-WS-047 — disconnect() cancels recv task, drains pending with set_exception(JuniperCascorConnectionError).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -872,7 +798,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 
 Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
-### JR-ML-WS-055 — Fail-fast: no SDK retries on timeout (C-04).
+### JR-ML-WS-048 — Fail-fast: no SDK retries on timeout (C-04).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -883,532 +809,532 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
 Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
-### JR-ML-WS-056 — GAP-WS-01: and the subsequent canopy-side adapter refactor.
+### JR-ML-WS-049 — GAP-WS-01: and the subsequent canopy-side adapter refactor.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1338-1342)
 
-### JR-ML-WS-057 — GAP-WS-01: through GAP-WS-33), ranging from P0 (security, auth, replay protocol, REST polling bandwid.
+### JR-ML-WS-050 — GAP-WS-01: through GAP-WS-33), ranging from P0 (security, auth, replay protocol, REST polling bandwid.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 149-153)
 
-### JR-ML-WS-058 — GAP-WS-01: — `juniper-cascor-client` lacks WebSocket `set_params`.
+### JR-ML-WS-051 — GAP-WS-01: — `juniper-cascor-client` lacks WebSocket `set_params`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1236-1240)
 
-### JR-ML-WS-059 — GAP-WS-02: through GAP-WS-05) | Playwright e2e: `test_browser_receives_metrics_event`, `test_chart_up.
+### JR-ML-WS-052 — GAP-WS-02: through GAP-WS-05) | Playwright e2e: `test_browser_receives_metrics_event`, `test_chart_up.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1784-1788)
 
-### JR-ML-WS-060 — GAP-WS-02: — Browser-side `cascorWS` / `cascorControlWS` are dead code.
+### JR-ML-WS-053 — GAP-WS-02: — Browser-side `cascorWS` / `cascorControlWS` are dead code.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1249-1253)
 
-### JR-ML-WS-061 — GAP-WS-03: — Parallel raw-WebSocket clientside callback at `dashboard_manager.py:1490`.
+### JR-ML-WS-054 — GAP-WS-03: — Parallel raw-WebSocket clientside callback at `dashboard_manager.py:1490`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1257-1261)
 
-### JR-ML-WS-062 — GAP-WS-04: note about background tab throttling.
+### JR-ML-WS-055 — GAP-WS-04: note about background tab throttling.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2003-2007)
 
-### JR-ML-WS-063 — GAP-WS-04: — `ws-metrics-buffer` store never populated.
+### JR-ML-WS-056 — GAP-WS-04: — `ws-metrics-buffer` store never populated.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1265-1269)
 
-### JR-ML-WS-064 — GAP-WS-05: — No clientside callback drains WS stores into chart inputs.
+### JR-ML-WS-057 — GAP-WS-05: — No clientside callback drains WS stores into chart inputs.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1273-1277)
 
-### JR-ML-WS-065 — GAP-WS-06: — Training control buttons use REST POST instead of WebSocket.
+### JR-ML-WS-058 — GAP-WS-06: — Training control buttons use REST POST instead of WebSocket.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1289-1293)
 
-### JR-ML-WS-066 — GAP-WS-07: (backpressure) sooner. **Decision needed before Phase E.**.
+### JR-ML-WS-059 — GAP-WS-07: (backpressure) sooner. **Decision needed before Phase E.**.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2015-2019)
 
-### JR-ML-WS-067 — GAP-WS-07: backpressure with per-send timeout) lands before or together with Phase B (GAP-WS-13 seque.
+### JR-ML-WS-060 — GAP-WS-07: backpressure with per-send timeout) lands before or together with Phase B (GAP-WS-13 seque.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1170-1174)
 
-### JR-ML-WS-068 — GAP-WS-07: — No backpressure / slow client handling in cascor `WebSocketManager`.
+### JR-ML-WS-061 — GAP-WS-07: — No backpressure / slow client handling in cascor `WebSocketManager`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1297-1301)
 
-### JR-ML-WS-069 — GAP-WS-08: — No end-to-end browser test for the WebSocket path.
+### JR-ML-WS-062 — GAP-WS-08: — No end-to-end browser test for the WebSocket path.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1307-1311)
 
-### JR-ML-WS-070 — GAP-WS-09: integration tests that exercise the failure modes.
+### JR-ML-WS-063 — GAP-WS-09: integration tests that exercise the failure modes.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1437-1441)
 
-### JR-ML-WS-071 — GAP-WS-09: — No cascor-side integration test for `set_params` on `/ws/control`.
+### JR-ML-WS-064 — GAP-WS-09: — No cascor-side integration test for `set_params` on `/ws/control`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1320-1324)
 
-### JR-ML-WS-072 — GAP-WS-10: + the canopy adapter refactor + GAP-WS-32 (per-command timeouts).
+### JR-ML-WS-065 — GAP-WS-10: + the canopy adapter refactor + GAP-WS-32 (per-command timeouts).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1855-1859)
 
-### JR-ML-WS-073 — GAP-WS-10: — No canopy-side integration test for `set_params` round-trip.
+### JR-ML-WS-066 — GAP-WS-10: — No canopy-side integration test for `set_params` round-trip.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1332-1336)
 
-### JR-ML-WS-074 — GAP-WS-11: + §4.4 phased plan.
+### JR-ML-WS-067 — GAP-WS-11: + §4.4 phased plan.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1923-1927)
 
-### JR-ML-WS-075 — GAP-WS-11: Phase H).
+### JR-ML-WS-068 — GAP-WS-11: Phase H).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1532-1536)
 
-### JR-ML-WS-076 — GAP-WS-11: — Canopy `_normalize_metric` dual format is undocumented for external consumers.
+### JR-ML-WS-069 — GAP-WS-11: — Canopy `_normalize_metric` dual format is undocumented for external consumers.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1340-1344)
 
-### JR-ML-WS-077 — GAP-WS-12: — No WebSocket heartbeat / ping-pong reciprocity.
+### JR-ML-WS-070 — GAP-WS-12: — No WebSocket heartbeat / ping-pong reciprocity.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1348-1352)
 
-### JR-ML-WS-078 — GAP-WS-13: (P1) — Lossless reconnect via sequence numbers and replay buffer.** Required components:.
+### JR-ML-WS-071 — GAP-WS-13: (P1) — Lossless reconnect via sequence numbers and replay buffer.** Required components:.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1142-1146)
 
-### JR-ML-WS-079 — GAP-WS-13: (sequence numbers + replay), GAP-WS-14 (Plotly extendTraces), GAP-WS-15 (rAF coalescing),.
+### JR-ML-WS-072 — GAP-WS-13: (sequence numbers + replay), GAP-WS-14 (Plotly extendTraces), GAP-WS-15 (rAF coalescing),.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1829-1833)
 
-### JR-ML-WS-080 — GAP-WS-13: a server that doesn't recognize the `resume` command will respond with `command_response`.
+### JR-ML-WS-073 — GAP-WS-13: a server that doesn't recognize the `resume` command will respond with `command_response`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1214-1218)
 
-### JR-ML-WS-081 — GAP-WS-13: Lossless Reconnect via Sequence Numbers and Replay Buffer.
+### JR-ML-WS-074 — GAP-WS-13: Lossless Reconnect via Sequence Numbers and Replay Buffer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2177-2188)
 
-### JR-ML-WS-082 — GAP-WS-13: reconnect+replay protocol — `server_start_time` change forces all clients to do a full RES.
+### JR-ML-WS-075 — GAP-WS-13: reconnect+replay protocol — `server_start_time` change forces all clients to do a full RES.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2005-2009)
 
-### JR-ML-WS-083 — GAP-WS-13: sequence numbers land). Currently there is no mechanism to reject an outdated client. **De.
+### JR-ML-WS-076 — GAP-WS-13: sequence numbers land). Currently there is no mechanism to reject an outdated client. **De.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2023-2027)
 
-### JR-ML-WS-084 — GAP-WS-13: — Lossless reconnect via sequence numbers and replay buffer.
+### JR-ML-WS-077 — GAP-WS-13: — Lossless reconnect via sequence numbers and replay buffer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1356-1360)
 
-### JR-ML-WS-085 — GAP-WS-14: (`extendTraces`), this keeps the per-frame cost under 17 ms.
+### JR-ML-WS-078 — GAP-WS-14: (`extendTraces`), this keeps the per-frame cost under 17 ms.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1377-1381)
 
-### JR-ML-WS-086 — GAP-WS-14: above. Kept here for reference link integrity.
+### JR-ML-WS-079 — GAP-WS-14: above. Kept here for reference link integrity.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1442-1446)
 
-### JR-ML-WS-087 — GAP-WS-14: mandates `Plotly.extendTraces(maxPoints=5000)`; ring buffer in `ws-metrics-buffer` (last 1.
+### JR-ML-WS-080 — GAP-WS-14: mandates `Plotly.extendTraces(maxPoints=5000)`; ring buffer in `ws-metrics-buffer` (last 1.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2001-2005)
 
-### JR-ML-WS-088 — GAP-WS-14: Plotly `extendTraces` with `maxPoints` Limit.
+### JR-ML-WS-081 — GAP-WS-14: Plotly `extendTraces` with `maxPoints` Limit.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2146-2160)
 
-### JR-ML-WS-089 — GAP-WS-14: — Plotly chart updates must use `extendTraces` with `maxPoints`.
+### JR-ML-WS-082 — GAP-WS-14: — Plotly chart updates must use `extendTraces` with `maxPoints`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1364-1368)
 
-### JR-ML-WS-090 — GAP-WS-15: Browser-Side rAF Coalescing for 50Hz Candidate Events.
+### JR-ML-WS-083 — GAP-WS-15: Browser-Side rAF Coalescing for 50Hz Candidate Events.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2163-2174)
 
-### JR-ML-WS-091 — GAP-WS-15: — Browser-side rAF coalescing for high-frequency events.
+### JR-ML-WS-084 — GAP-WS-15: — Browser-side rAF coalescing for high-frequency events.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1372-1376)
 
-### JR-ML-WS-092 — GAP-WS-16: `/api/metrics/history` Polling Bandwidth Bomb (~3 MB/s).
+### JR-ML-WS-085 — GAP-WS-16: `/api/metrics/history` Polling Bandwidth Bomb (~3 MB/s).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2129-2143)
 
-### JR-ML-WS-093 — GAP-WS-16: — `/api/metrics/history` polling is the bandwidth bomb (P0 motivator).
+### JR-ML-WS-086 — GAP-WS-16: — `/api/metrics/history` polling is the bandwidth bomb (P0 motivator).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1380-1384)
 
-### JR-ML-WS-094 — GAP-WS-17: — `permessage-deflate` compression not configured.
+### JR-ML-WS-087 — GAP-WS-17: — `permessage-deflate` compression not configured.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1388-1392)
 
-### JR-ML-WS-095 — GAP-WS-18: chunking or REST fallback; document the threshold; add a server-side size guard.
+### JR-ML-WS-088 — GAP-WS-18: chunking or REST fallback; document the threshold; add a server-side size guard.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2007-2011)
 
-### JR-ML-WS-096 — GAP-WS-18: Topology Message >64KB Causes Connection Teardown.
+### JR-ML-WS-089 — GAP-WS-18: Topology Message >64KB Causes Connection Teardown.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2219-2238)
 
-### JR-ML-WS-097 — GAP-WS-18: — Topology message can exceed 64 KB silently.
+### JR-ML-WS-090 — GAP-WS-18: — Topology message can exceed 64 KB silently.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1396-1400)
 
-### JR-ML-WS-098 — GAP-WS-19: in §7.
+### JR-ML-WS-091 — GAP-WS-19: in §7.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 229-233)
 
-### JR-ML-WS-099 — GAP-WS-19: — `close_all()` does not hold `_lock` (CR-025 partial).
+### JR-ML-WS-092 — GAP-WS-19: — `close_all()` does not hold `_lock` (CR-025 partial).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1404-1408)
 
-### JR-ML-WS-100 — GAP-WS-20: (P3)**: normalize bidirectional envelope to use `{type, timestamp, data}` everywhere. Trac.
+### JR-ML-WS-093 — GAP-WS-20: (P3)**: normalize bidirectional envelope to use `{type, timestamp, data}` everywhere. Trac.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 482-486)
 
-### JR-ML-WS-101 — GAP-WS-20: — Bidirectional envelope asymmetry.
+### JR-ML-WS-094 — GAP-WS-20: — Bidirectional envelope asymmetry.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1412-1416)
 
-### JR-ML-WS-102 — GAP-WS-21: (P1)** in §7.
+### JR-ML-WS-095 — GAP-WS-21: (P1)** in §7.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 555-559)
 
-### JR-ML-WS-103 — GAP-WS-21: 1 Hz State Throttle Drops Terminal Transitions.
+### JR-ML-WS-096 — GAP-WS-21: 1 Hz State Throttle Drops Terminal Transitions.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2241-2246)
 
-### JR-ML-WS-104 — GAP-WS-21: debouncer rewrite) AND state event rate goes >5 Hz.
+### JR-ML-WS-097 — GAP-WS-21: debouncer rewrite) AND state event rate goes >5 Hz.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1528-1532)
 
-### JR-ML-WS-105 — GAP-WS-21: — 1 Hz state throttle drops terminal transitions.
+### JR-ML-WS-098 — GAP-WS-21: — 1 Hz state throttle drops terminal transitions.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1420-1424)
 
-### JR-ML-WS-106 — GAP-WS-22: (P2)** in §7.
+### JR-ML-WS-099 — GAP-WS-22: (P2)** in §7.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 745-749)
 
-### JR-ML-WS-107 — GAP-WS-22: (protocol error responses).
+### JR-ML-WS-100 — GAP-WS-22: (protocol error responses).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1908-1912)
 
-### JR-ML-WS-108 — GAP-WS-22: — Protocol error responses not specified.
+### JR-ML-WS-101 — GAP-WS-22: — Protocol error responses not specified.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1431-1435)
 
-### JR-ML-WS-109 — GAP-WS-23: (P1)** in §7: clientside chart updates must use `Plotly.extendTraces()` with `maxPoints` p.
+### JR-ML-WS-102 — GAP-WS-23: (P1)** in §7: clientside chart updates must use `Plotly.extendTraces()` with `maxPoints` p.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1022-1026)
 
-### JR-ML-WS-110 — GAP-WS-23: — `Plotly.extendTraces` with `maxPoints` (alias of GAP-WS-14).
+### JR-ML-WS-103 — GAP-WS-23: — `Plotly.extendTraces` with `maxPoints` (alias of GAP-WS-14).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1439-1443)
 
-### JR-ML-WS-111 — GAP-WS-24: (P2)** in §7. Phase B includes the instrumentation; Phase C+ uses the data to validate (or.
+### JR-ML-WS-104 — GAP-WS-24: (P2)** in §7. Phase B includes the instrumentation; Phase C+ uses the data to validate (or.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1037-1041)
 
-### JR-ML-WS-112 — GAP-WS-24: — Production WebSocket latency instrumentation.
+### JR-ML-WS-105 — GAP-WS-24: — Production WebSocket latency instrumentation.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1444-1448)
 
-### JR-ML-WS-113 — GAP-WS-25: (polling toggle).
+### JR-ML-WS-106 — GAP-WS-25: (polling toggle).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1385-1389)
 
-### JR-ML-WS-114 — GAP-WS-25: polling toggle.
+### JR-ML-WS-107 — GAP-WS-25: polling toggle.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1386-1390)
 
-### JR-ML-WS-115 — GAP-WS-25: WebSocket-Health-Aware Polling Toggle.
+### JR-ML-WS-108 — GAP-WS-25: WebSocket-Health-Aware Polling Toggle.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2191-2202)
 
-### JR-ML-WS-116 — GAP-WS-25: — WebSocket-health-aware polling toggle.
+### JR-ML-WS-109 — GAP-WS-25: — WebSocket-health-aware polling toggle.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1452-1456)
 
-### JR-ML-WS-117 — GAP-WS-26: Visible Connection Status Indicator.
+### JR-ML-WS-110 — GAP-WS-26: Visible Connection Status Indicator.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2205-2216)
 
-### JR-ML-WS-118 — GAP-WS-26: — Visible connection status indicator.
+### JR-ML-WS-111 — GAP-WS-26: — Visible connection status indicator.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1460-1464)
 
-### JR-ML-WS-119 — GAP-WS-27: — Per-IP connection caps and DoS protection.
+### JR-ML-WS-112 — GAP-WS-27: — Per-IP connection caps and DoS protection.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1468-1472)
 
-### JR-ML-WS-120 — GAP-WS-28: Multi-Key `update_params` Torn-Write Race.
+### JR-ML-WS-113 — GAP-WS-28: Multi-Key `update_params` Torn-Write Race.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2249-2260)
 
-### JR-ML-WS-121 — GAP-WS-28: — Multi-key `update_params` torn-write race.
+### JR-ML-WS-114 — GAP-WS-28: — Multi-key `update_params` torn-write race.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1476-1480)
 
-### JR-ML-WS-122 — GAP-WS-29: for the exception-handling path.
+### JR-ML-WS-115 — GAP-WS-29: for the exception-handling path.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1180-1184)
 
-### JR-ML-WS-123 — GAP-WS-29: — `broadcast_from_thread` discards future exceptions.
+### JR-ML-WS-116 — GAP-WS-29: — `broadcast_from_thread` discards future exceptions.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1484-1488)
 
-### JR-ML-WS-124 — GAP-WS-30: — Reconnect backoff has no jitter (thundering herd risk).
+### JR-ML-WS-117 — GAP-WS-30: — Reconnect backoff has no jitter (thundering herd risk).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1492-1496)
 
-### JR-ML-WS-125 — GAP-WS-31: Unbounded Reconnect Cap — Stops After 10.
+### JR-ML-WS-118 — GAP-WS-31: Unbounded Reconnect Cap — Stops After 10.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2263-2274)
 
-### JR-ML-WS-126 — GAP-WS-31: — Unbounded reconnect attempts cap (currently capped at 10).
+### JR-ML-WS-119 — GAP-WS-31: — Unbounded reconnect attempts cap (currently capped at 10).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1500-1504)
 
-### JR-ML-WS-127 — GAP-WS-32: per-command correlation IDs + `pending verification` state pending matching `command_respo.
+### JR-ML-WS-120 — GAP-WS-32: per-command correlation IDs + `pending verification` state pending matching `command_respo.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2004-2008)
 
-### JR-ML-WS-128 — GAP-WS-32: Per-Command Timeouts and Orphaned-Command Resolution.
+### JR-ML-WS-121 — GAP-WS-32: Per-Command Timeouts and Orphaned-Command Resolution.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2277-2288)
 
-### JR-ML-WS-129 — GAP-WS-32: — Per-command timeouts and orphaned-command resolution.
+### JR-ML-WS-122 — GAP-WS-32: — Per-command timeouts and orphaned-command resolution.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1508-1512)
 
-### JR-ML-WS-130 — GAP-WS-33: — Demo mode failure visibility.
+### JR-ML-WS-123 — GAP-WS-33: — Demo mode failure visibility.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1516-1520)
 
-### JR-ML-WS-131 — lifecycle/manager.py state coalescer; terminal transitions bypass throttle (GAP-WS-21).
+### JR-ML-WS-124 — lifecycle/manager.py state coalescer; terminal transitions bypass throttle (GAP-WS-21).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1419,7 +1345,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-ML-WS-132 — manager.py gains server_instance_id, server_start_time, _next_seq, _seq_lock, _replay_buffer, _assign_seq_and_append().
+### JR-ML-WS-125 — manager.py gains server_instance_id, server_start_time, _next_seq, _seq_lock, _replay_buffer, _assign_seq_and_append().
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1430,32 +1356,21 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-ML-WS-133 — messages.py optional seq + emitted_at_monotonic field on every builder.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 112-112)
-
-**Notes**:
-
-Phase 0-cascor checklist item from R3-03 §3.1 deliverables
-
-### JR-ML-WS-134 — MISSING: - PARTIAL — feature is partially implemented; some paths work, others don't.
+### JR-ML-WS-126 — MISSING: - PARTIAL — feature is partially implemented; some paths work, others don't.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 60-61)
 
-### JR-ML-WS-135 — MISSING: Status: server-side PRESENT (cascor accepts and handles the command); client-side MISSING.
+### JR-ML-WS-127 — MISSING: Status: server-side PRESENT (cascor accepts and handles the command); client-side MISSING.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 729-730)
 
-### JR-ML-WS-136 — Phase 0-cascor: Cascor /ws/training emits monotonic seq, advertises server_instance_id+replay_buffer_capacity, supports resume, fixes state coalescer.
+### JR-ML-WS-128 — Phase 0-cascor: Cascor /ws/training emits monotonic seq, advertises server_instance_id+replay_buffer_capacity, supports resume, fixes state coalescer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1466,100 +1381,31 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 Phase 0-cascor major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-WS-137 — Phase A-SDK: `CascorControlStream.set_params(params, timeout=1.0, command_id=...)` ships to PyPI.
+### JR-ML-WS-129 — Phase D: Browser start/stop/pause/resume/reset routed via /ws/control with REST fallback; per-command timeouts.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 243-331)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-92)
-
-**Detail**:
-
-New SDK method sends `set_params` command over `/ws/control`, returns response matched via `command_id`.
-Generates `command_id = uuid4()` if absent. Raises `JuniperCascorTimeoutError` on timeout (default 1.0 s),
-`JuniperCascorConnectionError` on disconnect, `JuniperCascorError` on server error.
-Correlation map: `_pending: Dict[str, asyncio.Future]` keyed by `command_id`.
-Background `_recv_task` started on first call; cancels cleanly on `close()`, sets exceptions on pending futures.
-Caller cancellation safe: removes map entry in `finally`, no memory leak.
-`_client_latency_ms` field on response (SDK-private).
-No retries, no reconnect queue. Caller decides retry logic.
-Pydantic `SetParamsResponse` with `extra="allow"` (additive).
-10 tests: happy path, timeout, concurrent correlation, caller cancellation, fails-fast-on-disconnect, no-retry, error response, bounded correlation map (256), recv-task exception propagation.
-PyPI publish; `juniper-ml/pyproject.toml` optional-extras pin bumped (follow-up PR).
-
-**Design**:
-
-Correlation map with bounded growth (256 entries). Background recv task handles message routing.
-Timeout enforced client-side (no retries). SDK-private latency instrumentation.
-
-**Notes**:
-
-Parallel with Phase 0-cascor. Loose entry gate (SDK ships independent of cascor). Gated by 
-`test_set_params_caller_cancellation_cleans_correlation_map` passing. Rollback: PyPI yank or flag-off.
-
----
-
-Phase A-SDK major milestone from R3-03 Phase index (§2); orchestrates implementation effort
-
-*Merged from 2 extraction candidates (slices: 3b-2, ml-B).*
-
-### JR-ML-WS-138 — Phase C: Canopy adapter hot/cold split; hot→WS via command_id; unconditional REST fallback; flag-off default.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-96)
-
-**Notes**:
-
-Phase C major milestone from R3-03 Phase index (§2); orchestrates implementation effort
-
-### JR-ML-WS-139 — Phase D: Browser start/stop/pause/resume/reset routed via /ws/control with REST fallback; per-command timeouts.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
+- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 250-350)
+- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1278-1355)
+- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 792-864)
 - `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-97)
 
-**Notes**:
-
-Phase D major milestone from R3-03 Phase index (§2); orchestrates implementation effort
-
-### JR-ML-WS-140 — Phase D: browser start/stop/pause/resume/reset training-control via `/ws/control` with REST fallback.
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 792-864)
-
 **Detail**:
 
-Frontend: clientside callback on each button sends `{command: "start", command_id: uuid()}` (etc.) to `window.cascorControlWS` if WS connected;
-REST POST if not. Per-command correlation map: send remembers `command_id`→button, response match updates button state.
-Orphaned-command UI: no response within timeout (start=10s, others=2s) → fallback REST POST after small delay.
-Badge status "pending" while awaiting WS ack.
-Cascor-side: `/ws/control` routes `{command, command_id, ...}` to existing REST-POST handler, emits `command_response{command_id, status, error?}`.
-Per-command timeout async dispatch: `asyncio.wait_for(..., timeout=<per-command>)`.
-Command whitelist: start, stop, pause, resume, reset, set_params. Unknown → `{status: "error", code: "unknown_command"}`.
-Per-command timeouts: start=10s (per source §7.32), stop/pause/resume/reset=2s, set_params=1s.
-Tests: 9 entries. CSRF required (regression), start/stop/pause/resume happy path, per-command timeouts enforced,
-unknown commands rejected, command_id echoed, orphaned commands fallback, fallback works on WS disconnect.
-Observability: `canopy_training_control_command_latency_ms{command, transport}` histogram,
-`canopy_training_control_orphaned_total{command}` counter, `cascor_ws_control_command_received_total{command}` counter.
-
-**Design**:
-
-Two-PR sequence (cascor→canopy). P11 cascor dispatch, P12 canopy button routing. Merge strict order: P11→P12.
-Per-command timeouts reflect source doc priority (start longest, others shorter).
+Replace REST POST callback body with clientside callback calling window.cascorControlWS.send({command, command_id: uuidv4()}).
+Fallback: if window.cascorControlWS not connected, POST to /api/train/{command}.
+Add command_id generation in ws_dash_bridge.js.
+Track pending commands in JS map; mark button "pending verification" until command_response or matching state event.
+Cascor: accept optional command_id in inbound frames; echo in command_response (pass-through string, no validation).
 
 **Notes**:
 
-Entry: Phase B in main + Phase B-pre-b in production >=48h (strict). Phase D gated on production because directly exposes control plane.
+[v3 xround merge: rounds=R0-0,R1-0,R2-0,R3-0, n=3] GAP-WS-32, RISK-13. Cascor Day 3 verify command_id echo. Phase D (Day 11). BLOCKED on Phase B-pre in production ≥24h. / Entry: Phase B in main + Phase B-pre-b in production >=48h (strict). Phase D gated on production because directly exposes control plane.
 Exit: 9 tests pass, manual button clicks work via WS + fallback, CSRF enforced, 24h zero orphaned commands.
-Rollback: `JUNIPER_CANOPY_BUTTONS_USE_WS=false` (instant) or revert P12→P11. Dedup candidate with R3-03.
+Rollback: `JUNIPER_CANOPY_BUTTONS_USE_WS=false` (instant) or revert P12→P11. Dedup candidate with R3-03. / Phase D major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-WS-141 — Phase F: Application ping/pong at 30s; 10s dead-conn threshold; uncap reconnect; jitter formula.
+### JR-ML-WS-130 — Phase F: Application ping/pong at 30s; 10s dead-conn threshold; uncap reconnect; jitter formula.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1570,7 +1416,7 @@ Rollback: `JUNIPER_CANOPY_BUTTONS_USE_WS=false` (instant) or revert P12→P11. D
 
 Phase F major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-WS-142 — replay_since(last_seq) + ReplayOutOfRange exception; copy-under-lock pattern.
+### JR-ML-WS-131 — replay_since(last_seq) + ReplayOutOfRange exception; copy-under-lock pattern.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1581,7 +1427,7 @@ Phase F major milestone from R3-03 Phase index (§2); orchestrates implementatio
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-ML-WS-143 — Security: CSWSH closed.
+### JR-ML-WS-132 — Security: CSWSH closed.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1592,7 +1438,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-144 — self._pending: Dict[str, asyncio.Future] correlation map, bounded at 256 with JuniperCascorOverloadError on overflow.
+### JR-ML-WS-133 — self._pending: Dict[str, asyncio.Future] correlation map, bounded at 256 with JuniperCascorOverloadError on overflow.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1603,18 +1449,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
-### JR-ML-WS-145 — _send_json wraps in asyncio.wait_for timeout (GAP-WS-07 quick-fix, default 0.5s).
-
-**Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 114-114)
-
-**Notes**:
-
-Phase 0-cascor checklist item from R3-03 §3.1 deliverables
-
-### JR-ML-WS-146 — training_stream.py two-phase registration, resume/resume_ok/resume_failed handler with 5s timeout.
+### JR-ML-WS-134 — training_stream.py two-phase registration, resume/resume_ok/resume_failed handler with 5s timeout.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1625,7 +1460,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-ML-WS-147 — GAP-WS-19 close_all lock is RESOLVED on main.
+### JR-ML-WS-135 — GAP-WS-19 close_all lock is RESOLVED on main.
 
 **Status**: shipped  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1636,7 +1471,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 Settled position C-11 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-148 — Standardize WebSocket frame schema for Canopy↔CasCor training streaming.
+### JR-ML-WS-136 — Standardize WebSocket frame schema for Canopy↔CasCor training streaming.
 
 **Status**: designed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1654,32 +1489,14 @@ Settled position C-11 from R3-03 table; cross-round consensus consolidation
 
 Two-layer implementation: global ~/.claude/CLAUDE.md + project CLAUDE.md. Trigger: 95-99% context utilization (within 1-5% of compaction threshold). Additional triggers: 15+ tool calls, phase boundary, degraded recall, module transition, user request. 5-step execution protocol: checkpoint, compose goal, present, verify, git status. Exclusions: nearly complete task, sharp thread, tightly coupled work.
 
-### JR-ML-WS-149 — Phase E-server deferred perper-client queue and backpressure policy matrix.
+### JR-ML-WS-137 — Phase E-server deferred perper-client queue and backpressure policy matrix.
 
 **Status**: deferred  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 1017-1029)
 
-### JR-ML-WS-150 — 8. WebSocket Migration (R5-01 Remaining Phases).
-
-**Status**: superseded  **Priority**: P2  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 289-324)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 323-360)
-
-**Notes**:
-
-[v2 ARCH→WS re-bucket] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
-
----
-
-Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
-
-*Merged from 2 extraction candidates (slices: 3b-3).*
-
-### JR-ML-WS-151 — 2.3 Code Quality.
+### JR-ML-WS-138 — 2.3 Code Quality.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1690,18 +1507,11 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 |    ID    | Severity | File:Line               | Description                                                                                 |
 
-### JR-ML-WS-152 — 2.3 Plant/chop systemd mode activation.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 32-38)
-
-**Detail**:
-
-**Decision**: Support both `--systemd` flag and `USE_SYSTEMD=1` env var.
-
-### JR-ML-WS-153 — Adapter→cascor auth = HMAC first-frame, NOT X-Juniper-Role header.
+### JR-ML-WS-139 — Adapter→cascor auth = HMAC first-frame, NOT X-Juniper-Role header.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1723,7 +1533,7 @@ Settled position C-10 from R3-03 table; cross-round consensus consolidation
 
 Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service architecture. Phase 2: Add server commands, environment variables, key entry points (server.py, api/app.py). Phase 3: Document REST API (endpoint inventory, auth), WebSocket protocol (3 channels), lifecycle management, remote workers, middleware. Phase 4: Security (API keys, rate limiting, headers, TLS), observability (JSON logging, Prometheus, Sentry). Phase 5: CI/CD workflows, deployment (Docker, Kubernetes), configuration. Phase 6: Update existing sections (directory structure, dependencies, testing). Phase 7: New sections (service launcher, MCP). Validation criteria listed.
 
-### JR-ML-WS-154 — Canopy adapter hot/cold parameter splitting (WebSocket vs REST).
+### JR-ML-WS-140 — Canopy adapter hot/cold parameter splitting (WebSocket vs REST).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1734,7 +1544,7 @@ Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service archi
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-155 — Canopy control buttons must resolve orphaned commands via state event arrival (fallback to explicit timeout).
+### JR-ML-WS-141 — Canopy control buttons must resolve orphaned commands via state event arrival (fallback to explicit timeout).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1753,7 +1563,7 @@ Prevents UI deadlock if server handles command but response WS frame is dropped.
 
 RISK-13. Phase D (Day 11). Playwright test: test_orphaned_command_resolves_via_state_event.
 
-### JR-ML-WS-156 — Cascor SetParamsRequest has extra=forbid; canopy adapter routes unclassified keys to REST.
+### JR-ML-WS-142 — Cascor SetParamsRequest has extra=forbid; canopy adapter routes unclassified keys to REST.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1764,7 +1574,7 @@ RISK-13. Phase D (Day 11). Playwright test: test_orphaned_command_resolves_via_s
 
 Settled position C-09 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-157 — CC-08: WebSocket Auto-Reconnection Not Implemented.
+### JR-ML-WS-143 — CC-08: WebSocket Auto-Reconnection Not Implemented.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1774,17 +1584,6 @@ Settled position C-09 from R3-03 table; cross-round consensus consolidation
 **Notes**:
 
 [v2 ARCH→WS re-bucket]
-
-### JR-ML-WS-158 — command_response has NO seq field; /ws/control has no replay buffer.
-
-**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 39-39)
-
-**Notes**:
-
-Settled position C-02 from R3-03 table; cross-round consensus consolidation
 
 ### JR-CAS-WS-005 — Complete documentation for spiral data generator extraction, PyPI client packages, microservices implementation, and polyrepo architecture.
 
@@ -1797,7 +1596,7 @@ Settled position C-02 from R3-03 table; cross-round consensus consolidation
 
 Comprehensive extraction plan synthesizing 3 proposals, phases 0-4 complete (76 tests passing), phase 5 deferred. Core principles: pure NumPy generator, artifact-first API (NPZ), minimal provider set, deterministic reproducibility. Methods to extract: coordinate generation, feature/label construction, ordering/partitioning. Dependency decoupling: remove torch, matplotlib, logging, multiprocessing. Constants extraction: spiral geometry (num_spirals, points_per_spiral, rotations), noise parameters. NPZ data contract specification (dataset_id hash-based, structure validation). Documentation complete with test coverage and phase-by-phase delivery schedule.
 
-### JR-ML-WS-159 — Correlation field is command_id, NOT request_id.
+### JR-ML-WS-144 — Correlation field is command_id, NOT request_id.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1807,6 +1606,21 @@ Comprehensive extraction plan synthesizing 3 proposals, phases 0-4 complete (76 
 **Notes**:
 
 Settled position C-01 from R3-03 table; cross-round consensus consolidation
+
+### JR-ML-WS-145 — Decision**: Support both `--systemd` flag and `USE_SYSTEMD=1` env var.
+
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 32-38)
+
+**Detail**:
+
+**Decision**: Support both `--systemd` flag and `USE_SYSTEMD=1` env var.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.3 Plant/chop systemd mode activation']
 
 ### JR-CWK-WS-002 — Hardcoded values refactoring: create juniper_cascor_worker/constants.py to consolidate ~50 hardcoded values (protocol messages, activation functions, training defaults, WebSocket config, validation bounds).
 
@@ -1823,7 +1637,7 @@ Settled position C-01 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-160 — Implement WebSocket remote worker infrastructure: /ws/v1/workers endpoint, WorkerRegistry, WorkerCoordinator, binary protocol.
+### JR-ML-WS-146 — Implement WebSocket remote worker infrastructure: /ws/v1/workers endpoint, WorkerRegistry, WorkerCoordinator, binary protocol.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1834,7 +1648,7 @@ Settled position C-01 from R3-03 table; cross-round consensus consolidation
 
 Phase 1b WebSocket endpoint with JWT auth, binary message frames, task assignment/result collection, worker heartbeat management.
 
-### JR-ML-WS-161 — One-resume-per-connection rule (second resume → close 1003).
+### JR-ML-WS-147 — One-resume-per-connection rule (second resume → close 1003).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1845,18 +1659,7 @@ Phase 1b WebSocket endpoint with JWT auth, binary message frames, task assignmen
 
 Settled position C-25 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-162 — Overview.
-
-**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 280-287)
-
-**Detail**:
-
-- **Tests**: 101 passed, 80.13% coverage (barely meets threshold)
-
-### JR-ML-WS-163 — Phase B ships behind two flags: enable_browser_ws_bridge + disable_ws_bridge.
+### JR-ML-WS-148 — Phase B ships behind two flags: enable_browser_ws_bridge + disable_ws_bridge.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1867,12 +1670,13 @@ Settled position C-25 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-14 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-164 — Phase C (P2 priority): Canopy adapter hot/cold param split; hot→WS via `command_id`; REST fallback; flag-off default.
+### JR-ML-WS-149 — Phase C (P2 priority): Canopy adapter hot/cold param split; hot→WS via `command_id`; REST fallback; flag-off default.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 706-789)
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-96)
 
 **Detail**:
 
@@ -1899,12 +1703,12 @@ Adapter refactor centralizes param routing logic. REST fallback unconditional (n
 
 **Notes**:
 
-Entry: Phase A-SDK on PyPI, Phase B in main + staging. Optional: Phase C can skip until Phase D if timeline tight
+[v3 xround merge: rounds=R2-0,R3-0, n=2] Entry: Phase A-SDK on PyPI, Phase B in main + staging. Optional: Phase C can skip until Phase D if timeline tight
 (Phase D is gated on B-pre-b, not C). Exit: 14+ tests pass, latency histogram has both transport labels,
 flag-off by default (regression check), manual drag test works. Rollback: `JUNIPER_CANOPY_USE_WEBSOCKET_SET_PARAMS=false`.
-Canary: 7 days production >=0 orphaned commands before flag flip PR.
+Canary: 7 days production >=0 orphaned commands before flag flip PR. / Phase C major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-WS-165 — Phase F (optional): Application-level `ping`/`pong` heartbeat, dead-connection detection, uncapped reconnect.
+### JR-ML-WS-150 — Phase F (optional): Application-level `ping`/`pong` heartbeat, dead-connection detection, uncapped reconnect.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1928,7 +1732,7 @@ Single PR (P14) across cascor + canopy. Application-level vs framework-level (uv
 Entry: Phase B in main. Priority P2 (default), small phase (0.25-1.0 day). Exit: 4 tests pass,
 manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback: revert P14 (10 min TTF).
 
-### JR-ML-WS-166 — PROTO-01: Canopy `/ws/control` Accepts `reset` Parameter Not in Cascor Protocol.
+### JR-ML-WS-151 — PROTO-01: Canopy `/ws/control` Accepts `reset` Parameter Not in Cascor Protocol.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1939,7 +1743,7 @@ manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-167 — Replay buffer = 1024 entries, env-configurable via JUNIPER_WS_REPLAY_BUFFER_SIZE.
+### JR-ML-WS-152 — Replay buffer = 1024 entries, env-configurable via JUNIPER_WS_REPLAY_BUFFER_SIZE.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1950,7 +1754,7 @@ manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback
 
 Settled position C-05 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-168 — replay_buffer_capacity added to connection_established.
+### JR-ML-WS-153 — replay_buffer_capacity added to connection_established.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1961,7 +1765,7 @@ Settled position C-05 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-07 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-169 — REST fallback cadence during disconnect = 1 Hz.
+### JR-ML-WS-154 — REST fallback cadence during disconnect = 1 Hz.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1972,7 +1776,7 @@ Settled position C-07 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-17 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-170 — Ring-bound enforced in the handler, NOT the drain callback.
+### JR-ML-WS-155 — Ring-bound enforced in the handler, NOT the drain callback.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1983,7 +1787,7 @@ Settled position C-17 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-19 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-171 — RISK: Security: CSWSH closed.
+### JR-ML-WS-156 — RISK: Security: CSWSH closed.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1994,7 +1798,7 @@ Settled position C-19 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-172 — SDK fails fast on disconnect; no reconnect queue; no SDK-level retries.
+### JR-ML-WS-157 — SDK fails fast on disconnect; no reconnect queue; no SDK-level retries.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -2005,7 +1809,7 @@ Settled position C-19 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-04 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-173 — server_instance_id = programmatic key; server_start_time = advisory only.
+### JR-ML-WS-158 — server_instance_id = programmatic key; server_start_time = advisory only.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -2016,29 +1820,22 @@ Settled position C-04 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-06 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-174 — set_params default timeout = 1.0 s.
+### JR-ML-WS-159 — **Tests**: 101 passed, 80.13% coverage (barely meets threshold).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 40-40)
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 280-287)
+
+**Detail**:
+
+- **Tests**: 101 passed, 80.13% coverage (barely meets threshold)
 
 **Notes**:
 
-Settled position C-03 from R3-03 table; cross-round consensus consolidation
+[v3 brief repaired from cited content; was: 'Overview']
 
-### JR-ML-WS-175 — Two-phase registration via _pending_connections set.
-
-**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 45-45)
-
-**Notes**:
-
-Settled position C-08 from R3-03 table; cross-round consensus consolidation
-
-### JR-ML-WS-176 — WebSocket fallback to REST for set_params on connection/timeout errors.
+### JR-ML-WS-160 — WebSocket fallback to REST for set_params on connection/timeout errors.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -2085,21 +1882,6 @@ ISS-11 LOW. WebSocket relay loop (cascor_service_adapter.py:203-206) broadcasts 
 **Detail**:
 
 Native installer for Claude Code (no Node.js required), uvx for Serena (from GitHub), global MCP server configuration with --project-from-cwd auto-detection, validation procedures (claude doctor, /mcp status check), troubleshooting (uvx path, Serena startup, port 24282, PATH resolution). File locations: ~/.local/bin/claude, ~/.claude/settings.json, ~/.claude.json. Per-project configuration alternative. Documentation complete with 8 sections and reference tables.
-
-### JR-CWK-WS-003 — Hardcoded values refactor implementation plan: Phase 1 create constants module, Phase 2 refactor source files, Phase 3 validate test suite and pre-commit, Phase 4 documentation update.
-
-**Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: cwk
-
-**Sources**:
-- `juniper-cascor-worker/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 1-79)
-
-**Detail**:
-
-Phase 1 (HIGH priority): Create constants.py (~30 constants in 7 sections), eliminate config duplication. Phase 2 (HIGH priority): Refactor worker.py (10 protocol strings), task_executor.py (12 training defaults/activation names), ws_connection.py (4 WebSocket strings), config.py (8 dataclass field defaults + 8 env var defaults), cli.py (4 argparse defaults). Phase 3 (HIGH priority): Run full pytest suite, run pre-commit hooks, verify protocol message type strings match cascor server. Phase 4 (MEDIUM priority): Update AGENTS.md, update CHANGELOG.md, create release description. Risk: protocol string mismatch with server (very low, mitigated by constants matching exact current strings + integration test); training defaults change behavior (very low, constants preserve exact values); config duplication elimination error (low, mitigated by unit test); import cycle (very low, constants.py has no imports from other worker modules).
-
-**Notes**:
-
-[v2 ARCH→WS re-bucket]
 
 ### JR-CAN-WS-004 — Training WebSocket must validate message size to prevent DoS.
 

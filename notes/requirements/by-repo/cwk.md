@@ -1,12 +1,12 @@
 # Requirements — juniper-cascor-worker (cwk)
 
-**Total entries**: 17
+**Total entries**: 16
 
-**By status**: proposed=5 | shipped=12
+**By status**: proposed=4 | shipped=12
 
-**By priority**: P0=1 | P1=8 | P2=6 | P3=2
+**By priority**: P0=1 | P1=8 | P2=6 | P3=1
 
-**By category**: SEC=4 | DOC=3 | WS=3 | TOOL=3 | TEST=3 | DEP=1
+**By category**: SEC=4 | DOC=3 | TOOL=3 | TEST=3 | WS=2 | DEP=1
 
 ---
 
@@ -213,19 +213,4 @@ CandidateTrainingWorker (legacy): use --legacy to opt in; emits DeprecationWarni
 **Notes**:
 
 [v2 ARCH→SEC re-bucket]
-
-### JR-CWK-WS-003 — Hardcoded values refactor implementation plan: Phase 1 create constants module, Phase 2 refactor source files, Phase 3 validate test suite and pre-commit, Phase 4 documentation update.
-
-**Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: cwk
-
-**Sources**:
-- `juniper-cascor-worker/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 1-79)
-
-**Detail**:
-
-Phase 1 (HIGH priority): Create constants.py (~30 constants in 7 sections), eliminate config duplication. Phase 2 (HIGH priority): Refactor worker.py (10 protocol strings), task_executor.py (12 training defaults/activation names), ws_connection.py (4 WebSocket strings), config.py (8 dataclass field defaults + 8 env var defaults), cli.py (4 argparse defaults). Phase 3 (HIGH priority): Run full pytest suite, run pre-commit hooks, verify protocol message type strings match cascor server. Phase 4 (MEDIUM priority): Update AGENTS.md, update CHANGELOG.md, create release description. Risk: protocol string mismatch with server (very low, mitigated by constants matching exact current strings + integration test); training defaults change behavior (very low, constants preserve exact values); config duplication elimination error (low, mitigated by unit test); import cycle (very low, constants.py has no imports from other worker modules).
-
-**Notes**:
-
-[v2 ARCH→WS re-bucket]
 

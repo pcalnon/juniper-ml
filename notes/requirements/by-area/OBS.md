@@ -2,17 +2,17 @@
 
 **Area**: observability — metrics, logging, tracing, dashboards, alerting
 
-**Total entries**: 184
+**Total entries**: 189
 
-**By status**: proposed=144 | designed=11 | in-progress=3 | shipped=16 | deferred=9 | rejected=1
+**By status**: proposed=149 | designed=11 | in-progress=3 | shipped=16 | deferred=9 | rejected=1
 
-**By priority**: P0=23 | P1=48 | P2=101 | P3=12
+**By priority**: P0=23 | P1=48 | P2=106 | P3=12
 
-**By owner**: ml=142 | can=18 | dep=12 | dat=7 | cas=5
+**By owner**: ml=147 | can=18 | dep=12 | dat=7 | cas=5
 
 ---
 
-### JR-ML-OBS-001 — 15.2 4 stale dashboard panels post audit-PR closes.
+### JR-ML-OBS-001 — Finding.** Four dashboard text / inference panels are stale relative.
 
 **Status**: shipped  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
@@ -22,6 +22,10 @@
 **Detail**:
 
 **Finding.** Four dashboard text / inference panels are stale relative
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '15.2 4 stale dashboard panels post audit-PR closes']
 
 ### JR-CAN-OBS-001 — Prometheus histogram bucket rationale: canopy_ws_browser_latency_ms with SLO candidates (p95<25ms, p99<100ms).
 
@@ -67,18 +71,7 @@ In-flight branch audit-fixup/stale-dashboard-panels exists as of 2026-05-06.
 
 Operational blocker. Recommend Option A - land in-flight PR + add dashboard-lint CI guardrail.
 
-### JR-ML-OBS-003 — 5.6 Phase 3 Success Criteria.
-
-**Status**: designed  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 556-574)
-
-**Detail**:
-
-- [x] Dashboard shows per-epoch loss during output training phases — `train_output_layer` callback wired in cascor `manager.py:237-248`; demo mode emits via `_emit_training_metrics()` (verified 2026-04-09)
-
-### JR-ML-OBS-004 — 6.0 Phase 4 Execution Results (2026-04-10, REVISED).
+### JR-ML-OBS-003 — > **REVISION HISTORY**:.
 
 **Status**: designed  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
@@ -89,12 +82,35 @@ Operational blocker. Recommend Option A - land in-flight PR + add dashboard-lint
 
 > - 2026-04-10 first pass: typed contract landed (PR #140); P5-RC-05 marked DEFERRED
 
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.0 Phase 4 Execution Results (2026-04-10, REVISED)']
+
+### JR-ML-OBS-004 — [x] Dashboard shows per-epoch loss during output training phases — `train_output_layer` callback wired in cascor `manager.py:237-248`; demo….
+
+**Status**: designed  **Priority**: P0  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 556-574)
+
+**Detail**:
+
+- [x] Dashboard shows per-epoch loss during output training phases — `train_output_layer` callback wired in cascor `manager.py:237-248`; demo mode emits via `_emit_training_metrics()` (verified 2026-04-09)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.6 Phase 3 Success Criteria']
+
 ### JR-ML-OBS-005 — 7.0 Critical and High-Priority Enhancements (v3.0.0).
 
 **Status**: deferred  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 193-203)
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 ### JR-ML-OBS-006 — Additional completed work (not in original plan).
 
@@ -107,67 +123,16 @@ Operational blocker. Recommend Option A - land in-flight PR + add dashboard-lint
 
 ## 8. Critical Bug Fixes (Phase 1)
 
-### JR-ML-OBS-007 — 1.1 WebSocket Topology Broadcast Gap.
-
-**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 57-93)
-
-**Detail**:
-
-**Repositories**: juniper-cascor, juniper-canopy
-
-### JR-ML-OBS-008 — 15.1 `juniper_data_datasets_cached` is defined-and-emitted in tests but has no production caller.
-
-**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 787-826)
-
-**Detail**:
-
-**Finding.** The metric `juniper_data_datasets_cached` (Gauge, no labels)
-
-### JR-ML-OBS-009 — 3.1 SLO catalog target calibration against soak-window data.
-
-**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 70-97)
-
-**Detail**:
-
-- **Status**: open (30-day soak underway)
-
-### JR-ML-OBS-010 — 4.2 Dimension B — PromQL + scrape correctness.
-
-**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 260-275)
-
-**Detail**:
-
-**Scope**: Verify alert/dashboard/scrape configs are technically correct.
-
-### JR-ML-OBS-011 — 7.1 Rules by severity label.
+### JR-ML-OBS-007 — 7.1 Rules by severity label.
 
 **Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 446-456)
 
-### JR-ML-OBS-012 — 8.3 Critical Individual Gaps (from WebSocket Architecture Review).
+**Notes**:
 
-**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 257-280)
-
-**Detail**:
-
-## 9. Microservices and Infrastructure
+[v3 thin-brief flagged]
 
 ### JR-DEP-OBS-001 — Add juniper_cascor_training_sessions_completed_total counter with closed-set outcome labels.
 
@@ -212,7 +177,37 @@ endpoint down > 2 min, request error rate > 5%, P95 latency > 2s, container rest
 Wire into prometheus/prometheus.yml via rule_files directive. Add Grafana alert contact
 point configuration to provisioning.
 
-### JR-ML-OBS-013 — Low Priority (Future Phases).
+### JR-ML-OBS-008 — Finding.** The metric `juniper_data_datasets_cached` (Gauge, no labels).
+
+**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 787-826)
+
+**Detail**:
+
+**Finding.** The metric `juniper_data_datasets_cached` (Gauge, no labels)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '15.1 `juniper_data_datasets_cached` is defined-and-emitted i']
+
+### JR-ML-OBS-009 — Items identified from cross-referencing WebSocket messaging architecture reviews against implementation status.
+
+**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 257-280)
+
+**Detail**:
+
+## 9. Microservices and Infrastructure
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '8.3 Critical Individual Gaps (from WebSocket Architecture Re']
+
+### JR-ML-OBS-010 — Low Priority (Future Phases).
 
 **Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
@@ -223,7 +218,7 @@ point configuration to provisioning.
 
 | Phase 5: Observability & Hardening | MICROSERVICES_STARTUP_CODE_REVIEW | AlertManager receivers, alert rules, health standardization                 |
 
-### JR-ML-OBS-014 — P2 — Quality / correctness (real but lower-impact).
+### JR-ML-OBS-011 — P2 — Quality / correctness (real but lower-impact).
 
 **Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
@@ -234,7 +229,7 @@ point configuration to provisioning.
 
 | **A.5** | juniper-cascor | `juniper_cascor_inference_*` (counter + histogram) dead → 4 dashboard panels show flat zeros | Wire `record_inference()` if cas
 
-### JR-ML-OBS-015 — Phase 1: Critical Bug Fixes (OI-1 + OI-4) — COMPLETE.
+### JR-ML-OBS-012 — Phase 1: Critical Bug Fixes (OI-1 + OI-4) — COMPLETE.
 
 **Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
@@ -244,6 +239,36 @@ point configuration to provisioning.
 **Detail**:
 
 **Repos**: juniper-canopy only
+
+### JR-ML-OBS-013 — Scope**: Verify alert/dashboard/scrape configs are technically correct.
+
+**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 260-275)
+
+**Detail**:
+
+**Scope**: Verify alert/dashboard/scrape configs are technically correct.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.2 Dimension B — PromQL + scrape correctness']
+
+### JR-ML-OBS-014 — Severity**: CRITICAL.
+
+**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 57-93)
+
+**Detail**:
+
+**Repositories**: juniper-cascor, juniper-canopy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.1 WebSocket Topology Broadcast Gap']
 
 ### JR-DEP-OBS-004 — Ship Prometheus burn-rate alerting rules derived from SLO targets with MWMBR pattern.
 
@@ -258,6 +283,21 @@ Implement Multi-Window Multi-Burn-Rate alerts for the 5 user-facing SLOs (§3).
 Fast-burn (5m/1h @ 14.4×) and mid-burn (30m/6h @ 6×) page on-call.
 Slow-burn (2h/24h @ 3×) and long-burn (6h/72h @ 1×) create tickets only.
 Internal-supporting SLIs (§4) emit log-only-severity alerts with same MWMBR shape.
+
+### JR-ML-OBS-015 — **Status**: open (30-day soak underway).
+
+**Status**: proposed  **Priority**: P0  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 70-97)
+
+**Detail**:
+
+- **Status**: open (30-day soak underway)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.1 SLO catalog target calibration against soak-window data']
 
 ### JR-ML-OBS-016 — Who/what closes it.
 
@@ -290,6 +330,21 @@ Recommend Option A: Email-via-Gmail SMTP for both (use existing SOPS-encrypted c
 **Sources**:
 - `juniper-cascor/notes/history/PRE-DEPLOYMENT_ROADMAP.md` (lines 715-743)
 
+### JR-ML-OBS-018 — Create a clientside callback that monitors the WebSocket message buffer for `"topology"` messages and pushes them directly into the….
+
+**Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 251-301)
+
+**Detail**:
+
+#### Approach A: Add WebSocket-to-Store bridge via clientside callback (RECOMMENDED)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix Approaches']
+
 ### JR-DEP-OBS-005 — Define and catalogue 5 user-facing and 8 internal-supporting SLO/SLI targets for the Juniper observability stack.
 
 **Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: dep
@@ -310,21 +365,6 @@ are graphed but not paging.
 
 SLO targets are provisional pending 30-day soak (§2.6). Burn-rate alerting uses
 Multi-Window Multi-Burn-Rate pattern. Several forward-references to R5.3/R5.4 designs.
-
-### JR-ML-OBS-018 — Fix Approaches.
-
-**Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 152-202)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 251-301)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 555-605)
-
-**Detail**:
-
-#### Approach A: Return `dash.no_update` on error (RECOMMENDED)
-
-*Merged from 3 extraction candidates (slices: 3c-2b).*
 
 ### JR-DEP-OBS-006 — Maintain health-readiness probe topology as a DAG with asymmetric severity policies.
 
@@ -379,18 +419,7 @@ RD-001 complete 2026-02-24. Only B008 warnings remain. v0.5.0 scope updated.
 G3 - Dead Gauge with no production caller. Defined but never emitted.
 In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) after each operation.
 
-### JR-ML-OBS-020 — 3.4 juniper-cascor-worker.
-
-**Status**: designed  **Priority**: P1  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 193-222)
-
-**Detail**:
-
-| Source-of-truth file | `juniper_cascor_worker/http_health.py` (heartbeat HTTP/1.1 server, hand-rolled on `asyncio.start_server`) |
-
-### JR-ML-OBS-021 — 4.1 juniper-cascor Performance.
+### JR-ML-OBS-020 — 4.1 juniper-cascor Performance.
 
 **Status**: designed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -401,12 +430,35 @@ In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) af
 
 | **Forward pass**        | ✅ Optimized     | Pre-allocated buffer (OPT-1) eliminates N `torch.cat()` calls                    |
 
-### JR-ML-OBS-022 — 4.2 juniper-canopy Performance.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-OBS-021 — 4.2 juniper-canopy Performance.
 
 **Status**: designed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 433-442)
+
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-OBS-022 — The worker is **heartbeat-only** by design (R1.3 design doc, METRICS-MON.
+
+**Status**: designed  **Priority**: P1  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 193-222)
+
+**Detail**:
+
+| Source-of-truth file | `juniper_cascor_worker/http_health.py` (heartbeat HTTP/1.1 server, hand-rolled on `asyncio.start_server`) |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.4 juniper-cascor-worker']
 
 ### JR-DEP-OBS-007 — Replace log-only burn-rate alert severity with paging severity after 30-day soak period.
 
@@ -446,18 +498,11 @@ for §3.1, §3.2, §3.5 (which have all pre-conditions met today).
 
 | Python entry point             | `juniper_data/__main__.py`                                                                | Active                                      |
 
-### JR-ML-OBS-025 — 3.3 Fix — Phase 2: Cross-Repo Dataset Data Endpoint.
+**Notes**:
 
-**Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 151-187)
-
-**Detail**:
-
-result = {"train_x": self._train_x.detach().cpu().tolist(),
-
-### JR-ML-OBS-026 — 4.2 Strengths.
+### JR-ML-OBS-025 — 4.2 Strengths.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -468,32 +513,11 @@ result = {"train_x": self._train_x.detach().cpu().tolist(),
 
 | **Dependency ordering** | `depends_on` with `condition: service_healthy` ensures proper startup sequence        |
 
-### JR-ML-OBS-027 — 5.0 Phase 3 Execution Results (2026-04-09).
+**Notes**:
 
-**Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 451-491)
-
-**Detail**:
-
-roadmap snapshot and Phase 3 execution. The only real gap was the demo backend,
-
-### JR-ML-OBS-028 — 7.1 Canopy Enhancement Backlog (CAN-000 through CAN-021).
-
-**Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 203-237)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 158-192)
-
-**Detail**:
-
-## 8. WebSocket Migration (R5-01 Remaining Phases)
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-OBS-029 — 9.1 juniper-canopy (all phases).
+### JR-ML-OBS-026 — 9.1 juniper-canopy (all phases).
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -504,7 +528,11 @@ roadmap snapshot and Phase 3 execution. The only real gap was the demo backend,
 
 | `src/backend/cascor_service_adapter.py`          | Fix layer assignments (Task 3); add `get_dataset_data()` (Task 2 Ph2) | 1, 4  |
 
-### JR-ML-OBS-030 — Add dashboard/alert lint lane to juniper-deploy CI.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-OBS-027 — Add dashboard/alert lint lane to juniper-deploy CI.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -516,6 +544,39 @@ roadmap snapshot and Phase 3 execution. The only real gap was the demo backend,
 Cross-cutting recommendation: Add CI guardrail to prevent future stale panels.
 Run promtool check rules on alert_rules.yml and recording_rules.yml.
 JSON-schema validate each dashboard and promtool query instant against synthetic Prometheus.
+
+### JR-ML-OBS-028 — Add `get_dataset_data()` method to `src/api/lifecycle/manager.py`:.
+
+**Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 151-187)
+
+**Detail**:
+
+result = {"train_x": self._train_x.detach().cpu().tolist(),
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 Fix — Phase 2: Cross-Repo Dataset Data Endpoint']
+
+### JR-ML-OBS-029 — All items 🔴 NOT STARTED unless otherwise noted.
+
+**Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 203-237)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 158-192)
+
+**Detail**:
+
+## 8. WebSocket Migration (R5-01 Remaining Phases)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.1 Canopy Enhancement Backlog (CAN-000 through CAN-021)']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
 
 ### JR-DEP-OBS-008 — Bridge juniper_cascor_pending_tasks gauge from worker coordinator queue depth to Prometheus.
 
@@ -531,7 +592,7 @@ R4.4 worker heartbeat SLO (§4.1) is resolved via WorkerRegistryCollector. But �
 worker coordinator. Small cascor sub-track to add to existing WorkerRegistryCollector,
 populated from coordinator's pending-task queue depth.
 
-### JR-ML-OBS-031 — broadcast_from_thread adds Task.add_done_callback(_log_exception) (GAP-WS-29).
+### JR-ML-OBS-030 — broadcast_from_thread adds Task.add_done_callback(_log_exception) (GAP-WS-29).
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -542,7 +603,7 @@ populated from coordinator's pending-task queue depth.
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-ML-OBS-032 — BUG-CC-17: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission.
+### JR-ML-OBS-031 — BUG-CC-17: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -553,7 +614,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 [v2 ARCH→OBS re-bucket]
 
-### JR-ML-OBS-033 — BUG-JD-09: High-Cardinality Prometheus Labels from Parameterized Routes.
+### JR-ML-OBS-032 — BUG-JD-09: High-Cardinality Prometheus Labels from Parameterized Routes.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -564,7 +625,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 [v2 ARCH→OBS re-bucket]
 
-### JR-ML-OBS-034 — C-37: P0 success metric = `canopy_rest_polling_bytes_per_sec{endpoint="/api/metrics/history"}` reduced >90.
+### JR-ML-OBS-033 — C-37: P0 success metric = `canopy_rest_polling_bytes_per_sec{endpoint="/api/metrics/history"}` reduced >90.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -577,7 +638,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
-### JR-ML-OBS-035 — Canopy must implement JSON audit logger for WebSocket control commands with scrubbing and CRLF escaping.
+### JR-ML-OBS-034 — Canopy must implement JSON audit logger for WebSocket control commands with scrubbing and CRLF escaping.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -599,7 +660,7 @@ Settings: audit_log_path, audit_log_retention_days.
 
 IMPL-SEC-32..35. Configurable path and retention. Phase B-pre (Day 6). M-SEC-10 consolidation per R1-03.
 
-### JR-ML-OBS-036 — CCC-02: Observability stack — metrics/logging/tracing/dashboards/alerts before behavior, load-bearing SLO binding.
+### JR-ML-OBS-035 — CCC-02: Observability stack — metrics/logging/tracing/dashboards/alerts before behavior, load-bearing SLO binding.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -622,7 +683,7 @@ Acceptance: all metrics present before PR merge, histogram test-fired in staging
 
 Cross-cutting. Principle from R1-02 principle 1. Dedup with R3-03.
 
-### JR-ML-OBS-037 — _client_latency_ms private field on returned dict.
+### JR-ML-OBS-036 — _client_latency_ms private field on returned dict.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -645,7 +706,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 Issue 3.1.1: ColoredFormatter adds ANSI codes to LogRecord.msg in-place,
 affecting file output. Clone record before mutation or use format string.
 
-### JR-ML-OBS-038 — CONC-03: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission.
+### JR-ML-OBS-037 — CONC-03: `_extract_and_record_metrics()` Split-Lock — Duplicate Metric Emission.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -672,7 +733,7 @@ and Prometheus config (7 values). Approach A (RECOMMENDED): Docker Compose exten
 Add ~20 new variables to .env.example: HEALTHCHECK_INTERVAL, TIMEOUT, START_PERIOD, RETRIES;
 PROMETHEUS_SCRAPE_INTERVAL, EVAL_INTERVAL, SCRAPE_TIMEOUT; per-service intervals.
 
-### JR-ML-OBS-039 — Create register_or_reuse and register_fresh helpers in juniper-observability to centralize idempotent prometheus_client collector construction, eliminating ~10 copy-pasted implementations across consumer repos.
+### JR-ML-OBS-038 — Create register_or_reuse and register_fresh helpers in juniper-observability to centralize idempotent prometheus_client collector construction, eliminating ~10 copy-pasted implementations across consumer repos.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -705,7 +766,7 @@ def register_fresh(factory: Callable, name: str, *args, **kwargs) -> T
 
 Part of OBS-COLLECTOR-IDEMPOTENT track. Cascor has drop+recreate; 2026-05 PRs use adopt-existing. This centralizes into single canonical form.
 
-### JR-ML-OBS-040 — D-Criterion: Metric.
+### JR-ML-OBS-039 — D-Criterion: Metric.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -716,7 +777,7 @@ Part of OBS-COLLECTOR-IDEMPOTENT track. Cascor has drop+recreate; 2026-05 PRs us
 
 [v2 ARCH→OBS re-bucket]
 
-### JR-ML-OBS-041 — D-**Dual metric format breakage** (RISK-01): High.
+### JR-ML-OBS-040 — D-**Dual metric format breakage** (RISK-01): High.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -799,7 +860,7 @@ Issue 3.1.5: Health endpoints currently block on cascor connectivity checks.
 Use async probes or timeout guards to prevent cascor slowness from blocking
 health endpoint response.
 
-### JR-ML-OBS-042 — Issue Remediations, Section 17.
+### JR-ML-OBS-041 — Issue Remediations, Section 17.
 
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
@@ -821,6 +882,21 @@ health endpoint response.
 
 Issue 3.1.2: Wrapper created fresh on each logger.info/debug call. Cache
 wrapper per logger instance to improve performance.
+
+### JR-ML-OBS-042 — Phase 3 was executed on branch `feat/canopy-cascor-phase3-metrics`. Verification.
+
+**Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 451-491)
+
+**Detail**:
+
+roadmap snapshot and Phase 3 execution. The only real gap was the demo backend,
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.0 Phase 3 Execution Results (2026-04-09)']
 
 ### JR-ML-OBS-043 — Phase 6: Finalize.
 
@@ -912,18 +988,7 @@ Deploy behind JUNIPER_CASCOR_WS_METRICS_FULL feature flag initially.
 **Sources**:
 - `juniper-ml/notes/observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md` (lines 1-50)
 
-### JR-ML-OBS-048 — 6.5 Placeholder text panels (intentional gaps — OBS-WIRE-01).
-
-**Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 424-446)
-
-**Detail**:
-
-| juniper-cascor.json | Worker `last_task_duration_seconds` (JSON-only — Prometheus bridge pending) | **STALE** — bridge shipped via juniper-cascor#188 (`WorkerRegistr
-
-### JR-ML-OBS-049 — Closing PRs that motivated this tracker (reference only).
+### JR-ML-OBS-048 — Closing PRs that motivated this tracker (reference only).
 
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -961,7 +1026,7 @@ optional integration with soft-fail on missing libraries.
 
 **PRs**: {'PR-series': 'Wave 3 (93 new tests, 640+ total for Phase 3)'}
 
-### JR-ML-OBS-050 — Severity-1 cluster headline.
+### JR-ML-OBS-049 — Severity-1 cluster headline.
 
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -971,6 +1036,21 @@ optional integration with soft-fail on missing libraries.
 **Detail**:
 
 cause: the pre-METRICS-MON observability scaffolding in
+
+### JR-ML-OBS-050 — These four placeholders predate the bridge close.** Per the audit.
+
+**Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 424-446)
+
+**Detail**:
+
+| juniper-cascor.json | Worker `last_task_duration_seconds` (JSON-only — Prometheus bridge pending) | **STALE** — bridge shipped via juniper-cascor#188 (`WorkerRegistr
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.5 Placeholder text panels (intentional gaps — OBS-WIRE-01)']
 
 ### JR-ML-OBS-051 — What needs to happen.
 
@@ -994,18 +1074,7 @@ cause: the pre-METRICS-MON observability scaffolding in
 
 **File:** `src/frontend/components/metrics_panel.py`
 
-### JR-ML-OBS-053 — 4.2 When new items are added.
-
-**Status**: designed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 378-388)
-
-**Detail**:
-
-- **Audit follow-ups** — if a new audit (e.g. a 2026-Q3 observability re-audit) surfaces findings whose action sits beyond a single PR, add them here with a fresh ID.
-
-### JR-ML-OBS-054 — Design docs.
+### JR-ML-OBS-053 — [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md).
 
 **Status**: designed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1016,7 +1085,11 @@ cause: the pre-METRICS-MON observability scaffolding in
 
 - [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
 
-### JR-ML-OBS-055 — Design mini-batch instrumentation for CasCor training observability.
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Design docs']
+
+### JR-ML-OBS-054 — Design mini-batch instrumentation for CasCor training observability.
 
 **Status**: designed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1027,7 +1100,7 @@ cause: the pre-METRICS-MON observability scaffolding in
 
 Batch-level metrics collection.
 
-### JR-ML-OBS-056 — Phase B (polling elimination — P0 WIN) — ✅ IMPLEMENTED.
+### JR-ML-OBS-055 — Phase B (polling elimination — P0 WIN) — ✅ IMPLEMENTED.
 
 **Status**: designed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1037,6 +1110,21 @@ Batch-level metrics collection.
 **Detail**:
 
 | Two-flag design: `enable_browser_ws_bridge` + `disable_ws_bridge`   | ✅ In `settings.py`                        |
+
+### JR-ML-OBS-056 — This tracker accepts new items in three cases:.
+
+**Status**: designed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 378-388)
+
+**Detail**:
+
+- **Audit follow-ups** — if a new audit (e.g. a 2026-Q3 observability re-audit) surfaces findings whose action sits beyond a single PR, add them here with a fresh ID.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.2 When new items are added']
 
 ### JR-ML-OBS-057 — Address residual follow-ups from METRICS-MON program close.
 
@@ -1061,7 +1149,7 @@ Captured in POST_METRICS_MON_TRACKER; deferred after program closure.
 G7 - 50 ms SLO target sits one bucket below 100 ms +inf cap, limiting breach-detection precision.
 Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKETS_RATIONALE.md.
 
-### JR-ML-OBS-059 — 1.2 Network Topology Visualization Issues.
+### JR-ML-OBS-059 — Repositories**: juniper-cascor, juniper-canopy.
 
 **Status**: rejected  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1071,6 +1159,10 @@ Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKE
 **Detail**:
 
 **Repositories**: juniper-cascor, juniper-canopy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.2 Network Topology Visualization Issues']
 
 ### JR-ML-OBS-060 — 1.1 Bugs.
 
@@ -1083,6 +1175,10 @@ Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKE
 
 | ID        | Severity   | File:Line                    | Description
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 ### JR-ML-OBS-061 — 2.2 juniper-canopy.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
@@ -1094,12 +1190,20 @@ Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKE
 
 | CN-01 | **Medium** | `dashboard_manager.py`  | 346–349        | `_api_base_url` hardcoded to `127.0.0.1` — Dash REST callbacks break in Docker/remote deployments                                 |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 ### JR-ML-OBS-062 — 2.5 Resource limits.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 46-54)
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 ### JR-ML-OBS-063 — 2B. Training Progress Summary Cards.
 
@@ -1134,95 +1238,7 @@ Deferred to R5.1c post-soak calibration per juniper-cascor/notes/HISTOGRAM_BUCKE
 
 **File:** `src/frontend/components/metrics_panel.py`, `src/frontend/dashboard_manager.py`
 
-### JR-ML-OBS-066 — 3.1 Current Implementation.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 328-342)
-
-**Detail**:
-
-JuniperCanopy implements a two-mode activation system in `src/main.py` (lines 213-247):
-
-### JR-ML-OBS-067 — 3.11 DATA-CACHED-WIRE — `juniper_data_datasets_cached` Gauge has no production caller.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 307-334)
-
-**Detail**:
-
-**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
-
-### JR-ML-OBS-068 — 3.2 Purpose and Analysis of Current Modes.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 342-388)
-
-**Detail**:
-
-- Simulates realistic training lifecycle: idle → training → paused → complete
-
-### JR-ML-OBS-069 — 3.2 R5.1c-BUCKETS — Cascor sub-ms bucket re-evaluation.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 97-124)
-
-**Detail**:
-
-**Severity:** P2 · **Owner repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
-
-### JR-ML-OBS-070 — 3.4 Phase 1 Success Criteria.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 207-216)
-
-**Detail**:
-
-- [x] New tests added for all changes — `test_websocket_control.py` (3 tests), `test_lifecycle_manager.py` (1 test)
-
-### JR-ML-OBS-071 — 4.1 Architecture Overview.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 292-313)
-
-**Detail**:
-
-Profile: observability (additive)
-
-### JR-ML-OBS-072 — 4.1 Callback Summary.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 197-214)
-
-**Detail**:
-
-**Removed callback**: `handle_parameter_changes` - returns `dash.no_update` unconditionally, only logs. Logging can move to `track_param_changes`.
-
-### JR-ML-OBS-073 — 4.1 Public symbols.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 222-236)
-
-**Detail**:
-
-- **Constants (R1.1/R1.2/R1.3 contract):**
-
-### JR-ML-OBS-074 — 4.2 Adoption matrix.
+### JR-ML-OBS-066 — 4.2 Adoption matrix.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1233,18 +1249,26 @@ Profile: observability (additive)
 
 | Repo | Declares dep in `pyproject.toml`? | Imports `juniper_observability`? | Components imported |
 
-### JR-ML-OBS-075 — 4.3 When the tracker itself can be retired.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-OBS-067 — 5 fast/slow pairs = 10 MWMBR rules** of the 16 page+ticket count;.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 388-409)
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 456-472)
 
 **Detail**:
 
-- A successor tracker (e.g. `POST_METRICS_MON_TRACKER_2026-09-01.md` for a 2026-Q3 program close) supersedes it.
+| 3.1 Canopy dashboard availability | `CanopyDashboardAvailabilityFastBurn` | `CanopyDashboardAvailabilitySlowBurn` |
 
-### JR-ML-OBS-076 — 5.1 User-facing primary SLIs (release-blocking, 5).
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.2 MWMBR burn-rate pairs']
+
+### JR-ML-OBS-068 — 5.1 User-facing primary SLIs (release-blocking, 5).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1255,18 +1279,11 @@ Profile: observability (additive)
 
 | 3.1 | Canopy dashboard availability | `99.5%` | 30d rolling | `CanopyDashboardAvailabilityFastBurn` (page) / `CanopyDashboardAvailabilitySlowBurn` (ticket) | Computable; log-only-effective dur
 
-### JR-ML-OBS-077 — 5.2 Internal-supporting SLIs (graphed-only, 8).
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 286-310)
-
-**Detail**:
-
-| 4.1 | Worker heartbeat freshness | `< 30s` per worker | n/a (instant) | Computable post juniper-cascor#188 (`WorkerRegistryCollector` ships `juniper_cas
-
-### JR-ML-OBS-078 — 5.2 juniper-canopy.
+### JR-ML-OBS-069 — 5.2 juniper-canopy.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1278,42 +1295,13 @@ Profile: observability (additive)
 
 | BUG-CN-01 | **HIGH**   | `_stop.clear()` race in `_perform_reset()` — outside lock      | `src/demo_mode.py:1617`             | Second call site at L1617 is outside the lock block (lock only covers L1615-1616)                                    |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-OBS-079 — 5.2 Option C: Output Training Callback.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 505-521)
-
-**Detail**:
-
-**Effort**: 1-2 days | **Repo**: juniper-cascor
-
-### JR-ML-OBS-080 — 5.2 Requirements for K8s Support.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 364-385)
-
-**Detail**:
-
-## 6. Client & Worker Analysis
-
-### JR-ML-OBS-081 — 5.3 Architecture Diagram: WebSocket Message Flow.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 472-492)
-
-**Detail**:
-
-## 6. Risk Assessment and Guardrails
-
-### JR-ML-OBS-082 — 5.4 Observability Issues.
+### JR-ML-OBS-070 — 5.4 Observability Issues.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1324,91 +1312,22 @@ Profile: observability (additive)
 
 | DD-OBS-01 | **High**   | AlertManager config exists but is never deployed (see DD-DC-02).                                  |
 
-### JR-ML-OBS-083 — 6.1 P5-RC-18: Typed Backend Contract.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 619-649)
-
-**Detail**:
-
-**Effort**: 3-5 days | **Repo**: juniper-canopy
-
-### JR-ML-OBS-084 — 6.2 juniper-canopy.json (18 panels, version 3, title "JuniperCanopy").
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 330-360)
-
-**Detail**:
-
-Categories: 5 RED panels (Request Rate, Error Rate, p95 Latency stats +
-
-### JR-ML-OBS-085 — 6.2 P5-RC-14 + P5-RC-05: WebSocket Consumption.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 649-657)
-
-**Detail**:
-
-**Effort**: 3-4 days | **Repo**: juniper-canopy
-
-### JR-ML-OBS-086 — 6.3 juniper-cascor.json (22 panels, version 3, title "JuniperCascor").
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 360-400)
-
-**Detail**:
-
-Categories: 5 RED panels, 5 training panels (sessions, hidden units,
-
-### JR-ML-OBS-087 — 6.4 juniper-data.json (17 panels, version 3, title "JuniperData").
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 400-424)
-
-**Detail**:
-
-Cross-link: panels bind catalog §3.5 (`dataset_post_total`) and §4.7.
-
-### JR-ML-OBS-088 — 7.2 MWMBR burn-rate pairs.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 456-472)
-
-**Detail**:
-
-| 3.1 Canopy dashboard availability | `CanopyDashboardAvailabilityFastBurn` | `CanopyDashboardAvailabilitySlowBurn` |
-
-### JR-ML-OBS-089 — 7.4 Logging.
+### JR-ML-OBS-071 — 7.4 Logging.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 444-453)
 
-### JR-ML-OBS-090 — 8.1 Automated Tests.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 291-302)
-
-**Detail**:
-
-pytest tests/unit/test_response_normalization.py -v       # All must pass (0 failures)
-
-### JR-ML-OBS-091 — 8.1 Phases Now Complete.
+### JR-ML-OBS-072 — 8.1 Phases Now Complete.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1420,20 +1339,13 @@ pytest tests/unit/test_response_normalization.py -v       # All must pass (0 fai
 
 | A-SDK    | `CascorControlStream.set_params()` with `command_id` | ✅ Complete                                     |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-OBS-092 — 8.2 Kubernetes (`juniper-deploy/k8s/helm/juniper/templates/*-servicemonitor.yaml`).
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 513-539)
-
-**Detail**:
-
-Three ServiceMonitor templates: `data-servicemonitor.yaml`,
-
-### JR-ML-OBS-093 — 8.4 Existing Tests Requiring Updates.
+### JR-ML-OBS-073 — 8.4 Existing Tests Requiring Updates.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1444,29 +1356,41 @@ Three ServiceMonitor templates: `data-servicemonitor.yaml`,
 
 | `test_convergence_layout.py`         | Update for removed `convergence-enabled-checkbox`, new radio group        |
 
-### JR-ML-OBS-094 — 9.2 Approach B: Unified CLI Tool (juniper-ctl).
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-OBS-074 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups….
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 529-564)
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 409-415)
 
 **Detail**:
 
-**Risk**: Medium. New code means new bugs. Conda activation from Python subprocess is notoriously fragile.
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
 
-### JR-ML-OBS-095 — 9.3 Approach C: systemd-First + Makefile Enhancement.
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Primary']
+
+### JR-ML-OBS-075 — [x] `max_iterations` independently controllable from canopy dashboard — verified end-to-end (2026-04-09).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 564-591)
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 207-216)
 
 **Detail**:
 
-Standardize on systemd user services for host-mode and enhance the juniper-deploy Makefile for container mode. Remove the bash orchestration scripts.
+- [x] New tests added for all changes — `test_websocket_control.py` (3 tests), `test_lifecycle_manager.py` (1 test)
 
-### JR-ML-OBS-096 — A.4 CasCor Query Utilities.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.4 Phase 1 Success Criteria']
+
+### JR-ML-OBS-076 — A.4 CasCor Query Utilities.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1477,7 +1401,7 @@ Standardize on systemd user services for host-mode and enhance the juniper-deplo
 
 | `util/get_cascor_status.bash`       | juniper-ml | `/v1/training/status`           |
 
-### JR-ML-OBS-097 — A.5 Configuration Files.
+### JR-ML-OBS-077 — A.5 Configuration Files.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1488,7 +1412,7 @@ Standardize on systemd user services for host-mode and enhance the juniper-deplo
 
 | `.env.example`                  | juniper-deploy | Full config template    |
 
-### JR-ML-OBS-098 — Add phase="input" and phase="candidate" emission sites in cascor training_step_duration_seconds.
+### JR-ML-OBS-078 — Add phase="input" and phase="candidate" emission sites in cascor training_step_duration_seconds.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1500,7 +1424,22 @@ Standardize on systemd user services for host-mode and enhance the juniper-deplo
 G6 - training_step_duration_seconds only emits phase="output" despite SLO design intent of three phases.
 Add input/candidate emission sites at corresponding training stages.
 
-### JR-ML-OBS-099 — Additional Work Completed (not in original plan).
+### JR-ML-OBS-079 — Add warning-level logging to the exception handler:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 457-473)
+
+**Detail**:
+
+logger.warning("Failed to extract network topology: %s: %s", type(e).__name__, e)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix']
+
+### JR-ML-OBS-080 — Additional Work Completed (not in original plan).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1511,7 +1450,67 @@ Add input/candidate emission sites at corresponding training stages.
 
 | GIL contention test fix | 04db7e6 | Rewrote flaky training loop tests to use thread.join instead of polling |
 
-### JR-ML-OBS-100 — Canopy must observe set_params latency separately for WebSocket and REST transports.
+### JR-ML-OBS-081 — All dashboards live in.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 286-310)
+
+**Detail**:
+
+| 4.1 | Worker heartbeat freshness | `< 30s` per worker | n/a (instant) | Computable post juniper-cascor#188 (`WorkerRegistryCollector` ships `juniper_cas
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.2 Internal-supporting SLIs (graphed-only, 8)']
+
+### JR-ML-OBS-082 — Background.** Audit finding D.2 (P2) flagged that the catalog §4.4 SLO target `p95 < 50 ms` for `juniper_cascor_ws_command_handler_seconds`….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 97-124)
+
+**Detail**:
+
+**Severity:** P2 · **Owner repo:** juniper-cascor · **Status:** open (depends on CALIB-01)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.2 R5.1c-BUCKETS — Cascor sub-ms bucket re-evaluation']
+
+### JR-ML-OBS-083 — Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found that `juniper_data_datasets_cached` Gauge is defined in….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 307-334)
+
+**Detail**:
+
+**Severity:** P2 · **Owner repo:** juniper-data · **Status:** in-flight (sister PR opened 2026-05-06)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.11 DATA-CACHED-WIRE — `juniper_data_datasets_cached` Gauge']
+
+### JR-ML-OBS-084 — Based on the existing Docker Compose architecture, a k8s deployment would need:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 364-385)
+
+**Detail**:
+
+## 6. Client & Worker Analysis
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.2 Requirements for K8s Support']
+
+### JR-ML-OBS-085 — Canopy must observe set_params latency separately for WebSocket and REST transports.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1530,7 +1529,67 @@ REST: measure time.monotonic() delta.
 
 Per R0-04 §7. Cross-transport comparison informs Phase C feature flag decision (§5.6 ack-vs-effect).
 
-### JR-ML-OBS-101 — Complete baseline metrics and observability inventory analysis.
+### JR-ML-OBS-086 — Categories: 5 RED panels (Request Rate, Error Rate, p95 Latency stats +.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 330-360)
+
+**Detail**:
+
+Categories: 5 RED panels (Request Rate, Error Rate, p95 Latency stats +
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.2 juniper-canopy.json (18 panels, version 3, title "Junipe']
+
+### JR-ML-OBS-087 — Categories: 5 RED panels, 5 training panels (sessions, hidden units,.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 360-400)
+
+**Detail**:
+
+Categories: 5 RED panels, 5 training panels (sessions, hidden units,
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.3 juniper-cascor.json (22 panels, version 3, title "Junipe']
+
+### JR-ML-OBS-088 — cd /home/pcalnon/Development/python/Juniper/juniper-canopy/src.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 291-302)
+
+**Detail**:
+
+pytest tests/unit/test_response_normalization.py -v       # All must pass (0 failures)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '8.1 Automated Tests']
+
+### JR-ML-OBS-089 — class TestTopologyStoreErrorHandling:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 736-760)
+
+**Detail**:
+
+mock_requests.get.return_value = Mock(ok=False, status_code=503)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Phase 1 Tests']
+
+### JR-ML-OBS-090 — Complete baseline metrics and observability inventory analysis.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1540,13 +1599,6 @@ Per R0-04 §7. Cross-transport comparison informs Phase C feature flag decision 
 **Notes**:
 
 BASELINE phase of METRICS-MON program.
-
-### JR-ML-OBS-102 — Consequence.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 485-489)
 
 ### JR-DAT-OBS-004 — Coverage reporting must upload to external service (Codecov, Coveralls) for trend tracking.
 
@@ -1559,6 +1611,21 @@ BASELINE phase of METRICS-MON program.
 
 INF-002 MEDIUM (P2).
 
+### JR-ML-OBS-091 — Create a single `juniper-ctl` command (Python Click/Typer CLI) that manages all services across all modes:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 529-564)
+
+**Detail**:
+
+**Risk**: Medium. New code means new bugs. Conda activation from Python subprocess is notoriously fragile.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '9.2 Approach B: Unified CLI Tool (juniper-ctl)']
+
 ### JR-CAS-OBS-003 — Create baseline py-spy profiles for key operations to enable performance regression detection.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: cas
@@ -1566,16 +1633,20 @@ INF-002 MEDIUM (P2).
 **Sources**:
 - `juniper-cascor/notes/development/JUNIPER-CASCOR_POST-RELEASE_DEVELOPMENT-ROADMAP.md` (lines 850-854)
 
-### JR-ML-OBS-103 — Current State.
+### JR-ML-OBS-092 — Cross-link: panels bind catalog §3.5 (`dataset_post_total`) and §4.7.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 19-31)
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 400-424)
 
 **Detail**:
 
-The Training Parameters card (`dashboard_manager.py` lines 417-512) contains a flat list of 6 inputs:
+Cross-link: panels bind catalog §3.5 (`dataset_post_total`) and §4.7.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.4 juniper-data.json (17 panels, version 3, title "JuniperD']
 
 ### JR-CAN-OBS-010 — Dashboard must not hardcode localhost:8050 URLs; MetricsPanel has 6+ instances preventing non-local deployment.
 
@@ -1618,7 +1689,7 @@ Improves debugging and user experience.
 
 Benchmark harness needed to measure actual performance against targets.
 
-### JR-ML-OBS-104 — DEPLOY-02: AlertManager Service Missing from docker-compose.yml.
+### JR-ML-OBS-093 — DEPLOY-02: AlertManager Service Missing from docker-compose.yml.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1629,21 +1700,81 @@ Benchmark harness needed to measure actual performance against targets.
 
 [v2 ARCH→OBS re-bucket]
 
-### JR-ML-OBS-105 — Design and implement worker heartbeat protocol for CasCor distributed training.
+### JR-ML-OBS-094 — Design and implement worker heartbeat protocol for CasCor distributed training.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/METRICS_MONITORING_R1.3_WORKER_HEARTBEAT_DESIGN_2026-04-27.md` (lines 1-50)
 
-### JR-ML-OBS-106 — Document all metrics: Prometheus exposition format, cardinality limits, label guidelines.
+### JR-ML-OBS-095 — Document all metrics: Prometheus exposition format, cardinality limits, label guidelines.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/JUNIPER_METRICS_DOCUMENTATION.md` (lines 1-50)
 
-### JR-ML-OBS-107 — emitted_at_monotonic: float on every /ws/training broadcast envelope.
+### JR-ML-OBS-096 — Duplicate `_success_envelope` definition (dead code).
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 255-265)
+
+**Detail**:
+
+- `response.json()` not protected against non-JSON 200 responses
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Low Issues']
+
+### JR-ML-OBS-097 — Effort**: 1-2 days | **Repo**: juniper-cascor.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 505-521)
+
+**Detail**:
+
+**Effort**: 1-2 days | **Repo**: juniper-cascor
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.2 Option C: Output Training Callback']
+
+### JR-ML-OBS-098 — Effort**: 3-4 days | **Repo**: juniper-canopy.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 649-657)
+
+**Detail**:
+
+**Effort**: 3-4 days | **Repo**: juniper-canopy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.2 P5-RC-14 + P5-RC-05: WebSocket Consumption']
+
+### JR-ML-OBS-099 — Effort**: 3-5 days | **Repo**: juniper-canopy.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 619-649)
+
+**Detail**:
+
+**Effort**: 3-5 days | **Repo**: juniper-canopy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.1 P5-RC-18: Typed Backend Contract']
+
+### JR-ML-OBS-100 — emitted_at_monotonic: float on every /ws/training broadcast envelope.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1654,22 +1785,7 @@ Benchmark harness needed to measure actual performance against targets.
 
 Settled position C-41 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-OBS-108 — Evidence.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 111-142)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 215-245)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 437-457)
-
-**Detail**:
-
-**File**: `juniper-canopy/src/frontend/dashboard_manager.py`
-
-*Merged from 3 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-OBS-109 — Execute metrics and monitoring code review across Juniper services.
+### JR-ML-OBS-101 — Execute metrics and monitoring code review across Juniper services.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1696,18 +1812,55 @@ Extract to plot_utils.py or equivalent shared module.
 
 [v2 ARCH→OBS re-bucket]
 
-### JR-ML-OBS-110 — Fix.
+### JR-ML-OBS-102 — `extract_network_topology()` catches all exceptions with a bare `except Exception` and returns `None` with no logging. Any bug in….
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 457-473)
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 433-437)
 
 **Detail**:
 
-logger.warning("Failed to extract network topology: %s: %s", type(e).__name__, e)
+`extract_network_topology()` catches all exceptions with a bare `except Exception` and returns `None` with no logging. Any bug in `_transform_topology()` (e.g., unexpected data format from CasCor) is completely invisible.
 
-### JR-ML-OBS-111 — GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy /api/ws_latency + histogram).
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Root Cause']
+
+### JR-ML-OBS-103 — File**: `juniper-canopy/src/backend/cascor_service_adapter.py`.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 215-245)
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 437-457)
+
+**Detail**:
+
+**File**: `juniper-canopy/src/backend/cascor_service_adapter.py`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Evidence']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-OBS-104 — File**: `juniper-canopy/src/frontend/dashboard_manager.py`.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 111-142)
+
+**Detail**:
+
+**File**: `juniper-canopy/src/frontend/dashboard_manager.py`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Evidence']
+
+### JR-ML-OBS-105 — GAP-WS-24 splits into 24a (browser JS emitter) + 24b (canopy /api/ws_latency + histogram).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1729,7 +1882,7 @@ Settled position C-20 from R3-03 table; cross-round consensus consolidation
 
 Tentative layout pending R5.1 SLO design. HELP-string marker points to rationale doc.
 
-### JR-ML-OBS-112 — Implement unified health probe semantics and status code propagation across Juniper services.
+### JR-ML-OBS-106 — Implement unified health probe semantics and status code propagation across Juniper services.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1740,7 +1893,7 @@ Tentative layout pending R5.1 SLO design. HELP-string marker points to rationale
 
 R1.2 phase of METRICS-MON program.
 
-### JR-ML-OBS-113 — Issues Previously Identified and Now Resolved.
+### JR-ML-OBS-107 — Issues Previously Identified and Now Resolved.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1751,7 +1904,37 @@ R1.2 phase of METRICS-MON program.
 
 | RC-1: Stale editable install | DATASET_DISPLAY_BUG_ANALYSIS.md | Fixed: `get_dataset_data()` added to client, version bumped to 0.3.0 |
 
-### JR-ML-OBS-114 — Key Findings.
+### JR-ML-OBS-108 — juniper-cascor                    juniper-canopy.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 472-492)
+
+**Detail**:
+
+## 6. Risk Assessment and Guardrails
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.3 Architecture Diagram: WebSocket Message Flow']
+
+### JR-ML-OBS-109 — JuniperCanopy implements a two-mode activation system in `src/main.py` (lines 213-247):.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 328-342)
+
+**Detail**:
+
+JuniperCanopy implements a two-mode activation system in `src/main.py` (lines 213-247):
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.1 Current Implementation']
+
+### JR-ML-OBS-110 — Key Findings.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1762,18 +1945,11 @@ R1.2 phase of METRICS-MON program.
 
 1. **Host-mode startup (`juniper_plant_all.bash`)** -- overhauled in commit `03aec86`. Now uses `wait_for_health()` polling, `check_port_available()`, `validate_conda_env()`, per-service Python binaries, `set -euo pipefail`, `trap clean
 
-### JR-ML-OBS-115 — Low Issues.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 255-265)
-
-**Detail**:
-
-- `response.json()` not protected against non-JSON 200 responses
-
-### JR-ML-OBS-116 — Medium Issues.
+### JR-ML-OBS-111 — M-JD-1: Sentry PII enabled by default** (`observability.py:139`).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1783,6 +1959,25 @@ R1.2 phase of METRICS-MON program.
 **Detail**:
 
 **M-JD-1: Sentry PII enabled by default** (`observability.py:139`)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Medium Issues']
+
+### JR-ML-OBS-112 — Maintain two topology stores:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 555-605)
+
+**Detail**:
+
+#### Approach A: Dual-store architecture (RECOMMENDED)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix Approaches']
 
 ### JR-CAN-OBS-013 — Multiple hardcoded localhost:8050 URLs in MetricsPanel (6+ instances) prevent non-local deployment and cross-origin access.
 
@@ -1799,7 +1994,7 @@ Lines 1050, 1075, 1085, 1095, 1105, 1110 reference hardcoded localhost:8050. Mus
 
 Blocks deployment to non-localhost targets.
 
-### JR-ML-OBS-117 — Observability-before-behavior rule: metrics + panels + alerts land BEFORE behavior change.
+### JR-ML-OBS-113 — Observability-before-behavior rule: metrics + panels + alerts land BEFORE behavior change.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1810,7 +2005,18 @@ Blocks deployment to non-localhost targets.
 
 Settled position C-38 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-OBS-118 — P0 success metric: canopy_rest_polling_bytes_per_sec reduced >90% vs baseline.
+### JR-ML-OBS-114 — On dashboard startup (or reconnection), the topology tab will show blank until the first successful REST poll (up to 5 seconds) while the….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 485-489)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Consequence']
+
+### JR-ML-OBS-115 — P0 success metric: canopy_rest_polling_bytes_per_sec reduced >90% vs baseline.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1821,7 +2027,7 @@ Settled position C-38 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-37 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-OBS-119 — P1 — Operationally meaningful (alerts inert, dashboards wrong, SLI math broken).
+### JR-ML-OBS-116 — P1 — Operationally meaningful (alerts inert, dashboards wrong, SLI math broken).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1832,7 +2038,22 @@ Settled position C-37 from R3-03 table; cross-round consensus consolidation
 
 | **3.2** | juniper-deploy | Alertmanager `tickets` receiver is a placeholder | Open small PR wiring real notification config (webhook/email/Slack); decide
 
-### JR-ML-OBS-120 — Per-phase entry plans.
+### JR-ML-OBS-117 — Per `juniper_observability/__init__.py`:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 222-236)
+
+**Detail**:
+
+- **Constants (R1.1/R1.2/R1.3 contract):**
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 Public symbols']
+
+### JR-ML-OBS-118 — Per-phase entry plans.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1843,14 +2064,14 @@ Settled position C-37 from R3-03 table; cross-round consensus consolidation
 
 - [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](../legacy/METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
 
-### JR-ML-OBS-121 — Per-repo histogram bucket rationale.
+### JR-ML-OBS-119 — Per-repo histogram bucket rationale.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 740-746)
 
-### JR-ML-OBS-122 — Phase 0-cascor (seq/replay/resume) — ✅ IMPLEMENTED.
+### JR-ML-OBS-120 — Phase 0-cascor (seq/replay/resume) — ✅ IMPLEMENTED.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1861,18 +2082,7 @@ Settled position C-37 from R3-03 table; cross-round consensus consolidation
 
 | Send timeout (0.5s, GAP-WS-07 quick-fix)                               | ✅                                              |
 
-### JR-ML-OBS-123 — Phase 1 Tests.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 736-760)
-
-**Detail**:
-
-mock_requests.get.return_value = Mock(ok=False, status_code=503)
-
-### JR-ML-OBS-124 — Phase R4: Best-practice and ergonomic improvements for observability.
+### JR-ML-OBS-121 — Phase R4: Best-practice and ergonomic improvements for observability.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1883,7 +2093,7 @@ mock_requests.get.return_value = Mock(ok=False, status_code=503)
 
 Follows test-coverage closure (R3).
 
-### JR-ML-OBS-125 — Phase R5: SLO/SLI catalog, scrape manifests, Grafana dashboards, and alerting.
+### JR-ML-OBS-122 — Phase R5: SLO/SLI catalog, scrape manifests, Grafana dashboards, and alerting.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1894,18 +2104,7 @@ Follows test-coverage closure (R3).
 
 Final phase of METRICS-MON program.
 
-### JR-ML-OBS-126 — Primary.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 409-415)
-
-**Detail**:
-
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
-
-### JR-ML-OBS-127 — Primary catalog / program docs.
+### JR-ML-OBS-123 — Primary catalog / program docs.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1916,7 +2115,22 @@ Final phase of METRICS-MON program.
 
 - `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (juniper-ml#195 / #194)
 
-### JR-ML-OBS-128 — Resolve duplicated observability types (DependencyStatus, ReadinessResponse) across repos.
+### JR-ML-OBS-124 — Removed callback**: `handle_parameter_changes` - returns `dash.no_update` unconditionally, only logs. Logging can move to….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 197-214)
+
+**Detail**:
+
+**Removed callback**: `handle_parameter_changes` - returns `dash.no_update` unconditionally, only logs. Logging can move to `track_param_changes`.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 Callback Summary']
+
+### JR-ML-OBS-125 — Resolve duplicated observability types (DependencyStatus, ReadinessResponse) across repos.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1926,21 +2140,6 @@ Final phase of METRICS-MON program.
 **Notes**:
 
 Establish shared observability library.
-
-### JR-ML-OBS-129 — Root Cause.
-
-**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 107-111)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 207-215)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 433-437)
-
-**Detail**:
-
-`_update_topology_store_handler()` in `dashboard_manager.py` returns `{}` when the REST poll fails, instead of `dash.no_update`. This empty dict flows into the NetworkVisualizer callback where the guard `topology_data.get("input_units", 0) == 0` evaluates to `True`, rendering an empty graph.
-
-*Merged from 3 extraction candidates (slices: 3c-2b).*
 
 ### JR-DAT-OBS-006 — SARIF upload must fail on error, not continue-on-error.
 
@@ -1953,7 +2152,7 @@ Establish shared observability library.
 
 INF-004 MEDIUM (P2). ci.yml:320.
 
-### JR-ML-OBS-130 — Service Topology.
+### JR-ML-OBS-126 — Service Topology.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1964,7 +2163,22 @@ INF-004 MEDIUM (P2). ci.yml:320.
 
 │   Uses:             │     REST         │    Uses:             │
 
-### JR-ML-OBS-131 — Source of truth files (with current `origin/main` SHA).
+### JR-ML-OBS-127 — Showcase Canopy's dashboard features without requiring a running CasCor backend.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 342-388)
+
+**Detail**:
+
+- Simulates realistic training lifecycle: idle → training → paused → complete
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.2 Purpose and Analysis of Current Modes']
+
+### JR-ML-OBS-128 — Source of truth files (with current `origin/main` SHA).
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1975,7 +2189,22 @@ INF-004 MEDIUM (P2). ci.yml:320.
 
 - `juniper-data/juniper_data/api/observability.py` (juniper-data `88149bf`)
 
-### JR-ML-OBS-132 — Step 4: Commit Strategy.
+### JR-ML-OBS-129 — Standardize on systemd user services for host-mode and enhance the juniper-deploy Makefile for container mode. Remove the bash….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 564-591)
+
+**Detail**:
+
+Standardize on systemd user services for host-mode and enhance the juniper-deploy Makefile for container mode. Remove the bash orchestration scripts.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '9.3 Approach C: systemd-First + Makefile Enhancement']
+
+### JR-ML-OBS-130 — Step 4: Commit Strategy.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1985,6 +2214,66 @@ INF-004 MEDIUM (P2). ci.yml:320.
 **Detail**:
 
 1. **Phase 6 training improvements**: Constants, demo_mode algorithm changes, demo_backend, phase6 tests
+
+### JR-ML-OBS-131 — Strengths**: Minimal change, preserves last known good state, consistent with Dash conventions.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 152-202)
+
+**Detail**:
+
+#### Approach A: Return `dash.no_update` on error (RECOMMENDED)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix Approaches']
+
+### JR-ML-OBS-132 — The `juniper-deploy` repository provides Docker Compose orchestration with 5 profiles:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 292-313)
+
+**Detail**:
+
+Profile: observability (additive)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 Architecture Overview']
+
+### JR-ML-OBS-133 — The Training Parameters card (`dashboard_manager.py` lines 417-512) contains a flat list of 6 inputs:.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 19-31)
+
+**Detail**:
+
+The Training Parameters card (`dashboard_manager.py` lines 417-512) contains a flat list of 6 inputs:
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Current State']
+
+### JR-ML-OBS-134 — Three ServiceMonitor templates: `data-servicemonitor.yaml`,.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 513-539)
+
+**Detail**:
+
+Three ServiceMonitor templates: `data-servicemonitor.yaml`,
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '8.2 Kubernetes (`juniper-deploy/k8s/helm/juniper/templates/*']
 
 ### JR-CAN-OBS-014 — Training History must record dataset swap as first-class event with timestamp, before/after config, and architecture changes.
 
@@ -2001,6 +2290,21 @@ F2.7: History shall record swap with timestamp + before/after cfg. F2.8: Snapsho
 
 Persistence schema TBD during review.
 
+### JR-ML-OBS-135 — `_update_topology_store_handler()` in `dashboard_manager.py` returns `{}` when the REST poll fails, instead of `dash.no_update`. This empty….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 107-111)
+
+**Detail**:
+
+`_update_topology_store_handler()` in `dashboard_manager.py` returns `{}` when the REST poll fails, instead of `dash.no_update`. This empty dict flows into the NetworkVisualizer callback where the guard `topology_data.get("input_units", 0) == 0` evaluates to `True`, rendering an empty graph.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Root Cause']
+
 ### JR-CAS-OBS-005 — Verify WebSocket responsiveness under load when training runs via asyncio.run_in_executor().
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: cas
@@ -2008,7 +2312,22 @@ Persistence schema TBD during review.
 **Sources**:
 - `juniper-cascor/notes/development/JUNIPER-CASCOR_POST-RELEASE_DEVELOPMENT-ROADMAP.md` (lines 870-874)
 
-### JR-ML-OBS-133 — Why This Causes the Blank After Hidden Unit Addition.
+### JR-ML-OBS-136 — When `cascade_add` is received via WebSocket from CasCor, the Canopy adapter in `start_metrics_relay()` reacts by making a REST call to….
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 207-215)
+
+**Detail**:
+
+When `cascade_add` is received via WebSocket from CasCor, the Canopy adapter in `start_metrics_relay()` reacts by making a REST call to CasCor's `/v1/network/topology` endpoint, transforms the result via `_transform_topology()`, and broadcasts it via Canopy's internal `websocket_manager.broadcast()`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Root Cause']
+
+### JR-ML-OBS-137 — Why This Causes the Blank After Hidden Unit Addition.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -2019,7 +2338,7 @@ Persistence schema TBD during review.
 
 When CasCor adds a hidden unit via `grow_network()`, there is a brief transient window where the network state is being reorganized (output weights resized, new unit installed). If the Canopy REST poll hits `/api/topology` during this window and receives a 503 (or timeout), the handler returns `{}`,
 
-### JR-ML-OBS-134 — Work Unit 5: Code Cleanup — Remove Redundant Inline Styles (LOW) — IMPLEMENTED.
+### JR-ML-OBS-138 — Work Unit 5: Code Cleanup — Remove Redundant Inline Styles (LOW) — IMPLEMENTED.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -2030,7 +2349,7 @@ When CasCor adds a hidden unit via `grow_network()`, there is a brief transient 
 
 Removed all 13 `style={"backgroundColor": "#f8f9fa"}` attributes from `dbc.CardHeader` instances across 4 files. The CSS rule `.card-header { background-color: var(--bg-secondary) !important;
 
-### JR-ML-OBS-135 — ws-metrics-buffer store shape = {events, gen, last_drain_ms}.
+### JR-ML-OBS-139 — ws-metrics-buffer store shape = {events, gen, last_drain_ms}.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -2041,7 +2360,22 @@ Removed all 13 `style={"backgroundColor": "#f8f9fa"}` attributes from `dbc.CardH
 
 Settled position C-18 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-OBS-136 — 3.6 TRAIN-ARCH-01 — Cascor mini-batch restoration.
+### JR-ML-OBS-140 — §2 has zero open rows for ≥ 30 days, **or.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 388-409)
+
+**Detail**:
+
+- A successor tracker (e.g. `POST_METRICS_MON_TRACKER_2026-09-01.md` for a 2026-Q3 program close) supersedes it.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.3 When the tracker itself can be retired']
+
+### JR-ML-OBS-141 — Background.** Discovered during R5.4-pre when an agent looking for the missing per-step hook found there was nothing to hook into: cascor….
 
 **Status**: shipped  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
@@ -2052,18 +2386,11 @@ Settled position C-18 from R3-03 table; cross-round consensus consolidation
 
 **Severity:** P3 (user-discretion) · **Owner repo:** juniper-cascor · **Status:** deferred
 
-### JR-ML-OBS-137 — 3.3 TRAIN-ARCH-01 cascor mini-batch restoration.
+**Notes**:
 
-**Status**: designed  **Priority**: P3  **Category**: OBS  **Owner**: ml
+[v3 brief repaired from cited content; was: '3.6 TRAIN-ARCH-01 — Cascor mini-batch restoration']
 
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 126-176)
-
-**Detail**:
-
-- **Status**: deferred (user explicitly paused at design-doc stage)
-
-### JR-ML-OBS-138 — Closing PRs (commit hashes verified against current `origin/main`).
+### JR-ML-OBS-142 — Closing PRs (commit hashes verified against current `origin/main`).
 
 **Status**: designed  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
@@ -2074,18 +2401,22 @@ Settled position C-18 from R3-03 table; cross-round consensus consolidation
 
 | juniper-cascor | #204 | obs-wire-01: wire 5 cascor metric emission sites + lazy-init race fix |
 
-### JR-ML-OBS-139 — 2.2 Documents in `notes/`.
+### JR-ML-OBS-143 — **Status**: deferred (user explicitly paused at design-doc stage).
 
-**Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
+**Status**: designed  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 82-105)
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 126-176)
 
 **Detail**:
 
-| CANOPY_DASHBOARD_DISPLAY_FIXES.md          | 3 display issues (metrics, dataset, topology) | Issue 3 (output weights transposition): **FIXED** (committed in adapter). Issues 1-2: **FIXED** per CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md |
+- **Status**: deferred (user explicitly paused at design-doc stage)
 
-### JR-ML-OBS-140 — 3.9 R2-WORKER-DEDUP — juniper-cascor-worker contract-constant dedup.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 TRAIN-ARCH-01 cascor mini-batch restoration']
+
+### JR-ML-OBS-144 — Background.** Optional follow-up from R2 exit-gate decision: the worker has two duplicated literals (`LIVENESS_TICK_BUDGET_MS`,….
 
 **Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
@@ -2095,6 +2426,10 @@ Settled position C-18 from R3-03 table; cross-round consensus consolidation
 **Detail**:
 
 **Severity:** P3 · **Owner repo:** juniper-cascor-worker · **Status:** deferred
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.9 R2-WORKER-DEDUP — juniper-cascor-worker contract-constan']
 
 ### JR-DAT-OBS-007 — Continuous profiling (Grafana Pyroscope, Prometheus, OpenTelemetry) deferred until production deployment.
 
@@ -2107,7 +2442,7 @@ Settled position C-18 from R3-03 table; cross-round consensus consolidation
 
 RD-017 (DATA-020). Deferred. Partially addressed with Prometheus + Sentry in commit 830a0ef.
 
-### JR-ML-OBS-141 — Defer full worker migration; adopt only R1.2 probe contract constants.
+### JR-ML-OBS-145 — Defer full worker migration; adopt only R1.2 probe contract constants.
 
 **Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
@@ -2117,6 +2452,21 @@ RD-017 (DATA-020). Deferred. Partially addressed with Prometheus + Sentry in com
 **Notes**:
 
 Decided: no full migration now. Use contract constants only.
+
+### JR-ML-OBS-146 — The following issues were identified through cross-referencing all prior documents against the current codebase. Issues are ordered by….
+
+**Status**: deferred  **Priority**: P3  **Category**: OBS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 82-105)
+
+**Detail**:
+
+| CANOPY_DASHBOARD_DISPLAY_FIXES.md          | 3 display issues (metrics, dataset, topology) | Issue 3 (output weights transposition): **FIXED** (committed in adapter). Issues 1-2: **FIXED** per CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.2 Documents in `notes/`']
 
 ### JR-CAN-OBS-015 — All print() statements must be replaced with logger.
 
@@ -2166,7 +2516,7 @@ Use datetime.now(timezone.utc) or equivalent.
 Issue 5.2.1: _log_with_context wrapper causes all logs to appear from
 logger.py instead of actual call site. Use inspect.stack() to get caller.
 
-### JR-ML-OBS-142 — Plan post-R5 observability program enhancements.
+### JR-ML-OBS-147 — Plan post-R5 observability program enhancements.
 
 **Status**: proposed  **Priority**: P3  **Category**: OBS  **Owner**: ml
 

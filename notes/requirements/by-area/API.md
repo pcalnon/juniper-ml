@@ -2,13 +2,13 @@
 
 **Area**: API contracts — schemas, versioning, compatibility, migrations
 
-**Total entries**: 156
+**Total entries**: 150
 
-**By status**: proposed=128 | designed=1 | shipped=22 | deferred=4 | rejected=1
+**By status**: proposed=122 | designed=1 | shipped=22 | deferred=4 | rejected=1
 
-**By priority**: P0=10 | P1=61 | P2=78 | P3=7
+**By priority**: P0=10 | P1=61 | P2=72 | P3=7
 
-**By owner**: ml=96 | can=36 | cas=14 | dat=6 | ccl=4
+**By owner**: ml=90 | can=36 | cas=14 | dat=6 | ccl=4
 
 ---
 
@@ -41,7 +41,18 @@ Session 1 (5 items): UUID persistence, Python RNG state, config JSON serializati
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-API-002 — 4.3 Test Coverage Gaps.
+### JR-ML-API-002 — Critical Issues.
+
+**Status**: proposed  **Priority**: P0  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 176-187)
+
+**Detail**:
+
+**C-JDC-1: Version doesn't reflect API changes**
+
+### JR-ML-API-003 — **Critical**: FakeDataClient accepts `"circle"` and `"moon"` — masks the server mismatch. All unit tests pass but would fail against real….
 
 **Status**: proposed  **Priority**: P0  **Category**: API  **Owner**: ml
 
@@ -52,16 +63,9 @@ Session 1 (5 items): UUID persistence, Python RNG state, config JSON serializati
 
 - **Critical**: FakeDataClient accepts `"circle"` and `"moon"` — masks the server mismatch. All unit tests pass but would fail against real server.
 
-### JR-ML-API-003 — Critical Issues.
+**Notes**:
 
-**Status**: proposed  **Priority**: P0  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 176-187)
-
-**Detail**:
-
-**C-JDC-1: Version doesn't reflect API changes**
+[v3 brief repaired from cited content; was: '4.3 Test Coverage Gaps']
 
 ### JR-ML-API-004 — Cross-Cutting Themes.
 
@@ -339,7 +343,7 @@ UUID: Inject from meta/uuid via config dict. Python RNG: random.getstate() → p
 
 [v2 remap: SE→API]
 
-### JR-ML-API-005 — 4.3 CR-024: Chunked Encoding Body Limit.
+### JR-ML-API-005 — Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED.
 
 **Status**: designed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -349,6 +353,10 @@ UUID: Inject from meta/uuid via config dict. Python RNG: random.getstate() → p
 **Detail**:
 
 **Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.3 CR-024: Chunked Encoding Body Limit']
 
 ### JR-ML-API-006 — CAN-015g/h snapshot-loading endpoints: restore, replay, resume, retrain with FSM state transitions.
 
@@ -391,20 +399,13 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 | JD-PERF-01 | **HIGH**   | `api/routes/datasets.py:107`        | Sync `generator.generate()` blocks async event loop. Needs `asyncio.to_thread()`.              |
 
+**Notes**:
+
+[v3 thin-brief flagged]
+
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-API-010 — 3.1 Root Cause.
-
-**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 128-137)
-
-**Detail**:
-
-`ServiceBackend.get_dataset()` (service_backend.py:155-168) returns metadata only. The
-
-### JR-ML-API-011 — 3.3 Performance.
+### JR-ML-API-010 — 3.3 Performance.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -415,18 +416,11 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 | ID         | Severity   | File:Line                    | Description                                                                                          |
 
-### JR-ML-API-012 — 4.3 Health Check Pattern Recommendation.
+**Notes**:
 
-**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 627-655)
-
-**Detail**:
-
-- cascor_service: reachable / unreachable / demo_mode
-
-### JR-ML-API-013 — 4.3 juniper-data Performance.
+### JR-ML-API-011 — 4.3 juniper-data Performance.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -437,29 +431,11 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
 | **Sync generation**    | ⚠️ Concern | `generator.generate(params)` blocks event loop in async endpoint  |
 
-### JR-ML-API-014 — 5.1 Tag & Release Order.
+**Notes**:
 
-**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 351-364)
-
-**Detail**:
-
-1. juniper-data (upstream, no Juniper dependencies)
-
-### JR-ML-API-015 — 5.2 `/api/state` Endpoint.
-
-**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 306-310)
-
-**Detail**:
-
-Include all 22 meta-parameter fields in the state response. Use `.get()` with `TrainingConstants` defaults for any missing fields to handle backward compatibility when the backend doesn't yet store all parameters.
-
-### JR-ML-API-016 — 5.3 juniper-data.
+### JR-ML-API-012 — 5.3 juniper-data.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -470,12 +446,20 @@ Include all 22 meta-parameter fields in the state response. Use `.get()` with `T
 
 | BUG-JD-01 | **MEDIUM** | `batch_export` builds entire ZIP in memory — OOM risk           | `api/routes/datasets.py:416-434` | Large dataset exports accumulate entire ZIP in memory before sending response                 |
 
-### JR-ML-API-017 — 6.1 Risks.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-013 — 6.1 Risks.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 492-505)
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 ### JR-CAS-API-006 — Add requests as declared dependency in pyproject.toml - currently undeclared but used by JuniperDataClient.
 
@@ -489,7 +473,7 @@ Include all 22 meta-parameter fields in the state response. Use `.get()` with `T
 JuniperDataClient imports requests but not listed in pyproject.toml or documented
 in CLAUDE.md. Will fail on fresh installs. Add to dependencies and document.
 
-### JR-ML-API-018 — All WebSocket message envelopes must include optional seq field and preserve backward compatibility.
+### JR-ML-API-014 — All WebSocket message envelopes must include optional seq field and preserve backward compatibility.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -523,7 +507,7 @@ New cascor_constants/constants_api/ submodule with constants_api_defaults.py (43
 
 [v2 remap: SE→API]
 
-### JR-ML-API-019 — Canonical settings table: 25+ configuration variables across cascor/canopy with env vars, types, defaults, validation.
+### JR-ML-API-015 — Canonical settings table: 25+ configuration variables across cascor/canopy with env vars, types, defaults, validation.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -625,7 +609,7 @@ Cascor returns nested objects; dashboard expects flat keys. Add _normalize_statu
 
 Status bar works via /api/status endpoint transformation; direct backend.get_status() calls get nested format.
 
-### JR-ML-API-020 — Client Packages (PyPI).
+### JR-ML-API-016 — Client Packages (PyPI).
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -673,7 +657,7 @@ documented but not enforced. Fix: create juniper_contracts package defining API 
 Issue 1.3.1: _api_url() helper is error-prone and inconsistent. Replace all
 callsites with settings-based URL construction. File: src/frontend/dashboard_manager.py
 
-### JR-ML-API-021 — Define four snapshot endpoints: restore (explore), replay (watch metrics fresh), resume (continue), retrain (new training).
+### JR-ML-API-017 — Define four snapshot endpoints: restore (explore), replay (watch metrics fresh), resume (continue), retrain (new training).
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -691,6 +675,21 @@ callsites with settings-based URL construction. File: src/frontend/dashboard_man
 
 Issue 1.1.5: set_params endpoint lacks formal request schema. Add Pydantic
 model for validation. File: src/main.py. Updates OpenAPI documentation.
+
+### JR-ML-API-018 — Enhance readiness checks to include dependency health**:.
+
+**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 627-655)
+
+**Detail**:
+
+- cascor_service: reachable / unreachable / demo_mode
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.3 Health Check Pattern Recommendation']
 
 ### JR-CAN-API-014 — Fix CascorStateSync to read from correct response fields (data.state_machine, data.monitor).
 
@@ -805,6 +804,21 @@ Methods do not exist; code falls through to minimal HDF5 fallback that only stor
 
 Snapshot save/load in real backend mode produces incomplete snapshots
 
+### JR-ML-API-019 — Include all 22 meta-parameter fields in the state response. Use `.get()` with `TrainingConstants` defaults for any missing fields to handle….
+
+**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 306-310)
+
+**Detail**:
+
+Include all 22 meta-parameter fields in the state response. Use `.get()` with `TrainingConstants` defaults for any missing fields to handle backward compatibility when the backend doesn't yet store all parameters.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.2 `/api/state` Endpoint']
+
 ### JR-CAN-API-021 — Middleware must handle malformed Content-Length header gracefully.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
@@ -862,7 +876,7 @@ _ServiceTrainingMonitor reads raw JuniperCascorClient responses without calling 
 
 Systemic root cause; affects metrics, is_training flag, response shape
 
-### JR-ML-API-022 — Phase 2: Backend API.
+### JR-ML-API-020 — Phase 2: Backend API.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -873,7 +887,7 @@ Systemic root cause; affects metrics, is_training flag, response shape
 
 1. Update `/api/set_params` endpoint to accept new keys
 
-### JR-ML-API-023 — Reconnect protocol must handle resume frames within 5s timeout and emit resume_ok or resume_failed response.
+### JR-ML-API-021 — Reconnect protocol must handle resume frames within 5s timeout and emit resume_ok or resume_failed response.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -893,6 +907,21 @@ Promote to active only after resume handling completes.
 
 Phase A-server (Day 3). R0-03 §6.1 "initial_status race" documented in code comment. Scenarios in §8.
 
+### JR-ML-API-022 — Releases must follow the dependency graph:.
+
+**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 351-364)
+
+**Detail**:
+
+1. juniper-data (upstream, no Juniper dependencies)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.1 Tag & Release Order']
+
 ### JR-CAN-API-025 — Remove duplicate cn_patience configuration parameter.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
@@ -905,7 +934,7 @@ Phase A-server (Day 3). R0-03 §6.1 "initial_status race" documented in code com
 Issue 1.1.4: cn_patience appears twice in configuration. Consolidate to single
 canonical definition. File: src/main.py
 
-### JR-ML-API-024 — Server must advertise server_instance_id (UUID) in connection_established and snapshot_seq in status endpoint.
+### JR-ML-API-023 — Server must advertise server_instance_id (UUID) in connection_established and snapshot_seq in status endpoint.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
@@ -923,6 +952,21 @@ Client uses server_instance_id to detect server restarts and reject out-of-date 
 **Notes**:
 
 Phase A-server (Days 2-3). Atomicity of snapshot_seq with state read is load-bearing (Day 3 commit 6).
+
+### JR-ML-API-024 — `ServiceBackend.get_dataset()` (service_backend.py:155-168) returns metadata only. The.
+
+**Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 128-137)
+
+**Detail**:
+
+`ServiceBackend.get_dataset()` (service_backend.py:155-168) returns metadata only. The
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.1 Root Cause']
 
 ### JR-ML-API-025 — SetParamsResponse wire model with extra=allow.
 
@@ -968,16 +1012,9 @@ Added 5 integration tests to `test_network_stats_endpoint.py` (`TestNetworkStats
 
 | ID       | Severity   | File:Line                         | Description
 
-### JR-ML-API-029 — 4.1 Root Cause.
+**Notes**:
 
-**Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 200-213)
-
-**Detail**:
-
-**Output weights transposition bug**: ALREADY FIXED (merged). `_transform_topology()` now
+[v3 thin-brief flagged]
 
 ### JR-CAS-API-011 — Infrastructure & profiling suite: cProfile, memory profiling, py-spy, hot-path logging, micro-benchmarks, test harness.
 
@@ -1009,7 +1046,7 @@ HDF5 groups: meta, config, params, arch, random, hidden_units. Backward compatib
 
 [v2 remap: SE→API]
 
-### JR-ML-API-030 — _normalize_metric dual-format contract (flat + nested) preserved forever.
+### JR-ML-API-029 — _normalize_metric dual-format contract (flat + nested) preserved forever.
 
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1019,6 +1056,21 @@ HDF5 groups: meta, config, params, arch, random, hidden_units. Backward compatib
 **Notes**:
 
 Settled position C-22 from R3-03 table; cross-round consensus consolidation
+
+### JR-ML-API-030 — Output weights transposition bug**: ALREADY FIXED (merged). `_transform_topology()` now.
+
+**Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 200-213)
+
+**Detail**:
+
+**Output weights transposition bug**: ALREADY FIXED (merged). `_transform_topology()` now
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 Root Cause']
 
 ### JR-ML-API-031 — REST endpoints preserved FOREVER: /api/metrics/history, /api/train/*, /api/v1/training/params, /api/topology.
 
@@ -1031,163 +1083,7 @@ Settled position C-22 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-23 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-API-032 — 1.4 Shared Memory and Multiprocessing Issues.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 188-217)
-
-**Detail**:
-
-#### 1.4.1 Shared Memory Block Leaks
-
-### JR-ML-API-033 — 10. Phase 7: Validation and Finalization.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 232-233)
-
-### JR-ML-API-034 — 2. Plan Overview.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 21-22)
-
-### JR-ML-API-035 — 2.3 juniper-cascor-client.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 298-314)
-
-**Detail**:
-
-| CL-01 | **Medium** | `ws_client.py`              | 231–240  | `command()` vs `set_params()` message format inconsistency — `command()` never sends `"type"` field   |
-
-### JR-ML-API-036 — 2.4 juniper-cascor-worker.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 314-327)
-
-**Detail**:
-
-| CW-01 | **Medium** | `worker.py`        | 225     | Timeout error sends `candidate_uuid: ""` instead of actual UUID from `candidate_data`                |
-
-### JR-ML-API-037 — 2.6 juniper-deploy: Makefile & Dockerfile Fixes.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 243-273)
-
-**Detail**:
-
-**2.6.1 Fix Makefile variables** (`Makefile:70-72`):
-
-### JR-ML-API-038 — 3. Phase 0: Prior Art Assessment.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 60-61)
-
-### JR-ML-API-039 — 3.1 Bugs.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 159-169)
-
-**Detail**:
-
-| ID        | Severity   | File:Line                        | Description
-
-### JR-ML-API-040 — 3.1 CR-006: Verify `max_iterations` End-to-End Implementation.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 82-132)
-
-**Detail**:
-
-**Severity**: S1 (largely resolved) | **Effort**: Small (0.5-1 day) | **Repos**: juniper-cascor, juniper-canopy
-
-### JR-ML-API-041 — 3.2 README & Documentation Updates.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 286-294)
-
-**Detail**:
-
-| juniper-data-client   | README API table (+6 methods), REFERENCE.md (version + batch/versioning), QUICK_START.md (FakeDataClient class name) |
-
-### JR-ML-API-042 — 3.2 Wire Protocol Alignment.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 388-402)
-
-**Detail**:
-
-**Repositories**: juniper-cascor, juniper-cascor-client, juniper-cascor-worker
-
-### JR-ML-API-043 — 3.3 CR-008: Implement WebSocket `set_params`.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 182-207)
-
-**Detail**:
-
-**Severity**: S2 | **Effort**: Small (0.5 day) | **Repo**: juniper-cascor
-
-### JR-ML-API-044 — 3.4 Code Quality.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 187-198)
-
-**Detail**:
-
-| ID       | Severity   | File:Line                           | Description                                                                               |
-
-### JR-ML-API-045 — 3.5 Test Coverage Gaps.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 198-206)
-
-### JR-ML-API-046 — 4. Phase 1: Codebase Exploration and Discovery.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 85-86)
-
-### JR-ML-API-047 — 4.1 Current Health Endpoints.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 604-616)
-
-**Detail**:
-
-| **JuniperData**   | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ...}`                        | `GET /v1/health` |
-
-### JR-ML-API-048 — 4.4 Applied Params Store Structure.
+### JR-ML-API-032 — "nn_max_iterations": 1000,.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1198,47 +1094,112 @@ Settled position C-23 from R3-03 table; cross-round consensus consolidation
 
 "cn_candidate_selection": None,  # no default; sub-group disabled when checkbox unchecked
 
-### JR-ML-API-049 — 4.4 Dimension D — Buckets + test coverage.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.4 Applied Params Store Structure']
+
+### JR-ML-API-033 — 2.3 juniper-cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 305-331)
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 298-314)
 
 **Detail**:
 
-**Scope**: Bucket→SLO alignment, R5.1b coverage of the 2 non-re-bucketed
+| CL-01 | **Medium** | `ws_client.py`              | 231–240  | `command()` vs `set_params()` message format inconsistency — `command()` never sends `"type"` field   |
 
-### JR-ML-API-050 — 4.4 Per-Service Dockerfile Review.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-034 — 2.4 juniper-cascor-worker.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 341-360)
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 314-327)
 
 **Detail**:
 
-| Base image    | python:3.14-slim         | python:3.14-slim       | python:3.14-slim     |
+| CW-01 | **Medium** | `worker.py`        | 225     | Timeout error sends `candidate_uuid: ""` instead of actual UUID from `candidate_data`                |
 
-### JR-ML-API-051 — 5. Phase 2: Deep-Dive API and Model Analysis.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 116-117)
-
-### JR-ML-API-052 — 5.1 `/api/set_params` Endpoint (`main.py`).
+### JR-ML-API-035 — 2.6.1 Fix Makefile variables** (`Makefile:70-72`):.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 302-306)
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 243-273)
 
 **Detail**:
 
-Expand to accept all 22 parameter keys with `nn_` and `cn_` prefixes. Map `nn_learning_rate`, `nn_max_hidden_units`, `nn_max_total_epochs` to `TrainingState.update_state()` for backward compatibility. Forward all params to `backend.apply_params()`.
+**2.6.1 Fix Makefile variables** (`Makefile:70-72`):
 
-### JR-ML-API-053 — 5.1 Docker Compose Issues.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.6 juniper-deploy: Makefile & Dockerfile Fixes']
+
+### JR-ML-API-036 — 22 inputs on `track_param_changes` is significant but safe because:.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 431-439)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.3 Performance']
+
+### JR-ML-API-037 — 3.1 Bugs.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 159-169)
+
+**Detail**:
+
+| ID        | Severity   | File:Line                        | Description
+
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-038 — 3.2 README & Documentation Updates.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 286-294)
+
+**Detail**:
+
+| juniper-data-client   | README API table (+6 methods), REFERENCE.md (version + batch/versioning), QUICK_START.md (FakeDataClient class name) |
+
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-039 — 3.4 Code Quality.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 187-198)
+
+**Detail**:
+
+| ID       | Severity   | File:Line                           | Description                                                                               |
+
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-040 — 5.1 Docker Compose Issues.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1249,7 +1210,11 @@ Expand to accept all 22 parameter keys with `nn_` and `cn_` prefixes. Map `nn_le
 
 | DD-DC-01 | **High**   | **Secret name/path mismatch**: Top-level `secrets` defines `juniper_data_api_key` (singular) but service env `JUNIPER_DATA_API_KEYS_FILE` points to `/run/secrets/juniper_data_api_k
 
-### JR-ML-API-054 — 5.1 juniper-cascor.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-041 — 5.1 juniper-cascor.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1260,65 +1225,11 @@ Expand to accept all 22 parameter keys with `nn_` and `cn_` prefixes. Map `nn_le
 
 | BUG-CC-01 | **MEDIUM** | `create_topology_message()` is dead code — topology changes never broadcast via WS | `src/api/websocket/messages.py:72`                                                | Defined and exported but zero production callers. Only used in tests
 
-### JR-ML-API-055 — 5.7 juniper-all-ctl (Step 2.6).
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 298-310)
-
-**Detail**:
-
-**New file**: `juniper-ml/scripts/juniper-all-ctl`
-
-### JR-ML-API-056 — 5.8 Plant/chop --systemd mode (Step 2.8).
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 310-353)
-
-**Detail**:
-
-if [[ "${1:-}" == "--systemd" ]]; then
-
-### JR-ML-API-057 — 6. Phase 3: Interface Contract Mapping.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 133-134)
-
-### JR-ML-API-058 — 6.3 KL-1: Dataset Data in Service Mode.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 657-664)
-
-**Detail**:
-
-**Effort**: 3-5 days | **Repos**: juniper-cascor, juniper-canopy
-
-### JR-ML-API-059 — 7. Phase 4: Discrepancy Identification.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 150-151)
-
-### JR-ML-API-060 — 7.1 Health Check Consistency.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 414-424)
-
-**Detail**:
-
-**Issue**: Inconsistent endpoint availability. All services should implement the full set: `/v1/health` (basic), `/v1/health/live` (liveness), `/v1/health/ready
-
-### JR-ML-API-061 — 7.2 Short-Term (Medium).
+### JR-ML-API-042 — 7.2 Short-Term (Medium).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1329,14 +1240,11 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 5. **Add topology hash based on weights**: Include a hash or generation counter for weight values in the topology hash function so the network visualization redraws when weights change during
 
-### JR-ML-API-062 — 7.3 Performance.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 431-439)
-
-### JR-ML-API-063 — 7.4 Backward Compatibility.
+### JR-ML-API-043 — 7.4 Backward Compatibility.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1347,14 +1255,11 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 | `/api/state` response         | Old fields missing               | Always provide defaults via `.get()` with `TrainingConstants` fallbacks      |
 
-### JR-ML-API-064 — 8. Phase 5: Comprehensive Documentation.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 177-178)
-
-### JR-ML-API-065 — 8.1 Priority Matrix.
+### JR-ML-API-044 — 8.1 Priority Matrix.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1365,7 +1270,11 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 | Health-check-based startup in `juniper_plant_all.bash` | High   | Low     | **P0**   | **Resolved** (commit `03aec86`)           |
 
-### JR-ML-API-066 — 8.2 High (Fix Soon).
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-045 — 8.2 High (Fix Soon).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1376,7 +1285,11 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 | 6 | juniper-deploy | Add AlertManager service to docker-compose.yml                                           |
 
-### JR-ML-API-067 — 8.3 Integration Tests.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-046 — 8.3 Integration Tests.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1387,7 +1300,11 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 | `DemoMode.apply_params()` accepts all new params  | Backend integration |
 
-### JR-ML-API-068 — 8.3 Medium (Address in Next Sprint).
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-047 — 8.3 Medium (Address in Next Sprint).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1398,14 +1315,11 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 | 10 | juniper-data          | Use `hmac.compare_digest()` for API key comparison (SEC-01)    |
 
-### JR-ML-API-069 — 9. Phase 6: Remediation Planning.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md` (lines 206-207)
-
-### JR-ML-API-070 — A.6 Application Entry Points.
+### JR-ML-API-048 — A.6 Application Entry Points.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1415,6 +1329,51 @@ if [[ "${1:-}" == "--systemd" ]]; then
 **Detail**:
 
 | `juniper_data/__main__.py`     | juniper-data          | `python -m juniper_data` |
+
+### JR-ML-API-049 — After applying synced training state, also push synced topology to the topology store's initial data or expose it via the `/api/topology`….
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 489-499)
+
+**Detail**:
+
+**Recommendation**: LOW PRIORITY — the 5-second poll will pick it up. Can be addressed as part of OI-2 (WebSocket push) which provides a more comprehensive solution.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Fix']
+
+### JR-ML-API-050 — All three service Dockerfiles follow a consistent multi-stage pattern:.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 341-360)
+
+**Detail**:
+
+| Base image    | python:3.14-slim         | python:3.14-slim       | python:3.14-slim     |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.4 Per-Service Dockerfile Review']
+
+### JR-ML-API-051 — All three services already implement Kubernetes-compatible health probes:.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 604-616)
+
+**Detail**:
+
+| **JuniperData**   | `GET /v1/health/live` → `{"status": "alive"}` | `GET /v1/health/ready` → `{"status": "ready", "version": ...}`                        | `GET /v1/health` |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 Current Health Endpoints']
 
 ### JR-DAT-API-006 — API versioning strategy defines version increment, backward-incompatibility, deprecation policy (2 minor versions notice, 6 months support).
 
@@ -1427,63 +1386,63 @@ if [[ "${1:-}" == "--systemd" ]]; then
 
 DATA-009 complete. Documented in docs/api/JUNIPER_DATA_API.md.
 
-### JR-ML-API-071 — API-01: Health `status` Value Inconsistent.
+### JR-ML-API-052 — API-01: Health `status` Value Inconsistent.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5133-5148)
 
-### JR-ML-API-072 — API-02: Health Response Schema Diverges.
+### JR-ML-API-053 — API-02: Health Response Schema Diverges.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5151-5165)
 
-### JR-ML-API-073 — API-03: Canopy FSM Lacks Auto-Reset from FAILED/COMPLETED on START.
+### JR-ML-API-054 — API-03: Canopy FSM Lacks Auto-Reset from FAILED/COMPLETED on START.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5168-5182)
 
-### JR-ML-API-074 — API-04: FakeClient State Constants Different Vocabulary.
+### JR-ML-API-055 — API-04: FakeClient State Constants Different Vocabulary.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5185-5189)
 
-### JR-ML-API-075 — API-05: Error Response Format Inconsistent.
+### JR-ML-API-056 — API-05: Error Response Format Inconsistent.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5192-5207)
 
-### JR-ML-API-076 — API-06: `candidate_progress` WS Message Not in Client Constants.
+### JR-ML-API-057 — API-06: `candidate_progress` WS Message Not in Client Constants.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5210-5214)
 
-### JR-ML-API-077 — API-07: Client Missing Methods for 4 Server Endpoints.
+### JR-ML-API-058 — API-07: Client Missing Methods for 4 Server Endpoints.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5217-5221)
 
-### JR-ML-API-078 — API-08: `set_params` Includes Extraneous `type:command` Field.
+### JR-ML-API-059 — API-08: `set_params` Includes Extraneous `type:command` Field.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5224-5232)
 
-### JR-ML-API-079 — API-09: HTTPException Errors Bypass ResponseEnvelope.
+### JR-ML-API-060 — API-09: HTTPException Errors Bypass ResponseEnvelope.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1561,18 +1520,22 @@ JUNIPER_DATA_URL not in app_config.yaml; no docker-compose entry; no E2E test wi
 
 Phase 2 high priority; client exists in Phase 4 deliverable but is not actively integrated
 
-### JR-ML-API-080 — Evaluation.
+### JR-ML-API-061 — Effort**: 3-5 days | **Repos**: juniper-cascor, juniper-canopy.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 663-713)
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 657-664)
 
 **Detail**:
 
-The mixed approach (Pydantic Settings for two services, YAML for one) creates inconsistency. All three services are FastAPI-based, so Pydantic `BaseSettings` is the natural fit.
+**Effort**: 3-5 days | **Repos**: juniper-cascor, juniper-canopy
 
-### JR-ML-API-081 — Existing Infrastructure.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.3 KL-1: Dataset Data in Service Mode']
+
+### JR-ML-API-062 — Existing Infrastructure.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1583,16 +1546,20 @@ The mixed approach (Pydantic Settings for two services, YAML for one) creates in
 
 - **Docker Compose**: Partial — `JuniperCanopy/conf/docker-compose.yaml` defines `juniper-data`, `juniper_canopy`, and `redis` services; `JuniperCascor/conf/docker-compose
 
-### JR-ML-API-082 — Fix.
+### JR-ML-API-063 — Expand to accept all 22 parameter keys with `nn_` and `cn_` prefixes. Map `nn_learning_rate`, `nn_max_hidden_units`, `nn_max_total_epochs`….
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 489-499)
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 302-306)
 
 **Detail**:
 
-**Recommendation**: LOW PRIORITY — the 5-second poll will pick it up. Can be addressed as part of OI-2 (WebSocket push) which provides a more comprehensive solution.
+Expand to accept all 22 parameter keys with `nn_` and `cn_` prefixes. Map `nn_learning_rate`, `nn_max_hidden_units`, `nn_max_total_epochs` to `TrainingState.update_state()` for backward compatibility. Forward all params to `backend.apply_params()`.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.1 `/api/set_params` Endpoint (`main.py`)']
 
 ### JR-CAN-API-029 — Fix uppercase status normalization gap in WebSocket relay path (ISS-06 architectural fragility).
 
@@ -1609,7 +1576,7 @@ ISS-06 HIGH (latent). CasCor TrainingStateMachine.get_state_summary() returns UP
 
 Post-validation finding: current production WebSocket state messages use title-case (protected). But vulnerability exists in test paths and is latent architectural fragility.
 
-### JR-ML-API-083 — High Issues.
+### JR-ML-API-064 — H-JD-1: 60+ commits since v0.5.0 not in CHANGELOG.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1620,7 +1587,11 @@ Post-validation finding: current production WebSocket state messages use title-c
 
 **H-JD-1: 60+ commits since v0.5.0 not in CHANGELOG**
 
-### JR-ML-API-084 — Immediate (No Infrastructure Changes).
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'High Issues']
+
+### JR-ML-API-065 — Immediate (No Infrastructure Changes).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1631,30 +1602,91 @@ Post-validation finding: current production WebSocket state messages use title-c
 
 1. **Refactor Canopy's backend branching**: Define a `BackendProtocol` that both `DemoMode` and `CascorServiceAdapter` implement. Eliminate scattered `if demo_mode_instance:` checks in `main.py
 
-### JR-ML-API-085 — Low Issues.
+### JR-ML-API-066 — Issue**: Inconsistent endpoint availability. All services should implement the full set: `/v1/health` (basic), `/v1/health/live`….
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 150-156)
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 414-424)
 
 **Detail**:
 
-- `traces_sample_rate=1.0` sends all Sentry traces
+**Issue**: Inconsistent endpoint availability. All services should implement the full set: `/v1/health` (basic), `/v1/health/live` (liveness), `/v1/health/ready
 
-### JR-ML-API-086 — Medium Issues.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.1 Health Check Consistency']
+
+### JR-ML-API-067 — M-JCC-1: `wait_for_ready()` calls `is_alive()` instead of `is_ready()`** (`client.py:86`).
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 239-255)
+
+**Detail**:
+
+**M-JCC-1: `wait_for_ready()` calls `is_alive()` instead of `is_ready()`** (`client.py:86`)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Medium Issues']
+
+### JR-ML-API-068 — M-JDC-1: docs/REFERENCE.md stale** — version header says 0.3.1, missing batch and versioning documentation.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 195-201)
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 239-255)
 
 **Detail**:
 
 **M-JDC-1: docs/REFERENCE.md stale** — version header says 0.3.1, missing batch and versioning documentation
 
-*Merged from 2 extraction candidates (slices: 3c-2b).*
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Medium Issues']
+
+### JR-ML-API-069 — Modify** `juniper-ml/util/juniper_plant_all.bash`:.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 310-353)
+
+**Detail**:
+
+if [[ "${1:-}" == "--systemd" ]]; then
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.8 Plant/chop --systemd mode (Step 2.8)']
+
+### JR-ML-API-070 — New file**: `juniper-ml/scripts/juniper-all-ctl`.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 298-310)
+
+**Detail**:
+
+**New file**: `juniper-ml/scripts/juniper-all-ctl`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.7 juniper-all-ctl (Step 2.6)']
+
+### JR-ML-API-071 — No end-to-end API tests with real filesystem storage.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 198-206)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.5 Test Coverage Gaps']
 
 ### JR-CAN-API-030 — Normalize /api/metrics current snapshot endpoint; follows same broken path as metrics history (ISS-07).
 
@@ -1671,21 +1703,6 @@ ISS-07 MODERATE. /api/metrics endpoint (current snapshot) calls cascor_service_a
 
 Phase 2 focused only on /api/metrics/history; missed current endpoint.
 
-### JR-ML-API-087 — Overview.
-
-**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 108-115)
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 169-176)
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 221-228)
-
-**Detail**:
-
-- **Version**: 0.5.0 (pyproject.toml) / 0.4.2 (**init**.py) / 0.4.0 (Dockerfile)
-
-*Merged from 3 extraction candidates (slices: 3c-2b).*
-
 ### JR-CAN-API-031 — Parameter map _CASCOR_TO_CANOPY_PARAM_MAP is asymmetric: forward maps nn_growth_convergence_threshold to patience, reverse maps patience to cn_training_convergence_threshold (different field).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
@@ -1701,7 +1718,7 @@ Generate reverse map programmatically: _CASCOR_TO_CANOPY_PARAM_MAP = {v: k for k
 
 Causes param sync to apply updates to wrong canopy parameter.
 
-### JR-ML-API-088 — Phase 5: Tests.
+### JR-ML-API-072 — Phase 5: Tests.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1712,7 +1729,26 @@ Causes param sync to apply updates to wrong canopy parameter.
 
 1. Update all broken existing tests
 
-### JR-ML-API-089 — Remediation Summary.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-API-073 — Rate limiter `_counters` dict grows unbounded with unique IPs (no TTL eviction).
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 150-156)
+
+**Detail**:
+
+- `traces_sample_rate=1.0` sends all Sentry traces
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Low Issues']
+
+### JR-ML-API-074 — Remediation Summary.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1726,7 +1762,52 @@ Causes param sync to apply updates to wrong canopy parameter.
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-API-090 — Service Inventory.
+### JR-ML-API-075 — Repositories**: juniper-cascor, juniper-cascor-client, juniper-cascor-worker.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 388-402)
+
+**Detail**:
+
+**Repositories**: juniper-cascor, juniper-cascor-client, juniper-cascor-worker
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.2 Wire Protocol Alignment']
+
+### JR-ML-API-076 — Repository**: juniper-cascor.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 188-217)
+
+**Detail**:
+
+#### 1.4.1 Shared Memory Block Leaks
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.4 Shared Memory and Multiprocessing Issues']
+
+### JR-ML-API-077 — Scope**: Bucket→SLO alignment, R5.1b coverage of the 2 non-re-bucketed.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 305-331)
+
+**Detail**:
+
+**Scope**: Bucket→SLO alignment, R5.1b coverage of the 2 non-re-bucketed
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.4 Dimension D — Buckets + test coverage']
+
+### JR-ML-API-078 — Service Inventory.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1752,6 +1833,96 @@ get_status() returns nested cascor structures. Must add _normalize_status_respon
 
 Status bar works via /api/status endpoint transformation; inconsistent when backend.get_status() called directly.
 
+### JR-ML-API-079 — Severity**: S1 (largely resolved) | **Effort**: Small (0.5-1 day) | **Repos**: juniper-cascor, juniper-canopy.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 82-132)
+
+**Detail**:
+
+**Severity**: S1 (largely resolved) | **Effort**: Small (0.5-1 day) | **Repos**: juniper-cascor, juniper-canopy
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.1 CR-006: Verify `max_iterations` End-to-End Implementatio']
+
+### JR-ML-API-080 — Severity**: S2 | **Effort**: Small (0.5 day) | **Repo**: juniper-cascor.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 182-207)
+
+**Detail**:
+
+**Severity**: S2 | **Effort**: Small (0.5 day) | **Repo**: juniper-cascor
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 CR-008: Implement WebSocket `set_params`']
+
+### JR-ML-API-081 — **Tests**: 208 passed, 84.48% coverage.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 221-228)
+
+**Detail**:
+
+- **Tests**: 208 passed, 84.48% coverage
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Overview']
+
+### JR-ML-API-082 — The mixed approach (Pydantic Settings for two services, YAML for one) creates inconsistency. All three services are FastAPI-based, so….
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 663-713)
+
+**Detail**:
+
+The mixed approach (Pydantic Settings for two services, YAML for one) creates inconsistency. All three services are FastAPI-based, so Pydantic `BaseSettings` is the natural fit.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Evaluation']
+
+### JR-ML-API-083 — **Version**: 0.3.2 (code) — but no git tag exists for v0.3.2.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 169-176)
+
+**Detail**:
+
+- **Version**: 0.3.2 (code) — but no git tag exists for v0.3.2
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Overview']
+
+### JR-ML-API-084 — **Version**: 0.5.0 (pyproject.toml) / 0.4.2 (**init**.py) / 0.4.0 (Dockerfile).
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 108-115)
+
+**Detail**:
+
+- **Version**: 0.5.0 (pyproject.toml) / 0.4.2 (**init**.py) / 0.4.0 (Dockerfile)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Overview']
+
 ### JR-CAN-API-033 — WebSocket /ws/training connect-time message ordering is not atomic; initial_status/state messages can be preempted by background demo broadcasts.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
@@ -1767,7 +1938,7 @@ Handler sends connection_established, initial_status, state with await boundarie
 
 Currently mitigated on test side only; product-side ordering not enforced.
 
-### JR-ML-API-091 — Wire-format rollout is strictly additive; no field renamed/retyped/removed.
+### JR-ML-API-085 — Wire-format rollout is strictly additive; no field renamed/retyped/removed.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1778,7 +1949,7 @@ Currently mitigated on test side only; product-side ordering not enforced.
 
 Settled position C-40 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-API-092 — Work Unit 3: Pre-Existing Test Failures (MEDIUM) — IMPLEMENTED.
+### JR-ML-API-086 — Work Unit 3: Pre-Existing Test Failures (MEDIUM) — IMPLEMENTED.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
@@ -1789,7 +1960,7 @@ Settled position C-40 from R3-03 table; cross-round consensus consolidation
 
 **Issues**: 3A (9 failing tests in `test_api_state_endpoint.py`)
 
-### JR-ML-API-093 — 7.3 The 25-epoch throttle caveat.
+### JR-ML-API-087 — `CascorTrainStepLatencyFastBurn` and `CascorTrainStepLatencySlowBurn`.
 
 **Status**: deferred  **Priority**: P3  **Category**: API  **Owner**: ml
 
@@ -1800,7 +1971,11 @@ Settled position C-40 from R3-03 table; cross-round consensus consolidation
 
 annotation `description` blocks (`alert_rules.yml:751`, `:819`). The
 
-### JR-ML-API-094 — Ecosystem-Wide Patterns.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.3 The 25-epoch throttle caveat']
+
+### JR-ML-API-088 — Ecosystem-Wide Patterns.
 
 **Status**: deferred  **Priority**: P3  **Category**: API  **Owner**: ml
 
@@ -1811,7 +1986,7 @@ annotation `description` blocks (`alert_rules.yml:751`, `:819`). The
 
 1. **No application has all git tags**: This is a systemic process gap. Releases are documented in changelogs but tags are not created, meaning GitHub releases and PyPI publishes may not ha
 
-### JR-ML-API-095 — 9.2 juniper-cascor (Phase 4 only).
+### JR-ML-API-089 — 9.2 juniper-cascor (Phase 4 only).
 
 **Status**: proposed  **Priority**: P3  **Category**: API  **Owner**: ml
 
@@ -1821,6 +1996,10 @@ annotation `description` blocks (`alert_rules.yml:751`, `:819`). The
 **Detail**:
 
 | `src/api/lifecycle/manager.py` | Add `get_dataset_data()` method     |
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 ### JR-CAN-API-034 — candidate_learning_rate parameter unmapped in canopy (accessible via cascor API but not UI) (ISS-16).
 
@@ -1871,7 +2050,7 @@ ISS-12 MODERATE. During initial state sync (state_sync.py:98-103), training para
 
 Identified by v7 (unique finding). Caused by ISS-13 (state sync bypasses adapter).
 
-### JR-ML-API-096 — Phase 4 (cross-repo dataset endpoint).
+### JR-ML-API-090 — Phase 4 (cross-repo dataset endpoint).
 
 **Status**: proposed  **Priority**: P3  **Category**: API  **Owner**: ml
 

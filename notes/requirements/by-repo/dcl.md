@@ -1,12 +1,12 @@
 # Requirements — juniper-data-client (dcl)
 
-**Total entries**: 16
+**Total entries**: 11
 
-**By status**: proposed=15 | shipped=1
+**By status**: proposed=10 | shipped=1
 
-**By priority**: P0=3 | P1=4 | P2=8 | P3=1
+**By priority**: P0=3 | P1=3 | P2=4 | P3=1
 
-**By category**: DOC=10 | ARCH=3 | SEC=1 | DATA=1 | TEST=1
+**By category**: DOC=8 | SEC=1 | ARCH=1 | TEST=1
 
 ---
 
@@ -119,47 +119,7 @@ juniper-canopy). Must add "Testing Utilities" section documenting import paths a
 The omission of this submodule from AGENTS.md means agents are unaware of this significant API.
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.4) and AGENTS_MD_UPDATE_PLAN (Step 2.4).
 
-### JR-DCL-DOC-006 — Expand AGENTS.md Key Files table from 4 entries to ~20 entries covering all significant files.
-
-**Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 50-76)
-
-**Detail**:
-
-The Key Files table is severely incomplete. Must document: juniper_data_client/testing/ submodule
-(fake_client.py, generators.py), docs/ directory (4 files), scripts/ (check_doc_links.py, generate_dep_docs.sh),
-util/ (run_all_tests.bash), CI/CD workflows (.github/workflows/ci.yml, publish.yml, security-scan.yml),
-configuration files (.pre-commit-config.yaml, .sops.yaml, .env.example, conf/), and project meta files
-(CHANGELOG.md, py.typed, README.md, LICENSE).
-
-**Notes**:
-
-Severity: High. Testing submodule is critical public API (ships with library, used by juniper-cascor
-and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
-Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
-
-### JR-DCL-DOC-007 — Add Architecture & Design Patterns section to AGENTS.md.
-
-**Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` (lines 112-118)
-
-**Detail**:
-
-AGENTS.md lacks architecture/design patterns section. For agents working on this codebase, understanding
-the following patterns is essential: connection management (requests.Session with HTTPAdapter), retry
-strategy (exponential backoff, retries on 429/5xx), URL normalization (scheme addition, trailing slash
-removal, /v1 suffix handling), error mapping (HTTP status codes -> specific exception types), API key
-handling (constructor param or JUNIPER_DATA_API_KEY env var), context manager pattern.
-
-**Notes**:
-
-Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.1) and AGENTS_MD_UPDATE_PLAN (Step 3.1).
-
-### JR-DCL-DOC-008 — Add CI/CD documentation section to AGENTS.md covering 3 GitHub Actions workflows.
+### JR-DCL-DOC-006 — Add CI/CD documentation section to AGENTS.md covering 3 GitHub Actions workflows.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: dcl
 
@@ -200,7 +160,7 @@ Maintain backward compatibility by keeping class-level constants as aliases refe
 Validate all generator outputs match current behavior with integration tests.
 Keep mathematical constants clearly separated from configuration constants.
 
-### JR-DCL-DOC-009 — Document JuniperDataClient exception hierarchy with HTTP status code mapping in AGENTS.md.
+### JR-DCL-DOC-007 — Document JuniperDataClient exception hierarchy with HTTP status code mapping in AGENTS.md.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: dcl
 
@@ -217,46 +177,6 @@ Essential context for agents working on error handling and debugging.
 
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.3) and AGENTS_MD_UPDATE_PLAN (Step 3.3).
 
-### JR-DCL-ARCH-002 — Refactor client.py to import from constants.py module (~25 replacements).
-
-**Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 38-41)
-
-**Detail**:
-
-client.py contains ~25 hardcoded values (base URL, endpoints, pool config, status codes) that must be
-migrated to constants.py. This refactor depends on dcl-010 (creation of constants.py).
-
-### JR-DCL-ARCH-003 — Refactor testing/fake_client.py to import from constants.py (~20 replacements).
-
-**Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 42-45)
-
-**Detail**:
-
-testing/fake_client.py contains ~20 hardcoded values (URLs, training defaults, worker data) that must be
-migrated to constants.py. Depends on dcl-010.
-
-### JR-DCL-DATA-001 — Refactor testing/generators.py to import from constants.py (~30 replacements).
-
-**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: dcl
-
-**Sources**:
-- `juniper-data-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 46-49)
-
-**Detail**:
-
-testing/generators.py contains ~30 hardcoded values (math constants, dataset defaults) for spiral, xor,
-circle, and moon generators that must be migrated to constants.py. Depends on dcl-010.
-
-**Notes**:
-
-[v2 ARCH→DATA re-bucket]
-
 ### JR-DCL-TEST-001 — Run full test suite and pre-commit hooks after constants refactor to validate no behavioral changes.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: dcl
@@ -270,7 +190,7 @@ After completing constants refactor (dcl-010 through dcl-013), must run: (1) Ful
 pytest tests/ -v, (2) Pre-commit hooks with pre-commit run --all-files, (3) Verify each generator
 (spiral, xor, circle, moon) with default parameters to ensure outputs match pre-refactor results.
 
-### JR-DCL-DOC-010 — Update AGENTS.md Last Updated date and document utility scripts.
+### JR-DCL-DOC-008 — Update AGENTS.md Last Updated date and document utility scripts.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: dcl
 

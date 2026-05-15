@@ -2,13 +2,13 @@
 
 **Area**: training — cascor algorithm, candidates, convergence, model state
 
-**Total entries**: 148
+**Total entries**: 150
 
-**By status**: proposed=103 | designed=7 | shipped=33 | deferred=2 | rejected=1 | superseded=2
+**By status**: proposed=105 | designed=7 | shipped=33 | deferred=2 | rejected=1 | superseded=2
 
-**By priority**: P0=21 | P1=51 | P2=68 | P3=8
+**By priority**: P0=22 | P1=51 | P2=69 | P3=8
 
-**By owner**: ml=99 | cas=36 | can=11 | ccl=2
+**By owner**: ml=103 | cas=35 | can=11 | ccl=1
 
 ---
 
@@ -238,6 +238,17 @@ FR-1: Workers connect before/after training. FR-3: Tolerate intermittent connect
 
 [v2 ARCH→TRAIN re-bucket]
 
+### JR-ML-TRAIN-009 — Goal**: Restore functional training in juniper-cascor.
+
+**Status**: proposed  **Priority**: P0  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 10-46)
+
+**Notes**:
+
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 1:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+
 ### JR-CAS-TRAIN-011 — Remove hardcoded absolute path from remote_client_0.py that points to obsolete prototype directory.
 
 **Status**: proposed  **Priority**: P0  **Category**: TRAIN  **Owner**: cas
@@ -353,7 +364,7 @@ Implement CascorServiceAdapter for two-mode activation (demo/service); remove le
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-009 — Derive candidate_pool_phase from phase_detail in Canopy adapter.
+### JR-ML-TRAIN-010 — Derive candidate_pool_phase from phase_detail in Canopy adapter.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -368,7 +379,7 @@ Adapter derives candidate_pool_status but not candidate_pool_phase. One-line fix
 
 Phase 2 P1 fix; doc status COMPLETE; simple derivation gap
 
-### JR-ML-TRAIN-010 — Enhance grow iteration callback with top 2 candidate ID and correlation data.
+### JR-ML-TRAIN-011 — Enhance grow iteration callback with top 2 candidate ID and correlation data.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -444,7 +455,7 @@ RC-1: torch.set_num_threads(1) + BLAS env vars → 5-15x improvement. RC-2: Dire
 
 [v2 remap: BG→TRAIN]
 
-### JR-ML-TRAIN-011 — Use Pearson correlation (normalized) instead of raw covariance in candidate training.
+### JR-ML-TRAIN-012 — Use Pearson correlation (normalized) instead of raw covariance in candidate training.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -459,7 +470,7 @@ Raw covariance scales with residual magnitude; after first hidden unit, residual
 
 Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 
-### JR-ML-TRAIN-012 — 15.2 juniper-cascor — Required (cross-repo).
+### JR-ML-TRAIN-013 — 15.2 juniper-cascor — Required (cross-repo).
 
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -468,18 +479,18 @@ Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket]
+[v2 ARCH→TRAIN re-bucket] [v3 thin-brief flagged]
 
-### JR-ML-TRAIN-013 — 7.3 CasCor Phase Bug Severity.
+### JR-ML-TRAIN-014 — Final resolution**: **Known limitation**. This is not a bug — it is an architectural limitation of CasCor's API. Requires CasCor API….
 
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1119-1128)
+- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1156-1164)
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket]
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: '7.7 Dataset Scatter: Active Bug vs Known Limitation']
 
 ### JR-CAS-TRAIN-021 — Implement full IPC architecture to separate Cascor from Canopy process for production deployment.
 
@@ -499,7 +510,7 @@ management and health checks.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-014 — 4.1 CR-023: Whitelist Training Start Parameters.
+### JR-ML-TRAIN-015 — Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: VERIFIED + test added.
 
 **Status**: rejected  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -510,7 +521,11 @@ management and health checks.
 
 **Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: VERIFIED + test added
 
-### JR-ML-TRAIN-015 — 0-cascor: `git revert` P1.
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.1 CR-023: Whitelist Training Start Parameters']
+
+### JR-ML-TRAIN-016 — 0-cascor: `git revert` P1.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -523,7 +538,7 @@ management and health checks.
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-016 — 0-cascor: `JUNIPER_WS_REPLAY_BUFFER_SIZE=0`.
+### JR-ML-TRAIN-017 — 0-cascor: `JUNIPER_WS_REPLAY_BUFFER_SIZE=0`.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -536,7 +551,7 @@ management and health checks.
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-017 — 0-cascor: `JUNIPER_WS_SEND_TIMEOUT_SECONDS=0.01`.
+### JR-ML-TRAIN-018 — 0-cascor: `JUNIPER_WS_SEND_TIMEOUT_SECONDS=0.01`.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -549,7 +564,7 @@ management and health checks.
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-018 — 0-cascor: Rolling cascor restart.
+### JR-ML-TRAIN-019 — 0-cascor: Rolling cascor restart.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -562,7 +577,7 @@ management and health checks.
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-019 — 06: Reconnection storm after cascor restart.
+### JR-ML-TRAIN-020 — 06: Reconnection storm after cascor restart.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -573,7 +588,7 @@ management and health checks.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-020 — 11: Silent data loss via drop-oldest.
+### JR-ML-TRAIN-021 — 11: Silent data loss via drop-oldest.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -584,7 +599,7 @@ management and health checks.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-021 — 14: Cascor crash mid-broadcast.
+### JR-ML-TRAIN-022 — 14: Cascor crash mid-broadcast.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -595,7 +610,7 @@ management and health checks.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-022 — 2.1 juniper-ml: CI & Script Fixes.
+### JR-ML-TRAIN-023 — 2.1.1 CI path fix** (`ci.yml:244`):.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -606,16 +621,9 @@ management and health checks.
 
 **2.1.1 CI path fix** (`ci.yml:244`):
 
-### JR-ML-TRAIN-023 — 5.1 Define Progress Fields in TrainingState.
+**Notes**:
 
-**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 491-505)
-
-**Detail**:
-
-**Effort**: 1 day | **Repo**: juniper-cascor
+[v3 brief repaired from cited content; was: '2.1 juniper-ml: CI & Script Fixes']
 
 ### JR-ML-TRAIN-024 — --: Phase 0-cascor staging soak = 72 h.
 
@@ -630,7 +638,18 @@ management and health checks.
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-025 — A-SDK: Downgrade cascor-client pin.
+### JR-ML-TRAIN-025 — [x] **Status**: ✅ Fixed (2026-04-03 — branch `fix/regression-phase2-cascor`, PR #62).
+
+**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/regressions/CONSOLIDATED_DEVELOPMENT_ROADMAP.md` (lines 103-153)
+
+**Notes**:
+
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 2:'] From CONSOLIDATED_DEVELOPMENT_ROADMAP.md
+
+### JR-ML-TRAIN-026 — A-SDK: Downgrade cascor-client pin.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -643,7 +662,7 @@ management and health checks.
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-026 — C-09: Cascor `SetParamsRequest` has `extra="forbid"`; canopy adapter routes unclassified keys to REST with.
+### JR-ML-TRAIN-027 — C-09: Cascor `SetParamsRequest` has `extra="forbid"`; canopy adapter routes unclassified keys to REST with.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -654,7 +673,7 @@ management and health checks.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-027 — C-10: Adapter->cascor auth = HMAC first-frame (NOT `X-Juniper-Role` header).
+### JR-ML-TRAIN-028 — C-10: Adapter->cascor auth = HMAC first-frame (NOT `X-Juniper-Role` header).
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -667,7 +686,7 @@ management and health checks.
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-028 — C-12: Phase 0-cascor is a carve-out from Phase B.
+### JR-ML-TRAIN-029 — C-12: Phase 0-cascor is a carve-out from Phase B.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -680,7 +699,7 @@ management and health checks.
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
-### JR-ML-TRAIN-029 — CCC-01: Wire-format schema evolution — strictly additive, no field rename/retype/remove; rollout state matrix.
+### JR-ML-TRAIN-030 — CCC-01: Wire-format schema evolution — strictly additive, no field rename/retype/remove; rollout state matrix.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -716,7 +735,7 @@ shared package installable by both applications.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-030 — Correctness: no state loss.
+### JR-ML-TRAIN-031 — Correctness: no state loss.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -745,7 +764,7 @@ Dataset Configuration.
 
 [v2 ARCH→TRAIN re-bucket] Part of hardcoded-values refactor (HIGH priority)
 
-### JR-ML-TRAIN-031 — D-2: Phase 0-cascor carve-out (D-11).
+### JR-ML-TRAIN-032 — D-2: Phase 0-cascor carve-out (D-11).
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -756,7 +775,7 @@ Dataset Configuration.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-032 — D-**Cascor crash mid-broadcast** (RISK-14): Low.
+### JR-ML-TRAIN-033 — D-**Cascor crash mid-broadcast** (RISK-14): Low.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -767,7 +786,7 @@ Dataset Configuration.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-033 — D-Correctness: no state loss: `cascor_ws_dropped_messages_total{type="state"}`.
+### JR-ML-TRAIN-034 — D-Correctness: no state loss: `cascor_ws_dropped_messages_total{type="state"}`.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -778,7 +797,7 @@ Dataset Configuration.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-034 — D-**Silent data loss** (RISK-11): High (low likelihood).
+### JR-ML-TRAIN-035 — D-**Silent data loss** (RISK-11): High (low likelihood).
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -789,7 +808,7 @@ Dataset Configuration.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-035 — Effort bounds and calendar: 15.75 expected eng days (~4.5 weeks calendar) with soak windows.
+### JR-ML-TRAIN-036 — Effort bounds and calendar: 15.75 expected eng days (~4.5 weeks calendar) with soak windows.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -812,7 +831,22 @@ Phase dependency graph: A-SDK || 0-cascor || B-pre-a → B || B-pre-b → D; C p
 B NetworkVisualizer Plotly (+1 day), B-pre-b session middleware absent (+0.5 day), C concurrent-correlation bugs (+risk),
 D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lift debated.
 
-### JR-ML-TRAIN-036 — ERR-02: `response.json()` Unguarded in cascor-client `_request()`.
+### JR-ML-TRAIN-037 — Effort**: 1 day | **Repo**: juniper-cascor.
+
+**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 491-505)
+
+**Detail**:
+
+**Effort**: 1 day | **Repo**: juniper-cascor
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.1 Define Progress Fields in TrainingState']
+
+### JR-ML-TRAIN-038 — ERR-02: `response.json()` Unguarded in cascor-client `_request()`.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -823,7 +857,7 @@ D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lif
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-037 — ERR-06: `raise HTTPException` Without `from e` — Lost Exception Context (cascor).
+### JR-ML-TRAIN-039 — ERR-06: `raise HTTPException` Without `from e` — Lost Exception Context (cascor).
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -834,7 +868,7 @@ D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lif
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-038 — Fix BUG-CC-12: replace yaml.safe_load with torch.load or safetensors in cascor utils.py.
+### JR-ML-TRAIN-040 — Fix BUG-CC-12: replace yaml.safe_load with torch.load or safetensors in cascor utils.py.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -845,7 +879,7 @@ D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lif
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-039 — Fix CasCor demo training error with identified root cause and remediation.
+### JR-ML-TRAIN-041 — Fix CasCor demo training error with identified root cause and remediation.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -871,7 +905,7 @@ Each grow_network() loop iteration performs complete Cascade Correlation growth 
 
 [v2 remap: BG→TRAIN]
 
-### JR-ML-TRAIN-040 — Fix tensor dimension mismatch issues in CasCor batch processing pipeline.
+### JR-ML-TRAIN-042 — Fix tensor dimension mismatch issues in CasCor batch processing pipeline.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -882,7 +916,7 @@ Each grow_network() loop iteration performs complete Cascade Correlation growth 
 
 Analysis-based remediation for candidate training.
 
-### JR-ML-TRAIN-041 — Implement root cause fix for CasCor training stall based on proposal analysis.
+### JR-ML-TRAIN-043 — Implement root cause fix for CasCor training stall based on proposal analysis.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -893,7 +927,7 @@ Analysis-based remediation for candidate training.
 
 Blocks training completion.
 
-### JR-ML-TRAIN-042 — Phase 3: Layout.
+### JR-ML-TRAIN-044 — Phase 3: Layout.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -904,23 +938,7 @@ Blocks training completion.
 
 1. Replace Training Parameters card with Meta Parameters card
 
-### JR-CCL-TRAIN-002 — Refactor testing/scenarios.py to use testing constants (~50 replacements of hardcoded values).
-
-**Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ccl
-
-**Sources**:
-- `juniper-cascor-client/notes/HARDCODED_VALUES_REFACTOR_PLAN.md` (lines 54-56)
-
-**Detail**:
-
-Largest refactor: loss curve parameters, accuracy curve parameters, network topology generation,
-decision boundary generation constants.
-
-**Notes**:
-
-[v2 ARCH→TRAIN re-bucket] Part of hardcoded-values refactor (HIGH priority)
-
-### JR-ML-TRAIN-043 — Remediate training stall issue with identified root cause and proposed solution.
+### JR-ML-TRAIN-045 — Remediate training stall issue with identified root cause and proposed solution.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -931,7 +949,7 @@ decision boundary generation constants.
 
 Blocking training completion; high priority fix.
 
-### JR-ML-TRAIN-044 — Training Control.
+### JR-ML-TRAIN-046 — Training Control.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
@@ -993,28 +1011,6 @@ OptimizerConfig dataclass and _create_optimizer() method already exist in codeba
 
 _select_best_candidates() and add_units_as_layer() methods already exist.
 
-### JR-ML-TRAIN-045 — 4.4 CR-025: WebSocket Async Lock.
-
-**Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 419-434)
-
-**Detail**:
-
-**Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED
-
-### JR-ML-TRAIN-046 — 5.4 `settings.py`.
-
-**Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 314-331)
-
-**Detail**:
-
-epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=1000000)
-
 ### JR-ML-TRAIN-047 — Concurrency Assessment.
 
 **Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
@@ -1026,25 +1022,55 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 
 **WebSocket Mode**: Well-designed single-threaded asyncio with `asyncio.to_thread` for CPU-bound training. No shared mutable state between async loop and training thread
 
-### JR-ML-TRAIN-048 — 10. CasCor Algorithm and Feature Enhancements.
+### JR-ML-TRAIN-048 — Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED.
+
+**Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 419-434)
+
+**Detail**:
+
+**Effort**: 0.5 day | **Repo**: juniper-cascor | **Status**: FIXED
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.4 CR-025: WebSocket Async Lock']
+
+### JR-ML-TRAIN-049 — Update `TrainingSettings` model to include new `TrainingParamConfig` entries:.
+
+**Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 314-331)
+
+**Detail**:
+
+epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=1000000)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.4 `settings.py`']
+
+### JR-ML-TRAIN-050 — (Unchanged from v3 — Phases 0-cascor, A-SDK, B-pre-a, B, C, D all ✅ Complete.).
 
 **Status**: superseded  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 360-410)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 398-450)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 289-324)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 323-360)
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: '8. WebSocket Migration (R5-01 Remaining Phases)'] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
 
 ---
 
-Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
+[v3 brief repaired from cited content; was: '8. WebSocket Migration (R5-01 Remaining Phases)'] Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
-### JR-ML-TRAIN-049 — V6 Partial — Agent B: Active Bugs (CasCor, Canopy, Data).
+### JR-ML-TRAIN-051 — V6 Partial — Agent B: Active Bugs (CasCor, Canopy, Data).
 
 **Status**: superseded  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1055,7 +1081,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 [v2 ARCH→TRAIN re-bucket] v6 partial agent output; pre-dates V6_REMEDIATION_ANALYSIS — likely subsumed by V6/V7 entries already captured by ml-C
 
-### JR-ML-TRAIN-050 — 1.4 Test Coverage Gaps.
+### JR-ML-TRAIN-052 — 1.4 Test Coverage Gaps.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1066,18 +1092,11 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 | `client.py`    | 82.22%   | `wait_for_ready()` polling, JSON decode errors, fallback error message path                                                          |
 
-### JR-ML-TRAIN-051 — 1.6 juniper-ml: CHANGELOG & Tags.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 113-131)
-
-**Detail**:
-
-**CHANGELOG changes**: Populate [Unreleased] section, then rename to [0.4.0] covering:
-
-### JR-ML-TRAIN-052 — 15.1 juniper-cascor-client.
+### JR-ML-TRAIN-053 — 15.1 juniper-cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1088,7 +1107,11 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 | CC-04 | **LOW**    | `set_params()` method not documented in AGENTS.md Architecture                                | 🔴 Open            |
 
-### JR-ML-TRAIN-053 — 2.2 Candidate Nodes Subsection (10 inputs).
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-TRAIN-054 — 2.2 Candidate Nodes Subsection (10 inputs).
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1099,7 +1122,11 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 | 2   | Correlation Threshold     | `cn-correlation-threshold-input`          | number (float) | 0.001               | NEW         |
 
-### JR-ML-TRAIN-054 — 2.5 juniper-cascor-worker: Thread Safety & Coverage.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-TRAIN-055 — 2.5.1 Fix signal handler thread safety** (`worker.py:121`, `cli.py:95`):.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1110,95 +1137,11 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 
 **2.5.1 Fix signal handler thread safety** (`worker.py:121`, `cli.py:95`):
 
-### JR-ML-TRAIN-055 — 3.1 Modified Existing Constants.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+[v3 brief repaired from cited content; was: '2.5 juniper-cascor-worker: Thread Safety & Coverage']
 
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 99-114)
-
-**Detail**:
-
-DEFAULT_TRAINING_EPOCHS: Final[int] = 1000000    # was 300
-
-### JR-ML-TRAIN-056 — 3.2 CR-007: Auto-Reset State Machine on Start.
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 154-182)
-
-**Detail**:
-
-**Severity**: S1 | **Effort**: Medium (1 day) | **Repo**: juniper-cascor
-
-### JR-ML-TRAIN-057 — 3.3 New Candidate Nodes Constants.
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 149-197)
-
-**Detail**:
-
-DEFAULT_CANDIDATE_CORRELATION_THRESHOLD: Final[float] = 0.001
-
-### JR-ML-TRAIN-058 — 3.3 State Name Inconsistency.
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 402-409)
-
-**Detail**:
-
-**Repositories**: juniper-cascor, juniper-cascor-client
-
-### JR-ML-TRAIN-059 — 5.5 Option A: Candidate Progress Queue.
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 543-556)
-
-**Detail**:
-
-**Effort**: 3-5 days | **Repo**: juniper-cascor
-
-### JR-ML-TRAIN-060 — 6.2 Medium: 503 Not Retried (XREPO-02 — confirmed STILL PRESENT).
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 340-345)
-
-**Detail**:
-
-**File**: `juniper-cascor-client/constants.py:31`
-
-### JR-ML-TRAIN-061 — 6.3 Medium: No FakeCascorControlStream (XREPO-03 — confirmed STILL MISSING).
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 345-349)
-
-**Detail**:
-
-`juniper-cascor-client/testing/__init__.py` exports `FakeCascorClient` and `FakeCascorTrainingStream` only. No fake for `CascorControlStream`. Consumers testing WebSocket control (e.g., `set_params`) cannot use the testing subpackage.
-
-### JR-ML-TRAIN-062 — 6.4 Medium: Protocol Constants Alignment is Manual.
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 349-353)
-
-**Detail**:
-
-Worker protocol constants (`MSG_TYPE_*`, `BINARY_FRAME_*`) must remain bit-identical to cascor's `MessageType(StrEnum)` in `protocol.py`. Wave 5 verified alignment, but **no automated CI check exists**. A cascor protocol change could silently break worker connectivity.
-
-### JR-ML-TRAIN-063 — 7.1 juniper-cascor-client — All Planned Work ✅ COMPLETE.
+### JR-ML-TRAIN-056 — 7.1 juniper-cascor-client — All Planned Work ✅ COMPLETE.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1209,25 +1152,22 @@ Worker protocol constants (`MSG_TYPE_*`, `BINARY_FRAME_*`) must remain bit-ident
 
 | Hardcoded values refactor → `constants.py` | ✅ Complete (126 lines, 330 test constants)           |
 
-### JR-ML-TRAIN-064 — 7.2 juniper-cascor-worker — All Planned Work ✅ COMPLETE.
+**Notes**:
 
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+[v3 thin-brief flagged]
 
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 381-392)
-
-**Detail**:
-
-| Hardcoded values refactor → `constants.py`                 | ✅ Complete (~70 replacements) |
-
-### JR-ML-TRAIN-065 — 8.1 Unit Tests - Layout Verification.
+### JR-ML-TRAIN-057 — 8.1 Unit Tests - Layout Verification.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 460-471)
 
-### JR-ML-TRAIN-066 — Adam Optimizer Pathology: fix Adam optimizer pathology issues.
+**Notes**:
+
+[v3 thin-brief flagged]
+
+### JR-ML-TRAIN-058 — Adam Optimizer Pathology: fix Adam optimizer pathology issues.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1249,14 +1189,14 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 
 [v2 ARCH→TRAIN re-bucket] Alternative options (keep candidates, retrain on new data) considered and rejected.
 
-### JR-ML-TRAIN-067 — Candidate Quality Decay: address candidate quality degradation in long training runs.
+### JR-ML-TRAIN-059 — Candidate Quality Decay: address candidate quality degradation in long training runs.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_02_CANDIDATE_QUALITY_DECAY.md` (lines 1-40)
 
-### JR-ML-TRAIN-068 — CFG-14: `juniper-cascor-client>=0.1.0` Allows Outdated Incompatible Versions.
+### JR-ML-TRAIN-060 — CFG-14: `juniper-cascor-client>=0.1.0` Allows Outdated Incompatible Versions.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1267,7 +1207,22 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-069 — CI-01: cascor-client CI Doesn't Test Python 3.14.
+### JR-ML-TRAIN-061 — CHANGELOG changes**: Populate [Unreleased] section, then rename to [0.4.0] covering:.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 113-131)
+
+**Detail**:
+
+**CHANGELOG changes**: Populate [Unreleased] section, then rename to [0.4.0] covering:
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.6 juniper-ml: CHANGELOG & Tags']
+
+### JR-ML-TRAIN-062 — CI-01: cascor-client CI Doesn't Test Python 3.14.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1278,7 +1233,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-070 — CI-02: cascor-worker CI Doesn't Test Python 3.14.
+### JR-ML-TRAIN-063 — CI-02: cascor-worker CI Doesn't Test Python 3.14.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1289,7 +1244,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-071 — CI-05: Missing lockfile-update.yml for cascor-client.
+### JR-ML-TRAIN-064 — CI-05: Missing lockfile-update.yml for cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1300,19 +1255,57 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-072 — Consequence.
+### JR-ML-TRAIN-065 — class TestDemoBackendCascadeConnections:.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 245-251)
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 760-775)
 
-### JR-ML-TRAIN-073 — Convergence Timing: optimize convergence detection timing.
+**Detail**:
+
+# Setup: create network with 2+ hidden units
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Phase 2 Tests']
+
+### JR-ML-TRAIN-066 — Convergence Timing: optimize convergence detection timing.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_04_CONVERGENCE_TIMING.md` (lines 1-46)
+
+### JR-ML-TRAIN-067 — DEFAULT_CANDIDATE_POOL_SIZE: Final[int] = 100.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 149-197)
+
+**Detail**:
+
+DEFAULT_CANDIDATE_CORRELATION_THRESHOLD: Final[float] = 0.001
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 New Candidate Nodes Constants']
+
+### JR-ML-TRAIN-068 — DEFAULT_TRAINING_EPOCHS: Final[int] = 1000000    # was 300.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 99-114)
+
+**Detail**:
+
+DEFAULT_TRAINING_EPOCHS: Final[int] = 1000000    # was 300
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.1 Modified Existing Constants']
 
 ### JR-CAN-TRAIN-005 — Demo cascor training loss plateaus at ~0.24 after first hidden unit despite 6+ units added; root causes include vanilla SGD vs Adam and mini-batch issues.
 
@@ -1363,7 +1356,52 @@ Demo preserves old output weights, only new column gets small-random init. Refer
 
 Mismatch 2 of 5 identified.
 
-### JR-ML-TRAIN-074 — Enable Canopy to connect to external CasCor instances with connection orchestration.
+### JR-ML-TRAIN-069 — `demo_backend.py:get_network_topology()` only creates input-to-hidden connections. It does not create hidden-to-hidden cascade connections….
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 357-361)
+
+**Detail**:
+
+`demo_backend.py:get_network_topology()` only creates input-to-hidden connections. It does not create hidden-to-hidden cascade connections that are the defining featur
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Root Cause']
+
+### JR-ML-TRAIN-070 — During `CascorStateSync.sync()`, the topology is fetched and transformed correctly into `SyncedState.topology`. However, in `main.py` where….
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 475-479)
+
+**Detail**:
+
+During `CascorStateSync.sync()`, the topology is fetched and transformed correctly into `SyncedState.topology`. However, in `main.py` where the synced state is applied, only training status/epoch/params are pushed to the app state — the synced topology is never written to the Das
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Root Cause']
+
+### JR-ML-TRAIN-071 — Effort**: 3-5 days | **Repo**: juniper-cascor.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 543-556)
+
+**Detail**:
+
+**Effort**: 3-5 days | **Repo**: juniper-cascor
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.5 Option A: Candidate Progress Queue']
+
+### JR-ML-TRAIN-072 — Enable Canopy to connect to external CasCor instances with connection orchestration.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1373,6 +1411,21 @@ Mismatch 2 of 5 identified.
 **Notes**:
 
 [v2 ARCH→TRAIN re-bucket] Approved for implementation.
+
+### JR-ML-TRAIN-073 — File**: `juniper-cascor-client/constants.py:31`.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 340-345)
+
+**Detail**:
+
+**File**: `juniper-cascor-client/constants.py:31`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.2 Medium: 503 Not Retried (XREPO-02 — confirmed STILL PRES']
 
 ### JR-CAS-TRAIN-028 — Fix validate_training_results bug - uninitialized variables in edge cases.
 
@@ -1402,7 +1455,7 @@ and validate_training_results before loop.
 
 Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=0), debug log crashes with AttributeError on .early_stop.
 
-### JR-ML-TRAIN-075 — High Issues.
+### JR-ML-TRAIN-074 — H-JCC-1: CHANGELOG missing v0.2.0 and v0.3.0 entries.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1413,7 +1466,11 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 
 **H-JCC-1: CHANGELOG missing v0.2.0 and v0.3.0 entries**
 
-### JR-ML-TRAIN-076 — HSK-05: cascor-client AGENTS.md Header Version 0.3.0 vs Package 0.4.0.
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'High Issues']
+
+### JR-ML-TRAIN-075 — HSK-05: cascor-client AGENTS.md Header Version 0.3.0 vs Package 0.4.0.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1424,7 +1481,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-077 — HSK-07: cascor-client File Headers Show Versions 0.1.0–0.3.0.
+### JR-ML-TRAIN-076 — HSK-07: cascor-client File Headers Show Versions 0.1.0–0.3.0.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1435,7 +1492,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-078 — HSK-09: Dead Code `_STATE_TO_FSM` and `_STATE_TO_PHASE` in cascor-client.
+### JR-ML-TRAIN-077 — HSK-09: Dead Code `_STATE_TO_FSM` and `_STATE_TO_PHASE` in cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1446,7 +1503,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-079 — HSK-23: `scripts/juniper-all-ctl:38` Cascor Port Defaults to 8200 (Container) vs Host 8201.
+### JR-ML-TRAIN-078 — HSK-23: `scripts/juniper-all-ctl:38` Cascor Port Defaults to 8200 (Container) vs Host 8201.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1457,7 +1514,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-080 — HSK-24: Unused Constants in cascor-client.
+### JR-ML-TRAIN-079 — HSK-24: Unused Constants in cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1483,12 +1540,27 @@ CAS-INT-001 through CAS-INT-009 verified complete. Items include: API path valid
 
 [v2 remap: BG→TRAIN]
 
-### JR-ML-TRAIN-081 — Investigate V38 grow-network performance; characterize scaling limits and convergence behavior.
+### JR-ML-TRAIN-080 — Investigate V38 grow-network performance; characterize scaling limits and convergence behavior.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/V38_GROW_NETWORK_INVESTIGATION_PLAN_2026-05-02.md` (lines 1-50)
+
+### JR-ML-TRAIN-081 — `juniper-cascor-client/testing/__init__.py` exports `FakeCascorClient` and `FakeCascorTrainingStream` only. No fake for….
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 345-349)
+
+**Detail**:
+
+`juniper-cascor-client/testing/__init__.py` exports `FakeCascorClient` and `FakeCascorTrainingStream` only. No fake for `CascorControlStream`. Consumers testing WebSocket control (e.g., `set_params`) cannot use the testing subpackage.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.3 Medium: No FakeCascorControlStream (XREPO-03 — confirmed']
 
 ### JR-CAN-TRAIN-008 — Live dataset swap during training requires experimental-functions gate, pause/resume lifecycle, architecture adaptation, and snapshot/replay persistence.
 
@@ -1509,7 +1581,7 @@ Cascor lifecycle method swap_dataset_live: acquire _training_lock, validate gate
 
 Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent cascor components; design review replaced with actual surface.
 
-### JR-ML-TRAIN-082 — Medium Issues.
+### JR-ML-TRAIN-082 — M-JCW-1: No task execution timeout** (`worker.py:201`).
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1519,6 +1591,10 @@ Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent casco
 **Detail**:
 
 **M-JCW-1: No task execution timeout** (`worker.py:201`)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Medium Issues']
 
 ### JR-ML-TRAIN-083 — Network Architecture.
 
@@ -1552,14 +1628,29 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_05_OUTPUT_WEIGHT_INIT.md` (lines 1-38)
 
-### JR-ML-TRAIN-085 — Phantom Inter-Cascade Training Phase: remove 1-step/epoch phantom training phase.
+### JR-ML-TRAIN-085 — Outstanding**: No version bump for unreleased constants refactor. Integration test marker defined but zero tests.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 381-392)
+
+**Detail**:
+
+| Hardcoded values refactor → `constants.py`                 | ✅ Complete (~70 replacements) |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '7.2 juniper-cascor-worker — All Planned Work ✅ COMPLETE']
+
+### JR-ML-TRAIN-086 — Phantom Inter-Cascade Training Phase: remove 1-step/epoch phantom training phase.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_01_PHANTOM_TRAINING_PHASE.md` (lines 30-48)
 
-### JR-ML-TRAIN-086 — Phase 0-cascor is a carve-out from Phase B.
+### JR-ML-TRAIN-087 — Phase 0-cascor is a carve-out from Phase B.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1569,17 +1660,6 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Notes**:
 
 [v2 ARCH→TRAIN re-bucket] Settled position C-12 from R3-03 table; cross-round consensus consolidation
-
-### JR-ML-TRAIN-087 — Phase 2 Tests.
-
-**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 760-775)
-
-**Detail**:
-
-# Setup: create network with 2+ hidden units
 
 ### JR-ML-TRAIN-088 — Phase A-SDK — ✅ IMPLEMENTED.
 
@@ -1615,14 +1695,29 @@ Remove or reconnect to active candidate pool UI.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-090 — Residual Variance Collapse: address residual variance collapse in training.
+### JR-ML-TRAIN-090 — Repositories**: juniper-cascor, juniper-cascor-client.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 402-409)
+
+**Detail**:
+
+**Repositories**: juniper-cascor, juniper-cascor-client
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 State Name Inconsistency']
+
+### JR-ML-TRAIN-091 — Residual Variance Collapse: address residual variance collapse in training.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_09_RESIDUAL_VARIANCE_COLLAPSE.md` (lines 1-46)
 
-### JR-ML-TRAIN-091 — RISK: Correctness: no state loss.
+### JR-ML-TRAIN-092 — RISK: Correctness: no state loss.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1633,21 +1728,22 @@ Remove or reconnect to active candidate pool UI.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-092 — Root Cause.
+### JR-ML-TRAIN-093 — Severity**: S1 | **Effort**: Medium (1 day) | **Repo**: juniper-cascor.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 357-361)
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 475-479)
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 154-182)
 
 **Detail**:
 
-`demo_backend.py:get_network_topology()` only creates input-to-hidden connections. It does not create hidden-to-hidden cascade connections that are the defining featur
+**Severity**: S1 | **Effort**: Medium (1 day) | **Repo**: juniper-cascor
 
-*Merged from 2 extraction candidates (slices: 3c-2b).*
+**Notes**:
 
-### JR-ML-TRAIN-093 — Spiral Complexity: limit spiral depth and complexity growth.
+[v3 brief repaired from cited content; was: '3.2 CR-007: Auto-Reset State Machine on Start']
+
+### JR-ML-TRAIN-094 — Spiral Complexity: limit spiral depth and complexity growth.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1661,14 +1757,14 @@ Remove or reconnect to active candidate pool UI.
 **Sources**:
 - `juniper-cascor/notes/history/DEVELOPMENT_ROADMAP.md` (lines 749-773)
 
-### JR-ML-TRAIN-094 — Tanh Saturation: address tanh saturation issues.
+### JR-ML-TRAIN-095 — Tanh Saturation: address tanh saturation issues.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/proposals/PROPOSAL_06_TANH_SATURATION.md` (lines 1-38)
 
-### JR-ML-TRAIN-095 — Task 3 (Topology).
+### JR-ML-TRAIN-096 — Task 3 (Topology).
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1679,7 +1775,18 @@ Remove or reconnect to active candidate pool UI.
 
 - Exact lines confirmed: 582 and 611 in cascor_service_adapter.py
 
-### JR-ML-TRAIN-096 — TQ-01: 10+ Tests with No Assertions (cascor).
+### JR-ML-TRAIN-097 — Topology updates after `cascade_add` are delayed by **up to 5 seconds.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 245-251)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Consequence']
+
+### JR-ML-TRAIN-098 — TQ-01: 10+ Tests with No Assertions (cascor).
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1690,7 +1797,7 @@ Remove or reconnect to active candidate pool UI.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-097 — TQ-04: 139 `hasattr` Guards in cascor Tests.
+### JR-ML-TRAIN-099 — TQ-04: 139 `hasattr` Guards in cascor Tests.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
@@ -1701,7 +1808,22 @@ Remove or reconnect to active candidate pool UI.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-098 — 3.7 R5.6-THROTTLE — Cascor 25-epoch emit throttle removal.
+### JR-ML-TRAIN-100 — Worker protocol constants (`MSG_TYPE_*`, `BINARY_FRAME_*`) must remain bit-identical to cascor's `MessageType(StrEnum)` in `protocol.py`.….
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 349-353)
+
+**Detail**:
+
+Worker protocol constants (`MSG_TYPE_*`, `BINARY_FRAME_*`) must remain bit-identical to cascor's `MessageType(StrEnum)` in `protocol.py`. Wave 5 verified alignment, but **no automated CI check exists**. A cascor protocol change could silently break worker connectivity.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '6.4 Medium: Protocol Constants Alignment is Manual']
+
+### JR-ML-TRAIN-101 — Background.** `cascade_correlation.py:1655`'s lifecycle callback fires only on `epoch % 25 == 0 or epoch == epochs - 1`, so the R5.4-pre….
 
 **Status**: designed  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
@@ -1711,6 +1833,10 @@ Remove or reconnect to active candidate pool UI.
 **Detail**:
 
 **Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** deferred
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.7 R5.6-THROTTLE — Cascor 25-epoch emit throttle removal']
 
 ### JR-CAS-TRAIN-032 — Document workaround for sys.path mutation pattern - long-term fix via IPC.
 
@@ -1729,7 +1855,7 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-ML-TRAIN-099 — 6.1 juniper-cascor — Stale Code Removal.
+### JR-ML-TRAIN-102 — 6.1 juniper-cascor — Stale Code Removal.
 
 **Status**: deferred  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
@@ -1740,6 +1866,10 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 **Detail**:
 
 | CLN-CC-02 | **P2**   | Delete stale `check.py` duplicate (600 lines) — copy of spiral_problem.py                        | `src/spiral_problem/check.py`                                                            | 10 min      |
+
+**Notes**:
+
+[v3 thin-brief flagged]
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
@@ -1792,22 +1922,18 @@ Current architecture embeds CasCor within Canopy process. Deferral justified by 
 
 [v2 ARCH→TRAIN re-bucket] Phase 4 deferred; has explicit trigger conditions
 
-### JR-CAS-TRAIN-035 — Future enhancements: CAN-000 through CAN-021 (meta param menu, training metrics UI, parameter tuning tab, snapshot capture/replay).
+### JR-ML-TRAIN-103 — Goal**: Ensure cascor exposes all required fields for canopy consumption.
 
-**Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: cas
+**Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-cascor/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 280-310)
-
-**Detail**:
-
-CAN-000: Meta param menu periodic update pause. CAN-001: Training Loss time window toggle. CAN-002: Custom rolling time window. CAN-003: Retain candidate pool data per node (expandable "Previous Pools"). CAN-004-005: Meta param tuning tab with pin/unpin. CAN-006-013: Network/candidate/optimizer meta parameters. CAN-014-015: Snapshot captures, replay with live tuning. CAN-016a-b: Dashboard layout save/load, dataset import/generate. CAN-017-021: Tooltips, tutorials, network hierarchy, population views. Status: 🔴 NOT STARTED for all items.
+- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 49-65)
 
 **Notes**:
 
-[v2 remap: BG→TRAIN]
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 2:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
 
-### JR-CAS-TRAIN-036 — Per-instance queue management to avoid cross-instance interference.
+### JR-CAS-TRAIN-035 — Per-instance queue management to avoid cross-instance interference.
 
 **Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: cas
 
