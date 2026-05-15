@@ -62,7 +62,7 @@ The plan was reviewed and these five questions were resolved 2026-05-11. Re-open
 
 **Answer (locked 2026-05-11)**: **Multi-file.** Output structure:
 
-```
+```bash
 notes/REQUIREMENTS_INDEX.md             ← navigation entrypoint
 notes/requirements/
 ├── README.md                           ← schema + ID convention reference
@@ -120,19 +120,19 @@ The **canonical** definition of each requirement lives once in `by-area/<area>.m
 
 For Phase 3 extraction agents, the following are all treated as candidate requirements:
 
-| Pattern | Example | Treat as | Status default |
-|---|---|---|---|
-| Explicit "Requirement N: …" or "REQ-N:" headings | "Requirement 4.2: cascor must expose /v1/health/ready" | requirement | based on context |
-| Acceptance-criteria checklist items | "- [x] /metrics returns 200 anonymously" | requirement | inferred from checkbox state |
-| "Must / shall / should / will / cannot" sentences in a design or plan doc | "Canopy shall not log API keys" | requirement | `proposed` unless context says otherwise |
-| Numbered design-decision rationale | "**Decision**: use IP-allowlist on /metrics" | requirement | `shipped` if cited PR is merged |
-| TODO items in a roadmap or plan | "TODO: wire OBS-WIRE-02" | requirement | `proposed` |
-| Performance / latency / throughput targets | "p95 < 50 ms", "must support 100 RPS" | requirement | `proposed` unless tied to a shipped SLO |
-| SLO / SLI definitions | "Availability SLI: 99.5%" | requirement | `shipped` if catalogued |
-| Naming/format conventions stated as expectations | "All Helm charts: version and appVersion must match" | requirement | `shipped` if practiced |
-| Architectural constraints | "Worker must not import pydantic at runtime" | requirement | `shipped` if test exists |
-| Trigger conditions in deferred-design docs | The Option C triggers in CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md | requirement | `deferred` |
-| Compatibility / pin floors stated as deliberate | "juniper-observability >= 0.2.0 floor for register_or_reuse" | requirement | `shipped` |
+| Pattern                                                                   | Example                                                                    | Treat as    | Status default                           |
+|---------------------------------------------------------------------------|----------------------------------------------------------------------------|-------------|------------------------------------------|
+| Explicit "Requirement N: …" or "REQ-N:" headings                          | "Requirement 4.2: cascor must expose /v1/health/ready"                     | requirement | based on context                         |
+| Acceptance-criteria checklist items                                       | "- [x] /metrics returns 200 anonymously"                                   | requirement | inferred from checkbox state             |
+| "Must / shall / should / will / cannot" sentences in a design or plan doc | "Canopy shall not log API keys"                                            | requirement | `proposed` unless context says otherwise |
+| Numbered design-decision rationale                                        | "**Decision**: use IP-allowlist on /metrics"                               | requirement | `shipped` if cited PR is merged          |
+| TODO items in a roadmap or plan                                           | "TODO: wire OBS-WIRE-02"                                                   | requirement | `proposed`                               |
+| Performance / latency / throughput targets                                | "p95 < 50 ms", "must support 100 RPS"                                      | requirement | `proposed` unless tied to a shipped SLO  |
+| SLO / SLI definitions                                                     | "Availability SLI: 99.5%"                                                  | requirement | `shipped` if catalogued                  |
+| Naming/format conventions stated as expectations                          | "All Helm charts: version and appVersion must match"                       | requirement | `shipped` if practiced                   |
+| Architectural constraints                                                 | "Worker must not import pydantic at runtime"                               | requirement | `shipped` if test exists                 |
+| Trigger conditions in deferred-design docs                                | The Option C triggers in CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md | requirement | `deferred`                               |
+| Compatibility / pin floors stated as deliberate                           | "juniper-observability >= 0.2.0 floor for register_or_reuse"               | requirement | `shipped`                                |
 
 **Not** treated as requirements:
 
@@ -200,12 +200,12 @@ The priority field was added in Phase 2 after the Phase-1 inventory implied >150
 
 **Taxonomy** (P0 highest urgency, P3 lowest):
 
-| Level | Inferred when source doc shows … |
-|---|---|
+| Level  | Inferred when source doc shows …                                                                                                                                                |
+|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **P0** | Words like *blocker*, *critical*, *production incident*, *must-ship-before-X*; open incident remediation plans; security CVE/CVSS-high fixes; data-loss or correctness defects. |
-| **P1** | Listed in a current-quarter roadmap, has an explicit owner + ETA, or is named in a release-preparation / pre-deploy roadmap with a near-term target. |
-| **P2** | Backlog / future-quarter item; no concrete ETA; *should* / *planned* language without urgency cues. |
-| **P3** | *Nice to have*, *future work*, *deferred*, *out of scope for v1*, *parking lot*, or explicitly tagged for a much later milestone. |
+| **P1** | Listed in a current-quarter roadmap, has an explicit owner + ETA, or is named in a release-preparation / pre-deploy roadmap with a near-term target.                            |
+| **P2** | Backlog / future-quarter item; no concrete ETA; *should* / *planned* language without urgency cues.                                                                             |
+| **P3** | *Nice to have*, *future work*, *deferred*, *out of scope for v1*, *parking lot*, or explicitly tagged for a much later milestone.                                               |
 
 **Default**: If the source doc gives no cue, default to **P2** and mark the entry with `**Priority-inferred**: true` (extractor metadata; this becomes a Notes line, e.g. `Notes: Priority defaulted to P2 — no urgency cues in source.`).
 
@@ -234,23 +234,23 @@ Format: `JR-<REPO>-<AREA>-<NNN>`
 
 **Locked area-code enum (15 codes)**:
 
-| Code | Scope |
-|---|---|
-| `OBS`   | observability — metrics, logging, tracing, dashboards, alerting |
-| `SEC`   | security — authn, authz, secrets, CVEs, hardening |
-| `API`   | API contracts — schemas, versioning, compatibility, migrations |
-| `DEP`   | deployment-config — Docker, Compose, K8s, Helm, image build |
-| `UI`    | ui-frontend — Canopy/Dash, UX, visualizations |
-| `DATA`  | data-pipeline — dataset generation, NPZ contracts, ingestion |
-| `TRAIN` | training — cascor algorithm, candidates, convergence, model state |
-| `WS`    | websocket / messaging — Canopy↔Cascor streaming, replay, control plane |
-| `TEST`  | testing-and-ci — pytest, fixtures, CI workflows, regression analysis |
-| `LOCK`  | lockfile-and-deps — uv lockfiles, pyproject pins, dep updates, env rebuilds |
-| `ARCH`  | architecture / cross-cutting design — microservices, polyrepo, interface proposals |
-| `PERF`  | performance / scalability — throughput, latency, parallelization, CUDA |
+| Code    | Scope                                                                                    |
+|---------|------------------------------------------------------------------------------------------|
+| `OBS`   | observability — metrics, logging, tracing, dashboards, alerting                          |
+| `SEC`   | security — authn, authz, secrets, CVEs, hardening                                        |
+| `API`   | API contracts — schemas, versioning, compatibility, migrations                           |
+| `DEP`   | deployment-config — Docker, Compose, K8s, Helm, image build                              |
+| `UI`    | ui-frontend — Canopy/Dash, UX, visualizations                                            |
+| `DATA`  | data-pipeline — dataset generation, NPZ contracts, ingestion                             |
+| `TRAIN` | training — cascor algorithm, candidates, convergence, model state                        |
+| `WS`    | websocket / messaging — Canopy↔Cascor streaming, replay, control plane                   |
+| `TEST`  | testing-and-ci — pytest, fixtures, CI workflows, regression analysis                     |
+| `LOCK`  | lockfile-and-deps — uv lockfiles, pyproject pins, dep updates, env rebuilds              |
+| `ARCH`  | architecture / cross-cutting design — microservices, polyrepo, interface proposals       |
+| `PERF`  | performance / scalability — throughput, latency, parallelization, CUDA                   |
 | `TOOL`  | dev tooling / scripts / workflow — worktree procs, claude-code launchers, util/* scripts |
-| `DOC`   | documentation / process — link validation, conventions, file headers, READMEs |
-| `OPS`   | operations / runbooks / on-call — runbook documents, incident response, day-2 |
+| `DOC`   | documentation / process — link validation, conventions, file headers, READMEs            |
+| `OPS`   | operations / runbooks / on-call — runbook documents, incident response, day-2            |
 
 Examples: `JR-CAS-WS-014`, `JR-CAN-OBS-007`, `JR-DEP-OPS-003`, `JR-ML-LOCK-002`, `JR-ML-ARCH-011`.
 
@@ -258,29 +258,29 @@ IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, an
 
 ### Status taxonomy
 
-| Status | Meaning |
-|---|---|
-| `proposed` | Identified in a notes doc but no design or implementation work has begun. |
-| `designed` | A design doc exists but no implementation work has begun. |
-| `in-progress` | One or more PRs are open / in active development. |
-| `shipped` | Closed by one or more merged PRs; the requirement is satisfied in the current main branch of all owning repos. |
-| `deferred` | Explicitly deferred with conditions for future activation (e.g. trigger criteria documented). |
-| `rejected` | Explicitly decided against; retained for historical traceability. |
-| `superseded` | Replaced by another requirement; the entry stays with a forward link to the replacement's ID. |
+| Status        | Meaning                                                                                                        |
+|---------------|----------------------------------------------------------------------------------------------------------------|
+| `proposed`    | Identified in a notes doc but no design or implementation work has begun.                                      |
+| `designed`    | A design doc exists but no implementation work has begun.                                                      |
+| `in-progress` | One or more PRs are open / in active development.                                                              |
+| `shipped`     | Closed by one or more merged PRs; the requirement is satisfied in the current main branch of all owning repos. |
+| `deferred`    | Explicitly deferred with conditions for future activation (e.g. trigger criteria documented).                  |
+| `rejected`    | Explicitly decided against; retained for historical traceability.                                              |
+| `superseded`  | Replaced by another requirement; the entry stays with a forward link to the replacement's ID.                  |
 
 ---
 
 ## 7. Phased execution plan
 
-| Phase | Description | Approx wall-clock | Status |
-|---|---|---|---|
-| 0 | Plan written, decisions locked | done | ✅ 2026-05-11 |
-| 1 | Inventory all `notes/` directories across the 8 repos | 15-30 min, 1 Explore agent | ☐ not started |
-| 2 | Schema lock (already drafted in §5; re-confirm after Phase 1 size estimate) | 10 min, deterministic | ☐ not started |
-| 3 | Per-repo extraction, parallel | 1-3 h wall, 8 Explore agents in parallel | ☐ not started |
-| 4 | Consolidation, dedup, ID assignment, area-grouping | 30-60 min, sequential | ☐ not started |
-| 5 | QA pass: random N=20 verification + coverage spot-check | 30 min, 1 Explore agent + supervisor | ☐ not started |
-| 6 | Ship: commit `notes/REQUIREMENTS_INDEX.md` + `notes/requirements/*.md` to juniper-ml main | 10 min | ☐ not started |
+| Phase | Description                                                                               | Approx wall-clock                        | Status        |
+|-------|-------------------------------------------------------------------------------------------|------------------------------------------|---------------|
+| 0     | Plan written, decisions locked                                                            | done                                     | ✅ 2026-05-11 |
+| 1     | Inventory all `notes/` directories across the 8 repos                                     | 15-30 min, 1 Explore agent               | ☐ not started |
+| 2     | Schema lock (already drafted in §5; re-confirm after Phase 1 size estimate)               | 10 min, deterministic                    | ☐ not started |
+| 3     | Per-repo extraction, parallel                                                             | 1-3 h wall, 8 Explore agents in parallel | ☐ not started |
+| 4     | Consolidation, dedup, ID assignment, area-grouping                                        | 30-60 min, sequential                    | ☐ not started |
+| 5     | QA pass: random N=20 verification + coverage spot-check                                   | 30 min, 1 Explore agent + supervisor     | ☐ not started |
+| 6     | Ship: commit `notes/REQUIREMENTS_INDEX.md` + `notes/requirements/*.md` to juniper-ml main | 10 min                                   | ☐ not started |
 
 **Pilot recommendation (still in force)**: run all phases against `juniper-ml/notes/` only first (~1 hour total), recalibrate the aggressive-threshold and schema based on what surfaces, then fan out Phase 3 to the other 7 repos. The pilot output is **disposable** — Phase 3 will re-extract `juniper-ml` from scratch in the full-fan-out run.
 
@@ -342,31 +342,31 @@ IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, an
 
 ## 8. Risks and mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Hallucinated requirements (extracted but no traceable source) | medium | high (corrupts the artifact's audit value) | Schema mandates at least one `Source` with line range. Phase 5 QA sample of N=20 catches a meaningful fraction. |
-| ID collisions / shifting IDs on re-runs | medium | medium (breaks external links) | Persist `id_assignments.yaml`. Future re-runs reuse IDs for matched entries. Never reuse a retired ID. |
-| Aggressive threshold produces overwhelming volume (>1500 entries) | medium | medium (output unreviewable) | Phase 1 inventory sizes the corpus before Phase 3 commits. If Phase 1 forecasts > 1500 entries, Phase 2 adds a `priority` field and Phase 4 surfaces a `priority: high` view. |
-| Cross-repo restatements miss dedup (same requirement, two entries) | high | low (cosmetic; can be re-merged later) | Phase 4 fuzzy-match dedup with human review of the merge candidates. |
-| Aggressive scope misses an explicit requirement (false negative) | low-medium | medium | Phase 5 coverage check on 5 high-density files catches obvious misses. |
-| In-progress edits in main worktree get clobbered during Phase 6 commit | medium (already happened twice this session) | low (stash recovers) | Standard stash + merge + pop pattern, documented in `project_juniper_ml_concurrent_session_activity.md`. |
-| Phase 3 agent token cost exceeds expectations | medium | low | Run pilot on juniper-ml first (~1 hour, single-repo cost); use that to project full-fan-out cost before committing. |
+| Risk                                                                   | Likelihood                                   | Impact                                     | Mitigation                                                                                                                                                                    |
+|:-----------------------------------------------------------------------|:---------------------------------------------|:-------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Hallucinated requirements (extracted but no traceable source)          | medium                                       | high (corrupts the artifact's audit value) | Schema mandates at least one `Source` with line range. Phase 5 QA sample of N=20 catches a meaningful fraction.                                                               |
+| ID collisions / shifting IDs on re-runs                                | medium                                       | medium (breaks external links)             | Persist `id_assignments.yaml`. Future re-runs reuse IDs for matched entries. Never reuse a retired ID.                                                                        |
+| Aggressive threshold produces overwhelming volume (>1500 entries)      | medium                                       | medium (output unreviewable)               | Phase 1 inventory sizes the corpus before Phase 3 commits. If Phase 1 forecasts > 1500 entries, Phase 2 adds a `priority` field and Phase 4 surfaces a `priority: high` view. |
+| Cross-repo restatements miss dedup (same requirement, two entries)     | high                                         | low (cosmetic; can be re-merged later)     | Phase 4 fuzzy-match dedup with human review of the merge candidates.                                                                                                          |
+| Aggressive scope misses an explicit requirement (false negative)       | low-medium                                   | medium                                     | Phase 5 coverage check on 5 high-density files catches obvious misses.                                                                                                        |
+| In-progress edits in main worktree get clobbered during Phase 6 commit | medium (already happened twice this session) | low (stash recovers)                       | Standard stash + merge + pop pattern, documented in `project_juniper_ml_concurrent_session_activity.md`.                                                                      |
+| Phase 3 agent token cost exceeds expectations                          | medium                                       | low                                        | Run pilot on juniper-ml first (~1 hour, single-repo cost); use that to project full-fan-out cost before committing.                                                           |
 
 ---
 
 ## 9. Effort estimate
 
-| Phase | Wall-clock | Notes |
-|---|---|---|
-| 1 — Inventory | 15-30 min | Mostly `find` + `wc` operations, single agent. |
-| 2 — Schema lock | 10 min | Deterministic, mostly already done in §5. |
-| 3 — Extraction (full fan-out) | 1-3 hours wall | 8 agents in parallel. Token cost is the dominant resource here. |
-| 3 — Extraction (juniper-ml pilot only) | ~1 hour | Single agent against the densest repo. |
-| 4 — Consolidation | 30-60 min | Sequential, agent-assisted but supervisor-driven. |
-| 5 — QA | 30 min | One agent + spot-check. |
-| 6 — Ship | 10 min | Standard commit-push-merge flow. |
-| **Total (pilot only)** | **~2-2.5 hours** | Recommended starting point. |
-| **Total (full fan-out)** | **~3-5 hours** | After pilot validates the approach. |
+| Phase                                  | Wall-clock       | Notes                                                           |
+|----------------------------------------|------------------|-----------------------------------------------------------------|
+| 1 — Inventory                          | 15-30 min        | Mostly `find` + `wc` operations, single agent.                  |
+| 2 — Schema lock                        | 10 min           | Deterministic, mostly already done in §5.                       |
+| 3 — Extraction (full fan-out)          | 1-3 hours wall   | 8 agents in parallel. Token cost is the dominant resource here. |
+| 3 — Extraction (juniper-ml pilot only) | ~1 hour          | Single agent against the densest repo.                          |
+| 4 — Consolidation                      | 30-60 min        | Sequential, agent-assisted but supervisor-driven.               |
+| 5 — QA                                 | 30 min           | One agent + spot-check.                                         |
+| 6 — Ship                               | 10 min           | Standard commit-push-merge flow.                                |
+| **Total (pilot only)**                 | **~2-2.5 hours** | Recommended starting point.                                     |
+| **Total (full fan-out)**               | **~3-5 hours**   | After pilot validates the approach.                             |
 
 ---
 
@@ -381,11 +381,13 @@ Per Q3 (snapshot first) and Q4 (notes/ only for v1), the following are explicitl
 **Why deferred**: A living model requires every notes-doc author to follow a tagging convention (e.g. `<!-- req: ID -->` markers, or a structured frontmatter block). Adoption is a separate culture change, and trying to do both v1 capture and v1 living-doc tooling at once dilutes both.
 
 **Promote when**:
+
 - The v1 snapshot has been used for at least one project planning cycle and the value is confirmed.
 - A tagging convention has been proposed and adopted.
 - A CI lint exists that fails when a new notes file mentions a requirement-shaped phrase without a tag.
 
 **Sketch**:
+
 - Notes-doc authors annotate requirements inline: `<!-- req: JR-CAS-WS-014 status:in-progress -->`
 - A scheduled (or PR-triggered) extractor reads these tags + any new untagged candidates, regenerates `notes/requirements/`, and opens a PR with the diff.
 - The CI lint catches new requirement-shaped content that wasn't tagged.
@@ -394,13 +396,13 @@ Per Q3 (snapshot first) and Q4 (notes/ only for v1), the following are explicitl
 
 The following sources contain real requirement-shaped content but are deferred from v1.
 
-| Source | Why deferred | Promote when |
-|---|---|---|
-| **PR descriptions** | Rich requirement context, but volume is large and history is fragmentary. Triples Phase-3 scope. | After v1 surfaces the highest-value PRs that the notes/ extraction *cited*, focus a follow-up pass only on those PR descriptions. |
-| **`docs/` directories** | Polished user-facing docs sometimes encode requirements implicitly ("the API supports X"). Different style, requires separate extraction prompt tuning. | After v1 ships and we have a stable extraction-prompt template that can be adapted. |
-| **GitHub issues** | High signal for `proposed` status entries, but tracking issue lifecycle (open/closed/superseded) is a separate state machine. | When the project adopts a more structured issue-template that includes a `JR-` ID field. |
-| **Code-level docstrings** | Mostly describe what code does, not what it should do. Lower yield. | Probably never as a primary source; useful as a cross-reference during QA. |
-| **Conversation-derived (Slack, email, in-person)** | Not searchable in a structured way. | When/if the team adopts a "decision-of-record" practice (e.g. ADRs) that captures conversational outcomes in notes/. |
+| Source                                             | Why deferred                                                                                                                                            | Promote when                                                                                                                      |
+|:---------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
+| **PR descriptions**                                | Rich requirement context, but volume is large and history is fragmentary. Triples Phase-3 scope.                                                        | After v1 surfaces the highest-value PRs that the notes/ extraction *cited*, focus a follow-up pass only on those PR descriptions. |
+| **`docs/` directories**                            | Polished user-facing docs sometimes encode requirements implicitly ("the API supports X"). Different style, requires separate extraction prompt tuning. | After v1 ships and we have a stable extraction-prompt template that can be adapted.                                               |
+| **GitHub issues**                                  | High signal for `proposed` status entries, but tracking issue lifecycle (open/closed/superseded) is a separate state machine.                           | When the project adopts a more structured issue-template that includes a `JR-` ID field.                                          |
+| **Code-level docstrings**                          | Mostly describe what code does, not what it should do. Lower yield.                                                                                     | Probably never as a primary source; useful as a cross-reference during QA.                                                        |
+| **Conversation-derived (Slack, email, in-person)** | Not searchable in a structured way.                                                                                                                     | When/if the team adopts a "decision-of-record" practice (e.g. ADRs) that captures conversational outcomes in notes/.              |
 
 ### 10.3 Priority field
 
@@ -455,17 +457,17 @@ This section is the canonical record of where the effort stands. Update at each 
 
 Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesystem; `.md` rebuilt deterministically from TSV after the first agent's hallucinated draft).
 
-| Repo | notes file count | total LOC | total density score | top file (score) |
-|---|---|---|---|---|
-| juniper-ml | 262 | 152,718 | 7,834 | interface_proposals/R1-04_operational_runbook.md (469) |
-| juniper-canopy | 133 | 58,334 | 2,243 | TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN.md (166) |
-| juniper-cascor | 114 | 55,338 | 2,045 | development/DEVELOPMENT_ROADMAP.md (238) |
-| juniper-data | 47 | 13,830 | 500 | JUNIPER-DATA_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-17.md (73) |
-| juniper-deploy | 23 | 5,612 | 206 | SLO_CATALOG_2026-05-03.md (66) |
-| juniper-cascor-worker | 17 | 2,262 | 44 | WORKTREE_CLEANUP_PROCEDURE_V2.md (7) |
-| juniper-cascor-client | 14 | 1,839 | 26 | WORKTREE_CLEANUP_PROCEDURE_V2.md (7) |
-| juniper-data-client | 15 | 1,737 | 28 | WORKTREE_CLEANUP_PROCEDURE_V2.md (7) |
-| **Total** | **625** | **291,670** | **12,926** | — |
+| Repo                  | notes file count | total LOC   | total density score | top file (score)                                                 |
+|-----------------------|------------------|-------------|---------------------|------------------------------------------------------------------|
+| juniper-ml            | 262              | 152,718     | 7,834               | interface_proposals/R1-04_operational_runbook.md (469)           |
+| juniper-canopy        | 133              | 58,334      | 2,243               | TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN.md (166)            |
+| juniper-cascor        | 114              | 55,338      | 2,045               | development/DEVELOPMENT_ROADMAP.md (238)                         |
+| juniper-data          | 47               | 13,830      | 500                 | JUNIPER-DATA_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-17.md (73) |
+| juniper-deploy        | 23               | 5,612       | 206                 | SLO_CATALOG_2026-05-03.md (66)                                   |
+| juniper-cascor-worker | 17               | 2,262       | 44                  | WORKTREE_CLEANUP_PROCEDURE_V2.md (7)                             |
+| juniper-cascor-client | 14               | 1,839       | 26                  | WORKTREE_CLEANUP_PROCEDURE_V2.md (7)                             |
+| juniper-data-client   | 15               | 1,737       | 28                  | WORKTREE_CLEANUP_PROCEDURE_V2.md (7)                             |
+| **Total**             | **625**          | **291,670** | **12,926**          | —                                                                |
 
 **Top 5 cross-repo files by density** (Phase-3 priority seed):
 
@@ -485,25 +487,25 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 
 ### Phase-3 + Phase-3b extraction yields (filled in 2026-05-12)
 
-| Slice | Repo | Files in scope | Files processed | Pre-dedup entries | Notes |
-|---|---|---|---|---|---|
-| ml-A | juniper-ml (top-level + obs/releases/docs/concurrency/templates) | 71 | 4 | 17 | Severely truncated; agent only handled V7 roadmap + 3 small files. Filled by 3b later. |
-| ml-B | juniper-ml (interface_proposals/ + proposals/) | 30 | 30 | 83 | Agent anchored on R3-03 (73 of 83 entries from one file); other R-rounds got 1 entry each → 3b-1/3b-2 gap-fill. |
-| ml-C | juniper-ml (development + legacy + code-review + regressions + pull_requests + partials) | 161 | 3 | 705 | Agent processed only the 3 elephants (V6 remediation 5,458 LOC, R5-01 canonical 2,167 LOC, WebSocket architecture-1 2,154 LOC); 158 files of legacy/regressions/etc. skipped. |
-| cas | juniper-cascor | 114 | 15 | 45 | Agent excluded 99 files as "pure historical narrative" per §4. Coverage of forward-looking material reasonable. |
-| can | juniper-canopy | 133 | 4 | 95 | Severely truncated. CODE_REVIEW_DEVELOPMENT_ROADMAP_2026-04-04.md alone produced 78 entries. |
-| dat | juniper-data | 47 | 3 | 39 | Agent claimed "44 reviewed for completeness" but only cited 3 files. |
-| dep | juniper-deploy | 23 | 8 | 28 | Reasonable for a small repo. SLO_CATALOG + PHASE2_SYSTEMD dominate. |
-| cwk | juniper-cascor-worker | 17 | 17 | 15 | Complete coverage. Low-density slice. |
-| ccl | juniper-cascor-client | 14 | 14 | 33 | Complete coverage. AGENTS.md audit/update + release notes dominate. |
-| dcl | juniper-data-client | 15 | 9 | 16 | 6 boilerplate/score-0 files skipped (legitimate). |
-| **Phase-3 subtotal** | | **625** | **107** | **1,078** | |
-| 3b-1 | juniper-ml interface_proposals R0/R1 (gap-fill) | 6 | 6 | 34 | Recovered R1-04 (score 469) + 5 R0/R1 siblings. |
-| 3b-2 | juniper-ml interface_proposals R2/R3/R4 (gap-fill) | 7 | 7 | 20 | Recovered R2-02 (score 365) + 6 R2/R3/R4 siblings. Heavy under-extraction — agent applied consolidation aggressively. |
-| 3b-3 | juniper-ml development/code-review/regressions (gap-fill) | 12 | 12 | 154 | 45 entries marked `superseded` (V4/V5 snapshots subsumed by V6/V7). |
-| 3b-4 | legacy/history across 3 repos (gap-fill) | 11 | 9 | 30 | Historical-narrative exclusion applied strictly per §4. 2 files (CASCOR_DEMO_TRAINING_ERROR_PLAN _1 + -ORIG) treated as dedups of primary. |
-| **Phase-3b subtotal** | | **36** | **34** | **238** | |
-| **Grand total** | | **661 file-slots** | **141 distinct files** | **1,316 candidates** | 96 unique files cited; 1,033 entries after Phase-4 dedup. |
+| Slice                 | Repo                                                                                     | Files in scope     | Files processed        | Pre-dedup entries    | Notes                                                                                                                                                                         |
+|-----------------------|------------------------------------------------------------------------------------------|--------------------|------------------------|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ml-A                  | juniper-ml (top-level + obs/releases/docs/concurrency/templates)                         | 71                 | 4                      | 17                   | Severely truncated; agent only handled V7 roadmap + 3 small files. Filled by 3b later.                                                                                        |
+| ml-B                  | juniper-ml (interface_proposals/ + proposals/)                                           | 30                 | 30                     | 83                   | Agent anchored on R3-03 (73 of 83 entries from one file); other R-rounds got 1 entry each → 3b-1/3b-2 gap-fill.                                                               |
+| ml-C                  | juniper-ml (development + legacy + code-review + regressions + pull_requests + partials) | 161                | 3                      | 705                  | Agent processed only the 3 elephants (V6 remediation 5,458 LOC, R5-01 canonical 2,167 LOC, WebSocket architecture-1 2,154 LOC); 158 files of legacy/regressions/etc. skipped. |
+| cas                   | juniper-cascor                                                                           | 114                | 15                     | 45                   | Agent excluded 99 files as "pure historical narrative" per §4. Coverage of forward-looking material reasonable.                                                               |
+| can                   | juniper-canopy                                                                           | 133                | 4                      | 95                   | Severely truncated. CODE_REVIEW_DEVELOPMENT_ROADMAP_2026-04-04.md alone produced 78 entries.                                                                                  |
+| dat                   | juniper-data                                                                             | 47                 | 3                      | 39                   | Agent claimed "44 reviewed for completeness" but only cited 3 files.                                                                                                          |
+| dep                   | juniper-deploy                                                                           | 23                 | 8                      | 28                   | Reasonable for a small repo. SLO_CATALOG + PHASE2_SYSTEMD dominate.                                                                                                           |
+| cwk                   | juniper-cascor-worker                                                                    | 17                 | 17                     | 15                   | Complete coverage. Low-density slice.                                                                                                                                         |
+| ccl                   | juniper-cascor-client                                                                    | 14                 | 14                     | 33                   | Complete coverage. AGENTS.md audit/update + release notes dominate.                                                                                                           |
+| dcl                   | juniper-data-client                                                                      | 15                 | 9                      | 16                   | 6 boilerplate/score-0 files skipped (legitimate).                                                                                                                             |
+| **Phase-3 subtotal**  |                                                                                          | **625**            | **107**                | **1,078**            |                                                                                                                                                                               |
+| 3b-1                  | juniper-ml interface_proposals R0/R1 (gap-fill)                                          | 6                  | 6                      | 34                   | Recovered R1-04 (score 469) + 5 R0/R1 siblings.                                                                                                                               |
+| 3b-2                  | juniper-ml interface_proposals R2/R3/R4 (gap-fill)                                       | 7                  | 7                      | 20                   | Recovered R2-02 (score 365) + 6 R2/R3/R4 siblings. Heavy under-extraction — agent applied consolidation aggressively.                                                         |
+| 3b-3                  | juniper-ml development/code-review/regressions (gap-fill)                                | 12                 | 12                     | 154                  | 45 entries marked `superseded` (V4/V5 snapshots subsumed by V6/V7).                                                                                                           |
+| 3b-4                  | legacy/history across 3 repos (gap-fill)                                                 | 11                 | 9                      | 30                   | Historical-narrative exclusion applied strictly per §4. 2 files (CASCOR_DEMO_TRAINING_ERROR_PLAN _1 + -ORIG) treated as dedups of primary.                                    |
+| **Phase-3b subtotal** |                                                                                          | **36**             | **34**                 | **238**              |                                                                                                                                                                               |
+| **Grand total**       |                                                                                          | **661 file-slots** | **141 distinct files** | **1,316 candidates** | 96 unique files cited; 1,033 entries after Phase-4 dedup.                                                                                                                     |
 
 ### Phase-5 QA findings (filled in 2026-05-12)
 
@@ -518,29 +520,29 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 
 **Coverage spot-check (high-density files)**:
 
-| File | Density score | Entries assigned | Note |
-|---|---|---|---|
-| `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` | 450 (15,220 LOC) | ~4 (ml-A) | Significantly under-extracted; only sampled tail. v1 known limitation. |
-| `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` | 469 | 34 (3b-1) | Down from pilot's 133 due to consolidation rule. Some loss; acceptable for v1. |
-| `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` | 365 | 13 (3b-2) | Under-extracted relative to density. Agent over-consolidated. |
-| `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` | 324 (5,458 LOC) | 250 (ml-C) | Heavy coverage as expected (Approach-A/B/C corpus). |
-| `juniper-ml/notes/development/R5-01_canonical_development_plan.md` | 235 (2,167 LOC) | 388 (ml-C) | Maximum-extraction file; many short C-NN constitution positions. |
+| File                                                                                            | Density score    | Entries assigned | Note                                                                           |
+|-------------------------------------------------------------------------------------------------|------------------|------------------|--------------------------------------------------------------------------------|
+| `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`           | 450 (15,220 LOC) | ~4 (ml-A)        | Significantly under-extracted; only sampled tail. v1 known limitation.         |
+| `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md`                             | 469              | 34 (3b-1)        | Down from pilot's 133 due to consolidation rule. Some loss; acceptable for v1. |
+| `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md`                       | 365              | 13 (3b-2)        | Under-extracted relative to density. Agent over-consolidated.                  |
+| `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` | 324 (5,458 LOC)  | 250 (ml-C)       | Heavy coverage as expected (Approach-A/B/C corpus).                            |
+| `juniper-ml/notes/development/R5-01_canonical_development_plan.md`                              | 235 (2,167 LOC)  | 388 (ml-C)       | Maximum-extraction file; many short C-NN constitution positions.               |
 
 **Verdict**: v1 acceptable. Hallucination defenses held (no fabricated files or invalid line ranges). The two findings (citation-precision drift in #11, thin brief in #7) are Phase-4 quality issues that should be addressed in v2 iteration — not blockers for shipping v1.
 
 ### Phase-6 ship record (filled in 2026-05-13)
 
-| Item | Value |
-|---|---|
-| PR | [#255](https://github.com/pcalnon/juniper-ml/pull/255) |
-| Merge commit | `5705aaff5b90f00cdb3592a80e5fb4654575a6b6` |
-| Source branch | `worktree-validated-weaving-pie` (commit `bbb6848`) |
-| Files added | 33 (`notes/REQUIREMENTS_INDEX.md`, `notes/requirements/README.md`, 15 `by-area/*.md`, 8 `by-repo/*.md`, 7 `by-status/*.md`, `id_assignments.yaml`) |
-| Files modified | 1 (`notes/REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`) |
-| Total requirements published | 1,033 (1,316 candidates pre-dedup; 283 collapsed) |
-| Unique source files cited | 96 |
-| Date shipped | 2026-05-13 |
-| Tracker close-out | This update (separate PR, branch `chore/req-tracker-closeout-2026-05-13`) |
+| Item                         | Value                                                                                                                                              |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| PR                           | [#255](https://github.com/pcalnon/juniper-ml/pull/255)                                                                                             |
+| Merge commit                 | `5705aaff5b90f00cdb3592a80e5fb4654575a6b6`                                                                                                         |
+| Source branch                | `worktree-validated-weaving-pie` (commit `bbb6848`)                                                                                                |
+| Files added                  | 33 (`notes/REQUIREMENTS_INDEX.md`, `notes/requirements/README.md`, 15 `by-area/*.md`, 8 `by-repo/*.md`, 7 `by-status/*.md`, `id_assignments.yaml`) |
+| Files modified               | 1 (`notes/REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`)                                                                                         |
+| Total requirements published | 1,033 (1,316 candidates pre-dedup; 283 collapsed)                                                                                                  |
+| Unique source files cited    | 96                                                                                                                                                 |
+| Date shipped                 | 2026-05-13                                                                                                                                         |
+| Tracker close-out            | This update (separate PR, branch `chore/req-tracker-closeout-2026-05-13`)                                                                          |
 
 ---
 
@@ -548,31 +550,31 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 
 ### v1 issues — status as of v2 ship
 
-| # | Issue | v1 Severity | v2 Resolution |
-|---|---|---|---|
-| 1 | **File coverage 141/625 (23%).** Mid-density (score 10-49) and most score 1-9 files not processed. | Medium | **PARTIAL** — v2 Phase-3c added 8 agents covering 189 of 218 score-10-49 files (87% mid-density coverage). Ecosystem coverage now ~330/625 = 53%. Score 1-9 files (~245) still unprocessed; deferred to v3 (low value). |
-| 2 | **Citation-precision drift** estimated at ~20% from 5-sample. | Medium | **RESOLVED** — v2-1 full-corpus diagnostic showed actual population precision is 98.3% EXACT; the 5-sample estimate was noise. Downgrade to Low. 8 specific bad-citation entries fixed via source-YAML edits. |
-| 3 | **Thin briefs** ("RISK: Criterion", etc.) | Low | **NOT ADDRESSED** — carried to v3. |
-| 4 | **`ARCH` category over-represents at 42%.** | Low | **PARTIAL** — v2-4 ARCH re-bucket moved 148 entries to finer codes; ARCH now ~24% of corpus. Some ARCH entries remain that lacked keyword signal for re-bucketing. |
-| 5 | **Cross-round dedup conservative** (R0-R4 proposal overlap). | Low | **NOT ADDRESSED** — carried to v3. Would need fuzzy-match. |
-| 6 | **Two `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` files** (ml + canopy). | Low | **NOT ADDRESSED** — v2-3 cross-repo dedup heuristic (require exact normalized brief + same basename tuple) got 0 hits because briefs differ across owners. 60 entries cite this basename across both owners; real dup. Needs fuzzy match — carried to v3. |
-| 7 | **Phase-1 agent fabricated its `.md` report.** | Process | **APPLIED** — v2 brief reinforced same discipline (machine-checkable YAML only). No agent-summary fabrications detected in Phase-3c. |
+| # | Issue                                                                                              | v1 Severity | v2 Resolution                                                                                                                                                                                                                                             |
+|---|----------------------------------------------------------------------------------------------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1 | **File coverage 141/625 (23%).** Mid-density (score 10-49) and most score 1-9 files not processed. | Medium      | **PARTIAL** — v2 Phase-3c added 8 agents covering 189 of 218 score-10-49 files (87% mid-density coverage). Ecosystem coverage now ~330/625 = 53%. Score 1-9 files (~245) still unprocessed; deferred to v3 (low value).                                   |
+| 2 | **Citation-precision drift** estimated at ~20% from 5-sample.                                      | Medium      | **RESOLVED** — v2-1 full-corpus diagnostic showed actual population precision is 98.3% EXACT; the 5-sample estimate was noise. Downgrade to Low. 8 specific bad-citation entries fixed via source-YAML edits.                                             |
+| 3 | **Thin briefs** ("RISK: Criterion", etc.)                                                          | Low         | **NOT ADDRESSED** — carried to v3.                                                                                                                                                                                                                        |
+| 4 | **`ARCH` category over-represents at 42%.**                                                        | Low         | **PARTIAL** — v2-4 ARCH re-bucket moved 148 entries to finer codes; ARCH now ~24% of corpus. Some ARCH entries remain that lacked keyword signal for re-bucketing.                                                                                        |
+| 5 | **Cross-round dedup conservative** (R0-R4 proposal overlap).                                       | Low         | **NOT ADDRESSED** — carried to v3. Would need fuzzy-match.                                                                                                                                                                                                |
+| 6 | **Two `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` files** (ml + canopy).                          | Low         | **NOT ADDRESSED** — v2-3 cross-repo dedup heuristic (require exact normalized brief + same basename tuple) got 0 hits because briefs differ across owners. 60 entries cite this basename across both owners; real dup. Needs fuzzy match — carried to v3. |
+| 7 | **Phase-1 agent fabricated its `.md` report.**                                                     | Process     | **APPLIED** — v2 brief reinforced same discipline (machine-checkable YAML only). No agent-summary fabrications detected in Phase-3c.                                                                                                                      |
 
 ### New issues discovered during v2 (status updated at v3 ship)
 
-| # | Issue | Severity | v3 status |
-|---|---|---|---|
-| 8 | **Phase-3c agents truncated on "elephant" files within their slice.** | Medium | **NOT ADDRESSED** — agent-brief improvement; only helps future extraction passes. Carried to v4. |
-| 9 | **3c-3b-2 invented 6 invalid category codes.** | Low | **NOT ADDRESSED** — agent-brief improvement; only helps future extraction passes. Carried to v4. |
-| 10 | **Cross-repo content dedup needs fuzzy match.** | Medium | **RESOLVED** — v3-1 implemented overlap-coefficient ≥ 0.65 fuzzy match. Surprise finding: most "cross-repo dups" were actually different content extracted from the same shared file. Only 9 real dups collapsed across 22 multi-owner basename clusters. The `AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` per-repo audits were correctly NOT merged (briefs differ enough). |
-| 11 | **Score 1-9 long tail (~245 files) unprocessed.** | Low | **NOT ADDRESSED** — cost > benefit; remains out of scope. |
-| 12 | **ARCH re-bucket rules first-match heuristic.** | Low | **NOT ADDRESSED (no-op)** — v3 spot-check showed no obvious mis-classifications; rules retained as-is. Carried to v4 only if specific bad cases surface. |
+| #  | Issue                                                                 | Severity | v3 status                                                                                                                                                                                                                                                                                  |
+|----|-----------------------------------------------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 8  | **Phase-3c agents truncated on "elephant" files within their slice.** | Medium   | **NOT ADDRESSED** — agent-brief improvement; only helps future extraction passes. Carried to v4.                                                                                                                                                                                           |
+| 9  | **3c-3b-2 invented 6 invalid category codes.**                        | Low      | **NOT ADDRESSED** — agent-brief improvement; only helps future extraction passes. Carried to v4.                                                                                                                                                                                           |
+| 10 | **Cross-repo content dedup needs fuzzy match.**                       | Medium   | **RESOLVED** — v3-1 implement overlap-coefficient ≥ 0.65 fuzzy match. Most "cross-repo dups", diff content from same file. 9 dups collapsed across 22 multi-owner basename clusters. `AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` per-repo audits correctly NOT merged (briefs differ enough). |
+| 11 | **Score 1-9 long tail (~245 files) unprocessed.**                     | Low      | **NOT ADDRESSED** — cost > benefit; remains out of scope.                                                                                                                                                                                                                                  |
+| 12 | **ARCH re-bucket rules first-match heuristic.**                       | Low      | **NOT ADDRESSED (no-op)** — v3 spot-check showed no obvious mis-classifications; rules retained as-is. Carried to v4 only if specific bad cases surface.                                                                                                                                   |
 
 ### New issues discovered during v3 (status as of v3 ship)
 
 | # | Issue | Severity | Suggested resolution |
 |---|---|---|---|
-| 13 | **Header-pattern brief problem was massive.** 526 of 2,120 v2 candidates (25%) had briefs that were document section headers ("1. Executive Summary", "1.2 Foo") rather than requirement summaries. v3-3 dropped 32 pure-header entries and repaired 355 briefs by reading cited content. **139 unrepairable entries remain** — their cited line range was ≤ 3 lines or contained only headers; flagged with `[v3 thin-brief flagged]` in notes. | Low (improvement over v2) | v4 may re-process flagged entries by expanding their cited line range to include the section body, then re-extracting briefs. Or accept as v3 limitation. |
+| 13 | **Header-pattern brief problem was massive.** 526 of 2,120 v2 candidates (25%) had briefs of document section headers ("1. Executive Summary", "1.2 Foo") not requirement summaries. v3-3 dropped 32 pure-header entries and repaired 355 briefs by reading cited content. **139 unrepairable entries remain** — their cited line range was ≤ 3 lines or contained only headers; flagged with `[v3 thin-brief flagged]` in notes. | Low (improvement over v2) | v4 may re-process flagged entries by expanding their cited line range to include the section body, then re-extracting briefs. Or accept as v3 limitation. |
 | 14 | **Brief-repair heuristic occasionally picks wrong content line.** The repair scans for the first non-header non-bullet non-fence line ≥ 20 chars in the cited range. Sometimes picks a less-load-bearing line (e.g., a status sentence rather than the actual requirement). | Low | v4 could use an LLM to select the most-requirement-like sentence from the cited content. |
 | 15 | **Cross-round dedup smaller than expected.** Only 17 sibling restatements collapsed, much less than the 50-150 hypothesized in §12-#5. This is because ml-B's R3-03 anchor strategy at v2-extraction time already prevented most cross-round duplication. The remaining 17 are pairs where multiple R-rounds were processed independently (R0 via 3b-1, R3-03 via ml-B). | Resolved (smaller scope than expected) | None — this is a finding, not a bug. |
 | 16 | **3c-3a unprocessed canopy files** (~30 mid-density files) still uncovered. | Low | v4 could launch a tiny gap-fill agent. Marginal value. |
