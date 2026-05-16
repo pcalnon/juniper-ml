@@ -2,30 +2,15 @@
 
 **Area**: security — authn, authz, secrets, CVEs, hardening
 
-**Total entries**: 243
+**Total entries**: 246
 
-**By status**: proposed=190 | designed=12 | in-progress=1 | shipped=18 | deferred=13 | rejected=9
+**By status**: proposed=191 | designed=12 | in-progress=1 | shipped=20 | deferred=13 | rejected=9
 
-**By priority**: P0=58 | P1=65 | P2=110 | P3=10
+**By priority**: P0=58 | P1=67 | P2=111 | P3=10
 
-**By owner**: ml=219 | can=9 | dep=5 | cwk=4 | dat=3 | ccl=2 | dcl=1
+**By owner**: ml=219 | can=12 | dep=5 | cwk=4 | dat=3 | ccl=2 | dcl=1
 
 ---
-
-### JR-ML-SEC-001 — > **REVISION HISTORY**:.
-
-**Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 216-266)
-
-**Detail**:
-
-> - 2026-04-10 second revision: NEW-01 and canopy-set_params markings reverted as
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.5 Phase 1 Deferred Items — STATUS UPDATE (2026-04-10, REVI']
 
 ### JR-DAT-SEC-001 — API security includes APIKeyAuth authentication and RateLimiter middleware as default behaviors.
 
@@ -38,7 +23,7 @@
 
 DATA-017 complete. security.py confirmed.
 
-### JR-ML-SEC-002 — Background.** OBS-ROUTE-01 (juniper-deploy#60, merged 2026-05-05) closed audit findings 3.2 (P1) and B.1 (P3) by wiring the alertmanager….
+### JR-ML-SEC-001 — Background.** OBS-ROUTE-01 (juniper-deploy#60, merged 2026-05-05) closed audit findings 3.2 (P1) and B.1 (P3) by wiring the alertmanager….
 
 **Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -70,6 +55,21 @@ All tests passing (88 unit tests, 0 failures).
 
 Status inferred from PR marked READY_FOR_MERGE with test results. SemVer impact: PATCH (0.3.1 → 0.3.2).
 No breaking changes. Medium security/privacy impact (supply chain verification via attestations).
+
+### JR-ML-SEC-002 — missed, (b) part of a not-yet-implemented WebSocket consumption pathway that.
+
+**Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 216-266)
+
+**Detail**:
+
+> - 2026-04-10 second revision: NEW-01 and canopy-set_params markings reverted as
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.5 Phase 1 Deferred Items — STATUS UPDATE (2026-04-10, REVI']
 
 ### JR-CWK-SEC-001 — v0.2.0 breaking change: remove hardcoded default auth key ("juniper"), make WORKER_AUTH_KEY environment variable required at worker startup with clear error message if not set.
 
@@ -119,7 +119,7 @@ Related: v0.3.0 renamed WORKER_AUTH_KEY to CASCOR_AUTH_TOKEN and the CLI flag fr
 
 #### Phase E: Backpressure Pump Tasks
 
-### JR-ML-SEC-006 — `amtool check-config` cannot run in the snap-confined `amtool`.
+### JR-ML-SEC-006 — carry-forward tracker — recommended container-form alternative is.
 
 **Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -145,22 +145,7 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 #### DEPLOY-01: Docker Secret Name/Path Mismatch
 
-### JR-ML-SEC-008 — The remaining open items are all P3 / soft-blocker items tracked in.
-
-**Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 648-676)
-
-**Detail**:
-
-| **A.1 / A.2a–e (cascor training metrics dead-defined)** | juniper-cascor#204 (OBS-WIRE-01) — wired 5 emission sites |
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Closing PRs']
-
-### JR-ML-SEC-009 — This document was produced by cross-referencing:.
+### JR-ML-SEC-008 — juniper-deploy: 3 high infrastructure bugs (AlertManager missing, rules not mounted, secret mismatch), 8 unimplemented roadmap items.
 
 **Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -175,6 +160,21 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 [v3 brief repaired from cited content; was: '15.3 juniper-cascor-worker']
 
+### JR-ML-SEC-009 — The remaining open items are all P3 / soft-blocker items tracked in.
+
+**Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 648-676)
+
+**Detail**:
+
+| **A.1 / A.2a–e (cascor training metrics dead-defined)** | juniper-cascor#204 (OBS-WIRE-01) — wired 5 emission sites |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Closing PRs']
+
 ### JR-ML-SEC-010 — v3.0.0 Cross-Referenced Source Documents (34 total).
 
 **Status**: deferred  **Priority**: P0  **Category**: SEC  **Owner**: ml
@@ -186,25 +186,14 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 | 1  | `notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md`                              | juniper-ml     |
 
-### JR-ML-SEC-011 — By Category.
-
-**Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 421-436)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-012 — `_create_optimizer` references undefined `OptimizerConfig` attributes — crashes on non-default optimizer types.
+### JR-ML-SEC-011 — `_create_optimizer` references undefined `OptimizerConfig` attributes — crashes on non-default optimizer types.
 
 **Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 648-680)
 
-### JR-ML-SEC-013 — Keep the `CASCOR_DEMO_MODE` environment variable toggle but refactor the branching.
+### JR-ML-SEC-012 — Enhancement**: Instead of scattered `if demo_mode_instance:` checks, use a common backend interface. Both `DemoMode` and….
 
 **Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -219,48 +208,18 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 [v3 brief repaired from cited content; was: '3.3 Operating Mode Options for Microservices']
 
-### JR-ML-SEC-014 — 2.1 juniper-cascor.
+### JR-ML-SEC-013 — Floating tags, undefined vars, broken Dockerfiles.
 
-**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
+**Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 256-283)
-
-**Detail**:
-
-| CC-01 | **Critical** | `api/websocket/messages.py`       | 72–79   | `create_topology_message()` exists but is never called — topology changes not broadcast via WS                            |
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 421-436)
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: 'By Category']
 
-### JR-ML-SEC-015 — 4.3 Issues Identified.
-
-**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 328-341)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-016 — 7.1 Immediate (Critical/High).
-
-**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 523-533)
-
-**Detail**:
-
-1. **Wire up topology broadcast**: Register a `topology_change` callback in `TrainingLifecycleManager._install_monitoring_hooks()` that calls `create_topology_message()` and broadcasts
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-017 — [x] BackendProtocol uses typed returns — all 9 previously-untyped methods now use….
+### JR-ML-SEC-014 — [ ] WebSocket relay normalized and consumed by dashboard — relay normalization is COMPLETE (P5-RC-14, `cascor_service_adapter.py:222`);….
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -275,21 +234,21 @@ arbitrary file paths). Tracked as **AMTOOL-CI** (P3) on the
 
 [v3 brief repaired from cited content; was: '6.4 Phase 4 Success Criteria']
 
-### JR-ML-SEC-018 — `_accuracy` assumes one-hot encoded targets — broken for `output_size=1`.
+### JR-ML-SEC-015 — `_accuracy` assumes one-hot encoded targets — broken for `output_size=1`.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 803-821)
 
-### JR-ML-SEC-019 — `ActivationWithDerivative.__setstate__` silently falls back to ReLU for unrecognized activation names.
+### JR-ML-SEC-016 — `ActivationWithDerivative.__setstate__` silently falls back to ReLU for unrecognized activation names.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 746-766)
 
-### JR-ML-SEC-020 — `add_unit` initializes new hidden unit output weights with random values instead of zero.
+### JR-ML-SEC-017 — `add_unit` initializes new hidden unit output weights with random values instead of zero.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -304,7 +263,7 @@ Add an `init_output_weights` flag with enumerated values including, but not nece
     Flag default should be accessed by juniper-cascor durring all network initialization locations in the code.
     The flag value
 
-### JR-ML-SEC-021 — All WebSocket endpoints must enforce per-frame size limits: training 4 KB inbound, control 64 KB.
+### JR-ML-SEC-018 — All WebSocket endpoints must enforce per-frame size limits: training 4 KB inbound, control 64 KB.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -346,7 +305,7 @@ File: src/security.py
 Issue 0.2.1: Replace instance attributes with contextvars.ContextVar to ensure
 thread isolation. File: src/frontend/callback_context.py
 
-### JR-ML-SEC-022 — Canopy and Cascor must validate WebSocket Origin header against configurable allowlist; reject null origins and wildcards.
+### JR-ML-SEC-019 — Canopy and Cascor must validate WebSocket Origin header against configurable allowlist; reject null origins and wildcards.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -366,7 +325,7 @@ Canopy default: [http://localhost:8050, https://localhost:8050, http://127.0.0.1
 
 M-SEC-01 (canopy), M-SEC-01b (cascor). RISK-15 CSWSH mitigation. Env var JUNIPER_WS_ALLOWED_ORIGINS. Phase B-pre (Day 4).
 
-### JR-ML-SEC-023 — Canopy must implement cookie-session + CSRF first-frame validation before accepting WebSocket connections.
+### JR-ML-SEC-020 — Canopy must implement cookie-session + CSRF first-frame validation before accepting WebSocket connections.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -387,14 +346,14 @@ Frontend: inject window.__canopy_csrf in layout, send auth frame immediately in 
 
 M-SEC-02 (P0). CSWSH second-line defense. Env var JUNIPER_CANOPY_SESSION_SECRET. Phase B-pre (Day 5).
 
-### JR-ML-SEC-024 — `CascadeCorrelationNetwork._roll_sequence_number` stores all discarded values in a list.
+### JR-ML-SEC-021 — `CascadeCorrelationNetwork._roll_sequence_number` stores all discarded values in a list.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 628-648)
 
-### JR-ML-SEC-025 — CasCor distributed training must enforce TLS encryption, worker authentication, multi-tier protection, and comprehensive data validation.
+### JR-ML-SEC-022 — CasCor distributed training must enforce TLS encryption, worker authentication, multi-tier protection, and comprehensive data validation.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -405,7 +364,18 @@ M-SEC-02 (P0). CSWSH second-line defense. Env var JUNIPER_CANOPY_SESSION_SECRET.
 
 SR-1/2/3: Protect network, workers, and primary from threats. SR-5: TLS for all in-transit data. SR-6: Worker authentication. SR-7: Data validation.
 
-### JR-ML-SEC-026 — Coverage tests bypass actual `fit()` method to avoid timeouts — false coverage confidence.
+### JR-ML-SEC-023 — Cassandra referenced in docs but not in compose file.
+
+**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 328-341)
+
+**Notes**:
+
+[v4 brief repaired; was: '4.3 Issues Identified']
+
+### JR-ML-SEC-024 — Coverage tests bypass actual `fit()` method to avoid timeouts — false coverage confidence.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -418,7 +388,7 @@ Both Option A and Option B.
     Option A will allow accurate, critical code path coverage checks with non-limiting runtimes.
     Option B will allow the more rigorous checks needed for this application critical code path.
 
-### JR-ML-SEC-027 — Critical deployment gap.** The worker is the only distributed component that runs on remote machines but has zero deployment infrastructure:.
+### JR-ML-SEC-025 — Critical deployment gap.** The worker is the only distributed component that runs on remote machines but has zero deployment infrastructure:.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -433,7 +403,7 @@ Both Option A and Option B.
 
 [v3 brief repaired from cited content; was: '6.2 juniper-cascor-worker']
 
-### JR-ML-SEC-028 — Critical Issues.
+### JR-ML-SEC-026 — Critical Issues.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -448,7 +418,7 @@ Both Option A and Option B.
 
 *Merged from 3 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-SEC-029 — CSWSH (Cross-Site WebSocket Hijacking) attack must be closed by Origin allowlist + CSRF first-frame.
+### JR-ML-SEC-027 — CSWSH (Cross-Site WebSocket Hijacking) attack must be closed by Origin allowlist + CSRF first-frame.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -468,14 +438,14 @@ Origin validation must happen pre-accept (fail-closed).
 
 RISK-15 (High). Mandatory close per R1-03 as page-on-call alert, not ticket. Phase B-pre (Days 4-5).
 
-### JR-ML-SEC-030 — Duplicate forward-pass logic in `train_output_layer` vs `forward()`.
+### JR-ML-SEC-028 — Duplicate forward-pass logic in `train_output_layer` vs `forward()`.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 821-841)
 
-### JR-ML-SEC-031 — Early stopping patience state not propagated between `grow_network` iterations.
+### JR-ML-SEC-029 — Early stopping patience state not propagated between `grow_network` iterations.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -494,35 +464,35 @@ RISK-15 (High). Mandatory close per R1-03 as page-on-call alert, not ticket. Pha
 Issue 0.1.3: Return generic message to client, preserve full exception in
 server-side logs only. Prevents information disclosure.
 
-### JR-ML-SEC-032 — Global singleton initialization race in `get_api_key_auth()` and `get_rate_limiter()`.
+### JR-ML-SEC-030 — Global singleton initialization race in `get_api_key_auth()` and `get_rate_limiter()`.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 330-362)
 
-### JR-ML-SEC-033 — Hidden unit activation function not wrapped in `ActivationWithDerivative` after HDF5 deserialization.
+### JR-ML-SEC-031 — Hidden unit activation function not wrapped in `ActivationWithDerivative` after HDF5 deserialization.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 700-718)
 
-### JR-ML-SEC-034 — `InlineDataset` allows unbounded array sizes in training start request.
+### JR-ML-SEC-032 — `InlineDataset` allows unbounded array sizes in training start request.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 571-591)
 
-### JR-ML-SEC-035 — juniper-data P0: path traversal fix in csv_import with JUNIPER_DATA_IMPORT_DIR validation.
+### JR-ML-SEC-033 — juniper-data P0: path traversal fix in csv_import with JUNIPER_DATA_IMPORT_DIR validation.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md` (lines 25-40)
 
-### JR-ML-SEC-036 — Key Categories of Missing Items.
+### JR-ML-SEC-034 — Key Categories of Missing Items.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -533,37 +503,7 @@ server-side logs only. Prevents information disclosure.
 
 | Active Bugs (cascor)   | 3         | `TrainingMonitor.current_phase` never updated, uninitialized variable crash    |
 
-### JR-ML-SEC-037 — Location**: `juniper-ml/util/juniper_chop_all.bash` (226 lines).
-
-**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 208-243)
-
-**Detail**:
-
-**Location**: `juniper-ml/util/juniper_chop_all.bash` (226 lines)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.2 Current State: `juniper_chop_all.bash`']
-
-### JR-ML-SEC-038 — Location**: `juniper-ml/util/juniper_plant_all.bash` (319 lines).
-
-**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 152-202)
-
-**Detail**:
-
-**Location**: `juniper-ml/util/juniper_plant_all.bash` (319 lines)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.1 Current State: `juniper_plant_all.bash`']
-
-### JR-ML-SEC-039 — `_NoOpLogger` session fixture masks logging-related bugs in production code.
+### JR-ML-SEC-035 — `_NoOpLogger` session fixture masks logging-related bugs in production code.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -598,7 +538,7 @@ File: src/backend/training_state_machine.py
 0.2.1: Fix thread-unsafe CallbackContextAdapter via contextvars.ContextVar.
 0.2.2: Fix threading.Event replacement race with clear() instead of reassign.
 
-### JR-ML-SEC-040 — Phase 1: Critical Fixes (P0) -- COMPLETED.
+### JR-ML-SEC-036 — Phase 1: Critical Fixes (P0) -- COMPLETED.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -609,7 +549,7 @@ File: src/backend/training_state_machine.py
 
 **Goal**: Make existing host-mode startup/shutdown reliable.
 
-### JR-ML-SEC-041 — Phase 1: Critical Startup/Shutdown Fixes — ✅ COMPLETE (commit `03aec86`).
+### JR-ML-SEC-037 — Phase 1: Critical Startup/Shutdown Fixes — ✅ COMPLETE (commit `03aec86`).
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -620,14 +560,14 @@ File: src/backend/training_state_machine.py
 
 | 1.1  | `wait_for_health()` function — polls `/v1/health` with configurable timeout | ✅ Implemented |
 
-### JR-ML-SEC-042 — `_save_hidden_units` reads activation function name incorrectly from `ActivationWithDerivative` wrapper.
+### JR-ML-SEC-038 — `_save_hidden_units` reads activation function name incorrectly from `ActivationWithDerivative` wrapper.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 785-803)
 
-### JR-ML-SEC-043 — `SharedTrainingMemory` shape descriptor only supports tensors up to 2D.
+### JR-ML-SEC-039 — `SharedTrainingMemory` shape descriptor only supports tensors up to 2D.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -639,7 +579,7 @@ File: src/backend/training_state_machine.py
 Immedidately, add validation check rejecting `ndim > 2` with a clear error message.
     - The capacity to allow `ndim > 2` should be documented as an enhancement and added to the development plan.  This feature is required for using some alternate datasets and for the hierarchical network enhancement.
 
-### JR-ML-SEC-044 — Step 6: PR and Worktree Cleanup.
+### JR-ML-SEC-040 — Step 6: PR and Worktree Cleanup.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -662,7 +602,7 @@ Immedidately, add validation check rejecting `ndim > 2` with a clear error messa
 Issue 0.2.2: In demo_mode.py, use _stop.clear() instead of _stop = Event()
 to avoid TOCTOU race. File: src/demo_mode.py
 
-### JR-ML-SEC-045 — Three receivers, all SMTP email per OBS-ROUTE-01 (juniper-deploy#60).
+### JR-ML-SEC-041 — Three receivers, all SMTP email per OBS-ROUTE-01 (juniper-deploy#60).
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
@@ -677,48 +617,125 @@ to avoid TOCTOU race. File: src/demo_mode.py
 
 [v3 brief repaired from cited content; was: '9.1 Receivers']
 
-### JR-ML-SEC-046 — Triple random seeding in `conftest.py` creates confusing test infrastructure.
+### JR-ML-SEC-042 — Tracks PID in `STARTED_PIDS` array for failure cleanup.
+
+**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 152-202)
+
+**Detail**:
+
+**Location**: `juniper-ml/util/juniper_plant_all.bash` (319 lines)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.1 Current State: `juniper_plant_all.bash`']
+
+### JR-ML-SEC-043 — Triple random seeding in `conftest.py` creates confusing test infrastructure.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 1076-1176)
 
-### JR-ML-SEC-047 — `validate_training` has no early stopping path when validation data is absent.
+### JR-ML-SEC-044 — `unit.get("activation_fn", torch.sigmoid).__name__` returns `"ActivationWithDerivative"` not the underlying function name.
+
+**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 256-283)
+
+**Detail**:
+
+| CC-01 | **Critical** | `api/websocket/messages.py`       | 72–79   | `create_topology_message()` exists but is never called — topology changes not broadcast via WS                            |
+
+**Notes**:
+
+[v4 brief repaired; was: '2.1 juniper-cascor']
+
+### JR-ML-SEC-045 — `validate_pid()` checks `/proc/<pid>` exists and logs `/proc/<pid>/cmdline`.
+
+**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 208-243)
+
+**Detail**:
+
+**Location**: `juniper-ml/util/juniper_chop_all.bash` (226 lines)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.2 Current State: `juniper_chop_all.bash`']
+
+### JR-ML-SEC-046 — `validate_training` has no early stopping path when validation data is absent.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 680-700)
 
-### JR-ML-SEC-048 — WebSocket control stream documents `set_params` command but does not implement it.
+### JR-ML-SEC-047 — WebSocket control stream documents `set_params` command but does not implement it.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 227-260)
 
-### JR-ML-SEC-049 — `WebSocketManager` `_active_connections` set lacks explicit async synchronization.
+### JR-ML-SEC-048 — `WebSocketManager` `_active_connections` set lacks explicit async synchronization.
 
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 459-490)
 
-### JR-ML-SEC-050 — > **STATUS UPDATE 2026-05-06:** This item was tracked as open in the.
+### JR-ML-SEC-049 — **Wire up topology broadcast**: Register a `topology_change` callback in `TrainingLifecycleManager._install_monitoring_hooks()` that calls `.
 
-**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
+**Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 280-307)
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 523-533)
 
 **Detail**:
 
-**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+1. **Wire up topology broadcast**: Register a `topology_change` callback in `TrainingLifecycleManager._install_monitoring_hooks()` that calls `create_topology_message()` and broadcasts
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '3.10 WORKER-PENDING-TASKS — `juniper_cascor_pending_tasks` w']
+[v4 brief repaired; was: '7.1 Immediate (Critical/High)']
+
+### JR-CAN-SEC-007 — API key timing attack must use hmac.compare_digest() for constant-time comparison.
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 79-83)
+
+**Detail**:
+
+HIGH-001: Replace simple set membership check with hmac.compare_digest() in both browser CSRF auth and adapter HMAC auth.
+R5-01 Section 4.1 mandates this pattern; remediation already correct per analysis.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; reinforced by R5-01 canonical pattern.
+
+### JR-CAN-SEC-008 — Exception handler must use opaque error messages and add CRLF escaping in audit logs.
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 84-88)
+
+**Detail**:
+
+HIGH-002: Generic error messages + server-side logging per R5-01 Section 4.3 (M-SEC-06).
+Add CRLF escaping in audit logs per M-SEC-07 when logs echo client input.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; shipped with opaque messages pattern.
 
 ### JR-CCL-SEC-001 — Implement SOPS configuration (.sops.yaml) and .env.example for secrets management.
 
@@ -742,7 +759,7 @@ Shipped in v0.2.0 (2026-03-21)
 
 v0.5.0 released as security hardening. Requires explicit CORS_ORIGINS env var for existing deployments.
 
-### JR-ML-SEC-051 — The Appendix G work (now merged) completed:.
+### JR-ML-SEC-050 — The Appendix G work (now merged) completed:.
 
 **Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -756,6 +773,21 @@ v0.5.0 released as security hardening. Requires explicit CORS_ORIGINS env var fo
 **Notes**:
 
 [v3 brief repaired from cited content; was: '2.1 Current State (Post-Appendix G)']
+
+### JR-ML-SEC-051 — Trigger / due date.** None — independent small sub-track. Useful at any time; pairs naturally with WS metric wire-ups already shipped via….
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 280-307)
+
+**Detail**:
+
+**Severity:** P3 · **Owner repo:** juniper-cascor · **Status:** ✅ **CLOSED 2026-05-04 via juniper-cascor#218**
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.10 WORKER-PENDING-TASKS — `juniper_cascor_pending_tasks` w']
 
 ### JR-CWK-SEC-002 — v0.2.0 security infrastructure: add .github/workflows/security-scan.yml for weekly scheduled Bandit and pip-audit scanning, Dependabot configuration, SOPS config, and SHA-pinned GitHub Actions.
 
@@ -779,7 +811,7 @@ Added .github/workflows/security-scan.yml for weekly Bandit (static security) an
 
 setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit pre-commit hook tuned to avoid false positives on known-safe test fixtures (B105: hardcoded_password_string suppressed for test auth_token fields). pip-audit dependency scanning runs in CI; torch +cpu local version handling fixed to enable reliable scanning of worker dependency tree.
 
-### JR-ML-SEC-052 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR….
+### JR-ML-SEC-052 — [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](../legacy/METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03).
 
 **Status**: designed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -805,40 +837,7 @@ setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit 
 
 #### XREPO-01: Generator Name `"circle"` vs Server's `"circles"`
 
-### JR-ML-SEC-054 — 13.2 Unimplemented Roadmap Items.
-
-**Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 419-436)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 330-347)
-
-**Detail**:
-
-| DEPLOY-RD-01 | 0.3.0           | Production compose profile with resource limits          | 🔴 NOT DONE                                                        |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-SEC-055 — 7.5 juniper-deploy — Multiple Plans Partially Complete.
-
-**Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 409-433)
-
-**Detail**:
-
-| Post-release roadmap: Grafana dashboards, Prometheus alerting | ✅ Done (v0.2.0)                                                         |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-056 — Issue Remediations, Section 14 — Performance and Roadmap.
+### JR-ML-SEC-054 — Issue Remediations, Section 14 — Performance and Roadmap.
 
 **Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -849,7 +848,7 @@ setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit 
 
 #### JD-PERF-01: Sync `generator.generate()` Blocks Event Loop
 
-### JR-ML-SEC-057 — Phase 1 was executed on branch `fix/interface-phase1-verification`. All three Tier 0.
+### JR-ML-SEC-055 — Phase 1 was executed on branch `fix/interface-phase1-verification`. All three Tier 0.
 
 **Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -863,6 +862,39 @@ setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit 
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.0 Phase 1 Execution Results (2026-04-09)']
+
+### JR-ML-SEC-056 — ❌ Planned in `CONTAINER_VALIDATION_CI_PLAN.md` but absent from `ci.yml`.
+
+**Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 409-433)
+
+**Detail**:
+
+| Post-release roadmap: Grafana dashboards, Prometheus alerting | ✅ Done (v0.2.0)                                                         |
+
+**Notes**:
+
+[v4 brief repaired; was: '7.5 juniper-deploy — Multiple Plans Partially Complete']
+
+### JR-ML-SEC-057 — 🔴 Planned in `CONTAINER_VALIDATION_CI_PLAN.md` but absent from CI.
+
+**Status**: deferred  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 419-436)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 330-347)
+
+**Detail**:
+
+| DEPLOY-RD-01 | 0.3.0           | Production compose profile with resource limits          | 🔴 NOT DONE                                                        |
+
+**Notes**:
+
+[v4 brief repaired; was: '13.2 Unimplemented Roadmap Items']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
 
 ### JR-ML-SEC-058 — Issue Remediations, Section 18.
 
@@ -890,37 +922,7 @@ setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit 
 
 [v3 brief repaired from cited content; was: '4.0 Phase 2 Execution Results (2026-04-09)']
 
-### JR-ML-SEC-060 — 2.5 juniper-data.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 327-348)
-
-**Detail**:
-
-| JD-01 | **High**   | `api/security.py`        | 59      | Non-constant-time API key comparison — timing side-channel attack vector                     |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-061 — 8.2 New Tests Required.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 302-314)
-
-**Detail**:
-
-| `test_dataset_target_conversion_binary`             | Binary: `[[0.0],[1.0]]` -> `[0,1]` (threshold, not argmax) |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-062 — [ ] Training Metrics: progress bars show grow iteration and candidate epoch during training.
+### JR-ML-SEC-060 — [ ] Training Metrics: progress bars show grow iteration and candidate epoch during training.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -949,7 +951,7 @@ over plaintext on internal networks. Support both self-signed certificates (dev)
 and Let's Encrypt (production). Expose only ports 443 (HTTPS) and optionally 80
 (redirect) on host.
 
-### JR-ML-SEC-063 — Add security hardening to check_doc_links.py including universal bounds checking, input validation, and traversal depth limits.
+### JR-ML-SEC-061 — Add security hardening to check_doc_links.py including universal bounds checking, input validation, and traversal depth limits.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -966,7 +968,7 @@ Required fixes:
 3. Traversal depth limit - reject links with >5 ../ segments
 4. Structural validation in skip mode - ensure cross-repo links don't escape target repo
 
-### JR-ML-SEC-064 — Add security logging remediation across Juniper services.
+### JR-ML-SEC-062 — Add security logging remediation across Juniper services.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -977,7 +979,7 @@ Required fixes:
 
 Audit trail and incident response capability.
 
-### JR-ML-SEC-065 — Additional Findings from CasCor Validation.
+### JR-ML-SEC-063 — Additional Findings from CasCor Validation.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -988,12 +990,42 @@ Audit trail and incident response capability.
 
 1. **`create_topology_message()` is dead code in juniper-cascor** — The message builder exists in `api/websocket/messages.py` (line 35) and is exported in `__init__.py`, but no production code path ever calls it. CasCor only sends `cascade_add` event messages (with event metadata, no topology data).
 
-### JR-ML-SEC-066 — `add_units_as_layer` stores numpy copies of weights in history.
+### JR-ML-SEC-064 — `add_units_as_layer` stores numpy copies of weights in history.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 895-913)
+
+### JR-ML-SEC-065 — All three tasks validated by specialized sub-agents (2026-03-29):.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 354-366)
+
+**Detail**:
+
+- `network_visualizer.py` — uses count-based positioning, not numeric `layer` field
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '9.4 Files NOT Requiring Modification']
+
+### JR-ML-SEC-066 — Binary: `[[0.0],[1.0]]` -> `[0,1]` (threshold, not argmax).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 302-314)
+
+**Detail**:
+
+| `test_dataset_target_conversion_binary`             | Binary: `[[0.0],[1.0]]` -> `[0,1]` (threshold, not argmax) |
+
+**Notes**:
+
+[v4 brief repaired; was: '8.2 New Tests Required']
 
 ### JR-ML-SEC-067 — Canopy WebSocket handlers must enforce 120s idle timeout; close with code 1000 on expiry.
 
@@ -1070,7 +1102,7 @@ Grafana admin password, Sentry DSNs). Add make secrets-encrypt / make secrets-de
 targets wrapping sops commands. Document workflow in docs/SECRETS_GUIDE.md. Ensure CI
 does not require decrypted secrets (use ${VAR:-} defaults).
 
-### JR-CAN-SEC-007 — CORS must be restricted to used methods and headers only.
+### JR-CAN-SEC-009 — CORS must be restricted to used methods and headers only.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: can
 
@@ -1093,20 +1125,20 @@ actual API usage (GET, POST, OPTIONS; only necessary headers). File: src/main.py
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-ML-SEC-071 — Effort**: 1-2 days | **Repo**: juniper-cascor.
+### JR-ML-SEC-071 — Deterministic IDs with `seed=None` → same ID for different random data → stale cache returns.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 521-534)
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 327-348)
 
 **Detail**:
 
-**Effort**: 1-2 days | **Repo**: juniper-cascor
+| JD-01 | **High**   | `api/security.py`        | 59      | Non-constant-time API key comparison — timing side-channel attack vector                     |
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '5.3 Grow-Network State Updates']
+[v4 brief repaired; was: '2.5 juniper-data']
 
 ### JR-ML-SEC-072 — Excessive f-string tensor interpolation logging in hot paths.
 
@@ -1178,7 +1210,7 @@ in health_check.sh (line 59-79) and test_health_enhanced.sh (line 66). Affects w
 health_check.sh, test_health_enhanced.sh. Remediation: pass URLs via sys.argv[1] instead of
 interpolating into code string. Add PORT numeric validation as defense-in-depth.
 
-### JR-CAN-SEC-008 — get_rate_limiter() must use get_settings() instead of direct access.
+### JR-CAN-SEC-010 — get_rate_limiter() must use get_settings() instead of direct access.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: can
 
@@ -1218,7 +1250,18 @@ Both repos should be updated in the same development cycle to avoid a window whe
 
 #### CI-01: cascor-client CI Doesn't Test Python 3.14
 
-### JR-ML-SEC-079 — Line 582: `"layer": h + 1` -> `"layer": 1`.
+### JR-ML-SEC-079 — Medium Priority.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 364-375)
+
+**Detail**:
+
+| Task 2 Ph1: Metadata-only graceful handling  | DASHBOARD_AUGMENTATION_PLAN       | Dataset tab metadata-only display for service mode
+
+### JR-ML-SEC-080 — Output weight connection loop — correctly handles all inputs + hidden -> each output.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -1233,33 +1276,7 @@ Both repos should be updated in the same development cycle to avoid a window whe
 
 [v3 brief repaired from cited content; was: '4.2 Fix']
 
-### JR-ML-SEC-080 — Medium Priority.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 364-375)
-
-**Detail**:
-
-| Task 2 Ph1: Metadata-only graceful handling  | DASHBOARD_AUGMENTATION_PLAN       | Dataset tab metadata-only display for service mode
-
-### JR-ML-SEC-081 — `network_visualizer.py` — uses count-based positioning, not numeric `layer` field.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 354-366)
-
-**Detail**:
-
-- `network_visualizer.py` — uses count-based positioning, not numeric `layer` field
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '9.4 Files NOT Requiring Modification']
-
-### JR-ML-SEC-082 — Phase B-pre-a: Origin allowlist, per-IP cap, frame-size cap, audit logger skeleton on `/ws/training`.
+### JR-ML-SEC-081 — Phase B-pre-a: Origin allowlist, per-IP cap, frame-size cap, audit logger skeleton on `/ws/training`.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -1291,7 +1308,7 @@ Origin allowlist on `/ws/training` specifically (read-path). Gates Phase B only.
 Parallel with Phase 0-cascor and A-SDK. Exit gate: empty allowlist = fail-closed (HALT if fail-open).
 Rollback: env flags (`JUNIPER_WS_ALLOWED_ORIGINS='*'` ignored by parser; instead use high cap `JUNIPER_WS_MAX_CONNECTIONS_PER_IP=1000`).
 
-### JR-ML-SEC-083 — Phase B-pre-a: Origin on /ws/training, size caps, per-IP cap, idle timeout, audit-logger skeleton.
+### JR-ML-SEC-082 — Phase B-pre-a: Origin on /ws/training, size caps, per-IP cap, idle timeout, audit-logger skeleton.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -1302,7 +1319,7 @@ Rollback: env flags (`JUNIPER_WS_ALLOWED_ORIGINS='*'` ignored by parser; instead
 
 Phase B-pre-a major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-SEC-084 — Phase B-pre-b: Origin on /ws/control, cookie session + CSRF first-frame, rate limit, idle timeout, adapter HMAC, audit Prom counters.
+### JR-ML-SEC-083 — Phase B-pre-b: Origin on /ws/control, cookie session + CSRF first-frame, rate limit, idle timeout, adapter HMAC, audit Prom counters.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -1344,7 +1361,148 @@ HMAC first-frame auth uniform with existing SDK auth pattern.
 Exit: all tests green, manual Origin/CSRF/rate-limit probes work, SessionMiddleware detected, adapter handshake works, 48h soak.
 Rollback: `JUNIPER_DISABLE_WS_AUTH=true` (existing flag, 2 min TTF). Dedup candidate with R3-03. / Phase B-pre-b major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-SEC-085 — Repositories**: juniper-canopy, juniper-cascor.
+### JR-ML-SEC-084 — SEC-01: API Key Comparison Not Constant-Time — Timing Side-Channel.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 169-184)
+
+### JR-ML-SEC-085 — SEC-02: Rate Limiter Memory Unbounded — DoS Vector.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 187-209)
+
+### JR-ML-SEC-086 — SEC-03: No Per-IP WebSocket Connection Limiting (cascor).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 212-226)
+
+### JR-ML-SEC-087 — SEC-04: Sync Dataset Generation Blocks Event Loop.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 229-244)
+
+### JR-ML-SEC-088 — SEC-05: Cross-Site WebSocket Hijacking (CSWSH) — No Origin Validation (canopy).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 247-261)
+
+### JR-ML-SEC-089 — SEC-06: No Auth on Canopy WS Endpoints.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 264-278)
+
+### JR-ML-SEC-090 — SEC-07: Unvalidated `params` Dict Values in TrainingStartRequest.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 281-295)
+
+### JR-ML-SEC-091 — SEC-10: Sentry `send_default_pii=True` (juniper-data).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 298-312)
+
+### JR-ML-SEC-092 — SEC-11: `pickle.loads` HDF5 Snapshot Data Without RestrictedUnpickler.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 315-337)
+
+### JR-ML-SEC-093 — SEC-12: `/ws` Generic Endpoint Missing Origin/Per-IP Validation (canopy).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 340-354)
+
+### JR-ML-SEC-094 — SEC-13: Auth Secrets Exposed via Query Params (`/api/remote/connect`).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 357-379)
+
+### JR-ML-SEC-095 — SEC-14: Internal Exception Messages Leaked to Clients.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 382-396)
+
+### JR-ML-SEC-096 — SEC-15: Cascor Sentry `send_default_pii=True`.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 399-413)
+
+### JR-ML-SEC-097 — SEC-16: `/metrics` Prometheus Endpoint Bypasses Auth Middleware.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 416-430)
+
+### JR-ML-SEC-098 — SEC-17: Snapshot `snapshot_id` Path Param Unchecked for Traversal.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 433-447)
+
+### JR-ML-SEC-099 — SEC-18: `_decode_binary_frame` No Bounds Check (cascor-worker).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 450-464)
+
+### JR-ML-SEC-100 — Security remediation for identified vulnerability in PR#40.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/legacy/PR40_SECURITY_REMEDIATION_PLAN.md` (lines 1-100)
+
+### JR-ML-SEC-101 — Security remediation for juniper-deploy PR#14.
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/legacy/JUNIPER_DEPLOY_PR14_SECURITY_REMEDIATION_PLAN.md` (lines 1-100)
+
+**Notes**:
+
+Security issue in deployment pipeline.
+
+### JR-ML-SEC-102 — Task 1 (Metrics).
+
+**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 381-404)
+
+**Detail**:
+
+- Card pattern: `html.Div([html.H5(), html.H2(id=...)])` with flex layout (lines 393-428)
+
+### JR-ML-SEC-103 — The metaparameter update flow works through these stages:.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -1359,146 +1517,20 @@ Rollback: `JUNIPER_DISABLE_WS_AUTH=true` (existing flag, 2 min TTF). Dedup candi
 
 [v3 brief repaired from cited content; was: '1.3 Metaparameter Wiring Gaps']
 
-### JR-ML-SEC-086 — SEC-01: API Key Comparison Not Constant-Time — Timing Side-Channel.
+### JR-ML-SEC-104 — Update TrainingState at each grow iteration boundary:.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 169-184)
-
-### JR-ML-SEC-087 — SEC-02: Rate Limiter Memory Unbounded — DoS Vector.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 187-209)
-
-### JR-ML-SEC-088 — SEC-03: No Per-IP WebSocket Connection Limiting (cascor).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 212-226)
-
-### JR-ML-SEC-089 — SEC-04: Sync Dataset Generation Blocks Event Loop.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 229-244)
-
-### JR-ML-SEC-090 — SEC-05: Cross-Site WebSocket Hijacking (CSWSH) — No Origin Validation (canopy).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 247-261)
-
-### JR-ML-SEC-091 — SEC-06: No Auth on Canopy WS Endpoints.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 264-278)
-
-### JR-ML-SEC-092 — SEC-07: Unvalidated `params` Dict Values in TrainingStartRequest.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 281-295)
-
-### JR-ML-SEC-093 — SEC-10: Sentry `send_default_pii=True` (juniper-data).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 298-312)
-
-### JR-ML-SEC-094 — SEC-11: `pickle.loads` HDF5 Snapshot Data Without RestrictedUnpickler.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 315-337)
-
-### JR-ML-SEC-095 — SEC-12: `/ws` Generic Endpoint Missing Origin/Per-IP Validation (canopy).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 340-354)
-
-### JR-ML-SEC-096 — SEC-13: Auth Secrets Exposed via Query Params (`/api/remote/connect`).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 357-379)
-
-### JR-ML-SEC-097 — SEC-14: Internal Exception Messages Leaked to Clients.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 382-396)
-
-### JR-ML-SEC-098 — SEC-15: Cascor Sentry `send_default_pii=True`.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 399-413)
-
-### JR-ML-SEC-099 — SEC-16: `/metrics` Prometheus Endpoint Bypasses Auth Middleware.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 416-430)
-
-### JR-ML-SEC-100 — SEC-17: Snapshot `snapshot_id` Path Param Unchecked for Traversal.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 433-447)
-
-### JR-ML-SEC-101 — SEC-18: `_decode_binary_frame` No Bounds Check (cascor-worker).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 450-464)
-
-### JR-ML-SEC-102 — Security remediation for identified vulnerability in PR#40.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/legacy/PR40_SECURITY_REMEDIATION_PLAN.md` (lines 1-100)
-
-### JR-ML-SEC-103 — Security remediation for juniper-deploy PR#14.
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/legacy/JUNIPER_DEPLOY_PR14_SECURITY_REMEDIATION_PLAN.md` (lines 1-100)
-
-**Notes**:
-
-Security issue in deployment pipeline.
-
-### JR-ML-SEC-104 — Task 1 (Metrics).
-
-**Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 381-404)
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 521-534)
 
 **Detail**:
 
-- Card pattern: `html.Div([html.H5(), html.H2(id=...)])` with flex layout (lines 393-428)
+**Effort**: 1-2 days | **Repo**: juniper-cascor
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.3 Grow-Network State Updates']
 
 ### JR-ML-SEC-105 — Validate Anthropic API key access patterns across repos; ensure keys not logged or exposed in responses.
 
@@ -1507,37 +1539,7 @@ Security issue in deployment pipeline.
 **Sources**:
 - `juniper-ml/notes/ANTHROPIC_API_KEY_ACCESS_VALIDATION_WALKTHROUGH_2026-05-10.md` (lines 1-50)
 
-### JR-ML-SEC-106 — Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found two clusters of stale panels in….
-
-**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 334-370)
-
-**Detail**:
-
-**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.12 DASHBOARD-STALE-PANELS — 7 stale Grafana panels post au']
-
-### JR-ML-SEC-107 — Scope**: Find hidden throttles beyond the known `cascade_correlation.py:1655`,.
-
-**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 331-370)
-
-**Detail**:
-
-**Scope**: Find hidden throttles beyond the known `cascade_correlation.py:1655`,
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '4.5 Dimension E — Throttles + tech debt + race conditions']
-
-### JR-ML-SEC-108 — Scope**: Verify all metrics referenced in the R5.1 SLO catalog, `alert_rules.yml`,.
+### JR-ML-SEC-106 — > bound 2 user-supporting SLIs (§4.3, §4.4) to 2 of them. Result: ≥8 dashboard.
 
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -1552,7 +1554,22 @@ Security issue in deployment pipeline.
 
 [v3 brief repaired from cited content; was: '4.1 Dimension A — Metrics surface integrity']
 
-### JR-ML-SEC-109 — Service-specific metric inventory: training-domain (8 metrics).
+### JR-ML-SEC-107 — Background.** The post-METRICS-MON state report (juniper-ml#223 §15) found two clusters of stale panels in….
+
+**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 334-370)
+
+**Detail**:
+
+**Severity:** P1 (operational — dashboards mislead operators) · **Owner repo:** juniper-deploy · **Status:** in-flight (sister PR opened 2026-05-06)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.12 DASHBOARD-STALE-PANELS — 7 stale Grafana panels post au']
+
+### JR-ML-SEC-108 — emits per-worker gauges. `juniper-cascor-worker` itself does **not.
 
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -1566,6 +1583,21 @@ Security issue in deployment pipeline.
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.2 juniper-cascor']
+
+### JR-ML-SEC-109 — TODO/FIXME/HACK**: 3 empty `# TODO :` banner placeholders in canopy frontend.
+
+**Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 331-370)
+
+**Detail**:
+
+**Scope**: Find hidden throttles beyond the known `cascade_correlation.py:1655`,
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.5 Dimension E — Throttles + tech debt + race conditions']
 
 ### JR-ML-SEC-110 — Version**: 0.3.0 (unreleased constants refactor on main) | **Python**: ≥3.11 | **Coverage**: 91.47%.
 
@@ -1633,7 +1665,7 @@ Security issue in deployment pipeline.
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 1058-1076)
 
-### JR-ML-SEC-116 — Scope**: Verify R2.1 lib adoption, R2.2 WS schema alignment, R4.6.
+### JR-ML-SEC-116 — R4.6 request-id propagation**: Correctly implemented and well-tested in.
 
 **Status**: designed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -1659,7 +1691,40 @@ Security issue in deployment pipeline.
 
 Settled position C-33 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-SEC-118 — 2.7 juniper-deploy.
+### JR-ML-SEC-118 — 2A. Validation Loss/Accuracy Overlay Traces.
+
+**Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 74-88)
+
+**Detail**:
+
+**File:** `src/frontend/components/metrics_panel.py`
+
+### JR-ML-SEC-119 — Issue Remediations, Section 15 — juniper-cascor-client.
+
+**Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 323-373)
+
+**Detail**:
+
+#### CC-01: `_recv_loop` Catches Bare `Exception`
+
+### JR-ML-SEC-120 — Issue Remediations, Section 15 — juniper-cascor-worker.
+
+**Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 561-611)
+
+**Detail**:
+
+#### CW-01: `receive_json()` Doesn't Catch JSONDecodeError
+
+### JR-ML-SEC-121 — Secret name `juniper_data_api_key` (singular) vs env var `juniper_data_api_keys` (plural) — naming inconsistency.
 
 **Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -1672,280 +1737,9 @@ Settled position C-33 from R3-03 table; cross-round consensus consolidation
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '2.7 juniper-deploy']
 
-### JR-ML-SEC-119 — 2A. Validation Loss/Accuracy Overlay Traces.
-
-**Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 74-88)
-
-**Detail**:
-
-**File:** `src/frontend/components/metrics_panel.py`
-
-### JR-ML-SEC-120 — Issue Remediations, Section 15 — juniper-cascor-client.
-
-**Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 323-373)
-
-**Detail**:
-
-#### CC-01: `_recv_loop` Catches Bare `Exception`
-
-### JR-ML-SEC-121 — Issue Remediations, Section 15 — juniper-cascor-worker.
-
-**Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 561-611)
-
-**Detail**:
-
-#### CW-01: `receive_json()` Doesn't Catch JSONDecodeError
-
-### JR-ML-SEC-122 — 1.2 Security.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 62-69)
-
-**Detail**:
-
-| ID        | Severity | File:Line           | Description                                                                                                  |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-123 — 13.1 Infrastructure Bugs (Confirmed Still Present).
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 402-419)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 317-330)
-
-**Detail**:
-
-| DEPLOY-01 | **HIGH**   | Docker secret name/path mismatch: `juniper_data_api_key` (singular) vs app expects `juniper_data_api_keys` (plural)              | `docker-compose.yml:499-500` vs service env var
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-SEC-124 — 14.1 Security Issues (Confirmed Still Present).
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 436-444)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 347-355)
-
-**Detail**:
-
-| JD-SEC-01 | **HIGH**   | `storage/local_fs.py:52-58` | Path traversal: `dataset_id` concatenated into filesystem paths without `../` sanitization. User-supplied IDs in delete/get endpoints can esc
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-SEC-125 — 2.2 Security.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 114-123)
-
-**Detail**:
-
-| ID        | Severity | File:Line                  | Description
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-126 — 2.3 Comparative Evaluation.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 282-299)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-127 — 2.3.1 Add PATCH to retry allowed_methods** (`client.py:101`):.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 188-204)
-
-**Detail**:
-
-**2.3.1 Add PATCH to retry allowed_methods** (`client.py:101`):
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '2.3 juniper-data-client: Test & Retry Fixes']
-
-### JR-ML-SEC-128 — 2.4 Test Coverage Gaps.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 132-142)
-
-**Detail**:
-
-| `cli.py`           | 90.70%   | Second SIGINT force-exit path; post-`asyncio.run` log line                                |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-129 — 3.2 Security.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 169-178)
-
-**Detail**:
-
-| ID        | Severity   | File:Line                   | Description
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-130 — 3.4 Comparative Evaluation.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 560-575)
-
-**Detail**:
-
-| Criterion                     | Option 1: Feature Flag | Option 2: Mock Containers | Option 3: Client Fakes | Option 4: VCR         | Option 5: Demo Profile    |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-131 — 5.1 juniper-cascor.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 120-134)
-
-**Detail**:
-
-| BUG-CC-01 | **MEDIUM** | `create_topology_message()` not implemented — No topology changes WS   | `src/api/websocket/messages.py:72`                                                | Defined and exported, no production callers. Only used in tests
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-132 — 5.1 Strengths.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 455-464)
-
-**Detail**:
-
-1. **Clean separation of concerns**: Each repository has a single, well-defined responsibility
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-133 — 5.2 Kubernetes/Helm Issues.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 272-281)
-
-**Detail**:
-
-| DD-K8S-01 | **Medium** | `values.yaml:306`     | Redis `auth.enabled: false` — no authentication.
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-134 — 5.3 Security.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 281-292)
-
-**Detail**:
-
-| DD-SEC-02 | **Medium** | Cascor port bound to 0.0.0.0 (see DD-DC-04).        |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-135 — 5.5 Test Coverage Gaps.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 300-311)
-
-**Detail**:
-
-| TST-01 | **Medium** | No Helm chart tests in CI (`helm lint` only in pre-commit, not CI).                                                                                                         |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-136 — 5.6 Scripts/Automation.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 311-324)
-
-**Detail**:
-
-| DD-SCR-01 | **Low**  | `test_health_enhanced.sh` uses `curl` while other scripts use python3 urllib. Inconsistent dependency. |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-137 — 6.2 Guardrails.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 505-523)
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-138 — 6.2 juniper-canopy — Code Quality.
+### JR-ML-SEC-122 — 4 test files with `requires_server` skip marker — need CI integration environment.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -1959,74 +1753,22 @@ Settled position C-33 from R3-03 table; cross-round consensus consolidation
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v4 brief repaired; was: '6.2 juniper-canopy — Code Quality']
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
-### JR-ML-SEC-139 — 6.6 High: Docker Infrastructure Gaps (juniper-deploy).
+### JR-ML-SEC-123 — [ ] All tests pass (`pytest -v` or `python3 -m unittest -v`).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 363-374)
-
-**Detail**:
-
-1. **AlertManager service missing** from docker-compose.yml but referenced by Prometheus
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 314-327)
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v3 brief repaired from cited content; was: '4.2 Pre-Release Validation Checklist']
 
-### JR-ML-SEC-140 — 8.2 Risk Assessment.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 489-504)
-
-**Detail**:
-
-## 9. Development & Tooling Recommendations
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-### JR-ML-SEC-141 — 9.2 Phase 5: Observability & Hardening — INCOMPLETE.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 289-299)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 225-235)
-
-**Detail**:
-
-| 5.1  | Configure AlertManager receivers (Slack/email)   | 🔴 Placeholders only | `alertmanager.yml` has empty receiver stubs, no real integrations |
-
-**Notes**:
-
-[v3 thin-brief flagged]
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-SEC-142 — [x] Training start only accepts whitelisted parameters — verified 2026-04-09; regression test added.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 434-451)
-
-**Detail**:
-
-## 5. Phase 3: Metrics Granularity
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '4.5 Phase 2 Success Criteria']
-
-### JR-ML-SEC-143 — A.3 Health Check Scripts.
+### JR-ML-SEC-124 — A.3 Health Check Scripts.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2062,7 +1804,73 @@ vulnerability database to reduce CI time.
 
 Medium severity: documents security tooling
 
-### JR-ML-SEC-144 — All service files use the same hardening pattern as the existing canopy service:.
+### JR-ML-SEC-125 — Add `TestBatchOperations` and `TestVersioning` classes in `test_client.py` using `@responses.activate`. Cover:.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 188-204)
+
+**Detail**:
+
+**2.3.1 Add PATCH to retry allowed_methods** (`client.py:101`):
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.3 juniper-data-client: Test & Retry Fixes']
+
+### JR-ML-SEC-126 — **AlertManager service missing** from docker-compose.yml but referenced by Prometheus.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 363-374)
+
+**Detail**:
+
+1. **AlertManager service missing** from docker-compose.yml but referenced by Prometheus
+
+**Notes**:
+
+[v4 brief repaired; was: '6.6 High: Docker Infrastructure Gaps (juniper-deploy)']
+
+### JR-ML-SEC-127 — AlertManager service missing from docker-compose.yml — `prometheus.yml:34` references `alertmanager:9093` but no service defined.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 402-419)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 317-330)
+
+**Detail**:
+
+| DEPLOY-01 | **HIGH**   | Docker secret name/path mismatch: `juniper_data_api_key` (singular) vs app expects `juniper_data_api_keys` (plural)              | `docker-compose.yml:499-500` vs service env var
+
+**Notes**:
+
+[v4 brief repaired; was: '13.1 Infrastructure Bugs (Confirmed Still Present)']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-SEC-128 — `alertmanager.yml` has empty receiver stubs, no real integrations.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 289-299)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 225-235)
+
+**Detail**:
+
+| 5.1  | Configure AlertManager receivers (Slack/email)   | 🔴 Placeholders only | `alertmanager.yml` has empty receiver stubs, no real integrations |
+
+**Notes**:
+
+[v4 brief repaired; was: '9.2 Phase 5: Observability & Hardening — INCOMPLETE']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-SEC-129 — All service files use the same hardening pattern as the existing canopy service:.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2073,7 +1881,7 @@ Medium severity: documents security tooling
 
 [v3 brief repaired from cited content; was: '2.6 Security hardening']
 
-### JR-ML-SEC-145 — Analyze juniper-deploy public release feasibility: dependencies, security, CI/CD readiness.
+### JR-ML-SEC-130 — Analyze juniper-deploy public release feasibility: dependencies, security, CI/CD readiness.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2084,29 +1892,29 @@ Medium severity: documents security tooling
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-ML-SEC-146 — `AuditLogger` and `WorkerMetrics` counters lack thread-safety.
+### JR-ML-SEC-131 — API key in plaintext over HTTP. Default URL is `http://`. No warning when API key is set with non-HTTPS URL.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 62-69)
+
+**Detail**:
+
+| ID        | Severity | File:Line           | Description                                                                                                  |
+
+**Notes**:
+
+[v4 brief repaired; was: '1.2 Security']
+
+### JR-ML-SEC-132 — `AuditLogger` and `WorkerMetrics` counters lack thread-safety.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 523-541)
 
-### JR-ML-SEC-147 — Background.** Local validation of `alertmanager/alertmanager.yml` is blocked by snap confinement on the dev host: the `amtool` snap can't….
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 182-207)
-
-**Detail**:
-
-**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.5 AMTOOL-CI — `amtool check-config` snap-confinement gap']
-
-### JR-ML-SEC-148 — Both are pure client libraries. They provide:.
+### JR-ML-SEC-133 — Both are pure client libraries. They provide:.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2121,7 +1929,7 @@ Medium severity: documents security tooling
 
 [v3 brief repaired from cited content; was: '6.1 juniper-data-client / juniper-cascor-client']
 
-### JR-ML-SEC-149 — CasCor-Side Validation.
+### JR-ML-SEC-134 — CasCor-Side Validation.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2132,7 +1940,7 @@ Medium severity: documents security tooling
 
 | `cascade_add` correlation hardcoded to 0.0 | Cosmetic — does not affect topology display |
 
-### JR-ML-SEC-150 — CC-15: No TLS/SSL Configuration Support on WS Streams.
+### JR-ML-SEC-135 — CC-15: No TLS/SSL Configuration Support on WS Streams.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2143,7 +1951,7 @@ Medium severity: documents security tooling
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-ML-SEC-151 — CHANGELOG changes**: Add sections for v0.1.1, v0.3.0 covering:.
+### JR-ML-SEC-136 — CHANGELOG changes**: Add sections for v0.1.1, v0.3.0 covering:.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2158,7 +1966,7 @@ Medium severity: documents security tooling
 
 [v3 brief repaired from cited content; was: '1.5 juniper-cascor-worker: CHANGELOG & Tags']
 
-### JR-ML-SEC-152 — CI-04: Missing Weekly security-scan.yml for cascor-client.
+### JR-ML-SEC-137 — CI-04: Missing Weekly security-scan.yml for cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2169,7 +1977,7 @@ Medium severity: documents security tooling
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-ML-SEC-153 — CI-SEC-01: No Weekly Security Scan for cascor-client.
+### JR-ML-SEC-138 — CI-SEC-01: No Weekly Security Scan for cascor-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2180,7 +1988,7 @@ Medium severity: documents security tooling
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-ML-SEC-154 — CI-SEC-02: No Security Scanning in juniper-deploy.
+### JR-ML-SEC-139 — CI-SEC-02: No Security Scanning in juniper-deploy.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2190,6 +1998,21 @@ Medium severity: documents security tooling
 **Notes**:
 
 [v2 ARCH→SEC re-bucket]
+
+### JR-ML-SEC-140 — **Clean separation of concerns**: Each repository has a single, well-defined responsibility.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 455-464)
+
+**Detail**:
+
+1. **Clean separation of concerns**: Each repository has a single, well-defined responsibility
+
+**Notes**:
+
+[v4 brief repaired; was: '5.1 Strengths']
 
 ### JR-DEP-SEC-005 — Close secret-leak detection bypass via Gitleaks path-based allowlisting.
 
@@ -2206,7 +2029,22 @@ matching files from all rules, (2) pre-commit hook skipped in CI, (3) weak SOPS 
 (only grep "^sops_" check). Remediation: replace path allowlist with content-based ciphertext regex,
 remove CI skip, strengthen to multi-field SOPS validation + ciphertext line check.
 
-### JR-ML-SEC-155 — Code Reference Validation.
+### JR-ML-SEC-141 — **Code complexity in Canopy**.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 560-575)
+
+**Detail**:
+
+| Criterion                     | Option 1: Feature Flag | Option 2: Mock Containers | Option 3: Client Fakes | Option 4: VCR         | Option 5: Demo Profile    |
+
+**Notes**:
+
+[v4 brief repaired; was: '3.4 Comparative Evaluation']
+
+### JR-ML-SEC-142 — Code Reference Validation.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2217,29 +2055,44 @@ remove CI skip, strengthen to multi-field SOPS validation + ciphertext line chec
 
 Every line number, code snippet, and factual claim about the codebase was verified against the current source files. No shifted, wrong, or missing references found.
 
-### JR-ML-SEC-156 — Create a single ecosystem-level `docker-compose.yml` that defines all services with proper dependency ordering.
+### JR-ML-SEC-143 — Cross-references.** Runbook §5.3, §7 · OBS-ROUTE-01 PR juniper-deploy#60 (validation evidence in PR body).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 116-166)
+- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 182-207)
 
 **Detail**:
 
-#### Option A: Docker Compose (Unified)
+**Severity:** P3 · **Owner repo:** juniper-deploy · **Status:** open
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '2.2 Startup Orchestration Options']
+[v3 brief repaired from cited content; was: '3.5 AMTOOL-CI — `amtool check-config` snap-confinement gap']
 
-### JR-ML-SEC-157 — Decision boundary computation runs synchronously in async handler, blocking event loop.
+### JR-ML-SEC-144 — `dataset_id` concatenated into filesystem paths without sanitization. Path traversal via `../../` in user-supplied `dataset_id`. Documented.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 169-178)
+
+**Detail**:
+
+| ID        | Severity   | File:Line                   | Description
+
+**Notes**:
+
+[v4 brief repaired; was: '3.2 Security']
+
+### JR-ML-SEC-145 — Decision boundary computation runs synchronously in async handler, blocking event loop.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 913-931)
 
-### JR-ML-SEC-158 — DEPLOY-01: Docker Secret Name/Path Mismatch.
+### JR-ML-SEC-146 — DEPLOY-01: Docker Secret Name/Path Mismatch.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2250,14 +2103,14 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-ML-SEC-159 — Dual auth mechanisms — WebSocket endpoints lack middleware-level enforcement and rate limiting.
+### JR-ML-SEC-147 — Dual auth mechanisms — WebSocket endpoints lack middleware-level enforcement and rate limiting.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 294-330)
 
-### JR-ML-SEC-160 — End of deep audit report.
+### JR-ML-SEC-148 — End of deep audit report.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2272,22 +2125,22 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 [v3 brief repaired from cited content; was: '8.4 Low (Backlog)']
 
-### JR-ML-SEC-161 — File**: `docker-compose.yml` lines 494-503.
+### JR-ML-SEC-149 — Estimated Duration**: 8-12 days (original) — **ACTUAL: ~0.5 day (verification + demo gap fix).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 73-101)
+- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 434-451)
 
 **Detail**:
 
-**File**: `docker-compose.yml` lines 494-503
+## 5. Phase 3: Metrics Granularity
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '1.4 juniper-deploy: Network Isolation']
+[v3 brief repaired from cited content; was: '4.5 Phase 2 Success Criteria']
 
-### JR-ML-SEC-162 — For each application, compile changelog entries from git history:.
+### JR-ML-SEC-150 — For each application, compile changelog entries from git history:.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2302,18 +2155,7 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 [v3 brief repaired from cited content; was: '3.1 Changelog Updates']
 
-### JR-ML-SEC-163 — For each application, verify:.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 314-327)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '4.2 Pre-Release Validation Checklist']
-
-### JR-ML-SEC-164 — For juniper-ml, juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker:.
+### JR-ML-SEC-151 — For juniper-ml, juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker:.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2324,14 +2166,14 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 [v3 brief repaired from cited content; was: '4.3 Build & Package Validation (PyPI packages only)']
 
-### JR-ML-SEC-165 — `force_sequential_training` autouse fixture masks all multiprocessing bugs.
+### JR-ML-SEC-152 — `force_sequential_training` autouse fixture masks all multiprocessing bugs.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 1002-1022)
 
-### JR-ML-SEC-166 — Future (If Scale Demands).
+### JR-ML-SEC-153 — Future (If Scale Demands).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2342,7 +2184,7 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 1. **Docker Compose demo profile**: Run real CasCor with auto-start training for stakeholder demos.
 
-### JR-ML-SEC-167 — Future enhancements: CAN-000 through CAN-021 (meta param menu, training metrics UI, parameter tuning tab, snapshot capture/replay).
+### JR-ML-SEC-154 — Future enhancements: CAN-000 through CAN-021 (meta param menu, training metrics UI, parameter tuning tab, snapshot capture/replay).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2369,7 +2211,7 @@ Every line number, code snippet, and factual claim about the codebase was verifi
 
 SEC-004 MEDIUM (P2). ci.yml:70,73,84, etc.
 
-### JR-ML-SEC-168 — H-JDP-1: Makefile `prepare-secrets` uses undefined variables** (`Makefile:70-72`).
+### JR-ML-SEC-155 — H-JDP-1: Makefile `prepare-secrets` uses undefined variables** (`Makefile:70-72`).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2384,43 +2226,28 @@ SEC-004 MEDIUM (P2). ci.yml:70,73,84, etc.
 
 [v3 brief repaired from cited content; was: 'High Issues']
 
-### JR-ML-SEC-169 — H-ML-1: CI dependency-docs job references wrong path** (`ci.yml:244`).
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 53-67)
-
-**Detail**:
-
-**H-ML-1: CI dependency-docs job references wrong path** (`ci.yml:244`)
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'High Issues']
-
-### JR-ML-SEC-170 — Hidden unit forward pass recomputed redundantly every output training epoch.
+### JR-ML-SEC-156 — Hidden unit forward pass recomputed redundantly every output training epoch.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 841-859)
 
-### JR-ML-SEC-171 — Implement secrets management strategy for Juniper ecosystem (analysis-driven).
+### JR-ML-SEC-157 — Implement secrets management strategy for Juniper ecosystem (analysis-driven).
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/legacy/SECRETS_MANAGEMENT_ANALYSIS.md` (lines 1-100)
 
-### JR-ML-SEC-172 — Integration tests rely on fixed `time.sleep()` for async training synchronization.
+### JR-ML-SEC-158 — Integration tests rely on fixed `time.sleep()` for async training synchronization.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 951-969)
 
-### JR-ML-SEC-173 — Issue Remediations, Section 15 — juniper-data-client.
+### JR-ML-SEC-159 — Issue Remediations, Section 15 — juniper-data-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2431,7 +2258,7 @@ SEC-004 MEDIUM (P2). ci.yml:70,73,84, etc.
 
 #### DC-01: GENERATOR_CIRCLE = "circle" — Server Has "circles"
 
-### JR-ML-SEC-174 — Issue Remediations, Section 9.
+### JR-ML-SEC-160 — Issue Remediations, Section 9.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2442,7 +2269,7 @@ SEC-004 MEDIUM (P2). ci.yml:70,73,84, etc.
 
 #### 5.1: AlertManager Receivers — Placeholders Only
 
-### JR-ML-SEC-175 — Issues Previously Identified and Still Outstanding.
+### JR-ML-SEC-161 — Issues Previously Identified and Still Outstanding.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2453,261 +2280,7 @@ SEC-004 MEDIUM (P2). ci.yml:70,73,84, etc.
 
 | response.ok returns bad default | DATASET_DISPLAY_BUG_DEVELOPMENT_PLAN.md Phase 3/5 | OI-1 |
 
-### JR-ML-SEC-176 — juniper-canopy demo** (`util/juniper_canopy-demo.bash`):.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 265-292)
-
-**Detail**:
-
-- **Strength**: Self-contained, handles env setup
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.4 Individual Application Startup Scripts']
-
-### JR-ML-SEC-177 — `juniper_data/__init__.py:17` — change `__version__ = "0.4.2"` to `"0.6.0"`.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 30-41)
-
-**Detail**:
-
-- `juniper_data/__init__.py:17` — change `__version__ = "0.4.2"` to `"0.6.0"`
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '1.1 juniper-data: Version Synchronization']
-
-### JR-ML-SEC-178 — JUNIPER_WS_ALLOWED_ORIGINS=* explicitly REFUSED by the parser.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 67-67)
-
-**Notes**:
-
-Settled position C-30 from R3-03 table; cross-round consensus consolidation
-
-### JR-ML-SEC-179 — M-JDP-1: `redis:7-alpine` floating minor version tag.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 373-390)
-
-**Detail**:
-
-**M-JDP-1: `redis:7-alpine` floating minor version tag**
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: 'Medium Issues']
-
-### JR-ML-SEC-180 — `MetricsAuthMiddleware` (SEC-16) lives **only** in.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 257-276)
-
-**Detail**:
-
-`juniper-data/juniper_data/api/observability.py:72` and is **not**
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '4.4 MetricsAuthMiddleware confinement']
-
-### JR-ML-SEC-181 — New file**: `juniper-cascor/scripts/juniper-cascor.service`.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 195-245)
-
-**Detail**:
-
-**New file**: `juniper-cascor/scripts/juniper-cascor.service`
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '5.4 juniper-cascor.service (Step 2.2)']
-
-### JR-ML-SEC-182 — New file**: `juniper-data/scripts/juniper-data.service`.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 128-178)
-
-**Detail**:
-
-**New file**: `juniper-data/scripts/juniper-data.service`
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '5.2 juniper-data.service (Step 2.1)']
-
-### JR-ML-SEC-183 — Per-IP connection cap = 5 default; single-bucket rate limit = 10 cmd/s.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 63-63)
-
-**Notes**:
-
-Settled position C-26 from R3-03 table; cross-round consensus consolidation
-
-### JR-ML-SEC-184 — Phase 3: Worker Deployment & Container Integration — ✅ COMPLETE.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 258-270)
-
-**Detail**:
-
-| 3.1  | `juniper-cascor-worker/Dockerfile`                            | ✅ Implemented                                           |
-
-### JR-ML-SEC-185 — Phase 5: Observability & Hardening (P2-P3) -- Medium-Term.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 804-818)
-
-**Detail**:
-
-| 5.1  | Configure AlertManager receivers (Slack/email)   | `juniper-deploy/alertmanager/alertmanager.yml` | Low             |
-
-### JR-ML-SEC-186 — Phase 5: Observability & Hardening — ❌ NOT STARTED.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 285-302)
-
-**Detail**:
-
-| 5.1  | Configure AlertManager receivers                 | ❌      |
-
-### JR-ML-SEC-187 — Phase 5: Quality Improvements (OI-5, OI-6) — COMPLETE.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 706-736)
-
-**Detail**:
-
-**Repos**: juniper-canopy only
-
-### JR-ML-SEC-188 — Phase B-pre-a (security) — ⚠️ PARTIALLY IMPLEMENTED.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 322-330)
-
-### JR-ML-SEC-189 — Prometheus metrics unbounded label cardinality on `endpoint` label.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 362-395)
-
-### JR-ML-SEC-190 — Remediation Summary.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 330-343)
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 397-411)
-
-**Detail**:
-
-1. Write CHANGELOG v0.3.0 entry (WebSocket rewrite, auth_token rename, TLS support, etc.)
-
-*Merged from 2 extraction candidates (slices: 3c-2b).*
-
-### JR-ML-SEC-191 — `RequestBodyLimitMiddleware` relies solely on `Content-Length` header — bypassable with chunked encoding.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 427-459)
-
-### JR-ML-SEC-192 — Root cause**: `csv_import/generator.py:80-87` passes `file_path` directly to `Path()`.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 41-63)
-
-**Detail**:
-
-**Root cause**: `csv_import/generator.py:80-87` passes `file_path` directly to `Path()`.
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '1.2 juniper-data: CSV Import Path Traversal Fix']
-
-### JR-ML-SEC-193 — `scrape_timeout: 10s`. **`metric_relabel_configs`:** none — only static.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 496-513)
-
-**Detail**:
-
-| `prometheus` | `localhost:9090` | 15s (global default) | 10s | `/metrics` | `deployment=docker-compose`; per-job `service=prometheus`, `environment=docker` |
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '8.1 docker-compose (`juniper-deploy/prometheus/prometheus.ym']
-
-### JR-ML-SEC-194 — Security Concerns.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 89-95)
-
-**Detail**:
-
-- `kill_all_pythons.bash`: Dangerous — kills all Python processes system-wide with `sudo kill -9`
-
-### JR-ML-SEC-195 — Serialization & Validation (v3.0.0).
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 337-348)
-
-### JR-ML-SEC-196 — Service file**: `juniper-canopy/scripts/juniper-canopy.service`.
-
-**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 243-265)
-
-**Detail**:
-
-**Service file**: `juniper-canopy/scripts/juniper-canopy.service`
-
-**Notes**:
-
-[v3 brief repaired from cited content; was: '3.3 Current State: systemd (juniper-canopy only)']
-
-### JR-ML-SEC-197 — Service-specific metric inventory (4 metrics):.
+### JR-ML-SEC-162 — `juniper_observability` mounted at app construction): emits.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2722,22 +2295,306 @@ Settled position C-26 from R3-03 table; cross-round consensus consolidation
 
 [v3 brief repaired from cited content; was: '3.1 juniper-data']
 
-### JR-ML-SEC-198 — Service-specific metric inventory (7 metrics):.
+### JR-ML-SEC-163 — JUNIPER_WS_ALLOWED_ORIGINS=* explicitly REFUSED by the parser.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 163-193)
-
-**Detail**:
-
-| `/metrics` URL | `http://juniper-canopy:8050/metrics` |
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 67-67)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: '3.3 juniper-canopy']
+Settled position C-30 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-SEC-199 — Severity**: HIGH (aggregate).
+### JR-ML-SEC-164 — Locks in lifecycle manager; `_topology_lock` for safe reads during training.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 505-523)
+
+**Notes**:
+
+[v4 brief repaired; was: '6.2 Guardrails']
+
+### JR-ML-SEC-165 — Missing `JUNIPER_CANOPY_JUNIPER_DATA_URL` and `JUNIPER_CANOPY_CASCOR_SERVICE_URL` env vars. Canopy deployment won't wire to backend services.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 272-281)
+
+**Detail**:
+
+| DD-K8S-01 | **Medium** | `values.yaml:306`     | Redis `auth.enabled: false` — no authentication.
+
+**Notes**:
+
+[v4 brief repaired; was: '5.2 Kubernetes/Helm Issues']
+
+### JR-ML-SEC-166 — New file**: `juniper-cascor/scripts/juniper-cascor.service`.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 195-245)
+
+**Detail**:
+
+**New file**: `juniper-cascor/scripts/juniper-cascor.service`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.4 juniper-cascor.service (Step 2.2)']
+
+### JR-ML-SEC-167 — New file**: `juniper-data/scripts/juniper-data.service`.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 128-178)
+
+**Detail**:
+
+**New file**: `juniper-data/scripts/juniper-data.service`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '5.2 juniper-data.service (Step 2.1)']
+
+### JR-ML-SEC-168 — **No docker-integration CI job** — compose config validated but services never built/started/tested. Planned in `CONTAINER_VALIDATION_CI_PLA.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 300-311)
+
+**Detail**:
+
+| TST-01 | **Medium** | No Helm chart tests in CI (`helm lint` only in pre-commit, not CI).                                                                                                         |
+
+**Notes**:
+
+[v4 brief repaired; was: '5.5 Test Coverage Gaps']
+
+### JR-ML-SEC-169 — No integration tests (marker defined, zero tests use it); no binary frame edge case tests.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 132-142)
+
+**Detail**:
+
+| `cli.py`           | 90.70%   | Second SIGINT force-exit path; post-`asyncio.run` log line                                |
+
+**Notes**:
+
+[v4 brief repaired; was: '2.4 Test Coverage Gaps']
+
+### JR-ML-SEC-170 — No validation that TLS cert/key/CA paths exist on disk at startup. Confusing SSL error at connect time instead of clear config error.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 114-123)
+
+**Detail**:
+
+| ID        | Severity | File:Line                  | Description
+
+**Notes**:
+
+[v4 brief repaired; was: '2.2 Security']
+
+### JR-ML-SEC-171 — **Orchestration quality**.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 282-299)
+
+**Notes**:
+
+[v4 brief repaired; was: '2.3 Comparative Evaluation']
+
+### JR-ML-SEC-172 — Orchestration quality**: Excellent. Declarative dependency ordering with health-gated startup (`depends_on: condition: service_healthy`)….
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 116-166)
+
+**Detail**:
+
+#### Option A: Docker Compose (Unified)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '2.2 Startup Orchestration Options']
+
+### JR-ML-SEC-173 — Path traversal: `dataset_id` concatenated into filesystem paths without `../` sanitization. User-supplied IDs in delete/get endpoints can es.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 436-444)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 347-355)
+
+**Detail**:
+
+| JD-SEC-01 | **HIGH**   | `storage/local_fs.py:52-58` | Path traversal: `dataset_id` concatenated into filesystem paths without `../` sanitization. User-supplied IDs in delete/get endpoints can esc
+
+**Notes**:
+
+[v4 brief repaired; was: '14.1 Security Issues (Confirmed Still Present)']
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-SEC-174 — Per-IP connection cap = 5 default; single-bucket rate limit = 10 cmd/s.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 63-63)
+
+**Notes**:
+
+Settled position C-26 from R3-03 table; cross-round consensus consolidation
+
+### JR-ML-SEC-175 — Phase 3: Worker Deployment & Container Integration — ✅ COMPLETE.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 258-270)
+
+**Detail**:
+
+| 3.1  | `juniper-cascor-worker/Dockerfile`                            | ✅ Implemented                                           |
+
+### JR-ML-SEC-176 — Phase 5: Observability & Hardening (P2-P3) -- Medium-Term.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 804-818)
+
+**Detail**:
+
+| 5.1  | Configure AlertManager receivers (Slack/email)   | `juniper-deploy/alertmanager/alertmanager.yml` | Low             |
+
+### JR-ML-SEC-177 — Phase 5: Observability & Hardening — ❌ NOT STARTED.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 285-302)
+
+**Detail**:
+
+| 5.1  | Configure AlertManager receivers                 | ❌      |
+
+### JR-ML-SEC-178 — Phase 5: Quality Improvements (OI-5, OI-6) — COMPLETE.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 706-736)
+
+**Detail**:
+
+**Repos**: juniper-canopy only
+
+### JR-ML-SEC-179 — Phase B-pre-a (security) — ⚠️ PARTIALLY IMPLEMENTED.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 322-330)
+
+### JR-ML-SEC-180 — Phase display may be incorrect — field set at init but not yet updated during training transitions.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 120-134)
+
+**Detail**:
+
+| BUG-CC-01 | **MEDIUM** | `create_topology_message()` not implemented — No topology changes WS   | `src/api/websocket/messages.py:72`                                                | Defined and exported, no production callers. Only used in tests
+
+**Notes**:
+
+[v4 brief repaired; was: '5.1 juniper-cascor']
+
+### JR-ML-SEC-181 — PID validation (check `/proc/<pid>/cmdline`).
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 489-504)
+
+**Detail**:
+
+## 9. Development & Tooling Recommendations
+
+**Notes**:
+
+[v4 brief repaired; was: '8.2 Risk Assessment']
+
+### JR-ML-SEC-182 — prometheus container's bridge-network IP must be in.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 496-513)
+
+**Detail**:
+
+| `prometheus` | `localhost:9090` | 15s (global default) | 10s | `/metrics` | `deployment=docker-compose`; per-job `service=prometheus`, `environment=docker` |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '8.1 docker-compose (`juniper-deploy/prometheus/prometheus.ym']
+
+### JR-ML-SEC-183 — Prometheus metrics unbounded label cardinality on `endpoint` label.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 362-395)
+
+### JR-ML-SEC-184 — `pyproject.toml:7` — update header comment to `Version: 0.6.0`.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 30-41)
+
+**Detail**:
+
+- `juniper_data/__init__.py:17` — change `__version__ = "0.4.2"` to `"0.6.0"`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.1 juniper-data: Version Synchronization']
+
+### JR-ML-SEC-185 — Remediation Summary.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 330-343)
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 397-411)
+
+**Detail**:
+
+1. Write CHANGELOG v0.3.0 entry (WebSocket rewrite, auth_token rename, TLS support, etc.)
+
+*Merged from 2 extraction candidates (slices: 3c-2b).*
+
+### JR-ML-SEC-186 — Repositories**: juniper-data, juniper-deploy.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2752,14 +2609,145 @@ Settled position C-26 from R3-03 table; cross-round consensus consolidation
 
 [v3 brief repaired from cited content; was: '1.5 Security Concerns']
 
-### JR-ML-SEC-200 — State machine enters irrecoverable terminal state after FAILED or COMPLETED without enforced reset.
+### JR-ML-SEC-187 — `RequestBodyLimitMiddleware` relies solely on `Content-Length` header — bypassable with chunked encoding.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 427-459)
+
+### JR-ML-SEC-188 — Requires CASCOR_SERVICE_URL or explicit demo mode.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 265-292)
+
+**Detail**:
+
+- **Strength**: Self-contained, handles env setup
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.4 Individual Application Startup Scripts']
+
+### JR-ML-SEC-189 — `secrets/` directory on disk (gitignored properly).
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 281-292)
+
+**Detail**:
+
+| DD-SEC-02 | **Medium** | Cascor port bound to 0.0.0.0 (see DD-DC-04).        |
+
+**Notes**:
+
+[v4 brief repaired; was: '5.3 Security']
+
+### JR-ML-SEC-190 — Security Concerns.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 89-95)
+
+**Detail**:
+
+- `kill_all_pythons.bash`: Dangerous — kills all Python processes system-wide with `sudo kill -9`
+
+### JR-ML-SEC-191 — Serialization & Validation (v3.0.0).
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 337-348)
+
+### JR-ML-SEC-192 — Service file**: `juniper-canopy/scripts/juniper-canopy.service`.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 243-265)
+
+**Detail**:
+
+**Service file**: `juniper-canopy/scripts/juniper-canopy.service`
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 Current State: systemd (juniper-canopy only)']
+
+### JR-ML-SEC-193 — Service-specific metric inventory (7 metrics):.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 163-193)
+
+**Detail**:
+
+| `/metrics` URL | `http://juniper-canopy:8050/metrics` |
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '3.3 juniper-canopy']
+
+### JR-ML-SEC-194 — Should be pinned (e.g., `redis:7.4.2-alpine`) for reproducible builds.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 373-390)
+
+**Detail**:
+
+**M-JDP-1: `redis:7-alpine` floating minor version tag**
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Medium Issues']
+
+### JR-CAN-SEC-011 — Snapshot endpoints must sanitize names and confine paths to prevent directory traversal attacks.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-04.md` (lines 53-95)
+
+**Detail**:
+
+CRIT-001 vulnerability: /api/v1/snapshots endpoints allow path traversal via ../../ and URL-encoded sequences.
+Remediation: Add _sanitize_snapshot_name() with regex ^[a-zA-Z0-9_-]+$; verify resolved path stays within _snapshots_dir.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS v0.4.0; path sanitization + path confinement (defense in depth) recommended.
+
+### JR-ML-SEC-195 — Source-of-truth:** `juniper-deploy/notes/SLO_CATALOG_2026-05-03.md`.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 257-276)
+
+**Detail**:
+
+`juniper-data/juniper_data/api/observability.py:72` and is **not**
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '4.4 MetricsAuthMiddleware confinement']
+
+### JR-ML-SEC-196 — State machine enters irrecoverable terminal state after FAILED or COMPLETED without enforced reset.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 186-227)
 
-### JR-ML-SEC-201 — Step 5: Update Plan Document.
+### JR-ML-SEC-197 — Step 5: Update Plan Document.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
@@ -2770,12 +2758,72 @@ Settled position C-26 from R3-03 table; cross-round consensus consolidation
 
 Add Phase 5.3 section to `notes/CASCOR_DEMO_TRAINING_ERROR_PLAN.md` documenting:
 
-### JR-ML-SEC-202 — `TaskDistributor` dual-path execution is serial, not concurrent.
+### JR-ML-SEC-198 — **Strength**: Matches documented security model; prevents container internet access on backend/data.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 73-101)
+
+**Detail**:
+
+**File**: `docker-compose.yml` lines 494-503
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.4 juniper-deploy: Network Isolation']
+
+### JR-ML-SEC-199 — Strengths of A**: Preserves functionality, standard security pattern, configurable per deployment.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 41-63)
+
+**Detail**:
+
+**Root cause**: `csv_import/generator.py:80-87` passes `file_path` directly to `Path()`.
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: '1.2 juniper-data: CSV Import Path Traversal Fix']
+
+### JR-ML-SEC-200 — Substantial features (systemd support, worker integration, startup/shutdown scripts, worktree cleanup v2) are completely undocumented in….
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 53-67)
+
+**Detail**:
+
+**H-ML-1: CI dependency-docs job references wrong path** (`ci.yml:244`)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'High Issues']
+
+### JR-ML-SEC-201 — `TaskDistributor` dual-path execution is serial, not concurrent.
 
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 931-951)
+
+### JR-ML-SEC-202 — `test_health_enhanced.sh` uses `curl` while other scripts use python3 urllib. Inconsistent dependency.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 311-324)
+
+**Detail**:
+
+| DD-SCR-01 | **Low**  | `test_health_enhanced.sh` uses `curl` while other scripts use python3 urllib. Inconsistent dependency. |
+
+**Notes**:
+
+[v4 brief repaired; was: '5.6 Scripts/Automation']
 
 ### JR-ML-SEC-203 — Tests named for `grow_network` testing actually bypass it entirely.
 
@@ -2979,7 +3027,7 @@ Draft release descriptions for each application (templates provided in the code 
 
 [v3 brief repaired from cited content; was: '3.3 Release Description Documents']
 
-### JR-CAN-SEC-009 — Exception handling in callback_context must narrow exception types.
+### JR-CAN-SEC-012 — Exception handling in callback_context must narrow exception types.
 
 **Status**: proposed  **Priority**: P3  **Category**: SEC  **Owner**: can
 

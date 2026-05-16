@@ -2,13 +2,13 @@
 
 **Area**: websocket / messaging — Canopy↔Cascor streaming, replay, control plane
 
-**Total entries**: 173
+**Total entries**: 176
 
-**By status**: proposed=155 | designed=11 | shipped=5 | deferred=2
+**By status**: proposed=157 | designed=11 | shipped=5 | deferred=2 | superseded=1
 
-**By priority**: P0=14 | P1=125 | P2=30 | P3=4
+**By priority**: P0=14 | P1=125 | P2=33 | P3=4
 
-**By owner**: ml=160 | cas=6 | can=4 | cwk=2 | dat=1
+**By owner**: ml=161 | cas=6 | can=6 | cwk=2 | dat=1
 
 ---
 
@@ -175,7 +175,7 @@ Pre-flight checks (must complete before Phase B PR): (1) Confirm ecosystem clean
 
 [v2 ARCH→WS re-bucket] Gate on Phase B entry. Dedup with R4-02, R3-03.
 
-### JR-ML-WS-011 — H-JCW-1: `worker.py` at 68.23% coverage.
+### JR-ML-WS-011 — H-JCW-2: Thread-unsafe `asyncio.Event.set()` from signal handler.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
@@ -349,18 +349,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v2 ARCH→WS re-bucket] Backward-compatible at deployment level via --legacy. Operators may continue legacy mode during migration window. Default mode changed; no fallback default.
 
-### JR-ML-WS-015 — 10. Risk Register.
-
-**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
-
-**Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1875-1897)
-
-**Notes**:
-
-[v3 thin-brief flagged] WebSocket/messaging architecture gap or design
-
-### JR-ML-WS-016 — [§0 Document Conventions](#0-document-conventions).
+### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](#29-security-model-required-before-phase-d).
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -371,7 +360,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v3 brief repaired from cited content; was: '0.2 Table of Contents'] WebSocket/messaging architecture gap or design
 
-### JR-ML-WS-017 — Each item below has: a unique ID, severity (P0-P3), location, current state, target state, and a remediation hook.
+### JR-ML-WS-016 — Each item below has: a unique ID, severity (P0-P3), location, current state, target state, and a remediation hook.
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -382,7 +371,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v3 brief repaired from cited content; was: '7. Missing / Broken Pieces (Enumerated)'] WebSocket/messaging architecture gap or design
 
-### JR-ML-WS-018 — Final resolution**: **LOW (latent)**. The bug is currently inactive because the dashboard doesn't consume WebSocket data (P5-RC-05). The….
+### JR-ML-WS-017 — Final resolution**: **LOW (latent)**. The bug is currently inactive because the dashboard doesn't consume WebSocket data (P5-RC-05). The….
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -393,7 +382,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v2 ARCH→WS re-bucket] [v3 brief repaired from cited content; was: '7.9 Relay Raw Metrics Severity: MODERATE vs LOW']
 
-### JR-ML-WS-019 — Given the latency tolerance matrix, here is the recommended transport for every operation in scope.
+### JR-ML-WS-018 — Given the latency tolerance matrix, here is the recommended transport for every operation in scope.
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -404,7 +393,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v3 brief repaired from cited content; was: '6. Transport Split Design'] WebSocket/messaging architecture gap or design
 
-### JR-ML-WS-020 — `juniper-cascor` — cascor server (FastAPI, async).
+### JR-ML-WS-019 — **Latency budgets**: see §5 — distinguishes *control feedback latency* (slider→DOM, must be <16 ms, achieved by Dash clientside), *ack….
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -414,6 +403,17 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Notes**:
 
 [v3 brief repaired from cited content; was: '0. Document Conventions'] WebSocket/messaging architecture gap or design
+
+### JR-ML-WS-020 — Playwright trace viewer + dash_duo store assertions + the verification matrix in §8.8; the §1.3 architectural correction (Option B Interval.
+
+**Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1875-1897)
+
+**Notes**:
+
+[v4 brief repaired; was: '10. Risk Register'] WebSocket/messaging architecture gap or design
 
 ### JR-ML-WS-021 — The original draft had 8 open questions; several have been resolved into recommendations during integration. Remaining genuinely-open….
 
@@ -1496,20 +1496,23 @@ Two-layer implementation: global ~/.claude/CLAUDE.md + project CLAUDE.md. Trigge
 **Sources**:
 - `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 1017-1029)
 
-### JR-ML-WS-138 — 2.3 Code Quality.
+### JR-ML-WS-138 — `src/api/websocket/worker_stream.py:159-164` — server generates `worker_id = f"worker-{uuid.uuid4().hex[:12]}"`. Client-supplied value is st.
 
-**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
+**Status**: superseded  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 123-132)
-
-**Detail**:
-
-|    ID    | Severity | File:Line               | Description                                                                                 |
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 76-100)
+- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 93-119)
 
 **Notes**:
 
-[v3 thin-brief flagged]
+[v2 ARCH→WS re-bucket] [v4 brief repaired; was: '3. Items Previously Incomplete — Now Fixed'] Superseded: V4 VALIDATED snapshot; check v6/v7 remediation entries
+
+---
+
+[v4 brief repaired; was: '3. Items Previously Incomplete — Now Fixed'] Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
+
+*Merged from 2 extraction candidates (slices: 3b-3).*
 
 ### JR-ML-WS-139 — Adapter→cascor auth = HMAC first-frame, NOT X-Juniper-Role header.
 
@@ -1533,7 +1536,22 @@ Settled position C-10 from R3-03 table; cross-round consensus consolidation
 
 Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service architecture. Phase 2: Add server commands, environment variables, key entry points (server.py, api/app.py). Phase 3: Document REST API (endpoint inventory, auth), WebSocket protocol (3 channels), lifecycle management, remote workers, middleware. Phase 4: Security (API keys, rate limiting, headers, TLS), observability (JSON logging, Prometheus, Sentry). Phase 5: CI/CD workflows, deployment (Docker, Kubernetes), configuration. Phase 6: Update existing sections (directory structure, dependencies, testing). Phase 7: New sections (service launcher, MCP). Validation criteria listed.
 
-### JR-ML-WS-140 — Canopy adapter hot/cold parameter splitting (WebSocket vs REST).
+### JR-ML-WS-140 — **Architecture**: WebSocket-based async worker (default) + legacy multiprocessing mode (deprecated).
+
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 280-287)
+
+**Detail**:
+
+- **Tests**: 101 passed, 80.13% coverage (barely meets threshold)
+
+**Notes**:
+
+[v3 brief repaired from cited content; was: 'Overview']
+
+### JR-ML-WS-141 — Canopy adapter hot/cold parameter splitting (WebSocket vs REST).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1544,7 +1562,7 @@ Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service archi
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-141 — Canopy control buttons must resolve orphaned commands via state event arrival (fallback to explicit timeout).
+### JR-ML-WS-142 — Canopy control buttons must resolve orphaned commands via state event arrival (fallback to explicit timeout).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1563,7 +1581,7 @@ Prevents UI deadlock if server handles command but response WS frame is dropped.
 
 RISK-13. Phase D (Day 11). Playwright test: test_orphaned_command_resolves_via_state_event.
 
-### JR-ML-WS-142 — Cascor SetParamsRequest has extra=forbid; canopy adapter routes unclassified keys to REST.
+### JR-ML-WS-143 — Cascor SetParamsRequest has extra=forbid; canopy adapter routes unclassified keys to REST.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1574,7 +1592,7 @@ RISK-13. Phase D (Day 11). Playwright test: test_orphaned_command_resolves_via_s
 
 Settled position C-09 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-143 — CC-08: WebSocket Auto-Reconnection Not Implemented.
+### JR-ML-WS-144 — CC-08: WebSocket Auto-Reconnection Not Implemented.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1596,7 +1614,7 @@ Settled position C-09 from R3-03 table; cross-round consensus consolidation
 
 Comprehensive extraction plan synthesizing 3 proposals, phases 0-4 complete (76 tests passing), phase 5 deferred. Core principles: pure NumPy generator, artifact-first API (NPZ), minimal provider set, deterministic reproducibility. Methods to extract: coordinate generation, feature/label construction, ordering/partitioning. Dependency decoupling: remove torch, matplotlib, logging, multiprocessing. Constants extraction: spiral geometry (num_spirals, points_per_spiral, rotations), noise parameters. NPZ data contract specification (dataset_id hash-based, structure validation). Documentation complete with test coverage and phase-by-phase delivery schedule.
 
-### JR-ML-WS-144 — Correlation field is command_id, NOT request_id.
+### JR-ML-WS-145 — Correlation field is command_id, NOT request_id.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1607,7 +1625,7 @@ Comprehensive extraction plan synthesizing 3 proposals, phases 0-4 complete (76 
 
 Settled position C-01 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-145 — Decision**: Support both `--systemd` flag and `USE_SYSTEMD=1` env var.
+### JR-ML-WS-146 — Decision**: Support both `--systemd` flag and `USE_SYSTEMD=1` env var.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1637,7 +1655,7 @@ Settled position C-01 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-146 — Implement WebSocket remote worker infrastructure: /ws/v1/workers endpoint, WorkerRegistry, WorkerCoordinator, binary protocol.
+### JR-ML-WS-147 — Implement WebSocket remote worker infrastructure: /ws/v1/workers endpoint, WorkerRegistry, WorkerCoordinator, binary protocol.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1648,7 +1666,22 @@ Settled position C-01 from R3-03 table; cross-round consensus consolidation
 
 Phase 1b WebSocket endpoint with JWT auth, binary message frames, task assignment/result collection, worker heartbeat management.
 
-### JR-ML-WS-147 — One-resume-per-connection rule (second resume → close 1003).
+### JR-ML-WS-148 — `MSG_TYPE_TOKEN_REFRESH` defined but never referenced — dead code (forward compatibility?).
+
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
+
+**Sources**:
+- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 123-132)
+
+**Detail**:
+
+|    ID    | Severity | File:Line               | Description                                                                                 |
+
+**Notes**:
+
+[v4 brief repaired; was: '2.3 Code Quality']
+
+### JR-ML-WS-149 — One-resume-per-connection rule (second resume → close 1003).
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1659,7 +1692,7 @@ Phase 1b WebSocket endpoint with JWT auth, binary message frames, task assignmen
 
 Settled position C-25 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-148 — Phase B ships behind two flags: enable_browser_ws_bridge + disable_ws_bridge.
+### JR-ML-WS-150 — Phase B ships behind two flags: enable_browser_ws_bridge + disable_ws_bridge.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1670,7 +1703,7 @@ Settled position C-25 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-14 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-149 — Phase C (P2 priority): Canopy adapter hot/cold param split; hot→WS via `command_id`; REST fallback; flag-off default.
+### JR-ML-WS-151 — Phase C (P2 priority): Canopy adapter hot/cold param split; hot→WS via `command_id`; REST fallback; flag-off default.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1708,7 +1741,7 @@ Adapter refactor centralizes param routing logic. REST fallback unconditional (n
 flag-off by default (regression check), manual drag test works. Rollback: `JUNIPER_CANOPY_USE_WEBSOCKET_SET_PARAMS=false`.
 Canary: 7 days production >=0 orphaned commands before flag flip PR. / Phase C major milestone from R3-03 Phase index (§2); orchestrates implementation effort
 
-### JR-ML-WS-150 — Phase F (optional): Application-level `ping`/`pong` heartbeat, dead-connection detection, uncapped reconnect.
+### JR-ML-WS-152 — Phase F (optional): Application-level `ping`/`pong` heartbeat, dead-connection detection, uncapped reconnect.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1732,7 +1765,7 @@ Single PR (P14) across cascor + canopy. Application-level vs framework-level (uv
 Entry: Phase B in main. Priority P2 (default), small phase (0.25-1.0 day). Exit: 4 tests pass,
 manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback: revert P14 (10 min TTF).
 
-### JR-ML-WS-151 — PROTO-01: Canopy `/ws/control` Accepts `reset` Parameter Not in Cascor Protocol.
+### JR-ML-WS-153 — PROTO-01: Canopy `/ws/control` Accepts `reset` Parameter Not in Cascor Protocol.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1743,7 +1776,7 @@ manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-152 — Replay buffer = 1024 entries, env-configurable via JUNIPER_WS_REPLAY_BUFFER_SIZE.
+### JR-ML-WS-154 — Replay buffer = 1024 entries, env-configurable via JUNIPER_WS_REPLAY_BUFFER_SIZE.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1754,7 +1787,7 @@ manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback
 
 Settled position C-05 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-153 — replay_buffer_capacity added to connection_established.
+### JR-ML-WS-155 — replay_buffer_capacity added to connection_established.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1765,7 +1798,7 @@ Settled position C-05 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-07 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-154 — REST fallback cadence during disconnect = 1 Hz.
+### JR-ML-WS-156 — REST fallback cadence during disconnect = 1 Hz.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1776,7 +1809,7 @@ Settled position C-07 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-17 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-155 — Ring-bound enforced in the handler, NOT the drain callback.
+### JR-ML-WS-157 — Ring-bound enforced in the handler, NOT the drain callback.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1787,7 +1820,7 @@ Settled position C-17 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-19 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-156 — RISK: Security: CSWSH closed.
+### JR-ML-WS-158 — RISK: Security: CSWSH closed.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1798,7 +1831,7 @@ Settled position C-19 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→WS re-bucket]
 
-### JR-ML-WS-157 — SDK fails fast on disconnect; no reconnect queue; no SDK-level retries.
+### JR-ML-WS-159 — SDK fails fast on disconnect; no reconnect queue; no SDK-level retries.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1809,7 +1842,7 @@ Settled position C-19 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-04 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-158 — server_instance_id = programmatic key; server_start_time = advisory only.
+### JR-ML-WS-160 — server_instance_id = programmatic key; server_start_time = advisory only.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1820,22 +1853,24 @@ Settled position C-04 from R3-03 table; cross-round consensus consolidation
 
 Settled position C-06 from R3-03 table; cross-round consensus consolidation
 
-### JR-ML-WS-159 — **Tests**: 101 passed, 80.13% coverage (barely meets threshold).
+### JR-CAN-WS-003 — WebSocket /ws endpoint exception handling must be complete with proper cleanup in finally block.
 
-**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: can
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 280-287)
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 130-144)
 
 **Detail**:
 
-- **Tests**: 101 passed, 80.13% coverage (barely meets threshold)
+HIGH-010: Endpoint will be substantially rewritten in R5-01 Phase 0-cascor + Phase B-pre-a/b.
+Current finally block is minimal stopgap; acceptable interim but do NOT over-invest in hardening.
+Will implement two-phase registration, frame size caps, per-IP caps, origin validation, CSRF auth, rate limiting.
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Overview']
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; deferred until R5-01 phases complete.
 
-### JR-ML-WS-160 — WebSocket fallback to REST for set_params on connection/timeout errors.
+### JR-ML-WS-161 — WebSocket fallback to REST for set_params on connection/timeout errors.
 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
@@ -1845,6 +1880,22 @@ Settled position C-06 from R3-03 table; cross-round consensus consolidation
 **Notes**:
 
 [v2 ARCH→WS re-bucket]
+
+### JR-CAN-WS-004 — WebSocket relay state callback must include current_epoch and other training fields in broadcast.
+
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_66a019dc-94ba-47fb-8042-7ce8f974d071.md` (lines 311-380)
+
+**Detail**:
+
+Relay only sends status and phase; omits current_epoch, metrics_history, parameters.
+Causes stale state data in /api/state endpoint and incomplete WebSocket state updates.
+
+**Notes**:
+
+Identified by all 7 Phase 3 proposals. MODERATE severity, not a display blocker.
 
 ### JR-DAT-WS-001 — IPC architecture (gRPC, message queue, shared memory, WebSocket) deferred until REST bottleneck or >100MB datasets.
 
@@ -1857,7 +1908,7 @@ Settled position C-06 from R3-03 table; cross-round consensus consolidation
 
 [v2 ARCH→WS re-bucket] RD-015 (DATA-018). Deferred. REST migration success reduced urgency.
 
-### JR-CAN-WS-003 — Architectural fragility: WebSocket relay broadcasts unnormalized metric field names (ISS-11).
+### JR-CAN-WS-005 — Architectural fragility: WebSocket relay broadcasts unnormalized metric field names (ISS-11).
 
 **Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: can
 
@@ -1883,7 +1934,7 @@ ISS-11 LOW. WebSocket relay loop (cascor_service_adapter.py:203-206) broadcasts 
 
 Native installer for Claude Code (no Node.js required), uvx for Serena (from GitHub), global MCP server configuration with --project-from-cwd auto-detection, validation procedures (claude doctor, /mcp status check), troubleshooting (uvx path, Serena startup, port 24282, PATH resolution). File locations: ~/.local/bin/claude, ~/.claude/settings.json, ~/.claude.json. Per-project configuration alternative. Documentation complete with 8 sections and reference tables.
 
-### JR-CAN-WS-004 — Training WebSocket must validate message size to prevent DoS.
+### JR-CAN-WS-006 — Training WebSocket must validate message size to prevent DoS.
 
 **Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: can
 

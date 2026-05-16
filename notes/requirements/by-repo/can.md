@@ -1,12 +1,12 @@
 # Requirements — juniper-canopy (can)
 
-**Total entries**: 186
+**Total entries**: 215
 
-**By status**: proposed=165 | designed=1 | shipped=20
+**By status**: proposed=180 | designed=1 | shipped=34
 
-**By priority**: P0=19 | P1=75 | P2=59 | P3=33
+**By priority**: P0=19 | P1=89 | P2=74 | P3=33
 
-**By category**: TEST=38 | API=36 | UI=29 | OBS=18 | TRAIN=11 | SEC=9 | DOC=9 | ARCH=9 | DEP=6 | OPS=5 | LOCK=5 | PERF=4 | WS=4 | DATA=2 | TOOL=1
+**By category**: TEST=44 | API=39 | UI=36 | OBS=19 | SEC=12 | TRAIN=12 | DOC=10 | ARCH=10 | LOCK=6 | WS=6 | DEP=6 | PERF=5 | OPS=5 | DATA=4 | TOOL=1
 
 ---
 
@@ -287,6 +287,54 @@ Affects training flow control.
 Issue 0.2.2: In demo_mode.py, use _stop.clear() instead of _stop = Event()
 to avoid TOCTOU race. File: src/demo_mode.py
 
+### JR-CAN-SEC-007 — API key timing attack must use hmac.compare_digest() for constant-time comparison.
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 79-83)
+
+**Detail**:
+
+HIGH-001: Replace simple set membership check with hmac.compare_digest() in both browser CSRF auth and adapter HMAC auth.
+R5-01 Section 4.1 mandates this pattern; remediation already correct per analysis.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; reinforced by R5-01 canonical pattern.
+
+### JR-CAN-UI-005 — Candidate info section must display and be collapsible with historical pool tracking.
+
+**Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase1/README.md` (lines 27-93)
+
+**Detail**:
+
+P1-1 feature: always-visible section with toggle icon, historical pools rendered as collapsed cards, top 10 pools maintained.
+Implemented in metrics_panel.py with dbc.Collapse wrapper and callback handlers.
+
+**Notes**:
+
+Phase 1 complete feature; shipped status verified from implementation notes.
+
+### JR-CAN-SEC-008 — Exception handler must use opaque error messages and add CRLF escaping in audit logs.
+
+**Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 84-88)
+
+**Detail**:
+
+HIGH-002: Generic error messages + server-side logging per R5-01 Section 4.3 (M-SEC-06).
+Add CRLF escaping in audit logs per M-SEC-07 when logs echo client input.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; shipped with opaque messages pattern.
+
 ### JR-CAN-TRAIN-003 — External CasCor development plan phases 0-7: characterization, adapter normalization, backend sync, parameter mapping, dataset/topology adapters, integration validation.
 
 **Status**: shipped  **Priority**: P1  **Category**: TRAIN  **Owner**: can
@@ -303,6 +351,22 @@ Comprehensive 7-phase plan validating RC-1 through RC-5 root causes and implemen
 **Notes**:
 
 [v2 ARCH→TRAIN re-bucket]
+
+### JR-CAN-DOC-001 — Four standardized documentation templates must be provided for roadmaps, issue tracking, PRs, and release notes.
+
+**Status**: shipped  **Priority**: P1  **Category**: DOC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 20-31)
+
+**Detail**:
+
+TEMPLATE_DEVELOPMENT_ROADMAP.md, TEMPLATE_ISSUE_TRACKING.md, TEMPLATE_PULL_REQUEST_DESCRIPTION.md, TEMPLATE_RELEASE_NOTES.md.
+All with placeholders, consistency enforcement for future documentation.
+
+**Notes**:
+
+Shipped in v0.24.0; verified as part of POST_REFACTOR_VERIFICATION report.
 
 ### JR-CAN-API-006 — Implement cascor_service_adapter normalization adapters (ResponseEnvelope, metrics, status, parameters).
 
@@ -347,7 +411,94 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 
 **PRs**: #146
 
-### JR-CAN-API-007 — Normalize external CasCor response envelope format (FIX-1 through FIX-14 decision blocks).
+### JR-CAN-LOCK-001 — Lockfile must include --extra observability to prevent Dependabot PR failures in CI.
+
+**Status**: shipped  **Priority**: P1  **Category**: LOCK  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-04.md` (lines 145-155)
+
+**Detail**:
+
+CRIT-003: .github/workflows/lockfile-update.yml does not pass --extra observability to pip-compile;
+causes CI failures when Dependabot updates dependencies.
+Fix: Add --extra observability flag to lockfile-update workflow.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS v0.4.0; critical CI/CD blocker for regular dependency updates.
+
+### JR-CAN-API-007 — MetricsPanel must transform flat-keyed metrics to nested format for dashboard consumption (RC-1 fix from Phase 4 analysis).
+
+**Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_66a019dc-94ba-47fb-8042-7ce8f974d071.md` (lines 123-226)
+
+**Detail**:
+
+Service backend's _normalize_metric() produces flat keys (train_loss, train_accuracy, hidden_units), 
+but dashboard MetricsPanel reads nested keys (metrics.loss, metrics.accuracy, network_topology.hidden_units).
+Fix: Add _to_dashboard_metric() transformation layer after _normalize_metric() in _ServiceTrainingMonitor.get_recent_metrics().
+
+**Design**:
+
+@staticmethod
+def _to_dashboard_metric(flat: dict) -> dict:
+  return {
+    "epoch": flat.get("epoch", 0),
+    "metrics": {
+      "loss": flat.get("train_loss"),
+      "accuracy": flat.get("train_accuracy"),
+      "val_loss": flat.get("val_loss"),
+      "val_accuracy": flat.get("val_accuracy"),
+    },
+    "network_topology": {
+      "hidden_units": flat.get("hidden_units", 0),
+    },
+    "phase": flat.get("phase"),
+    "timestamp": flat.get("timestamp"),
+  }
+
+**Notes**:
+
+Primary blocker identified by all 7 Phase 3 proposals (v1-v7) and 4 Phase 4 proposals. Verified at cascor_service_adapter.py:430-460 and metrics_panel.py lines 1091,1120-1122,1330,1449-1450,1499,1561-1562.
+
+### JR-CAN-UI-006 — Network topology visualization must support staggered hidden node layout with wave pattern positioning.
+
+**Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase1/README.md` (lines 175-244)
+
+**Detail**:
+
+P1-3 feature: staggered layout option in dropdown; first node at center, alternating outward left/right.
+Dynamic spread increases with node count (up to 3.0 max). Centered between input/output columns.
+Implemented via _compute_staggered_positions() method in network_visualizer.py.
+
+**Notes**:
+
+Phase 1 complete feature; shipped status verified.
+
+### JR-CAN-API-008 — NetworkVisualizer must accept weight-oriented topology format from CasCor and transform to graph-oriented format (RC-2 from Phase 4).
+
+**Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_66a019dc-94ba-47fb-8042-7ce8f974d071.md` (lines 232-310)
+
+**Detail**:
+
+CasCor returns topology with input_size/output_size keys and hidden_units as weight array;
+NetworkVisualizer expects input_units/output_units as integers and a graph connections structure.
+extract_network_topology() returns raw CasCor response without transformation.
+
+**Notes**:
+
+Identified by v2 and v4 Phase 3 proposals. Secondary display blocker.
+
+### JR-CAN-API-009 — Normalize external CasCor response envelope format (FIX-1 through FIX-14 decision blocks).
 
 **Status**: shipped  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -387,7 +538,7 @@ Epic 2.1: Single source of truth for test fixtures. Epic 2.2: Re-enabled critica
 MyPy error codes (arg-type, return-value, assignment). Epic 2.3: Enabled flake8
 linting on test files with relaxed configuration.
 
-### JR-CAN-UI-005 — Phase 2 polish features: visual indicators, image downloads, HDF5 snapshots, About tab (70 tests, 2247 passed).
+### JR-CAN-UI-007 — Phase 2 polish features: visual indicators, image downloads, HDF5 snapshots, About tab (70 tests, 2247 passed).
 
 **Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -414,7 +565,7 @@ Epic 3.1: Reduced in [200, 503] permissive patterns from 21 to 5. Epic 3.2: Conv
 5 exception suppression patterns. Epic 3.4: Re-enabled B905, F401, B008. Epic 3.5:
 Removed duplicate test classes. Epic 3.6: Converted bug-documenting tests to xfail.
 
-### JR-CAN-UI-006 — Phase 3 Wave 1 HDF5 snapshot capabilities: create, restore, history with validation (102 tests, 2413 passed).
+### JR-CAN-UI-008 — Phase 3 Wave 1 HDF5 snapshot capabilities: create, restore, history with validation (102 tests, 2413 passed).
 
 **Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -461,6 +612,39 @@ Reorganizes remediation timeline to coordinate with R5-01 Canonical Development 
 
 [v2 ARCH→WS re-bucket]
 
+### JR-CAN-PERF-002 — Rate limiter memory leak must be fixed with periodic eviction of expired counters.
+
+**Status**: shipped  **Priority**: P1  **Category**: PERF  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 89-93)
+
+**Detail**:
+
+HIGH-003 HTTP-level rate limiter: Add periodic eviction to prevent unbounded memory growth.
+Note: R5-01 Phase B adds separate WS-level single-bucket rate limiter (10 tokens, 10 cmd/sec) - do not delete HTTP limiter.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; shipped with HTTP rate limiter; WS limiter in Phase B.
+
+### JR-CAN-UI-009 — Replay controls must support playback at variable speeds (1x, 2x, 4x) with progress slider.
+
+**Status**: shipped  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase1/README.md` (lines 95-172)
+
+**Detail**:
+
+P1-2 feature: ⏮ go-to-start, ◀ step-back, ▶ play/pause, ⏩ step-forward, ⏭ go-to-end, speed selector.
+Replay state machine: stopped → playing → paused → stopped. Visibility controlled by training state.
+Implemented with dcc.Store for replay-state and interval timer.
+
+**Notes**:
+
+Phase 1 complete feature; shipped status verified.
+
 ### JR-CAN-OPS-001 — Startup regression analysis and fixes: JuniperData lifecycle, env var expansion, namespace collision, config convention mismatches.
 
 **Status**: shipped  **Priority**: P1  **Category**: OPS  **Owner**: can
@@ -474,7 +658,25 @@ Root causes: RC-1 missing JuniperData service lifecycle management, RC-2 ${VAR:d
 
 **PRs**: #146
 
-### JR-CAN-TEST-006 — Test suite remediation: fix 67 non-passing tests (54 ERROR, 10 FAILED, 3 XFAIL) → 3,215 passed, 37 skipped.
+### JR-CAN-TEST-006 — Test suite must achieve 2908 tests passing with 99% pass rate and 93%+ coverage across all components.
+
+**Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 50-80)
+
+**Detail**:
+
+34 roadmap items (Phases 0-3) verified complete with 2908 tests passed, 34 skipped, 0 failed.
+Coverage by component: redis_panel 100%, redis_client 97%, cassandra_client 97%, cassandra_panel 99%,
+websocket_manager 100%, statistics 100%, dashboard_manager 95%, training_monitor 95%,
+training_state_machine 96%, hdf5_snapshots_panel 95%, about_panel 100%, main.py 84%.
+
+**Notes**:
+
+v0.24.0 shipped; main.py gap noted as requiring real CasCor backend or uvicorn runtime.
+
+### JR-CAN-TEST-007 — Test suite remediation: fix 67 non-passing tests (54 ERROR, 10 FAILED, 3 XFAIL) → 3,215 passed, 37 skipped.
 
 **Status**: shipped  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -487,7 +689,7 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 
 **PRs**: #146
 
-### JR-CAN-UI-007 — Meta Parameters enhancement: rename Training Parameters to Meta Parameters with NN and Candidate Nodes subsections (22 components).
+### JR-CAN-UI-010 — Meta Parameters enhancement: rename Training Parameters to Meta Parameters with NN and Candidate Nodes subsections (22 components).
 
 **Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -502,7 +704,7 @@ Restructure parameters card into two collapsible subsections: Neural Network (12
 
 Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/radio/checkbox sync, theme constants (NEW/CHANGED/REMOVED tracking). Test plan includes unit and integration tests.
 
-### JR-CAN-UI-008 — Accuracy plot phase band logic must be deduplicated.
+### JR-CAN-UI-011 — Accuracy plot phase band logic must be deduplicated.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -514,7 +716,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 Issue 1.3.3: Repeated phase-band visualization logic in metrics_panel.py.
 Extract to shared helper. File: src/frontend/components/metrics_panel.py
 
-### JR-CAN-TEST-007 — Add browser-automation UI test sub-suite with dedicated CI lane.
+### JR-CAN-TEST-008 — Add browser-automation UI test sub-suite with dedicated CI lane.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -529,7 +731,7 @@ in Phase 4 step 1, full coverage in Phase 4 step 2.
 
 **PRs**: PR-4.1 (skeleton with basic page loads), {'PR-4.2 (full coverage': 'param Apply, dataset swap, snapshot restore)'}
 
-### JR-CAN-TEST-008 — Add integration test suite for real CasCor backend code paths with mocked CascorIntegration.
+### JR-CAN-TEST-009 — Add integration test suite for real CasCor backend code paths with mocked CascorIntegration.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -559,7 +761,7 @@ ISS-02 MODERATE. WebSocket relay state callback (cascor_service_adapter.py:218-2
 
 Currently latent because status bar makes fresh REST calls. Mitigating factor masks the bug in production but architectural risk remains.
 
-### JR-CAN-DOC-001 — Application version must be centralized via importlib.metadata.
+### JR-CAN-DOC-002 — Application version must be centralized via importlib.metadata.
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: can
 
@@ -572,7 +774,7 @@ Issue 1.2.1: Version string currently duplicated across health, status, and
 config endpoints. Use importlib.metadata as single source of truth.
 File: src/main.py
 
-### JR-CAN-TEST-009 — Bandit configuration must be consolidated to single file.
+### JR-CAN-TEST-010 — Bandit configuration must be consolidated to single file.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -584,7 +786,7 @@ File: src/main.py
 Issue 2.2.1: Multiple bandit config files (.bandit, .pre-commit hook, CI).
 Consolidate to .bandit and reference from all invocation points.
 
-### JR-CAN-TEST-010 — Bandit invocations across all CI workflows must be consistent.
+### JR-CAN-TEST-011 — Bandit invocations across all CI workflows must be consistent.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -596,7 +798,23 @@ Consolidate to .bandit and reference from all invocation points.
 Issue 2.2.2: bandit runs in pre-commit, CI, and manual invocations with
 varying flags. Standardize command and flags across all paths.
 
-### JR-CAN-API-008 — Canopy must enforce max_connections limit in WebSocketManager.
+### JR-CAN-ARCH-001 — CallbackContextAdapter must use contextvars.ContextVar for thread-safe and async-safe test mode isolation.
+
+**Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-04.md` (lines 99-143)
+
+**Detail**:
+
+CRIT-002 concurrency vulnerability: instance attributes in CallbackContextAdapter not thread-safe.
+Current fix (contextvars) implemented correctly; recommendation reinforced to use ContextVar pattern.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS v0.4.0; fixed with contextvars.ContextVar in alignment with R5-01 philosophy.
+
+### JR-CAN-API-010 — Canopy must enforce max_connections limit in WebSocketManager.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -608,7 +826,7 @@ varying flags. Standardize command and flags across all paths.
 Issue 1.1.2: Currently no enforcement of max_connections. Must track active
 connection count and reject new clients when limit reached.
 
-### JR-CAN-API-009 — Canopy must normalize cascor ResponseEnvelope format at adapter boundary, transforming metrics, topology, and dataset responses to dashboard-compatible shapes.
+### JR-CAN-API-011 — Canopy must normalize cascor ResponseEnvelope format at adapter boundary, transforming metrics, topology, and dataset responses to dashboard-compatible shapes.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -627,7 +845,23 @@ DemoBackend is the reference implementation. ServiceBackend must produce identic
 
 Root cause of metrics display failure in service mode. Phase 1 plan addressed envelope unwrapping but did not establish dashboard-compatibility contract.
 
-### JR-CAN-API-010 — CascorServiceAdapter must normalize cascor's nested status structure (state_machine, monitor, training_state) to flat dashboard format (is_running, is_paused, phase, current_epoch, hidden_units).
+### JR-CAN-DATA-002 — CascorIntegration must implement save_snapshot() and load_snapshot() for persistence and recovery.
+
+**Status**: proposed  **Priority**: P1  **Category**: DATA  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 96-115)
+
+**Detail**:
+
+CascorIntegration lacks snapshot serialization methods; prevents session recovery and checkpoint-based resumption.
+HDF5 snapshot creation exists in main.py but only for demo mode state.
+
+**Notes**:
+
+[v2 ARCH→DATA re-bucket] CAN-CRIT-002; CRITICAL priority post-release item; validation confirmed not implemented.
+
+### JR-CAN-API-012 — CascorServiceAdapter must normalize cascor's nested status structure (state_machine, monitor, training_state) to flat dashboard format (is_running, is_paused, phase, current_epoch, hidden_units).
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -642,7 +876,7 @@ Cascor returns nested objects; dashboard expects flat keys. Add _normalize_statu
 
 Status bar works via /api/status endpoint transformation; direct backend.get_status() calls get nested format.
 
-### JR-CAN-TEST-011 — CI must upload coverage reports to Codecov.
+### JR-CAN-TEST-012 — CI must upload coverage reports to Codecov.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -654,7 +888,7 @@ Status bar works via /api/status endpoint transformation; direct backend.get_sta
 Issue 2.1.5: .github/workflows/ci.yml missing Codecov step. Add upload
 after test run for coverage tracking and status badges.
 
-### JR-CAN-UI-009 — Code review audit plan (R5-01 aligned): 34 gaps, 22 REAFFIRMED, 1 SUPERSEDED, 4 DEFERRED, 7 COORDINATED with R5-01 phases.
+### JR-CAN-UI-012 — Code review audit plan (R5-01 aligned): 34 gaps, 22 REAFFIRMED, 1 SUPERSEDED, 4 DEFERRED, 7 COORDINATED with R5-01 phases.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -681,7 +915,7 @@ Re-evaluates 34 gaps from original audit (91 issues, 57 verified, 16 partially f
 Issue 3.1.1: ColoredFormatter adds ANSI codes to LogRecord.msg in-place,
 affecting file output. Clone record before mutation or use format string.
 
-### JR-CAN-DOC-002 — Configuration must have no version string mismatches (app_config.yaml, pyproject.toml).
+### JR-CAN-DOC-003 — Configuration must have no version string mismatches (app_config.yaml, pyproject.toml).
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: can
 
@@ -693,7 +927,7 @@ affecting file output. Clone record before mutation or use format string.
 Issues 1.2.2, 1.2.3: Update app_config.yaml version to 0.4.0 and pyproject.toml
 header version comment to match. Should be single source via importlib.metadata.
 
-### JR-CAN-API-011 — CORS configuration YAML syntax must be valid and documented.
+### JR-CAN-API-013 — CORS configuration YAML syntax must be valid and documented.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -705,7 +939,7 @@ header version comment to match. Should be single source via importlib.metadata.
 Issue 1.2.5: app_config.yaml CORS section has syntax errors. Validate and
 document expected format. File: conf/app_config.yaml
 
-### JR-CAN-SEC-007 — CORS must be restricted to used methods and headers only.
+### JR-CAN-SEC-009 — CORS must be restricted to used methods and headers only.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: can
 
@@ -732,7 +966,7 @@ Nine MetricsPanel code locations read nested structure: Line 1091 network_topolo
 
 Display failure affects all metric charts. Nested format required by React component state rendering.
 
-### JR-CAN-API-012 — DashboardManager must construct API URLs via settings, not ad-hoc _api_url().
+### JR-CAN-API-014 — DashboardManager must construct API URLs via settings, not ad-hoc _api_url().
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -744,7 +978,24 @@ Display failure affects all metric charts. Nested format required by React compo
 Issue 1.3.1: _api_url() helper is error-prone and inconsistent. Replace all
 callsites with settings-based URL construction. File: src/frontend/dashboard_manager.py
 
-### JR-CAN-API-013 — Define Pydantic model for set_params endpoint request body.
+### JR-CAN-UI-013 — Decision boundary visualization must support real CasCor backend (currently demo-only endpoint).
+
+**Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 74-94)
+
+**Detail**:
+
+/api/decision_boundary endpoint only returns demo data when CASCOR_DEMO_MODE is not set.
+No implementation for real backend path; core visualization feature non-functional in production.
+Design option: Add get_decision_boundary_data() to CascorIntegration that queries real backend.
+
+**Notes**:
+
+[v2 ARCH→UI re-bucket] CAN-CRIT-001; identified as validation-confirmed critical integration gap in post-release audit.
+
+### JR-CAN-API-015 — Define Pydantic model for set_params endpoint request body.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -804,7 +1055,7 @@ document production override env vars (API_BASE, CASCOR_HOST, etc).
 Issue 2.3.3: HEALTHCHECK instruction uses http://localhost:8000/health
 but app may be configured differently. Use env vars or expose-port-agnostic probe.
 
-### JR-CAN-TEST-012 — FakeCascorClient.update_params snapshots _network_config to _training_params['params'] at init but update_params does not sync updates, causing verify-roundtrip mismatches.
+### JR-CAN-TEST-013 — FakeCascorClient.update_params snapshots _network_config to _training_params['params'] at init but update_params does not sync updates, causing verify-roundtrip mismatches.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -821,7 +1072,7 @@ When update_params({'learning_rate': 0.005}) is called, _network_config is updat
 
 Upstream fix pending in juniper-cascor-client. Test currently uses idle scenario workaround.
 
-### JR-CAN-API-014 — Fix CascorStateSync to read from correct response fields (data.state_machine, data.monitor).
+### JR-CAN-API-016 — Fix CascorStateSync to read from correct response fields (data.state_machine, data.monitor).
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -836,7 +1087,7 @@ Sync reads data.state, data.epoch; real cascor has data.state_machine, data.moni
 
 FIX-5; initial sync reads wrong keys
 
-### JR-CAN-API-015 — Fix metrics format mismatch: _normalize_metric() produces flat keys but dashboard expects nested format.
+### JR-CAN-API-017 — Fix metrics format mismatch: _normalize_metric() produces flat keys but dashboard expects nested format.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -855,7 +1106,7 @@ Transform _normalize_metric() output or add adapter layer between normalized fla
 
 Unanimous finding across Phase 3 proposals v1-v7 and Phase 2. Phase 1 designed canonical internal contract (flat keys) by analyzing normalization boundary only, never validated against dashboard consumption boundary. Status bar's success with flat keys masked metrics panel failure.
 
-### JR-CAN-API-016 — Fix network topology format mismatch: cascor returns weight-oriented structure but NetworkVisualizer expects graph-oriented.
+### JR-CAN-API-018 — Fix network topology format mismatch: cascor returns weight-oriented structure but NetworkVisualizer expects graph-oriented.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -874,7 +1125,7 @@ Add topology adapter (extract_network_topology_graph) that transforms cascor wei
 
 Identified by proposals v2, v4. Regression tests (test_topology_boundary_data_contract.py) validate expected input_units/output_units keys; these pass against demo backend but would fail against real cascor data.
 
-### JR-CAN-SEC-008 — get_rate_limiter() must use get_settings() instead of direct access.
+### JR-CAN-SEC-010 — get_rate_limiter() must use get_settings() instead of direct access.
 
 **Status**: proposed  **Priority**: P1  **Category**: SEC  **Owner**: can
 
@@ -890,7 +1141,7 @@ for uniform configuration retrieval. File: src/security.py
 
 [v2 ARCH→SEC re-bucket]
 
-### JR-CAN-TEST-013 — GitHub Actions workflow must fix lockfile extras mismatch.
+### JR-CAN-TEST-014 — GitHub Actions workflow must fix lockfile extras mismatch.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -902,7 +1153,7 @@ for uniform configuration retrieval. File: src/security.py
 Issue 2.1.1: .github/workflows/lockfile-update.yml extras specification
 conflicts with pyproject.toml. Align definitions.
 
-### JR-CAN-TEST-014 — GitHub publish workflow must add contents:read permission.
+### JR-CAN-TEST-015 — GitHub publish workflow must add contents:read permission.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -927,7 +1178,7 @@ Issue 3.1.5: Health endpoints currently block on cascor connectivity checks.
 Use async probes or timeout guards to prevent cascor slowness from blocking
 health endpoint response.
 
-### JR-CAN-API-017 — Helper function _first_defined() must be available for falsy-value safe field extraction across nested cascor response structures.
+### JR-CAN-API-019 — Helper function _first_defined() must be available for falsy-value safe field extraction across nested cascor response structures.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -942,7 +1193,7 @@ Pattern: _first_defined(a, b, c) returns first non-None/non-False value. Require
 
 Used across all normalization methods.
 
-### JR-CAN-API-018 — Implement CascorIntegration.get_network_data() method to return network statistics.
+### JR-CAN-API-020 — Implement CascorIntegration.get_network_data() method to return network statistics.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -957,7 +1208,7 @@ Method does not exist on CascorIntegration class; callers will receive Attribute
 
 Network statistics tab fails when connected to real CasCor backend; blocking P1
 
-### JR-CAN-UI-010 — Implement decision boundary visualization for real CasCor backend in Canopy dashboard.
+### JR-CAN-UI-014 — Implement decision boundary visualization for real CasCor backend in Canopy dashboard.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -972,7 +1223,7 @@ The /api/decision_boundary endpoint retrieves prediction function from cascor_in
 
 Dataset/Decision Boundary tab shows "No data available" when connected to real CasCor backend
 
-### JR-CAN-API-019 — Implement real backend control for Canopy WebSocket endpoint when connected to live CasCor backend.
+### JR-CAN-API-021 — Implement real backend control for Canopy WebSocket endpoint when connected to live CasCor backend.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -987,7 +1238,7 @@ The /ws/control endpoint currently rejects all commands when cascor_integration 
 
 Part of Phase 1 critical integration blockers; blocking all real-backend WebSocket control
 
-### JR-CAN-API-020 — Implement save_snapshot() and load_snapshot() methods on CascorIntegration class.
+### JR-CAN-API-022 — Implement save_snapshot() and load_snapshot() methods on CascorIntegration class.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1014,7 +1265,7 @@ Snapshot save/load in real backend mode produces incomplete snapshots
 Issue 3.1.2: Wrapper created fresh on each logger.info/debug call. Cache
 wrapper per logger instance to improve performance.
 
-### JR-CAN-API-021 — Middleware must handle malformed Content-Length header gracefully.
+### JR-CAN-API-023 — Middleware must handle malformed Content-Length header gracefully.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1026,7 +1277,7 @@ wrapper per logger instance to improve performance.
 Issue 1.1.6: Non-numeric or negative Content-Length can crash request parsing.
 Add bounds check and return 400 Bad Request. File: src/middleware.py
 
-### JR-CAN-TEST-015 — MyPy strict_optional setting conflict must be resolved.
+### JR-CAN-TEST-016 — MyPy strict_optional setting conflict must be resolved.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1038,7 +1289,7 @@ Add bounds check and return 400 Bad Request. File: src/middleware.py
 Issue 2.2.3: MyPy configuration has conflicting strict_optional directives
 in different sections. Consolidate to single authoritative setting.
 
-### JR-CAN-API-022 — Network topology format mismatch: cascor returns weight-oriented format (input_size, hidden_units array with weights) but NetworkVisualizer expects graph-oriented format (input_units, output_units integers, nodes/connections lists).
+### JR-CAN-API-024 — Network topology format mismatch: cascor returns weight-oriented format (input_size, hidden_units array with weights) but NetworkVisualizer expects graph-oriented format (input_units, output_units integers, nodes/connections lists).
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1053,7 +1304,7 @@ CasCor architecture: input_size, hidden_units [{id, weights, bias, activation}],
 
 Topology visualization always renders empty because validation guard topology_data.get('input_units', 0)==0 fails when key is 'input_size'.
 
-### JR-CAN-UI-011 — Network visualizer screenshot timestamp must not be static.
+### JR-CAN-UI-015 — Network visualizer screenshot timestamp must not be static.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -1065,7 +1316,7 @@ Topology visualization always renders empty because validation guard topology_da
 Issue 1.3.2: Screenshot PNG contains hardcoded timestamp instead of actual
 capture time. Must update on every screenshot. File: src/frontend/components/network_visualizer.py
 
-### JR-CAN-TEST-016 — No real UI test sub-suite; browser-automation harness does not exist; no acceptance criterion for UI correctness.
+### JR-CAN-TEST-017 — No real UI test sub-suite; browser-automation harness does not exist; no acceptance criterion for UI correctness.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1080,7 +1331,7 @@ Fix: new pytest sub-suite + CI lane. Add Selenium or Playwright-based browser au
 
 Quality gate missing; manual testing only.
 
-### JR-CAN-API-023 — Normalize case-sensitivity for status and phase fields: ensure consistent handling of uppercase values from backends.
+### JR-CAN-API-025 — Normalize case-sensitivity for status and phase fields: ensure consistent handling of uppercase values from backends.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1095,7 +1346,7 @@ Relay path at cascor_service_adapter.py:222 lacks .lower(); sync path at state_s
 
 P5-RC-03; retained as HIGH latent bug; defensive measure for future backends
 
-### JR-CAN-API-024 — Normalize ServiceTrainingMonitor to use unwrapped response format for real cascor integration.
+### JR-CAN-API-026 — Normalize ServiceTrainingMonitor to use unwrapped response format for real cascor integration.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1110,7 +1361,7 @@ _ServiceTrainingMonitor reads raw JuniperCascorClient responses without calling 
 
 Systemic root cause; affects metrics, is_training flag, response shape
 
-### JR-CAN-UI-012 — Numeric input typing vs spinner mismatch; universal debounce=True confuses Apply-button enable indicator.
+### JR-CAN-UI-016 — Numeric input typing vs spinner mismatch; universal debounce=True confuses Apply-button enable indicator.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -1125,7 +1376,7 @@ Fix: canopy frontend component refactor. Debounce logic does not properly track 
 
 UX issue; component refactor required.
 
-### JR-CAN-ARCH-001 — Phase 1 Addendum—6 backend fixes (KeyError guards, thread safety, connection leaks).
+### JR-CAN-ARCH-002 — Phase 1 Addendum—6 backend fixes (KeyError guards, thread safety, connection leaks).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: can
 
@@ -1141,7 +1392,7 @@ UX issue; component refactor required.
 1.4.5: Fix Redis exception aliases to use sentinel class (MED-042).
 1.4.6: Fix Redis force_new=True connection leak (MED-043).
 
-### JR-CAN-TEST-017 — Phase 2 CI/CD Infrastructure Reliability (12 tasks).
+### JR-CAN-TEST-018 — Phase 2 CI/CD Infrastructure Reliability (12 tasks).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1157,7 +1408,7 @@ fix mypy strict_optional conflict.
 Step 2.3 (4 Docker tasks): Create prod config, pin deps via lockfile,
 fix service URLs, change log handler to append mode.
 
-### JR-CAN-ARCH-002 — Phase 3 Addendum—5 backend quality improvements (circuit breaker, lazy imports, API exposure).
+### JR-CAN-ARCH-003 — Phase 3 Addendum—5 backend quality improvements (circuit breaker, lazy imports, API exposure).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: can
 
@@ -1172,7 +1423,7 @@ fix service URLs, change log handler to append mode.
 3.5.4: Expose public API on CascorServiceAdapter (MED-046).
 3.5.5: Don't store Cassandra credentials as plain attributes (MED-040).
 
-### JR-CAN-DOC-003 — Phase 3 Code Quality & Observability (18 tasks).
+### JR-CAN-DOC-004 — Phase 3 Code Quality & Observability (18 tasks).
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: can
 
@@ -1190,7 +1441,7 @@ Step 3.3 (5 frontend): Extract colors to theme_constants, fix modulo toggle,
 fix doc links, remove blocking time.sleep(), split NetworkVisualizer callback.
 Step 3.4 (2 perf): Reduce API timeout, begin DashboardManager extraction.
 
-### JR-CAN-TEST-018 — Phase 4 Addendum—6 test quality fixes (context suppression, schema tests, coverage gaps).
+### JR-CAN-TEST-019 — Phase 4 Addendum—6 test quality fixes (context suppression, schema tests, coverage gaps).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1206,7 +1457,7 @@ Step 3.4 (2 perf): Reduce API timeout, begin DashboardManager extraction.
 4.3.5: Add dedicated tests for parameters_panel.py (55.3% gap).
 4.3.6: Expand candidate_metrics_panel.py callback tests (65.6% gap).
 
-### JR-CAN-TEST-019 — pip-audit in CI must scan full dependency tree, not just top-level.
+### JR-CAN-TEST-020 — pip-audit in CI must scan full dependency tree, not just top-level.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1257,7 +1508,7 @@ production-safe default (INFO/WARNING) independent of dev config.
 Issue 3.1.4: Endpoint labels may include query params, causing unbounded cardinality.
 Normalize to path template (e.g. /api/v1/params/{id} not /api/v1/params/123).
 
-### JR-CAN-LOCK-001 — pyproject.toml must define 'dev' extra for dependency management.
+### JR-CAN-LOCK-002 — pyproject.toml must define 'dev' extra for dependency management.
 
 **Status**: proposed  **Priority**: P1  **Category**: LOCK  **Owner**: can
 
@@ -1269,7 +1520,7 @@ Normalize to path template (e.g. /api/v1/params/{id} not /api/v1/params/123).
 Issue 2.1.4: Missing dev extra for development dependencies. Define
 [project.optional-dependencies] with 'dev' key including test/lint tools.
 
-### JR-CAN-API-025 — Remove duplicate cn_patience configuration parameter.
+### JR-CAN-API-027 — Remove duplicate cn_patience configuration parameter.
 
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: can
 
@@ -1281,7 +1532,7 @@ Issue 2.1.4: Missing dev extra for development dependencies. Define
 Issue 1.1.4: cn_patience appears twice in configuration. Consolidate to single
 canonical definition. File: src/main.py
 
-### JR-CAN-TEST-020 — Replace 8 always-passing assert True tests with real assertions using pytest.raises().
+### JR-CAN-TEST-021 — Replace 8 always-passing assert True tests with real assertions using pytest.raises().
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1296,7 +1547,7 @@ Tests in performance and integration suites use assert True in both success and 
 
 Category A: 8 critical test issues; Phase 1 critical
 
-### JR-CAN-UI-013 — Replace debounce=True with 350ms on numeric inputs to fix perceived typing lag.
+### JR-CAN-UI-017 — Replace debounce=True with 350ms on numeric inputs to fix perceived typing lag.
 
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: can
 
@@ -1323,7 +1574,7 @@ Also adds clientside blur-on-Apply and validation styling (invalid=True border).
 Issue 3.1.3: Sentry sample_rate hardcoded. Add SENTRY_SAMPLE_RATE env var
 with sensible default (0.1 for production, 1.0 for dev).
 
-### JR-CAN-TEST-021 — Test Suite & CI/CD Enhancements (16 epics, 145 total hours).
+### JR-CAN-TEST-022 — Test Suite & CI/CD Enhancements (16 epics, 145 total hours).
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: can
 
@@ -1339,7 +1590,41 @@ Phase 3 (50h): Fix weak tests, address unconditional skips, fix exception suppre
 re-enable flake8 checks, remove duplicate test classes, fix bug-documenting tests.
 Phase 4 (35h): Configuration standardization, docs, future MyPy, extended suppress review.
 
-### JR-CAN-UI-014 — Must support zero-copy metadata parameter updates between Canopy and Cascor.
+### JR-CAN-UI-018 — About tab must display version, license, credits, documentation links, and collapsible system information.
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 74-100)
+
+**Detail**:
+
+P2-3 feature: new about_panel.py component showing version 2.2.0, MIT License, author/algorithm/tech credits,
+links to docs/API/environment setup, GitHub contact, Python/platform/arch in collapsible section.
+Integrated into dashboard_manager as fifth tab.
+
+**Notes**:
+
+Phase 2 feature; shipped with 27 tests, 95%+ coverage maintained.
+
+### JR-CAN-UI-019 — Image download from Network Topology must use timestamp-based filename (juniper_topology_YYYYMMDD_HHMMSS.png).
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 55-72)
+
+**Detail**:
+
+P2-2 feature: replaces Plotly default "newplot" with unique timestamped name.
+High resolution 2x scale for crisp PNG exports.
+Implemented via toImageButtonOptions in dcc.Graph config.
+
+**Notes**:
+
+Phase 2 feature; shipped with 4 tests.
+
+### JR-CAN-UI-020 — Must support zero-copy metadata parameter updates between Canopy and Cascor.
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1358,7 +1643,24 @@ Validation helper _validate_candidate_pool_triple() enforces 6 invariants.
 Shipped as part of Phase 6A remediation (Issue #1 / can-001 implementation).
 Candidate-pool semantics confirmed 2026-05-09.
 
-### JR-CAN-UI-015 — Phase 3 Wave 1—HDF5 snapshot capabilities (create, restore, history).
+### JR-CAN-UI-021 — New node visual indicator must show pulsing glow (cyan #17a2b8, 1s period) and edge highlighting (50% opacity).
+
+**Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_PHASE2_PARTIAL_2026-01-07.md` (lines 24-50)
+
+**Detail**:
+
+P2-1 feature: animated glow on new hidden node addition; state machine (none → active → fading → none).
+Highlight persists until different node selected; 2-second linear fade when triggered.
+Implemented via new-node-highlight dcc.Store and interval-based callback.
+
+**Notes**:
+
+Phase 2 feature; shipped with 17 tests, visual regression verification recommended.
+
+### JR-CAN-UI-022 — Phase 3 Wave 1—HDF5 snapshot capabilities (create, restore, history).
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1372,7 +1674,7 @@ timestamp names and demo mode support. P3-2: Restore endpoint with training stat
 validation and WebSocket broadcast. P3-3: History tracking (append-only JSONL log).
 Status: all complete as of 2026-01-10.
 
-### JR-CAN-UI-016 — Phase 3 Wave 2—Training Metrics Save/Load layouts and 3D topology visualization.
+### JR-CAN-UI-023 — Phase 3 Wave 2—Training Metrics Save/Load layouts and 3D topology visualization.
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1403,7 +1705,7 @@ optional integration with soft-fail on missing libraries.
 
 **PRs**: {'PR-series': 'Wave 3 (93 new tests, 640+ total for Phase 3)'}
 
-### JR-CAN-UI-017 — Redefine pool training metrics around correlation statistics instead of loss/accuracy.
+### JR-CAN-UI-024 — Redefine pool training metrics around correlation statistics instead of loss/accuracy.
 
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1418,7 +1720,7 @@ CasCor trains on correlation, not loss/accuracy; these metrics do not exist for 
 
 Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 
-### JR-CAN-TEST-022 — 9+ skipped/placeholder tests contain only pass or skip decorator without real test logic.
+### JR-CAN-TEST-023 — 9+ skipped/placeholder tests contain only pass or skip decorator without real test logic.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1433,7 +1735,7 @@ Placeholder tests with no assertions or logic do not test anything. Must impleme
 
 Identified in test audit; blocks coverage.
 
-### JR-CAN-UI-018 — About panel documentation links must be validated and repaired.
+### JR-CAN-UI-025 — About panel documentation links must be validated and repaired.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1445,7 +1747,7 @@ Identified in test audit; blocks coverage.
 Issue 3.3.3: Broken or outdated documentation links in About panel.
 Audit all links and update URLs or remove invalid references.
 
-### JR-CAN-TEST-023 — Add integration tests for async/sync boundary with WebSocket responsiveness during training.
+### JR-CAN-TEST-024 — Add integration tests for async/sync boundary with WebSocket responsiveness during training.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1460,7 +1762,23 @@ No integration tests verify WebSocket responsiveness during active training; sch
 
 Phase 2 high priority; training callbacks are registered but untested in integration context
 
-### JR-CAN-PERF-002 — API timeout must be reduced for fast-interval callbacks.
+### JR-CAN-API-028 — All JuniperData REST API interactions must have standardized error handling with status code mapping.
+
+**Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 199-211)
+
+**Detail**:
+
+Map HTTP status codes to user-friendly error messages; implement consistent retry and timeout patterns.
+Estimated scope: 2-3 files, 100-200 lines.
+
+**Notes**:
+
+CAN-HIGH-006; HIGH priority post-release item.
+
+### JR-CAN-PERF-003 — API timeout must be reduced for fast-interval callbacks.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 
@@ -1473,7 +1791,7 @@ Issue 3.4.1: Default API timeout too long for frequently-polled endpoints.
 Set shorter timeout (2-5s) for metrics/state endpoints, keep longer (10s) for
 heavy operations like dataset upload.
 
-### JR-CAN-DATA-002 — Architecture adapter must handle dataset-triggered shape changes: equal-dim (no-op), grow-only (append nodes), shrink (prepend adapter layer).
+### JR-CAN-DATA-003 — Architecture adapter must handle dataset-triggered shape changes: equal-dim (no-op), grow-only (append nodes), shrink (prepend adapter layer).
 
 **Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: can
 
@@ -1487,6 +1805,22 @@ Method: adapt_for_dataset_swap(network, before_dims, after_dims) → ArchChanges
 **Notes**:
 
 [v2 ARCH→DATA re-bucket] Returns ArchChanges struct for training history persistence.
+
+### JR-CAN-TEST-025 — Async/sync boundary (ThreadPoolExecutor fit_async, start_training_background) must have dedicated test coverage.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 157-168)
+
+**Detail**:
+
+No tests for concurrent start requests, executor shutdown during training, exception propagation across boundary.
+Estimated scope: 1-2 test files, 200-300 lines.
+
+**Notes**:
+
+CAN-HIGH-003; HIGH priority post-release item.
 
 ### JR-CAN-OPS-002 — Background coverage runs exceed 300s timeout, requiring CI harness tuning.
 
@@ -1503,7 +1837,7 @@ Operational issue, not a code defect. Suggest increasing test harness timeout or
 
 Operational tuning only.
 
-### JR-CAN-ARCH-003 — Bypass state sync normalization fragility: CascorStateSync uses raw client, bypassing adapter layer (ISS-13).
+### JR-CAN-ARCH-004 — Bypass state sync normalization fragility: CascorStateSync uses raw client, bypassing adapter layer (ISS-13).
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: can
 
@@ -1533,7 +1867,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 
 [v2 ARCH→TRAIN re-bucket] Alternative options (keep candidates, retrain on new data) considered and rejected.
 
-### JR-CAN-UI-019 — Canopy must use explicit blur-on-Apply to force pending debounced values to commit.
+### JR-CAN-UI-026 — Canopy must use explicit blur-on-Apply to force pending debounced values to commit.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1550,7 +1884,24 @@ submit before debounce commits value. ~10 lines of JS.
 
 Part of Issue
 
-### JR-CAN-API-026 — Cascor swap_dataset_live endpoint pre-conditions: experimental gate enabled, training running, no swap in progress, dim change supported, shrink supported by phase set.
+### JR-CAN-OBS-010 — Canopy must validate that JuniperData service is reachable during startup via HTTP health probe.
+
+**Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 122-139)
+
+**Detail**:
+
+Application validates JUNIPER_DATA_URL configuration but makes no actual HTTP request.
+Failures only surface when user first attempts data operation.
+Recommendation: Add GET to {JUNIPER_DATA_URL}/health during lifespan; non-blocking with degradation flag.
+
+**Notes**:
+
+CAN-HIGH-001 from post-release roadmap; marked as validated critical integration gap.
+
+### JR-CAN-API-029 — Cascor swap_dataset_live endpoint pre-conditions: experimental gate enabled, training running, no swap in progress, dim change supported, shrink supported by phase set.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -1565,7 +1916,7 @@ Return 403 if gate disabled, 422 if not training/dim unsupported/shrink unsuppor
 
 Failures between steps 4-14 trigger rollback; return 5xx with original error wrapped.
 
-### JR-CAN-API-027 — CascorStateSync reads raw cascor responses and duplicates envelope-unwrapping logic instead of using adapter normalization methods, risking format drift.
+### JR-CAN-API-030 — CascorStateSync reads raw cascor responses and duplicates envelope-unwrapping logic instead of using adapter normalization methods, risking format drift.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -1580,7 +1931,7 @@ state_sync.py reads raw response without adapter; bypasses normalization methods
 
 State sync should accept adapter instead of raw client reference.
 
-### JR-CAN-TEST-024 — CI/CD configuration disables 15+ MyPy type checking codes and excludes tests from flake8/mypy, hiding type errors.
+### JR-CAN-TEST-026 — CI/CD configuration disables 15+ MyPy type checking codes and excludes tests from flake8/mypy, hiding type errors.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1595,7 +1946,7 @@ State sync should accept adapter instead of raw client reference.
 
 Allows type errors to ship.
 
-### JR-CAN-DOC-004 — Code quality, frontend, security, CI/CD audit domains: 8-domain audit with 15 gaps identified (11 NOT fixed, 4 partially, 1 documentation).
+### JR-CAN-DOC-005 — Code quality, frontend, security, CI/CD audit domains: 8-domain audit with 15 gaps identified (11 NOT fixed, 4 partially, 1 documentation).
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: can
 
@@ -1606,7 +1957,7 @@ Allows type errors to ship.
 
 Comprehensive audit across 8 domains: Security, Concurrency, CI/CD, App Logic, Backend Services, Code Quality/Frontend, Observability/Logging, Test Quality. Registry of CRIT-001 through LOW-022 issues mapping to severity (Critical, High, Medium, Low), category, file, phase, claimed status. Most issues have proposed fixes ranging from straightforward (add lock, fix hardcoded value) to complex (restructure component, redesign exception handling).
 
-### JR-CAN-API-028 — Configure JuniperData client integration with JUNIPER_DATA_URL and docker-compose entry.
+### JR-CAN-API-031 — Configure JuniperData client integration with JUNIPER_DATA_URL and docker-compose entry.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -1621,7 +1972,7 @@ JUNIPER_DATA_URL not in app_config.yaml; no docker-compose entry; no E2E test wi
 
 Phase 2 high priority; client exists in Phase 4 deliverable but is not actively integrated
 
-### JR-CAN-TEST-025 — Consolidate duplicate conftest.py fixtures into single configuration file.
+### JR-CAN-TEST-027 — Consolidate duplicate conftest.py fixtures into single configuration file.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1636,7 +1987,7 @@ Two conftest.py files (445 + 224 lines) contain overlapping fixtures. Consolidat
 
 Category D: Duplicate fixtures; DRY principle violation
 
-### JR-CAN-PERF-003 — Dashboard HTTP polling ignores WebSocket relay; switch to WS for real-time metrics updates.
+### JR-CAN-PERF-004 — Dashboard HTTP polling ignores WebSocket relay; switch to WS for real-time metrics updates.
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 
@@ -1647,7 +1998,7 @@ Category D: Duplicate fixtures; DRY principle violation
 
 ISS-03 LOW. Dashboard has WebSocket relay (cascor_service_adapter.py relay loop) but does NOT consume WebSocket messages. Relies entirely on HTTP polling via dcc.Interval: fast-update-interval 1000ms, slow-update-interval 5000ms. websocket-data div defined at dashboard_manager.py:876 but zero Input("websocket-data",...) Dash callback bindings exist. Performance/UX issue, not functional blocker (ISS-01 format mismatch applies to WebSocket data anyway, and ISS-11 unnormalized field names would become active bug if this fixed).
 
-### JR-CAN-OBS-010 — Dashboard must not hardcode localhost:8050 URLs; MetricsPanel has 6+ instances preventing non-local deployment.
+### JR-CAN-OBS-011 — Dashboard must not hardcode localhost:8050 URLs; MetricsPanel has 6+ instances preventing non-local deployment.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: can
 
@@ -1662,7 +2013,7 @@ Lines 1050, 1075, 1085, 1095, 1105, 1110 in MetricsPanel reference hardcoded loc
 
 Blocks Docker/cloud deployment.
 
-### JR-CAN-OBS-011 — Dashboard state management must track cascor service backend availability and display connection status/errors to user.
+### JR-CAN-OBS-012 — Dashboard state management must track cascor service backend availability and display connection status/errors to user.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: can
 
@@ -1677,7 +2028,7 @@ Currently no feedback when cascor service is unavailable; UI hangs or renders em
 
 Improves debugging and user experience.
 
-### JR-CAN-UI-020 — DashboardManager must be refactored for extract to <2000 lines.
+### JR-CAN-UI-027 — DashboardManager must be refactored for extract to <2000 lines.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1693,7 +2044,7 @@ controls, stores, and theme logic into separate modules. Post-refactor target: <
 
 [v2 ARCH→UI re-bucket]
 
-### JR-CAN-UI-021 — Dataset scatter plot always empty in service mode; CasCor endpoint returns metadata only (ISS-09).
+### JR-CAN-UI-028 — Dataset scatter plot always empty in service mode; CasCor endpoint returns metadata only (ISS-09).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1761,7 +2112,7 @@ Demo preserves old output weights, only new column gets small-random init. Refer
 
 Mismatch 2 of 5 identified.
 
-### JR-CAN-OBS-012 — Extract create_empty_plot() as shared utility across metric panels.
+### JR-CAN-OBS-013 — Extract create_empty_plot() as shared utility across metric panels.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: can
 
@@ -1777,7 +2128,7 @@ Extract to plot_utils.py or equivalent shared module.
 
 [v2 ARCH→OBS re-bucket]
 
-### JR-CAN-API-029 — Fix uppercase status normalization gap in WebSocket relay path (ISS-06 architectural fragility).
+### JR-CAN-API-032 — Fix uppercase status normalization gap in WebSocket relay path (ISS-06 architectural fragility).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -1792,7 +2143,7 @@ ISS-06 HIGH (latent). CasCor TrainingStateMachine.get_state_summary() returns UP
 
 Post-validation finding: current production WebSocket state messages use title-case (protected). But vulnerability exists in test paths and is latent architectural fragility.
 
-### JR-CAN-UI-022 — Hardcoded colors must be extracted to theme_constants.py for DRY.
+### JR-CAN-UI-029 — Hardcoded colors must be extracted to theme_constants.py for DRY.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1819,7 +2170,7 @@ ISS-10 MODERATE. Multiple metrics_panel.py locations use hardcoded http://localh
 
 Identified by v4. Validation found 4 additional hardcoded localhost URLs beyond initial 2 identified.
 
-### JR-CAN-TEST-026 — Integration tests use time.sleep(0.2)-based timing for synchronization across multiple files; fragile and platform-dependent.
+### JR-CAN-TEST-028 — Integration tests use time.sleep(0.2)-based timing for synchronization across multiple files; fragile and platform-dependent.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1853,7 +2204,23 @@ Cascor lifecycle method swap_dataset_live: acquire _training_lock, validate gate
 
 Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent cascor components; design review replaced with actual surface.
 
-### JR-CAN-UI-023 — Modulo toggle for theme switching must use Dash State, not module-level flag.
+### JR-CAN-TEST-029 — main.py test coverage must increase from 84% to 95% target for critical paths.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 234-246)
+
+**Detail**:
+
+Gap is primarily in real-backend code paths and error handling branches not exercised in demo mode.
+Estimated scope: 1-2 test files, 200-300 lines.
+
+**Notes**:
+
+CAN-HIGH-008; HIGH priority post-release item.
+
+### JR-CAN-UI-030 — Modulo toggle for theme switching must use Dash State, not module-level flag.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1865,7 +2232,7 @@ Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent casco
 Issue 3.3.2: Theme toggle using module-level variable instead of callback State.
 Can cause race conditions in multi-user scenarios. Use dcc.Store for theme state.
 
-### JR-CAN-TEST-027 — Move 5 non-test files (scripts, manual verifiers) out of test directory to util/.
+### JR-CAN-TEST-030 — Move 5 non-test files (scripts, manual verifiers) out of test directory to util/.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1880,7 +2247,7 @@ Files like test_yaml.py, test_dashboard_init.py are print-based scripts with no 
 
 Category B: 5 files; Phase 1 high priority
 
-### JR-CAN-OBS-013 — Multiple hardcoded localhost:8050 URLs in MetricsPanel (6+ instances) prevent non-local deployment and cross-origin access.
+### JR-CAN-OBS-014 — Multiple hardcoded localhost:8050 URLs in MetricsPanel (6+ instances) prevent non-local deployment and cross-origin access.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: can
 
@@ -1895,7 +2262,7 @@ Lines 1050, 1075, 1085, 1095, 1105, 1110 reference hardcoded localhost:8050. Mus
 
 Blocks deployment to non-localhost targets.
 
-### JR-CAN-TEST-028 — Multiple test files contain 25+ exception suppressions (try/except pass) that hide real errors and should be replaced with proper assertions.
+### JR-CAN-TEST-031 — Multiple test files contain 25+ exception suppressions (try/except pass) that hide real errors and should be replaced with proper assertions.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -1910,7 +2277,7 @@ Suppressions mask failures and prevent test failures from surfacing. Must audit 
 
 Identified in test audit as 25+ suppression sites.
 
-### JR-CAN-ARCH-004 — NetworkVisualizer callback is overloaded and must be split.
+### JR-CAN-ARCH-005 — NetworkVisualizer callback is overloaded and must be split.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: can
 
@@ -1922,7 +2289,7 @@ Identified in test audit as 25+ suppression sites.
 Issue 3.3.5: Single callback handles too many inputs. Split into separate
 callbacks for layout changes, theme changes, and data updates.
 
-### JR-CAN-API-030 — Normalize /api/metrics current snapshot endpoint; follows same broken path as metrics history (ISS-07).
+### JR-CAN-API-033 — Normalize /api/metrics current snapshot endpoint; follows same broken path as metrics history (ISS-07).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -1952,7 +2319,23 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 
 [v2 ARCH→TRAIN re-bucket] Identified by v1, v3, v5, v6, v7. Structural cause underlying ISS-05, ISS-06, ISS-12. Sync module should go through adapter or replicate normalization logic.
 
-### JR-CAN-UI-024 — Numeric inputs must use validation styling (red border) for out-of-range values.
+### JR-CAN-DATA-004 — NPZ dataset loading must validate dtype and shape of all arrays beyond key existence checks.
+
+**Status**: proposed  **Priority**: P2  **Category**: DATA  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 141-154)
+
+**Detail**:
+
+Current implementation only verifies required keys exist; does not validate array dtypes or shapes.
+Malformed data causes cryptic errors downstream during training.
+
+**Notes**:
+
+CAN-HIGH-002; HIGH priority post-release item; marked PARTIALLY IMPLEMENTED.
+
+### JR-CAN-UI-031 — Numeric inputs must use validation styling (red border) for out-of-range values.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -1969,7 +2352,7 @@ immediate feedback without requiring Apply-button interaction.
 
 Part of Issue
 
-### JR-CAN-API-031 — Parameter map _CASCOR_TO_CANOPY_PARAM_MAP is asymmetric: forward maps nn_growth_convergence_threshold to patience, reverse maps patience to cn_training_convergence_threshold (different field).
+### JR-CAN-API-034 — Parameter map _CASCOR_TO_CANOPY_PARAM_MAP is asymmetric: forward maps nn_growth_convergence_threshold to patience, reverse maps patience to cn_training_convergence_threshold (different field).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -1984,7 +2367,7 @@ Generate reverse map programmatically: _CASCOR_TO_CANOPY_PARAM_MAP = {v: k for k
 
 Causes param sync to apply updates to wrong canopy parameter.
 
-### JR-CAN-PERF-004 — Parameter retry logic must not use blocking time.sleep().
+### JR-CAN-PERF-005 — Parameter retry logic must not use blocking time.sleep().
 
 **Status**: proposed  **Priority**: P2  **Category**: PERF  **Owner**: can
 
@@ -1996,7 +2379,7 @@ Causes param sync to apply updates to wrong canopy parameter.
 Issue 3.3.4: Blocking sleep in parameter retry callback blocks event loop.
 Use asyncio.sleep() or defer via callback scheduling instead.
 
-### JR-CAN-TEST-029 — Phase 1 test coverage gap: characterization tests validate flat output, not dashboard nested consumption (ISS-19).
+### JR-CAN-TEST-032 — Phase 1 test coverage gap: characterization tests validate flat output, not dashboard nested consumption (ISS-19).
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -2015,7 +2398,7 @@ Add dashboard contract tests validating that normalized flat output can be trans
 
 Identified by v5, v7. Reflects Phase 1 boundary assumption error.
 
-### JR-CAN-TEST-030 — Phase 4 Test Coverage Expansion (14 tasks).
+### JR-CAN-TEST-033 — Phase 4 Test Coverage Expansion (14 tasks).
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -2029,7 +2412,7 @@ secrets_util (SOPS paths), middleware edge cases (malformed headers).
 Step 4.2 (4 new types): Security tests (auth, injection, CORS), WebSocket load,
 circuit breaker resilience, API contract validation.
 
-### JR-CAN-DOC-005 — Phase 5 Housekeeping (19 low-priority tasks across config, logging, CI/CD).
+### JR-CAN-DOC-006 — Phase 5 Housekeeping (19 low-priority tasks across config, logging, CI/CD).
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: can
 
@@ -2047,7 +2430,7 @@ parameter forwarding, hit_rate format verification, theme-aware colors.
 5.4 (4 CI/CD): Docker health check, shellcheck severity, pre-commit autoupdate,
 codecov docs.
 
-### JR-CAN-TEST-031 — Re-enable MyPy error codes currently disabled (15 codes); fix underlying type issues.
+### JR-CAN-TEST-034 — Re-enable MyPy error codes currently disabled (15 codes); fix underlying type issues.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -2062,7 +2445,41 @@ codecov docs.
 
 Category H: 15 codes disabled; type safety issue
 
-### JR-CAN-DOC-006 — Remove commented-out imports across codebase.
+### JR-CAN-TEST-035 — Real backend code paths in main.py and CascorIntegration must have integration test coverage.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 170-182)
+
+**Detail**:
+
+All current tests run with CASCOR_DEMO_MODE=1; no integration tests for real backend.
+Should gate behind CASCOR_BACKEND_AVAILABLE environment variable.
+Estimated scope: 2-3 test files, 400-600 lines.
+
+**Notes**:
+
+CAN-HIGH-004; HIGH priority post-release item.
+
+### JR-CAN-TEST-036 — RemoteWorkerClient integration must have test coverage and verified integration path.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 184-197)
+
+**Detail**:
+
+RemoteWorkerClient integration referenced in architecture docs but has no test coverage or verified path.
+Distributed training via remote workers is planned capability.
+Estimated scope: 2-3 files, 300-500 lines; depends on RemoteWorkerClient in JuniperCascor.
+
+**Notes**:
+
+[v2 ARCH→TEST re-bucket] CAN-HIGH-005; HIGH priority post-release item.
+
+### JR-CAN-DOC-007 — Remove commented-out imports across codebase.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: can
 
@@ -2073,7 +2490,7 @@ Category H: 15 codes disabled; type safety issue
 
 Issue 3.2.5: Commented imports clutter code. Remove or restore with rationale.
 
-### JR-CAN-UI-025 — Remove dead _create_candidate_pool_display from MetricsPanel.
+### JR-CAN-UI-032 — Remove dead _create_candidate_pool_display from MetricsPanel.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: can
 
@@ -2089,7 +2506,7 @@ File: src/frontend/components/metrics_panel.py
 
 [v2 ARCH→UI re-bucket]
 
-### JR-CAN-ARCH-005 — Remove or deprecate legacy TrainingMetricsComponent.
+### JR-CAN-ARCH-006 — Remove or deprecate legacy TrainingMetricsComponent.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: can
 
@@ -2117,7 +2534,7 @@ Remove or reconnect to active candidate pool UI.
 
 [v2 ARCH→TRAIN re-bucket]
 
-### JR-CAN-TEST-032 — Remove || true suppression from Bandit security scan in CI pipeline.
+### JR-CAN-TEST-037 — Remove || true suppression from Bandit security scan in CI pipeline.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -2132,7 +2549,7 @@ ci.yml line 412: bandit || true suppresses security issues silently. Security sh
 
 Category G: Security scan gap; best practices violation
 
-### JR-CAN-API-032 — ServiceBackend.get_status() returns nested training status but dashboard expects flat keys (is_running, is_paused, phase, current_epoch, hidden_units).
+### JR-CAN-API-035 — ServiceBackend.get_status() returns nested training status but dashboard expects flat keys (is_running, is_paused, phase, current_epoch, hidden_units).
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -2147,7 +2564,23 @@ get_status() returns nested cascor structures. Must add _normalize_status_respon
 
 Status bar works via /api/status endpoint transformation; inconsistent when backend.get_status() called directly.
 
-### JR-CAN-ARCH-006 — Systemic architectural issue: no canonical backend contract across demo and service modes (ISS-17).
+### JR-CAN-SEC-011 — Snapshot endpoints must sanitize names and confine paths to prevent directory traversal attacks.
+
+**Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-04.md` (lines 53-95)
+
+**Detail**:
+
+CRIT-001 vulnerability: /api/v1/snapshots endpoints allow path traversal via ../../ and URL-encoded sequences.
+Remediation: Add _sanitize_snapshot_name() with regex ^[a-zA-Z0-9_-]+$; verify resolved path stays within _snapshots_dir.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS v0.4.0; path sanitization + path confinement (defense in depth) recommended.
+
+### JR-CAN-ARCH-007 — Systemic architectural issue: no canonical backend contract across demo and service modes (ISS-17).
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: can
 
@@ -2166,7 +2599,7 @@ Define shared BackendProtocol with Pydantic models or TypedDicts enforcing ident
 
 Identified by v4, v6, v7. Architectural root cause hierarchy shows ISS-17 at apex with multiple child issues.
 
-### JR-CAN-TEST-033 — Test non-test files exist in test directory; test_yaml.py, test_config.py, test_dashboard_init.py, test_and_verify_button_layout.py, implementation_script.py should be moved or removed.
+### JR-CAN-TEST-038 — Test non-test files exist in test directory; test_yaml.py, test_config.py, test_dashboard_init.py, test_and_verify_button_layout.py, implementation_script.py should be moved or removed.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -2181,7 +2614,7 @@ Five non-test files found in test directory that should either be moved to appro
 
 Identified in test audit.
 
-### JR-CAN-TEST-034 — Test suite contains 9 false-positive tests (assert True only) masking actual test failures.
+### JR-CAN-TEST-039 — Test suite contains 9 false-positive tests (assert True only) masking actual test failures.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
 
@@ -2196,7 +2629,7 @@ False positives in test_button_responsiveness.py (4 instances), test_button_stat
 
 Must be replaced with real test assertions or removed.
 
-### JR-CAN-OBS-014 — Training History must record dataset swap as first-class event with timestamp, before/after config, and architecture changes.
+### JR-CAN-OBS-015 — Training History must record dataset swap as first-class event with timestamp, before/after config, and architecture changes.
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: can
 
@@ -2211,7 +2644,40 @@ F2.7: History shall record swap with timestamp + before/after cfg. F2.8: Snapsho
 
 Persistence schema TBD during review.
 
-### JR-CAN-API-033 — WebSocket /ws/training connect-time message ordering is not atomic; initial_status/state messages can be preempted by background demo broadcasts.
+### JR-CAN-TRAIN-011 — TrainingStateMachine must protect all state mutations with threading.Lock to ensure thread safety.
+
+**Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 177-181)
+
+**Detail**:
+
+HIGH-015: Add threading.Lock on all state mutations AND getters (partial fix in prior audit lacked lock on getters).
+Independent of R5-01; backend state management concern.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; partially remediated prior; full coverage required.
+
+### JR-CAN-WS-003 — WebSocket /ws endpoint exception handling must be complete with proper cleanup in finally block.
+
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md` (lines 130-144)
+
+**Detail**:
+
+HIGH-010: Endpoint will be substantially rewritten in R5-01 Phase 0-cascor + Phase B-pre-a/b.
+Current finally block is minimal stopgap; acceptable interim but do NOT over-invest in hardening.
+Will implement two-phase registration, frame size caps, per-IP caps, origin validation, CSRF auth, rate limiting.
+
+**Notes**:
+
+CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; deferred until R5-01 phases complete.
+
+### JR-CAN-API-036 — WebSocket /ws/training connect-time message ordering is not atomic; initial_status/state messages can be preempted by background demo broadcasts.
 
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: can
 
@@ -2226,7 +2692,41 @@ Handler sends connection_established, initial_status, state with await boundarie
 
 Currently mitigated on test side only; product-side ordering not enforced.
 
-### JR-CAN-DOC-007 — Add deprecation warnings to remaining legacy env validators.
+### JR-CAN-WS-004 — WebSocket relay state callback must include current_epoch and other training fields in broadcast.
+
+**Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/proposals/phase_4/PHASE_4_CANOPY_CASCOR_CONNECTION_ANALYSIS_66a019dc-94ba-47fb-8042-7ce8f974d071.md` (lines 311-380)
+
+**Detail**:
+
+Relay only sends status and phase; omits current_epoch, metrics_history, parameters.
+Causes stale state data in /api/state endpoint and incomplete WebSocket state updates.
+
+**Notes**:
+
+Identified by all 7 Phase 3 proposals. MODERATE severity, not a display blocker.
+
+### JR-CAN-TEST-040 — WebSocket tests marked with requires_server must be converted to work with TestClient interface.
+
+**Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/history/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-25.md` (lines 213-232)
+
+**Detail**:
+
+Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py, 
+test_main_ws.py (subset), test_websocket_state.py (subset).
+Convert to TestClient WebSocket interface for CI compatibility.
+Estimated scope: 4 files, 200-300 lines modified.
+
+**Notes**:
+
+CAN-HIGH-007; HIGH priority post-release item; identified in TEST_SUITE_AUDIT.
+
+### JR-CAN-DOC-008 — Add deprecation warnings to remaining legacy env validators.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: can
 
@@ -2238,7 +2738,7 @@ Currently mitigated on test side only; product-side ordering not enforced.
 Issue 5.1.1: Legacy env var validators need deprecation warnings.
 Use warnings.warn() to alert users of upcoming removal.
 
-### JR-CAN-OBS-015 — All print() statements must be replaced with logger.
+### JR-CAN-OBS-016 — All print() statements must be replaced with logger.
 
 **Status**: proposed  **Priority**: P3  **Category**: OBS  **Owner**: can
 
@@ -2250,7 +2750,7 @@ Use warnings.warn() to alert users of upcoming removal.
 Issue 5.2.3: print() bypasses logging config. Replace with appropriate
 logger.info/debug/warning calls throughout codebase.
 
-### JR-CAN-TEST-035 — apply_params verify-roundtrip has no retry mechanism on stale reads, could surface as spurious user-facing errors.
+### JR-CAN-TEST-041 — apply_params verify-roundtrip has no retry mechanism on stale reads, could surface as spurious user-facing errors.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -2265,7 +2765,7 @@ Verify logic does not retry stale reads; timing-sensitive assertion could fail i
 
 Risk of spurious test failures and user-facing errors.
 
-### JR-CAN-WS-003 — Architectural fragility: WebSocket relay broadcasts unnormalized metric field names (ISS-11).
+### JR-CAN-WS-005 — Architectural fragility: WebSocket relay broadcasts unnormalized metric field names (ISS-11).
 
 **Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: can
 
@@ -2280,7 +2780,7 @@ ISS-11 LOW. WebSocket relay loop (cascor_service_adapter.py:203-206) broadcasts 
 
 [v2 ARCH→WS re-bucket] Identified by v4, v7. Latent until ISS-03 fixed.
 
-### JR-CAN-LOCK-002 — Black code formatter must have py314 in target-version.
+### JR-CAN-LOCK-003 — Black code formatter must have py314 in target-version.
 
 **Status**: proposed  **Priority**: P3  **Category**: LOCK  **Owner**: can
 
@@ -2292,7 +2792,7 @@ ISS-11 LOW. WebSocket relay loop (cascor_service_adapter.py:203-206) broadcasts 
 Issue 5.1.4: pyproject.toml Black config needs py314 for Python 3.14 compatibility.
 Add to target-version list.
 
-### JR-CAN-API-034 — candidate_learning_rate parameter unmapped in canopy (accessible via cascor API but not UI) (ISS-16).
+### JR-CAN-API-037 — candidate_learning_rate parameter unmapped in canopy (accessible via cascor API but not UI) (ISS-16).
 
 **Status**: proposed  **Priority**: P3  **Category**: API  **Owner**: can
 
@@ -2307,7 +2807,7 @@ ISS-16 LOW. CasCor TrainingParamUpdateRequest accepts candidate_learning_rate as
 
 Identified by v4 (unique finding).
 
-### JR-CAN-LOCK-003 — CASCOR_SNAPSHOT_DIR env var must be migrated to JUNIPER_CANOPY_SNAPSHOT_DIR.
+### JR-CAN-LOCK-004 — CASCOR_SNAPSHOT_DIR env var must be migrated to JUNIPER_CANOPY_SNAPSHOT_DIR.
 
 **Status**: proposed  **Priority**: P3  **Category**: LOCK  **Owner**: can
 
@@ -2319,7 +2819,7 @@ Identified by v4 (unique finding).
 Issue 5.1.3: Old env var still referenced. Support both for compatibility
 but document migration path and plan removal date.
 
-### JR-CAN-TEST-036 — Codebase contains 60+ skipped tests using 'Method _X not exposed as public API' rationale, papering over real coverage gaps.
+### JR-CAN-TEST-042 — Codebase contains 60+ skipped tests using 'Method _X not exposed as public API' rationale, papering over real coverage gaps.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -2334,7 +2834,7 @@ but document migration path and plan removal date.
 
 Coverage gaps in h5py and internal method testing.
 
-### JR-CAN-DOC-008 — Codecov build count assumption must be documented.
+### JR-CAN-DOC-009 — Codecov build count assumption must be documented.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: can
 
@@ -2347,7 +2847,7 @@ Issue 5.4.4: Codecov configuration makes implicit assumptions about build
 frequency. Document in README or config comments what build count limit is
 set to and why.
 
-### JR-CAN-LOCK-004 — CPU-only conda environment must be created for deployment without CUDA.
+### JR-CAN-LOCK-005 — CPU-only conda environment must be created for deployment without CUDA.
 
 **Status**: proposed  **Priority**: P3  **Category**: LOCK  **Owner**: can
 
@@ -2359,7 +2859,7 @@ set to and why.
 Issue 5.1.5: Current environment assumes CUDA. Create environment-cpu.yml
 with PyTorch CPU variant and document usage.
 
-### JR-CAN-API-035 — Dead parameter mapping: cn_training_iterations → candidate_epochs (unmapped by cascor) (ISS-15).
+### JR-CAN-API-038 — Dead parameter mapping: cn_training_iterations → candidate_epochs (unmapped by cascor) (ISS-15).
 
 **Status**: proposed  **Priority**: P3  **Category**: API  **Owner**: can
 
@@ -2378,7 +2878,7 @@ Sub-issue ISS-15b: patience → nn_growth_convergence_threshold has semantic mis
 
 Identified by v2, v4. Misleading UI label and dead parameter slot in mapping.
 
-### JR-CAN-TRAIN-011 — Defer true IPC architecture (Cascor-Canopy process separation) to future when triggering conditions are met.
+### JR-CAN-TRAIN-012 — Defer true IPC architecture (Cascor-Canopy process separation) to future when triggering conditions are met.
 
 **Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: can
 
@@ -2450,7 +2950,7 @@ ISS-14 INFO. Two independent normalization paths exist: Path A (ServiceBackend.g
 
 Identified by v4. Cross-source status comparison risk.
 
-### JR-CAN-ARCH-007 — Environment variable parsing must fix boolean/integer precedence bug.
+### JR-CAN-ARCH-008 — Environment variable parsing must fix boolean/integer precedence bug.
 
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: can
 
@@ -2462,7 +2962,7 @@ Identified by v4. Cross-source status comparison risk.
 Issue 5.1.2: _convert_type checks boolean before integer, causing "0"
 to parse as False instead of 0. Reorder checks: int/float before bool.
 
-### JR-CAN-SEC-009 — Exception handling in callback_context must narrow exception types.
+### JR-CAN-SEC-012 — Exception handling in callback_context must narrow exception types.
 
 **Status**: proposed  **Priority**: P3  **Category**: SEC  **Owner**: can
 
@@ -2474,7 +2974,7 @@ to parse as False instead of 0. Reorder checks: int/float before bool.
 Issue 5.3.3: Bare except: clause catches SystemExit/KeyboardInterrupt.
 Narrow to (ValueError, AttributeError, ...); let system signals propagate.
 
-### JR-CAN-OBS-016 — FATAL_LEVEL constant conflict must be resolved.
+### JR-CAN-OBS-017 — FATAL_LEVEL constant conflict must be resolved.
 
 **Status**: proposed  **Priority**: P3  **Category**: OBS  **Owner**: can
 
@@ -2486,7 +2986,7 @@ Narrow to (ValueError, AttributeError, ...); let system signals propagate.
 Issue 5.2.4: FATAL_LEVEL defined in multiple modules with different values.
 Consolidate to single definition in logging module.
 
-### JR-CAN-UI-026 — Header title color must be theme-aware (not hardcoded).
+### JR-CAN-UI-033 — Header title color must be theme-aware (not hardcoded).
 
 **Status**: proposed  **Priority**: P3  **Category**: UI  **Owner**: can
 
@@ -2498,7 +2998,7 @@ Consolidate to single definition in logging module.
 Issue 5.3.6: Header title color hardcoded to light theme. Use theme-aware
 color from theme_constants.py for dark/light mode support.
 
-### JR-CAN-UI-027 — Hit rate formatter must verify percentage contract (0.0-1.0 range).
+### JR-CAN-UI-034 — Hit rate formatter must verify percentage contract (0.0-1.0 range).
 
 **Status**: proposed  **Priority**: P3  **Category**: UI  **Owner**: can
 
@@ -2510,7 +3010,7 @@ color from theme_constants.py for dark/light mode support.
 Issue 5.3.5: _format_hit_rate may receive values outside [0, 1]. Add bounds
 check and either clamp or raise error depending on usage context.
 
-### JR-CAN-ARCH-008 — Layout type sprint must forward positional/keyword parameters correctly.
+### JR-CAN-ARCH-009 — Layout type sprint must forward positional/keyword parameters correctly.
 
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: can
 
@@ -2522,7 +3022,7 @@ check and either clamp or raise error depending on usage context.
 Issue 5.3.4: _layout_type_sprint helper loses parameters. Use *args, **kwargs
 or explicit forwarding to preserve full signature.
 
-### JR-CAN-UI-028 — Left sidebar too wide on Training Metrics tab; hardcoded dbc.Col(width=3) applies to all tabs.
+### JR-CAN-UI-035 — Left sidebar too wide on Training Metrics tab; hardcoded dbc.Col(width=3) applies to all tabs.
 
 **Status**: proposed  **Priority**: P3  **Category**: UI  **Owner**: can
 
@@ -2537,7 +3037,7 @@ Fix: per-tab width via ui_standards.py + seed notes/UI_STANDARDS.md with design 
 
 Cosmetic; low priority. Enables UI design documentation.
 
-### JR-CAN-UI-029 — Left sidebar too wide on Training Metrics tab—use per-tab width from ui_standards.
+### JR-CAN-UI-036 — Left sidebar too wide on Training Metrics tab—use per-tab width from ui_standards.
 
 **Status**: proposed  **Priority**: P3  **Category**: UI  **Owner**: can
 
@@ -2551,7 +3051,7 @@ ui_standards.py. Seeds UI_STANDARDS.md documentation.
 
 **PRs**: PR-6 (cosmetic sidebar width), PR-6.5 (UI_STANDARDS doc + Training-Metrics narrowing experiment)
 
-### JR-CAN-OBS-017 — Log timestamps must be timezone-aware (UTC).
+### JR-CAN-OBS-018 — Log timestamps must be timezone-aware (UTC).
 
 **Status**: proposed  **Priority**: P3  **Category**: OBS  **Owner**: can
 
@@ -2563,7 +3063,7 @@ ui_standards.py. Seeds UI_STANDARDS.md documentation.
 Issue 5.2.2: Naive timestamps can cause ambiguity in distributed logs.
 Use datetime.now(timezone.utc) or equivalent.
 
-### JR-CAN-OBS-018 — Logger must capture real call site instead of logger.py:line-N.
+### JR-CAN-OBS-019 — Logger must capture real call site instead of logger.py:line-N.
 
 **Status**: proposed  **Priority**: P3  **Category**: OBS  **Owner**: can
 
@@ -2575,7 +3075,7 @@ Use datetime.now(timezone.utc) or equivalent.
 Issue 5.2.1: _log_with_context wrapper causes all logs to appear from
 logger.py instead of actual call site. Use inspect.stack() to get caller.
 
-### JR-CAN-API-036 — Normalize parameter mapping: state sync params use raw cascor names instead of nn_*/cn_* namespace (ISS-12).
+### JR-CAN-API-039 — Normalize parameter mapping: state sync params use raw cascor names instead of nn_*/cn_* namespace (ISS-12).
 
 **Status**: proposed  **Priority**: P3  **Category**: API  **Owner**: can
 
@@ -2590,7 +3090,7 @@ ISS-12 MODERATE. During initial state sync (state_sync.py:98-103), training para
 
 Identified by v7 (unique finding). Caused by ISS-13 (state sync bypasses adapter).
 
-### JR-CAN-LOCK-005 — Pre-commit hook suite must be auto-updated.
+### JR-CAN-LOCK-006 — Pre-commit hook suite must be auto-updated.
 
 **Status**: proposed  **Priority**: P3  **Category**: LOCK  **Owner**: can
 
@@ -2602,7 +3102,7 @@ Identified by v7 (unique finding). Caused by ISS-13 (state sync bypasses adapter
 Issue 5.4.3: pre-commit hooks may be outdated. Run `pre-commit autoupdate`
 to refresh all hook versions and update .pre-commit-config.yaml.
 
-### JR-CAN-TEST-037 — Pytest tests use CWD-relative paths instead of fixture-based or absolute paths, causing Docker-environment failures.
+### JR-CAN-TEST-043 — Pytest tests use CWD-relative paths instead of fixture-based or absolute paths, causing Docker-environment failures.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -2617,7 +3117,7 @@ One file fixed; codebase-wide audit not done. CWD-relative paths fail in contain
 
 One file fixed; more audit needed.
 
-### JR-CAN-ARCH-009 — Settings access must guard against KeyError or use default.
+### JR-CAN-ARCH-010 — Settings access must guard against KeyError or use default.
 
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: can
 
@@ -2629,7 +3129,7 @@ One file fixed; more audit needed.
 Issue 5.3.1: config.key access can raise AttributeError. Use get() or
 try/except to provide sensible defaults.
 
-### JR-CAN-TEST-038 — Shellcheck severity level should align with ecosystem convention.
+### JR-CAN-TEST-044 — Shellcheck severity level should align with ecosystem convention.
 
 **Status**: proposed  **Priority**: P3  **Category**: TEST  **Owner**: can
 
@@ -2641,7 +3141,7 @@ try/except to provide sensible defaults.
 Issue 5.4.2: Current shellcheck invocation uses non-standard severity flag.
 Align to standard shellcheck options.
 
-### JR-CAN-WS-004 — Training WebSocket must validate message size to prevent DoS.
+### JR-CAN-WS-006 — Training WebSocket must validate message size to prevent DoS.
 
 **Status**: proposed  **Priority**: P3  **Category**: WS  **Owner**: can
 
@@ -2653,7 +3153,7 @@ Align to standard shellcheck options.
 Issue 5.3.2: WebSocket message handler does not check message size.
 Add check: reject messages > 1MB with log and graceful disconnect.
 
-### JR-CAN-DOC-009 — UI_STANDARDS.md document must be created to codify design constants (sidebar widths, spacing, color scheme) across dashboard components.
+### JR-CAN-DOC-010 — UI_STANDARDS.md document must be created to codify design constants (sidebar widths, spacing, color scheme) across dashboard components.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: can
 

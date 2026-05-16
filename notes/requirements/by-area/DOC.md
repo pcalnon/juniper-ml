@@ -2,13 +2,13 @@
 
 **Area**: documentation / process — link validation, conventions, file headers
 
-**Total entries**: 52
+**Total entries**: 53
 
-**By status**: proposed=46 | shipped=6
+**By status**: proposed=46 | shipped=7
 
-**By priority**: P0=5 | P1=15 | P2=24 | P3=8
+**By priority**: P0=5 | P1=16 | P2=24 | P3=8
 
-**By owner**: ccl=13 | ml=13 | can=9 | dcl=8 | cas=4 | cwk=3 | dat=2
+**By owner**: ccl=13 | ml=13 | can=10 | dcl=8 | cas=4 | cwk=3 | dat=2
 
 ---
 
@@ -139,6 +139,22 @@ AGENTS.md (thread handoff and worktree procedures), ecosystem compatibility matr
 
 Shipped in v0.2.0 (2026-03-21)
 
+### JR-CAN-DOC-001 — Four standardized documentation templates must be provided for roadmaps, issue tracking, PRs, and release notes.
+
+**Status**: shipped  **Priority**: P1  **Category**: DOC  **Owner**: can
+
+**Sources**:
+- `juniper-canopy/notes/pull_requests/PR_DESCRIPTION_POST_REFACTOR_v0.24.0_2026-01-11.md` (lines 20-31)
+
+**Detail**:
+
+TEMPLATE_DEVELOPMENT_ROADMAP.md, TEMPLATE_ISSUE_TRACKING.md, TEMPLATE_PULL_REQUEST_DESCRIPTION.md, TEMPLATE_RELEASE_NOTES.md.
+All with placeholders, consistency enforcement for future documentation.
+
+**Notes**:
+
+Shipped in v0.24.0; verified as part of POST_REFACTOR_VERIFICATION report.
+
 ### JR-CCL-DOC-005 — Add Architecture section to AGENTS.md documenting class hierarchy, API categories, exception hierarchy, design patterns.
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: ccl
@@ -187,7 +203,7 @@ juniper_data_client/, juniper_data_client/testing/, tests/, docs/, notes/, scrip
 
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.1) and AGENTS_MD_UPDATE_PLAN (Step 2.1).
 
-### JR-CAN-DOC-001 — Application version must be centralized via importlib.metadata.
+### JR-CAN-DOC-002 — Application version must be centralized via importlib.metadata.
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: can
 
@@ -211,7 +227,7 @@ File: src/main.py
 
 Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 
-### JR-CAN-DOC-002 — Configuration must have no version string mismatches (app_config.yaml, pyproject.toml).
+### JR-CAN-DOC-003 — Configuration must have no version string mismatches (app_config.yaml, pyproject.toml).
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: can
 
@@ -295,7 +311,7 @@ CHANGELOG.md, docs/ (4 files), scripts/ (2 files), notes/, .env.example, .pre-co
 and juniper-canopy). Agents working on this codebase are unaware of its existence when omitted from AGENTS.md.
 Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2).
 
-### JR-CAN-DOC-003 — Phase 3 Code Quality & Observability (18 tasks).
+### JR-CAN-DOC-004 — Phase 3 Code Quality & Observability (18 tasks).
 
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: can
 
@@ -411,7 +427,7 @@ Medium severity: helps agents understand test conventions
 
 [v2 ARCH→DOC re-bucket]
 
-### JR-CAN-DOC-004 — Code quality, frontend, security, CI/CD audit domains: 8-domain audit with 15 gaps identified (11 NOT fixed, 4 partially, 1 documentation).
+### JR-CAN-DOC-005 — Code quality, frontend, security, CI/CD audit domains: 8-domain audit with 15 gaps identified (11 NOT fixed, 4 partially, 1 documentation).
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: can
 
@@ -527,7 +543,7 @@ Drift analysis identifies documentation gaps.
 Multiple locations in cascade_correlation.py have import traceback inside except
 blocks. Move to file-level imports.
 
-### JR-CAN-DOC-005 — Phase 5 Housekeeping (19 low-priority tasks across config, logging, CI/CD).
+### JR-CAN-DOC-006 — Phase 5 Housekeeping (19 low-priority tasks across config, logging, CI/CD).
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: can
 
@@ -584,7 +600,7 @@ Note: Phase H is NOT a behavior-change gate; it's a documentation + regression-g
 
 D-050 MEDIUM priority. Current docs show direct app reference.
 
-### JR-CAN-DOC-006 — Remove commented-out imports across codebase.
+### JR-CAN-DOC-007 — Remove commented-out imports across codebase.
 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: can
 
@@ -656,7 +672,7 @@ Documentation & release phase (MEDIUM priority)
 
 [v3 brief repaired from cited content; was: '4.1 How this tracker is updated as items close']
 
-### JR-CAN-DOC-007 — Add deprecation warnings to remaining legacy env validators.
+### JR-CAN-DOC-008 — Add deprecation warnings to remaining legacy env validators.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: can
 
@@ -679,7 +695,7 @@ Use warnings.warn() to alert users of upcoming removal.
 
 D-001 through D-050 catalogued. 5 CRITICAL issues (version, security, line length, directory, middleware).
 
-### JR-CAN-DOC-008 — Codecov build count assumption must be documented.
+### JR-CAN-DOC-009 — Codecov build count assumption must be documented.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: can
 
@@ -717,7 +733,7 @@ set to and why.
 
 Living documentation; should be kept current.
 
-### JR-CAN-DOC-009 — UI_STANDARDS.md document must be created to codify design constants (sidebar widths, spacing, color scheme) across dashboard components.
+### JR-CAN-DOC-010 — UI_STANDARDS.md document must be created to codify design constants (sidebar widths, spacing, color scheme) across dashboard components.
 
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: can
 
