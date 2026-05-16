@@ -149,8 +149,8 @@ Root cause: incomplete param-map gap + no roundtrip verification. Candidate-pool
 
 **Detail**:
 
-Step 1.1 (7 tasks): Fix /ws exception loop, enforce max_connections, stop 
-broadcast() mutation, remove duplicate cn_patience, define set_params Pydantic model, 
+Step 1.1 (7 tasks): Fix /ws exception loop, enforce max_connections, stop
+broadcast() mutation, remove duplicate cn_patience, define set_params Pydantic model,
 handle malformed Content-Length, restrict CORS.
 Step 1.2 (5 tasks): Centralize version, update app_config.yaml/pyproject.toml headers,
 use get_settings() in get_rate_limiter(), fix CORS YAML syntax.
@@ -2129,4 +2129,3 @@ Identified by v7 (unique finding). Caused by ISS-13 (state sync bypasses adapter
 **Detail**:
 
 | Task 2 Phase 2: `GET /v1/dataset/data` endpoint in cascor | ❌ NOT STARTED |
-

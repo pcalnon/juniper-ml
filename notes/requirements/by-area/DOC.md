@@ -321,7 +321,7 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Task 2.2) and AGENTS_MD_UPDATE_PLAN (Step 2.2)
 **Detail**:
 
 Step 3.1 (6 logging): Fix ColoredFormatter mutation, cache logger wrappers,
-make Sentry sample rate configurable, normalize Prometheus labels, use async 
+make Sentry sample rate configurable, normalize Prometheus labels, use async
 health checks, set production log levels.
 Step 3.2 (5 dead code): Remove unused candidate pool display, orphaned callbacks,
 extract create_empty_plot(), deprecate legacy TrainingMetricsComponent.
@@ -764,4 +764,3 @@ Low-priority metadata and polish tasks: (1) Update header Last Updated from 2026
 **Notes**:
 
 Also in AGENTS_MD_UPDATE_ROADMAP (Tasks 4.1, 4.2, 4.3) and AGENTS_MD_UPDATE_PLAN (Steps 4.1, 4.2, 4.3).
-

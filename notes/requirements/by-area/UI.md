@@ -86,7 +86,7 @@ GAP-WS-14. P0 bandwidth kill (3 MB/s→<400 KB over 10s). Dummy output pattern p
 
 **Detail**:
 
-Issue 1.1.3: broadcast() currently mutates message dicts in-place. 
+Issue 1.1.3: broadcast() currently mutates message dicts in-place.
 Must pass immutable copy or deep clone before modification.
 
 ### JR-CAN-UI-002 — Dataset-tab edits don't persist—Phase 1 cold-swap with Cancel button, Phase 2 live in-flight swap.
@@ -98,8 +98,8 @@ Must pass immutable copy or deep clone before modification.
 
 **Detail**:
 
-Phase 1: add Cancel button, cold-swap via canopy adapter + cascor endpoint. 
-Phase 2 (separate doc): live dataset swap behind experimental-functions gate, 
+Phase 1: add Cancel button, cold-swap via canopy adapter + cascor endpoint.
+Phase 2 (separate doc): live dataset swap behind experimental-functions gate,
 two-step warning modal, History/Snapshots/Replay persistence.
 
 **PRs**: PR-7 (Phase 1, Issue, PR-series P2-1 to P2-7 (Phase 2 live swap, documented separately)
@@ -118,8 +118,8 @@ Shares root cause with Issue #1.
 
 **Detail**:
 
-Root causes: incomplete adapter mapping, no roundtrip verification. 
-Three sub-parts: (C1) surface drops to user, (C2) extend cascor PATCH endpoints, 
+Root causes: incomplete adapter mapping, no roundtrip verification.
+Three sub-parts: (C1) surface drops to user, (C2) extend cascor PATCH endpoints,
 (C3) roundtrip verification. Includes candidate-pool invariants atomic validation.
 
 **PRs**: PR-1 (Phase 6A series, Issue
@@ -495,8 +495,8 @@ Phase I major milestone from R3-03 Phase index (§2); orchestrates implementatio
 
 **Detail**:
 
-Issue: spinner changes commit immediately but typed values require blur. 
-Solution: use debounce=350ms for live feedback without callback churn. 
+Issue: spinner changes commit immediately but typed values require blur.
+Solution: use debounce=350ms for live feedback without callback churn.
 Also adds clientside blur-on-Apply and validation styling (invalid=True border).
 
 **PRs**: PR-2 (Phase 6B, Issue
@@ -555,7 +555,7 @@ Phase 2 feature; shipped with 4 tests.
 
 **Detail**:
 
-Candidate-pool invariants form a constrained triple (selected_candidates, 
+Candidate-pool invariants form a constrained triple (selected_candidates,
 top_candidates, random_candidates) that must be validated atomically in cascor.
 Post-merge validation required for multi-key PATCH (e.g. {S: 6, T: 4, R: 2}).
 Validation helper _validate_candidate_pool_triple() enforces 6 invariants.
@@ -606,8 +606,8 @@ Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already config
 
 **Detail**:
 
-P3-1: Create new snapshot endpoint (POST /api/v1/snapshots) with auto-generated 
-timestamp names and demo mode support. P3-2: Restore endpoint with training state 
+P3-1: Create new snapshot endpoint (POST /api/v1/snapshots) with auto-generated
+timestamp names and demo mode support. P3-2: Restore endpoint with training state
 validation and WebSocket broadcast. P3-3: History tracking (append-only JSONL log).
 Status: all complete as of 2026-01-10.
 
@@ -620,8 +620,8 @@ Status: all complete as of 2026-01-10.
 
 **Detail**:
 
-P3-4: Save/load metric panel configuration as named presets (GET/POST/DELETE 
-/api/v1/metrics/layouts endpoints). P3-5: Toggle 2D/3D network topology view 
+P3-4: Save/load metric panel configuration as named presets (GET/POST/DELETE
+/api/v1/metrics/layouts endpoints). P3-5: Toggle 2D/3D network topology view
 with layer-based z-axis, circular layout for >4 hidden nodes, weight-based edge coloring.
 
 **PRs**: {'PR-series': 'Wave 2 (37 new tests, coverage maintained 93%+)'}
@@ -1566,8 +1566,7 @@ Cosmetic; low priority. Enables UI design documentation.
 
 **Detail**:
 
-Hardcoded dbc.Col(width=3) for all tabs. Move to per-tab config via 
+Hardcoded dbc.Col(width=3) for all tabs. Move to per-tab config via
 ui_standards.py. Seeds UI_STANDARDS.md documentation.
 
 **PRs**: PR-6 (cosmetic sidebar width), PR-6.5 (UI_STANDARDS doc + Training-Metrics narrowing experiment)
-

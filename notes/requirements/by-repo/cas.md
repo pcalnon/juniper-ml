@@ -1508,4 +1508,3 @@ responsiveness should be verified under load.
 **Detail**:
 
 docker-compose config for 3-service deployment not tested end-to-end.
-

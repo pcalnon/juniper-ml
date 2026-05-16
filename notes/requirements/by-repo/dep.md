@@ -432,4 +432,3 @@ Phase 2 (P1 priority) add missing major sections: directory layout, security arc
 Docker Compose profiles (profile-to-service mapping), network architecture, Makefile targets.
 Phase 3 complete existing sections: expand service ports table, key files table, dependency graph,
 environment variables, essential commands. Phase 4 update metadata, add documentation index, testing architecture.
-

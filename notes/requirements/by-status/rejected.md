@@ -220,4 +220,3 @@ Settled position C-31 from R3-03 table; cross-round consensus consolidation
 **Notes**:
 
 [v3 brief repaired from cited content; was: '4.2 Cross-Section Checkbox Linking']
-

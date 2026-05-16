@@ -821,4 +821,3 @@ curl-based probe (add curl to base image) for more flexible checks.
 **Detail**:
 
 docker-compose config for 3-service deployment not tested end-to-end.
-

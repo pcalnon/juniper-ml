@@ -502,4 +502,3 @@ remove legacy spiral generator from spiral_problem.py.
 
 **Sources**:
 - `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 260-294)
-

@@ -1865,7 +1865,7 @@ cProfile integration: ProfileContext, profile_function decorator (src/profiling/
 
 **Detail**:
 
-Candidate-pool invariants form a constrained triple (selected_candidates, 
+Candidate-pool invariants form a constrained triple (selected_candidates,
 top_candidates, random_candidates) that must be validated atomically in cascor.
 Post-merge validation required for multi-key PATCH (e.g. {S: 6, T: 4, R: 2}).
 Validation helper _validate_candidate_pool_triple() enforces 6 invariants.
@@ -1957,8 +1957,8 @@ Paths in `juniper_plant_all.bash` and `juniper_chop_all.bash` are already config
 
 **Detail**:
 
-P3-1: Create new snapshot endpoint (POST /api/v1/snapshots) with auto-generated 
-timestamp names and demo mode support. P3-2: Restore endpoint with training state 
+P3-1: Create new snapshot endpoint (POST /api/v1/snapshots) with auto-generated
+timestamp names and demo mode support. P3-2: Restore endpoint with training state
 validation and WebSocket broadcast. P3-3: History tracking (append-only JSONL log).
 Status: all complete as of 2026-01-10.
 
@@ -1971,8 +1971,8 @@ Status: all complete as of 2026-01-10.
 
 **Detail**:
 
-P3-4: Save/load metric panel configuration as named presets (GET/POST/DELETE 
-/api/v1/metrics/layouts endpoints). P3-5: Toggle 2D/3D network topology view 
+P3-4: Save/load metric panel configuration as named presets (GET/POST/DELETE
+/api/v1/metrics/layouts endpoints). P3-5: Toggle 2D/3D network topology view
 with layer-based z-axis, circular layout for >4 hidden nodes, weight-based edge coloring.
 
 **PRs**: {'PR-series': 'Wave 2 (37 new tests, coverage maintained 93%+)'}
@@ -1986,9 +1986,9 @@ with layer-based z-axis, circular layout for >4 hidden nodes, weight-based edge 
 
 **Detail**:
 
-P3-6: Redis monitoring (health badge, memory/ops/hit-rate metrics, auto-refresh). 
-P3-7: Cassandra cluster overview (contact points, hosts table, keyspace/table metrics). 
-Both integrate new backend clients (redis_client.py, cassandra_client.py), 
+P3-6: Redis monitoring (health badge, memory/ops/hit-rate metrics, auto-refresh).
+P3-7: Cassandra cluster overview (contact points, hosts table, keyspace/table metrics).
+Both integrate new backend clients (redis_client.py, cassandra_client.py),
 optional integration with soft-fail on missing libraries.
 
 **PRs**: {'PR-series': 'Wave 3 (93 new tests, 640+ total for Phase 3)'}
@@ -2238,4 +2238,3 @@ CandidateTrainingWorker (legacy): use --legacy to opt in; emits DeprecationWarni
 **Notes**:
 
 [v2 ARCH→SEC re-bucket]
-

@@ -108,4 +108,3 @@ In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) af
 **Detail**:
 
 - Branch: `main` with committed Phase 5.1/5.2 fixes
-

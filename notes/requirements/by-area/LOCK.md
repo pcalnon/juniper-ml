@@ -166,4 +166,3 @@ to refresh all hook versions and update .pre-commit-config.yaml.
 **Detail**:
 
 Consider using single-source-of-truth version via importlib.metadata.version() instead of file header strings.
-

@@ -3196,4 +3196,3 @@ or explicit forwarding to preserve full signature.
 
 Issue 5.3.1: config.key access can raise AttributeError. Use get() or
 try/except to provide sensible defaults.
-

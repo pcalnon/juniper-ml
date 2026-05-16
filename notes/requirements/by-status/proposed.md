@@ -350,7 +350,7 @@ M-SEC-02 (P0). CSWSH second-line defense. Env var JUNIPER_CANOPY_SESSION_SECRET.
 
 **Detail**:
 
-Issue 1.1.3: broadcast() currently mutates message dicts in-place. 
+Issue 1.1.3: broadcast() currently mutates message dicts in-place.
 Must pass immutable copy or deep clone before modification.
 
 ### JR-ML-OBS-008 — `CanopyDashboardAvailabilitySlowBurn`, `CanopyRenderLatencySlowBurn`, `CascorTrainJobSuccessSlowBurn`, `CascorTrainStepLatencySlowBurn`, `Da.
@@ -547,7 +547,7 @@ Preserves existing command() API. Includes latency instrumentation via _client_l
 
 **Notes**:
 
-[v3 xround merge: rounds=R0-0,R1-0,R2-0,R3-0, n=7] GAP-WS-01. Cross-round dup with ml-B/R3-03 which would have surfaced this. Phase A (Day 1 of runbook). / Disagreement D2 per R1-04 §14. Rationale: user experience during parameter adjustment. / Parallel with Phase 0-cascor. Loose entry gate (SDK ships independent of cascor). Gated by 
+[v3 xround merge: rounds=R0-0,R1-0,R2-0,R3-0, n=7] GAP-WS-01. Cross-round dup with ml-B/R3-03 which would have surfaced this. Phase A (Day 1 of runbook). / Disagreement D2 per R1-04 §14. Rationale: user experience during parameter adjustment. / Parallel with Phase 0-cascor. Loose entry gate (SDK ships independent of cascor). Gated by
 `test_set_params_caller_cancellation_cleans_correlation_map` passing. Rollback: PyPI yank or flag-off. / Settled position C-03 from R3-03 table; cross-round consensus consolidation / Phase A-SDK major milestone from R3-03 Phase index (§2); orchestrates implementation effort / Phase 0-cascor checklist item from R3-03 §3.1 deliverables / Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
 ### JR-ML-SEC-023 — Cassandra referenced in docs but not in compose file.
@@ -724,8 +724,8 @@ Separate detailed spec in ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md
 
 **Detail**:
 
-Phase 1: add Cancel button, cold-swap via canopy adapter + cascor endpoint. 
-Phase 2 (separate doc): live dataset swap behind experimental-functions gate, 
+Phase 1: add Cancel button, cold-swap via canopy adapter + cascor endpoint.
+Phase 2 (separate doc): live dataset swap behind experimental-functions gate,
 two-step warning modal, History/Snapshots/Replay persistence.
 
 **PRs**: PR-7 (Phase 1, Issue, PR-series P2-1 to P2-7 (Phase 2 live swap, documented separately)
@@ -938,8 +938,8 @@ rate, etc. WORSE than documented - affects all training in fit() path.
 
 **Detail**:
 
-Root causes: incomplete adapter mapping, no roundtrip verification. 
-Three sub-parts: (C1) surface drops to user, (C2) extend cascor PATCH endpoints, 
+Root causes: incomplete adapter mapping, no roundtrip verification.
+Three sub-parts: (C1) surface drops to user, (C2) extend cascor PATCH endpoints,
 (C3) roundtrip verification. Includes candidate-pool invariants atomic validation.
 
 **PRs**: PR-1 (Phase 6A series, Issue
@@ -1250,8 +1250,8 @@ File: src/backend/training_state_machine.py
 
 **Detail**:
 
-Step 1.1 (7 tasks): Fix /ws exception loop, enforce max_connections, stop 
-broadcast() mutation, remove duplicate cn_patience, define set_params Pydantic model, 
+Step 1.1 (7 tasks): Fix /ws exception loop, enforce max_connections, stop
+broadcast() mutation, remove duplicate cn_patience, define set_params Pydantic model,
 handle malformed Content-Length, restrict CORS.
 Step 1.2 (5 tasks): Centralize version, update app_config.yaml/pyproject.toml headers,
 use get_settings() in get_rate_limiter(), fix CORS YAML syntax.
@@ -1493,7 +1493,7 @@ Internal-supporting SLIs (§4) emit log-only-severity alerts with same MWMBR sha
 
 **Detail**:
 
-cascor lifecycle manager leaves _pause_event cleared after reset(). 
+cascor lifecycle manager leaves _pause_event cleared after reset().
 Fix: one-line change to clear+set instead of reassign.
 
 **PRs**: PR-5 (cascor fix, ordered first in remediation)
@@ -1655,9 +1655,9 @@ Critical severity: marked P0 as blocking (agents produce incorrect output)
 
 **Detail**:
 
-Cascor's `/ws/training` broadcast stream emits monotonically-increasing `seq` on every outbound envelope, 
-advertises `server_instance_id` + `replay_buffer_capacity` on `connection_established`, supports a 1024-entry 
-replay buffer with `resume` handler, exposes `snapshot_seq` atomically on REST. Browser drains `/ws/training` 
+Cascor's `/ws/training` broadcast stream emits monotonically-increasing `seq` on every outbound envelope,
+advertises `server_instance_id` + `replay_buffer_capacity` on `connection_established`, supports a 1024-entry
+replay buffer with `resume` handler, exposes `snapshot_seq` atomically on REST. Browser drains `/ws/training`
 into bounded Dash store, renders via Plotly.extendTraces, **stops polling `/api/metrics/history`** when healthy.
 Polling kept forever as fallback kill-switch.
 
@@ -2152,8 +2152,8 @@ exception hierarchy (7 exception classes), design patterns (context manager, cal
 
 **Detail**:
 
-No browser automation harness exists. Create pytest sub-suite with ≤5 min 
-wall-clock budget via parallel jobs, caching, and slow marker. Skeleton 
+No browser automation harness exists. Create pytest sub-suite with ≤5 min
+wall-clock budget via parallel jobs, caching, and slow marker. Skeleton
 in Phase 4 step 1, full coverage in Phase 4 step 2.
 
 **PRs**: PR-4.1 (skeleton with basic page loads), {'PR-4.2 (full coverage': 'param Apply, dataset swap, snapshot restore)'}
@@ -3825,7 +3825,7 @@ M-SEC-04 (P1), IMPL-SEC-05..09. RISK-07 mitigation. Phase B-pre (Day 6).
 **Detail**:
 
 10 commits: `messages.py` adds optional `seq: Optional[int]` on every envelope builder.
-`manager.py` adds: `server_instance_id: str = uuid4()`, `server_start_time: float`, `_next_seq: int`, 
+`manager.py` adds: `server_instance_id: str = uuid4()`, `server_start_time: float`, `_next_seq: int`,
 `_seq_lock: asyncio.Lock`, `_replay_buffer: deque` with `maxlen=Settings.ws_replay_buffer_size` (default 1024).
 `connect()` sends `connection_established` with `server_instance_id`, `server_start_time`, `replay_buffer_capacity`.
 `_send_json()` wraps in `asyncio.wait_for(..., timeout=0.5)` (GAP-WS-07 quick-fix).
@@ -3841,12 +3841,12 @@ CHANGELOG + `docs/websocket_protocol.md` update.
 
 **Design**:
 
-Additive-field design. Existing clients ignoring seq keep working. Resume handler with 5 s timeout; 
+Additive-field design. Existing clients ignoring seq keep working. Resume handler with 5 s timeout;
 one-resume guard prevents replay amplification. Atomic snapshot_seq under seq_lock prevents torn reads.
 
 **Notes**:
 
-Parallel with Phase A-SDK. Entry: cascor main clean, GAP-WS-19 verified. Exit: 20 tests pass, 
+Parallel with Phase A-SDK. Entry: cascor main clean, GAP-WS-19 verified. Exit: 20 tests pass,
 seq monotonic in staging, 24h soak zero gaps. Rollback: git revert (15 min TTF).
 
 ### JR-ML-PERF-004 — CasCor remote workers must maintain zero regression in local-only throughput and limit remote overhead to < 5% of task execution.
@@ -6449,7 +6449,7 @@ Phase 0-cascor major milestone from R3-03 Phase index (§2); orchestrates implem
 
 **Detail**:
 
-Step 2.1 (5 CI tasks): Fix lockfile extras, add permissions, fix pip-audit, 
+Step 2.1 (5 CI tasks): Fix lockfile extras, add permissions, fix pip-audit,
 define dev extra, add Codecov upload.
 Step 2.2 (3 security tasks): Consolidate bandit config, standardize invocations,
 fix mypy strict_optional conflict.
@@ -6492,7 +6492,7 @@ fix service URLs, change log handler to append mode.
 **Detail**:
 
 Step 3.1 (6 logging): Fix ColoredFormatter mutation, cache logger wrappers,
-make Sentry sample rate configurable, normalize Prometheus labels, use async 
+make Sentry sample rate configurable, normalize Prometheus labels, use async
 health checks, set production log levels.
 Step 3.2 (5 dead code): Remove unused candidate pool display, orphaned callbacks,
 extract create_empty_plot(), deprecate legacy TrainingMetricsComponent.
@@ -6892,8 +6892,8 @@ Category A: 8 critical test issues; Phase 1 critical
 
 **Detail**:
 
-Issue: spinner changes commit immediately but typed values require blur. 
-Solution: use debounce=350ms for live feedback without callback churn. 
+Issue: spinner changes commit immediately but typed values require blur.
+Solution: use debounce=350ms for live feedback without callback churn.
 Also adds clientside blur-on-Apply and validation styling (invalid=True border).
 
 **PRs**: PR-2 (Phase 6B, Issue
@@ -13901,7 +13901,7 @@ Estimated scope: 2-3 files, 300-500 lines; depends on RemoteWorkerClient in Juni
 **Detail**:
 
 CLN-CC-03: 9 local `import traceback` statements scattered in cascade_correlation.py
-across lines 2270, 2804, 3775, 3840 and other files. Consolidate via uncommented 
+across lines 2270, 2804, 3775, 3840 and other files. Consolidate via uncommented
 line 64 top-level import. Effort: 30 minutes.
 
 ### JR-CAN-DOC-007 — Remove commented-out imports across codebase.
@@ -13924,7 +13924,7 @@ Issue 3.2.5: Commented imports clutter code. Remove or restore with rationale.
 
 **Detail**:
 
-CLN-CC-12: Jupyter notebook checkpoint directories committed to repository in 
+CLN-CC-12: Jupyter notebook checkpoint directories committed to repository in
 src/cascade_correlation/.ipynb_checkpoints/, src/candidate_unit/, src/
 These should be in .gitignore. Effort: 10 minutes.
 
@@ -16710,7 +16710,7 @@ Cosmetic; low priority. Enables UI design documentation.
 
 **Detail**:
 
-Hardcoded dbc.Col(width=3) for all tabs. Move to per-tab config via 
+Hardcoded dbc.Col(width=3) for all tabs. Move to per-tab config via
 ui_standards.py. Seeds UI_STANDARDS.md documentation.
 
 **PRs**: PR-6 (cosmetic sidebar width), PR-6.5 (UI_STANDARDS doc + Training-Metrics narrowing experiment)
@@ -17054,4 +17054,3 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Tasks 4.1, 4.2, 4.3) and AGENTS_MD_UPDATE_PLAN
 **Detail**:
 
 docker-compose config for 3-service deployment not tested end-to-end.
-

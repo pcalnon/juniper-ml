@@ -3038,4 +3038,3 @@ Draft release descriptions for each application (templates provided in the code 
 
 Issue 5.3.3: Bare except: clause catches SystemExit/KeyboardInterrupt.
 Narrow to (ValueError, AttributeError, ...); let system signals propagate.
-

@@ -595,7 +595,7 @@ CAS-REF-002: Coverage gates (per-module thresholds, P2, S effort). CAS-REF-003: 
 **Detail**:
 
 CLN-CC-03: 9 local `import traceback` statements scattered in cascade_correlation.py
-across lines 2270, 2804, 3775, 3840 and other files. Consolidate via uncommented 
+across lines 2270, 2804, 3775, 3840 and other files. Consolidate via uncommented
 line 64 top-level import. Effort: 30 minutes.
 
 ### JR-ML-TOOL-045 — Remove committed .ipynb_checkpoints directories from repository.
@@ -607,7 +607,7 @@ line 64 top-level import. Effort: 30 minutes.
 
 **Detail**:
 
-CLN-CC-12: Jupyter notebook checkpoint directories committed to repository in 
+CLN-CC-12: Jupyter notebook checkpoint directories committed to repository in
 src/cascade_correlation/.ipynb_checkpoints/, src/candidate_unit/, src/
 These should be in .gitignore. Effort: 10 minutes.
 
@@ -657,4 +657,3 @@ Priority P3 (folded, low-visibility change).
 
 **Sources**:
 - `juniper-cascor/notes/development/JUNIPER-CASCOR_POST-RELEASE_DEVELOPMENT-ROADMAP.md` (lines 275-279)
-

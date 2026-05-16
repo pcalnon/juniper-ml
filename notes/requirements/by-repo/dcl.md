@@ -206,4 +206,3 @@ Low-priority metadata and polish tasks: (1) Update header Last Updated from 2026
 **Notes**:
 
 Also in AGENTS_MD_UPDATE_ROADMAP (Tasks 4.1, 4.2, 4.3) and AGENTS_MD_UPDATE_PLAN (Steps 4.1, 4.2, 4.3).
-

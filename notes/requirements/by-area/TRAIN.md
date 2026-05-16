@@ -264,7 +264,7 @@ inconsistent queue names between remote_client.py and remote_client_0.py.
 
 **Detail**:
 
-cascor lifecycle manager leaves _pause_event cleared after reset(). 
+cascor lifecycle manager leaves _pause_event cleared after reset().
 Fix: one-line change to clear+set instead of reassign.
 
 **PRs**: PR-5 (cascor fix, ordered first in remediation)
@@ -1992,4 +1992,3 @@ Current architecture embeds CasCor within Canopy process. Deferral justified by 
 **Notes**:
 
 Complex refactor; deferred to later phase.
-

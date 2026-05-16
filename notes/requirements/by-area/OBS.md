@@ -1030,9 +1030,9 @@ See histogram_rationale file for bucket selection rationale.
 
 **Detail**:
 
-P3-6: Redis monitoring (health badge, memory/ops/hit-rate metrics, auto-refresh). 
-P3-7: Cassandra cluster overview (contact points, hosts table, keyspace/table metrics). 
-Both integrate new backend clients (redis_client.py, cassandra_client.py), 
+P3-6: Redis monitoring (health badge, memory/ops/hit-rate metrics, auto-refresh).
+P3-7: Cassandra cluster overview (contact points, hosts table, keyspace/table metrics).
+Both integrate new backend clients (redis_client.py, cassandra_client.py),
 optional integration with soft-fail on missing libraries.
 
 **PRs**: {'PR-series': 'Wave 3 (93 new tests, 640+ total for Phase 3)'}
@@ -2566,4 +2566,3 @@ logger.py instead of actual call site. Use inspect.stack() to get caller.
 **Notes**:
 
 After R5 completion; scope TBD.
-

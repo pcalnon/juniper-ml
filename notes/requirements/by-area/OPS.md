@@ -266,4 +266,3 @@ Identified by v4. Cross-source status comparison risk.
 **Detail**:
 
 Phase 5: Create OvertoadResearch org on GitHub/PyPI, transfer repos with URL redirects, update git remotes/SSH, add org as PyPI maintainer, update OIDC configs.
-

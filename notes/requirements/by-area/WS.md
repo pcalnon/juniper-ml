@@ -147,7 +147,7 @@ Preserves existing command() API. Includes latency instrumentation via _client_l
 
 **Notes**:
 
-[v3 xround merge: rounds=R0-0,R1-0,R2-0,R3-0, n=7] GAP-WS-01. Cross-round dup with ml-B/R3-03 which would have surfaced this. Phase A (Day 1 of runbook). / Disagreement D2 per R1-04 §14. Rationale: user experience during parameter adjustment. / Parallel with Phase 0-cascor. Loose entry gate (SDK ships independent of cascor). Gated by 
+[v3 xround merge: rounds=R0-0,R1-0,R2-0,R3-0, n=7] GAP-WS-01. Cross-round dup with ml-B/R3-03 which would have surfaced this. Phase A (Day 1 of runbook). / Disagreement D2 per R1-04 §14. Rationale: user experience during parameter adjustment. / Parallel with Phase 0-cascor. Loose entry gate (SDK ships independent of cascor). Gated by
 `test_set_params_caller_cancellation_cleans_correlation_map` passing. Rollback: PyPI yank or flag-off. / Settled position C-03 from R3-03 table; cross-round consensus consolidation / Phase A-SDK major milestone from R3-03 Phase index (§2); orchestrates implementation effort / Phase 0-cascor checklist item from R3-03 §3.1 deliverables / Phase A-SDK checklist item from R3-03 §4.1 deliverables
 
 ### JR-ML-WS-010 — Day-1 verification procedure: 5 greps + baseline measurement before any Phase B deploy.
@@ -272,9 +272,9 @@ Two-flag logic: `enabled = enable_browser_ws_bridge AND NOT disable_ws_bridge`. 
 
 **Detail**:
 
-Cascor's `/ws/training` broadcast stream emits monotonically-increasing `seq` on every outbound envelope, 
-advertises `server_instance_id` + `replay_buffer_capacity` on `connection_established`, supports a 1024-entry 
-replay buffer with `resume` handler, exposes `snapshot_seq` atomically on REST. Browser drains `/ws/training` 
+Cascor's `/ws/training` broadcast stream emits monotonically-increasing `seq` on every outbound envelope,
+advertises `server_instance_id` + `replay_buffer_capacity` on `connection_established`, supports a 1024-entry
+replay buffer with `resume` handler, exposes `snapshot_seq` atomically on REST. Browser drains `/ws/training`
 into bounded Dash store, renders via Plotly.extendTraces, **stops polling `/api/metrics/history`** when healthy.
 Polling kept forever as fallback kill-switch.
 
@@ -706,7 +706,7 @@ Enables Phase C and Phase D. Separate from metrics relay (Day 7). Histogram buck
 **Detail**:
 
 10 commits: `messages.py` adds optional `seq: Optional[int]` on every envelope builder.
-`manager.py` adds: `server_instance_id: str = uuid4()`, `server_start_time: float`, `_next_seq: int`, 
+`manager.py` adds: `server_instance_id: str = uuid4()`, `server_start_time: float`, `_next_seq: int`,
 `_seq_lock: asyncio.Lock`, `_replay_buffer: deque` with `maxlen=Settings.ws_replay_buffer_size` (default 1024).
 `connect()` sends `connection_established` with `server_instance_id`, `server_start_time`, `replay_buffer_capacity`.
 `_send_json()` wraps in `asyncio.wait_for(..., timeout=0.5)` (GAP-WS-07 quick-fix).
@@ -722,12 +722,12 @@ CHANGELOG + `docs/websocket_protocol.md` update.
 
 **Design**:
 
-Additive-field design. Existing clients ignoring seq keep working. Resume handler with 5 s timeout; 
+Additive-field design. Existing clients ignoring seq keep working. Resume handler with 5 s timeout;
 one-resume guard prevents replay amplification. Atomic snapshot_seq under seq_lock prevents torn reads.
 
 **Notes**:
 
-Parallel with Phase A-SDK. Entry: cascor main clean, GAP-WS-19 verified. Exit: 20 tests pass, 
+Parallel with Phase A-SDK. Entry: cascor main clean, GAP-WS-19 verified. Exit: 20 tests pass,
 seq monotonic in staging, 24h soak zero gaps. Rollback: git revert (15 min TTF).
 
 ### JR-ML-WS-044 — Constitution: 42+ settled positions on wire format, protocol behavior, security, phase order, observability, effort.
@@ -1945,4 +1945,3 @@ Native installer for Claude Code (no Node.js required), uvx for Serena (from Git
 
 Issue 5.3.2: WebSocket message handler does not check message size.
 Add check: reject messages > 1MB with log and graceful disconnect.
-

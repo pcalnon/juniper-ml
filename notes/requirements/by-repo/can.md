@@ -58,7 +58,7 @@ thread isolation. File: src/frontend/callback_context.py
 
 **Detail**:
 
-Issue 1.1.3: broadcast() currently mutates message dicts in-place. 
+Issue 1.1.3: broadcast() currently mutates message dicts in-place.
 Must pass immutable copy or deep clone before modification.
 
 ### JR-CAN-API-001 — Dataset-tab edits do not change running training data; missing dataset-swap endpoint and param-map gap prevent user control of cascor dataset.
@@ -85,8 +85,8 @@ Separate detailed spec in ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md
 
 **Detail**:
 
-Phase 1: add Cancel button, cold-swap via canopy adapter + cascor endpoint. 
-Phase 2 (separate doc): live dataset swap behind experimental-functions gate, 
+Phase 1: add Cancel button, cold-swap via canopy adapter + cascor endpoint.
+Phase 2 (separate doc): live dataset swap behind experimental-functions gate,
 two-step warning modal, History/Snapshots/Replay persistence.
 
 **PRs**: PR-7 (Phase 1, Issue, PR-series P2-1 to P2-7 (Phase 2 live swap, documented separately)
@@ -130,8 +130,8 @@ File: src/main.py
 
 **Detail**:
 
-Root causes: incomplete adapter mapping, no roundtrip verification. 
-Three sub-parts: (C1) surface drops to user, (C2) extend cascor PATCH endpoints, 
+Root causes: incomplete adapter mapping, no roundtrip verification.
+Three sub-parts: (C1) surface drops to user, (C2) extend cascor PATCH endpoints,
 (C3) roundtrip verification. Includes candidate-pool invariants atomic validation.
 
 **PRs**: PR-1 (Phase 6A series, Issue
@@ -226,8 +226,8 @@ File: src/backend/training_state_machine.py
 
 **Detail**:
 
-Step 1.1 (7 tasks): Fix /ws exception loop, enforce max_connections, stop 
-broadcast() mutation, remove duplicate cn_patience, define set_params Pydantic model, 
+Step 1.1 (7 tasks): Fix /ws exception loop, enforce max_connections, stop
+broadcast() mutation, remove duplicate cn_patience, define set_params Pydantic model,
 handle malformed Content-Length, restrict CORS.
 Step 1.2 (5 tasks): Centralize version, update app_config.yaml/pyproject.toml headers,
 use get_settings() in get_rate_limiter(), fix CORS YAML syntax.
@@ -255,7 +255,7 @@ Emergency size cap: 10,000 entries. File: src/security.py
 
 **Detail**:
 
-cascor lifecycle manager leaves _pause_event cleared after reset(). 
+cascor lifecycle manager leaves _pause_event cleared after reset().
 Fix: one-line change to clear+set instead of reassign.
 
 **PRs**: PR-5 (cascor fix, ordered first in remediation)
@@ -725,8 +725,8 @@ Extract to shared helper. File: src/frontend/components/metrics_panel.py
 
 **Detail**:
 
-No browser automation harness exists. Create pytest sub-suite with ≤5 min 
-wall-clock budget via parallel jobs, caching, and slow marker. Skeleton 
+No browser automation harness exists. Create pytest sub-suite with ≤5 min
+wall-clock budget via parallel jobs, caching, and slow marker. Skeleton
 in Phase 4 step 1, full coverage in Phase 4 step 2.
 
 **PRs**: PR-4.1 (skeleton with basic page loads), {'PR-4.2 (full coverage': 'param Apply, dataset swap, snapshot restore)'}
@@ -1401,7 +1401,7 @@ UX issue; component refactor required.
 
 **Detail**:
 
-Step 2.1 (5 CI tasks): Fix lockfile extras, add permissions, fix pip-audit, 
+Step 2.1 (5 CI tasks): Fix lockfile extras, add permissions, fix pip-audit,
 define dev extra, add Codecov upload.
 Step 2.2 (3 security tasks): Consolidate bandit config, standardize invocations,
 fix mypy strict_optional conflict.
@@ -1433,7 +1433,7 @@ fix service URLs, change log handler to append mode.
 **Detail**:
 
 Step 3.1 (6 logging): Fix ColoredFormatter mutation, cache logger wrappers,
-make Sentry sample rate configurable, normalize Prometheus labels, use async 
+make Sentry sample rate configurable, normalize Prometheus labels, use async
 health checks, set production log levels.
 Step 3.2 (5 dead code): Remove unused candidate pool display, orphaned callbacks,
 extract create_empty_plot(), deprecate legacy TrainingMetricsComponent.
@@ -1556,8 +1556,8 @@ Category A: 8 critical test issues; Phase 1 critical
 
 **Detail**:
 
-Issue: spinner changes commit immediately but typed values require blur. 
-Solution: use debounce=350ms for live feedback without callback churn. 
+Issue: spinner changes commit immediately but typed values require blur.
+Solution: use debounce=350ms for live feedback without callback churn.
 Also adds clientside blur-on-Apply and validation styling (invalid=True border).
 
 **PRs**: PR-2 (Phase 6B, Issue
@@ -1633,7 +1633,7 @@ Phase 2 feature; shipped with 4 tests.
 
 **Detail**:
 
-Candidate-pool invariants form a constrained triple (selected_candidates, 
+Candidate-pool invariants form a constrained triple (selected_candidates,
 top_candidates, random_candidates) that must be validated atomically in cascor.
 Post-merge validation required for multi-key PATCH (e.g. {S: 6, T: 4, R: 2}).
 Validation helper _validate_candidate_pool_triple() enforces 6 invariants.
@@ -1669,8 +1669,8 @@ Phase 2 feature; shipped with 17 tests, visual regression verification recommend
 
 **Detail**:
 
-P3-1: Create new snapshot endpoint (POST /api/v1/snapshots) with auto-generated 
-timestamp names and demo mode support. P3-2: Restore endpoint with training state 
+P3-1: Create new snapshot endpoint (POST /api/v1/snapshots) with auto-generated
+timestamp names and demo mode support. P3-2: Restore endpoint with training state
 validation and WebSocket broadcast. P3-3: History tracking (append-only JSONL log).
 Status: all complete as of 2026-01-10.
 
@@ -1683,8 +1683,8 @@ Status: all complete as of 2026-01-10.
 
 **Detail**:
 
-P3-4: Save/load metric panel configuration as named presets (GET/POST/DELETE 
-/api/v1/metrics/layouts endpoints). P3-5: Toggle 2D/3D network topology view 
+P3-4: Save/load metric panel configuration as named presets (GET/POST/DELETE
+/api/v1/metrics/layouts endpoints). P3-5: Toggle 2D/3D network topology view
 with layer-based z-axis, circular layout for >4 hidden nodes, weight-based edge coloring.
 
 **PRs**: {'PR-series': 'Wave 2 (37 new tests, coverage maintained 93%+)'}
@@ -1698,9 +1698,9 @@ with layer-based z-axis, circular layout for >4 hidden nodes, weight-based edge 
 
 **Detail**:
 
-P3-6: Redis monitoring (health badge, memory/ops/hit-rate metrics, auto-refresh). 
-P3-7: Cassandra cluster overview (contact points, hosts table, keyspace/table metrics). 
-Both integrate new backend clients (redis_client.py, cassandra_client.py), 
+P3-6: Redis monitoring (health badge, memory/ops/hit-rate metrics, auto-refresh).
+P3-7: Cassandra cluster overview (contact points, hosts table, keyspace/table metrics).
+Both integrate new backend clients (redis_client.py, cassandra_client.py),
 optional integration with soft-fail on missing libraries.
 
 **PRs**: {'PR-series': 'Wave 3 (93 new tests, 640+ total for Phase 3)'}
@@ -3046,7 +3046,7 @@ Cosmetic; low priority. Enables UI design documentation.
 
 **Detail**:
 
-Hardcoded dbc.Col(width=3) for all tabs. Move to per-tab config via 
+Hardcoded dbc.Col(width=3) for all tabs. Move to per-tab config via
 ui_standards.py. Seeds UI_STANDARDS.md documentation.
 
 **PRs**: PR-6 (cosmetic sidebar width), PR-6.5 (UI_STANDARDS doc + Training-Metrics narrowing experiment)
@@ -3167,4 +3167,3 @@ Currently no centralized design standards; sidebar width hardcoded to dbc.Col(wi
 **Notes**:
 
 Enables consistent design across application.
-

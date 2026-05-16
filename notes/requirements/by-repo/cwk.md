@@ -213,4 +213,3 @@ CandidateTrainingWorker (legacy): use --legacy to opt in; emits DeprecationWarni
 **Notes**:
 
 [v2 ARCH→SEC re-bucket]
-

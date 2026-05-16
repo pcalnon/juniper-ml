@@ -344,8 +344,8 @@ Prerequisite for other canopy development items.
 
 **Detail**:
 
-No browser automation harness exists. Create pytest sub-suite with ≤5 min 
-wall-clock budget via parallel jobs, caching, and slow marker. Skeleton 
+No browser automation harness exists. Create pytest sub-suite with ≤5 min
+wall-clock budget via parallel jobs, caching, and slow marker. Skeleton
 in Phase 4 step 1, full coverage in Phase 4 step 2.
 
 **PRs**: PR-4.1 (skeleton with basic page loads), {'PR-4.2 (full coverage': 'param Apply, dataset swap, snapshot restore)'}
@@ -601,7 +601,7 @@ Quality gate missing; manual testing only.
 
 **Detail**:
 
-Step 2.1 (5 CI tasks): Fix lockfile extras, add permissions, fix pip-audit, 
+Step 2.1 (5 CI tasks): Fix lockfile extras, add permissions, fix pip-audit,
 define dev extra, add Codecov upload.
 Step 2.2 (3 security tasks): Consolidate bandit config, standardize invocations,
 fix mypy strict_optional conflict.
@@ -1631,4 +1631,3 @@ Align to standard shellcheck options.
 
 When Cascor training runs via asyncio.run_in_executor() in FastAPI, WebSocket
 responsiveness should be verified under load.
-

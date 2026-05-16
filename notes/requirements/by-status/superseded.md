@@ -440,4 +440,3 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Notes**:
 
 [v3 brief repaired from cited content; was: '23. Validation Methodology (v5.0.0 - v1.0.0)'] Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
-
