@@ -15780,7 +15780,7 @@ Identified by all 7 Phase 3 proposals. MODERATE severity, not a display blocker.
 
 **Detail**:
 
-Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py, 
+Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py,
 test_main_ws.py (subset), test_websocket_state.py (subset).
 Convert to TestClient WebSocket interface for CI compatibility.
 Estimated scope: 4 files, 200-300 lines modified.

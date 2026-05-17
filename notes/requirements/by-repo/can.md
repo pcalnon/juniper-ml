@@ -437,7 +437,7 @@ CODE_REVIEW_ANALYSIS v0.4.0; critical CI/CD blocker for regular dependency updat
 
 **Detail**:
 
-Service backend's _normalize_metric() produces flat keys (train_loss, train_accuracy, hidden_units), 
+Service backend's _normalize_metric() produces flat keys (train_loss, train_accuracy, hidden_units),
 but dashboard MetricsPanel reads nested keys (metrics.loss, metrics.accuracy, network_topology.hidden_units).
 Fix: Add _to_dashboard_metric() transformation layer after _normalize_metric() in _ServiceTrainingMonitor.get_recent_metrics().
 
@@ -2717,7 +2717,7 @@ Identified by all 7 Phase 3 proposals. MODERATE severity, not a display blocker.
 
 **Detail**:
 
-Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py, 
+Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py,
 test_main_ws.py (subset), test_websocket_state.py (subset).
 Convert to TestClient WebSocket interface for CI compatibility.
 Estimated scope: 4 files, 200-300 lines modified.

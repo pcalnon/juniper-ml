@@ -1520,7 +1520,7 @@ DeprecationWarnings (23): CandidateTrainingWorker.__init__() emits at worker.py:
 
 **Detail**:
 
-Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py, 
+Four WebSocket test groups currently skipped: test_websocket_training.py, test_websocket_control.py,
 test_main_ws.py (subset), test_websocket_state.py (subset).
 Convert to TestClient WebSocket interface for CI compatibility.
 Estimated scope: 4 files, 200-300 lines modified.
