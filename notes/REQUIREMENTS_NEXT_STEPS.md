@@ -25,15 +25,15 @@ Each section below is a separate, independently-shippable initiative. None of th
 
 ## 2. Topics
 
-| # | Topic | Cost | Value | Depends on | Suggested start? |
-|---|---|---|---|---|---|
-| 1 | [Snapshot consumption recipes](#3-snapshot-consumption-recipes) | Trivial | Immediate | — | Yes — start here |
-| 2 | [JR-ID references in PRs](#4-jr-id-references-in-prs) | Low | High | — | Yes |
-| 3 | [Author-side JR-ID tagging in notes/](#5-author-side-jr-id-tagging-in-notes) | Low | Medium | — | When tooling matures |
-| 4 | [CI lint validating JR-ID references](#6-ci-lint-validating-jr-id-references) | Medium | Medium | §4 or §5 adoption | After §4 picks up |
-| 5 | [Stale / drift detection](#7-stale--drift-detection) | Medium | Medium | — | Before any refresh |
-| 6 | [Periodic refresh procedure](#8-periodic-refresh-procedure) | Medium | Medium | §7 | When drift accumulates |
-| 7 | [§12 carry-over triage](#9-12-carry-over-triage) | Low (admin) | Low | — | Anytime |
+| # | Topic                                                                                    | Cost        | Value     | Depends on        | Suggested start?       |
+|---|------------------------------------------------------------------------------------------|-------------|-----------|-------------------|------------------------|
+| 1 | [Snapshot consumption recipes](#3-snapshot-consumption-recipes)                          | Trivial     | Immediate | —                 | Yes — start here       |
+| 2 | [JR-ID references in PRs](#4-jr-id-references-in-prs)                                    | Low         | High      | —                 | Yes                    |
+| 3 | [Author-side JR-ID tagging in notes/](#5-author-side-jr-id-tagging-in-notes-source-docs) | Low         | Medium    | —                 | When tooling matures   |
+| 4 | [CI lint validating JR-ID references](#6-ci-lint-validating-jr-id-references)            | Medium      | Medium    | §4 or §5 adoption | After §4 picks up      |
+| 5 | [Stale / drift detection](#7-stale--drift-detection)                                     | Medium      | Medium    | —                 | Before any refresh     |
+| 6 | [Periodic refresh procedure](#8-periodic-refresh-procedure)                              | Medium      | Medium    | §7                | When drift accumulates |
+| 7 | [§12 carry-over triage](#9-12-carry-over-triage)                                         | Low (admin) | Low       | —                 | Anytime                |
 
 ---
 
@@ -244,14 +244,14 @@ The `scripts/validate_jr_id_refs.py` (to be written) reads the PR body from stdi
 
 ### Categories of drift
 
-| Drift type | Detection signal | Likely action |
-|---|---|---|
-| **Line shift** — content moved within the same file (e.g., section added above pushed everything down) | Brief keywords no longer in cited range but still in file | Re-cite to new line range |
-| **Content deletion** — cited content removed | Brief keywords no longer in file at all | Mark requirement as `superseded` or `rejected` pending review |
-| **File deletion** — source file no longer exists | `path` does not resolve | Same — supersede or rejection |
-| **File renamed** — source moved (e.g., `notes/foo.md` → `notes/legacy/foo.md`) | Path doesn't resolve but a same-basename file exists nearby | Re-cite to new path |
-| **Content drift** — line range still contains relevant content, but specifics changed (numbers, names) | Brief partially matches; surrounding content has changed | Flag for manual review; possibly update brief |
-| **No drift** | Brief keywords still in cited range | No action |
+| Drift type                                                                                             | Detection signal                                            | Likely action                                                 |
+|--------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|---------------------------------------------------------------|
+| **Line shift** — content moved within the same file (e.g., section added above pushed everything down) | Brief keywords no longer in cited range but still in file   | Re-cite to new line range                                     |
+| **Content deletion** — cited content removed                                                           | Brief keywords no longer in file at all                     | Mark requirement as `superseded` or `rejected` pending review |
+| **File deletion** — source file no longer exists                                                       | `path` does not resolve                                     | Same — supersede or rejection                                 |
+| **File renamed** — source moved (e.g., `notes/foo.md` → `notes/legacy/foo.md`)                         | Path doesn't resolve but a same-basename file exists nearby | Re-cite to new path                                           |
+| **Content drift** — line range still contains relevant content, but specifics changed (numbers, names) | Brief partially matches; surrounding content has changed    | Flag for manual review; possibly update brief                 |
+| **No drift**                                                                                           | Brief keywords still in cited range                         | No action                                                     |
 
 ### Existing tooling
 
@@ -320,14 +320,14 @@ A refresh becomes worthwhile when one or more of:
 
 **Status**: Active. The following plan-doc §12 issues have explicit dispositions:
 
-| § | Issue | Disposition | Rationale |
-|---|---|---|---|
-| #8 | Phase-3c agents truncated on elephant files | **DEFER permanently** — agent-brief improvement; only helps future extraction passes. No extraction passes planned. | Resolution from v4-#18: corpus is at coverage ceiling. |
-| #9 | 3c-3b-2 invented invalid category codes | **DEFER permanently** — same reason as #8. | Same. |
-| #11 | Score 1-9 long-tail (~245 files) unprocessed | **REJECT permanently** — cost > benefit, boilerplate content. | v1 decision, reaffirmed at v4. |
-| #12 | ARCH re-bucket rules first-match heuristic | **ACCEPT as-is** — v3 spot-check showed no obvious misclassifications. | No usage signal that finer ARCH bucketing matters. |
-| #17 | 2 thin-brief entries still flagged after v4 | **ACCEPT as-is** — trivial residual. | Not worth a v5 just for 2 entries. |
-| #18 | Coverage ceiling reached | **FRAMING DECISION (not a defect)** — informs §10 update. | Future work shifts to *use* per this doc. |
+| §   | Issue                                        | Disposition                                                                                                         | Rationale                                              |
+|-----|----------------------------------------------|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|
+| #8  | Phase-3c agents truncated on elephant files  | **DEFER permanently** — agent-brief improvement; only helps future extraction passes. No extraction passes planned. | Resolution from v4-#18: corpus is at coverage ceiling. |
+| #9  | 3c-3b-2 invented invalid category codes      | **DEFER permanently** — same reason as #8.                                                                          | Same.                                                  |
+| #11 | Score 1-9 long-tail (~245 files) unprocessed | **REJECT permanently** — cost > benefit, boilerplate content.                                                       | v1 decision, reaffirmed at v4.                         |
+| #12 | ARCH re-bucket rules first-match heuristic   | **ACCEPT as-is** — v3 spot-check showed no obvious misclassifications.                                              | No usage signal that finer ARCH bucketing matters.     |
+| #17 | 2 thin-brief entries still flagged after v4  | **ACCEPT as-is** — trivial residual.                                                                                | Not worth a v5 just for 2 entries.                     |
+| #18 | Coverage ceiling reached                     | **FRAMING DECISION (not a defect)** — informs §10 update.                                                           | Future work shifts to *use* per this doc.              |
 
 Update plan doc §12 to reflect these dispositions in a future small PR (or alongside the next substantive change).
 
@@ -335,21 +335,21 @@ Update plan doc §12 to reflect these dispositions in a future small PR (or alon
 
 ## 10. Anti-patterns — things NOT to do next
 
-| Anti-pattern | Why not |
-|---|---|
-| Build all of §3-§9 speculatively | Most won't pay off. Wait for usage signals (someone reaches for the feature). |
-| Re-extract score 1-9 long-tail files | §12-#11; rejected at v1 and v4. Cost > benefit. |
-| Add new area codes without a corpus-level review | The 15-code enum is locked. New codes are a v5 prerequisite, not a v4.x option. |
-| Manually edit `id_assignments.yaml` to fix small things | Regenerator will clobber. Edit the source extraction YAMLs instead, or accept the small thing. |
-| Build a custom UI on top of the snapshot | The markdown tree IS the UI. Don't add layers; add queries (§3). |
+| Anti-pattern                                              | Why not                                                                                            |
+|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| Build all of §3-§9 speculatively                          | Most won't pay off. Wait for usage signals (someone reaches for the feature).                      |
+| Re-extract score 1-9 long-tail files                      | §12-#11; rejected at v1 and v4. Cost > benefit.                                                    |
+| Add new area codes without a corpus-level review          | The 15-code enum is locked. New codes are a v5 prerequisite, not a v4.x option.                    |
+| Manually edit `id_assignments.yaml` to fix small things   | Regenerator will clobber. Edit the source extraction YAMLs instead, or accept the small thing.     |
+| Build a custom UI on top of the snapshot                  | The markdown tree IS the UI. Don't add layers; add queries (§3).                                   |
 | Treat the snapshot as ground truth without checking drift | Snapshot is point-in-time. Always run drift detection (§7) before relying on it for big decisions. |
 
 ---
 
 ## 11. Decision log
 
-| Date | Decision | Rationale | Owner |
-|---|---|---|---|
-| 2026-05-16 | Document created with 7 next-step topics | Captures forward plan after v4 corpus shipped (PR #261). Format mirrors plan doc structure: numbered sections, cross-refs, open decisions. | Paul Calnon |
-| 2026-05-16 | All 7 topics are opt-in / wait-for-signal | Avoid speculative infra. The snapshot itself is the deliverable. | Paul Calnon |
-| 2026-05-16 | §3 and §4 recommended as first adoption steps | Lowest cost, immediate value, no infrastructure required. | Paul Calnon |
+| Date       | Decision                                      | Rationale                                                                                                                                  | Owner       |
+|------------|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| 2026-05-16 | Document created with 7 next-step topics      | Captures forward plan after v4 corpus shipped (PR #261). Format mirrors plan doc structure: numbered sections, cross-refs, open decisions. | Paul Calnon |
+| 2026-05-16 | All 7 topics are opt-in / wait-for-signal     | Avoid speculative infra. The snapshot itself is the deliverable.                                                                           | Paul Calnon |
+| 2026-05-16 | §3 and §4 recommended as first adoption steps | Lowest cost, immediate value, no infrastructure required.                                                                                  | Paul Calnon |
