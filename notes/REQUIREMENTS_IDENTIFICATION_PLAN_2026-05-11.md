@@ -374,19 +374,17 @@ IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, an
 
 Per Q3 (snapshot first) and Q4 (notes/ only for v1), the following are explicitly deferred. Each entry includes the conditions under which it should be promoted to active work.
 
+> **2026-05-16 status update (post-v4 ship)**: The forward-looking work captured in this section has now been refined and expanded with v1-v4 empirical experience. The actionable, current version of the forward plan lives in [`REQUIREMENTS_NEXT_STEPS.md`](REQUIREMENTS_NEXT_STEPS.md). The subsections below are retained for historical context (they capture v1-era thinking that informed but does not replace the new doc).
+
 ### 10.1 Living-document refresh
 
-**What**: Convert this from a periodic snapshot into a continuously-maintained artifact that stays in sync with notes/ as new requirements are written or status changes.
+**v4 status**: Decomposed into 4 separate initiatives in `REQUIREMENTS_NEXT_STEPS.md`: [§4 PR refs](REQUIREMENTS_NEXT_STEPS.md#4-jr-id-references-in-prs), [§5 author-side tagging](REQUIREMENTS_NEXT_STEPS.md#5-author-side-jr-id-tagging-in-notes), [§7 drift detection](REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection), [§8 refresh procedure](REQUIREMENTS_NEXT_STEPS.md#8-periodic-refresh-procedure). All retained as opt-in / wait-for-signal initiatives.
 
-**Why deferred**: A living model requires every notes-doc author to follow a tagging convention (e.g. `<!-- req: ID -->` markers, or a structured frontmatter block). Adoption is a separate culture change, and trying to do both v1 capture and v1 living-doc tooling at once dilutes both.
+**What** (v1-era framing, retained for context): Convert this from a periodic snapshot into a continuously-maintained artifact that stays in sync with notes/ as new requirements are written or status changes.
 
-**Promote when**:
+**Why deferred** (v1-era): A living model requires every notes-doc author to follow a tagging convention. Adoption is a separate culture change, and trying to do both v1 capture and v1 living-doc tooling at once dilutes both.
 
-- The v1 snapshot has been used for at least one project planning cycle and the value is confirmed.
-- A tagging convention has been proposed and adopted.
-- A CI lint exists that fails when a new notes file mentions a requirement-shaped phrase without a tag.
-
-**Sketch**:
+**Sketch** (v1-era):
 
 - Notes-doc authors annotate requirements inline: `<!-- req: JR-CAS-WS-014 status:in-progress -->`
 - A scheduled (or PR-triggered) extractor reads these tags + any new untagged candidates, regenerates `notes/requirements/`, and opens a PR with the diff.
@@ -406,11 +404,13 @@ The following sources contain real requirement-shaped content but are deferred f
 
 ### 10.3 Priority field
 
-If Phase 1 forecasts > 1500 candidate requirements, add a `priority` field to the schema (P0 = ship-blocking, P1 = next-cycle, P2 = backlog, P3 = nice-to-have). Defer until Phase-1 numbers are in.
+**v4 status**: **RESOLVED at v2.** Priority field added to schema (P0/P1/P2/P3, source-doc-cue inference). See §5.1 and §11 v2-2 row.
 
 ### 10.4 Cross-repo dependency graph
 
-Some requirements depend on others (e.g. canopy's "use juniper-observability register_or_reuse" depends on juniper-observability's "ship register_or_reuse helper"). v1 captures both as independent entries with a `Notes` cross-reference. A proper dependency-graph view (DOT/Mermaid) is deferred.
+**v4 status**: **NOT BUILT.** No usage signal yet. The `notes:` field on entries captures cross-references in plain text where authors flagged siblings during extraction. A proper graph view (DOT/Mermaid) remains a "build when someone asks for it" item. Listed implicitly under [`REQUIREMENTS_NEXT_STEPS.md` §10 anti-patterns](REQUIREMENTS_NEXT_STEPS.md#10-anti-patterns--things-not-to-do-next) — don't build speculatively.
+
+**Original framing (retained)**: Some requirements depend on others (e.g. canopy's "use juniper-observability register_or_reuse" depends on juniper-observability's "ship register_or_reuse helper"). v1 captures both as independent entries with a `Notes` cross-reference.
 
 ---
 
