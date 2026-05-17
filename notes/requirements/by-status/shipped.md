@@ -1122,7 +1122,7 @@ Closes METRICS-MON R2.3 seed-15. Operator runbook in §6.
 
 **Detail**:
 
-Service backend's _normalize_metric() produces flat keys (train_loss, train_accuracy, hidden_units), 
+Service backend's _normalize_metric() produces flat keys (train_loss, train_accuracy, hidden_units),
 but dashboard MetricsPanel reads nested keys (metrics.loss, metrics.accuracy, network_topology.hidden_units).
 Fix: Add _to_dashboard_metric() transformation layer after _normalize_metric() in _ServiceTrainingMonitor.get_recent_metrics().
 
