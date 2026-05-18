@@ -331,6 +331,8 @@ A refresh becomes worthwhile when one or more of:
 
 Update plan doc §12 to reflect these dispositions in a future small PR (or alongside the next substantive change).
 
+**2026-05-18**: Done. Plan doc §12 now has a "Final dispositions (consolidated 2026-05-18)" subsection mirroring this table. Future refreshes can treat these as closed.
+
 ---
 
 ## 10. Anti-patterns — things NOT to do next

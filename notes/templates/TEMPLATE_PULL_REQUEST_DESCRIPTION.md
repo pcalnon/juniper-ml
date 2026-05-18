@@ -30,6 +30,25 @@
 
 ---
 
+## Requirements
+
+<!--
+  List JR-* IDs touched by this PR. Verb conventions
+  (see notes/REQUIREMENTS_NEXT_STEPS.md §4):
+
+    Closes JR-*           — fully satisfies the requirement (→ shipped at next refresh).
+    Partially closes JR-* — satisfies some parts; specify which.
+    References JR-*       — informed by but does not change status.
+    Supersedes JR-*       — design replaces the entry (→ old entry superseded at refresh).
+
+  Look up IDs via notes/REQUIREMENTS_INDEX.md or notes/requirements/by-area/<CODE>.md.
+  Delete this section if no tracked requirement applies.
+-->
+
+- _e.g._ Closes JR-CAS-WS-014 — WebSocket replay buffer occupancy gauge.
+
+---
+
 ## Priority & Work Status
 
 <!-- Optional: Use this table when the PR bundles multiple related changes -->
