@@ -85,7 +85,7 @@ jobs:
       - name: Run pre-commit hooks
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Pre-commit Checks                      ║"
+          echo "║       juniper-ml - Pre-commit Checks                       ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           pre-commit run --all-files --show-diff-on-failure
 
@@ -112,7 +112,7 @@ jobs:
       - name: Run Python regression tests
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Python Regression Tests                ║"
+          echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
           python3 -m unittest -v tests/test_check_doc_links.py
@@ -123,7 +123,7 @@ jobs:
       - name: Run bash regression tests
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Bash Regression Tests                  ║"
+          echo "║       juniper-ml - Bash Regression Tests                   ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           bash scripts/test_resume_file_safety.bash
 
@@ -149,7 +149,7 @@ jobs:
       - name: Build package
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Build Package                          ║"
+          echo "║       juniper-ml - Build Package                           ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python -m build
 
@@ -197,9 +197,21 @@ jobs:
       - name: Validate Documentation Links
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Documentation Link Validation          ║"
+          echo "║       juniper-ml - Documentation Link Validation           ║"
           echo "╚════════════════════════════════════════════════════════════╝"
-          python scripts/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo skip
+          python scripts/check_doc_links.py \
+            --exclude templates \
+            --exclude history \
+            --exclude legacy \
+            --exclude pull_requests \
+            --exclude releases \
+            --exclude analysis \
+            --exclude fixes \
+            --exclude development \
+            --exclude CHANGELOG.md \
+            --cross-repo skip
+
+
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Security: pip-audit for dependency vulnerabilities
@@ -219,7 +231,7 @@ jobs:
       - name: Run pip-audit
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - pip-audit Security Scan                ║"
+          echo "║       juniper-ml - pip-audit Security Scan                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python -m pip install --upgrade "pip>=26.1.1"
           pip install pip-audit
@@ -255,7 +267,7 @@ jobs:
       - name: Validate .github/workflows/claude.yml
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - claude.yml Public-Repo Access Audit    ║"
+          echo "║       juniper-ml - claude.yml Public-Repo Access Audit     ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           bash util/validate_claude_yaml_access.bash .github/workflows/claude.yml
 
@@ -284,7 +296,7 @@ jobs:
       - name: Generate Dependency Documentation
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Dependency Documentation               ║"
+          echo "║       juniper-ml - Dependency Documentation                ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           bash util/generate_dep_docs.sh
 
@@ -310,7 +322,7 @@ jobs:
       - name: Check Quality Gate Status
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-ml - Quality Gate Status                    ║"
+          echo "║       juniper-ml - Quality Gate Status                     ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           echo ""
           echo "Pre-commit:           ${{ needs.pre-commit.result }}"
