@@ -1,43 +1,82 @@
-# Canopy Frontend Issues — Cross-Repo Implementation Plan (Pointer)
+# Canopy Frontend Issues Plan — Pointer (2026-05-09)
 
-**Date**: 2026-05-09
-**Status**: Plan finalized v1.2; implementation starting with PR-1
-**Canonical plan**: [`juniper-canopy/notes/FRONTEND_ISSUES_PLAN_2026-05-09.md`](../../juniper-canopy/notes/FRONTEND_ISSUES_PLAN_2026-05-09.md)
-**Phase 2 spec**: [`juniper-canopy/notes/ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md`](../../juniper-canopy/notes/ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md)
+This is a **pointer** note. The canonical, full plan lives in the
+juniper-canopy repo:
 
----
+* **Canonical**:
+  [`juniper-canopy/notes/FRONTEND_ISSUES_PLAN_2026-05-09.md`](../../../../../juniper-canopy/notes/FRONTEND_ISSUES_PLAN_2026-05-09.md)
+* **Absolute path**:
+  `/home/pcalnon/Development/python/Juniper/juniper-canopy/notes/FRONTEND_ISSUES_PLAN_2026-05-09.md`
+
+## Why this pointer exists
+
+The plan addresses six juniper-canopy frontend bugs (and one cross-repo cascor
+fix) but was scoped from this juniper-ml worktree. Keeping a pointer here so
+ecosystem-level ops see the work and don't double-spec.
+
+## Revisions
+
+| Date       | Rev  | Note                                                                    |
+|------------|------|-------------------------------------------------------------------------|
+| 2026-05-09 | v1.0 | Initial plan posted.                                                    |
+| 2026-05-09 | v1.1 | Open questions Q1-Q4 resolved (see canonical §10 Resolution log). PR series gains PR-9.5; PR-4 scope hardened with candidate-pool invariants. |
+| 2026-05-09 | v1.2 | Issue #3 Recommendation superseded by §3.4.2 alternate approach. Phase 1 (cold-swap + Cancel) stays in canonical plan; Phase 2 (live in-flight swap behind experimental gate, with History/Snapshots/Replay persistence) lives in a separate spec at `juniper-canopy/notes/ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md`. New PR series P2-1…P2-7. |
 
 ## TL;DR
 
-Six user-facing frontend issues in juniper-canopy, remediated through a cross-repo PR series spanning **juniper-cascor** and **juniper-canopy**. Total optimistic ≈ 33h, realistic ≈ 82h.
+| #   | Issue | Severity | Recommended PR |
+|-----|---|---|---|
+| 1   | Metaparam edits don't reach cascor (silent param-map drop) | P0 | canopy + cascor (PR-2, PR-4, PR-5) |
+| 2   | Numeric input typing vs spinner mismatch | P1 | canopy (PR-8) |
+| 3   | Dataset View edits don't change training dataset | P0 | **Phase 1**: canopy + cascor (PR-6, PR-7 — cold swap + Cancel button). **Phase 2**: in-flight swap behind experimental gate + History/Snapshots/Replay persistence (PRs P2-1…P2-7, separate spec doc). |
+| 4   | No real UI test sub-suite | P1 | canopy (PR-3 skeleton, PR-10 full) |
+| 5   | Single-iteration auto-pause after stop+reset+start | P0 | cascor 1-line (PR-1) |
+| 6   | Sidebar too wide on Training Metrics tab | P3 | canopy (PR-9 + PR-9.5 spec doc) |
 
-| # | Issue | Repos touched | PR(s) |
-|---|-------|---------------|-------|
-| 1 | Metaparameter edits don't reach cascor (silent drop in adapter) | cascor + canopy | PR-4 (cascor PATCH endpoints), PR-5 (canopy adapter) |
-| 2 | Numeric inputs reject either typing OR spinner | canopy | PR-2 |
-| 3 | Dataset View tab doesn't affect training (Phase 1: cancel; Phase 2: live swap) | cascor + canopy | PR-6 (cascor cancel route), PR-6.5 (canopy cancel UI), Phase 2 deferred |
-| 4 | UI test sub-suite missing | canopy | PR-3 (Playwright skeleton), PR-10 (full coverage) |
-| 5 | Single-iteration auto-pause after Stop+Reset | cascor | **PR-1** (starting first) |
-| 6 | Left sidebar too wide on Training Metrics tab | canopy | PR-9 / PR-9.5 |
+## Recommended ordering
 
-## PR ordering (per canonical plan §8)
+`5 → 1 → 3 → 4 (skeleton) → 2 → 6 → 6.5 (UI spec doc + experiment) → 4 (full coverage)`.
+Full dependency graph, diff-ready patches, and validation are in the
+canonical doc.
 
-`5 → 1 → 3 → 4 (skeleton) → 2 → 6 → 6.5 → 4 (full)`
+## Issue #3 — alternate approach (v1.2, 2026-05-09)
 
-Rationale: PR-1 (Issue #5) is the smallest, highest-pain payoff; lockstep cross-repo PRs (4↔5, 6↔6.5) must merge **cascor first** to avoid 404 storms in canopy adapter map (canonical §9 hard dependencies).
+The §3 Recommendation has been replaced by the user-authored §3.4.2 alternate
+approach. The work is now split into two phases:
 
-## Branch naming convention
+* **Phase 1 (in canonical plan)** — cold swap + a Cancel button on the
+  pending-dataset banner. Resolves the user-visible Issue #3 bug. Ships in
+  PR-6 / PR-7.
+* **Phase 2 (separate spec doc)** — in-flight (live) dataset switch behind an
+  "Enable Experimental Functions" toggle, two-step warning modal, server-side
+  gate, and full History/Snapshots/Replay persistence of the swap. Required
+  for CasCor cross-training experiments. Specified in
+  `juniper-canopy/notes/ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md`.
 
-Across all worktrees: `frontend-issues/pr-N-<slug>`.
-Centralized worktree dir: `/home/pcalnon/Development/python/Juniper/worktrees/`.
+The §3.4.2 functional requirements (F2.1–F2.10 in the Phase 2 doc) are the
+source of truth. Implementation specifics in the Phase 2 doc are starting
+points and may be adjusted during review without invalidating the plan.
 
-## Open-question resolutions (canonical §10)
+## Resolved scope notes (from canonical §10 Resolution log)
 
-- **Q1** Demo mode stays — every new endpoint needs a `src/demo_mode.py` mirror.
-- **Q2** PR-4 must include candidate-pool triple invariants (canonical §1.5 C2.1) — atomic post-merge validation.
-- **Q3** New UI lane must add ≤5 min wall-clock CI (parallel + browser cache + `--maxfail=3` + slow marker).
-- **Q4** PR-9 introduces `src/frontend/ui_standards.py`; PR-9.5 seeds `notes/UI_STANDARDS.md` as the single layout-constant source of truth.
+* **Q1 — Demo mode is staying.** Mirror every new endpoint in
+  `juniper-canopy/src/demo_mode.py`. Reuse-refactor filed as out-of-scope
+  follow-up.
+* **Q2 — Candidate-pool knobs are real product surface.** PR-4 must implement
+  the constrained-triple invariants (`S = T + R` with degenerate cases) as
+  atomic post-merge validation, not five independent setters.
+* **Q3 — CI minutes budget capped at +5 min wall-clock** for the new UI lane.
+  Strategy: parallel job, browser cache, `--maxfail=3`, `slow` marker on heavy
+  snapshot tests. Accuracy beats speed.
+* **Q4 — No brand-spec exists; this work seeds one.** PR-9 introduces
+  `src/frontend/ui_standards.py` (constants); PR-9.5 introduces
+  `notes/UI_STANDARDS.md` and runs the Training-Metrics narrowing experiment
+  under Playwright.
 
-## What lives in juniper-ml for this initiative
+## Cross-repo touchpoints (from juniper-ml's perspective)
 
-This pointer doc and (eventually) any cross-repo CI scaffolding the meta-package coordinates. Implementation diffs land in juniper-cascor and juniper-canopy.
+* **juniper-cascor** changes required for PRs 1, 4, 6.
+* **juniper-canopy** changes required for PRs 2, 3, 5, 7, 8, 9, 9.5, 10.
+* **juniper-data-client** unaffected (uses existing `fetch_dataset` for
+  PR-6's dataset reload).
+* **juniper-ml** unaffected at the package level; this pointer only.
