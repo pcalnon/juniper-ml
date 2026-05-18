@@ -117,12 +117,12 @@ FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION} | --resume-fork | --resume-f
 ########################################################################################################################################################################
 # Define Test Input parameters
 ########################################################################################################################################################################
-debug_log "Define Test Input parameters"
+# debug_log "Define Test Input parameters"
 
 # PARAMS_TEST="--prompt \"Hello Claude!\" -- --effort high --print"
-PARAMS_TEST="--id --worktree --skip-permissions --path \"../../../Juniper/juniper-ml/scripts/test_prompt-000.md\" -- --effort high --print"
+# PARAMS_TEST="--id --worktree --skip-permissions --path \"../../../Juniper/juniper-ml/scripts/test_prompt-000.md\" -- --effort high --print"
 # debug_log "Default Testing Input parameters: \"${PARAMS_TEST}\""
-debug_log "Default Testing Input parameters: ${PARAMS_TEST}"
+# debug_log "Default Testing Input parameters: ${PARAMS_TEST}"
 
 
 ########################################################################################################################################################################
@@ -391,6 +391,7 @@ CLAUDE_CODE_PARAMS=()
 debug_log "Verify that input parameters have been provided"
 if [[ "${*}" != "" ]]; then
     debug_log "Input Params: [${#} args]"
+    echo "Input Params: \"${*}\""
 else
     debug_log "No input params provided."
     debug_log "Next time try these:"
@@ -655,6 +656,7 @@ if [[ "${HEADLESS_VALUE}" != "" ]]; then
     nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
 else
     debug_log "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
+    echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
     "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"
 fi
 NOHUP_STATUS=$?
