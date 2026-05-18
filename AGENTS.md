@@ -307,6 +307,35 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 ---
 
+## Pull Request Conventions
+
+### Requirements (JR-ID) cross-references
+
+PR descriptions on juniper-ml SHOULD include a `## Requirements` section that lists the [`JR-<REPO>-<AREA>-<NNN>` IDs](notes/REQUIREMENTS_INDEX.md) this PR touches. The repository-level [`.github/pull_request_template.md`](.github/pull_request_template.md) pre-fills the section; delete it only if no tracked requirement applies.
+
+**Verb conventions** (from [`REQUIREMENTS_NEXT_STEPS.md` §4](notes/REQUIREMENTS_NEXT_STEPS.md#4-jr-id-references-in-prs)):
+
+| Verb                    | Meaning                                                                            | Refresh-time effect       |
+| ----------------------- | ---------------------------------------------------------------------------------- | ------------------------- |
+| `Closes JR-*`           | This PR fully satisfies the requirement.                                           | Status → `shipped`.       |
+| `Partially closes JR-*` | This PR satisfies some of the requirement; describe which parts in the same line. | Status unchanged.         |
+| `References JR-*`       | This PR is informed by but does not change the requirement.                        | Status unchanged.         |
+| `Supersedes JR-*`       | This PR's design replaces an earlier requirement.                                  | Old entry → `superseded`. |
+
+**Looking up an ID**:
+
+- Browse [`notes/REQUIREMENTS_INDEX.md`](notes/REQUIREMENTS_INDEX.md) or [`notes/requirements/by-area/<CODE>.md`](notes/requirements/) for human-readable views.
+- For programmatic queries, see [`REQUIREMENTS_NEXT_STEPS.md` §3 recipes](notes/REQUIREMENTS_NEXT_STEPS.md#3-snapshot-consumption-recipes).
+- Never `grep` `id_assignments.yaml` for content — briefs there are truncated.
+
+**Scope**: Apply the convention in PR *descriptions* only — not commit messages. CI lint validating IDs is deferred until the convention has organic uptake (see [`REQUIREMENTS_NEXT_STEPS.md` §6](notes/REQUIREMENTS_NEXT_STEPS.md#6-ci-lint-validating-jr-id-references)).
+
+### Other PR description conventions
+
+For larger / cross-cutting PRs, the long-form template at [`notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md`](notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md) covers Summary, Context, Priority table, Keep-a-Changelog grouping, Impact/SemVer, Testing, and rollback plans. The repo-level `.github/pull_request_template.md` is the lightweight default; the long-form template is opt-in for PRs that warrant it.
+
+---
+
 ## Worktree Procedures (Mandatory -- Task Isolation)
 
 > **OPERATING INSTRUCTION**: All feature, bugfix, and task work SHOULD use git worktrees for isolation. Worktrees keep the main working directory on the default branch while task work proceeds in a separate checkout.

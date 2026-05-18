@@ -589,3 +589,16 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 |---|---|---|---|
 | 17 | **2 thin-brief entries still flagged after v4-1+v4-3** — borderline edge cases the LLM agent couldn't summarize cleanly. | Trivial | Accept as known limit; not worth a v5 just for 2 entries. |
 | 18 | **Coverage ceiling effectively reached for v1-v4 scope.** Score 1-9 long-tail files (~245) still unprocessed per §12-#11 (cost > benefit). Ecosystem file coverage is **~360/625 = 58%**, but **~98% density-weighted coverage** (high-density work captured; only boilerplate remains). | None | The corpus is essentially complete for practical purposes. Future work should focus on *use* of the snapshot (linking JR-IDs from PRs, integrating into PR templates), not further extraction. |
+
+### Final dispositions (consolidated 2026-05-18)
+
+Each carry-over issue above receives a permanent disposition here. Sourced from [`REQUIREMENTS_NEXT_STEPS.md` §9](REQUIREMENTS_NEXT_STEPS.md#9-12-carry-over-triage). Future refreshes should treat these as closed unless new evidence reopens them.
+
+| #   | Carry-over                                   | Final disposition                       | Rationale                                                            |
+|-----|----------------------------------------------|-----------------------------------------|----------------------------------------------------------------------|
+| #8  | Phase-3c agents truncated on elephant files  | **DEFER permanently**                   | Agent-brief improvement; only helps future extraction. None planned. |
+| #9  | 3c-3b-2 invented invalid category codes      | **DEFER permanently**                   | Same as #8 — extraction-time concern only.                           |
+| #11 | Score 1-9 long-tail (~245 files) unprocessed | **REJECT permanently**                  | Cost > benefit; boilerplate content. v1 decision reaffirmed at v4.   |
+| #12 | ARCH re-bucket rules first-match heuristic   | **ACCEPT as-is**                        | v3 spot-check showed no obvious misclassifications.                  |
+| #17 | 2 thin-brief entries still flagged after v4  | **ACCEPT as-is**                        | Trivial residual; not worth a v5 for 2 entries.                      |
+| #18 | Coverage ceiling reached                     | **FRAMING DECISION (not a defect)**     | Reframes future work toward *use* of the snapshot.                   |

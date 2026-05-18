@@ -51,6 +51,10 @@ Each requirement entry includes:
 - **By status**: `by-status/<status>.md`
 - **ID lookup**: `id_assignments.yaml`
 
+## Querying
+
+For worked recipes ("open P0/P1 SEC entries", "requirements citing file X", per-area / per-repo / per-status views) see [`../REQUIREMENTS_NEXT_STEPS.md` §3](../REQUIREMENTS_NEXT_STEPS.md#3-snapshot-consumption-recipes). It also lists what *not* to do (e.g., don't grep `id_assignments.yaml` for content — briefs are truncated; don't link to line numbers in `by-area/*.md` — they shift on regen).
+
 ## Coverage and limitations
 
 This is a **v1 snapshot**, not a living document. Specifically:

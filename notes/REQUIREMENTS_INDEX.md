@@ -3,6 +3,7 @@
 **Snapshot date**: 2026-05-12
 **Plan doc**: `REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`
 **Schema reference**: `requirements/README.md`
+**Forward plan**: `REQUIREMENTS_NEXT_STEPS.md` — querying recipes (§3), PR JR-ID convention (§4), refresh/drift tooling (§7–§8)
 
 ---
 
