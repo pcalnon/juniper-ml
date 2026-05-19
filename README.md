@@ -1,67 +1,140 @@
-# juniper-ml
+<div align="right" width="150px" height="150px" align="right" valign="top"> <img src="images/Juniper_Logo_150px.png" alt="Juniper" align="right" valign="top" width="150px" /></div>
+<br /> <br /> <br /> <br />
 
-Meta-package for the Juniper-ML Project, a Research Platform for investigating dynamic neural networks and novel learning algorithms.  Prototype implementation uses Cascade Correlation neural networks.
+# Juniper: Dynamic Neural Network Research Platform
 
-## Installation
+Juniper is an AI/ML research platform for investigating dynamic neural network architectures and novel learning paradigms.  The project emphasizes ground-up implementations from primary literature, enabling a more transparent exploration of fundamental algorithms.
 
-Install all client libraries and the distributed worker:
+## Juniper ML
+
+`juniper-ml` is the **public face of the Juniper platform on PyPI**. It is the meta-distribution that aggregates the platform's client libraries — `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, and `juniper-doc-tools` — behind a single installation entry point. The package additionally serves as the version-anchor for cross-component compatibility, the home of the platform-level documentation index, and the host repository from which two independently-tagged sibling packages (`juniper-observability` and `juniper-doc-tools`) are published. External callers who want to interact with Juniper services from their own Python code should start here.
+
+## Distribution
+
+`juniper-ml` is published on PyPI as **[`juniper-ml`](https://pypi.org/project/juniper-ml/)**. It provides a single installation entry point for the platform's client stack:
 
 ```bash
 pip install juniper-ml[all]
 ```
 
-Or install selectively:
-
-```bash
-pip install juniper-ml[clients]  # All client libraries
-pip install juniper-ml[worker]   # Distributed training worker
-```
+Individual components — `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-doc-tools`, and `juniper-observability` — remain installable in isolation for callers that require finer control over their dependency surface.
 
 ## Ecosystem Compatibility
 
 This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml) ecosystem.
-Verified compatible service versions:
+Verified compatible versions:
 
 | juniper-data | juniper-cascor | juniper-canopy | data-client | cascor-client | cascor-worker |
 |--------------|----------------|----------------|-------------|---------------|---------------|
-| 0.4.x        | 0.3.x          | 0.2.x          | >=0.3.1     | >=0.1.0       | >=0.1.0       |
+| 0.6.x        | 0.4.x          | 0.4.x          | >=0.4.1     | >=0.4.0       | >=0.3.0       |
 
-For full-stack Docker deployment and integration tests, see `juniper-deploy`.
+For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy).
 
-## Packages
+## Architecture
 
-| Package                                                                   | Description                                                                 | Install                             |
-|---------------------------------------------------------------------------|-----------------------------------------------------------------------------|-------------------------------------|
-| [juniper-data-client](https://github.com/pcalnon/juniper-data-client)     | HTTP client for the JuniperData dataset generation service                  | `pip install juniper-data-client`   |
-| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | HTTP/WebSocket client for the JuniperCascor neural network training service | `pip install juniper-cascor-client` |
-| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Remote candidate training worker for distributed CasCor training            | `pip install juniper-cascor-worker` |
+`juniper-ml` is a meta-package: it ships no importable code of its own. Its role is to declare, version, and install the libraries through which external callers interact with the platform's services. The diagram below reproduces the platform's dependency graph from the parent ecosystem documentation; `juniper-ml` sits at the bottom-right, aggregating the client side.
 
-## Sibling Package
-
-This repository also contains [`juniper-observability`](juniper-observability/README.md), a separately versioned package for shared health models, request-ID logging, Starlette middleware, Prometheus helpers, and Sentry setup. It is not installed by `juniper-ml[all]`; install it directly when a service needs the shared observability primitives:
-
-```bash
-pip install "juniper-observability[all]"
+```text
+juniper-cascor ──uses──> juniper-data-client ──calls──> juniper-data
+juniper-cascor ──managed by──> juniper-cascor-worker (distributed training, architectural only — no code import dependency)
+juniper-cascor-client ──calls──> juniper-cascor (REST/WebSocket)
+juniper-canopy ──uses──> juniper-data-client ──calls──> juniper-data
+juniper-canopy ──uses──> juniper-cascor-client ──calls──> juniper-cascor
+juniper-deploy ──orchestrates──> juniper-data, juniper-cascor, juniper-canopy (Docker)
+juniper-ml ──meta-package──> juniper-data-client, juniper-cascor-client, juniper-cascor-worker, juniper-doc-tools
+juniper-ml ──hosts (independently published)──> juniper-observability, juniper-doc-tools
 ```
 
-`juniper-observability` publishes from `.github/workflows/publish-observability.yml` when a `juniper-observability-vX.Y.Z` tag is pushed. See the package README for the release checklist and workflow constraints.
+## Related Services
 
-## Extras
+| Component | Relationship | Notes |
+|-----------|-------------|-------|
+| [juniper-data-client](https://github.com/pcalnon/juniper-data-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-data-client` |
+| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-cascor-client` |
+| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Aggregated under `[worker]` and `[all]` | `pip install juniper-cascor-worker` |
+| [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]` and `[all]`; published from this repository | `pip install juniper-doc-tools` |
+| [juniper-observability](juniper-observability/README.md) | Hosted in this repository; not aggregated under any extra (install directly when needed) | `pip install "juniper-observability[all]"` |
 
-| Extra     | Packages Included                              |
-|-----------|------------------------------------------------|
-| `clients` | `juniper-data-client`, `juniper-cascor-client` |
-| `worker`  | `juniper-cascor-worker`                        |
-| `all`     | All of the above                               |
+### Extras
 
-## About Juniper
+| Extra        | Packages Included                                                                                |
+|--------------|--------------------------------------------------------------------------------------------------|
+| `clients`    | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                     |
+| `worker`     | `juniper-cascor-worker>=0.3.0`                                                                   |
+| `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0`                                                                |
+| `all`        | All of the above                                                                                 |
 
-Juniper is an AI/ML research platform implementing the Cascade Correlation Neural Network algorithm (Fahlman & Lebiere, 1990). The platform includes:
+## Active Research Components
 
-- **JuniperCascor** - Cascade Correlation neural network training service
-- **JuniperData** - Dataset generation and management service
-- **juniper-canopy** - Real-time monitoring dashboard
+The active research components of the Juniper platform are surfaced through the component repositories listed below. Each repository's README documents the algorithms, datasets, protocols, or operational primitives it implements; `juniper-ml` aggregates their client surfaces and does not host research code of its own.
+
+| Component | Research artifact |
+|-----------|-------------------|
+| [juniper-cascor](https://github.com/pcalnon/juniper-cascor) | Cascade-Correlation reference implementation (Fahlman & Lebiere, 1990), candidate-pool training protocol, multi-network orchestration |
+| [juniper-data](https://github.com/pcalnon/juniper-data) | Dataset-generation service, named-version registry, ARC-AGI dataset families |
+| [juniper-canopy](https://github.com/pcalnon/juniper-canopy) | Real-time training-dynamics visualisation, network-topology renderer, WebSocket control surface |
+| [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Distributed candidate-unit training over a WebSocket worker protocol |
+| [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | REST + WebSocket training-stream and control-stream client protocols |
+| [juniper-observability](juniper-observability/README.md) | Idempotent Prometheus collector helpers (`register_or_reuse` family), structured-JSON logging, Starlette middleware |
+| [juniper-doc-tools](juniper-doc-tools/README.md) | `juniper-check-doc-links` CLI for cross-repo and ecosystem-root markdown link validation |
+
+## Quick Start Guide
+
+### Prerequisites
+
+- Python ≥ 3.12
+
+The meta-package itself has no other prerequisites. Component-specific requirements (e.g. a running `juniper-data` or `juniper-cascor` service) are documented in the corresponding component repository.
+
+### Installation
+
+```bash
+pip install juniper-ml[all]            # full client stack
+pip install juniper-ml[clients]        # client libraries only
+pip install juniper-ml[worker]         # distributed worker only
+pip install juniper-ml[doc-tools]      # markdown link validator only
+```
+
+### Verification
+
+Confirm the client libraries are importable:
+
+```python
+from juniper_data_client import JuniperDataClient
+from juniper_cascor_client import JuniperCascorClient
+```
+
+Confirm the documentation tooling CLI is on `PATH`:
+
+```bash
+juniper-check-doc-links --version
+```
+
+### Next Steps
+
+- [`docs/QUICK_START.md`](docs/QUICK_START.md) — installation and verification guide
+- [`docs/REFERENCE.md`](docs/REFERENCE.md) — extras, compatibility matrix, environment variables, service ports
+- [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy) — Docker Compose orchestration for the full-stack platform
+
+## Research Philosophy
+
+The Juniper platform exists to study learning algorithms whose network architecture is not fixed in advance. Its initial anchor is the Cascade-Correlation algorithm of Fahlman and Lebiere (1990), implemented from the primary literature without recourse to higher-level abstractions that elide the algorithm's operational detail. The organising commitment is that algorithm implementations remain inspectable at the level at which they were originally specified: candidate units, correlation objectives, weight-freezing semantics, and the structural events that grow the network are first-class artifacts of the codebase rather than internal details of a library wrapper. This permits comparative work — across algorithms, datasets, and hyperparameter regimes — to be conducted on a known and reproducible substrate.
+
+The current platform comprises a Cascade-Correlation training service exposing a REST and WebSocket interface, a dataset-generation service with a named-version registry that includes the ARC-AGI families, a real-time monitoring dashboard for inspecting training dynamics as they occur, and a distributed worker that parallelises candidate-unit training across hosts. Near-term work extends the architectural-growth catalogue beyond Cascade-Correlation, introduces multi-network orchestration for comparative experiments at the level of network populations rather than individual runs, and tightens the dataset–training–monitoring loop into a reproducible research workbench. The longer-term direction is the systematic empirical study of constructive and architecture-growing learning algorithms, with first-class infrastructure for the ablation, comparison, and replication that such a study requires.
+
+Within this programme, `juniper-ml` is the integration surface: a single installation entry point that aggregates the client libraries needed to interact with the platform from external Python code, and a version-anchor that makes the compatibility of components legible at a glance.
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`docs/DOCUMENTATION_OVERVIEW.md`](docs/DOCUMENTATION_OVERVIEW.md) | Navigation index for all `juniper-ml` documentation |
+| [`docs/QUICK_START.md`](docs/QUICK_START.md) | Installation and verification guide |
+| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports |
+| [`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`](docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | Quick-reference card for development tasks |
+| [`notes/README_NORMALIZATION_PLAN_2026-05-19.md`](notes/README_NORMALIZATION_PLAN_2026-05-19.md) | Ecosystem-wide README normalization plan (this README is its reference implementation) |
+| [`notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md`](notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md) | Source-of-truth for the Research Philosophy text inlined above |
 
 ## License
 
-MIT License - Copyright (c) 2024-2026 Paul Calnon
+MIT License — Copyright (c) 2024-2026 Paul Calnon
