@@ -12,6 +12,15 @@ from __future__ import annotations
 
 import re
 
+__all__ = [
+    "ECOSYSTEM_REPOS",
+    "ECOSYSTEM_ROOT_ITEMS",
+    "CROSS_REPO_PATTERN",
+    "ECOSYSTEM_ROOT_PATTERN",
+    "MAX_TRAVERSAL_DEPTH",
+    "CROSS_REPO_MODES",
+]
+
 # Juniper ecosystem repository names. Update this set when repos are added
 # or removed from the polyrepo.
 ECOSYSTEM_REPOS: frozenset[str] = frozenset(
