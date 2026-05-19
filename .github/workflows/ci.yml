@@ -109,6 +109,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          # PyYAML is required by tests/test_workflow_script_paths.py which
+          # parses .github/workflows/*.yml.
+          pip install "pyyaml>=6.0"
+
       - name: Run Python regression tests
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
@@ -119,6 +126,7 @@ jobs:
           python3 -m unittest -v tests/test_worktree_cleanup.py
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py
+          python3 -m unittest -v tests/test_workflow_script_paths.py
 
       - name: Run bash regression tests
         run: |

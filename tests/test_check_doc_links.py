@@ -187,6 +187,167 @@ class ValidateFileBehaviorTests(unittest.TestCase):
             self.assertEqual(cross_repo_count, 1)
             self.assertIn("WARN (cross-repo): README.md:2 -> ../juniper-data/README.md", buffer.getvalue())
 
+    def test_ecosystem_root_skip_counts_links(self):
+        # ../../CLAUDE.md from a doc 1 level deep escapes the repo and lands on
+        # the ecosystem-root CLAUDE.md. With skip mode it should count as a
+        # cross-repo skip, not raise "outside repository boundary".
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "juniper-data"
+            docs_dir = repo_root / "docs"
+            docs_dir.mkdir(parents=True)
+
+            md_file = docs_dir / "CHEATSHEET.md"
+            md_file.write_text(
+                "\n".join(
+                    [
+                        "# Title",
+                        "[Juniper CLAUDE.md](../../CLAUDE.md)",
+                        "[Template](../../notes/DOCUMENTATION_TEMPLATE_STANDARD.md)",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            errors, cross_repo_count = check_doc_links._validate_file(
+                md_file=md_file,
+                repo_root=repo_root,
+                cross_repo_mode="skip",
+                ecosystem_root=None,
+            )
+
+            self.assertEqual(errors, [])
+            self.assertEqual(cross_repo_count, 2)
+
+    def test_ecosystem_root_warn_prints_warning_and_counts_links(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "juniper-cascor"
+            docs_dir = repo_root / "docs"
+            docs_dir.mkdir(parents=True)
+
+            md_file = docs_dir / "GUIDE.md"
+            md_file.write_text(
+                "# Title\n[Notes](../../notes/PLAN.md)\n",
+                encoding="utf-8",
+            )
+
+            buffer = StringIO()
+            with redirect_stdout(buffer):
+                errors, cross_repo_count = check_doc_links._validate_file(
+                    md_file=md_file,
+                    repo_root=repo_root,
+                    cross_repo_mode="warn",
+                    ecosystem_root=None,
+                )
+
+            self.assertEqual(errors, [])
+            self.assertEqual(cross_repo_count, 1)
+            self.assertIn(
+                "WARN (ecosystem-root): docs/GUIDE.md:2 -> ../../notes/PLAN.md",
+                buffer.getvalue(),
+            )
+
+    def test_ecosystem_root_check_validates_file_exists(self):
+        # check mode resolves the path on disk. The ecosystem-root file that
+        # exists passes; the one that does not is reported as broken.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ecosystem_root = Path(temp_dir) / "Juniper"
+            repo_root = ecosystem_root / "juniper-data"
+            docs_dir = repo_root / "docs"
+            docs_dir.mkdir(parents=True)
+            (ecosystem_root / "CLAUDE.md").write_text("# eco\n", encoding="utf-8")
+            (ecosystem_root / "notes").mkdir()
+
+            md_file = docs_dir / "OVERVIEW.md"
+            md_file.write_text(
+                "\n".join(
+                    [
+                        "# Title",
+                        "[ok](../../CLAUDE.md)",
+                        "[missing](../../notes/DOES_NOT_EXIST.md)",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            errors, cross_repo_count = check_doc_links._validate_file(
+                md_file=md_file,
+                repo_root=repo_root,
+                cross_repo_mode="check",
+                ecosystem_root=ecosystem_root,
+            )
+
+            self.assertEqual(cross_repo_count, 0)
+            self.assertEqual(len(errors), 1)
+            self.assertIn("broken ecosystem-root link", errors[0])
+            self.assertIn("DOES_NOT_EXIST.md", errors[0])
+
+    def test_intra_repo_link_through_eco_named_dir_is_not_misclassified(self):
+        # ../notes/PLAN.md from juniper-data/docs/X.md resolves to
+        # juniper-data/notes/PLAN.md -- inside the repo. It must be validated
+        # as a normal intra-repo link, NOT silently skipped as ecosystem-root
+        # just because the path segment "notes" matches an eco-root item.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "juniper-data"
+            docs_dir = repo_root / "docs"
+            docs_dir.mkdir(parents=True)
+            notes_dir = repo_root / "notes"
+            notes_dir.mkdir()
+
+            md_file = docs_dir / "X.md"
+            md_file.write_text(
+                "\n".join(
+                    [
+                        "# Title",
+                        "[ok](../notes/PRESENT.md)",
+                        "[broken](../notes/ABSENT.md)",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            (notes_dir / "PRESENT.md").write_text("# present\n", encoding="utf-8")
+
+            errors, cross_repo_count = check_doc_links._validate_file(
+                md_file=md_file,
+                repo_root=repo_root,
+                cross_repo_mode="skip",
+                ecosystem_root=None,
+            )
+
+            # The present link passes, the absent one is a real broken link
+            # (not a cross-repo skip).
+            self.assertEqual(cross_repo_count, 0)
+            self.assertEqual(len(errors), 1)
+            self.assertIn("ABSENT.md", errors[0])
+            self.assertIn("file not found", errors[0])
+
+    def test_outside_repo_non_ecosystem_root_is_still_an_error(self):
+        # ../../random.md is NOT in _ECOSYSTEM_ROOT_ITEMS, so it must still
+        # be flagged as "outside repository boundary" even with --cross-repo
+        # skip. This is the regression test that prevents reverting to the
+        # 0.6.0-juniper-data permissive behavior that silently swallowed any
+        # outside-repo link.
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir) / "juniper-data"
+            docs_dir = repo_root / "docs"
+            docs_dir.mkdir(parents=True)
+
+            md_file = docs_dir / "Y.md"
+            md_file.write_text(
+                "# Title\n[escape](../../random_unknown.md)\n",
+                encoding="utf-8",
+            )
+
+            errors, cross_repo_count = check_doc_links._validate_file(
+                md_file=md_file,
+                repo_root=repo_root,
+                cross_repo_mode="skip",
+                ecosystem_root=None,
+            )
+
+            self.assertEqual(cross_repo_count, 0)
+            self.assertEqual(len(errors), 1)
+            self.assertIn("outside repository boundary", errors[0])
+
     def test_rejects_null_byte_and_out_of_bounds_paths(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir) / "repo"

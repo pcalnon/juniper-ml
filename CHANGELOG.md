@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `util/check_doc_links.py` bumped to **v0.7.0**: classifies ecosystem-root paths (`../../CLAUDE.md`, `../../AGENTS.md`, `../../notes/`, `../../prompts/`, `../../resources/`, `../../backups/`, `../../logs/`, `../../worktrees/`, `../../juniper-legacy/`, `../../Juniper{,1}.code-workspace`) the same way as cross-repo `../juniper-X/` links: subject to the `--cross-repo` policy (skip/warn/check). Restores parity with the more permissive behavior repo docs were already relying on without silently accepting truly broken outside-repo links. 5 new regression tests in `tests/test_check_doc_links.py` cover the ecosystem-root paths and a guard against misclassifying intra-repo links that happen to traverse a `notes/`-named directory.
+- `tests/test_workflow_script_paths.py` — new lint test that walks `.github/workflows/*.yml`, extracts every script path referenced via `python|bash <path>` / `python3 -m unittest ... <path.py>` / `$VAR <path>` patterns, and asserts each path exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18 when a script was renamed without updating the workflow. Designed to be copy-and-paste portable into the other Juniper repos' `tests/` directories.
+
 ## [0.4.1] - 2026-04-28
 
 ### Added
