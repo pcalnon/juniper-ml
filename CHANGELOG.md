@@ -23,8 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   runs the test matrix (3.12/3.13/3.14) + build + wheel smoke-test on
   PRs touching `juniper-doc-tools/**`. `.github/workflows/publish-doc-tools.yml`
   publishes to TestPyPI → PyPI on tags matching `juniper-doc-tools-v*`,
-  mirroring the existing `publish-observability.yml`. Next: Wave 1 cuts
-  `juniper-doc-tools-v0.1.0` and publishes to PyPI.
+  mirroring the existing `publish-observability.yml`.
+- **`juniper-doc-tools` 0.1.0 published to PyPI** — Wave 1 of the
+  migration plan. Tag `juniper-doc-tools-v0.1.0` cut from `main` on
+  2026-05-19; OIDC trusted publish went through TestPyPI → PyPI without
+  intervention (TestPyPI verified install + console-script + module-form
+  on a fresh runner). `pip install juniper-doc-tools` now works from
+  any environment. New `[doc-tools]` extra in this `pyproject.toml`
+  pins the consumer to `>=0.1.0,<0.2.0` so a future breaking minor
+  bump does not auto-adopt before Wave 2 swaps each repo's CI over.
+  Next: Wave 2 (per-repo CI swap) starts in juniper-ml itself, then
+  fans out to the 7 other ecosystem repos.
 
 ## [0.4.1] - 2026-04-28
 

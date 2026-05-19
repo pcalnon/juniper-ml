@@ -33,8 +33,16 @@ clients = [
 worker = [
     "juniper-cascor-worker>=0.3.0",
 ]
+# Shared documentation tooling -- the markdown link validator that every
+# Juniper repo's docs CI invokes. Wave 1 of the doc-link migration plan
+# (notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md). Pinned
+# inside the 0.1.x range so a future 0.2.x with breaking CLI changes
+# doesn't auto-adopt before consumer repos have migrated.
+doc-tools = [
+    "juniper-doc-tools>=0.1.0,<0.2.0",
+]
 all = [
-    "juniper-ml[clients,worker]",
+    "juniper-ml[clients,worker,doc-tools]",
 ]
 
 [tool.setuptools]
