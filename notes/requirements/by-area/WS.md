@@ -349,7 +349,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v2 ARCH→WS re-bucket] Backward-compatible at deployment level via --legacy. Operators may continue legacy mode during migration window. Default mode changed; no fallback default.
 
-### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](#29-security-model-required-before-phase-d).
+### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](../../code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md#29-security-model-required-before-phase-d).
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 

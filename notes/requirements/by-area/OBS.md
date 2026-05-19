@@ -1105,7 +1105,7 @@ Batch-level metrics collection.
 
 **Detail**:
 
-- [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
+- [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
 
 **Notes**:
 
@@ -1238,7 +1238,7 @@ mock_requests.get.return_value = Mock(ok=False, status_code=503)
 
 [v3 brief repaired from cited content; was: '7.2 MWMBR burn-rate pairs']
 
-### JR-ML-OBS-066 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups….
+### JR-ML-OBS-066 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups….
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -1247,7 +1247,7 @@ mock_requests.get.return_value = Mock(ok=False, status_code=503)
 
 **Detail**:
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
 
 **Notes**:
 
@@ -1979,7 +1979,7 @@ Categories: 5 RED panels, 5 training panels (sessions, hidden units,
 
 **Detail**:
 
-- [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](../legacy/METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
+- [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](../../legacy/METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
 
 ### JR-ML-OBS-113 — Per-repo histogram bucket rationale.
 

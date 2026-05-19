@@ -811,7 +811,7 @@ Added .github/workflows/security-scan.yml for weekly Bandit (static security) an
 
 setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit pre-commit hook tuned to avoid false positives on known-safe test fixtures (B105: hardcoded_password_string suppressed for test auth_token fields). pip-audit dependency scanning runs in CI; torch +cpu local version handling fixed to enable reliable scanning of worker dependency tree.
 
-### JR-ML-SEC-052 — [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](../legacy/METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03).
+### JR-ML-SEC-052 — [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](../../legacy/METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03).
 
 **Status**: designed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -820,7 +820,7 @@ setuptools CVE affecting source distribution handling; bumped to >=82.0. Bandit 
 
 **Detail**:
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR juniper-ml#192)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR juniper-ml#192)
 
 **Notes**:
 

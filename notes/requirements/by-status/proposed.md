@@ -7656,7 +7656,7 @@ Identified in test audit; blocks coverage.
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
-### JR-ML-OBS-066 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups….
+### JR-ML-OBS-066 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups….
 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
@@ -7665,7 +7665,7 @@ Identified in test audit; blocks coverage.
 
 **Detail**:
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
 
 **Notes**:
 
@@ -12971,7 +12971,7 @@ Settled position C-26 from R3-03 table; cross-round consensus consolidation
 
 **Detail**:
 
-- [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](../legacy/METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
+- [`METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md`](../../legacy/METRICS_MONITORING_R3_ENTRY_PLAN_2026-04-30.md)
 
 ### JR-ML-OBS-113 — Per-repo histogram bucket rationale.
 

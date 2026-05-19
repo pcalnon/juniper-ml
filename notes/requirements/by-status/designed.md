@@ -120,7 +120,7 @@
 
 [v2 ARCH→UI re-bucket] [v3 brief repaired from cited content; was: '14.4 Visual Verification Checklist']
 
-### JR-ML-SEC-052 — [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](../legacy/METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03)
+### JR-ML-SEC-052 — [`METRICS_MONITORING_ROADMAP_2026-04-25.md`](../../legacy/METRICS_MONITORING_ROADMAP_2026-04-25.md) — full program tracker (CLOSED 2026-05-03)
 
 **Status**: designed  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
@@ -130,13 +130,13 @@
 
 **Detail**:
 
-- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR juniper-ml#192)
+- [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — program-close note (PR juniper-ml#192)
 
 **Notes**:
 
 [v3 brief repaired from cited content; was: 'Primary']
 
-### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](#29-security-model-required-before-phase-d)
+### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](../../code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md#29-security-model-required-before-phase-d)
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
@@ -1013,7 +1013,7 @@ Batch-level metrics collection.
 
 **Detail**:
 
-- [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
+- [`METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md`](../../legacy/METRICS_MONITORING_R1.2_PROBE_DESIGN_2026-04-27.md)
 
 **Notes**:
 
