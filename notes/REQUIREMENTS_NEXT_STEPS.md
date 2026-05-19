@@ -25,15 +25,15 @@ Each section below is a separate, independently-shippable initiative. None of th
 
 ## 2. Topics
 
-| # | Topic                                                                                    | Cost        | Value     | Depends on        | Suggested start?       |
-|---|------------------------------------------------------------------------------------------|-------------|-----------|-------------------|------------------------|
-| 1 | [Snapshot consumption recipes](#3-snapshot-consumption-recipes)                          | Trivial     | Immediate | —                 | Yes — start here       |
-| 2 | [JR-ID references in PRs](#4-jr-id-references-in-prs)                                    | Low         | High      | —                 | Yes                    |
-| 3 | [Author-side JR-ID tagging in notes/](#5-author-side-jr-id-tagging-in-notes-source-docs) | Low         | Medium    | —                 | When tooling matures   |
-| 4 | [CI lint validating JR-ID references](#6-ci-lint-validating-jr-id-references)            | Medium      | Medium    | §4 or §5 adoption | After §4 picks up      |
-| 5 | [Stale / drift detection](#7-stale--drift-detection)                                     | Medium      | Medium    | —                 | Before any refresh     |
-| 6 | [Periodic refresh procedure](#8-periodic-refresh-procedure)                              | Medium      | Medium    | §7                | When drift accumulates |
-| 7 | [§12 carry-over triage](#9-12-carry-over-triage)                                         | Low (admin) | Low       | —                 | Anytime                |
+| # | Topic                                                                                    | Cost        | Value     | Depends on        | Status (2026-05-18)                  |
+|---|------------------------------------------------------------------------------------------|-------------|-----------|-------------------|--------------------------------------|
+| 1 | [Snapshot consumption recipes](#3-snapshot-consumption-recipes)                          | Trivial     | Immediate | —                 | ✅ Shipped (PR #264)                  |
+| 2 | [JR-ID references in PRs](#4-jr-id-references-in-prs)                                    | Low         | High      | —                 | ✅ Shipped (PR #264)                  |
+| 3 | [Author-side JR-ID tagging in notes/](#5-author-side-jr-id-tagging-in-notes-source-docs) | Low         | Medium    | §6                | Wait for §6                          |
+| 4 | [CI lint validating JR-ID references](#6-ci-lint-validating-jr-id-references)            | Medium      | Medium    | §4 organic uptake | Wait for ~10 PRs using §4            |
+| 5 | [Stale / drift detection](#7-stale--drift-detection)                                     | Medium      | Medium    | —                 | ✅ `--mode quick` shipped (this PR); `--mode full`/`--mode rewrite` deferred |
+| 6 | [Periodic refresh procedure](#8-periodic-refresh-procedure)                              | Medium      | Medium    | §7 full, consolidate-script rebuild | Wait for refresh trigger             |
+| 7 | [§12 carry-over triage](#9-12-carry-over-triage)                                         | Low (admin) | Low       | —                 | ✅ Shipped (PR #264)                  |
 
 ---
 
@@ -238,7 +238,9 @@ The `scripts/validate_jr_id_refs.py` (to be written) reads the PR body from stdi
 
 ## 7. Stale / drift detection
 
-**Status**: Pre-design. Useful immediately as a one-shot health check; required before any periodic refresh.
+**Status**: `--mode quick` shipped 2026-05-18 at [`util/requirements_drift_check.py`](../util/requirements_drift_check.py), with regression tests at [`tests/test_requirements_drift_check.py`](../tests/test_requirements_drift_check.py). Baseline run against v4 snapshot: **1,914 / 1,915 citations OK (99.95%), 1 BAD_PATH** (`JR-CAS-TOOL-002` cites a renamed/removed cascor history file). Drift is far below the >5% refresh trigger.
+
+`--mode full` and `--mode rewrite` are stubbed but unimplemented; they exit with code 2 and a "not yet implemented" message. They remain useful additions but should wait for a refresh trigger that actually exercises them.
 
 **Why**: Notes docs change over time. The cited line ranges in `id_assignments.yaml` are snapshots from extraction date; the content at those lines today may have shifted, been deleted, or been replaced by unrelated content. Without drift detection, a refresh can't tell what changed.
 
@@ -255,7 +257,9 @@ The `scripts/validate_jr_id_refs.py` (to be written) reads the PR body from stdi
 
 ### Existing tooling
 
-The script `/tmp/v2_citation_validate.py` (used during v4 QA, not currently in-tree) already detects 5 of these 6 (everything except "file renamed"). It would need to be promoted to a permanent script (`util/validate_requirements_citations.py` or similar) and extended with the file-rename heuristic.
+**Status (2026-05-18): irrecoverable.** The v4-QA script `v2_citation_validate.py` was authored in `/tmp/` and is no longer on disk — the session sandbox where it lived has been reaped. It cannot be promoted because there is nothing to promote. This loss is the motivating incident for the new ecosystem-wide [Script placement rule](../AGENTS.md#script-placement-mandatory): utility scripts MUST live in `util/`, never in `/tmp/`.
+
+The successor must therefore be **built from scratch** at `util/requirements_drift_check.py`. The five detection categories that the lost script implemented are still spec'd in the table above; the file-rename heuristic (6th category) is the only addition relative to the lost behaviour. The cost is small (~150–200 lines of Python) and the spec is unambiguous, so the rebuild is tractable when triggered.
 
 ### Proposed permanent location
 
@@ -289,7 +293,7 @@ Each refresh is a numbered iteration (vN+1) following the same pattern as v1-v4:
 
 1. **Audit** — run drift-detection (`util/requirements_drift_check.py --mode full`). Generate the drift report.
 2. **Decide scope** — review the drift report. If <5% drift, do a minimal refresh (re-cite only). If 5-20%, do a partial re-extraction on changed files. If >20%, consider a full re-extraction.
-3. **Refresh** — run the appropriate pipeline. Output goes through the standard consolidation script (`/tmp/phase4_consolidate.py` or its permanent successor).
+3. **Refresh** — run the consolidation script. **Status (2026-05-18): the v1–v4 consolidate script (`phase4_consolidate.py`) was authored in `/tmp/` and is irrecoverable** — the session sandbox that held it has been reaped. The first refresh must therefore **rebuild it from scratch** at `util/requirements_consolidate.py`, using the per-phase behaviour descriptions in plan doc §11 as the de-facto specification (Phase-4 base dedupe + v2-3 cross-repo + v2-4 ARCH rebucket + v3-1 fuzzy + v3-2 cross-round + v3-3/v4-3 brief repair). This loss is the motivating incident for the new ecosystem-wide [Script placement rule](../AGENTS.md#script-placement-mandatory); see plan-doc §12 for the formal carry-over entry.
 4. **Validate** — re-run citation validator. Confirm precision ≥ 95% EXACT.
 5. **Update plan doc §11** — add a new vN+1 row in the phase tracker. Update §12 with any new issues.
 6. **Ship** — commit, push, open PR. Same close-out pattern as v1-v4.
@@ -312,7 +316,7 @@ A refresh becomes worthwhile when one or more of:
 ### Open decisions
 
 - **Cadence**: do nothing scheduled; refresh when drift triggers it. Avoid calendar-driven refreshes if nothing has drifted.
-- **Where does the consolidation script live permanently?** Currently `/tmp/phase4_consolidate.py` (created in v1). Should move to `util/requirements_consolidate.py` so it survives across sessions. **This is a v5 prerequisite**.
+- **Where does the consolidation script live permanently?** Permanent destination is `util/requirements_consolidate.py`. **As of 2026-05-18 the script does not exist** (the original `/tmp/phase4_consolidate.py` is irrecoverable per the note above). v5 must rebuild it from scratch as a v5-entry task; the plan-doc §11 phase descriptions are the canonical spec. **This is a hard v5 prerequisite.**
 
 ---
 
