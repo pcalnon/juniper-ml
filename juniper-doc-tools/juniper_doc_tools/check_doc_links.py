@@ -117,6 +117,8 @@ def discover_ecosystem_root(repo_root: Path) -> Path | None:
             if _is_ecosystem_root(candidate):
                 return candidate
     except FileNotFoundError:
+        # Git is not installed/available; fall back to parent-directory probing below.
+        # This keeps link validation usable in non-git environments.
         pass
 
     for parent in [repo_root.parent, repo_root.parent.parent]:
