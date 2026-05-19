@@ -18,7 +18,16 @@
 #    workspace and runs:
 #      1. juniper-check-doc-links --cross-repo check (from PyPI)
 #         — validates cross-repo markdown links skipped during normal PR CI.
-#      2. validate_claude_yaml_access.bash (JUNIPER_ROOT mode)
+#      2. juniper-doc-tools consumer-version-pin lint (§5.1)
+#         — asserts every consumer repo's ci.yml pin still admits the
+#           current juniper-doc-tools version; soft-warns when a pin
+#           lags by more than 2 minor versions.
+#      3. juniper-doc-tools downstream-consumer integration (§5.2)
+#         — installs juniper-doc-tools and runs juniper-check-doc-links
+#           against every cloned consumer repo's docs. Tolerates per-
+#           repo failures up to a configurable threshold; flags
+#           catastrophic regressions across the ecosystem.
+#      4. validate_claude_yaml_access.bash (JUNIPER_ROOT mode)
 #         — fans out the L2/L3 claude.yml safeguard audit (no
 #           pull_request_target/workflow_run, @claude if-guard) across
 #           every Juniper repo, catching drift in sibling repos that
@@ -104,6 +113,98 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE/juniper-ml"
           juniper-check-doc-links --exclude templates --exclude history --exclude legacy --cross-repo check
+
+      # Plan §5.1 -- consumer-version-pin lint. Walks each cloned
+      # consumer repo's ci.yml, extracts the ``juniper-doc-tools>=X,<Y``
+      # pin, and asserts the range still admits the current version
+      # (read from juniper-doc-tools/pyproject.toml in this checkout).
+      # Soft-warns on pins more than 2 minors behind current; hard-fails
+      # when a pin's upper bound excludes the current release.
+      - name: Lint doc-tools pins across consumer repos
+        run: |
+          cd "$GITHUB_WORKSPACE/juniper-ml"
+          python3 -m unittest -v tests/test_doc_tools_drift.py
+
+      # Plan §5.2 -- downstream-consumer integration. Runs juniper-doc-
+      # tools (just installed above) against every cloned consumer
+      # repo's docs with each repo's canonical exclude set. Per-repo
+      # results aggregated; the step fails only if a configurable
+      # number of consumers regress in the same week (catastrophic
+      # juniper-doc-tools regression vs. a one-off broken-doc PR in
+      # any single repo).
+      - name: Downstream-consumer integration check
+        env:
+          # Tolerate up to this many per-repo failures before declaring
+          # a catastrophic juniper-doc-tools regression. With 7 consumers
+          # (juniper-deploy has no doc-link CI), >=5 broken == majority.
+          DOWNSTREAM_FAIL_THRESHOLD: "5"
+        run: |
+          set -uo pipefail
+          cd "$GITHUB_WORKSPACE"
+          # Canonical Juniper exclude set -- mirrors what each repo's
+          # own ci.yml uses. If any consumer customizes its excludes,
+          # update this list in lock-step (or this job will produce
+          # false positives for that repo).
+          ARGS=(
+            --exclude templates
+            --exclude history
+            --exclude legacy
+            --exclude pull_requests
+            --exclude releases
+            --exclude analysis
+            --exclude fixes
+            --exclude development
+            --exclude CHANGELOG.md
+            --cross-repo skip
+          )
+
+          # Consumer repos that ship a doc-link CI lane (juniper-deploy
+          # excluded; it has no docs job in its ci.yml).
+          CONSUMERS=(
+            juniper-canopy
+            juniper-cascor
+            juniper-cascor-client
+            juniper-cascor-worker
+            juniper-data
+            juniper-data-client
+          )
+
+          declare -i failures=0
+          declare -a failed_repos=()
+          for repo in "${CONSUMERS[@]}"; do
+            if [ ! -d "$repo" ]; then
+              echo "::warning::$repo not cloned (skip threshold)"
+              continue
+            fi
+            echo ""
+            echo "═══════════════════════════════════════════════════════════════"
+            echo "  Downstream validation: $repo"
+            echo "═══════════════════════════════════════════════════════════════"
+            ( cd "$repo" && juniper-check-doc-links "${ARGS[@]}" )
+            rc=$?
+            if [ "$rc" -ne 0 ]; then
+              failures=$((failures + 1))
+              failed_repos+=("$repo")
+              echo "::warning::$repo doc-link validation failed (exit $rc)"
+            fi
+          done
+
+          echo ""
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  Downstream integration summary"
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  Failures: ${failures} / ${#CONSUMERS[@]}"
+          if [ "$failures" -gt 0 ]; then
+            echo "  Failed repos: ${failed_repos[*]}"
+          fi
+          echo "  Threshold:    >= ${DOWNSTREAM_FAIL_THRESHOLD} fail-this-job"
+
+          if [ "$failures" -ge "$DOWNSTREAM_FAIL_THRESHOLD" ]; then
+            echo "::error::$failures consumer repos failed doc-link validation -- catastrophic juniper-doc-tools regression suspected"
+            exit 1
+          elif [ "$failures" -gt 0 ]; then
+            echo "::warning::$failures consumer repos broke doc-link validation -- investigate, but below catastrophic threshold (${DOWNSTREAM_FAIL_THRESHOLD})"
+          fi
 
       - name: Audit claude.yml access safeguards (cross-repo, L2/L3)
         # JUNIPER_ROOT mode discovers every <root>/<repo>/.github/workflows/

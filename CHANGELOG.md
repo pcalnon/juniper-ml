@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **§5 drift-detection guard rails** for the `juniper-doc-tools` PyPI
+  migration (plan
+  [`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
+  §5.1 + §5.2). Closes the open follow-ups from Wave 4.
+  - `tests/test_doc_tools_drift.py` — consumer-version-pin lint. Reads
+    the current `juniper-doc-tools` version from
+    `juniper-doc-tools/pyproject.toml`, then walks each cloned consumer
+    repo's `ci.yml` and asserts the `juniper-doc-tools>=X,<Y` pin still
+    admits current. Soft-warns when a pin lags by more than 2 minors;
+    hard-fails when the upper bound excludes current. Also lints
+    juniper-ml's own `ci.yml` + `docs-full-check.yml` for the same pin
+    rule (this case runs even per-PR; the cross-repo assertion auto-
+    skips when siblings aren't on disk). Local runs skip the cross-repo
+    assertion by default to avoid stale-working-tree false positives;
+    set `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` to override.
+  - `.github/workflows/docs-full-check.yml` — two new steps in the
+    weekly cross-repo workflow:
+    - "Lint doc-tools pins across consumer repos" invokes the new test.
+    - "Downstream-consumer integration check" installs `juniper-doc-tools`,
+      runs `juniper-check-doc-links` against each cloned consumer repo's
+      docs with the canonical Juniper exclude set, and aggregates per-
+      repo results. Per-repo failures are warned; the step fails only
+      when `>=DOWNSTREAM_FAIL_THRESHOLD` consumers regress in the same
+      week (default 5 of 6 = catastrophic juniper-doc-tools regression).
+
 ### Removed
 
 - **`util/check_doc_links.py`** (the inline v0.7.0 validator) — Wave 2 + Wave 4 of the doc-link migration plan. Replaced by the PyPI-published `juniper-doc-tools` package; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`. The CI docs jobs (`ci.yml`, `docs-full-check.yml`) now install the package and run the console script. Inline copies in all 7 sibling repos (canopy / cascor / data / cascor-client / cascor-worker / data-client / ml) are deleted in the same wave.
