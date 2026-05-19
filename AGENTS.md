@@ -51,6 +51,15 @@ Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The
 
 The shared `juniper-observability` package is published separately from the same repo (subdirectory `juniper-observability/`) by `.github/workflows/publish-observability.yml`, triggered by tags matching `juniper-observability-v*`.
 
+The shared `juniper-doc-tools` package (Wave 0 scaffold, plan
+[`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md))
+is published from subdirectory `juniper-doc-tools/` by
+`.github/workflows/publish-doc-tools.yml`, triggered by tags matching
+`juniper-doc-tools-v*`. It packages the markdown link validator
+(`juniper-check-doc-links` console script + `python -m juniper_doc_tools`
+module form) so that the 8 ecosystem repos can replace their inline
+`scripts/check_doc_links.py` copies with a single PyPI dependency.
+
 ## Shared Observability Helpers
 
 `juniper-observability` (this repo's `juniper-observability/` subdirectory, published as a standalone PyPI package) is the canonical home for cross-service observability primitives — middlewares, the build-info `Info` metric helper, structured-JSON logging, and **idempotent `prometheus_client` collector helpers**. Any new `Counter` / `Gauge` / `Histogram` / `Summary` / `Info` / `Enum` registration in any Juniper service should go through:
