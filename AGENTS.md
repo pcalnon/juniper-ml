@@ -32,6 +32,7 @@ python3 -m unittest -v tests/test_check_doc_links.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
 python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_requirements_drift_check.py
+python3 -m unittest -v tests/test_workflow_script_paths.py
 bash scripts/test_resume_file_safety.bash
 
 # Run pre-commit hooks
@@ -128,14 +129,15 @@ juniper-ml/
 │
 ├── tests/                     # Regression test suites (Python unittest)
 │   ├── test_wake_the_claude.py           # Launcher script regression (1470 lines)
-│   ├── test_check_doc_links.py           # Doc link validator regression (283 lines)
+│   ├── test_check_doc_links.py           # Doc link validator regression
 │   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
 │   ├── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
-│   └── test_requirements_drift_check.py  # Requirements snapshot drift checker tests
+│   ├── test_requirements_drift_check.py  # Requirements snapshot drift checker tests
+│   └── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
 │
 └── util/                      # Utility scripts and tools
     ├── ad-hoc/                           # Single-use / temporary / unfinished scripts (see ad-hoc/README.md)
-    ├── check_doc_links.py                # Doc link validator (v0.6.0) — used in CI/CD
+    ├── check_doc_links.py                # Doc link validator (v0.7.0) — used in CI/CD
     ├── requirements_drift_check.py       # Drift checker for the requirements snapshot (--mode quick)
     ├── generate_dep_docs.sh              # Generates dependency docs for CI
     ├── worktree_cleanup.bash             # V2 cleanup orchestrator (CWD-safe)
@@ -205,6 +207,7 @@ juniper-ml/
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling
 - `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
 - `tests/test_requirements_drift_check.py` -- Tests for `util/requirements_drift_check.py`: structural range validation, BAD_PATH / BAD_RANGE classification, `--ecosystem-root` rewriting, CLI exit codes, JSON output
+- `tests/test_workflow_script_paths.py` -- Lint test: every `python <path.py>` / `bash <path.bash>` invocation in `.github/workflows/*.yml` must reference a path that exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18.
 - `scripts/test.bash` -- Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` -- Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 

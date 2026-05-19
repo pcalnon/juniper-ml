@@ -150,7 +150,8 @@ repos:
           - --no-strict-optional
           - --python-version=3.12
         files: ^(scripts|tests)/.*\.py$
-        additional_dependencies: []
+        additional_dependencies:
+          - types-PyYAML  # for tests/test_workflow_script_paths.py
 
   # ═══════════════════════════════════════════════════════════════════════════
   # Security Scanning - Bandit (Python scripts)

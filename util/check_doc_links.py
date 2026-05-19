@@ -5,10 +5,10 @@
 # Application:   juniper
 # File Name:     check_doc_links.py
 # Author:        Paul Calnon
-# Version:       0.6.0
+# Version:       0.7.0
 #
 # Date Created:  2026-02-25
-# Last Modified: 2026-03-07
+# Last Modified: 2026-05-18
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
@@ -19,11 +19,13 @@
 #    that same-file anchor links reference existing headings.
 #    External URLs (http/https/mailto) are skipped.
 #
-#    Cross-repo links to Juniper ecosystem siblings are classified
+#    Cross-repo links to Juniper ecosystem siblings (../juniper-X/...) and
+#    ecosystem-root links (../CLAUDE.md, ../../notes/..., etc.) are classified
 #    via regex and handled according to the --cross-repo policy:
 #      skip  - silently skip, report count (default for CI)
 #      warn  - print warnings but do not fail
-#      check - validate via filesystem (requires sibling repos on disk)
+#      check - validate via filesystem (requires sibling repos on disk for
+#              cross-repo links; ecosystem-root links resolve from disk)
 #
 # Usage:
 #    python scripts/check_doc_links.py                           # Scan all .md files (cross-repo: check)
@@ -46,8 +48,10 @@
 
 Scans markdown files for relative links and anchor references,
 verifying that target files exist and heading anchors are valid.
-Cross-repo links to Juniper ecosystem siblings can be classified
-and handled via configurable policy (skip, warn, or check).
+Cross-repo links to Juniper ecosystem siblings (``../juniper-X/...``) and
+ecosystem-root links (``../CLAUDE.md``, ``../../notes/...``, etc.) are
+classified and handled via the configurable ``--cross-repo`` policy
+(``skip``, ``warn``, or ``check``).
 """
 
 import re
@@ -102,6 +106,33 @@ _ECOSYSTEM_REPOS = {
 
 # Pattern to detect cross-repo relative links (one or more ../ followed by an ecosystem repo name)
 _CROSS_REPO_PATTERN = re.compile(r"^(?:\.\./)*(" + "|".join(re.escape(r) for r in sorted(_ECOSYSTEM_REPOS)) + r")/")
+
+# Files and directories that live at the Juniper ecosystem root (parent of the
+# juniper-X repos). Repo docs may reference them via ``../<item>`` /
+# ``../../<item>`` patterns; the validator classifies these the same way as
+# cross-repo links and applies the --cross-repo policy to them.
+_ECOSYSTEM_ROOT_ITEMS = frozenset({
+    "AGENTS.md",
+    "CLAUDE.md",
+    "Juniper.code-workspace",
+    "Juniper1.code-workspace",
+    "backups",
+    "logs",
+    "notes",
+    "prompts",
+    "resources",
+    "worktrees",
+    "juniper-legacy",
+})
+
+# Pattern to detect ecosystem-root relative links: one or more ../ segments
+# followed by a known ecosystem-root item. Classification only applies when
+# the link also escapes the current repo (verified by the bounds check at the
+# call site); ``../notes/foo.md`` from a repo subdirectory that still resolves
+# inside the repo is handled by normal intra-repo validation.
+_ECOSYSTEM_ROOT_PATTERN = re.compile(
+    r"^(?:\.\./)+(" + "|".join(re.escape(n) for n in sorted(_ECOSYSTEM_ROOT_ITEMS)) + r")(?:/|$)"
+)
 
 # Maximum allowed directory traversal segments (..) in a single link
 _MAX_TRAVERSAL_DEPTH = 5
@@ -429,6 +460,36 @@ def _validate_file(md_file: Path, repo_root: Path, verbose: bool = False, cross_
             root_relative_in_bounds = target_path_from_root.is_relative_to(repo_boundary)
 
             if not file_relative_in_bounds and not root_relative_in_bounds:
+                # Path escapes the repo. If it lands on a known ecosystem-root
+                # item (CLAUDE.md, notes/, etc.), classify it the same way as
+                # a cross-repo link and apply the --cross-repo policy. This is
+                # the only valid reason for a relative link to leave the repo;
+                # anything else is a real broken link.
+                eco_match = _ECOSYSTEM_ROOT_PATTERN.match(file_part)
+                if eco_match:
+                    if cross_repo_mode == "skip":
+                        cross_repo_skipped += 1
+                        if verbose:
+                            print(f"  SKIP (ecosystem-root): {md_file}:{line_num} -> {file_part}")
+                        continue
+                    elif cross_repo_mode == "warn":
+                        cross_repo_skipped += 1
+                        print(f"  WARN (ecosystem-root): {rel_source}:{line_num} -> {file_part}")
+                        continue
+                    # "check" mode: verify the target exists on disk relative
+                    # to the source file. ecosystem_root is informational only
+                    # for the error message; resolution is purely path-based
+                    # so this works without sibling repos checked out.
+                    if target_path.exists() or target_path_from_root.exists():
+                        if verbose:
+                            print(f"  OK (ecosystem-root): {md_file}:{line_num} -> {file_part}")
+                    else:
+                        errors.append(
+                            f"  {rel_source}:{line_num}: broken ecosystem-root link "
+                            f"[{link_text}]({target}) -> file not found"
+                        )
+                    continue
+
                 errors.append(f"  {rel_source}:{line_num}: link resolves outside repository boundary")
                 continue
 
