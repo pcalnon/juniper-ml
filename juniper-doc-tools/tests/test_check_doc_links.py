@@ -533,6 +533,40 @@ def test_validate_directory_returns_validation_result(make_repo: Callable[..., P
     assert result.ok is False
     assert result.scanned_files == 2
     assert any("does_not_exist.md" in e for e in result.errors)
+    # 0.1.1: files_with_errors is a first-class field, counted at
+    # iteration time. Only one file (links.md) has any error.
+    assert result.files_with_errors == 1
+
+
+def test_validate_directory_files_with_errors_counts_each_file_once(
+    make_repo: Callable[..., Path],
+) -> None:
+    """Regression test for the 0.1.1 fix: a single markdown file that
+    has both a broken-anchor error (prefixed with the absolute Path) and
+    a broken-link error (prefixed with the path relative to repo_root)
+    must still be counted as one file, not two. The 0.1.0 CLI heuristic
+    string-deduped error prefixes and double-counted in this case.
+    """
+    repo_root = make_repo()
+    md_file = repo_root / "page.md"
+    md_file.write_text(
+        "\n".join(
+            [
+                "# Heading One",
+                "",
+                "[missing-file](does_not_exist.md)",  # broken link -> rel_source prefix
+                "[bad-anchor](#nope)",  # broken anchor -> absolute Path prefix
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = validate_directory(repo_root, cross_repo_mode="skip")
+
+    assert result.ok is False
+    # Two errors, but they come from the same single file:
+    assert len(result.errors) == 2
+    assert result.files_with_errors == 1
 
 
 def test_validate_directory_passes_clean_repo(make_repo: Callable[..., Path]) -> None:

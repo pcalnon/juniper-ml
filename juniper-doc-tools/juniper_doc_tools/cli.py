@@ -130,8 +130,7 @@ def main(argv: list[str] | None = None) -> int:
         action = "skipped" if cross_repo_mode == "skip" else "warned"
         print(f"\nCross-repo links {action}: {result.cross_repo_skipped}")
     if not result.ok:
-        files_with_errors = len({err.split(":")[0].strip() for err in result.errors})
-        print(f"\nFOUND {len(result.errors)} broken link(s) in {files_with_errors} file(s):\n")
+        print(f"\nFOUND {len(result.errors)} broken link(s) in {result.files_with_errors} file(s):\n")
         for error in result.errors:
             print(error)
         print(f"\n{'=' * 60}")
