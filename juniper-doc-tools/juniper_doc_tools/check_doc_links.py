@@ -65,12 +65,21 @@ class ValidationResult:
             warned (``warn`` mode). Always 0 in ``check`` mode (those
             links are either resolved as OK or appended to ``errors``).
         scanned_files: Number of markdown files actually validated.
+        files_with_errors: Number of distinct markdown files that
+            contributed at least one error. Counted at iteration time
+            in :func:`validate_directory` -- do not try to derive it by
+            parsing the error strings, because some error messages
+            prefix with the absolute path (broken anchors use the full
+            ``Path`` object) while others prefix with the path relative
+            to ``repo_root``, so a string-deduplication heuristic
+            double-counts.
     """
 
     ok: bool
     errors: list[str] = field(default_factory=list)
     cross_repo_skipped: int = 0
     scanned_files: int = 0
+    files_with_errors: int = 0
 
 
 def _is_ecosystem_root(candidate: Path) -> bool:
@@ -432,6 +441,7 @@ def validate_directory(
 
     all_errors: list[str] = []
     total_skipped = 0
+    files_with_errors_count = 0
     for md_file in md_files:
         errors, skipped = validate_file(
             md_file,
@@ -441,6 +451,8 @@ def validate_directory(
             ecosystem_root=ecosystem_root,
             strict_repo_boundary=strict_repo_boundary,
         )
+        if errors:
+            files_with_errors_count += 1
         all_errors.extend(errors)
         total_skipped += skipped
 
@@ -449,4 +461,5 @@ def validate_directory(
         errors=all_errors,
         cross_repo_skipped=total_skipped,
         scanned_files=len(md_files),
+        files_with_errors=files_with_errors_count,
     )

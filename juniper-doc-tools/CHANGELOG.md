@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-19
+
+### Fixed
+
+- CLI summary line "FOUND N broken link(s) in M file(s)" -- the M count
+  now matches the inline-script behavior it replaced. The 0.1.0 CLI
+  estimated M by string-deduping error prefixes, which double-counted
+  any markdown file that had *both* a broken-anchor error (prefixed
+  with the absolute ``Path``) and a broken-link error (prefixed with
+  the path relative to ``repo_root``). The count is now tracked at
+  iteration time in :func:`validate_directory` and exposed on
+  :class:`ValidationResult` as the new ``files_with_errors`` attribute.
+- Programmatic consumers gain access to the file count via
+  ``ValidationResult.files_with_errors`` (additive; existing fields
+  unchanged).
+
+No behavioral change beyond the summary line: the per-error output and
+the exit code are unchanged.
+
 ## [0.1.0] - 2026-05-18
 
 ### Added
