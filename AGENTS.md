@@ -28,21 +28,23 @@ pip install -e ".[all]"        # everything
 
 # Run all tests
 python3 -m unittest -v tests/test_wake_the_claude.py
-python3 -m unittest -v tests/test_check_doc_links.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
 python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_requirements_drift_check.py
 python3 -m unittest -v tests/test_workflow_script_paths.py
 bash scripts/test_resume_file_safety.bash
+# doc-link validator regression tests live in juniper-doc-tools/tests/
+# and run under the dedicated `CI -- juniper-doc-tools` workflow.
 
 # Run pre-commit hooks
 pre-commit run --all-files
 
-# Validate documentation links
-python util/check_doc_links.py --exclude templates --exclude history --exclude legacy
+# Validate documentation links (requires `pip install juniper-doc-tools`
+# or `pip install -e juniper-doc-tools/` for editable local development)
+juniper-check-doc-links --exclude templates --exclude history --exclude legacy
 
 # Validate documentation links (including cross-repo)
-python util/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo check
+juniper-check-doc-links --exclude templates --exclude history --exclude legacy --cross-repo check
 ```
 
 ## Publishing
@@ -128,7 +130,6 @@ juniper-ml/
 │   ├── default_interactive_session_claude_code.bash  # Config template for interactive sessions
 │   ├── activate_conda_env.bash           # Conda environment management
 │   ├── resume_session.bash               # Session resume convenience wrapper
-│   ├── check_doc_links.py               # Symlink -> ../util/check_doc_links.py
 │   ├── cleanup_session_worktrees.py      # Bulk-clean Claude Code session worktrees in .claude/worktrees/
 │   ├── test.bash                         # End-to-end test harness for launcher flows
 │   ├── test_resume_file_safety.bash      # Regression: invalid --resume input safety
@@ -138,15 +139,16 @@ juniper-ml/
 │
 ├── tests/                     # Regression test suites (Python unittest)
 │   ├── test_wake_the_claude.py           # Launcher script regression (1470 lines)
-│   ├── test_check_doc_links.py           # Doc link validator regression
 │   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
 │   ├── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
 │   ├── test_requirements_drift_check.py  # Requirements snapshot drift checker tests
 │   └── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
+│   # Doc-link validator regression tests moved to juniper-doc-tools/tests/
+│   # (Wave 4 of the doc-link migration plan; published under the dedicated
+│   #  juniper-doc-tools PyPI package).
 │
 └── util/                      # Utility scripts and tools
     ├── ad-hoc/                           # Single-use / temporary / unfinished scripts (see ad-hoc/README.md)
-    ├── check_doc_links.py                # Doc link validator (v0.7.0) — used in CI/CD
     ├── requirements_drift_check.py       # Drift checker for the requirements snapshot (--mode quick)
     ├── generate_dep_docs.sh              # Generates dependency docs for CI
     ├── worktree_cleanup.bash             # V2 cleanup orchestrator (CWD-safe)
@@ -201,7 +203,7 @@ juniper-ml/
 
 - `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). The `MAIN_REPO` path is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) with an optional `JUNIPER_ML_MAIN_REPO` environment override for test fixtures and unusual layouts. Supports `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`.
 - `util/reap_pytest_orphans.bash` -- Safely reaps orphaned Juniper pytest multiprocessing children. Supports `JUNIPER_REAP_PROC_ROOT` and `JUNIPER_REAP_KILL_CMD` test hooks for deterministic regression tests.
-- `util/check_doc_links.py` -- Documentation link validator (v0.6.0) for internal markdown links; used in CI/CD pipelines
+- Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
 - `util/requirements_drift_check.py` -- Drift checker for the requirements snapshot at `notes/requirements/id_assignments.yaml`. Default `--mode quick` validates path resolution + structural line-range integrity for every citation; emits a human report or `--json`. Exit code 1 on any drift. Implements the spec in [`notes/REQUIREMENTS_NEXT_STEPS.md` §7](notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection); `--mode full` / `--mode rewrite` are reserved for future work.
 - `util/ad-hoc/` -- Home for single-use / temporary / unfinished scripts. See `util/ad-hoc/README.md` for file-header conventions and graduation lifecycle. `/tmp/` is prohibited for script source files per the [Script placement](#script-placement-mandatory) rule.
 - `util/generate_dep_docs.sh` -- Generates `requirements_ci.txt` and `conda_environment_ci.yaml` for CI
@@ -212,7 +214,7 @@ juniper-ml/
 ### Tests
 
 - `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
-- `tests/test_check_doc_links.py` -- Regression tests for `util/check_doc_links.py` documentation link validation
+- Doc-link validator regression tests live in [`juniper-doc-tools/tests/`](juniper-doc-tools/tests/) (Wave 4 of the doc-link migration; exercised by the dedicated `CI -- juniper-doc-tools` workflow).
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling
 - `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
 - `tests/test_requirements_drift_check.py` -- Tests for `util/requirements_drift_check.py`: structural range validation, BAD_PATH / BAD_RANGE classification, `--ecosystem-root` rewriting, CLI exit codes, JSON output
@@ -247,7 +249,7 @@ Triggered on push to `main`/`develop`/`feature/**`/`fix/**` branches and PRs to 
 Jobs:
 
 1. **pre-commit** -- Runs all pre-commit hooks (flake8, bandit, shellcheck, yamllint, markdownlint)
-2. **tests** -- Python unittest (`test_wake_the_claude.py`, `test_check_doc_links.py`) and bash regression tests
+2. **tests** -- Python unittest (`test_wake_the_claude.py`, `test_workflow_script_paths.py`, etc.) and bash regression tests
 3. **build** -- Package build, twine validation, extras metadata verification
 4. **docs** -- Documentation link validation (`--cross-repo skip`)
 5. **security** -- pip-audit for dependency vulnerabilities

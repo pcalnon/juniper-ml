@@ -122,7 +122,10 @@ jobs:
           echo "║       juniper-ml - Python Regression Tests                 ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           python3 -m unittest -v tests/test_wake_the_claude.py
-          python3 -m unittest -v tests/test_check_doc_links.py
+          # The doc-link validator regression tests were moved out of this
+          # repo in Wave 4 of the doc-link migration; coverage now lives
+          # in juniper-doc-tools/tests/, exercised by the dedicated
+          # `CI -- juniper-doc-tools` workflow.
           python3 -m unittest -v tests/test_worktree_cleanup.py
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py

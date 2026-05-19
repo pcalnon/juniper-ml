@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **`util/check_doc_links.py`** (the inline v0.7.0 validator) — Wave 2 + Wave 4 of the doc-link migration plan. Replaced by the PyPI-published `juniper-doc-tools` package; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`. The CI docs jobs (`ci.yml`, `docs-full-check.yml`) now install the package and run the console script. Inline copies in all 7 sibling repos (canopy / cascor / data / cascor-client / cascor-worker / data-client / ml) are deleted in the same wave.
+- `scripts/check_doc_links.py` (symlink to the old `util/` copy), `util/check_doc_links.bash` (local-path-only convenience wrapper), and `tests/test_check_doc_links.py` (now covered by `juniper-doc-tools/tests/`).
+
 ### Added
 
 - `util/check_doc_links.py` bumped to **v0.7.0**: classifies ecosystem-root paths (`../../CLAUDE.md`, `../../AGENTS.md`, `../../notes/`, `../../prompts/`, `../../resources/`, `../../backups/`, `../../logs/`, `../../worktrees/`, `../../juniper-legacy/`, `../../Juniper{,1}.code-workspace`) the same way as cross-repo `../juniper-X/` links: subject to the `--cross-repo` policy (skip/warn/check). Restores parity with the more permissive behavior repo docs were already relying on without silently accepting truly broken outside-repo links. 5 new regression tests in `tests/test_check_doc_links.py` cover the ecosystem-root paths and a guard against misclassifying intra-repo links that happen to traverse a `notes/`-named directory.

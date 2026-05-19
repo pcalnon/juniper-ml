@@ -15,7 +15,7 @@
 | `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
 | `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
 | `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
-| `python3 scripts/check_doc_links.py --cross-repo skip` | Validate doc links (CI-parity mode)             |
+| `juniper-check-doc-links --cross-repo skip`            | Validate doc links (CI-parity mode; install via `pip install juniper-doc-tools`) |
 | `./claudey`                                            | Launch default interactive Claude session       |
 
 ---
@@ -178,8 +178,9 @@ Generators: `spiral`, `xor`, `gaussian`, `circles`, `checkerboard`, `csv_import`
 | Pre-commit             | `pre-commit run --all-files`                                                                |
 | Publish `juniper-ml`   | Create GitHub Release with `vX.Y.Z` tag (OIDC trusted publishing)                           |
 | Publish observability  | Push `juniper-observability-vX.Y.Z` tag (OIDC trusted publishing)                           |
-| Doc links (CI parity)  | `python scripts/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo skip` |
-| Doc links (full local) | `python scripts/check_doc_links.py --cross-repo check`                                      |
+| Publish doc-tools      | Push `juniper-doc-tools-vX.Y.Z` tag (OIDC trusted publishing)                               |
+| Doc links (CI parity)  | `juniper-check-doc-links --exclude templates --exclude history --exclude legacy --cross-repo skip` |
+| Doc links (full local) | `juniper-check-doc-links --cross-repo check`                                                |
 
 Key hooks: `ruff` (juniper-data) or `black`+`isort`+`flake8` (others), `mypy`, `bandit`, `shellcheck`, `no-unencrypted-env`.
 
