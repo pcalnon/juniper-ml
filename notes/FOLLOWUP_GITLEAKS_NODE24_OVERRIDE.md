@@ -1,6 +1,6 @@
 # Followup — Drop `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` override
 
-**Status**: open (created 2026-05-06)
+**Status**: blocked upstream (created 2026-05-06; last checked 2026-05-19)
 **Owner**: Paul Calnon
 **Trigger**: gitleaks-action publishes a release that runs on Node.js 24 (upstream PR [#215](https://github.com/gitleaks/gitleaks-action/pull/215))
 **Tracking issue**: [pcalnon/juniper-ml#229](https://github.com/pcalnon/juniper-ml/issues/229)
@@ -42,6 +42,13 @@ Watch for any of these signals — **any one** is sufficient:
    ("Upgrade from 'node20' to 'node24'") merges.
 3. A new gitleaks-action release tag appears that lists Node 24 in its
    `action.yml` runtime declaration (`runs.using: 'node24'`).
+
+Current upstream status at last check (2026-05-19):
+
+- Latest release is still `v2.3.9`.
+- `action.yml` still declares `runs.using: "node20"`.
+- PRs [#207](https://github.com/gitleaks/gitleaks-action/pull/207) and
+  [#215](https://github.com/gitleaks/gitleaks-action/pull/215) are both still open.
 
 Quick check command:
 
