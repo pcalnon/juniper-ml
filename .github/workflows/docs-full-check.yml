@@ -16,7 +16,7 @@
 #    Scheduled cross-repo audits that the per-PR pipelines cannot run on
 #    their own. Clones all Juniper ecosystem sibling repos into the
 #    workspace and runs:
-#      1. check_doc_links.py --cross-repo check
+#      1. juniper-check-doc-links --cross-repo check (from PyPI)
 #         — validates cross-repo markdown links skipped during normal PR CI.
 #      2. validate_claude_yaml_access.bash (JUNIPER_ROOT mode)
 #         — fans out the L2/L3 claude.yml safeguard audit (no
@@ -91,10 +91,19 @@ jobs:
           echo "Workspace contents:"
           ls -1 "$GITHUB_WORKSPACE"
 
+      # Wave 2 / Wave 4 of the doc-link migration plan
+      # (notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md): the
+      # validator is installed from PyPI instead of run from the deleted
+      # scripts/check_doc_links.py inline copy.
+      - name: Install juniper-doc-tools
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          pip install "juniper-doc-tools>=0.1.0,<0.2.0"
+
       - name: Validate all documentation links (cross-repo check)
         run: |
           cd "$GITHUB_WORKSPACE/juniper-ml"
-          python scripts/check_doc_links.py --exclude templates --exclude history --exclude legacy --cross-repo check
+          juniper-check-doc-links --exclude templates --exclude history --exclude legacy --cross-repo check
 
       - name: Audit claude.yml access safeguards (cross-repo, L2/L3)
         # JUNIPER_ROOT mode discovers every <root>/<repo>/.github/workflows/
