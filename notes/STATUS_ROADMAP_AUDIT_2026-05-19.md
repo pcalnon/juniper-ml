@@ -55,14 +55,16 @@ These docs are in an ambiguous state — looking abandoned, partially superseded
 
 ## 4. Archive / cleanup candidates (no work, doc hygiene)
 
-These docs are marked COMPLETE or have been superseded. Moving them to `notes/history/` would reduce noise on future audits.
+These docs are marked COMPLETE or have been superseded. Moving them to `notes/legacy/` reduces noise on future audits.
 
-- `regressions/REGRESSION_*_2026-04-02.md` (12 files) — superseded by `CONSOLIDATED_*` (Active).
-- `development/CONVERGENCE_UI_FIX_PLAN.md` — marked COMPLETE.
-- `PHASE1_CRITICAL_FIXES_PLAN.md` — marked COMPLETE.
-- `DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md` — marked COMPLETE.
-- `V2_AUDIT_DISPOSITION_2026-03-14.md` — marked COMPLETE.
-- `development/REMAINING_ISSUES_REMEDIATION_PLAN.md` — marked COMPLETE.
+> **2026-05-19 Round-1 cleanup (this PR)**: 3 unambiguously-COMPLETE docs moved to `notes/legacy/`. The other candidates the original sub-agent audit identified turned out to be either marked Active on inspection (e.g., several REGRESSION docs), already missing from their claimed paths, or still current — they were NOT moved. A Round-2 pass should cross-check each REGRESSION_* doc against the relevant `CONSOLIDATED_*` document before moving.
+
+- ~~`regressions/REGRESSION_*_2026-04-02.md` (12 files)~~ — **Round-1 deferred**: per-file inspection showed several are still marked "Active" or "Planning Complete" / "Analysis Complete" rather than fully superseded. Needs CONSOLIDATED-cross-check before move.
+- ~~`development/CONVERGENCE_UI_FIX_PLAN.md`~~ — **moved to `notes/legacy/` in Round 1** (Status: COMPLETE, Phase 5.1/5.2 commits c8f2740, e11b100).
+- `notes/development/PHASE1_CRITICAL_FIXES_PLAN.md` — sub-agent path was wrong (file is in `development/`, not root). No `Status` field; needs human review before move.
+- ~~`DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md`~~ — **moved to `notes/legacy/` in Round 1** (Status: COMPLETE, all 5 phases executed). Sub-agent path was wrong (actually under `notes/documentation/`).
+- `notes/documentation/V2_AUDIT_DISPOSITION_2026-03-14.md` — sub-agent path was wrong; no `Status` field; needs human review before move.
+- ~~`development/REMAINING_ISSUES_REMEDIATION_PLAN.md`~~ — **moved to `notes/legacy/` in Round 1** (Status: All 5 Work Units Complete).
 
 ## 5. Tension resolved (2026-05-19)
 
