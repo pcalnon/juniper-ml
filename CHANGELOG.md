@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `util/check_doc_links.py` bumped to **v0.7.0**: classifies ecosystem-root paths (`../../CLAUDE.md`, `../../AGENTS.md`, `../../notes/`, `../../prompts/`, `../../resources/`, `../../backups/`, `../../logs/`, `../../worktrees/`, `../../juniper-legacy/`, `../../Juniper{,1}.code-workspace`) the same way as cross-repo `../juniper-X/` links: subject to the `--cross-repo` policy (skip/warn/check). Restores parity with the more permissive behavior repo docs were already relying on without silently accepting truly broken outside-repo links. 5 new regression tests in `tests/test_check_doc_links.py` cover the ecosystem-root paths and a guard against misclassifying intra-repo links that happen to traverse a `notes/`-named directory.
 - `tests/test_workflow_script_paths.py` — new lint test that walks `.github/workflows/*.yml`, extracts every script path referenced via `python|bash <path>` / `python3 -m unittest ... <path.py>` / `$VAR <path>` patterns, and asserts each path exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18 when a script was renamed without updating the workflow. Designed to be copy-and-paste portable into the other Juniper repos' `tests/` directories.
+- **`juniper-doc-tools` subpackage scaffold** — Wave 0 of the doc-link
+  validator PyPI migration ([plan](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)).
+  New `juniper-doc-tools/` subdirectory packages the v0.7.0 markdown link
+  validator as a PyPI distribution with a stable CLI surface
+  (`juniper-check-doc-links` + `python -m juniper_doc_tools`), a small
+  library API (`validate_directory`, `validate_file`, `ValidationResult`),
+  and the new `--strict-repo-boundary` opt-out flag from §3.4.1 / §8.4.
+  Tests use pytest (§8.1); 30 tests cover the v0.7.0 behavior, the new
+  flag, and CLI argparse end-to-end. `.github/workflows/ci-doc-tools.yml`
+  runs the test matrix (3.12/3.13/3.14) + build + wheel smoke-test on
+  PRs touching `juniper-doc-tools/**`. `.github/workflows/publish-doc-tools.yml`
+  publishes to TestPyPI → PyPI on tags matching `juniper-doc-tools-v*`,
+  mirroring the existing `publish-observability.yml`. Next: Wave 1 cuts
+  `juniper-doc-tools-v0.1.0` and publishes to PyPI.
 
 ## [0.4.1] - 2026-04-28
 
