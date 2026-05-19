@@ -14,8 +14,8 @@ The items below are scoped, the doc shows them unfinished, and nothing in this a
 
 | Doc | Item | Effort |
 |------|------|--------|
-| [`ROADMAP_AUDIT_2026-05-05.md` §9.2](ROADMAP_AUDIT_2026-05-05.md) | **BUG-CC-12** — yaml→torch safe-loader swap in `juniper-cascor/utils.py:89-91` | ~1h |
-| [`ROADMAP_AUDIT_2026-05-05.md` §9.3](ROADMAP_AUDIT_2026-05-05.md) | **BUG-JD-10** — wrap `store.get_meta` / `update_meta` in `asyncio.to_thread` in `juniper-data/datasets.py:429-440` (⚠ verify still present — see §5) | ~2h |
+| ~~[`ROADMAP_AUDIT_2026-05-05.md` §9.2](ROADMAP_AUDIT_2026-05-05.md)~~ | ~~**BUG-CC-12**~~ — **2026-05-19: verified already fixed** by juniper-cascor PR #228 (commit `53070cd`); `utils.py:103` now uses `torch.load(weights_only=True)`. No action. | — |
+| ~~[`ROADMAP_AUDIT_2026-05-05.md` §9.2](ROADMAP_AUDIT_2026-05-05.md)~~ | ~~**BUG-JD-10**~~ — **2026-05-19: verified already fixed** by juniper-data PR #90 (commit `aae0081`); `datasets.py:435,444` wraps both store calls in `asyncio.to_thread`. The audit's "still present" finding was stale at the time of the 2026-05-05 audit itself. No action. | — |
 | [`ROADMAP_AUDIT_2026-05-05.md`](ROADMAP_AUDIT_2026-05-05.md) | Six "N-1..N-6" issues (bare-except hardening, session-key validation, orphaned-backup cleanup) | 30 min – 2h each |
 | [`code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) | **P1 cluster**: A.1–A.4 wire dead metrics + 3.2 alertmanager `tickets` receiver (5 items, each ~1 day; alerts/dashboards currently inert) | ~3-5 days total |
 | [`canopy_frontend_issues_plan_2026-05-09.md`](canopy_frontend_issues_plan_2026-05-09.md) | PR-1 (Issue 5 cascor) starting; PRs 2/3/4/6/6.5/9/10 still queued | 33h optimistic / 82h realistic |
@@ -64,14 +64,18 @@ These docs are marked COMPLETE or have been superseded. Moving them to `notes/hi
 - `V2_AUDIT_DISPOSITION_2026-03-14.md` — marked COMPLETE.
 - `development/REMAINING_ISSUES_REMEDIATION_PLAN.md` — marked COMPLETE.
 
-## 5. Tension flagged before picking up §1 BUG fixes
+## 5. Tension resolved (2026-05-19)
 
-The audit calls **BUG-JD-10 "confirmed still present"** in `juniper-data/datasets.py:429-440`. But BUG-JD-10 is the original incident that motivated the async-route audit migration shipped on 2026-05-06 (see [`FOLLOWUP_ASYNC_ROUTE_AUDIT.md`](FOLLOWUP_ASYNC_ROUTE_AUDIT.md)). Either:
+The tension here was: the audit called both BUG-CC-12 and BUG-JD-10 "confirmed still present," but BUG-JD-10 was the original incident that motivated the async-route audit migration shipped on 2026-05-06.
 
-- the migration added the CI lane (which only catches *new* ASYNC* violations) but didn't actually wrap the existing call sites; OR
-- the fix shipped and the roadmap-audit doc is stale on this point.
+**Verification ran 2026-05-19**:
 
-**Action**: before touching `datasets.py`, run `grep -n "asyncio.to_thread" juniper-data/juniper_data/api/routes/datasets.py` and `git log --oneline -p juniper-data/juniper_data/api/routes/datasets.py | grep -B 5 "BUG-JD-10\|to_thread\|store\.get_meta"` to determine which case we're in. ~5 min.
+- **BUG-CC-12** — `juniper-cascor` `git log --grep` shows `53070cd fix(utils): load_dataset uses torch.load(weights_only=True), not yaml (BUG-CC-12) (#228)`. Current `src/utils/utils.py:103` confirms `data = torch.load(file_path, map_location="cpu", weights_only=True)`; no `yaml.load` remains in the file. ✅ Fixed.
+- **BUG-JD-10** — `juniper-data` `git log --grep` shows `aae0081 fix(api): wrap batch_update_tags store calls in asyncio.to_thread (BUG-JD-10) (#90)`. Current `juniper_data/api/routes/datasets.py:435,444` reads `meta = await asyncio.to_thread(store.get_meta, dataset_id)` and `await asyncio.to_thread(store.update_meta, dataset_id, meta)`. ✅ Fixed.
+
+**Conclusion**: the 2026-05-05 roadmap-audit was stale on these two bugs at the time it was written — both fixes had already landed (PR #228 and PR #90 both pre-date 2026-05-05). The audit's §B.1 "CONFIRMED" line readings appear to have been against an out-of-date checkout. `notes/ROADMAP_AUDIT_2026-05-05.md` §9.2 has been updated with the verification notes in the same PR that ships this status doc.
+
+**Side observation (not a bug, just noted)**: BUG-JD-10's fix only touched `batch_update_tags`. Other `async def` routes in `juniper-data/.../datasets.py` (lines 66, 220, 239, 300, 339, 455, 542, 557, 581, 604) still make synchronous `store.*` calls that may also block the event loop under load. These were never named by the original BUG-JD-10 scope and are *not* a regression. If pattern-wide enforcement becomes desirable, the FOLLOWUP_ASYNC_ROUTE_AUDIT Item 2 (centralised deny-list) is the right mechanism — but it's still correctly dormant.
 
 ## 6. Top-3 recommended picks (sub-agent's call, retained verbatim)
 
@@ -81,4 +85,6 @@ The audit calls **BUG-JD-10 "confirmed still present"** in `juniper-data/dataset
 
 ## 7. Next action chosen
 
-Pick #1 — verify BUG-JD-10's current state (per §5), then fix any genuinely-present bug. Status of #2 and #3 captured for future re-entry.
+Pick #1 was selected, executed, and resolved as documentation-only work: both BUG-CC-12 and BUG-JD-10 were already fixed. The audit doc has been updated with the verification (see §5). No code change shipped from this pick.
+
+**Next on the queue**: top-3 pick #2 — wire `training_sessions_active` Gauge in cascor `lifecycle/manager.py` (P1 cluster A.1 from [`code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md)). ~1 day, unblocks three permanently-inert alerts in one PR.

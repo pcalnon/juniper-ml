@@ -242,6 +242,13 @@ The audit checked but did **not** find active issues in:
 
 ### 9.2 For the still-present bugs
 
+> **2026-05-19 update**: Both bugs below were already fixed *before* this audit was written; the audit's "CONFIRMED" findings in §B.1 were stale. Verifications:
+>
+> - **BUG-CC-12** — Resolved by juniper-cascor PR #228 (commit `53070cd`). Current `src/utils/utils.py:103` reads `data = torch.load(file_path, map_location="cpu", weights_only=True)`; no `yaml.load` remains in the file.
+> - **BUG-JD-10** — Resolved by juniper-data PR #90 (commit `aae0081`). Current `juniper_data/api/routes/datasets.py:435,444` wraps both `store.get_meta` and `store.update_meta` in `await asyncio.to_thread(...)`.
+>
+> The recommendations below are retained for historical context (they describe the intended fix shape). Both PRs implemented exactly this shape.
+
 1. **BUG-CC-12** (`utils.py:89-91`): finish the safe-loader swap — replace `yaml.safe_load(file_path.read())` with a `torch.load(file_path, map_location="cpu", weights_only=True)` (post-2.x torch supports `weights_only` for safer state-dict loading) or with the equivalent `safetensors` call. Add a unit test that round-trips a real torch state dict through the loader.
 2. **BUG-JD-10** (`datasets.py:429-440`): wrap each `store.get_meta()` and `store.update_meta()` in `await asyncio.to_thread(...)` to match the rest of the file. Add an integration test that batches 50+ tag updates and asserts no event-loop blocking (use `asyncio.get_running_loop().time()` to bound the gap between requests).
 
