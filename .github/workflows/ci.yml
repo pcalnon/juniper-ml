@@ -130,6 +130,13 @@ jobs:
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py
           python3 -m unittest -v tests/test_workflow_script_paths.py
+          # tests/test_doc_tools_drift.py: the cross-repo
+          # consumer-pin assertions auto-skip when siblings are not
+          # cloned (per-PR mode); the helper unit tests + juniper-ml's
+          # own pin check still run, catching the case where someone
+          # bumps juniper-doc-tools in this same PR but forgets to
+          # bump the pin in juniper-ml's own workflows.
+          python3 -m unittest -v tests/test_doc_tools_drift.py
 
       - name: Run bash regression tests
         run: |
