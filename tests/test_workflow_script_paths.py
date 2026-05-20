@@ -7,14 +7,17 @@ sibling repo) but the workflow continued to invoke the old path. The CI
 would fail with `python: can't open file '.../scripts/check_doc_links.py'`
 on every run until somebody noticed.
 
-Per CLAUDE.md the pattern is intended to be portable to the other Juniper
-repos -- copy this file into <repo>/tests/ and the test will validate that
-repo's workflows.
+This file is **location-agnostic**: drop it anywhere in any Juniper repo
+(top-level ``tests/``, ``src/tests/repo_meta/``, ``meta_tests/``, etc.)
+and it discovers the repo root by walking up the filesystem looking for
+``.github/workflows/``. Copy the file into ``<repo>/<wherever>/`` and
+invoke via ``python3 -m unittest <wherever>/test_workflow_script_paths.py``.
 """
 
 from __future__ import annotations
 
 import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -95,12 +98,29 @@ def _is_validatable(path: str) -> bool:
     return "/" in path
 
 
+def _find_repo_root(start: Path) -> Path:
+    """Walk up from ``start`` looking for the first ancestor that
+    contains a ``.github/workflows/`` directory. That's the repo root
+    relative to which every workflow path resolves.
+
+    This replaces the prior ``Path(__file__).resolve().parent.parent``
+    heuristic so the test file can live anywhere in the consuming repo
+    (top-level ``tests/``, ``src/tests/repo_meta/``,
+    ``meta_tests/``, etc.) -- the test discovers the repo without
+    caring about its own location.
+    """
+    for parent in [start, *start.parents]:
+        if (parent / ".github" / "workflows").is_dir():
+            return parent
+    raise RuntimeError(f"Could not locate repo root: no .github/workflows/ directory " f"found in any ancestor of {start}")
+
+
 class WorkflowScriptPathsTest(unittest.TestCase):
     """Every script path referenced from a CI workflow must exist."""
 
     @classmethod
     def setUpClass(cls):
-        cls.repo_root = Path(__file__).resolve().parent.parent
+        cls.repo_root = _find_repo_root(Path(__file__).resolve().parent)
         cls.workflows_dir = cls.repo_root / ".github" / "workflows"
 
     def test_workflows_dir_exists(self):
@@ -177,6 +197,33 @@ class WorkflowScriptPathExtractionTest(unittest.TestCase):
         self.assertFalse(_is_validatable("$(get_path)/foo.sh"))
         # standalone filename without a directory -- ambiguous, skip
         self.assertFalse(_is_validatable("foo.py"))
+
+
+class RepoRootDiscoveryTest(unittest.TestCase):
+    """Regression for the location-agnostic repo-root finder.
+
+    Replaces the prior ``Path(__file__).resolve().parent.parent``
+    heuristic that assumed the test file lives at
+    ``<repo>/tests/test_workflow_script_paths.py`` -- some consumer
+    repos use a top-level ``tests`` symlink (to a bash run-all
+    script), so the test file must live elsewhere there.
+    """
+
+    def test_finds_root_via_dot_github_workflows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            fake = Path(tmp) / "fake-repo"
+            (fake / ".github" / "workflows").mkdir(parents=True)
+            nested = fake / "deep" / "nested" / "tests"
+            nested.mkdir(parents=True)
+            self.assertEqual(_find_repo_root(nested), fake)
+            self.assertEqual(_find_repo_root(nested / "more"), fake)
+
+    def test_raises_when_no_dot_github_workflows_in_ancestors(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            isolated = Path(tmp) / "isolated"
+            isolated.mkdir()
+            with self.assertRaises(RuntimeError):
+                _find_repo_root(isolated)
 
 
 if __name__ == "__main__":
