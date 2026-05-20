@@ -48,7 +48,7 @@ The full migration sequence, including the four-wave structure and the per-repo 
 ┌─────────────────────────────────────────────────────────────────────┐
 │                            juniper-doc-tools                        │
 │  juniper-check-doc-links  ·  python -m juniper_doc_tools  ·  API    │
-└──────────┬────────────┬─────────────┬─────────────┬────────────────┘
+└──────────┬────────────┬─────────────┬─────────────┬─────────────────┘
            │ CI lane    │ CI lane     │ CI lane     │ CI lane (×8)
            ▼            ▼             ▼             ▼
    ┌─────────────┐ ┌──────────┐ ┌──────────┐ ┌────────────────────┐
@@ -126,7 +126,7 @@ if not result.ok:
 print(f"All {result.scanned_files} files OK ({result.cross_repo_skipped} cross-repo links skipped)")
 ```
 
-Exit codes: `0` if all links valid, `1` if broken links found or arguments are invalid.
+Exit codes: `0` if all links are valid, `1` if broken links are found or arguments are invalid.
 
 ### Next Steps
 
@@ -137,9 +137,9 @@ Exit codes: `0` if all links valid, `1` if broken links found or arguments are i
 
 ## Research Philosophy
 
-The Juniper platform exists to study learning algorithms whose network architecture is not fixed in advance. Its initial anchor is the Cascade-Correlation algorithm of Fahlman and Lebiere (1990), implemented from the primary literature without recourse to higher-level abstractions that elide the algorithm's operational detail. The organising commitment is that algorithm implementations remain inspectable at the level at which they were originally specified: candidate units, correlation objectives, weight-freezing semantics, and the structural events that grow the network are first-class artifacts of the codebase rather than internal details of a library wrapper. This permits comparative work — across algorithms, datasets, and hyperparameter regimes — to be conducted on a known and reproducible substrate.
+The Juniper platform exists to study learning algorithms whose network architecture is not fixed in advance. Its initial anchor is the Cascade-Correlation algorithm of Fahlman and Lebiere (1990), implemented from the primary literature without recourse to higher-level abstractions that elide the algorithm's operational detail. The organizing commitment is that algorithm implementations remain inspectable at the level at which they were originally specified: candidate units, correlation objectives, weight-freezing semantics, and the structural events that grow the network are first-class artifacts of the codebase rather than internal details of a library wrapper. This permits comparative work — across algorithms, datasets, and hyperparameter regimes — to be conducted on a known and reproducible substrate.
 
-The current platform comprises a Cascade-Correlation training service exposing a REST and WebSocket interface, a dataset-generation service with a named-version registry that includes the ARC-AGI families, a real-time monitoring dashboard for inspecting training dynamics as they occur, and a distributed worker that parallelises candidate-unit training across hosts. Near-term work extends the architectural-growth catalogue beyond Cascade-Correlation, introduces multi-network orchestration for comparative experiments at the level of network populations rather than individual runs, and tightens the dataset–training–monitoring loop into a reproducible research workbench. The longer-term direction is the systematic empirical study of constructive and architecture-growing learning algorithms, with first-class infrastructure for the ablation, comparison, and replication that such a study requires.
+The current platform comprises a Cascade-Correlation training service exposing a REST and WebSocket interface, a dataset-generation service with a named-version registry that includes the ARC-AGI families, a real-time monitoring dashboard for inspecting training dynamics as they occur, and a distributed worker that parallelizes candidate-unit training across hosts. Near-term work extends the architectural-growth catalogue beyond Cascade-Correlation, introduces multi-network orchestration for comparative experiments at the level of network populations rather than individual runs, and tightens the dataset–training–monitoring loop into a reproducible research workbench. The longer-term direction is the systematic empirical study of constructive and architecture-growing learning algorithms, with first-class infrastructure for the ablation, comparison, and replication that such a study requires.
 
 ## Design Notes
 
