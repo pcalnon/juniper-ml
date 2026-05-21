@@ -65,7 +65,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Iterator, Optional
+from typing import Iterator, Optional
 
 import yaml
 
@@ -80,7 +80,15 @@ import yaml
 #
 # Module form ``python -m foo.bar`` is intentionally not validated because
 # we cannot resolve a module to a path without importing the package.
-_SCRIPT_PATH = re.compile(r"(?<![A-Za-z0-9_./-])([A-Za-z0-9_-]+(?:/[A-Za-z0-9_./-]+)+\.(?:py|sh|bash))\b")
+#
+# Note on the inner character class: the per-segment class
+# ``[A-Za-z0-9_.-]+`` deliberately **excludes** the ``/`` character so each
+# outer ``(?:/...)`` iteration consumes exactly one path segment. The
+# earlier form that included ``/`` in the inner class was a CodeQL
+# `py/redos` finding (overlap between the outer ``+`` group and the inner
+# ``+`` quantifier permitted exponential backtracking on adversarial
+# inputs starting with ``-/`` repeated).
+_SCRIPT_PATH = re.compile(r"(?<![A-Za-z0-9_./-])([A-Za-z0-9_-]+(?:/[A-Za-z0-9_.-]+)+\.(?:py|sh|bash))\b")
 
 # Sibling ecosystem repos that scheduled workflows clone into the runner
 # workspace before invoking. Any path under one of these is runtime-
