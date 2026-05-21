@@ -143,6 +143,14 @@ jobs:
           # loudly. Added pre-0.5.0 after juniper-ml#295 introduced
           # [servers] + [tools] without regression coverage.
           python3 -m unittest -v tests/test_pyproject_extras.py
+          # tests/test_agents_md_version_drift.py: pins AGENTS.md's
+          # `**Version**:` header to pyproject.toml's [project].version
+          # so version bumps stay in sync with the agent-facing
+          # contract. Added after juniper-ml#295 bumped pyproject to
+          # 0.5.0 but left AGENTS.md at 0.4.0 for ~6 days (fixed in
+          # juniper-ml#304); this lint makes the drift impossible to
+          # ship.
+          python3 -m unittest -v tests/test_agents_md_version_drift.py
 
       - name: Run bash regression tests
         run: |
