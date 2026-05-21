@@ -20,7 +20,6 @@ this test -- they have nothing to compare the header against.
 from __future__ import annotations
 
 import re
-import sys
 import tomllib
 import unittest
 from pathlib import Path
@@ -54,8 +53,6 @@ class AgentsMdVersionDriftTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        if sys.version_info < (3, 11):
-            raise unittest.SkipTest("tomllib requires Python 3.11+")
         with _PYPROJECT.open("rb") as handle:
             pyproject = tomllib.load(handle)
         cls.pyproject_version = pyproject["project"]["version"]
