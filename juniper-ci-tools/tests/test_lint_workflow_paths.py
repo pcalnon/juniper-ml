@@ -19,8 +19,6 @@ from tempfile import TemporaryDirectory
 from juniper_ci_tools.cli_lint_workflow_paths import main as cli_main
 from juniper_ci_tools.lint_workflow_paths import (
     DEFAULT_ECOSYSTEM_SIBLING_PREFIXES,
-    LintFinding,
-    LintResult,
     extract_script_paths,
     find_repo_root,
     is_validatable,
