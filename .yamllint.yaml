@@ -1,34 +1,36 @@
 ---
-# yamllint configuration for juniper-ml.
+# yamllint configuration for the Juniper ecosystem.
 #
-# Scope: this file is consumed by manual ``yamllint .`` invocations and
-# editor integrations (e.g. ALE, coc-yamllint).
+# Canonical version: aligns all 8 ecosystem repos to a single ruleset
+# (juniper-ml, juniper-data, juniper-cascor, juniper-canopy,
+#  juniper-data-client, juniper-cascor-client, juniper-cascor-worker,
+#  juniper-deploy).
 #
-# Note on pre-commit relationship: the yamllint pre-commit hook in
-# ``.pre-commit-config.yaml`` invokes yamllint with ``-d relaxed``,
-# which passes an inline rules set that overrides this file. So pre-commit
-# and CI do not enforce these rules; they enforce yamllint's bundled
-# ``relaxed`` preset instead. This file documents the project's preferred
-# manual-run ruleset and matches the pattern used by juniper-cascor /
-# juniper-data / juniper-canopy / juniper-data-client / juniper-deploy.
+# Pre-commit no longer passes `-d relaxed` — it loads this file directly
+# so the rules a developer sees in their editor match the rules CI
+# enforces.
 #
-# Ecosystem note: line-length differs across repos (juniper-data /
-# juniper-canopy / juniper-data-client / juniper-deploy use 120; this
-# repo + juniper-cascor use 320). The 512-char ecosystem convention
-# tracked in AGENTS.md applies to black/isort/flake8/markdownlint; the
-# yamllint files have drifted independently. A future ecosystem sweep
-# could converge these.
-extends: default
+# Rules:
+#   - extends: relaxed (sane base: no truthy/comments strictness; the
+#     codebase has many comments-at-end-of-line and CI `on:` keys that
+#     would trip the strict default preset).
+#   - line-length: max 512 (matches AGENTS.md ecosystem convention for
+#     black/isort/flake8/markdownlint), level: warning (informational,
+#     does not fail pre-commit unless `--strict` is also passed).
+#
+# Ignores cover:
+#   - Local virtual environments and caches.
+#   - Helm chart templates (Go templating, not valid YAML).
+#   - Generated conda environment / pip requirements snapshots
+#     (indentation/structure reflects upstream conda env export output
+#     and would generate false-positive warnings).
+
+extends: relaxed
 
 rules:
   line-length:
-    max: 320
+    max: 512
     level: warning
-  document-start: disable
-  comments-indentation: disable
-  truthy:
-    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
-    check-keys: false
 
 ignore: |
   .venv/
@@ -36,6 +38,7 @@ ignore: |
   __pycache__/
   .pytest_cache/
   .mypy_cache/
-  data/
-  logs/
-  reports/
+  k8s/helm/*/templates/
+  /conda_environment_ci*.yaml
+  /conf/conda_environment_ci*.yaml
+  /conf/requirements_ci*.yaml
