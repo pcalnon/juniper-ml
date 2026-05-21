@@ -98,17 +98,23 @@ jobs:
           # TestPyPI and importlib.metadata sees the expected version.
           pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ "juniper-ml==${VERSION}"
           python -c "import importlib.metadata; print(f'TestPyPI bare OK: juniper-ml v{importlib.metadata.version(\"juniper-ml\")}')"
-          # Step 2: extras-resolution install. Exercises the
+          # Step 2: [clients] extras-resolution install. Exercises the
           # [project.optional-dependencies] surface against the published
           # metadata so a broken extras declaration (mistyped name, missing
           # roll-up into [all], dangling self-reference) fails the publish
-          # rather than landing on PyPI silently. We use [clients] because
-          # it is the lightest extra (data-client + cascor-client, no
-          # torch) and still walks the full resolver path. Both deps are
-          # already on production PyPI so the --extra-index-url is what
-          # actually serves them.
+          # rather than landing on PyPI silently. [clients] is one of two
+          # light extras (data-client + cascor-client, no torch); it walks
+          # the full resolver path. Both deps are already on production
+          # PyPI so the --extra-index-url is what actually serves them.
           pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ "juniper-ml[clients]==${VERSION}"
           python -c "import juniper_data_client, juniper_cascor_client; print(f'TestPyPI extras OK: [clients] resolved data-client={juniper_data_client.__version__ if hasattr(juniper_data_client, \"__version__\") else \"?\"}, cascor-client={juniper_cascor_client.__version__ if hasattr(juniper_cascor_client, \"__version__\") else \"?\"}')"
+          # Step 3: [tools] extras-resolution install. Pairs with step 2
+          # to cover both light extras at publish time -- if [tools] were
+          # broken, step 2 would still pass and ship. juniper-ci-tools,
+          # juniper-doc-tools, juniper-observability are all small and
+          # already on production PyPI; no torch involved.
+          pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ "juniper-ml[tools]==${VERSION}"
+          python -c "import juniper_ci_tools, juniper_doc_tools, juniper_observability; print(f'TestPyPI extras OK: [tools] resolved ci-tools={juniper_ci_tools.__version__ if hasattr(juniper_ci_tools, \"__version__\") else \"?\"}, doc-tools={juniper_doc_tools.__version__ if hasattr(juniper_doc_tools, \"__version__\") else \"?\"}, observability={juniper_observability.__version__ if hasattr(juniper_observability, \"__version__\") else \"?\"}')"
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # PyPI: Publish after TestPyPI verification
