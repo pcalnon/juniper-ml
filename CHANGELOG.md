@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`tests/test_agents_md_version_drift.py`** -- new lint test pinning
+  `AGENTS.md`'s `**Version**:` header to `pyproject.toml`'s
+  `[project].version`. juniper-ml#295 bumped `pyproject.toml` from
+  0.4.1 to 0.5.0 but left `AGENTS.md` at 0.4.0 for ~6 days (drift
+  caught by ad-hoc grep + fixed in juniper-ml#304); this lint makes
+  the failure class impossible to ship. Wired into the main CI tests
+  job; intentionally portable (auto-locates the repo root) so the
+  same module can be dropped into any Juniper repo's `tests/` to
+  catch the same drift class there.
+
 - **`notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`** -- source
   requirements doc for the meta-package extras surface. Specifies the
   declared groups, `[all]` aggregate semantics, version-bump policy,
