@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`tests/test_pyproject_extras.py`** -- new lint test pinning the
+  `[project.optional-dependencies]` surface so accidental edits (drop,
+  mistype, fail to roll up into `[all]`) fail loudly in CI. Schema-strict:
+  any future change to extras must update the lint contract in the same
+  PR. Wired into the main CI tests job; runs alongside
+  `test_doc_tools_drift.py` and `test_workflow_script_paths.py`.
+
 - **`[servers]` optional dependency group** for the three Juniper service
   packages on PyPI. `pip install juniper-ml[servers]` now installs
   `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, and
@@ -29,6 +36,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   package: 3 servers, 2 clients, 1 worker, and 3 tools.
 
 ### Changed
+
+- **Pre-tag docs polish for the 0.5.0 release.** Refreshes the three
+  Ecosystem Compatibility tables (`README.md`, `docs/REFERENCE.md`,
+  `docs/DOCUMENTATION_OVERVIEW.md`) to enumerate every package the
+  meta-package now pins -- canopy / cascor / data / data-client /
+  cascor-client / cascor-worker / ci-tools / doc-tools / observability
+  -- with their actual pyproject pins (the previous tables only listed
+  3-5 packages and used stale `0.4.x` headers). Adds `[servers]`,
+  `[tools]`, and `[doc-tools]` editable-install commands to `AGENTS.md`
+  and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`, plus an explicit
+  multi-GB callout on `[all]`.
 
 - **Version bumped to 0.5.0** (semver minor) to mark the new optional
   dependency surface. No removals or breaking changes -- existing

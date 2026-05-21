@@ -1,7 +1,7 @@
 # Developer Cheatsheet — juniper-ml
 
-**Version**: 1.0.3
-**Date**: 2026-05-04
+**Version**: 1.0.4
+**Date**: 2026-05-21
 **Project**: juniper-ml
 
 ---
@@ -10,9 +10,14 @@
 
 | Command                                                | Description                                     |
 |--------------------------------------------------------|-------------------------------------------------|
-| `pip install -e ".[all]"`                              | Install meta-package with all extras (editable) |
+| `pip install -e ".[all]"`                              | Install meta-package with all extras (editable; multi-GB — pulls torch via `[worker]`) |
+| `pip install -e ".[clients]"`                          | Install just the HTTP/WS client libraries (editable) |
+| `pip install -e ".[worker]"`                           | Install just the distributed training worker (editable) |
+| `pip install -e ".[servers]"`                          | Install just the service distributions: canopy + cascor + data (editable) |
+| `pip install -e ".[tools]"`                            | Install just shared tooling: ci-tools + doc-tools + observability (editable) |
 | `python -m build && twine check dist/*`                | Build and validate package                      |
 | `python3 -m unittest -v tests/test_wake_the_claude.py` | Run launcher regression tests                   |
+| `python3 -m unittest -v tests/test_pyproject_extras.py`| Lint pyproject.toml extras structure            |
 | `bash scripts/test_resume_file_safety.bash`            | Run resume file safety regression               |
 | `pre-commit run --all-files`                           | Run all pre-commit hooks                        |
 | `juniper-check-doc-links --cross-repo skip`            | Validate doc links (CI-parity mode; install via `pip install juniper-doc-tools`) |

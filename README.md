@@ -30,11 +30,19 @@ Individual components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `j
 ## Ecosystem Compatibility
 
 This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml) ecosystem.
-Verified compatible versions:
+The pyproject pins matching `juniper-ml` 0.5.0:
 
-| juniper-data | juniper-cascor | juniper-canopy | data-client | cascor-client | cascor-worker |
-|--------------|----------------|----------------|-------------|---------------|---------------|
-| 0.6.x        | 0.4.x          | 0.4.x          | >=0.4.1     | >=0.4.0       | >=0.3.0       |
+| Package                 | Pin               | Latest published |
+|-------------------------|-------------------|------------------|
+| `juniper-canopy`        | `>=0.3.0`         | 0.3.0            |
+| `juniper-cascor`        | `>=0.3.17`        | 0.3.17           |
+| `juniper-data`          | `>=0.6.0`         | 0.6.0            |
+| `juniper-data-client`   | `>=0.4.0`         | 0.4.0            |
+| `juniper-cascor-client` | `>=0.3.0`         | 0.3.0            |
+| `juniper-cascor-worker` | `>=0.3.0`         | 0.3.0            |
+| `juniper-ci-tools`      | `>=0.1.0`         | 0.1.0            |
+| `juniper-doc-tools`     | `>=0.1.0,<0.2.0`  | 0.1.1            |
+| `juniper-observability` | `>=0.2.0`         | 0.2.0            |
 
 For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy).
 
