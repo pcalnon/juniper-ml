@@ -81,9 +81,11 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-| juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-observability |
-|------------|--------------|----------------|----------------|-----------------------|
-| 0.4.x      | 0.4.x        | 0.3.x          | 0.2.x          | >=0.1.1               |
+`juniper-ml` 0.5.0 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups.
+
+| juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
+|------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
+| 0.5.x      | >=0.6.0      | >=0.3.17       | >=0.3.0        | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 
 ### Service Ports
 
