@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] -- 2026-05-21
+
+Adds the workflow-script-path lint as a second console script
+(non-breaking; existing `juniper-generate-dep-docs` callers are
+unaffected).
+
+### Added
+
+- `juniper_ci_tools.lint_workflow_paths` — Python library that walks
+  every `*.yml` / `*.yaml` file under a repo's `.github/workflows/`
+  and validates that every `python <path.py>` / `bash <path.{sh,bash}>`
+  invocation references a file that exists on disk. Catches the
+  failure class that broke 3 juniper-X CIs on 2026-05-18 (script
+  rename without workflow update).
+- `juniper-lint-workflow-paths` console script. Auto-discovers the
+  repo root via `.github/workflows/`; supports `--repo-root`,
+  `--workflows-dir`, `--exit-zero`, `--json`, `--version`. Exit
+  codes: 0 (clean), 1 (missing paths), 2 (repo root or workflows
+  dir not discoverable).
+- Public API additions: `LintResult`, `LintFinding`,
+  `lint_workflow_paths`, `extract_script_paths`, `is_validatable`,
+  `find_repo_root`, `DEFAULT_ECOSYSTEM_SIBLING_PREFIXES`.
+- 23 new tests under `tests/test_lint_workflow_paths.py` covering
+  extraction edge cases (YAML parse failure, multi-version python,
+  bash invocations, unittest positional args), cross-repo prefix
+  skipping with configurable sibling list, repo-root walk-up
+  discovery, end-to-end lint runs against synthetic repos, and full
+  CLI exit-code matrix including JSON output.
+
+### Migration context
+
+Replaces the 6 byte-identical copies of
+`util/test_workflow_script_paths.py` that existed across consumer
+repos. A future consumer-adoption PR series will swap the inline
+copies for `pip install "juniper-ci-tools>=0.2.0,<0.3.0"` +
+`juniper-lint-workflow-paths` (or `python3 -m unittest` of the
+in-package test, depending on each repo's preferred runner).
+
 ## [0.1.0] -- 2026-05-20
 
 Initial PyPI scaffold (Wave 0 of the `juniper-ci-tools` migration; plan doc
