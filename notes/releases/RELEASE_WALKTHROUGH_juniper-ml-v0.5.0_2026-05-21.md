@@ -211,7 +211,7 @@ pip install juniper-ml==0.5.0
 pip install "juniper-ml[clients]==0.5.0"
 pip install "juniper-ml[tools]==0.5.0"
 pip install "juniper-ml[servers]==0.5.0"
-pip install "juniper-ml[all]==0.5.0"      # ~2 GB, allow time
+pip install "juniper-ml[all]==0.5.0"      # ~5 GB on disk after install; allow 5-10 min
 pip list | grep ^juniper
 deactivate && rm -rf /tmp/v05-verify
 ```
@@ -254,10 +254,11 @@ ships with a problem:
    every external caller. The v0.5.0 expansion of `[all]` is
    technically a strict superset (so non-breaking), but a caller who
    was relying on `[all]` to be small (e.g. in a constrained CI
-   environment) will see the install size grow from ~30 MB to ~2 GB.
-   The install-size advisory in `docs/QUICK_START.md` (#301) calls
-   this out for new users; existing users discover it the first time
-   they upgrade.
+   environment) will see the install size grow from ~30 MB to ~5 GB
+   on disk after install (Python 3.13 + Linux x86_64, measured against
+   PyPI 2026-05-21). The install-size advisory in `docs/QUICK_START.md`
+   (#301) calls this out for new users; existing users discover it the
+   first time they upgrade.
 
 2. **The recursive `[all]` reference is checked at install time, not
    build time.** `twine check` does not validate that `juniper-ml[all]`
