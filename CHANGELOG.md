@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-21
+
 ### Added
+
+- **TestPyPI extras-resolution verification step** in
+  `.github/workflows/publish.yml`. After the bare-package install
+  verification, the workflow now also installs `juniper-ml[clients]`
+  from TestPyPI and imports both client modules. This exercises the
+  full `[project.optional-dependencies]` resolution path against the
+  published metadata, so a broken extras declaration (mistyped name,
+  missing roll-up into `[all]`, dangling self-reference) fails the
+  publish rather than landing on PyPI silently. `[clients]` is chosen
+  because it is the lightest extra (no torch) and still walks the full
+  resolver path.
+
+- **`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`**
+  -- runbook for the v0.5.0 release. Documents preconditions, the
+  TestPyPI / PyPI flow, the new extras-resolution verification step,
+  and the rollback options (yank vs. patch release) for a meta-package
+  whose extras surface has expanded.
 
 - **`tests/test_agents_md_version_drift.py`** -- new lint test pinning
   `AGENTS.md`'s `**Version**:` header to `pyproject.toml`'s
