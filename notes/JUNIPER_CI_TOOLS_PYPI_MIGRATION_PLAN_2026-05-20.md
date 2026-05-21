@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-20
 **Author:** Paul Calnon (drafted by Amp)
-**Status:** Wave 0 in progress
+**Status:** Waves 0-2 complete (2026-05-21); §5 drift detection in flight; Wave 4 inline-script deletion in flight
 **Estimated effort:** 3–5 working days, single owner
 
 ---
