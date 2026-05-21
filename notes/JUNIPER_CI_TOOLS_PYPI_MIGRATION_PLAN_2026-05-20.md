@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-20
 **Author:** Paul Calnon (drafted by Amp)
-**Status:** Waves 0-2 complete (2026-05-21); §5 drift detection in flight; Wave 4 inline-script deletion in flight
+**Status:** **Complete (2026-05-21)** — Waves 0, 1, 2, 4 merged across all 7 consumer repos; §5.1 + §5.2 drift detection live in `juniper-ml/.github/workflows/docs-full-check.yml`. Wave 3 was skipped per plan (no pre-commit surface). Wave 4 PRs: juniper-ml#298, juniper-cascor-client#56, juniper-cascor-worker#79, juniper-data-client#72, juniper-canopy#306, juniper-data#136, juniper-cascor#290.
 **Estimated effort:** 3–5 working days, single owner
 
 ---
