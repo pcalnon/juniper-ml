@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`[ci-tools]` optional dependency group** for the new `juniper-ci-tools`
+  PyPI package (Wave 1 of the dep-docs migration plan
+  [`notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`](notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md)).
+  - Pinned `juniper-ci-tools>=0.1.0,<0.2.0`; rolled into the `all` extra.
+  - `pip install juniper-ml[ci-tools]` installs the
+    `juniper-generate-dep-docs` console script for any consumer that
+    wants it without the full Juniper client/worker stack.
+  - Mirrors the `[doc-tools]` precedent. Wave 2 (per-repo CI swap) is
+    the natural follow-up.
+- **`doc-tools` and `ci-tools` rows** in `docs/REFERENCE.md` "Available
+  Extras" table (previously omitted when each extra was added).
+
 - **§5 drift-detection guard rails** for the `juniper-doc-tools` PyPI
   migration (plan
   [`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
