@@ -48,6 +48,8 @@ pip install juniper-ml[doc-tools]
 pip install juniper-ml[all]
 ```
 
+> **Note on install size.** `juniper-ml[all]` transitively pulls a multi-GB dependency tree (notably `torch` via `juniper-cascor-worker` and `juniper-cascor`). On a fresh environment this resolves to roughly 2 GB of wheels. Callers who do not need the worker or server distributions should prefer a narrower extra (`[clients]`, `[tools]`, or `[doc-tools]`), which resolve to tens of megabytes.
+
 ### What Each Extra Installs
 
 | Extra       | Packages                                                                                              |
