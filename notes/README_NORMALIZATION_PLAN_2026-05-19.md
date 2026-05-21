@@ -1,6 +1,6 @@
 # README Normalization Plan — Juniper Application Suite
 
-**Date**: 2026-05-19
+**Date**: 2026-05-19 (last updated 2026-05-21 for `juniper-ml` 0.5.0 extras-surface expansion)
 **Author**: Paul Calnon
 **Status**: Planning (no edits to README files in scope)
 **Applies to**: All ten application/library repositories in the Juniper ecosystem
@@ -138,8 +138,14 @@ The block is to be rendered as follows (substituting the repository's own PyPI n
 
 `<package-name>` is published on PyPI as **[`<package-name>`](https://pypi.org/project/<package-name>/)**.
 The package is also surfaced through the platform meta-distribution
-**[`juniper-ml`](https://pypi.org/project/juniper-ml/)**, which installs
-the full client stack via `pip install juniper-ml[all]`.
+**[`juniper-ml`](https://pypi.org/project/juniper-ml/)**, which aggregates
+every Juniper PyPI package -- servers, client libraries, distributed worker,
+and shared tooling -- and installs them in one step via
+`pip install juniper-ml[all]`. Per-component extras
+(`[clients]`, `[worker]`, `[servers]`, `[tools]`, `[doc-tools]`) are
+also available for finer-grained installs; see the
+[`juniper-ml` README](https://github.com/pcalnon/juniper-ml#extras)
+for the full table.
 
 ```bash
 pip install <package-name>
@@ -180,7 +186,10 @@ For `juniper-ml` itself, the section adopts the meta-package phrasing:
 
 `juniper-ml` is the **public face of the Juniper platform on PyPI**. It is
 published as **[`juniper-ml`](https://pypi.org/project/juniper-ml/)** and
-provides a single installation entry point for the full client stack:
+provides a single installation entry point for every Juniper PyPI package --
+the three service distributions (canopy, cascor, data), the two client
+libraries (data-client, cascor-client), the distributed worker, and the three
+shared tooling packages (ci-tools, doc-tools, observability):
 
 ```bash
 pip install juniper-ml[all]
@@ -358,7 +367,7 @@ Each repository's PR carries the same shape: preamble + application heading + Di
 ### 10.1 `juniper-ml` (public face)
 
 - Add preamble and 150 px logo (place asset at `images/Juniper_Logo_150px.png`).
-- Application heading: `## Juniper ML`. Description: three-to-five sentences positioning the package as the **public face** of the platform — the single installable entry point that aggregates the client stack, the meta-distribution that anchors version compatibility across components, and the canonical home for project-level documentation cross-references.
+- Application heading: `## Juniper ML`. Description: three-to-five sentences positioning the package as the **public face** of the platform — the single installable entry point that aggregates the **full Juniper PyPI surface** (servers, clients, worker, and shared tooling) into per-component extras, the meta-distribution that anchors version compatibility across components, and the canonical home for project-level documentation cross-references.
 - Distribution section uses the meta-package phrasing in §6.
 - Architecture: reproduce the parent-CLAUDE.md dependency graph; place at the top of the Architecture section.
 - Active Research Components: summarises the platform-level components by reference and links to each repository's README.
