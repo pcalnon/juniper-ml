@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.4.1
+**Version:** 0.5.0
 **Status:** Active
-**Last Updated:** May 4, 2026
+**Last Updated:** May 21, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -27,7 +27,7 @@
 | Field                  | Value        |
 |------------------------|--------------|
 | **PyPI Name**          | `juniper-ml` |
-| **Version**            | `0.4.1`      |
+| **Version**            | `0.5.0`      |
 | **Python**             | `>=3.12`     |
 | **Base Dependencies**  | None         |
 | **Importable Modules** | None         |
@@ -38,20 +38,28 @@
 
 ### Available Extras
 
-| Extra       | Packages Installed                                          | Min Version       |
-|-------------|-------------------------------------------------------------|-------------------|
-| `clients`   | `juniper-data-client`                                       | `>=0.4.0`         |
-|             | `juniper-cascor-client`                                     | `>=0.3.0`         |
-| `worker`    | `juniper-cascor-worker`                                     | `>=0.3.0`         |
-| `doc-tools` | `juniper-doc-tools`                                         | `>=0.1.0,<0.2.0`  |
-| `ci-tools`  | `juniper-ci-tools`                                          | `>=0.1.0,<0.2.0`  |
-| `all`       | All packages from `clients` + `worker` + `doc-tools` + `ci-tools` | --          |
+| Extra       | Packages Installed                                                                       | Min Version       |
+|-------------|------------------------------------------------------------------------------------------|-------------------|
+| `clients`   | `juniper-data-client`                                                                    | `>=0.4.0`         |
+|             | `juniper-cascor-client`                                                                  | `>=0.3.0`         |
+| `worker`    | `juniper-cascor-worker`                                                                  | `>=0.3.0`         |
+| `servers`   | `juniper-canopy`                                                                         | `>=0.3.0`         |
+|             | `juniper-cascor`                                                                         | `>=0.3.17`        |
+|             | `juniper-data`                                                                           | `>=0.6.0`         |
+| `tools`     | `juniper-ci-tools`                                                                       | `>=0.1.0`         |
+|             | `juniper-doc-tools`                                                                      | `>=0.1.0,<0.2.0`  |
+|             | `juniper-observability`                                                                  | `>=0.2.0`         |
+| `doc-tools` | `juniper-doc-tools` (back-compat alias for the doc-tools entry in `tools`)               | `>=0.1.0,<0.2.0`  |
+| `all`       | All packages from `clients` + `worker` + `servers` + `tools`                             | --                |
 
 ### Installation Commands
 
 ```bash
 pip install juniper-ml[clients]   # Data + CasCor HTTP/WS clients
 pip install juniper-ml[worker]    # Distributed training worker
+pip install juniper-ml[servers]   # Canopy + Cascor + Data services
+pip install juniper-ml[tools]     # CI tools + doc tools + observability
+pip install juniper-ml[doc-tools] # Markdown link validator only (back-compat alias)
 pip install juniper-ml[all]       # Everything
 ```
 
@@ -59,9 +67,15 @@ pip install juniper-ml[all]       # Everything
 
 | Package                   | Purpose                                                                         |
 |---------------------------|---------------------------------------------------------------------------------|
+| **juniper-canopy**        | Real-time monitoring dashboard (Dash/FastAPI) for training dynamics             |
+| **juniper-cascor**        | Cascade-Correlation training service (REST + WebSocket)                         |
+| **juniper-data**          | Dataset-generation REST service (FastAPI)                                       |
 | **juniper-data-client**   | Synchronous HTTP client for the juniper-data REST API (dataset generation)      |
 | **juniper-cascor-client** | Synchronous HTTP + async WebSocket client for the juniper-cascor API (training) |
 | **juniper-cascor-worker** | Remote candidate training worker using multiprocessing IPC                      |
+| **juniper-ci-tools**      | Dependency-documentation generator (`juniper-generate-dep-docs`) used by every Juniper repo's CI |
+| **juniper-doc-tools**     | Markdown link validator (`juniper-check-doc-links`) for intra- and cross-repo docs |
+| **juniper-observability** | Shared Prometheus collector helpers, structured-JSON logging, Starlette middleware |
 
 ---
 
@@ -85,7 +99,7 @@ pip install juniper-ml[all]       # Everything
 
 ### juniper-observability
 
-`juniper-observability` lives under `juniper-observability/` in this repository and publishes independently from the `juniper-ml` meta-package. It is not installed by `juniper-ml[all]`; services should depend on `juniper-observability` directly when they need shared health models, request-ID logging/middleware, Prometheus helpers, or Sentry setup.
+`juniper-observability` lives under `juniper-observability/` in this repository and publishes independently from the `juniper-ml` meta-package. Since `juniper-ml` 0.5.0 it is also aggregated under the `[tools]` and `[all]` extras, so a `pip install juniper-ml[all]` will pull it in alongside the rest of the platform. Services that don't need the full meta-package can still depend on `juniper-observability` directly when they only want the shared health models, request-ID logging/middleware, Prometheus helpers, or Sentry setup.
 
 | Field                 | Value                                                                      |
 |-----------------------|----------------------------------------------------------------------------|
@@ -115,6 +129,7 @@ Publish and CI constraints:
 
 | Version | Date       | Changes                                                                                   |
 |---------|------------|-------------------------------------------------------------------------------------------|
+| 0.5.0   | 2026-05-21 | Added `[servers]` and `[tools]` extras; expanded `[all]` to install every Juniper package |
 | 0.4.1   | 2026-04-28 | Added `juniper-observability` sibling package and dedicated CI/publish workflows          |
 | 0.4.0   | 2026-04-09 | Added service orchestration utilities, worktree cleanup tooling, and updated package pins |
 | 0.2.0   | 2026-02-27 | Added CLAUDE.md, raised Python to >=3.12, renamed from "juniper"                          |
@@ -182,6 +197,6 @@ These variables are used by consumer applications when juniper-ml extras are ins
 
 ---
 
-**Last Updated:** May 4, 2026
-**Version:** 0.4.1
+**Last Updated:** May 21, 2026
+**Version:** 0.5.0
 **Maintainer:** Paul Calnon
