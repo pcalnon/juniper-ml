@@ -5,10 +5,12 @@
 #
 # Description:
 #    Refresh pinned CI lockfiles weekly via PR. Drop into a target repo's
-#    `.github/workflows/lockfile-update.yml`. Each Juniper repo should
-#    expose a `util/generate_dep_docs.sh` (or equivalent) that regenerates
-#    `requirements_ci.txt` and `conda_environment_ci.yaml`. The workflow
-#    pushes the diff (if any) onto a new branch and opens a PR.
+#    `.github/workflows/lockfile-update.yml`. As of Wave 2 of the dep-docs
+#    PyPI migration (notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md),
+#    this installs `juniper-ci-tools` from PyPI and invokes the
+#    `juniper-generate-dep-docs` console script to regenerate
+#    `conf/requirements_ci.txt` and `conf/conda_environment_ci.yaml`.
+#    The workflow pushes the diff (if any) onto a new branch and opens a PR.
 #
 #    PRs are opened by `peter-evans/create-pull-request` using the
 #    workflow's GITHUB_TOKEN. No additional secret is required for the
@@ -40,14 +42,13 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Regenerate dependency lockfiles
+      - name: Install juniper-ci-tools
         run: |
-          if [ -f util/generate_dep_docs.sh ]; then
-            bash util/generate_dep_docs.sh
-          else
-            echo "::warning::util/generate_dep_docs.sh not found; nothing to refresh"
-            exit 0
-          fi
+          python -m pip install --upgrade "pip>=26.1.1"
+          pip install "juniper-ci-tools>=0.1.0,<0.2.0"
+
+      - name: Regenerate dependency lockfiles
+        run: juniper-generate-dep-docs
 
       - name: Open PR if lockfiles changed
         uses: peter-evans/create-pull-request@271a8d0340265f705aeb70568e08251a5f6ed72b  # v7.0.5
@@ -57,8 +58,9 @@ jobs:
           commit-message: 'chore(deps): refresh CI lockfiles'
           title: 'chore(deps): refresh CI lockfiles'
           body: |
-            Automated weekly refresh of CI lockfiles via
-            `util/generate_dep_docs.sh`.
+            Automated weekly refresh of CI lockfiles via the
+            `juniper-generate-dep-docs` console script from the
+            `juniper-ci-tools` PyPI package.
           labels: |
             dependencies
             automated
