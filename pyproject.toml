@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "juniper-ml"
-version = "0.4.1"
+version = "0.5.0"
 description = "Juniper - Cascade Correlation Neural Network Research Platform"
 readme = "README.md"
 license = "MIT"
@@ -37,12 +37,24 @@ worker = [
 # Juniper repo's docs CI invokes. Wave 1 of the doc-link migration plan
 # (notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md). Pinned
 # inside the 0.1.x range so a future 0.2.x with breaking CLI changes
-# doesn't auto-adopt before consumer repos have migrated.
+# doesn't auto-adopt before consumer repos have migrated. Kept as a
+# distinct extra for back-compat with `pip install juniper-ml[doc-tools]`
+# even though it is also included in the broader `tools` aggregate below.
 doc-tools = [
     "juniper-doc-tools>=0.1.0,<0.2.0",
 ]
+servers = [
+    "juniper-canopy>=0.3.0",
+    "juniper-cascor>=0.3.17",
+    "juniper-data>=0.6.0",
+]
+tools = [
+    "juniper-ci-tools>=0.1.0",
+    "juniper-doc-tools>=0.1.0,<0.2.0",
+    "juniper-observability>=0.2.0",
+]
 all = [
-    "juniper-ml[clients,worker,doc-tools]",
+    "juniper-ml[clients,worker,servers,tools]",
 ]
 
 [tool.setuptools]

@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.2.1
+**Version:** 0.3.0
 **Status:** Active
-**Last Updated:** May 4, 2026
+**Last Updated:** May 21, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -35,21 +35,33 @@ pip install juniper-ml[clients]
 # Distributed training worker only (juniper-cascor-worker)
 pip install juniper-ml[worker]
 
+# Server packages (juniper-canopy + juniper-cascor + juniper-data)
+pip install juniper-ml[servers]
+
+# Shared tooling (juniper-ci-tools + juniper-doc-tools + juniper-observability)
+pip install juniper-ml[tools]
+
+# Markdown link validator only (back-compat alias for one entry in [tools])
+pip install juniper-ml[doc-tools]
+
 # Everything
 pip install juniper-ml[all]
 ```
 
 ### What Each Extra Installs
 
-| Extra     | Packages                                                     |
-|-----------|--------------------------------------------------------------|
-| `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
-| `worker`  | `juniper-cascor-worker>=0.3.0`                               |
-| `all`     | All three packages above                                     |
+| Extra       | Packages                                                                                              |
+|-------------|-------------------------------------------------------------------------------------------------------|
+| `clients`   | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                          |
+| `worker`    | `juniper-cascor-worker>=0.3.0`                                                                        |
+| `servers`   | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0`                              |
+| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0`          |
+| `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)              |
+| `all`       | All packages from `clients` + `worker` + `servers` + `tools`                                          |
 
 ### Shared Observability Package
 
-`juniper-observability` is a sibling package in this repository, not part of `juniper-ml[all]`. Install it directly when a service needs the shared health models, request-ID middleware/logging, Prometheus helpers, or Sentry setup:
+Since `juniper-ml` 0.5.0, `juniper-observability` is also aggregated under the `[tools]` and `[all]` extras, so a `pip install juniper-ml[all]` will install it alongside the rest of the platform. Callers that only want the shared observability primitives without the full meta-package can still install it directly:
 
 ```bash
 pip install "juniper-observability[all]"
@@ -69,10 +81,16 @@ pip list | grep juniper
 Expected output (with `[all]`):
 
 ```bash
+juniper-canopy           0.3.x
+juniper-cascor           0.3.x
 juniper-cascor-client    0.3.x
 juniper-cascor-worker    0.3.x
+juniper-ci-tools         0.1.x
+juniper-data             0.6.x
 juniper-data-client      0.4.x
-juniper-ml               0.4.1
+juniper-doc-tools        0.1.x
+juniper-ml               0.5.0
+juniper-observability    0.2.x
 ```
 
 ```python
@@ -95,6 +113,6 @@ from juniper_cascor_worker import CandidateTrainingWorker
 
 ---
 
-**Last Updated:** May 4, 2026
-**Version:** 0.2.1
+**Last Updated:** May 21, 2026
+**Version:** 0.3.0
 **Status:** Active

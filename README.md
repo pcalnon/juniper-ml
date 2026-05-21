@@ -15,7 +15,7 @@ Juniper is an AI/ML research platform for investigating dynamic neural network a
 
 ## Juniper ML
 
-`juniper-ml` is the **public face of the Juniper platform on PyPI**. It is the meta-distribution that aggregates the platform's client libraries — `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, and `juniper-doc-tools` — behind a single installation entry point. The package additionally serves as the version-anchor for cross-component compatibility, the home of the platform-level documentation index, and the host repository from which two independently-tagged sibling packages (`juniper-observability` and `juniper-doc-tools`) are published. External callers who want to interact with Juniper services from their own Python code should start here.
+`juniper-ml` is the **public face of the Juniper platform on PyPI**. It is the meta-distribution that aggregates the platform's services (`juniper-canopy`, `juniper-cascor`, `juniper-data`), client libraries (`juniper-data-client`, `juniper-cascor-client`), distributed worker (`juniper-cascor-worker`), and shared tooling (`juniper-ci-tools`, `juniper-doc-tools`, `juniper-observability`) behind a single installation entry point. The package additionally serves as the version-anchor for cross-component compatibility, the home of the platform-level documentation index, and the host repository from which the independently-tagged `juniper-observability` and `juniper-doc-tools` packages are published. External callers who want to interact with Juniper services from their own Python code should start here.
 
 ## Distribution
 
@@ -25,7 +25,7 @@ Juniper is an AI/ML research platform for investigating dynamic neural network a
 pip install juniper-ml[all]
 ```
 
-Individual components — `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-doc-tools`, and `juniper-observability` — remain installable in isolation for callers that require finer control over their dependency surface.
+Individual components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-ci-tools`, `juniper-doc-tools`, and `juniper-observability` — remain installable in isolation for callers that require finer control over their dependency surface.
 
 ## Ecosystem Compatibility
 
@@ -49,7 +49,9 @@ juniper-cascor-client ──calls──> juniper-cascor (REST/WebSocket)
 juniper-canopy ──uses──> juniper-data-client ──calls──> juniper-data
 juniper-canopy ──uses──> juniper-cascor-client ──calls──> juniper-cascor
 juniper-deploy ──orchestrates──> juniper-data, juniper-cascor, juniper-canopy (Docker)
-juniper-ml ──meta-package──> juniper-data-client, juniper-cascor-client, juniper-cascor-worker, juniper-doc-tools
+juniper-ml ──meta-package──> juniper-canopy, juniper-cascor, juniper-data,
+                              juniper-data-client, juniper-cascor-client, juniper-cascor-worker,
+                              juniper-ci-tools, juniper-doc-tools, juniper-observability
 juniper-ml ──hosts (independently published)──> juniper-observability, juniper-doc-tools
 ```
 
@@ -57,11 +59,15 @@ juniper-ml ──hosts (independently published)──> juniper-observability, j
 
 | Component | Relationship | Notes |
 |-----------|-------------|-------|
+| [juniper-canopy](https://github.com/pcalnon/juniper-canopy) | Aggregated under `[servers]` and `[all]` | `pip install juniper-canopy` |
+| [juniper-cascor](https://github.com/pcalnon/juniper-cascor) | Aggregated under `[servers]` and `[all]` | `pip install juniper-cascor` |
+| [juniper-data](https://github.com/pcalnon/juniper-data) | Aggregated under `[servers]` and `[all]` | `pip install juniper-data` |
 | [juniper-data-client](https://github.com/pcalnon/juniper-data-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-data-client` |
 | [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-cascor-client` |
 | [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Aggregated under `[worker]` and `[all]` | `pip install juniper-cascor-worker` |
-| [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]` and `[all]`; published from this repository | `pip install juniper-doc-tools` |
-| [juniper-observability](juniper-observability/README.md) | Hosted in this repository; not aggregated under any extra (install directly when needed) | `pip install "juniper-observability[all]"` |
+| [juniper-ci-tools](https://github.com/pcalnon/juniper-ml/tree/main/juniper-ci-tools) | Aggregated under `[tools]` and `[all]`; published from this repository | `pip install juniper-ci-tools` |
+| [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]`, `[tools]`, and `[all]`; published from this repository | `pip install juniper-doc-tools` |
+| [juniper-observability](juniper-observability/README.md) | Aggregated under `[tools]` and `[all]`; published independently from this repository | `pip install "juniper-observability[all]"` |
 
 ### Extras
 
@@ -69,7 +75,9 @@ juniper-ml ──hosts (independently published)──> juniper-observability, j
 |--------------|--------------------------------------------------------------------------------------------------|
 | `clients`    | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                     |
 | `worker`     | `juniper-cascor-worker>=0.3.0`                                                                   |
-| `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0`                                                                |
+| `servers`    | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0`                         |
+| `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0`     |
+| `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)         |
 | `all`        | All of the above                                                                                 |
 
 ## Active Research Components
@@ -97,10 +105,12 @@ The meta-package itself has no other prerequisites. Component-specific requireme
 ### Installation
 
 ```bash
-pip install juniper-ml[all]            # full client stack
-pip install juniper-ml[clients]        # client libraries only
-pip install juniper-ml[worker]         # distributed worker only
-pip install juniper-ml[doc-tools]      # markdown link validator only
+pip install juniper-ml[all]            # all servers, clients, worker, and tools
+pip install juniper-ml[servers]        # juniper-canopy + juniper-cascor + juniper-data
+pip install juniper-ml[clients]        # juniper-data-client + juniper-cascor-client
+pip install juniper-ml[worker]         # juniper-cascor-worker
+pip install juniper-ml[tools]          # juniper-ci-tools + juniper-doc-tools + juniper-observability
+pip install juniper-ml[doc-tools]      # juniper-doc-tools only (back-compat alias)
 ```
 
 ### Verification

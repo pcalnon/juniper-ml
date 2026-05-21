@@ -77,17 +77,20 @@
 
 ## Ecosystem Context
 
-`juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual client libraries and worker.
+`juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual servers, client libraries, worker, and shared tooling packages.
 
-This repository also houses the independent `juniper-observability` subpackage. It is not part of the `juniper-ml[all]` extras; install it directly when a service needs shared health, logging, request-id, Prometheus, or Sentry primitives.
+This repository also houses the independent `juniper-observability` and `juniper-doc-tools` subpackages, which are published from this repo under their own version tags. Since `juniper-ml` 0.5.0 both are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
 
 ### What It Installs
 
 ```bash
 juniper-ml[clients] ──installs──> juniper-data-client, juniper-cascor-client
 juniper-ml[worker]  ──installs──> juniper-cascor-worker
-juniper-ml[all]     ──installs──> all three packages above
-juniper-observability ─direct install only──> shared observability primitives
+juniper-ml[servers] ──installs──> juniper-canopy, juniper-cascor, juniper-data
+juniper-ml[tools]   ──installs──> juniper-ci-tools, juniper-doc-tools, juniper-observability
+juniper-ml[all]     ──installs──> all packages from clients + worker + servers + tools
+juniper-observability ─direct install also supported──> shared observability primitives
+juniper-doc-tools     ─direct install also supported──> markdown link validator
 ```
 
 ### Compatibility

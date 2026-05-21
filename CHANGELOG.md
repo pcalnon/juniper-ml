@@ -9,6 +9,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`[servers]` optional dependency group** for the three Juniper service
+  packages on PyPI. `pip install juniper-ml[servers]` now installs
+  `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, and
+  `juniper-data>=0.6.0` in a single step. Previously the meta-package
+  only aggregated the client/worker libraries; the server distributions
+  had to be installed by name.
+- **`[tools]` optional dependency group** that aggregates the three
+  PyPI-published Juniper tool packages: `juniper-ci-tools>=0.1.0`
+  (dependency-documentation generator, Wave 1 of the dep-docs migration
+  plan), `juniper-doc-tools>=0.1.0,<0.2.0` (markdown link validator),
+  and `juniper-observability>=0.2.0` (shared Prometheus collector
+  helpers + structured logging + Starlette middleware). The
+  pre-existing `[doc-tools]` extra is retained for back-compat with
+  callers that already installed via that name.
+- **`[all]` extra expanded** to cover the new `[servers]` and `[tools]`
+  groups in addition to `[clients]` and `[worker]`. A single
+  `pip install juniper-ml[all]` now pulls in every published Juniper
+  package: 3 servers, 2 clients, 1 worker, and 3 tools.
+
+### Changed
+
+- **Version bumped to 0.5.0** (semver minor) to mark the new optional
+  dependency surface. No removals or breaking changes -- existing
+  `[clients]`, `[worker]`, `[doc-tools]`, and `[all]` install commands
+  continue to work; `[all]` is now a strict superset.
+- **`juniper-observability` is now aggregated under `juniper-ml[tools]`
+  and `juniper-ml[all]`.** Until 0.4.1 it was published from this
+  repository as a sibling package that had to be installed directly.
+  Documentation in `README.md`, `docs/QUICK_START.md`,
+  `docs/REFERENCE.md`, and `docs/DOCUMENTATION_OVERVIEW.md` updated to
+  reflect this. Independent versioning and the
+  `juniper-observability-v*` tag pipeline are unchanged.
+
 - **§5 drift-detection guard rails** for the `juniper-doc-tools` PyPI
   migration (plan
   [`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
