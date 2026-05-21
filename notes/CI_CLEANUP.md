@@ -90,5 +90,3 @@ Reasonable next-step candidates:
 | C | Watch for fallout from in-flight cascor API-09 PR 3/3 — once it lands, downstream juniper-cascor-client may need an adapter update                                                                          | 10–15 min once it lands | Direct downstream-consumer risk                                                              |
 | D | Stop here — ecosystem is in a uniquely clean state; let Paul drive the next directive                                                                                                                       | 0                       | Conservative                                                                                 |
 | E | CI_CLEANUP item #4 (pre-commit juniper-check-doc-links adoption)                                                                                                                                            | 30 min                  | Optional, originally flagged as quality-of-life                                              |
-
-
