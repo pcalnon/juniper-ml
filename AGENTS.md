@@ -63,6 +63,17 @@ is published from subdirectory `juniper-doc-tools/` by
 module form) so that the 8 ecosystem repos can replace their inline
 `scripts/check_doc_links.py` copies with a single PyPI dependency.
 
+The shared `juniper-ci-tools` package (Wave 0 scaffold, plan
+[`notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`](notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md))
+is published from subdirectory `juniper-ci-tools/` by
+`.github/workflows/publish-ci-tools.yml`, triggered by tags matching
+`juniper-ci-tools-v*`. It packages the dependency-documentation generator
+(`juniper-generate-dep-docs` console script + `python -m juniper_ci_tools`
+module form), Python port of the legacy `scripts/generate_dep_docs.sh` that
+drifted across 8 Juniper repos. Replaces all consumer inline copies via a
+single PyPI dependency; carries the cascor 2026-05-20 awk-extraction fix as
+the canonical implementation.
+
 ## Shared Observability Helpers
 
 `juniper-observability` (this repo's `juniper-observability/` subdirectory, published as a standalone PyPI package) is the canonical home for cross-service observability primitives — middlewares, the build-info `Info` metric helper, structured-JSON logging, and **idempotent `prometheus_client` collector helpers**. Any new `Counter` / `Gauge` / `Histogram` / `Summary` / `Info` / `Enum` registration in any Juniper service should go through:
