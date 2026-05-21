@@ -72,6 +72,16 @@ The `register_or_reuse` family is the default surface through which every Junipe
 | [juniper-data-client](https://github.com/pcalnon/juniper-data-client), [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | Client-library consumers — pull in via `[observability]` extra | Optional dependency |
 | [juniper-doc-tools](../juniper-doc-tools/README.md) | Sibling library published from the same repository on an independent tag pattern (`juniper-doc-tools-v*`) | Cross-link |
 
+## Design Notes
+
+> **Note** — per §10.9 of [`../notes/README_NORMALIZATION_PLAN_2026-05-19.md`](../notes/README_NORMALIZATION_PLAN_2026-05-19.md), the **Active Research Components** section is replaced by **Design Notes** for this repository, because `juniper-observability` is an infrastructure library rather than a research component. The substituted heading sits at the §4 slot #10 position (between Related Services and Quick Start Guide), per the plan's "same position in the order" stipulation.
+
+| Document | Purpose |
+|----------|---------|
+| [`../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) | Design rationale for the `register_or_reuse` / `register_fresh` / `register_info_or_update` / `lazy_register_or_reuse` family + migration history |
+| [`../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) | Original METRICS-MON R2.1 cross-service design (archived 2026-05-05) |
+| [`../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) | Release runbook + trusted-publisher troubleshooting notes |
+
 ## Quick Start Guide
 
 ### Prerequisites
@@ -117,21 +127,21 @@ The Juniper platform exists to study learning algorithms whose network architect
 
 The current platform comprises a Cascade-Correlation training service exposing a REST and WebSocket interface, a dataset-generation service with a named-version registry that includes the ARC-AGI families, a real-time monitoring dashboard for inspecting training dynamics as they occur, and a distributed worker that parallelises candidate-unit training across hosts. Near-term work extends the architectural-growth catalogue beyond Cascade-Correlation, introduces multi-network orchestration for comparative experiments at the level of network populations rather than individual runs, and tightens the dataset–training–monitoring loop into a reproducible research workbench. The longer-term direction is the systematic empirical study of constructive and architecture-growing learning algorithms, with first-class infrastructure for the ablation, comparison, and replication that such a study requires.
 
-## Design Notes
-
-> **Note** — per §10.9 of [`notes/README_NORMALIZATION_PLAN_2026-05-19.md`](../notes/README_NORMALIZATION_PLAN_2026-05-19.md), the **Active Research Components** section is replaced by **Design Notes** for this repository, because `juniper-observability` is an infrastructure library rather than a research component.
+## Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [`../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) | Design rationale for the `register_or_reuse` / `register_fresh` / `register_info_or_update` / `lazy_register_or_reuse` family + migration history |
+| [`../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) | Design rationale and migration history for the `register_or_reuse` family of collector helpers |
 | [`../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) | Original METRICS-MON R2.1 cross-service design (archived 2026-05-05) |
 | [`../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) | Release runbook + trusted-publisher troubleshooting notes |
+| [`../README.md`](../README.md) | Parent `juniper-ml` meta-package README |
+| [`../docs/REFERENCE.md`](../docs/REFERENCE.md) | Parent `juniper-ml` reference (extras, compatibility matrix, environment variables) |
 
-## Per-service metrics stay in each repo
+### Per-service metrics stay in each repo
 
 This package intentionally exposes only **cross-cutting** observability infrastructure. Service-specific metric definitions (training-loop counters, dataset-gen histograms, websocket gauges, etc.) live in their owning repo and register via `register_or_reuse` against `prometheus_client.REGISTRY` directly.
 
-## Release Workflow
+### Release Workflow
 
 `juniper-observability` is versioned and published independently of the root `juniper-ml` meta-package.
 
