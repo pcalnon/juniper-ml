@@ -95,9 +95,9 @@ juniper-doc-tools     ─direct install also supported──> markdown link vali
 
 ### Compatibility
 
-| juniper-ml | juniper-data-client | juniper-cascor-client | juniper-cascor-worker |
-|------------|---------------------|-----------------------|-----------------------|
-| 0.4.x      | >=0.4.0             | >=0.3.0               | >=0.3.0               |
+| juniper-ml | juniper-canopy | juniper-cascor | juniper-data | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools | juniper-observability |
+|------------|----------------|----------------|--------------|---------------------|-----------------------|-----------------------|------------------|-------------------|-----------------------|
+| 0.5.x      | >=0.3.0        | >=0.3.17       | >=0.6.0      | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
 
 ---
 
