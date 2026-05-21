@@ -1,0 +1,41 @@
+---
+# yamllint configuration for juniper-ml.
+#
+# Scope: this file is consumed by manual ``yamllint .`` invocations and
+# editor integrations (e.g. ALE, coc-yamllint).
+#
+# Note on pre-commit relationship: the yamllint pre-commit hook in
+# ``.pre-commit-config.yaml`` invokes yamllint with ``-d relaxed``,
+# which passes an inline rules set that overrides this file. So pre-commit
+# and CI do not enforce these rules; they enforce yamllint's bundled
+# ``relaxed`` preset instead. This file documents the project's preferred
+# manual-run ruleset and matches the pattern used by juniper-cascor /
+# juniper-data / juniper-canopy / juniper-data-client / juniper-deploy.
+#
+# Ecosystem note: line-length differs across repos (juniper-data /
+# juniper-canopy / juniper-data-client / juniper-deploy use 120; this
+# repo + juniper-cascor use 320). The 512-char ecosystem convention
+# tracked in AGENTS.md applies to black/isort/flake8/markdownlint; the
+# yamllint files have drifted independently. A future ecosystem sweep
+# could converge these.
+extends: default
+
+rules:
+  line-length:
+    max: 320
+    level: warning
+  document-start: disable
+  comments-indentation: disable
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
+    check-keys: false
+
+ignore: |
+  .venv/
+  venv/
+  __pycache__/
+  .pytest_cache/
+  .mypy_cache/
+  data/
+  logs/
+  reports/
