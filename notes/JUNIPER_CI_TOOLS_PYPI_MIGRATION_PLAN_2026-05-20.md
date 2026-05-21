@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-20
 **Author:** Paul Calnon (drafted by Amp)
-**Status:** **Complete (2026-05-21)** — Waves 0, 1, 2, 4 merged across all 7 consumer repos; §5.1 + §5.2 drift detection live in `juniper-ml/.github/workflows/docs-full-check.yml`. Wave 3 was skipped per plan (no pre-commit surface). Wave 4 PRs: juniper-ml#298, juniper-cascor-client#56, juniper-cascor-worker#79, juniper-data-client#72, juniper-canopy#306, juniper-data#136, juniper-cascor#290.
+**Status:** **Complete (2026-05-21)** — Waves 0, 1, 2, 4 merged across all 7 consumer repos; §5.1 + §5.2 drift detection live in `juniper-ml/.github/workflows/docs-full-check.yml`. Wave 3 was skipped per plan (no pre-commit surface). Wave 4 PRs: juniper-ml#298, juniper-cascor-client#56, juniper-cascor-worker#79, juniper-data-client#72, juniper-canopy#306, juniper-data#136, juniper-cascor#290. **Extension series (v0.2.0 + v0.3.0) also shipped 2026-05-21** — same package, same fan-out pattern, two additional lints (`juniper-lint-workflow-paths`, `juniper-lint-agents-md-version`); see §7 below for the PR roll-up. Pattern lessons captured in [`CI_TOOLS_EXTRACTION_PLAYBOOK.md`](CI_TOOLS_EXTRACTION_PLAYBOOK.md).
 **Estimated effort:** 3–5 working days, single owner
 
 ---
@@ -225,3 +225,60 @@ CI behavior remains identical to what the consumer would get from PyPI.
 None at scaffold time. Wave 2 will produce a side-by-side diff in the
 proof PR; if the diff is non-empty in unexpected ways we'll iterate on
 the Python port before rolling out to consumers.
+
+## 7. Extension series (post-2026-05-21)
+
+The same package + fan-out pattern proven by Waves 0–4 has been re-used
+twice more on the same day to absorb two unrelated lint scripts that had
+drifted into byte-identical copies across the 6 consumer repos. Both
+extensions reuse the established workflow verbatim: canonical
+implementation lives in juniper-ml's `tests/`; the package extraction
+lives under `juniper-ci-tools/`; consumer `util/` copies are deleted in
+the fan-out PRs; juniper-ml's own `tests/` files stay as dogfooded
+in-process unittests (mirroring how Wave 4 left
+`juniper-ml/tests/test_workflow_script_paths.py` untouched).
+
+### v0.2.0 — `juniper-lint-workflow-paths` (2026-05-21)
+
+**Trigger:** a workflow-paths drift broke 3 juniper-X CIs on 2026-05-18
+when a file referenced by `python|bash <path>` in `ci.yml` was renamed
+without updating the workflow. The lint asserts every
+`python|bash <path>` invocation in `.github/workflows/*.yml` resolves to
+a file that exists in the repo, with cross-repo paths (`juniper-X/...`)
+skipped as runtime-resolved.
+
+| Repo | PR |
+|---|---|
+| juniper-ml (package release) | #307 (v0.2.0), #308 (CodeQL ReDoS fix) |
+| juniper-data-client | #75 |
+| juniper-canopy | #310 |
+| juniper-cascor | #295 |
+| juniper-cascor-client | #60 |
+| juniper-cascor-worker | #82 |
+| juniper-data | #139 |
+
+### v0.3.0 — `juniper-lint-agents-md-version` (2026-05-21)
+
+**Trigger:** juniper-ml#295 bumped pyproject 0.4.1 → 0.5.0 but left
+AGENTS.md's `**Version**:` header at 0.4.0 for ~6 days (fixed in
+juniper-ml#304). The lint asserts the AGENTS.md version header matches
+`pyproject.toml [project].version` exactly.
+
+| Repo | PR |
+|---|---|
+| juniper-ml (package release) | #310 (v0.3.0) |
+| juniper-data-client | #76 |
+| juniper-canopy | #311 |
+| juniper-cascor | #298 |
+| juniper-cascor-client | #61 |
+| juniper-cascor-worker | #83 |
+| juniper-data | #140 |
+
+### Drift detection extension
+
+The §5.1 consumer-pin lint at `juniper-ml/tests/test_ci_tools_drift.py`
+already covers both new console scripts because the pin it inspects
+(`juniper-ci-tools>=X,<Y` in each consumer's `ci.yml`) is shared. No
+separate test_*_drift.py was added; widening the upper bound from
+`<0.3.0` → `<0.4.0` in each consumer (done as part of each fan-out PR)
+was the only consumer-side change to the drift contract.
