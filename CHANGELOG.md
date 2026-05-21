@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   approx. 2 GB on a fresh env) and recommends narrower extras
   (`[clients]`, `[tools]`, `[doc-tools]`) when the worker / server
   distributions are not needed.
-  
+
 - **`tests/test_pyproject_extras.py`** -- new lint test pinning the
   `[project.optional-dependencies]` surface so accidental edits (drop,
   mistype, fail to roll up into `[all]`) fail loudly in CI. Schema-strict:
@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `juniper-data>=0.6.0` in a single step. Previously the meta-package
   only aggregated the client/worker libraries; the server distributions
   had to be installed by name.
-  
+
 - **`[tools]` optional dependency group** that aggregates the three
   PyPI-published Juniper tool packages: `juniper-ci-tools>=0.1.0`
   (dependency-documentation generator, Wave 1 of the dep-docs migration
@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   helpers + structured logging + Starlette middleware). The
   pre-existing `[doc-tools]` extra is retained for back-compat with
   callers that already installed via that name.
-  
+
 - **`[all]` extra expanded** to cover the new `[servers]` and `[tools]`
   groups in addition to `[clients]` and `[worker]`. A single
   `pip install juniper-ml[all]` now pulls in every published Juniper
