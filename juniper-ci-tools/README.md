@@ -24,8 +24,18 @@ that addressed the analogous 2026-05-18 doc-link validator incident.
 pip install juniper-ci-tools
 ```
 
-This installs the `juniper-generate-dep-docs` console script. The package
-requires Python 3.11 or newer and depends on PyYAML.
+This installs two console scripts:
+
+- `juniper-generate-dep-docs` — dependency-documentation generator (the
+  consolidated `scripts/generate_dep_docs.sh` port; see "Usage" below).
+- `juniper-lint-workflow-paths` — lints that every
+  `python|bash <path>` invocation in `.github/workflows/*.yml`
+  references a file that exists on disk. Added in 0.2.0;
+  consolidates the 6 byte-identical copies of
+  `util/test_workflow_script_paths.py` that existed across consumer
+  repos.
+
+The package requires Python 3.11 or newer and depends on PyYAML.
 
 ## Usage
 
