@@ -89,9 +89,6 @@ debug_log "Define Claude Code Effort values"
 EFFORT_LOW="low"
 EFFORT_MED="medium"
 EFFORT_HIGH="high"
-EFFORT_XHIGH="xhigh"
-EFFORT_MAX="max"
-EFFORT_AUTO="auto"
 
 
 ########################################################################################################################################################################
@@ -316,7 +313,7 @@ function usage() {
     echo -ne "\t\tNOTE: Prompt string can be provided either as a string of text or as a file name or pathname to a file containing the prompt string.\n"
     echo -ne "\t ${EFFORT_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the effort used by the Claude Code model to be specified.\n"
-    echo -ne "\t\tNOTE: Effort value must be one of the following: ${EFFORT_LOW}, ${EFFORT_MED}, ${EFFORT_HIGH}, ${EFFORT_XHIGH}, ${EFFORT_MAX}, or ${EFFORT_AUTO}.\n"
+    echo -ne "\t\tNOTE: Effort value must be one of the following: ${EFFORT_LOW}, ${EFFORT_MED}, or ${EFFORT_HIGH}.\n"
     echo -ne "\t ${WORKTREE_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the worktree to be specified for use by the Claude Code model.\n"
     echo -ne "\t\tNOTE: Worktree value must be a valid worktree name.  If no worktree name is provided, Claude Code will assign a new worktree name.\n"
@@ -544,7 +541,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Received Remote Control Value, ${#CLAUDE_CODE_PARAMS[@]} args"
     elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
         debug_log "Parsing effort flags"
-        if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) || ( "${1}" == "${EFFORT_XHIGH}" ) || ( "${1}" == "${EFFORT_MAX}" ) || ( "${1}" == "${EFFORT_AUTO}" ) ) ]]; then
+        if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) && ( ( "${1}" == "${EFFORT_LOW}" ) || ( "${1}" == "${EFFORT_MED}" ) || ( "${1}" == "${EFFORT_HIGH}" ) ) ]]; then
             # EFFORT_VALUE="${CLAUDE_EFFORT_FLAGS} ${1}"
             CLAUDE_CODE_PARAMS+=("${CLAUDE_EFFORT_FLAGS}" "${1}")
             shift
