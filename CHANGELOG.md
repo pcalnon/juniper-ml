@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **TestPyPI extras-resolution verification extended to `[tools]`.**
+  `.github/workflows/publish.yml` now runs a third `pip install` step
+  after the bare-package install and the `[clients]` install: it also
+  installs `juniper-ml[tools]==${VERSION}` from TestPyPI and imports
+  the three `[tools]` packages (`juniper-ci-tools`,
+  `juniper-doc-tools`, `juniper-observability`). Both light extras
+  (`[clients]` + `[tools]`) are now exercised at publish time, closing
+  the gap documented in the v0.5.0 release runbook §7 (which
+  previously called out `[tools]` as caught only by the schema lint,
+  not at publish time). `[servers]` and `[worker]` remain
+  schema-lint-only because their dependency trees are too heavy to
+  resolve in every release run. Matching runbook §7 update so the
+  documented behavior matches reality.
+
 - **`juniper-ml[all]` install-size advisory corrected** in
   `docs/QUICK_START.md`, `notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`,
   and `notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`. The

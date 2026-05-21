@@ -150,42 +150,59 @@ issue.
 
 ## 7. The new extras-resolution verification step
 
-`publish.yml` v0.5.0 prep PR added a second `pip install` in the
-TestPyPI verify step:
+The publish workflow's TestPyPI verify step exercises **both** light
+extras after the bare-package install:
 
 ```bash
+# bare
+pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "juniper-ml==${VERSION}"
+
+# [clients] — data-client + cascor-client
 pip install --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
             "juniper-ml[clients]==${VERSION}"
 python -c "import juniper_data_client, juniper_cascor_client; ..."
+
+# [tools] — ci-tools + doc-tools + observability
+pip install --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "juniper-ml[tools]==${VERSION}"
+python -c "import juniper_ci_tools, juniper_doc_tools, juniper_observability; ..."
 ```
 
-**Why `[clients]` specifically:**
+**Why both `[clients]` and `[tools]`:**
 
-- It's the lightest non-empty extra (just `juniper-data-client` +
-  `juniper-cascor-client`; no torch, no service distributions, no
-  observability stack).
-- Both dependencies are already on production PyPI, so the
-  `--extra-index-url` is what actually serves them; TestPyPI only
-  serves the `juniper-ml` wheel itself.
-- It walks the full PEP 517 resolver path against the published
-  TestPyPI metadata, so a broken `[clients]` (or, transitively, a
-  broken `[all]` recursive reference) shows up here.
+- They are the **two light extras** — no torch, no service
+  distributions. `[clients]` is ~30 MB; `[tools]` is similar.
+- Together they cover **both axes of the v0.5.0 extras expansion**:
+  the long-standing client-library aggregate (`[clients]`) and the
+  new shared-tooling aggregate (`[tools]`). A misdeclaration on
+  either is caught at publish time.
+- Both deps live on production PyPI, so `--extra-index-url` is what
+  serves them; TestPyPI only serves the `juniper-ml` wheel itself.
+- The combined verify step walks the full PEP 517 resolver path
+  against the published TestPyPI metadata twice, so any broken extra
+  declaration in either axis (or transitively in the recursive `[all]`
+  reference) fails the publish.
 
 **What this catches vs. what it doesn't:**
 
-- ✅ Misnamed extra (`[client]` vs `[clients]`).
+- ✅ Misnamed extra (`[client]` vs `[clients]`, `[tool]` vs `[tools]`).
 - ✅ `[all]` missing a self-referenced subextra.
-- ✅ Removed package from `[clients]` while a downstream caller still
-  expects it.
-- ❌ A broken `[servers]` or `[tools]` (those resolve large dependency
-  trees that would slow the workflow too much; rely on the
+- ✅ Removed package from `[clients]` or `[tools]` while a downstream
+  caller still expects it.
+- ✅ Either light extra failing to resolve against published metadata.
+- ❌ A broken `[servers]` or `[worker]` (those resolve large
+  dependency trees that would slow the workflow too much; rely on the
   `tests/test_pyproject_extras.py` schema lint for those).
 
 **If this step fails:**
 
 1. Check the resolver error against `tests/test_pyproject_extras.py`'s
-   `EXPECTED_EXTRAS` table.
+   `EXPECTED_EXTRAS` table to identify which extra and which package
+   triggered the failure.
 2. The most likely cause is a typo in `pyproject.toml` that the schema
    lint missed (e.g. wrong PyPI name). Fix on a hotfix branch, bump
    the version to `0.5.1`, repeat the release flow.
