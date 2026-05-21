@@ -29,10 +29,16 @@ WAKE_THE_CLAUDE_SCRIPT="${SCRIPT_PATH}/${WAKE_THE_CLAUDE_SCRIPT_NAME}"
 ########################################################################################################################################################################################################
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
+export AUTO="auto"
+export MAX="max"
+export XHIGH="xhigh"
 export HIGH="high"
 export MEDIUM="medium"
 export LOW="low"
-export DEFAULT_EFFORT="${HIGH}"
+
+#export DEFAULT_EFFORT="${HIGH}"
+export DEFAULT_EFFORT="${MAX}"
+
 export DEFAULT_PROMPT="Hello World, Claude!"
 
 
