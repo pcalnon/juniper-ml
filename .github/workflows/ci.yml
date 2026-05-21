@@ -319,12 +319,24 @@ jobs:
           python -m pip install --upgrade "pip>=26.1.1"
           pip install -e .
 
+      # Wave 2 of the dep-docs PyPI migration (plan
+      # notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md):
+      # invoke the PyPI-published juniper-ci-tools console script
+      # instead of the inline util/generate_dep_docs.sh. The inline
+      # script will be removed from the tree in Wave 4 once the new
+      # step has soaked. Pinned <0.2.0 so a future major bump can be
+      # adopted deliberately per-repo.
+      - name: Install juniper-ci-tools
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          pip install "juniper-ci-tools>=0.1.0,<0.2.0"
+
       - name: Generate Dependency Documentation
         run: |
           echo "╔════════════════════════════════════════════════════════════╗"
           echo "║       juniper-ml - Dependency Documentation                ║"
           echo "╚════════════════════════════════════════════════════════════╝"
-          bash util/generate_dep_docs.sh
+          juniper-generate-dep-docs
 
       - name: Upload Dependency Documentation
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
