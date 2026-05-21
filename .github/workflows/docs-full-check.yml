@@ -27,7 +27,15 @@
 #           against every cloned consumer repo's docs. Tolerates per-
 #           repo failures up to a configurable threshold; flags
 #           catastrophic regressions across the ecosystem.
-#      4. validate_claude_yaml_access.bash (JUNIPER_ROOT mode)
+#      4. juniper-ci-tools consumer-version-pin lint (§5.1, ci-tools)
+#         — asserts every consumer repo's ci.yml pin still admits the
+#           current juniper-ci-tools version (mirrors step 2 for the
+#           dep-docs generator package).
+#      5. juniper-ci-tools downstream-consumer integration (§5.2, ci-tools)
+#         — installs juniper-ci-tools and runs juniper-generate-dep-docs
+#           against every cloned consumer repo. Per-repo failure
+#           threshold modeled on step 3.
+#      6. validate_claude_yaml_access.bash (JUNIPER_ROOT mode)
 #         — fans out the L2/L3 claude.yml safeguard audit (no
 #           pull_request_target/workflow_run, @claude if-guard) across
 #           every Juniper repo, catching drift in sibling repos that
@@ -204,6 +212,107 @@ jobs:
             exit 1
           elif [ "$failures" -gt 0 ]; then
             echo "::warning::$failures consumer repos broke doc-link validation -- investigate, but below catastrophic threshold (${DOWNSTREAM_FAIL_THRESHOLD})"
+          fi
+
+      # Wave 4 / §5 of the dep-docs PyPI migration plan
+      # (notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md).
+      # Installs the published juniper-ci-tools package used by §5.1
+      # (test_ci_tools_drift.py auto-discovers it via the on-disk
+      # checkout, but the §5.2 downstream-consumer integration step
+      # below needs the console script available in PATH).
+      - name: Install juniper-ci-tools
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          pip install "juniper-ci-tools>=0.1.0,<0.2.0"
+
+      # Plan §5.1 (ci-tools) -- consumer-version-pin lint. Mirrors the
+      # doc-tools §5.1 step above: walks each cloned consumer repo's
+      # ci.yml, extracts the ``juniper-ci-tools>=X,<Y`` pin, and
+      # asserts the range still admits the current version (read from
+      # juniper-ci-tools/pyproject.toml in this checkout). Soft-warns
+      # on pins more than 2 minors behind current; hard-fails when a
+      # pin's upper bound excludes the current release.
+      - name: Lint ci-tools pins across consumer repos
+        run: |
+          cd "$GITHUB_WORKSPACE/juniper-ml"
+          python3 -m unittest -v tests/test_ci_tools_drift.py
+
+      # Plan §5.2 (ci-tools) -- downstream-consumer integration. Runs
+      # juniper-generate-dep-docs (just installed above) against every
+      # cloned consumer repo. ``--no-conda`` is passed because the
+      # weekly runner does not provision the conda environments that
+      # each consumer's own ci.yml job sets up via setup-miniconda;
+      # the pip-side regeneration alone is enough to assert that the
+      # package wired into consumer CI remains invokable and the
+      # header-template lookup still resolves. Per-repo results are
+      # aggregated; the step fails only if a configurable number of
+      # consumers regress in the same week (catastrophic
+      # juniper-ci-tools regression vs. a one-off broken-pyproject
+      # PR in any single repo).
+      - name: Downstream-consumer integration check (ci-tools)
+        env:
+          # Tolerate up to this many per-repo failures before declaring
+          # a catastrophic juniper-ci-tools regression. With 6 consumers
+          # (juniper-deploy has no dep-docs CI step), >=4 broken == majority.
+          DOWNSTREAM_CI_TOOLS_FAIL_THRESHOLD: "4"
+        run: |
+          set -uo pipefail
+          cd "$GITHUB_WORKSPACE"
+
+          # Consumer repos that ship a "Generate Dependency
+          # Documentation" CI lane (juniper-deploy excluded; it has
+          # no dep-docs job in its ci.yml).
+          CONSUMERS=(
+            juniper-canopy
+            juniper-cascor
+            juniper-cascor-client
+            juniper-cascor-worker
+            juniper-data
+            juniper-data-client
+          )
+
+          declare -i failures=0
+          declare -a failed_repos=()
+          for repo in "${CONSUMERS[@]}"; do
+            if [ ! -d "$repo" ]; then
+              echo "::warning::$repo not cloned (skip)"
+              continue
+            fi
+            echo ""
+            echo "═══════════════════════════════════════════════════════════════"
+            echo "  Downstream dep-docs validation: $repo"
+            echo "═══════════════════════════════════════════════════════════════"
+            (
+              cd "$repo"
+              # --no-conda: runner has no conda env to export from.
+              # --no-yaml-validation: redundant once --no-conda is on,
+              #   but explicit for future-proofing if --no-conda
+              #   semantics ever change.
+              juniper-generate-dep-docs --no-conda --no-yaml-validation
+            )
+            rc=$?
+            if [ "$rc" -ne 0 ]; then
+              failures=$((failures + 1))
+              failed_repos+=("$repo")
+              echo "::warning::$repo juniper-generate-dep-docs failed (exit $rc)"
+            fi
+          done
+
+          echo ""
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  Downstream ci-tools integration summary"
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  Failures: ${failures} / ${#CONSUMERS[@]}"
+          if [ "$failures" -gt 0 ]; then
+            echo "  Failed repos: ${failed_repos[*]}"
+          fi
+          echo "  Threshold:    >= ${DOWNSTREAM_CI_TOOLS_FAIL_THRESHOLD} fail-this-job"
+
+          if [ "$failures" -ge "$DOWNSTREAM_CI_TOOLS_FAIL_THRESHOLD" ]; then
+            echo "::error::$failures consumer repos failed juniper-generate-dep-docs -- catastrophic juniper-ci-tools regression suspected"
+            exit 1
+          elif [ "$failures" -gt 0 ]; then
+            echo "::warning::$failures consumer repos broke juniper-generate-dep-docs -- investigate, but below catastrophic threshold (${DOWNSTREAM_CI_TOOLS_FAIL_THRESHOLD})"
           fi
 
       - name: Audit claude.yml access safeguards (cross-repo, L2/L3)
