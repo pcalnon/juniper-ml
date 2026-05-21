@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "juniper-ci-tools"
-version = "0.2.0"
-description = "Shared CI / build tooling for the Juniper ML platform (dependency-documentation generator + workflow-script-path lint)"
+version = "0.3.0"
+description = "Shared CI / build tooling for the Juniper ML platform (dependency-documentation generator + workflow-script-path lint + AGENTS.md version-drift lint)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -37,6 +37,7 @@ test = [
 [project.scripts]
 juniper-generate-dep-docs = "juniper_ci_tools.cli:main"
 juniper-lint-workflow-paths = "juniper_ci_tools.cli_lint_workflow_paths:main"
+juniper-lint-agents-md-version = "juniper_ci_tools.cli_lint_agents_md_version:main"
 
 [project.urls]
 Homepage = "https://github.com/pcalnon/juniper-ml"
