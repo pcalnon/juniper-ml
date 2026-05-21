@@ -330,6 +330,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 | `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
 | `worker` | `juniper-cascor-worker>=0.3.0` |
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` |
+| `ci-tools` | `juniper-ci-tools>=0.1.0,<0.2.0` |
 | `all` | All of the above |
 
 ## Conventions

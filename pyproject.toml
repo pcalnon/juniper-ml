@@ -41,8 +41,17 @@ worker = [
 doc-tools = [
     "juniper-doc-tools>=0.1.0,<0.2.0",
 ]
+# Shared CI / build tooling -- the dependency-documentation generator
+# that every Juniper repo's CI invokes as "Generate Dependency
+# Documentation". Wave 1 of the dep-docs migration plan
+# (notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md). Pinned
+# inside the 0.1.x range so a future 0.2.x with breaking CLI changes
+# doesn't auto-adopt before consumer repos have migrated.
+ci-tools = [
+    "juniper-ci-tools>=0.1.0,<0.2.0",
+]
 all = [
-    "juniper-ml[clients,worker,doc-tools]",
+    "juniper-ml[clients,worker,doc-tools,ci-tools]",
 ]
 
 [tool.setuptools]
