@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`juniper-ml[all]` install-size advisory corrected** in
+  `docs/QUICK_START.md`, `notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`,
+  and `notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`. The
+  original v0.5.0 estimate of "roughly 2 GB" understated the resolved
+  on-disk footprint by ~2.5x: the actual figure measured against PyPI
+  on 2026-05-21 (Python 3.13, Linux x86_64) was **5 GB on disk after
+  install**. The advisory also now gives concrete per-extra footprints
+  (`[clients]`, `[tools]`, `[doc-tools]` < 50 MB each; `[servers]`
+  < 200 MB). Pure documentation correction; no code or pin changes.
+
 ## [0.5.0] - 2026-05-21
 
 ### Added
