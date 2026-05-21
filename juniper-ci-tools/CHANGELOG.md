@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] -- 2026-05-21
+
+Adds the AGENTS.md version-drift lint as a third console script
+(non-breaking; existing `juniper-generate-dep-docs` and
+`juniper-lint-workflow-paths` callers are unaffected).
+
+### Added
+
+- `juniper_ci_tools.lint_agents_md_version` — Python library that
+  reads a repo's `AGENTS.md` `**Version**:` header and compares it to
+  `pyproject.toml`'s `[project].version`. Catches the same drift class
+  that motivated `juniper-ml#304` (pyproject 0.4.1 → 0.5.0 shipped
+  while AGENTS.md stayed at 0.4.0 for 6 days).
+- `juniper-lint-agents-md-version` console script. Auto-discovers the
+  repo root by walking up looking for both `pyproject.toml` and
+  `AGENTS.md`; supports `--repo-root`, `--exit-zero`, `--json`,
+  `--version`. Exit codes: 0 (in sync OR opted out by omitting the
+  header), 1 (drift), 2 (structural error: missing file, multiple
+  headers, missing `[project].version` key).
+- Public API additions: `AgentsMdLintResult`,
+  `MultipleVersionHeadersError`, `RepoRootNotFoundError`,
+  `find_agents_md_repo_root`, `lint_agents_md_version`.
+- 18 new tests under `tests/test_lint_agents_md_version.py` covering
+  in-sync detection, drift detection, opt-out (no header), multiple
+  headers, missing files, missing pyproject `[project].version`,
+  walk-up auto-discovery, full CLI exit-code matrix, and JSON output.
+
+### Migration context
+
+Replaces the byte-identical inline copies of
+`util/test_agents_md_version_drift.py` that exist across 6 consumer
+repos (juniper-canopy, juniper-cascor, juniper-cascor-client,
+juniper-cascor-worker, juniper-data, juniper-data-client) plus
+juniper-ml's `tests/test_agents_md_version_drift.py`. A follow-up
+consumer-adoption PR series will swap the inline copies for
+`pip install "juniper-ci-tools>=0.3.0,<0.4.0"` +
+`juniper-lint-agents-md-version`.
+
 ## [0.2.0] -- 2026-05-21
 
 Adds the workflow-script-path lint as a second console script
