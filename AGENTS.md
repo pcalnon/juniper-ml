@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Version**: 0.4.0
+**Version**: 0.5.0
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -195,7 +195,7 @@ juniper-ml/
 
 ### Package and Metadata
 
-- `pyproject.toml` -- Package metadata, version (`0.4.0`), and optional dependency groups (`clients`, `worker`, `all`)
+- `pyproject.toml` -- Package metadata, version (`0.5.0`), and optional dependency groups (`clients`, `worker`, `servers`, `tools`, `doc-tools`, `all`)
 - `README.md` -- PyPI landing page content
 - `CHANGELOG.md` -- Version history in Keep a Changelog format
 - `MANIFEST.in` -- Source distribution file includes
