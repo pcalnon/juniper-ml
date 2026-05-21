@@ -168,7 +168,6 @@ juniper-ml/
 └── util/                      # Utility scripts and tools
     ├── ad-hoc/                           # Single-use / temporary / unfinished scripts (see ad-hoc/README.md)
     ├── requirements_drift_check.py       # Drift checker for the requirements snapshot (--mode quick)
-    ├── generate_dep_docs.sh              # Generates dependency docs for CI
     ├── worktree_cleanup.bash             # V2 cleanup orchestrator (CWD-safe)
     ├── worktree_new.bash                 # Creates new git worktree
     ├── worktree_activate.bash            # Bash helper for worktree activation
@@ -224,7 +223,7 @@ juniper-ml/
 - Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
 - `util/requirements_drift_check.py` -- Drift checker for the requirements snapshot at `notes/requirements/id_assignments.yaml`. Default `--mode quick` validates path resolution + structural line-range integrity for every citation; emits a human report or `--json`. Exit code 1 on any drift. Implements the spec in [`notes/REQUIREMENTS_NEXT_STEPS.md` §7](notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection); `--mode full` / `--mode rewrite` are reserved for future work.
 - `util/ad-hoc/` -- Home for single-use / temporary / unfinished scripts. See `util/ad-hoc/README.md` for file-header conventions and graduation lifecycle. `/tmp/` is prohibited for script source files per the [Script placement](#script-placement-mandatory) rule.
-- `util/generate_dep_docs.sh` -- Generates `requirements_ci.txt` and `conda_environment_ci.yaml` for CI
+- Dependency-documentation generator now lives in [`juniper-ci-tools/`](juniper-ci-tools/) and is published to PyPI as `juniper-ci-tools` (Wave 4 of the dep-docs migration plan; install with `pip install juniper-ci-tools` and invoke via `juniper-generate-dep-docs`). The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298.
 - `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` but can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com util/juniper_plant_all.bash`).
 - `util/juniper_chop_all.bash` -- Stops all Juniper ecosystem services
 - `util/get_cascor_*.bash` -- Cascor REST API query utilities (status, metrics, history, network, topology). All scripts read `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` from the environment (with `localhost` / `8201` defaults) so a single environment override targets every utility.
@@ -275,7 +274,7 @@ Jobs:
 3. **build** -- Package build, twine validation, extras metadata verification
 4. **docs** -- Documentation link validation (`--cross-repo skip`)
 5. **security** -- pip-audit for dependency vulnerabilities
-6. **dependency-docs** -- Generates dependency documentation via `util/generate_dep_docs.sh`
+6. **dependency-docs** -- Generates dependency documentation via the `juniper-generate-dep-docs` console script from the PyPI-published `juniper-ci-tools>=0.1.0,<0.2.0` package (replaces the legacy `util/generate_dep_docs.sh` deleted in juniper-ml#298)
 7. **required-checks** -- Quality gate enforcing all checks must pass
 
 ### Publishing (`publish.yml`)
