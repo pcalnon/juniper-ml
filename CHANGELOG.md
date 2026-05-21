@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`** -- source
+  requirements doc for the meta-package extras surface. Specifies the
+  declared groups, `[all]` aggregate semantics, version-bump policy,
+  documentation-consistency surfaces, regression-coverage expectations,
+  and the install-size advisory. Written in the source-doc format that
+  the next snapshot consolidation pass can ingest; `JR-ML-*` IDs will
+  be assigned at that pass and referenced retroactively in PRs #293,
+  #295, #299.
+
+- **Install-size advisory for `juniper-ml[all]`** in `docs/QUICK_START.md`.
+  Calls out that `[all]` transitively pulls a multi-GB dependency tree
+  (notably `torch` via `juniper-cascor-worker` and `juniper-cascor`,
+  approx. 2 GB on a fresh env) and recommends narrower extras
+  (`[clients]`, `[tools]`, `[doc-tools]`) when the worker / server
+  distributions are not needed.
+
 - **`[servers]` optional dependency group** for the three Juniper service
   packages on PyPI. `pip install juniper-ml[servers]` now installs
   `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, and
