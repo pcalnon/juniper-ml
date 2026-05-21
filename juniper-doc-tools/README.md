@@ -82,6 +82,15 @@ External URLs (`http://`, `https://`, `mailto:`) and embedded images (`data:`, `
 | [juniper-ml](https://pypi.org/project/juniper-ml/) | Aggregates this package under `[doc-tools]` and `[all]` | `juniper-ml[all]` installs the full client stack including `juniper-doc-tools` |
 | [juniper-observability](../juniper-observability/README.md) | Sibling library published from the same repository on an independent tag pattern (`juniper-observability-v*`) | Cross-link |
 
+## Design Notes
+
+> **Note** — per §10.10 of [`../notes/README_NORMALIZATION_PLAN_2026-05-19.md`](../notes/README_NORMALIZATION_PLAN_2026-05-19.md), the **Active Research Components** section is replaced by **Design Notes** for this repository, because `juniper-doc-tools` is an infrastructure library rather than a research component. This is the same substitution applied to the sibling [`juniper-observability`](../juniper-observability/README.md) README per §10.9. The substituted heading sits at the §4 slot #10 position (between Related Services and Quick Start Guide), per the plan's "same position in the order" stipulation.
+
+| Document | Purpose |
+|----------|---------|
+| [`../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md) | Full migration plan: four-wave structure, per-repo PR references, deprecation of the per-repo `scripts/check_doc_links.py` validator |
+| [`../docs/REFERENCE.md`](../docs/REFERENCE.md) | Parent `juniper-ml` reference: extras (including `[doc-tools]`), compatibility matrix, environment variables |
+
 ## Quick Start Guide
 
 ### Prerequisites
@@ -149,16 +158,16 @@ The Juniper platform exists to study learning algorithms whose network architect
 
 The current platform comprises a Cascade-Correlation training service exposing a REST and WebSocket interface, a dataset-generation service with a named-version registry that includes the ARC-AGI families, a real-time monitoring dashboard for inspecting training dynamics as they occur, and a distributed worker that parallelizes candidate-unit training across hosts. Near-term work extends the architectural-growth catalogue beyond Cascade-Correlation, introduces multi-network orchestration for comparative experiments at the level of network populations rather than individual runs, and tightens the dataset–training–monitoring loop into a reproducible research workbench. The longer-term direction is the systematic empirical study of constructive and architecture-growing learning algorithms, with first-class infrastructure for the ablation, comparison, and replication that such a study requires.
 
-## Design Notes
-
-> **Note** — per §10.10 of [`../notes/README_NORMALIZATION_PLAN_2026-05-19.md`](../notes/README_NORMALIZATION_PLAN_2026-05-19.md), the **Active Research Components** section is replaced by **Design Notes** for this repository, because `juniper-doc-tools` is an infrastructure library rather than a research component. This is the same substitution applied to the sibling [`juniper-observability`](../juniper-observability/README.md) README per §10.9.
+## Documentation
 
 | Document | Purpose |
 |----------|---------|
 | [`../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md) | Full migration plan: four-wave structure, per-repo PR references, deprecation of the per-repo `scripts/check_doc_links.py` validator |
 | [`../docs/REFERENCE.md`](../docs/REFERENCE.md) | Parent `juniper-ml` reference: extras (including `[doc-tools]`), compatibility matrix, environment variables |
+| [`../README.md`](../README.md) | Parent `juniper-ml` meta-package README |
+| [`../juniper-observability/README.md`](../juniper-observability/README.md) | Sibling library README — shared infrastructure published on an independent tag pattern |
 
-## Release Workflow
+### Release Workflow
 
 `juniper-doc-tools` is versioned and published independently of the root `juniper-ml` meta-package.
 
