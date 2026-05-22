@@ -9,6 +9,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] -- 2026-05-22
+
+Adds the AGENTS.md header-schema lint as a fourth console script
+(non-breaking; existing `juniper-generate-dep-docs`,
+`juniper-lint-workflow-paths`, and `juniper-lint-agents-md-version`
+callers are unaffected).
+
+### Added
+
+- `juniper_ci_tools.lint_agents_md_header` — Python library that
+  validates a repo's `AGENTS.md` header bullet block against the
+  canonical six-field schema (`**Project**`, `**Repository**`,
+  `**Author**`, `**License**`, `**Version**`, `**Last Updated**` in
+  that relative order; each non-empty; `**Last Updated**` formatted
+  as `YYYY-MM-DD`). Extra fields (e.g. `**Python**:`) are permitted
+  and may be interleaved freely.
+- `juniper-lint-agents-md-header` console script. Auto-discovers the
+  repo root by walking up looking for `AGENTS.md` next to `.github/`
+  (unlike the version-drift sibling, no `pyproject.toml` is
+  required, so the lint applies to `juniper-deploy` as well).
+  Supports `--repo-root`, `--exit-zero`, `--json`, `--version`. Exit
+  codes: 0 (conformant), 1 (schema drift), 2 (structural error:
+  missing AGENTS.md, repo root not found).
+- Public API additions: `REQUIRED_FIELDS`,
+  `AgentsMdHeaderLintResult`, `RepoRootNotFoundError`,
+  `extract_header_bullets`, `find_agents_md_header_repo_root`,
+  `lint_agents_md_header`.
+- 24 new tests under `tests/test_lint_agents_md_header.py` covering
+  walk-up discovery, header termination at `---` / `## `, missing /
+  empty / mis-ordered required fields, freely-interleaved extras,
+  bad `Last Updated` format, missing `AGENTS.md`, walk-up
+  auto-discovery, and the full CLI exit-code matrix (including JSON
+  output on success and drift).
+
+### Migration context
+
+This release is Phase 4 (per
+`juniper-ml notes/AGENTS_MD_HEADER_STANDARDIZATION_PLAN_2026-05-22.md`)
+of the AGENTS.md header standardization initiative kicked off in
+juniper-ml#316. The canonical inline lint at
+`juniper-ml tests/test_agents_md_header_schema.py` and the auto-bump
+workflow at `juniper-ml .github/workflows/agents-md-touch-up.yml`
+shipped first; this release packages the lint logic for ecosystem
+fanout. Subsequent PRs in each sibling repo will bump the
+`juniper-ci-tools>=...,<X.Y.Z` pin range to admit 0.4.0, adopt the
+`juniper-lint-agents-md-header` invocation in `ci.yml`, copy the
+`agents-md-touch-up.yml` workflow file, and bump `**Last Updated**`
+to today.
+
 ## [0.3.0] -- 2026-05-21
 
 Adds the AGENTS.md version-drift lint as a third console script
