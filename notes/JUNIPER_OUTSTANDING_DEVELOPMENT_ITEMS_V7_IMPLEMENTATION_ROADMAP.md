@@ -145,6 +145,47 @@ A separate **async-route audit hook migration plan** ([juniper-ml #222](https://
 
 ---
 
+### 2.2 v7.0.1 → v7.0.2 status pass — Configuration / API contract items (2026-05-22)
+
+> **Trigger**: While working sequentially through the CFG-XX / API-XX series, two consecutive picks (CFG-13, API-01) came back already-shipped during the standard re-verification step. That hit-rate (~67%) prompted a sweep of the remaining 15 items in §20 (Configuration/Deps, v5) and §21 (API/Protocol, v5) before committing further per-item work.
+
+This pass covers only items in §20 + §21 — the broader v7 roadmap was not re-audited. The CFG-XX / API-XX coordinates here refer to the headings at lines 13439–14342.
+
+| ID | Section | New status | Evidence |
+|---|---|---|---|
+| **CFG-12** | §20 | ✅ shipped | cascor-worker [PR #77](https://github.com/pcalnon/juniper-cascor-worker/pull/77) (`5c04e17 docs(deps): CFG-12 — document setuptools>=82.0 CVE-evasion floor`) |
+| **CFG-13** | §20 | ✅ shipped | canopy [PR #304](https://github.com/pcalnon/juniper-canopy/pull/304) (`dbe9c18 chore(deps): CFG-13 — remove redundant explicit python-dotenv from canopy core deps`) |
+| **CFG-14** | §20 | ✅ shipped | canopy [PR #303](https://github.com/pcalnon/juniper-canopy/pull/303) (`b84bcd3 chore(deps): CFG-14 — raise juniper-cascor-client floor 0.1.0 → 0.3.0 to match juniper-ml`) |
+| **CFG-16** | §20 | ✅ shipped | canopy [PR #312](https://github.com/pcalnon/juniper-canopy/pull/312) (`e726a4f fix(CFG-16): consolidate CASCOR_DEMO_MODE/CASCOR_SERVICE_URL lookup onto Settings fields`); roadmap text mislocated the file in cascor — it lives in `juniper-canopy/src/backend/__init__.py` |
+| **API-01** | §21 | ✅ shipped | canopy [PR #299](https://github.com/pcalnon/juniper-canopy/pull/299) + [PR #300](https://github.com/pcalnon/juniper-canopy/pull/300) (`9c21b16 fix(api): API-01 — normalize /v1/health + /health response to "status": "ok"` + test follow-up) |
+| **API-02** | §21 | ✅ shipped | 3-PR fan-out: juniper-data [PR #132](https://github.com/pcalnon/juniper-data/pull/132), juniper-cascor [PR #285](https://github.com/pcalnon/juniper-cascor/pull/285), juniper-canopy [PR #301](https://github.com/pcalnon/juniper-canopy/pull/301) — all three services now emit `{status, version, service}` |
+| **API-08** | §21 | ✅ shipped (de-facto) | cascor-client `juniper_cascor_client/ws_client.py` lines 185, 363, 368, 417 all wrap outbound WS messages with `"type": WS_MSG_TYPE_COMMAND_OUT` on both `command()` and `set_params()`. Asymmetry resolved under the XREPO-07/08 / CC-06 tag; no explicit `API-08` commit |
+| **CFG-01** | §20 | ⏳ TODO | canopy `pyproject.toml` `[project] dependencies` has no `torch` entry; `juniper-canopy/src/backend/demo_backend.py:45` still does `import torch` unconditionally |
+| **CFG-02** | §20 | ⏳ TODO | cascor `pyproject.toml:44` still lists `"sentry-sdk>=2.0.0"` in `[project] dependencies` (not extras) |
+| **CFG-06** | §20 | ⏳ TODO | cascor-worker `juniper_cascor_worker/constants.py:151-165` still defines **15** bare-prefix `CASCOR_*` env-var consts with no `JUNIPER_*` alias / deprecation. Roadmap text said 13; actual is 15 |
+| **CFG-09** | §20 | ⏳ TODO | canopy `src/settings.py:172` still defaults `audit_log_path` to `/var/log/canopy/audit.log` (requires root, crashes non-root deployments) |
+| **API-06** | §21 | ⏳ TODO | cascor-client `juniper_cascor_client/constants.py` has no `candidate_progress` reference and no `WS_MSG_TYPE_CANDIDATE_PROGRESS`-style constant; no git log evidence of an `API-06` commit |
+| **CFG-07** | §20 | 🟡 ambiguous | juniper-deploy `docker-compose.yml` parameterizes `${CASCOR_HOST_PORT:-8201}:${CASCOR_PORT:-8200}` — partial documentation. Unclear whether a dedicated docs section (e.g. in `juniper-cascor/AGENTS.md` or `juniper-deploy/README.md`) closes the item as written |
+| **CFG-08** | §20 | 🟡 ambiguous | All three Settings classes still define `rate_limit_enabled` with **different** defaults (canopy `False`, cascor + data via prefixed env-var sentinels). Roadmap Approach A was "document differences" — needs a check that this is documented somewhere central (e.g. `juniper-ml/docs/REFERENCE.md`) |
+| **API-03** | §21 | 🟡 ambiguous | canopy `src/demo_mode.py` has no formal `TRANSITIONS` / `valid_transitions` dict at the expected location; needs a deeper read of the demo-mode FSM to determine whether the FAILED/COMPLETED → STOPPED auto-reset is in place |
+| **API-04** | §21 | 🟡 ambiguous | No `fake_client.py` found in `juniper-cascor-client/`; file may have been renamed, removed, or rolled into another module. Needs a `rg -l 'FakeClient'` audit across cascor-client and cascor |
+| **API-05** | §21 | 🟡 ambiguous | juniper-cascor uses the `ResponseEnvelope` shape ecosystem-wide (delivered via API-09); juniper-data still emits raw `JSONResponse(...)` in `juniper_data/api/app.py:138,146`. Cross-service alignment is partial — needs a per-service inventory before scoping |
+
+Rolled-up totals after this status pass:
+
+| Bucket | v7.0.1 | v7.0.2 status pass | Δ |
+|---|---|---|---|
+| §20 (Configuration/Deps) — open | 13 | 5 confirmed TODO + 2 ambiguous | −6 silently shipped |
+| §21 (API/Protocol) — open | 10 | 2 confirmed TODO + 4 ambiguous | −4 silently shipped (incl. API-09 + API-01 + API-02 + API-08) |
+| Newly catalogued shipped | n/a | 7 items (CFG-12, CFG-13, CFG-14, CFG-16, API-01, API-02, API-08) | +7 |
+| Items needing deeper investigation | n/a | 5 (CFG-07, CFG-08, API-03, API-04, API-05) | +5 deferred |
+
+**Pattern observation**: the v7 roadmap's CFG-XX / API-XX entries fall into three classes that were not previously distinguished — (a) shipped under their own ID and never marked, (b) shipped under a different tag (XREPO-* / CC-* / unrelated PR) so the original ID was orphaned, (c) genuinely outstanding. The audit hit-rate (~67% already-done) suggests the next CFG/API item should always be re-verified against current code before any worktree is created — formalised as a rule in `juniper-ml/CLAUDE.md` already (roadmap staleness, ~50% stale).
+
+The 5 ambiguous items are left for per-item investigation when the next continuation session reaches them; this pass intentionally does not commit to a status for them without deeper code reads.
+
+---
+
 ## 3. Items Previously Incomplete — Now Fixed
 
 ### Issue Identification Tables, Section 3
