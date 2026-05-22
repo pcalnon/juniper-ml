@@ -1,6 +1,13 @@
 # CLAUDE.md
 
+**Project**: juniper-ml — Meta-package for the Juniper ML Research Platform
+**Repository**: pcalnon/juniper-ml
+**Author**: Paul Calnon
+**License**: MIT License
 **Version**: 0.5.0
+**Last Updated**: 2026-05-22
+
+---
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -38,6 +45,7 @@ python3 -m unittest -v tests/test_workflow_script_paths.py
 python3 -m unittest -v tests/test_doc_tools_drift.py
 python3 -m unittest -v tests/test_pyproject_extras.py
 python3 -m unittest -v tests/test_agents_md_version_drift.py
+python3 -m unittest -v tests/test_agents_md_header_schema.py
 bash scripts/test_resume_file_safety.bash
 # doc-link validator regression tests live in juniper-doc-tools/tests/
 # and run under the dedicated `CI -- juniper-doc-tools` workflow.
@@ -162,7 +170,8 @@ juniper-ml/
 │   ├── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
 │   ├── test_doc_tools_drift.py           # Lint: consumer-repo juniper-doc-tools pins still admit current version (plan §5.1)
 │   ├── test_pyproject_extras.py          # Lint: pyproject [project.optional-dependencies] surface matches the contract
-│   └── test_agents_md_version_drift.py   # Lint: AGENTS.md **Version** header matches pyproject.toml [project].version
+│   ├── test_agents_md_version_drift.py   # Lint: AGENTS.md **Version** header matches pyproject.toml [project].version
+│   └── test_agents_md_header_schema.py   # Lint: AGENTS.md canonical header schema (6 required fields, ISO date format)
 │   # Doc-link validator regression tests moved to juniper-doc-tools/tests/
 │   # (Wave 4 of the doc-link migration plan; published under the dedicated
 │   #  juniper-doc-tools PyPI package).
@@ -243,6 +252,7 @@ juniper-ml/
   - juniper-ml's own pin check runs every PR; the cross-repo assertion auto-skips when siblings aren't on disk and additionally skips local runs by default. Set `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` to opt in locally.
 - `tests/test_ci_tools_drift.py` -- Lint test (dep-docs plan §5.1) for `juniper-ci-tools` pins. Mirrors `test_doc_tools_drift.py`: walks juniper-ml's own workflows (`ci.yml`, `lockfile-update.yml`, `docs-full-check.yml`) plus each cloned consumer repo's `ci.yml`, extracts the `juniper-ci-tools>=X,<Y` pin, and asserts the range still admits the current version (read from `juniper-ci-tools/pyproject.toml`). Same skip semantics and `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` override as the doc-tools sibling.
 - `tests/test_agents_md_version_drift.py` -- Lint test pinning `AGENTS.md`'s `**Version**:` header to `pyproject.toml`'s `[project].version`. Added after juniper-ml#295 bumped pyproject 0.4.1→0.5.0 but left AGENTS.md at 0.4.0 for ~6 days (fixed in juniper-ml#304); this lint makes the drift impossible to ship. Intentionally portable: auto-locates the repo root, so the module can be dropped into any Juniper repo's `tests/` (skips loudly if AGENTS.md has no canonical header).
+- `tests/test_agents_md_header_schema.py` -- Lint test pinning `AGENTS.md`'s canonical header schema. Six required fields in this relative order: `**Project**`, `**Repository**`, `**Author**`, `**License**`, `**Version**`, `**Last Updated**`. Extras (e.g. `**Python**:`) may be interleaved freely. Validates each value non-empty and `**Last Updated**` formatted as `YYYY-MM-DD`. Currency of the date is enforced by the companion `.github/workflows/agents-md-touch-up.yml` workflow, which auto-bumps on each PR push. Portable: same self-locating pattern as the version-drift sibling.
 - `scripts/test.bash` -- Manual end-to-end harness for session create/resume launcher flows
 - `scripts/test_resume_file_safety.bash` -- Regression script ensuring invalid `--resume <file.txt>` input does not delete the source file
 
@@ -253,6 +263,7 @@ juniper-ml/
 - `.github/workflows/docs-full-check.yml` -- Weekly full documentation link validation including cross-repo checks
 - `.github/workflows/security-scan.yml` -- Weekly pip-audit dependency vulnerability scanning
 - `.github/workflows/claude.yml` -- Claude Code action for issue/PR automation (@claude mentions)
+- `.github/workflows/agents-md-touch-up.yml` -- Auto-bumps `AGENTS.md`'s `**Last Updated**:` field to today's UTC date on every PR push that touches `AGENTS.md`. Idempotent (no-op when the date is already current); commits with `github-actions[bot]` authorship and `[skip ci]` so the bump itself does not re-trigger workflows. Companion to `tests/test_agents_md_header_schema.py`.
 
 ### Configuration
 
