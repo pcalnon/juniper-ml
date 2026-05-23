@@ -30,17 +30,18 @@ Individual components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `j
 ## Ecosystem Compatibility
 
 This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml) ecosystem.
-The pyproject pins matching `juniper-ml` 0.5.0:
+The pyproject pins matching `juniper-ml` 0.6.0:
 
 | Package                 | Pin               | Latest published |
 |-------------------------|-------------------|------------------|
-| `juniper-canopy`        | `>=0.3.0`         | 0.3.0            |
-| `juniper-cascor`        | `>=0.3.17`        | 0.3.17           |
+| `juniper-canopy`        | `>=0.5.0`         | 0.5.0            |
+| `juniper-cascor`        | `>=0.5.0`         | 0.5.0            |
 | `juniper-data`          | `>=0.6.0`         | 0.6.0            |
-| `juniper-data-client`   | `>=0.4.0`         | 0.4.0            |
-| `juniper-cascor-client` | `>=0.3.0`         | 0.3.0            |
-| `juniper-cascor-worker` | `>=0.3.0`         | 0.3.0            |
-| `juniper-ci-tools`      | `>=0.1.0`         | 0.1.0            |
+| `juniper-data-client`   | `>=0.4.1`         | 0.4.1            |
+| `juniper-cascor-client` | `>=0.4.0`         | 0.4.0            |
+| `juniper-cascor-worker` | `>=0.4.0`         | 0.4.0            |
+| `juniper-ci-tools`      | `>=0.1.0`         | 0.4.0            |
+| `juniper-config-tools`  | `>=0.1.0,<0.2.0`  | 0.1.0            |
 | `juniper-doc-tools`     | `>=0.1.0,<0.2.0`  | 0.1.1            |
 | `juniper-observability` | `>=0.2.0`         | 0.2.0            |
 
@@ -81,10 +82,10 @@ juniper-ml ──hosts (independently published)──> juniper-observability, j
 
 | Extra        | Packages Included                                                                                |
 |--------------|--------------------------------------------------------------------------------------------------|
-| `clients`    | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                     |
-| `worker`     | `juniper-cascor-worker>=0.3.0`                                                                   |
-| `servers`    | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0`                         |
-| `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0`     |
+| `clients`    | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.4.0`                                     |
+| `worker`     | `juniper-cascor-worker>=0.4.0`                                                                   |
+| `servers`    | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0`                          |
+| `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)         |
 | `all`        | All of the above                                                                                 |
 
