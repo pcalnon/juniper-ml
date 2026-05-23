@@ -54,10 +54,10 @@ pip install juniper-ml[all]
 
 | Extra       | Packages                                                                                              |
 |-------------|-------------------------------------------------------------------------------------------------------|
-| `clients`   | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                          |
-| `worker`    | `juniper-cascor-worker>=0.3.0`                                                                        |
-| `servers`   | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0`                              |
-| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0`          |
+| `clients`   | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.4.0`                                          |
+| `worker`    | `juniper-cascor-worker>=0.4.0`                                                                        |
+| `servers`   | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0`                               |
+| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)              |
 | `all`       | All packages from `clients` + `worker` + `servers` + `tools`                                          |
 
@@ -83,15 +83,16 @@ pip list | grep juniper
 Expected output (with `[all]`):
 
 ```bash
-juniper-canopy           0.3.x
-juniper-cascor           0.3.x
-juniper-cascor-client    0.3.x
-juniper-cascor-worker    0.3.x
-juniper-ci-tools         0.1.x
+juniper-canopy           0.5.x
+juniper-cascor           0.5.x
+juniper-cascor-client    0.4.x
+juniper-cascor-worker    0.4.x
+juniper-ci-tools         0.4.x
+juniper-config-tools     0.1.x
 juniper-data             0.6.x
 juniper-data-client      0.4.x
 juniper-doc-tools        0.1.x
-juniper-ml               0.5.0
+juniper-ml               0.6.0
 juniper-observability    0.2.x
 ```
 

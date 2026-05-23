@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.5.0
+**Version**: 0.6.0
 **Last Updated**: 2026-05-22
 
 ---
@@ -205,7 +205,7 @@ juniper-ml/
 
 ### Package and Metadata
 
-- `pyproject.toml` -- Package metadata, version (`0.5.0`), and optional dependency groups (`clients`, `worker`, `servers`, `tools`, `doc-tools`, `all`)
+- `pyproject.toml` -- Package metadata, version (`0.6.0`), and optional dependency groups (`clients`, `worker`, `servers`, `tools`, `doc-tools`, `all`)
 - `README.md` -- PyPI landing page content
 - `CHANGELOG.md` -- Version history in Keep a Changelog format
 - `MANIFEST.in` -- Source distribution file includes
@@ -347,10 +347,10 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 | Extra | Packages |
 |-------|----------|
-| `clients` | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0` |
-| `worker` | `juniper-cascor-worker>=0.3.0` |
-| `servers` | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0` |
-| `tools` | `juniper-ci-tools>=0.1.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |
+| `clients` | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.4.0` |
+| `worker` | `juniper-cascor-worker>=0.4.0` |
+| `servers` | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0` |
+| `tools` | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`) |
 | `all` | All of the above |
 

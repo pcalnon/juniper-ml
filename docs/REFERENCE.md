@@ -2,9 +2,9 @@
 
 ## juniper-ml Technical Reference
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 **Status:** Active
-**Last Updated:** May 21, 2026
+**Last Updated:** May 23, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -27,7 +27,7 @@
 | Field                  | Value        |
 |------------------------|--------------|
 | **PyPI Name**          | `juniper-ml` |
-| **Version**            | `0.5.0`      |
+| **Version**            | `0.6.0`      |
 | **Python**             | `>=3.12`     |
 | **Base Dependencies**  | None         |
 | **Importable Modules** | None         |
@@ -40,13 +40,14 @@
 
 | Extra       | Packages Installed                                                                       | Min Version       |
 |-------------|------------------------------------------------------------------------------------------|-------------------|
-| `clients`   | `juniper-data-client`                                                                    | `>=0.4.0`         |
-|             | `juniper-cascor-client`                                                                  | `>=0.3.0`         |
-| `worker`    | `juniper-cascor-worker`                                                                  | `>=0.3.0`         |
-| `servers`   | `juniper-canopy`                                                                         | `>=0.3.0`         |
-|             | `juniper-cascor`                                                                         | `>=0.3.17`        |
+| `clients`   | `juniper-data-client`                                                                    | `>=0.4.1`         |
+|             | `juniper-cascor-client`                                                                  | `>=0.4.0`         |
+| `worker`    | `juniper-cascor-worker`                                                                  | `>=0.4.0`         |
+| `servers`   | `juniper-canopy`                                                                         | `>=0.5.0`         |
+|             | `juniper-cascor`                                                                         | `>=0.5.0`         |
 |             | `juniper-data`                                                                           | `>=0.6.0`         |
 | `tools`     | `juniper-ci-tools`                                                                       | `>=0.1.0`         |
+|             | `juniper-config-tools`                                                                   | `>=0.1.0,<0.2.0`  |
 |             | `juniper-doc-tools`                                                                      | `>=0.1.0,<0.2.0`  |
 |             | `juniper-observability`                                                                  | `>=0.2.0`         |
 | `doc-tools` | `juniper-doc-tools` (back-compat alias for the doc-tools entry in `tools`)               | `>=0.1.0,<0.2.0`  |
@@ -81,11 +82,11 @@ pip install juniper-ml[all]       # Everything
 
 ## Ecosystem Compatibility
 
-`juniper-ml` 0.5.0 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups.
+`juniper-ml` 0.6.0 declares the following pins. Every package below ships from PyPI; servers and tools land under their own extras, clients and worker keep their existing groups.
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
-| 0.5.x      | >=0.6.0      | >=0.3.17       | >=0.3.0        | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
+| 0.6.x      | >=0.6.0      | >=0.5.0        | >=0.5.0        | >=0.4.1             | >=0.4.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 
 ### Service Ports
 
@@ -131,6 +132,7 @@ Publish and CI constraints:
 
 | Version | Date       | Changes                                                                                   |
 |---------|------------|-------------------------------------------------------------------------------------------|
+| 0.6.0   | 2026-05-23 | Floor-bumped `[clients]` / `[worker]` / `[servers]` extras to today's ecosystem release wave (cascor/canopy 0.5.0, cascor-client/cascor-worker 0.4.0, data-client 0.4.1) |
 | 0.5.0   | 2026-05-21 | Added `[servers]` and `[tools]` extras; expanded `[all]` to install every Juniper package |
 | 0.4.1   | 2026-04-28 | Added `juniper-observability` sibling package and dedicated CI/publish workflows          |
 | 0.4.0   | 2026-04-09 | Added service orchestration utilities, worktree cleanup tooling, and updated package pins |
@@ -199,6 +201,6 @@ These variables are used by consumer applications when juniper-ml extras are ins
 
 ---
 
-**Last Updated:** May 21, 2026
-**Version:** 0.5.0
+**Last Updated:** May 23, 2026
+**Version:** 0.6.0
 **Maintainer:** Paul Calnon

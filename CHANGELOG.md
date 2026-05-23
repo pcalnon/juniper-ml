@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-23
+
 ### Changed
+
+- **Extras floor-bump to today's ecosystem release wave.**
+  `[clients]`, `[worker]`, and `[servers]` now require the versions that
+  shipped to PyPI on 2026-05-23 alongside the broader
+  `juniper-cascor` 0.5.0 / `juniper-canopy` 0.5.0 /
+  `juniper-cascor-worker` 0.4.0 / `juniper-cascor-client` 0.4.0 /
+  `juniper-data-client` 0.4.1 release wave. Specifically:
+  - `[clients]`: `juniper-data-client>=0.4.0` → `>=0.4.1`;
+    `juniper-cascor-client>=0.3.0` → `>=0.4.0`.
+  - `[worker]`: `juniper-cascor-worker>=0.3.0` → `>=0.4.0`.
+  - `[servers]`: `juniper-canopy>=0.3.0` → `>=0.5.0`;
+    `juniper-cascor>=0.3.17` → `>=0.5.0`; `juniper-data>=0.6.0` (unchanged).
+  - `[tools]` and `[doc-tools]` unchanged at this release. The matching
+    lint contract in `tests/test_pyproject_extras.py` updates in lockstep.
+  Resolved doc surfaces brought into agreement: `README.md`,
+  `AGENTS.md`, `docs/REFERENCE.md`, `docs/DOCUMENTATION_OVERVIEW.md`,
+  and `docs/QUICK_START.md` all now declare the same pin set.
+  Drive-by fix: the `juniper-config-tools` member of `[tools]` (added
+  via CFG-06 / juniper-ml#320) is now visible in the README, AGENTS.md,
+  REFERENCE.md, and QUICK_START.md tables, closing pre-existing doc
+  drift between pyproject and human-readable extras references.
+  Version bumped 0.5.0 → 0.6.0 (semver minor: existing callers pinning
+  to `juniper-ml>=0.5.0` will be transparently upgraded to the new
+  floor minimums).
 
 - **TestPyPI extras-resolution verification extended to `[tools]`.**
   `.github/workflows/publish.yml` now runs a third `pip install` step

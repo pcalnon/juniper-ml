@@ -37,15 +37,15 @@ _PYPROJECT = _REPO / "pyproject.toml"
 # this table (or vice versa) is the failure mode this lint catches.
 EXPECTED_EXTRAS = {
     "clients": {
-        "juniper-data-client>=0.4.0",
-        "juniper-cascor-client>=0.3.0",
+        "juniper-data-client>=0.4.1",
+        "juniper-cascor-client>=0.4.0",
     },
     "worker": {
-        "juniper-cascor-worker>=0.3.0",
+        "juniper-cascor-worker>=0.4.0",
     },
     "servers": {
-        "juniper-canopy>=0.3.0",
-        "juniper-cascor>=0.3.17",
+        "juniper-canopy>=0.5.0",
+        "juniper-cascor>=0.5.0",
         "juniper-data>=0.6.0",
     },
     "tools": {
