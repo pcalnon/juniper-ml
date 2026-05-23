@@ -162,7 +162,7 @@ This pass covers only items in §20 + §21 — the broader v7 roadmap was not re
 | **API-08** | §21 | ✅ shipped (de-facto) | cascor-client `juniper_cascor_client/ws_client.py` lines 185, 363, 368, 417 all wrap outbound WS messages with `"type": WS_MSG_TYPE_COMMAND_OUT` on both `command()` and `set_params()`. Asymmetry resolved under the XREPO-07/08 / CC-06 tag; no explicit `API-08` commit |
 | **CFG-01** | §20 | ⏳ TODO | canopy `pyproject.toml` `[project] dependencies` has no `torch` entry; `juniper-canopy/src/backend/demo_backend.py:45` still does `import torch` unconditionally |
 | **CFG-02** | §20 | ⏳ TODO | cascor `pyproject.toml:44` still lists `"sentry-sdk>=2.0.0"` in `[project] dependencies` (not extras) |
-| **CFG-06** | §20 | ⏳ TODO | cascor-worker `juniper_cascor_worker/constants.py:151-165` still defines **15** bare-prefix `CASCOR_*` env-var consts with no `JUNIPER_*` alias / deprecation. Roadmap text said 13; actual is 15 |
+| **CFG-06** | §20 | ✅ shipped 2026-05-23 | cascor-worker [PR #86](https://github.com/pcalnon/juniper-cascor-worker/pull/86) (`052bce0 fix(CFG-06): converge env vars onto JUNIPER_CASCOR_WORKER_* prefix via juniper-config-tools`); preceded by the [juniper-config-tools PyPI migration plan](./JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md) (Waves 0/1/2 via juniper-ml [#318](https://github.com/pcalnon/juniper-ml/pull/318) / [#320](https://github.com/pcalnon/juniper-ml/pull/320) / release [`juniper-config-tools-v0.1.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-config-tools-v0.1.0)). Roadmap text said 13 env vars; actual count was 15 (coordinate correction folded into the design doc + plan) |
 | **CFG-09** | §20 | ⏳ TODO | canopy `src/settings.py:172` still defaults `audit_log_path` to `/var/log/canopy/audit.log` (requires root, crashes non-root deployments) |
 | **API-06** | §21 | ⏳ TODO | cascor-client `juniper_cascor_client/constants.py` has no `candidate_progress` reference and no `WS_MSG_TYPE_CANDIDATE_PROGRESS`-style constant; no git log evidence of an `API-06` commit |
 | **CFG-07** | §20 | 🟡 ambiguous | juniper-deploy `docker-compose.yml` parameterizes `${CASCOR_HOST_PORT:-8201}:${CASCOR_PORT:-8200}` — partial documentation. Unclear whether a dedicated docs section (e.g. in `juniper-cascor/AGENTS.md` or `juniper-deploy/README.md`) closes the item as written |
@@ -171,13 +171,13 @@ This pass covers only items in §20 + §21 — the broader v7 roadmap was not re
 | **API-04** | §21 | 🟡 ambiguous | No `fake_client.py` found in `juniper-cascor-client/`; file may have been renamed, removed, or rolled into another module. Needs a `rg -l 'FakeClient'` audit across cascor-client and cascor |
 | **API-05** | §21 | 🟡 ambiguous | juniper-cascor uses the `ResponseEnvelope` shape ecosystem-wide (delivered via API-09); juniper-data still emits raw `JSONResponse(...)` in `juniper_data/api/app.py:138,146`. Cross-service alignment is partial — needs a per-service inventory before scoping |
 
-Rolled-up totals after this status pass:
+Rolled-up totals after this status pass (with CFG-06 shipped 2026-05-23 folded in):
 
 | Bucket | v7.0.1 | v7.0.2 status pass | Δ |
 |---|---|---|---|
-| §20 (Configuration/Deps) — open | 13 | 5 confirmed TODO + 2 ambiguous | −6 silently shipped |
+| §20 (Configuration/Deps) — open | 13 | 4 confirmed TODO + 2 ambiguous | −7 (6 silently shipped + 1 explicitly shipped via CFG-06) |
 | §21 (API/Protocol) — open | 10 | 2 confirmed TODO + 4 ambiguous | −4 silently shipped (incl. API-09 + API-01 + API-02 + API-08) |
-| Newly catalogued shipped | n/a | 7 items (CFG-12, CFG-13, CFG-14, CFG-16, API-01, API-02, API-08) | +7 |
+| Newly catalogued shipped | n/a | 8 items (CFG-12, CFG-13, CFG-14, CFG-16, API-01, API-02, API-08, **CFG-06**) | +8 |
 | Items needing deeper investigation | n/a | 5 (CFG-07, CFG-08, API-03, API-04, API-05) | +5 deferred |
 
 **Pattern observation**: the v7 roadmap's CFG-XX / API-XX entries fall into three classes that were not previously distinguished — (a) shipped under their own ID and never marked, (b) shipped under a different tag (XREPO-* / CC-* / unrelated PR) so the original ID was orphaned, (c) genuinely outstanding. The audit hit-rate (~67% already-done) suggests the next CFG/API item should always be re-verified against current code before any worktree is created — formalised as a rule in `juniper-ml/CLAUDE.md` already (roadmap staleness, ~50% stale).
