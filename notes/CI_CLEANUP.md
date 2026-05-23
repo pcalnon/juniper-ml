@@ -83,10 +83,81 @@ Outstanding follow-ups (none release-blocking)
 
 Reasonable next-step candidates:
 
-| # | Item                                                                                                                                                                                                        | Effort                  | Why                                                                                          |
-|:--|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------|:---------------------------------------------------------------------------------------------|
-| A | Write thread handoff doc for the next agent (per AGENTS.md policy + prior session's pattern at handoff_ci-hygiene-completion_2026-05-21.md)                                                                 | 5 min                   | Captures this session's 11 PRs, the canonical lint, and open watchpoints so continuity holds |
-| B | Drift-class hunt — apply same playbook, find ecosystem drift surfaces: **Last Updated**: headers, juniper-ci-tools pin currency in juniper-ml/cascor/canopy (Wave 4 fanout incomplete), PyPI-vs-git-tag lag | 30–60 min               | Multiplies the strategic-fix value                                                           |
-| C | Watch for fallout from in-flight cascor API-09 PR 3/3 — once it lands, downstream juniper-cascor-client may need an adapter update                                                                          | 10–15 min once it lands | Direct downstream-consumer risk                                                              |
-| D | Stop here — ecosystem is in a uniquely clean state; let Paul drive the next directive                                                                                                                       | 0                       | Conservative                                                                                 |
-| E | CI_CLEANUP item #4 (pre-commit juniper-check-doc-links adoption)                                                                                                                                            | 30 min                  | Optional, originally flagged as quality-of-life                                              |
+| # | Item                                                                                                                                        | Effort                  | Why                                                                                          |
+|:--|:--------------------------------------------------------------------------------------------------------------------------------------------|:------------------------|:---------------------------------------------------------------------------------------------|
+| A | Write thread handoff doc for the next agent (per AGENTS.md policy + prior session's pattern at handoff_ci-hygiene-completion_2026-05-21.md) | 5 min                   | Captures this session's 11 PRs, the canonical lint, and open watchpoints so continuity holds |
+| B | Drift-class hunt, apply same playbook. find ecosystem drift surfaces: **Last Updated**:                                                     | 30–60 min               | Multiplies the strategic-fix value                                                           |
+|   | -- headers, juniper-ci-tools pin currency in juniper-ml/cascor/canopy (Wave 4 fanout incomplete), PyPI-vs-git-tag lag                       |                         |                                                                                              |
+| C | Watch for fallout from in-flight cascor API-09 PR 3/3 — once it lands, downstream juniper-cascor-client may need an adapter update          | 10–15 min once it lands | Direct downstream-consumer risk                                                              |
+| D | Stop here — ecosystem is in a uniquely clean state; let Paul drive the next directive                                                       | 0                       | Conservative                                                                                 |
+| E | CI_CLEANUP item #4 (pre-commit juniper-check-doc-links adoption)                                                                            | 30 min                  | Optional, originally flagged as quality-of-life                                              |
+
+---
+
+Audit complete. Status of all 15 remaining CFG/API items (after eliminating CFG-13, CFG-16, API-01, API-09 already known shipped):
+
+```bash
+┌────────┬───────────────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│   ID   │        Status         │                                                                                      Evidence                                                                                      │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-12 │ ✅ shipped            │ cascor-worker PR #77 (5c04e17)                                                                                                                                                     │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-14 │ ✅ shipped            │ canopy PR #303 (b84bcd3)                                                                                                                                                           │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-02 │ ✅ shipped            │ data #132 + cascor #285 + canopy #301 (3-PR fan-out)                                                                                                                               │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-08 │ ✅ shipped (de-facto) │ cascor-client ws_client.py lines 185, 363, 368, 417 all use WS_MSG_TYPE_COMMAND_OUT envelope on both command() and set_params() — asymmetry resolved under XREPO-07/08 / CC-06 tag │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-01 │ ⏳ TODO               │ canopy pyproject.toml core deps lack torch; src/backend/demo_backend.py:45 imports torch unconditionally                                                                           │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-02 │ ⏳ TODO               │ cascor pyproject.toml:44 still "sentry-sdk>=2.0.0" in core (not extras)                                                                                                            │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-06 │ ⏳ TODO               │ cascor-worker constants.py has 15 bare CASCOR_* env-var consts (roadmap said 13)                                                                                                   │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-09 │ ⏳ TODO               │ canopy src/settings.py:172 still defaults audit_log_path to /var/log/canopy/audit.log                                                                                              │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-06 │ ⏳ TODO               │ cascor-client constants.py has no candidate_progress / progress references                                                                                                         │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-07 │ 🟡 ambiguous          │ docker-compose parameterizes via ${CASCOR_HOST_PORT:-8201}:${CASCOR_PORT:-8200} — partial documentation; unclear if a dedicated docs section closes the item                       │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ CFG-08 │ 🟡 ambiguous          │ All three Settings have rate_limit_enabled; defaults differ per repo. Roadmap Approach A = "document differences" — may be documented elsewhere                                    │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-03 │ 🟡 ambiguous          │ canopy demo_mode.py has no formal TRANSITIONS dict at expected location; needs deeper read                                                                                         │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-04 │ 🟡 ambiguous          │ No fake_client.py found in cascor-client; may have been renamed/moved                                                                                                              │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-05 │ 🟡 ambiguous          │ cascor uses ResponseEnvelope (API-09); data still raw JSONResponse({"detail": …}); canopy unclear. Cross-service likely partial                                                    │
+├────────┼───────────────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ API-07 │ 🟡 ambiguous          │ data-client client.py lacks methods matching filter/stats/cleanup/tags — need to compare against actual data routes                                                                │
+└────────┴───────────────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+Summary: 4 already shipped (CFG-12, CFG-14, API-02, API-08), 5 confirmed TODO (CFG-01, 02, 06, 09, API-06), 5 ambiguous needing deeper investigation.
+
+---
+
+Juniper Canopy Testing issues:
+
+```bash
+SKIPPED [1] src/tests/performance/test_button_responsiveness.py:32: Requires full Dash callback registration context to invoke callback directly
+SKIPPED [4] src/tests/regression/test_candidate_visibility.py: Requires running server - set RUN_SERVER_TESTS=1 to enable
+SKIPPED [1] src/tests/unit/test_dashboard_manager.py:108: Method _create_network_visualizer not exposed as public API
+SKIPPED [1] src/tests/unit/test_dashboard_manager.py:115: Method _create_decision_boundary not exposed as public API
+SKIPPED [1] src/tests/unit/test_dashboard_manager.py:122: Method _create_dataset_plotter not exposed as public API
+SKIPPED [1] src/tests/unit/test_dashboard_manager.py:133: Method _create_layout not exposed as public API; layout is set up via _setup_layout
+SKIPPED [1] src/tests/unit/test_dashboard_manager.py:246: Dash app does not expose assets_folder as a public attribute
+SKIPPED [1] src/tests/unit/test_dashboard_manager.py:252: Dash app does not expose assets_url_path as a public attribute
+SKIPPED [3] src/tests/unit/test_dataset_plotter.py: Method _parse_dataset not exposed as public API
+SKIPPED [2] src/tests/unit/test_dataset_plotter.py: Method _get_class_colors not exposed as public API
+SKIPPED [3] src/tests/unit/test_decision_boundary.py: Method _create_grid not exposed as public API
+SKIPPED [3] src/tests/unit/test_decision_boundary.py: Method _create_contour_plot not exposed as public API
+SKIPPED [2] src/tests/unit/test_decision_boundary.py: Method _prepare_boundary_data not exposed as public API
+SKIPPED [1] src/tests/unit/test_decision_boundary.py:262: Method _create_contour_plot not exposed as public API
+SKIPPED [1] src/tests/unit/test_decision_boundary.py:271: Method _create_contour_plot not exposed as public API
+SKIPPED [5] src/tests/unit/test_network_visualizer.py: Method _parse_topology not exposed as public API
+SKIPPED [1] src/tests/unit/test_network_visualizer.py:173: Method _create_node_layout not exposed as public API
+SKIPPED [1] src/tests/unit/test_network_visualizer.py:181: Method _create_edges not exposed as public API
+SKIPPED [1] src/tests/unit/test_obs_wire_ws_metrics.py:407: PrometheusMiddleware not registered (metrics_enabled=False); covered by synthetic test
+```
+
+---

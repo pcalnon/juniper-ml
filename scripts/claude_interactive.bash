@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 ########################################################################################################################################################################################################
 # Author: Paul Calnon
-# Filename: default_interactive_session_claude_code.bash
+# Filename: claude_interactive.bash
 # Created:  2026-03-07
-# Modified: 2026-03-12
+# Modified: 2026-05-23
 #
 ########################################################################################################################################################################################################
 
@@ -29,10 +29,15 @@ WAKE_THE_CLAUDE_SCRIPT="${SCRIPT_PATH}/${WAKE_THE_CLAUDE_SCRIPT_NAME}"
 ########################################################################################################################################################################################################
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
+export AUTO="auto"
+export MAX="max"
+export XHIGH="xhigh"
 export HIGH="high"
 export MEDIUM="medium"
 export LOW="low"
-export DEFAULT_EFFORT="${HIGH}"
+
+# export DEFAULT_EFFORT="${HIGH}"
+export DEFAULT_EFFORT="${MAX}"
 export DEFAULT_PROMPT="Hello World, Claude!"
 
 
