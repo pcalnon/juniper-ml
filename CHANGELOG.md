@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **CFG-08** (v7 roadmap §13846): new "Rate Limiting Defaults" subsection under "Ecosystem Compatibility" in `docs/REFERENCE.md`. Documents the intentional split-default — `juniper-data` ships `rate_limit_enabled=True`, while `juniper-cascor` and `juniper-canopy` ship `False` — alongside the per-service env-var override names (`JUNIPER_<SERVICE>_RATE_LIMIT_ENABLED` / `JUNIPER_<SERVICE>_RATE_LIMIT_REQUESTS_PER_MINUTE`). Closes the documentation gap the roadmap CFG-08 entry called out (defaults differ across services but the rationale wasn't surfaced anywhere central). The per-minute threshold is uniform at 60 req/min across all three; only the enable flag varies. Source-of-truth file:line refs included so a future reader can re-verify against the live Settings classes. Per-service AGENTS.md cross-references are a deferred follow-up if the central reference proves insufficient.
+
 ## [0.6.0] - 2026-05-23
 
 ### Changed
