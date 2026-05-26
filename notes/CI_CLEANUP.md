@@ -161,3 +161,43 @@ SKIPPED [1] src/tests/unit/test_obs_wire_ws_metrics.py:407: PrometheusMiddleware
 ```
 
 ---
+
+File written: notes/OUTSTANDING_WORK_2026-05-26.md (190 lines, untracked in this worktree-parsed-foraging-lollipop worktree).
+
+What's in the doc
+
+- TL;DR of where we are
+- Active issues with full root-cause analysis for each:
+  - fastapi MAL-2026-4750 false positive (data + canopy + cascor CI red)
+  - cascor pre-commit baseline newline (concurrent thread's territory)
+  - cascor fastapi exposure (3 lockfiles)
+- Deferred items (this stream + carried forward from memory): CFG-06 Helm bump, doc-tools 0.1.1, gitleaks Node24, peter-evans Node20 deprecation, v0.6.0 walkthrough, etc.
+- Recent activity log — full table of the 14 PRs that shipped (and 2 that closed as not-warranted) during the work stream
+- Cross-repo state table — pyproject/tag/PyPI sync map across 8 repos plus per-repo open issues
+- Memories saved/updated this stream — 3 entries
+- Suggested resume plan — ordered next steps when picking up later
+- Cross-references to thread-handoff and worktree-cleanup procedures
+
+---
+
+● Document created at notes/TEST_INFRASTRUCTURE_WRAPUP_2026-05-26.md in the juniper-ml worktree (/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/snoopy-stirring-fiddle/notes/TEST_INFRASTRUCTURE_WRAPUP_2026-05-26.md).
+
+Eight sections:
+
+1. Shipped — table of 4 PRs across 3 repos with merge SHAs
+2. Verified gaps closed — scheduled-nightly green, .env-leak eliminated, stale cascor editable resolved
+3. Remaining gaps — 4 items, ranked by impact:
+    - juniper-data editable install in JuniperCascor1 is stale (one-command fix; would unblock 11 currently-skipped e2e tests)
+    - .env.example ↔ runtime-default drift (latent, no incident)
+    - pytest summary-line truncation (cosmetic, fix in place but not catching all paths)
+    - xfail deterministic training resume (long-standing accepted)
+4. Open issues / latent risks — stale-editable-install recurrence pattern (3 incidents in 2 days), future Juniper services adopting pydantic-settings, coverage-gate-on-partial-marker pattern in canopy/data/cascor-worker workflows
+5. Trigger-conditioned follow-ups — six concrete "when X happens, do Y" items
+6. Memory entries created or updated — points at the new project memory + MEMORY.md index update
+7. Files of record — canonical implementations across the three repos
+8. Worktrees remaining open — just this juniper-ml worktree
+
+Notable finding flagged in §3.1: pip show juniper-data reports 0.6.0 installed but its Editable project location points at a deleted 2026-05-20 worktree, so the 11 "juniper-data package not installed" skips in your cascor full-suite run are recoverable — pip install -e /home/pcalnon/Development/python/Juniper/juniper-data
+--no-deps fixes it.
+
+---
