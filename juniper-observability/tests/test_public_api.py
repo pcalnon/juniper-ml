@@ -27,8 +27,13 @@ EXPECTED_PUBLIC_SYMBOLS = {
     "LOG_FORMAT_JSON",
     "configure_logging",
     # Middleware
+    "METRICS_DEFAULT_TRUSTED_IPS",
+    "MetricsAuthMiddleware",
     "PrometheusMiddleware",
     "RequestIdMiddleware",
+    "TrustedNetwork",
+    "normalize_client_ip",
+    "parse_trusted_networks",
     "request_id_var",
     # Prometheus utils
     "get_prometheus_app",
@@ -60,15 +65,17 @@ def test_no_unexpected_public_symbols():
 
 
 def test_version_is_stable_string():
-    """0.2.0 — additive minor bump for the ``register_or_reuse`` helpers
-    (``register_or_reuse`` / ``register_fresh`` /
-    ``register_info_or_update`` / ``lazy_register_or_reuse``) and the
-    ``juniper_observability.testing.reset_prometheus_registry``
-    pytest fixture. No breaking changes vs ``0.1.1``; consumers
-    should pin ``juniper-observability>=0.2.0`` going forward to
-    pull the new API.
+    """0.3.0 — additive minor bump that promotes ``MetricsAuthMiddleware``
+    (plus ``parse_trusted_networks`` / ``normalize_client_ip`` /
+    ``METRICS_DEFAULT_TRUSTED_IPS`` / ``TrustedNetwork``) from the inline
+    duplicates that shipped in juniper-data #157 and juniper-cascor
+    #313. No breaking changes vs ``0.2.0``; consumers should pin
+    ``juniper-observability>=0.3.0`` going forward to import the
+    promoted middleware. 0.2.0 added the ``register_or_reuse`` helpers
+    and ``juniper_observability.testing.reset_prometheus_registry``;
+    0.1.1 was the pre-helpers baseline.
     """
-    assert juniper_observability.__version__ == "0.2.0"
+    assert juniper_observability.__version__ == "0.3.0"
 
 
 def test_constants_match_documented_values():

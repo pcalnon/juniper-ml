@@ -8,6 +8,63 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-05-29
+
+### Added
+
+- **``MetricsAuthMiddleware``** — IP-allowlist ASGI wrapper for
+  ``/metrics`` mounts. Promoted from the inline duplicates that
+  shipped in juniper-data
+  [#157](https://github.com/pcalnon/juniper-data/pull/157) and
+  juniper-cascor
+  [#313](https://github.com/pcalnon/juniper-cascor/pull/313). Two
+  consumers maintaining the same shape was the deferred follow-up in
+  POC remediation §6 ("Promote ``MetricsAuthMiddleware`` to
+  ``juniper-observability``"); this release fires that trigger.
+
+  Public surface added to ``juniper_observability``:
+
+  - ``MetricsAuthMiddleware`` — the ASGI wrapper. Bare-IP and CIDR
+    allowlist with IPv6 zone-id strip and IPv4-mapped IPv6 unwrap so
+    Docker bridge clients appearing as ``::ffff:172.18.0.5`` match an
+    IPv4 ``172.18.0.0/16`` allowlist entry. Returns 403 from the
+    middleware (no fallthrough to the wrapped app) when the client IP
+    is missing, malformed, or not in any allowlist network. Non-HTTP
+    scopes (WebSocket, lifespan) pass through.
+  - ``METRICS_DEFAULT_TRUSTED_IPS = ("127.0.0.1", "::1")`` — loopback-
+    only default consumed when ``trusted_ips`` is ``None``. Mirrors the
+    per-service ``Settings.metrics_trusted_ips`` defaults.
+  - ``parse_trusted_networks(raw) -> tuple[TrustedNetwork, ...]`` —
+    compiles bare-IP literals and CIDR strings to ``ip_network``
+    objects. Fail-loud on unparseable entries — operator typos
+    surface as ``ValueError`` at init, not as silent 403s on every
+    scrape. Per-service fail-loud Pydantic ``field_validator`` calls
+    this same function so the error surfaces at ``Settings()``.
+  - ``normalize_client_ip(client_ip) -> IPv4Address | IPv6Address`` —
+    strips IPv6 zone-ids and unwraps IPv4-mapped IPv6.
+  - ``TrustedNetwork`` — type alias for ``Union[IPv4Network, IPv6Network]``.
+
+  Public-API regression test (``tests/test_public_api.py``) updated
+  to pin the seven new symbols + the version bump.
+
+  Consumers should pin ``juniper-observability>=0.3.0`` going forward.
+  Migration follow-ups in juniper-data and juniper-cascor (replace
+  inline copy with import from this package) are tracked in the
+  deploy-side PR queue.
+
+  New regression test ``tests/test_metrics_auth_middleware.py`` (22
+  cases) pins: default constant, ``parse_trusted_networks`` host-
+  network widening for bare IPv4/IPv6 + mixed + fail-loud,
+  ``normalize_client_ip`` zone-strip + ipv4-mapped unwrap + passthrough,
+  middleware default-loopback allow/reject, CIDR v4 allow + miss,
+  mixed CIDR + literal, CIDR v6, ipv4-mapped IPv6 against IPv4 CIDR
+  (the docker-bridge regression), IPv6 zone-id strip, malformed
+  client rejects, missing-client rejects, invalid-CIDR raises at
+  init, non-HTTP scopes pass through, response passthrough verbatim,
+  and a source-level guard that the ``metrics_auth`` module does not
+  import starlette (kept ASGI-only so future consumers can strip the
+  starlette runtime dep if they only want this surface).
+
 ### Changed
 
 - ``PrometheusMiddleware.__init__`` and ``set_build_info`` now use the
