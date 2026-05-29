@@ -30,7 +30,16 @@ from juniper_observability.logging import (
     JuniperJsonFormatter,
     configure_logging,
 )
-from juniper_observability.middleware import PrometheusMiddleware, RequestIdMiddleware, request_id_var
+from juniper_observability.middleware import (
+    METRICS_DEFAULT_TRUSTED_IPS,
+    MetricsAuthMiddleware,
+    PrometheusMiddleware,
+    RequestIdMiddleware,
+    TrustedNetwork,
+    normalize_client_ip,
+    parse_trusted_networks,
+    request_id_var,
+)
 from juniper_observability.prometheus import get_prometheus_app, set_build_info
 from juniper_observability.prometheus_helpers import (
     lazy_register_or_reuse,
@@ -59,8 +68,13 @@ __all__ = [
     "LOG_FORMAT_JSON",
     "configure_logging",
     # Middleware
+    "METRICS_DEFAULT_TRUSTED_IPS",
+    "MetricsAuthMiddleware",
     "PrometheusMiddleware",
     "RequestIdMiddleware",
+    "TrustedNetwork",
+    "normalize_client_ip",
+    "parse_trusted_networks",
     "request_id_var",
     # Prometheus utilities
     "get_prometheus_app",
