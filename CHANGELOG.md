@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **E.3 (juniper-ml STACK_REGRESSION_CORRECTIONS_2026-05-27 §E.3)**: `[clients]` extra now pins `juniper-cascor-client>=0.5.0` (was `>=0.4.0`). The 0.5.0 release adds the `origin=` keyword argument to `CascorTrainingStream` and `CascorControlStream`, forwarded to `websockets.connect(..., origin=…)` — required by juniper-canopy to connect to cascor's fail-closed `/ws/control` allowlist (juniper-cascor#129) from inside docker compose. Without bumping this pin, downstream `pip install juniper-ml[clients]` (or `[all]`) installations would still resolve to `juniper-cascor-client 0.4.x`, which lacks the `origin=` kwarg, and any consumer threading an Origin through `CascorControlStream(origin=…)` would `TypeError` at runtime. Companion PRs in this cascade: juniper-deploy#101 (✅ merged 2026-05-29), juniper-canopy#327 (✅ merged 2026-05-29), juniper-cascor-client#69, juniper-cascor#312, juniper-canopy#328, juniper-deploy#102. The matching lint contract in `tests/test_pyproject_extras.py` updates in lockstep.
+
 ### Added
 
 - **CFG-08** (v7 roadmap §13846): new "Rate Limiting Defaults" subsection under "Ecosystem Compatibility" in `docs/REFERENCE.md`. Documents the intentional split-default — `juniper-data` ships `rate_limit_enabled=True`, while `juniper-cascor` and `juniper-canopy` ship `False` — alongside the per-service env-var override names (`JUNIPER_<SERVICE>_RATE_LIMIT_ENABLED` / `JUNIPER_<SERVICE>_RATE_LIMIT_REQUESTS_PER_MINUTE`). Closes the documentation gap the roadmap CFG-08 entry called out (defaults differ across services but the rationale wasn't surfaced anywhere central). The per-minute threshold is uniform at 60 req/min across all three; only the enable flag varies. Source-of-truth file:line refs included so a future reader can re-verify against the live Settings classes. Per-service AGENTS.md cross-references are a deferred follow-up if the central reference proves insufficient.

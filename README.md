@@ -38,7 +38,7 @@ The pyproject pins matching `juniper-ml` 0.6.0:
 | `juniper-cascor`        | `>=0.5.0`         | 0.5.0            |
 | `juniper-data`          | `>=0.6.0`         | 0.6.0            |
 | `juniper-data-client`   | `>=0.4.1`         | 0.4.1            |
-| `juniper-cascor-client` | `>=0.4.0`         | 0.4.0            |
+| `juniper-cascor-client` | `>=0.5.0`         | 0.5.0            |
 | `juniper-cascor-worker` | `>=0.4.0`         | 0.4.0            |
 | `juniper-ci-tools`      | `>=0.1.0`         | 0.4.0            |
 | `juniper-config-tools`  | `>=0.1.0,<0.2.0`  | 0.1.0            |
@@ -82,7 +82,7 @@ juniper-ml ──hosts (independently published)──> juniper-observability, j
 
 | Extra        | Packages Included                                                                                |
 |--------------|--------------------------------------------------------------------------------------------------|
-| `clients`    | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.4.0`                                     |
+| `clients`    | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.5.0`                                     |
 | `worker`     | `juniper-cascor-worker>=0.4.0`                                                                   |
 | `servers`    | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0`                          |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |

@@ -38,7 +38,7 @@ _PYPROJECT = _REPO / "pyproject.toml"
 EXPECTED_EXTRAS = {
     "clients": {
         "juniper-data-client>=0.4.1",
-        "juniper-cascor-client>=0.4.0",
+        "juniper-cascor-client>=0.5.0",
     },
     "worker": {
         "juniper-cascor-worker>=0.4.0",
