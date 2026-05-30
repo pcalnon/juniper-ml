@@ -28,8 +28,11 @@ See ``notes/poc/POC_REMEDIATION_PLAN_2026-05-27.md`` in juniper-deploy
 from __future__ import annotations
 
 import ipaddress
+import logging
 from collections.abc import Iterable
 from typing import Awaitable, Callable, MutableMapping, Union
+
+_logger = logging.getLogger(__name__)
 
 __all__ = [
     "METRICS_DEFAULT_TRUSTED_IPS",
@@ -158,7 +161,17 @@ class MetricsAuthMiddleware:
                     # from Starlette's TestClient default host) — never
                     # match. Tests must spoof a real IP via
                     # ``TestClient(app, client=("127.0.0.1", 12345))``.
-                    pass
+                    # Log so operators can see why a scrape is being
+                    # denied — silent fail-through hides config drift
+                    # (e.g. ``X-Forwarded-For`` not stripped by a
+                    # mis-configured ingress, or a sidecar putting a
+                    # hostname into ``scope["client"][0]``). Added in
+                    # 0.3.1 — see consumer-side rationale on
+                    # juniper-cascor#313's merge commit.
+                    _logger.warning(
+                        "Denying /metrics request due to unparseable client IP: %r",
+                        client_ip,
+                    )
             if not allowed:
                 await send(
                     {

@@ -177,6 +177,21 @@ class TestMetricsAuthMiddleware:
         captured = await _drive(middleware, _scope("not-an-ip"))
         assert _status_of(captured) == 403
 
+    async def test_malformed_client_address_logs_warning(self, caplog) -> None:
+        """0.3.1: the ``except ValueError`` path emits a
+        ``logging.warning`` so operators can spot mis-configured
+        scrapers (e.g. an ingress that puts a hostname into
+        ``scope["client"][0]``). Behaviour-only change vs 0.3.0; the
+        deny outcome is unchanged."""
+        middleware = MetricsAuthMiddleware(_stub_app, trusted_ips=["0.0.0.0/0"])
+        with caplog.at_level("WARNING", logger="juniper_observability.middleware.metrics_auth"):
+            captured = await _drive(middleware, _scope("not-an-ip"))
+        assert _status_of(captured) == 403
+        assert any(
+            "unparseable client IP" in record.getMessage() and "not-an-ip" in record.getMessage()
+            for record in caplog.records
+        ), f"expected unparseable-IP warning, got: {[r.getMessage() for r in caplog.records]!r}"
+
     async def test_missing_client_in_scope_rejects(self) -> None:
         middleware = MetricsAuthMiddleware(_stub_app, trusted_ips=["127.0.0.1"])
         captured = await _drive(middleware, _scope(None))
