@@ -8,6 +8,42 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-05-30
+
+### Changed
+
+- **``MetricsAuthMiddleware`` now logs the deny reason when
+  ``scope["client"][0]`` is not a parseable IP.** Previously the
+  ``except ValueError`` branch was silent (``pass``) — operators saw
+  only a 403 with no signal to distinguish "legitimately blocked
+  scraper" from "ingress / sidecar is putting a hostname into
+  ``scope["client"][0]``". The new behaviour emits a
+  ``logging.warning`` on the
+  ``juniper_observability.middleware.metrics_auth`` logger with the
+  offending ``client_ip`` repr so the misconfiguration is visible at
+  the first denied scrape.
+
+  This aligns the shared middleware with the implementation
+  juniper-cascor carried inline in its
+  [#313](https://github.com/pcalnon/juniper-cascor/pull/313) merge,
+  which had been logging the same warning since promotion of the
+  inline copy. Consumers migrating from those inline copies to the
+  shared wrapper now see identical observability behaviour. The
+  deny outcome (403, no fall-through to the wrapped app) is
+  unchanged.
+
+  New regression test ``test_malformed_client_address_logs_warning``
+  in ``tests/test_metrics_auth_middleware.py`` pins the new log
+  record — message must contain ``"unparseable client IP"`` and the
+  ``repr`` of the offending value. The pre-existing
+  ``test_malformed_client_address_rejects`` continues to pin the
+  403.
+
+  Consumers should pin ``juniper-observability>=0.3.1`` if they
+  rely on the new deny-reason warning. The migration follow-ups
+  (juniper-data + juniper-cascor swap inline copy for shared
+  import) move to this floor going forward.
+
 ## [0.3.0] - 2026-05-29
 
 ### Added

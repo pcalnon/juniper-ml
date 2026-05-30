@@ -65,17 +65,23 @@ def test_no_unexpected_public_symbols():
 
 
 def test_version_is_stable_string():
-    """0.3.0 — additive minor bump that promotes ``MetricsAuthMiddleware``
-    (plus ``parse_trusted_networks`` / ``normalize_client_ip`` /
-    ``METRICS_DEFAULT_TRUSTED_IPS`` / ``TrustedNetwork``) from the inline
-    duplicates that shipped in juniper-data #157 and juniper-cascor
-    #313. No breaking changes vs ``0.2.0``; consumers should pin
-    ``juniper-observability>=0.3.0`` going forward to import the
-    promoted middleware. 0.2.0 added the ``register_or_reuse`` helpers
-    and ``juniper_observability.testing.reset_prometheus_registry``;
-    0.1.1 was the pre-helpers baseline.
+    """0.3.1 — patch bump that adds a ``logging.warning`` to
+    ``MetricsAuthMiddleware`` when ``scope["client"][0]`` is not a
+    parseable IP. No API change vs ``0.3.0``; aligns the wrapper with
+    the behaviour juniper-cascor added inline in its #313 merge so the
+    two implementations can be collapsed into the single shared source.
+    0.3.0 was the additive minor bump that promoted
+    ``MetricsAuthMiddleware`` (plus ``parse_trusted_networks`` /
+    ``normalize_client_ip`` / ``METRICS_DEFAULT_TRUSTED_IPS`` /
+    ``TrustedNetwork``) from the inline duplicates that shipped in
+    juniper-data #157 and juniper-cascor #313. No breaking changes vs
+    ``0.2.0``; consumers should pin ``juniper-observability>=0.3.1``
+    going forward to get the warning-log behaviour. 0.2.0 added the
+    ``register_or_reuse`` helpers and
+    ``juniper_observability.testing.reset_prometheus_registry``; 0.1.1
+    was the pre-helpers baseline.
     """
-    assert juniper_observability.__version__ == "0.3.0"
+    assert juniper_observability.__version__ == "0.3.1"
 
 
 def test_constants_match_documented_values():
