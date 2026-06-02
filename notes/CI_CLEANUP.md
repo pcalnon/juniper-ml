@@ -201,3 +201,6 @@ Notable finding flagged in §3.1: pip show juniper-data reports 0.6.0 installed 
 --no-deps fixes it.
 
 ---
+
+juniper-cascor-worker needs _FILE indirection in _resolve() for auth_token / authkey / tls_* fields. Compose's DEPLOY-09 hardening (CASCOR_AUTH_TOKEN_FILE=/run/secrets/...) is effectively ignored today; worker boots with auth_token="". Once that lands, populated secrets/juniper_cascor_api_keys.txt will work end-to-end for worker
+  auth. Documented in memory for future sessions.

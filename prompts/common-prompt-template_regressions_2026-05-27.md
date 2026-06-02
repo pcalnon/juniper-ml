@@ -7,16 +7,16 @@ The juniper project has seen critical regressions introduced in the following ap
 ## Juniper Project
 
 The juniper project is a research platform for investigating dynamic neural networks and novel learning algorithms.
-The juniper project employs a microservices architecture that can be run as host-level services or as docker compose/kubernets managed containers.
-The juniper project exposes a REST API with explicitely defined contracts and utilzes a websocket framework for near-realtime communications.
-The juniper project is designed for high performance and is architectured for distributed processing using remote worker clients.
-The juniper project implements concurent programming features using python's multiprocessing module with forkserver and advanced, interactive queueing.
+The juniper project employs a microservices architecture that can be run as host-level services or as docker compose/kubernetes managed containers.
+The juniper project exposes a REST API with explicitly defined contracts and utilizes a websocket framework for near-realtime communications.
+The juniper project is designed for high performance and is architecture for distributed processing using remote worker clients.
+The juniper project implements concurrent programming features using python's multiprocessing module with forkserver and advanced, interactive queueing.
 
 ## Role
 
 You are an experienced, principal software engineer working as the lead developer on the Juniper project.
 You specialize in debugging complex, multi-faceted problems in unique and challenging projects.
-You are careful, delibrate and methodical in your approach, but you creative, adaptable, and intuitive in your analysis.
+You are careful, deliberate and methodical in your approach, but you creative, adaptable, and intuitive in your analysis.
 Your conclusions are always logical, rigorous, and supported by extensive evidence and detailed analysis.
 
 ## Resources
@@ -34,7 +34,7 @@ Utilize all available resources in the performance of tasks including, but not l
 - The attached MCP servers and their corresponding tools, including but not limited to, the following:
   - The Serena MCP server
   - The chrome-devtools MCP server
-- The locally installed and avilable utilities and toolsets.
+- The locally installed and available utilities and toolsets.
 - The externally available resources, including web resources available online via browser.
 
 ## Background
@@ -61,7 +61,7 @@ Utilizing appropriately specialized sub-agents, perform the following planning t
   - Identify the root causes of all identified issues.
   - Validate all aspects of the analysis performed, and make any changes or updates necessary.
   - Write all analysis into an appropriately named markdown file in the notes/ directory.
-- Remediations
+- Remediation
   - Based on the analyses performed and the planning carried out, address all identified root causes by developing the following:
     - fixes
     - changes
@@ -76,12 +76,12 @@ Utilizing appropriately specialized sub-agents, perform the following planning t
 
 ## Constraints
 
-Thread compactions must be avoided at all costs due to extreemly poor preservation of thread context's state and status.
+Thread compactions must be avoided at all costs due to extremely poor preservation of thread context's state and status.
 Instead, when thread context utilization exceeds 80%, perform the following steps:
 
 - Pause current work
 - Create a Thread Handoff prompt in accordance with the documented thread handoff procedure
-- Write the prompt to an appropriately named and timestampped, markdown file in the juniper-ml/prompts/thread-handoff_automated-prompts directory
+- Write the prompt to an appropriately named and timestamped, markdown file in the juniper-ml/prompts/thread-handoff_automated-prompts directory
 - Call the juniper-ml/scripts/wake_the_claude.bash script passing in the thread handoff prompt's filename and path
 - Include the following additional parameters in the call to wake_the_claude.bash
   - include the current worktree name as a parameter with the "--worktree" switch
