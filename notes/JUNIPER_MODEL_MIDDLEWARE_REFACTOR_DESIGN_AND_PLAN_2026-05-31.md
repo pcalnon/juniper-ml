@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml (design doc); touches juniper-cascor, juniper-data, juniper-canopy, juniper-deploy, and two new shared packages
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.2.0 (DRAFT — pre-implementation design; split from the master plan 2026-06-03)
-**Last Updated**: 2026-06-03
+**Version**: 0.3.0 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04)
+**Last Updated**: 2026-06-04
 
 ---
 
@@ -489,6 +489,151 @@ Grounding + literature surveys conducted via independent sub-agents (read-only `
 
 > **Pending — Round 2 (post-split / post-OQ-4):** when the OQ-4 model-pick redesign lands, re-verify (a) the revised model recommendation and any new citations, and (b) that the A/B split introduced no dangling cross-references or dropped content. Append results here.
 
+### Round 2 — refactor-scope re-verification against live code (2026-06-04)
+
+**Status: COMPLETE (refactor scope).** Seven independent read-only agents re-verified this document's *refactor-half* claims against the **current** repositories (commits through 2026-06-03), under strict anti-hallucination rules: exactly one of CONFIRMED / REFUTED / DRIFTED / CANNOT-VERIFY per claim, primary-source (file:line or command output) evidence mandatory, adversarial-falsification posture, no reliance on this document's own restatement. Scope covered the **(b)** split-integrity check the Round-1 note deferred, plus a full live-code drift sweep of Parts 0/2/3/4/5/6 and a grounding pass over both deployment stacks (feeding Part 8). **The (a) OQ-4 model-pick re-verification remains PENDING** in the companion (model scope; gated on the OQ-4 research landing).
+
+**Outcome:** the document is **structurally sound and was accurate when written** — no hallucinations, no dangling IDs/cross-references, the §2.3 diagram is a true DAG, and every architectural claim re-confirmed against today's code. Three days of active development introduced the drift below; all findings are integrated **append-only** (original Parts 0–7 are left as the as-written record; this log and Part 8 carry the corrections). Round-2 finding IDs use the `G` prefix to avoid collision with Round-1's `F1–F17`.
+
+**Verifier coverage (Round 2):** R1 cascor seam (live `src`); R2 juniper-data gap (live); R3 canopy coupling (live); R4 shared-pkgs / observability / ports (live + juniper-deploy); R5 doc internal-consistency + cited sources; R6 on-host stack grounding; R7 docker stack grounding.
+
+| ID | Lens | Finding | Severity | Resolution |
+|----|------|---------|----------|------------|
+| G1 | R2 | **`equities` generator (juniper-data #164) landed 2026-06-03, after the content freeze.** It ships a regression target (`y_reg_*` next-close), time-ordered OHLCV, and a temporal (non-shuffled) split — verified end-to-end (`generators/equities/generator.py:197-198,174-184` → `storage/local_fs.py:143` `np.savez_compressed(**arrays)` → data-client passthrough `client.py:554`). | **MAJOR (load-bearing)** | **Integrated** — the Exec-Summary "single most important sequencing insight," §2.4 table, and RK-1 are **re-scoped**: juniper-data is no longer "cannot serve this model today" but **"~30–40% demonstrated via #164; needs generalization."** WS-1 is reframed from build-from-zero to *generalize the equities pattern* (see §8.4 WS-1); RK-1 likelihood downgraded. |
+| G2 | R2 | equities closes the gap by **bypassing** the classification contract, not fixing it — it emits a dummy one-hot `y_*` so `api/routes/datasets.py:172` (`n_classes=y.shape[1]`, `argmax`, required `class_distribution`) won't crash, and rides the real target in extra `y_reg_*` keys. X stays 2-D `(n,10)` — no 3-D windowing. | MAJOR (strengthen) | **Integrated** — **reinforces RK-6**: classification assumptions are baked into routes/metadata, independently confirmed by how #164 had to contort around them. WS-1's *architectural* work (optional `n_classes`, `task_type`, `X.ndim` dispatch, shared `temporal_split`, persisted scaling, 3-D contract) is still required; the §2.4 "3-D NPZ MISSING" row stays accurate. |
+| G3 | R4 | `juniper-observability` on-disk is **0.3.1**, not 0.3.0 (cascor `pyproject.toml:66` and data `:76` already pin `>=0.3.1`). | LOW (pin) | **Integrated** — C4/F1's "on-disk is 0.3.0" phrasing is stale; the new recurse app should pin **`>=0.3.1`** to match the fleet floor. (The doc's `>=0.3.0` still resolves, but sits one patch below every live sibling.) |
+| G4 | R1 | New cascor seam attributes since 2026-05-31: `current_hidden_units` on the monitor (#316); `completion_reason` plumbed into `get_status` via model-private `_completion_reason` (#320); `round_id` distributed-dispatch tagging (#321). **`api/routes/network.py`** mutates `hidden_units` (POST/DELETE) but is absent from the §2.2 T3 route list. | MEDIUM | **Integrated** — the `describe_topology()` / `TrainingEvent` contract (§2.3) must cover these three attributes; `routes/network.py` is **T3-adjacent** (model-topology-mutating) and should be classified alongside `decision_boundary.py`. Folds into the §2.3 abstraction surface and the WS-6 acceptance criteria. |
+| G5 | R1/R3/R4 | Precision corrections: **(a)** "~5.5 KLOC T1" is *conservative* — the 14 named `api/` files are ~5.0 KLOC, and adding `log_config/`+`profiling/`+`utils/` brings T1 to ~8.3 KLOC; **(b)** canopy's UI-test isolation is **path-exclusion (`--ignore=src/tests/ui`) + a separate CI job**, *not* "plugin-autoload blocking"; **(c)** the "ci-tools floor-only" pin claim holds in `pyproject.toml` but consumer CI workflows cap it `<0.5.0`. | LOW | **Integrated** — (a) effort sizing for WS-2/WS-6 should budget against the larger figure; (b) §3.1/§3.4 wording corrected — the carried-forward constraint is "POST to the param endpoint + an isolated, separately-invoked UI subsuite"; (c) noted in the §2.3 pin discussion. |
+| G6 | R5 | Split-integrity (the Round-1-deferred **(b)** check): WS-0..8/WS-T, OQ-1..15, RK-1..13, F1..17, C1..5 are all defined with no gaps; the companion cross-reference (`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`) resolves in **both** directions; journal idea #2/#4/#5/#7 quotes, the C1 RESEARCH_PHILOSOPHY §2 quote, and all §6.1 source paths verify against live files. | — (clean) | **No change** — the A/B split introduced no dangling cross-references or dropped content. (Sole nuance: journal idea #5's literal title is "New juniper-cascor Client"; the doc's "ABC-client" shorthand is a faithful paraphrase.) |
+| G7 | R4/R7 | Port proposal **host 8211 → ctr 8210 confirmed free** (OQ-15) across `docker-compose.yml` and the published port set. Nuance: **8210 is already the cascor-worker's container-internal health port** (no host mapping → no conflict). On-host, **8200 is occupied by `duplicati-serve`** — cascor stays on 8201 (forced by plant_all). | LOW | **Integrated** — OQ-15 resolves to host 8211 / ctr 8210; §8 records the on-host 8200 collision and recommends on-host recurse bind **8211** (mirroring cascor's on-host 8201 = the docker *host* port). |
+
+**Process note:** this document was **merged to `main` (juniper-ml #344, `22c32bd`)** during the Round-2 pass; it is now canonical (no longer branch-only). Round-2 was produced from a fresh worktree off `origin/main`.
+
+**Still PENDING (unchanged):** Round-2 **(a)** — re-verification of the OQ-4 model-pick redesign and any new model citations — remains open in the companion model document.
+
 ---
 
-*End of refactor document. This is a living plan — the Status Tracker, Open-Questions table, and Verification Log above are canonical for the whole effort (both this document and the [companion model document](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)).*
+## Part 8 — Migration & Cutover Path: Preserving the On-Host and Docker Stacks
+
+> **⚑ CROSS-CUTTING (review):** added 2026-06-04 (Round 2). §2.7 specifies *what order to build the workstreams*; **Part 8 specifies how to ship each step without taking down a running deployment.** It is grounded in a live read of both stacks (Round-2 verifiers R6 on-host, R7 docker) and is canonical for rollout operations. It changes **no** architecture in Part 2 — it is the operational wrapper around it.
+
+### 8.0 The two stacks (current ground truth)
+
+**On-host stack** — `util/juniper_plant_all.bash` starts services sequentially, each gated on `/v1/health` before the next, after `conda activate`-ing a per-service env:
+
+| Service | Conda env (Python) | Launch | On-host bind | Health |
+|---------|--------------------|--------|--------------|--------|
+| juniper-data | `JuniperData` (3.14) | `uvicorn juniper_data.api.app:app` | `0.0.0.0:8100` | `:8100/v1/health` |
+| juniper-cascor | `JuniperCascor1` (3.13, torch 2.11) | `cd src; python server.py` | `127.0.0.1:8201` (forced via `JUNIPER_CASCOR_PORT`) | `:8201/v1/health` |
+| juniper-canopy | `JuniperCanopy1` (3.13) | `cd src; python main.py` | `127.0.0.1:8050` | `:8050/v1/health` |
+| juniper-cascor-worker | `JuniperCascor1` | console-script (WS client) | health `127.0.0.1:8210/v1/health/ready` | (no inbound app port) |
+
+Teardown: `util/juniper_chop_all.bash` (reads `JuniperProject.pid`). **Hazards (R6):** cascor's *default* port 8200 is occupied on-host by `duplicati-serve` — the stack only works because plant_all forces 8201; **`JuniperCascor1` has no LIBTORCH activate hooks** (only `JuniperCanopy1` does), so a fresh torch-using `JuniperRecurse` env replicating the CPU-torch pattern would need the isolate hook copied in; the `get_cascor_*.bash` utilities read **`CASCOR_HOST`/`CASCOR_PORT`** (not `JUNIPER_CASCOR_*`).
+
+**Docker stack** — `juniper-deploy/docker-compose.yml`; 4 images **built** from sibling repos (data/cascor/canopy/worker), infra **pulled** (prometheus/grafana/alertmanager/redis); profiles `full | demo | dev | test | observability`:
+
+| Service | Build/Image | host:ctr | depends_on | profile |
+|---------|-------------|----------|-----------|---------|
+| juniper-data | build `../juniper-data` | 8100:8100 | — | full,demo,dev,test |
+| juniper-cascor | build `../juniper-cascor` | 8201:8200 | data (healthy) | full,dev,test |
+| juniper-cascor-worker | build `../juniper-cascor-worker` | none | cascor (healthy) | full,test |
+| juniper-canopy | build `../juniper-canopy` | 8050:8050 | data,cascor,redis | full,test |
+| prometheus / grafana | pulled | 9090 / 3001:3000 | — | observability |
+
+Validation: `docker compose --profile full config` (exits 0 today); `make up && make wait && make health`; `make test` (3-service e2e in `tests/test_full_stack.py`).
+
+### 8.1 Why the two stacks need different handling — the dependency-resolution asymmetry
+
+This is the crux of the entire migration. The two new packages reach the two stacks by **incompatible mechanisms**:
+
+| | On-host | Docker |
+|---|---------|--------|
+| How `juniper-*` deps arrive | **editable** `pip install -e` from the local sibling repo into the conda env | **PyPI wheels** pinned in `requirements.lock`; build context is the single repo (no sibling source copied in) |
+| To introduce a new shared package | `pip install -e <new-repo>` into each consuming env | **publish to PyPI/TestPyPI _first_**, then add the pin, **regenerate `requirements.lock`**, rebuild the image |
+| Failure mode if the step is skipped | `ImportError` at service boot → `/v1/health` never comes up | **build stays green, container dies at runtime** with `ModuleNotFoundError` (pin is in `pyproject.toml`, package absent from the locked set) |
+
+**Two consequences that shape every step below:**
+
+1. **Publish-first is mandatory.** No consumer — on-host *or* docker — pins `juniper-service-core`/`juniper-model-core` until those packages are on PyPI (TestPyPI soak first, per the meta-package extras-resolution verify convention). The docker stack physically cannot build otherwise.
+2. **The `pyproject.toml` pin and the `requirements.lock` regen must land in the _same change_.** The single highest-risk docker action in the refactor is bumping a pin without regenerating the lock — `docker compose build` succeeds, then the container `ModuleNotFoundError`s at startup while the *build* reported healthy. Use the documented lock-regen recipe (`rm -f requirements.lock`, or compile-to-`/tmp`-then-`mv`) to avoid the self-pin trap.
+
+### 8.2 Invariants — must hold green after EVERY step
+
+- **On-host:** `juniper_plant_all.bash` brings all services to healthy `/v1/health`; cascor still binds **8201**; `get_cascor_*.bash` still answer.
+- **Docker:** `docker compose --profile full config` exits 0; `make up && make wait && make health` green; `make test` (3-service e2e) green.
+- **Data contract:** the 2-D NPZ path is **byte-identical** for existing cascor (RK-9); pre-existing artifacts still load.
+- **Behavior:** cascor's observable behavior is unchanged until WS-6 is *explicitly* triggered and passes its golden-regression gate.
+
+### 8.3 Cross-cutting pre-flight (once, before any workstream touches a consumer)
+
+- **Publishing rail.** Add `publish-service-core.yml` / `publish-model-core.yml` (clone `publish-observability.yml`; trigger on `juniper-service-core-v*` / `juniper-model-core-v*`). **Verify each with `gh workflow run` immediately** — a workflow can pass yamllint yet fail first execution (RK-10).
+- **On-host env hygiene** (clears latent drift the migration would otherwise trip on — all found by R6):
+  - Bump `JuniperCascor1`'s editable `juniper-observability` **0.2.0 → ≥0.3.1** (the env is currently *below* cascor's own pyproject pin).
+  - Re-point 3 **stale editable installs** (`juniper-cascor-client`, `juniper-ci-tools`, `juniper-data`) that reference deleted worktree paths to live repos (else a later `pip install -e` resolves an inconsistent env).
+- **Recurse env decision** ([OQ-16]). New `JuniperRecurse` env (copy the LIBTORCH isolate hook if it uses CPU-torch) vs reuse `JuniperCascor1`.
+- **Docker hygiene.** Confirm the lock-regen recipe; plan to delete `docker-compose.cw05-stopgap.yml` (it bind-mounts cascor `src` into the worker) once the shared-package extraction removes its reason to exist.
+
+### 8.4 Per-workstream cutover runbook
+
+Each step lists **precondition → on-host actions → docker actions → verification gate → rollback**. Order follows §2.7; the defining principle holds — **prove the template on greenfield recurse before touching production cascor.**
+
+**WS-1 — juniper-data: time-series + regression** (additive; critical path; now ~30–40% demonstrated via #164).
+- *Re-scope (Round-2 G1/G2):* generalize the equities-demonstrated patterns rather than build from zero — promote its temporal split into a reusable `core/temporal_split`; make `DatasetMeta.n_classes`/`class_distribution` optional and add `task_type`; add `X.ndim` dispatch in `api/routes/datasets.py`; persist scaling params; and add the deterministic synthetic generators ([OQ-5] multi-sine / Mackey-Glass / AR(p)) that real-market, network-dependent equities cannot be.
+- *On-host:* pure-Python additive changes in the `JuniperData` env; **no env or launcher change**, no new import.
+- *Docker:* `juniper-data` image rebuild picks up new code. **No new external dependency** unless a synthetic generator needs a new lib (then: pin + regen `juniper-data/requirements.lock` in the same change).
+- *Gate:* 2-D artifacts load byte-identical (RK-9); property test `max(train_time) < min(test_time)`; on-host `curl :8100/v1/health`; docker `docker compose build juniper-data && make test`.
+- *Rollback:* additive keys only → revert the generator/route commit; existing artifacts unaffected.
+
+**WS-2 — extract `juniper-service-core` (T1 infra) + publish. Cascor NOT yet repointed.**
+- *Clarification the migration surfaces:* §2.7 step 2 / RK-5 describe cascor "adopting behind a no-op shim." To honor the overriding *greenfield-first* principle, **the cascor→service-core repoint is deferred to the start of WS-6** (behind the golden gate). At WS-2, service-core is extracted and **published**, but **cascor keeps its own `src/api/**` copy** and is byte-unchanged on both stacks. The first real consumer is recurse (WS-4).
+- *On-host:* nothing changes for cascor/canopy/data. (`pip install -e juniper-service-core` happens only in the recurse env, at WS-4.)
+- *Docker:* no consumer image changes. service-core's own CI builds/tests it standalone (clone the `juniper-observability` package-test + publish gating; add a **drift-lint** clone of `test_doc_tools_drift.py`).
+- *Gate:* service-core unit + contract tests green (a stub model drives every generic route); TestPyPI install verification; **both stacks untouched → re-run the §8.2 invariants to prove zero impact.**
+- *Rollback:* delete the package + workflow; nothing depends on it yet.
+
+**WS-3 — define `juniper-model-core` interfaces + conformance kit + publish.** Same shape as WS-2 (design + tests + publish; no consumer repoint; both stacks untouched). The conformance kit ships as an installable pytest plugin ([OQ-12]). *Gate:* kit self-tests green against a reference stub; both-stack invariants unchanged.
+
+**WS-4 — build `juniper-recurse` greenfield** (FIRST real consumer; this validates the template).
+- *On-host:* create/select the recurse env; `pip install -e juniper-service-core juniper-model-core juniper-recurse` into it. Add a launch block to `plant_all.bash` mirroring the cascor block (constants, pre-flight `check_port_available`, `cd src; python server.py`, `wait_for_health`, a `juniper-recurse=PID` line in the PID writer). **On-host bind = 8211** (mirrors cascor's on-host = the docker *host* port; 8200 is duplicati, 8210 is the worker health port — avoid both; [OQ-18]). `chop_all.bash` needs no change (it iterates the PID file); only the `--systemd` reverse-order list would.
+- *Docker:* add `juniper-recurse/Dockerfile` cloning the **worker's CPU-lock two-stage pattern** (NOT cascor's — cascor's lock pulls the full CUDA stack → 7.5 GB image); `EXPOSE 8210`; recurse's own `requirements.lock` pins service-core/model-core/data-client/observability from PyPI. Add a compose service block after canopy (build `../juniper-recurse`; `ports "${BIND_HOST:-127.0.0.1}:${RECURSE_HOST_PORT:-8211}:${RECURSE_PORT:-8210}"`; `JUNIPER_DATA_URL`; metrics trusted-IPs; `juniper_data_api_keys` secret mount; `depends_on: juniper-data healthy`; healthcheck `:8210/v1/health/ready`; `networks: [backend, data]`). Add `RECURSE_PORT`/`RECURSE_HOST_PORT` to `.env.example`; add `juniper-recurse:${RECURSE_HOST_PORT}` to `scripts/health_check.sh` `SERVICES=` and `wait_for_services.sh`; add a prometheus scrape job to **both** `prometheus.yml` and the hand-mirrored `prometheus.demo.yml`.
+- *Gate:* **the conformance kit is the acceptance test** — recurse's model passes every `TrainableModel`/`GrowableModel` assertion and traverses every generic route as a *regression* model (no `argmax`, no accuracy). On-host `curl :8211/v1/health` + PID line present. Docker `docker compose build juniper-recurse && docker compose --profile full up -d juniper-recurse && curl :8211/v1/health/ready`; `docker compose exec juniper-recurse python -c "...reach juniper-data:8100..."`; prometheus target `up`. **Existing services untouched → §8.2 invariants still green.**
+- *Rollback:* remove the compose block + plant_all block; recurse is isolated, nothing else depends on it.
+
+**WS-5 — generalize canopy + recurse backend** (moderate; UI).
+- *On-host / Docker:* canopy gains a `juniper-recurse-client` backend behind the existing `BackendProtocol`; conditional/schema-driven panels (render decision-boundary/candidate/cascade only when the backend advertises them). Add `JUNIPER_CANOPY_RECURSE_SERVICE_URL` to the on-host launcher + compose env + `.env.example`.
+- *Gate:* canopy unit + the **isolated, separately-invoked** UI subsuite (Round-2 G5: POST to the param endpoint; `--ignore=src/tests/ui` + a separate job — *not* autoload-blocking); regression backend → MSE panel, no decision-boundary. The cascor path is unchanged → existing canopy↔cascor stays green on both stacks.
+- *Rollback:* the recurse backend is additive behind the protocol; revert leaves cascor monitoring intact.
+
+**WS-6 — refactor cascor onto shared packages** (DEFERRED; trigger-gated; the only behavior-risky step).
+- *Trigger (unchanged):* WS-4 shipped **and** a cascor golden/snapshot regression suite + the conformance suite are green for cascor.
+- *Step 6a — service-core repoint (mechanical):* cascor's `src/api/**` become thin re-export shims importing from `juniper_service_core` (the "no-op shim"). **On-host:** `pip install -e juniper-service-core juniper-model-core` into `JuniperCascor1` **before** re-running cascor — R6's single riskiest on-host action; skip it and boot dies at import. Launcher unchanged (`cd src; python server.py` still resolves). **Docker:** add the pins to `juniper-cascor/pyproject.toml` **and regenerate `juniper-cascor/requirements.lock` in the same commit**; `docker compose build --no-cache juniper-cascor`; `up -d` and **grep the container log for `ModuleNotFoundError`** (catches the build-green/runtime-red gap).
+- *Step 6b — model-core interface adoption (behavioral):* the lifecycle/routes stop naming `CascadeCorrelationNetwork` and operate against `TrainableModel`/`GrowableModel`; the new seam attributes (G4: `current_hidden_units`, `_completion_reason`, `round_id`) and `routes/network.py` are covered by `describe_topology()`/`TrainingEvent`.
+- *Gate:* the **pre-captured golden suite + conformance kit must stay green** (training trajectories on two-spiral at fixed seed; API response snapshots; HDF5 round-trips). On-host: `python -c "import juniper_service_core, juniper_model_core"` in the env, then `cd src; python -c "import api.app"`, then plant_all + full health + `get_cascor_status`. Docker: `make test` (3-service e2e) green.
+- *Kill-criterion (unchanged):* if the conformance suite cannot be made green for cascor without changing observable behavior, **WS-6 is abandoned** — cascor keeps its own service stack, recurse still benefits, the one-sided extraction is documented. Both stacks revert to the WS-5 state (cascor never repointed), which stayed green throughout.
+- *Rollback:* because 6a/6b land as separate commits behind the golden gate, revert to cascor's own `src/api` copy (still present until WS-6) — on-host the editable installs are inert if unused; docker rebuilds from the reverted lock.
+
+**WS-7 — deploy / meta-package integration.** Add `juniper-recurse-client` to `juniper-ml` extras + the two shared packages to `[tools]`/`[all]`; **update `test_pyproject_extras.py` in the same PR** (the lint fails otherwise). Land shared-CI/extras edits in **dedicated PRs** (RK-11 concurrent-session race). **WS-8** (recurse-worker) deferred.
+
+### 8.5 Rollout ordering & the both-stacks-green ladder
+
+The safe global order — every rung leaves both stacks fully operational:
+
+1. Pre-flight (publish rail + env hygiene) — no consumer touched.
+2. **WS-1** data (additive; 2-D path byte-identical).
+3. **WS-2 / WS-3** publish service-core + model-core — *no consumer repointed* (both stacks untouched; the key de-risking move).
+4. **WS-4** recurse — a *new* service added to both stacks; existing services untouched.
+5. **WS-5** canopy recurse backend — additive behind `BackendProtocol`.
+6. **WS-7** deploy / meta-package.
+7. **WS-6** cascor cutover — *last*, trigger-gated, golden-guarded, kill-criterion-bounded, under the publish-first + pin-and-lock-together rules of §8.1.
+
+Because cascor (the production system, and the most-coupled node in both stacks) is repointed **only at the final, gated step**, the stacks are green at every rung 1–6 by construction, and rung 7 is reversible to rung 6's green state.
+
+### 8.6 Open questions — migration (new; fold into the Part 5 canonical table at ratification)
+
+- **[OQ-16]** Recurse env strategy on-host: dedicated `JuniperRecurse` (with copied LIBTORCH hook) vs reuse `JuniperCascor1`? (Affects torch isolation and the `pip install -e` surface.)
+- **[OQ-17]** TestPyPI soak duration for service-core/model-core before the cascor (WS-6) docker lock pins them — reuse the meta-package "install lightest extra after bare" verify, or a fixed soak window?
+- **[OQ-18]** On-host recurse port: **8211** (host-port mirror, recommended) vs 8202 (next-free) — confirm against any future on-host service map; ties to [OQ-15].
+
+---
+
+*End of refactor document. This is a living plan — the Status Tracker, Open-Questions table, Verification Log, and Part 8 migration runbook above are canonical for the whole effort (both this document and the [companion model document](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)).*
