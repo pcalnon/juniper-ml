@@ -26,17 +26,18 @@ set -euo pipefail
 DRY_RUN=0
 if [[ "${1-}" == "--dry-run" ]]; then DRY_RUN=1; fi
 
-WORKTREES_ROOT="/home/pcalnon/Development/python/Juniper/worktrees"
+JUNIPER_BASE="${JUNIPER_WORKTREE_SWEEP_REPO_BASE:-/home/pcalnon/Development/python/Juniper}"
+WORKTREES_ROOT="${JUNIPER_WORKTREE_SWEEP_ROOT:-${JUNIPER_BASE}/worktrees}"
 
 declare -A REPO_OF=(
-    [juniper-ml]="/home/pcalnon/Development/python/Juniper/juniper-ml"
-    [juniper-canopy]="/home/pcalnon/Development/python/Juniper/juniper-canopy"
-    [juniper-cascor]="/home/pcalnon/Development/python/Juniper/juniper-cascor"
-    [juniper-data]="/home/pcalnon/Development/python/Juniper/juniper-data"
-    [juniper-deploy]="/home/pcalnon/Development/python/Juniper/juniper-deploy"
-    [juniper-cascor-worker]="/home/pcalnon/Development/python/Juniper/juniper-cascor-worker"
-    [juniper-data-client]="/home/pcalnon/Development/python/Juniper/juniper-data-client"
-    [juniper-cascor-client]="/home/pcalnon/Development/python/Juniper/juniper-cascor-client"
+    [juniper-ml]="${JUNIPER_BASE}/juniper-ml"
+    [juniper-canopy]="${JUNIPER_BASE}/juniper-canopy"
+    [juniper-cascor]="${JUNIPER_BASE}/juniper-cascor"
+    [juniper-data]="${JUNIPER_BASE}/juniper-data"
+    [juniper-deploy]="${JUNIPER_BASE}/juniper-deploy"
+    [juniper-cascor-worker]="${JUNIPER_BASE}/juniper-cascor-worker"
+    [juniper-data-client]="${JUNIPER_BASE}/juniper-data-client"
+    [juniper-cascor-client]="${JUNIPER_BASE}/juniper-cascor-client"
 )
 
 remove_worktree() {
@@ -60,14 +61,22 @@ remove_worktree() {
     popd >/dev/null
 }
 
-# Iterate the survey output. Survey is pre-fetched; this script just acts
-# on SAFE rows + ACTIVE-but-PR-merged rows (passed in via stdin so we
-# don't duplicate the pre-condition logic).
+# Iterate the survey output. Survey is pre-fetched; this script acts only
+# on SAFE rows so DIRTY / ACTIVE / BROKEN worktrees cannot be removed by
+# accidentally piping the full survey output.
 #
 # Input format (tab-separated): STATUS<TAB>REPO_KEY<TAB>BRANCH<TAB>WORKTREE_NAME
 while IFS=$'\t' read -r status repo_key branch wt_name; do
     [[ -z "${status:-}" ]] && continue
     [[ "$status" =~ ^# ]] && continue   # comment / header
+    if [[ "$status" != "SAFE" ]]; then
+        echo "skipped (status $status not safe): $wt_name"
+        continue
+    fi
+    if [[ -z "${REPO_OF[$repo_key]+x}" ]]; then
+        echo "skipped (unknown repo): $repo_key / $wt_name"
+        continue
+    fi
     wt="$WORKTREES_ROOT/$wt_name"
     if [[ ! -d "$wt" ]]; then
         echo "skipped (missing dir): $wt_name"
