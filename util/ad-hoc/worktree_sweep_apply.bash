@@ -82,6 +82,19 @@ while IFS=$'\t' read -r status repo_key branch wt_name; do
         echo "skipped (missing dir): $wt_name"
         continue
     fi
+    if ! git -C "$wt" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo "skipped (not a git worktree): $wt_name"
+        continue
+    fi
+    if [[ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]]; then
+        echo "skipped (no longer safe; dirty): $wt_name"
+        continue
+    fi
+    ahead=$(git -C "$wt" rev-list --count "origin/main..HEAD" 2>/dev/null || echo "?")
+    if [[ "$ahead" != "0" ]]; then
+        echo "skipped (no longer safe; ahead=$ahead): $wt_name"
+        continue
+    fi
     remove_worktree "$wt" "$branch" "$repo_key"
 done
 

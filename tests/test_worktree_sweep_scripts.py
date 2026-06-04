@@ -72,11 +72,19 @@ class TestApplySafety(WorktreeSweepTestCase):
             worktrees_root.mkdir()
             repo_base.mkdir()
 
-            for name in (
-                "juniper-ml--safe--20260604-0000--aaaa1111",
-                "juniper-ml--dirty--20260604-0000--bbbb2222",
-                "juniper-ml--active--20260604-0000--cccc3333",
-            ):
+            main_repo = repo_base / "juniper-ml"
+            _init_repo(main_repo)
+            _run_git(
+                main_repo,
+                "worktree",
+                "add",
+                "-q",
+                "-b",
+                "safe-branch",
+                str(worktrees_root / "juniper-ml--safe--20260604-0000--aaaa1111"),
+                "main",
+            )
+            for name in ("juniper-ml--dirty--20260604-0000--bbbb2222", "juniper-ml--active--20260604-0000--cccc3333"):
                 (worktrees_root / name).mkdir()
 
             rows = "\n".join(
@@ -126,6 +134,37 @@ class TestApplySafety(WorktreeSweepTestCase):
 
             self.assertEqual(result.returncode, 0, msg=result.stderr)
             self.assertIn("skipped (unknown repo): unknown-repo / unknown--safe", result.stdout)
+
+    def test_stale_safe_row_is_revalidated_before_removal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktrees_root = root / "worktrees"
+            repo_base = root / "repos"
+            worktrees_root.mkdir()
+            repo_base.mkdir()
+
+            main_repo = repo_base / "juniper-ml"
+            _init_repo(main_repo)
+            worktree_name = "juniper-ml--active-after-survey--20260604-0000--dddd4444"
+            worktree_path = worktrees_root / worktree_name
+            _run_git(main_repo, "worktree", "add", "-q", "-b", "active-after-survey", str(worktree_path), "main")
+
+            (worktree_path / "new-work.txt").write_text("not in origin/main\n")
+            _run_git(worktree_path, "add", "new-work.txt")
+            _run_git(worktree_path, "commit", "-q", "-m", "new local work")
+
+            result = subprocess.run(
+                ["bash", str(APPLY_SCRIPT), "--dry-run"],
+                input=f"SAFE\tjuniper-ml\tactive-after-survey\t{worktree_name}\n",
+                capture_output=True,
+                text=True,
+                env=self._env(worktrees_root, repo_base),
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn(f"skipped (no longer safe; ahead=1): {worktree_name}", result.stdout)
+            self.assertNotIn("worktree remove", result.stdout)
 
 
 class TestSurveyApplyContract(WorktreeSweepTestCase):
