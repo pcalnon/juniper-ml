@@ -49,6 +49,9 @@ Issues = "https://github.com/pcalnon/juniper-ml/issues"
 # same top-level package names cascor uses (candidate_unit / utils / log_config /
 # cascor_constants), so consumers' existing imports resolve verbatim from the package with
 # no rewrites. The thin `juniper_cascor_core` package carries the version + docs.
+[tool.setuptools]
+license-files = []
+
 [tool.setuptools.packages.find]
 include = [
     "juniper_cascor_core*",
