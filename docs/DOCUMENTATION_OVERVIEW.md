@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.2
+**Version:** 0.2.3
 **Status:** Active
-**Last Updated:** May 4, 2026
+**Last Updated:** June 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -26,6 +26,7 @@
 |-----------------------------------------|--------------------------------------------------------------------------|------------------------|
 | **Install Juniper packages**            | [QUICK_START.md](QUICK_START.md)                                         | docs/                  |
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                             | docs/                  |
+| **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                | docs/                  |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)       | juniper-observability/ |
@@ -42,8 +43,8 @@
 |----------------------------------------|-------|------------|-------------------------------------------------------------------------|
 | **DOCUMENTATION_OVERVIEW.md**          | ~90   | Overview   | This file -- navigation index                                           |
 | **QUICK_START.md**                     | ~90   | Tutorial   | Install Juniper packages in under a minute                              |
-| **REFERENCE.md**                       | ~120  | Reference  | Complete extras, compatibility, package, and release-workflow reference |
-| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~220  | Cheatsheet | Quick-reference card for common development tasks                       |
+| **REFERENCE.md**                       | ~280  | Reference  | Complete extras, compatibility, host-stack operations, package, and release-workflow reference |
+| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~260  | Cheatsheet | Quick-reference card for common development and host-stack tasks        |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
 > was relocated to `notes/history/` in 2026-04 and consolidated into
@@ -97,7 +98,7 @@ juniper-doc-tools     ─direct install also supported──> markdown link vali
 
 | juniper-ml | juniper-canopy | juniper-cascor | juniper-data | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools | juniper-observability |
 |------------|----------------|----------------|--------------|---------------------|-----------------------|-----------------------|------------------|-------------------|-----------------------|
-| 0.5.x      | >=0.3.0        | >=0.3.17       | >=0.6.0      | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
+| 0.6.x      | >=0.5.0        | >=0.5.0        | >=0.6.0      | >=0.4.1             | >=0.5.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
 
 ---
 
@@ -117,6 +118,6 @@ juniper-doc-tools     ─direct install also supported──> markdown link vali
 
 ---
 
-**Last Updated:** May 4, 2026
-**Version:** 0.2.2
+**Last Updated:** June 4, 2026
+**Version:** 0.2.3
 **Maintainer:** Paul Calnon
