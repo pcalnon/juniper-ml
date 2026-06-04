@@ -7,9 +7,10 @@ adopts the package (plan Wave 2, deferred). The only correctness risk of that de
 fails if any extracted candidate-core module diverges from its ``juniper-cascor/src``
 counterpart, so divergence is a conscious choice (re-extract, or extend the allowlist).
 
-Two files intentionally diverge -- the deployment-agnostic logging fix (CW-05 gap #3) -- and
-are allowlisted in ``_INTENTIONAL_DIVERGENCE``; they are to be backported to cascor in
-Wave 2.
+The logger implementation intentionally diverges for the deployment-agnostic logging fix
+(CW-05 gap #3) and is allowlisted until it is backported to cascor in Wave 2. The
+``cascor_constants/constants.py`` log-dir override is normalized before comparison so
+unrelated constants drift is still caught.
 
 Skips when the sibling ``juniper-cascor`` repo is not on disk (per-PR / isolated CI),
 mirroring ``test_doc_tools_drift.py``. Set ``JUNIPER_ECOSYSTEM_ROOT`` to point at the
@@ -31,9 +32,16 @@ _EXTRACTED_DIRS = ("candidate_unit", "utils", "log_config", "cascor_constants")
 _INTENTIONAL_DIVERGENCE = frozenset(
     {
         Path("log_config/logger/logger.py"),
-        Path("cascor_constants/constants.py"),
     }
 )
+
+_NORMALIZED_DIVERGENCE = frozenset({Path("cascor_constants/constants.py")})
+
+_PACKAGE_LOG_DIR_OVERRIDE = """# juniper-cascor-core: honor JUNIPER_CASCOR_LOG_DIR so deployments (e.g. the distributed
+# worker, where this package lives in site-packages and the source-relative logs/ dir is
+# not writable) can redirect file logging without code changes. Unset -> source default.
+_PROJECT_LOG_DIR_DEFAULT = pathlib.Path(os.environ.get("JUNIPER_CASCOR_LOG_DIR") or pathlib.Path(_PROJECT_DIR, _PROJECT_LOG_DIR_NAME_DEFAULT))"""
+_CASCOR_LOG_DIR_DEFAULT = "_PROJECT_LOG_DIR_DEFAULT = pathlib.Path(_PROJECT_DIR, _PROJECT_LOG_DIR_NAME_DEFAULT)"
 
 _SIBLING_REPOS = ("juniper-cascor", "juniper-data", "juniper-canopy", "juniper-cascor-worker")
 
@@ -58,6 +66,13 @@ def _find_ecosystem_root(juniper_ml_root: Path) -> Path | None:
         if present >= 3 or (override and (candidate / "juniper-cascor" / "src").is_dir()):
             return candidate
     return None
+
+
+def _drift_bytes(path: Path, rel: Path, *, is_package: bool) -> bytes:
+    text = path.read_text()
+    if is_package and rel in _NORMALIZED_DIVERGENCE:
+        text = text.replace(_PACKAGE_LOG_DIR_OVERRIDE, _CASCOR_LOG_DIR_DEFAULT)
+    return text.encode()
 
 
 class JuniperCascorCoreDriftTest(unittest.TestCase):
@@ -92,7 +107,7 @@ class JuniperCascorCoreDriftTest(unittest.TestCase):
                     missing.append(str(rel))
                     continue
                 checked += 1
-                if pkg_file.read_bytes() != src_file.read_bytes():
+                if _drift_bytes(pkg_file, rel, is_package=True) != _drift_bytes(src_file, rel, is_package=False):
                     mismatches.append(str(rel))
 
         problems: list[str] = []
