@@ -166,8 +166,113 @@ class TestApplySafety(WorktreeSweepTestCase):
             self.assertIn(f"skipped (no longer safe; ahead=1): {worktree_name}", result.stdout)
             self.assertNotIn("worktree remove", result.stdout)
 
+    def test_stale_safe_row_cannot_delete_different_branch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktrees_root = root / "worktrees"
+            repo_base = root / "repos"
+            worktrees_root.mkdir()
+            repo_base.mkdir()
+
+            main_repo = repo_base / "juniper-ml"
+            _init_repo(main_repo)
+            _run_git(main_repo, "switch", "-q", "-c", "victim-branch")
+            (main_repo / "victim.txt").write_text("unmerged local work\n")
+            _run_git(main_repo, "add", "victim.txt")
+            _run_git(main_repo, "commit", "-q", "-m", "victim work")
+            _run_git(main_repo, "switch", "-q", "main")
+
+            worktree_name = "juniper-ml--safe-current--20260604-0000--eeee5555"
+            worktree_path = worktrees_root / worktree_name
+            _run_git(main_repo, "worktree", "add", "-q", "-b", "safe-current", str(worktree_path), "main")
+
+            result = subprocess.run(
+                ["bash", str(APPLY_SCRIPT)],
+                input=f"SAFE\tjuniper-ml\tvictim-branch\t{worktree_name}\n",
+                capture_output=True,
+                text=True,
+                env=self._env(worktrees_root, repo_base),
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn(
+                f"skipped (branch mismatch: row=victim-branch current=safe-current): {worktree_name}",
+                result.stdout,
+            )
+            self.assertTrue(worktree_path.exists())
+            _run_git(main_repo, "show-ref", "--verify", "--quiet", "refs/heads/victim-branch")
+
+    def test_ignored_local_files_are_not_removed_as_safe(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktrees_root = root / "worktrees"
+            repo_base = root / "repos"
+            worktrees_root.mkdir()
+            repo_base.mkdir()
+
+            main_repo = repo_base / "juniper-ml"
+            _init_repo(main_repo)
+            (main_repo / ".gitignore").write_text("*.secret\n")
+            _run_git(main_repo, "add", ".gitignore")
+            _run_git(main_repo, "commit", "-q", "-m", "ignore local secrets")
+            _run_git(main_repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+            worktree_name = "juniper-ml--ignored-local--20260604-0000--ffff6666"
+            worktree_path = worktrees_root / worktree_name
+            _run_git(main_repo, "worktree", "add", "-q", "-b", "ignored-local", str(worktree_path), "main")
+            (worktree_path / "local.secret").write_text("local-only data\n")
+
+            result = subprocess.run(
+                ["bash", str(APPLY_SCRIPT)],
+                input=f"SAFE\tjuniper-ml\tignored-local\t{worktree_name}\n",
+                capture_output=True,
+                text=True,
+                env=self._env(worktrees_root, repo_base),
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn(f"skipped (no longer safe; dirty): {worktree_name}", result.stdout)
+            self.assertTrue((worktree_path / "local.secret").exists())
+            _run_git(main_repo, "show-ref", "--verify", "--quiet", "refs/heads/ignored-local")
+
 
 class TestSurveyApplyContract(WorktreeSweepTestCase):
+    def test_survey_marks_ignored_local_files_dirty(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktrees_root = root / "worktrees"
+            repo_base = root / "repos"
+            worktrees_root.mkdir()
+            repo_base.mkdir()
+
+            for repo_key in REPO_KEYS:
+                _init_repo(repo_base / repo_key)
+
+            main_repo = repo_base / "juniper-ml"
+            (main_repo / ".gitignore").write_text("*.secret\n")
+            _run_git(main_repo, "add", ".gitignore")
+            _run_git(main_repo, "commit", "-q", "-m", "ignore local secrets")
+            _run_git(main_repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+            worktree_name = "juniper-ml--ignored-survey--20260604-0000--9999aaaa"
+            worktree_path = worktrees_root / worktree_name
+            _run_git(main_repo, "worktree", "add", "-q", "-b", "ignored-survey", str(worktree_path), "main")
+            (worktree_path / "local.secret").write_text("local-only data\n")
+
+            survey = subprocess.run(
+                ["bash", str(SURVEY_SCRIPT)],
+                capture_output=True,
+                text=True,
+                env=self._env(worktrees_root, repo_base),
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            self.assertEqual(survey.returncode, 0, msg=survey.stderr)
+            data_rows = [line for line in survey.stdout.splitlines() if line and not line.startswith("#")]
+            self.assertEqual(data_rows, [f"DIRTY\tjuniper-ml\tignored-survey\t{worktree_name}"])
+
     def test_survey_safe_row_can_feed_apply_dry_run(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

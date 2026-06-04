@@ -77,7 +77,7 @@ for wt in "$WORKTREES_ROOT"/*/; do
     fi
 
     # Dirty?
-    if [[ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]]; then
+    if [[ -n "$(git -C "$wt" status --porcelain --ignored 2>/dev/null)" ]]; then
         printf "%s\t%s\t%s\t%s\n" "DIRTY" "$repo_key" "$branch" "$name"
         continue
     fi
