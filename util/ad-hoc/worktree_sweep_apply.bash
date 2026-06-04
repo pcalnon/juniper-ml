@@ -86,6 +86,14 @@ while IFS=$'\t' read -r status repo_key branch wt_name; do
         echo "skipped (not a git worktree): $wt_name"
         continue
     fi
+    actual_branch=$(git -C "$wt" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")
+    if [[ "$actual_branch" == "HEAD" ]]; then
+        actual_branch="(detached: $(git -C "$wt" rev-parse --short HEAD 2>/dev/null || echo '?'))"
+    fi
+    if [[ "$actual_branch" != "$branch" ]]; then
+        echo "skipped (no longer safe; branch changed from $branch to $actual_branch): $wt_name"
+        continue
+    fi
     if [[ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]]; then
         echo "skipped (no longer safe; dirty): $wt_name"
         continue
