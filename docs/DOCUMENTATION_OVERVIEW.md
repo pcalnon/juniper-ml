@@ -41,10 +41,10 @@
 
 | File                                   | Lines | Type       | Purpose                                                                 |
 |----------------------------------------|-------|------------|-------------------------------------------------------------------------|
-| **DOCUMENTATION_OVERVIEW.md**          | ~90   | Overview   | This file -- navigation index                                           |
-| **QUICK_START.md**                     | ~90   | Tutorial   | Install Juniper packages in under a minute                              |
-| **REFERENCE.md**                       | ~120  | Reference  | Complete extras, compatibility, package, and release-workflow reference |
-| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~220  | Cheatsheet | Quick-reference card for common development tasks                       |
+| **DOCUMENTATION_OVERVIEW.md**          | ~135  | Overview   | This file -- navigation index                                           |
+| **QUICK_START.md**                     | ~120  | Tutorial   | Install Juniper packages in under a minute                              |
+| **REFERENCE.md**                       | ~275  | Reference  | Complete extras, compatibility, package, and release-workflow reference |
+| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~230  | Cheatsheet | Quick-reference card for common development tasks                       |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
 > was relocated to `notes/history/` in 2026-04 and consolidated into
@@ -89,7 +89,7 @@
 
 `juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual servers, client libraries, worker, and shared tooling packages.
 
-This repository also houses independently published sibling packages such as `juniper-observability`, `juniper-doc-tools`, `juniper-ci-tools`, `juniper-config-tools`, and `juniper-cascor-core`. Tooling packages are aggregated under `[tools]` and `[all]` where appropriate; `juniper-cascor-core` is a direct dependency for the distributed worker adoption wave rather than a `juniper-ml` extra.
+This repository also houses independently published sibling packages such as `juniper-observability`, `juniper-doc-tools`, `juniper-ci-tools`, `juniper-config-tools`, and `juniper-cascor-core`. Tooling packages are aggregated under `[tools]` and `[all]` where appropriate; `juniper-cascor-core` is prepared as the direct dependency for the distributed worker adoption wave rather than a `juniper-ml` extra.
 
 ### What It Installs
 

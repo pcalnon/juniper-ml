@@ -82,7 +82,7 @@ juniper-ml ──hosts (independently published)──> juniper-observability, j
 | [juniper-data-client](https://github.com/pcalnon/juniper-data-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-data-client` |
 | [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-cascor-client` |
 | [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Aggregated under `[worker]` and `[all]` | `pip install juniper-cascor-worker` |
-| [juniper-cascor-core](juniper-cascor-core/README.md) | Published independently from this repository; direct worker dependency in CW-05 Wave 1 | `pip install juniper-cascor-core` |
+| [juniper-cascor-core](juniper-cascor-core/README.md) | Published independently from this repository; planned direct worker dependency in CW-05 Wave 1 | `pip install juniper-cascor-core` |
 | [juniper-ci-tools](https://github.com/pcalnon/juniper-ml/tree/main/juniper-ci-tools) | Aggregated under `[tools]` and `[all]`; published from this repository | `pip install juniper-ci-tools` |
 | [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]`, `[tools]`, and `[all]`; published from this repository | `pip install juniper-doc-tools` |
 | [juniper-observability](juniper-observability/README.md) | Aggregated under `[tools]` and `[all]`; published independently from this repository | `pip install "juniper-observability[all]"` |
