@@ -4,7 +4,7 @@
 
 **Version:** 0.6.0
 **Status:** Active
-**Last Updated:** May 23, 2026
+**Last Updated:** June 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -14,6 +14,7 @@
 - [Package Overview](#package-overview)
 - [Extras Reference](#extras-reference)
 - [Ecosystem Compatibility](#ecosystem-compatibility)
+- [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Sibling Packages](#sibling-packages)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
@@ -90,11 +91,34 @@ pip install juniper-ml[all]       # Everything
 
 ### Service Ports
 
-| Service        | Default Port | Health Endpoint |
-|----------------|--------------|-----------------|
-| juniper-data   | 8100         | `/v1/health`    |
-| juniper-cascor | 8200         | `/v1/health`    |
-| juniper-canopy | 8050         | `/v1/health`    |
+`juniper-cascor` has two commonly visible ports: the service/container default is `8200`, while the host-level Juniper stack and Docker published port use `8201`. Local utilities in this repository target the host-facing port.
+
+| Service                  | Service / Container Port | Host-Facing Port | Health Endpoint             |
+|--------------------------|--------------------------|------------------|-----------------------------|
+| juniper-data             | 8100                     | 8100             | `/v1/health`                |
+| juniper-cascor           | 8200                     | 8201             | `/v1/health`                |
+| juniper-canopy           | 8050                     | 8050             | `/v1/health`                |
+| juniper-cascor-worker    | n/a                      | 8210             | `/v1/health/ready`          |
+
+---
+
+## Host Orchestration Utilities
+
+`util/juniper_plant_all.bash` starts the host-level stack in dependency order (`juniper-data`, then `juniper-cascor`, then `juniper-canopy`, then `juniper-cascor-worker`), waits for health checks, and writes `JuniperProject.pid` for `util/juniper_chop_all.bash`.
+
+| Utility | Purpose | Key Overrides |
+|---------|---------|---------------|
+| `util/juniper_plant_all.bash` | Start the host-level stack with health gates | `JUNIPER_DATA_HOST`, `JUNIPER_DATA_PORT`, `JUNIPER_CASCOR_HOST`, `JUNIPER_CASCOR_PORT`, `JUNIPER_CANOPY_PORT`, `JUNIPER_WORKER_HEALTH_HOST`, `JUNIPER_WORKER_HEALTH_PORT` |
+| `util/juniper_chop_all.bash` | Stop services from `JuniperProject.pid` | `JUNIPER_PROJECT_DIR`, `SIGTERM_TIMEOUT`, `KILL_WORKERS`, `USE_SYSTEMD` |
+| `util/get_cascor_*.bash` | Query cascor REST endpoints from a shell | `CASCOR_HOST`, `CASCOR_PORT` |
+
+Important pitfall: the startup script uses the `JUNIPER_CASCOR_HOST` / `JUNIPER_CASCOR_PORT` names, but the `get_cascor_*.bash` query helpers intentionally use the shorter legacy `CASCOR_HOST` / `CASCOR_PORT` names. Both default to `localhost:8201` for local host-mode access.
+
+```bash
+JUNIPER_CASCOR_PORT=8201 util/juniper_plant_all.bash
+CASCOR_PORT=8201 util/get_cascor_status.bash
+util/juniper_chop_all.bash
+```
 
 ### Rate Limiting Defaults
 
@@ -219,8 +243,10 @@ These variables are used by consumer applications when juniper-ml extras are ins
 
 > These are not set by juniper-ml itself — they are consumed by the installed sub-packages.
 
+Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities).
+
 ---
 
-**Last Updated:** May 23, 2026
+**Last Updated:** June 4, 2026
 **Version:** 0.6.0
 **Maintainer:** Paul Calnon
