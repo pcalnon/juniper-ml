@@ -127,6 +127,7 @@ jobs:
           # in juniper-doc-tools/tests/, exercised by the dedicated
           # `CI -- juniper-doc-tools` workflow.
           python3 -m unittest -v tests/test_worktree_cleanup.py
+          python3 -m unittest -v tests/test_worktree_sweep_scripts.py
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py
           python3 -m unittest -v tests/test_workflow_script_paths.py

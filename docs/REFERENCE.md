@@ -14,6 +14,7 @@
 - [Package Overview](#package-overview)
 - [Extras Reference](#extras-reference)
 - [Ecosystem Compatibility](#ecosystem-compatibility)
+- [Host Orchestration Utilities](#host-orchestration-utilities)
 - [Sibling Packages](#sibling-packages)
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
@@ -87,15 +88,18 @@ pip install juniper-ml[all]       # Everything
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
-| 0.6.x      | >=0.6.0      | >=0.5.0        | >=0.5.0        | >=0.4.1             | >=0.4.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
+| 0.6.x      | >=0.6.0      | >=0.5.0        | >=0.5.0        | >=0.4.1             | >=0.5.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 
 ### Service Ports
 
-| Service        | Default Port | Health Endpoint |
-|----------------|--------------|-----------------|
-| juniper-data   | 8100         | `/v1/health`    |
-| juniper-cascor | 8200         | `/v1/health`    |
-| juniper-canopy | 8050         | `/v1/health`    |
+`juniper-cascor` has two commonly visible ports: the service/container default is `8200`, while the host-level Juniper stack and Docker published port use `8201`. Local utilities in this repository target the host-facing port.
+
+| Service                  | Service / Container Port | Host-Facing Port | Health Endpoint             |
+|--------------------------|--------------------------|------------------|-----------------------------|
+| juniper-data             | 8100                     | 8100             | `/v1/health`                |
+| juniper-cascor           | 8200                     | 8201             | `/v1/health`                |
+| juniper-canopy           | 8050                     | 8050             | `/v1/health`                |
+| juniper-cascor-worker    | n/a                      | 8210             | `/v1/health/ready`          |
 
 ### Rate Limiting Defaults
 
@@ -116,6 +120,59 @@ The three services intentionally ship with **different** `rate_limit_enabled` de
 | `juniper-canopy` | `JUNIPER_CANOPY_RATE_LIMIT_ENABLED`  | `JUNIPER_CANOPY_RATE_LIMIT_REQUESTS_PER_MINUTE`   |
 
 The split-default is intentional, not an oversight: `juniper-data` is a higher-risk public-shaped surface (dataset generation, paginated reads), so it ships rate-limited by default; the other two run behind a known reverse-proxy / authenticated client surface where the rate-limit value adds operator friction during local development. Closes the documentation gap tracked in the v7 outstanding-development roadmap under CFG-08.
+
+---
+
+## Host Orchestration Utilities
+
+`util/juniper_plant_all.bash` starts the host-level stack in dependency order (`juniper-data`, then `juniper-cascor`, then `juniper-canopy`, then `juniper-cascor-worker`), waits for health checks, and writes `JuniperProject.pid` for `util/juniper_chop_all.bash`.
+
+Prerequisites:
+
+- Sibling repositories are expected next to `juniper-ml` under the same Juniper project root: `juniper-data`, `juniper-cascor`, `juniper-canopy`, and `juniper-cascor-worker`.
+- `curl` and `ss` must be on `PATH`; `plant_all` uses them for health checks and port preflight.
+- Conda must be available at `JUNIPER_CONDA_DIR` (default `/opt/miniforge3`) with `JuniperData`, `JuniperCascor1`, and `JuniperCanopy1` environments. The cascor server and worker both default to `JuniperCascor1`.
+- The worker console script must exist at `${JUNIPER_CONDA_DIR}/envs/${JUNIPER_WORKER_CONDA}/bin/juniper-cascor-worker`.
+
+| Utility | Purpose | Key Overrides |
+|---------|---------|---------------|
+| `util/juniper_plant_all.bash` | Start the host-level stack with health gates | `JUNIPER_DATA_HOST`, `JUNIPER_DATA_PORT`, `JUNIPER_CASCOR_HOST`, `JUNIPER_CASCOR_PORT`, `JUNIPER_CANOPY_PORT`, `JUNIPER_WORKER_HEALTH_HOST`, `JUNIPER_WORKER_HEALTH_PORT` |
+| `util/juniper_chop_all.bash` | Stop services from `JuniperProject.pid` | `JUNIPER_PROJECT_DIR`, `SIGTERM_TIMEOUT`, `KILL_WORKERS`, `USE_SYSTEMD` |
+| `util/get_cascor_*.bash` | Query cascor REST endpoints from a shell | `CASCOR_HOST`, `CASCOR_PORT` |
+
+Important pitfall: the startup script uses the `JUNIPER_CASCOR_HOST` / `JUNIPER_CASCOR_PORT` names, but the `get_cascor_*.bash` query helpers intentionally use the shorter legacy `CASCOR_HOST` / `CASCOR_PORT` names. Both default to `localhost:8201` for local host-mode access.
+
+```bash
+JUNIPER_CASCOR_PORT=8201 util/juniper_plant_all.bash
+CASCOR_PORT=8201 util/get_cascor_status.bash
+util/juniper_chop_all.bash
+```
+
+Query helpers:
+
+| Script | Endpoint |
+|--------|----------|
+| `util/get_cascor_status.bash` | `/v1/training/status` |
+| `util/get_cascor_metrics.bash` | `/v1/metrics` |
+| `util/get_cascor_history.bash` | `/v1/metrics/history?count=10` |
+| `util/get_cascor_history-plus.bash` | `/v1/metrics/history?count=100` |
+| `util/get_cascor_network.bash` | `/v1/network` |
+| `util/get_cascor_topology.bash` | `/v1/network/topology` |
+
+Lifecycle details:
+
+- In `nohup` mode, `plant_all` writes one `name=pid` entry per service to `juniper-ml/JuniperProject.pid`; `chop_all` reads that file, sends `SIGTERM`, then escalates to `SIGKILL` after `SIGTERM_TIMEOUT` seconds if needed.
+- In systemd mode (`--systemd` or `USE_SYSTEMD=1`), both scripts call `systemctl --user` for `juniper-data`, `juniper-cascor`, `juniper-canopy`, and `juniper-cascor-worker`. This mode does not use `JuniperProject.pid`.
+- `plant_all` derives the Juniper project root from the script location (`util/` -> repository -> parent directory). `chop_all` honors `JUNIPER_PROJECT_DIR` directly, so non-standard layouts should run both scripts from the same checkout and verify the reported PID path.
+
+Troubleshooting:
+
+| Symptom | Check / Fix |
+|---------|-------------|
+| Port preflight fails | Run `ss -tlnp` and free the reported port (`8100`, `8201`, `8050`, or `8210` by default), or override the matching `JUNIPER_*_PORT` before startup. |
+| `juniper-cascor` never reaches `/v1/health` | Inspect `juniper-cascor/logs/juniper-cascor_*.log`. Prefer the default `JuniperCascor1` env; the legacy `JuniperCascor` Python 3.14 / torch layout is a known health-startup trap. See [`notes/CASCOR_CONDA_ENV_FIX_2026-05-07.md`](../notes/CASCOR_CONDA_ENV_FIX_2026-05-07.md). |
+| Worker startup says binary missing | Activate the worker env and install the package: `conda activate JuniperCascor1 && pip install juniper-cascor-worker`. |
+| `chop_all` cannot find `JuniperProject.pid` | Confirm `plant_all` completed successfully in `nohup` mode and check the PID path printed at startup. If using systemd mode, stop with `util/juniper_chop_all.bash --systemd` instead. |
 
 ---
 
@@ -268,6 +325,11 @@ These variables are used by consumer applications when juniper-ml extras are ins
 | `CASCOR_MANAGER_PORT`    | juniper-cascor-worker | `50000`                 | Worker manager port                       |
 
 > These are not set by juniper-ml itself — they are consumed by the installed sub-packages.
+> `CASCOR_SERVICE_URL` defaults to the cascor service/container port (`8200`). The host-level stack and `util/get_cascor_*.bash` helpers target the host-facing port (`8201`) unless overridden.
+
+Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities).
+
+Local orchestration scripts in `util/` also read the host-stack variables documented in [Host Orchestration Utilities](#host-orchestration-utilities).
 
 ---
 
