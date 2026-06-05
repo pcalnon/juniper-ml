@@ -4,7 +4,7 @@
 
 **Version:** 0.3.1
 **Status:** Active
-**Last Updated:** June 5, 2026
+**Last Updated:** June 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -153,6 +153,6 @@ assert "Tanh" in ActivationWithDerivative.ACTIVATION_MAP
 
 ---
 
-**Last Updated:** June 5, 2026
-**Version:** 0.3.0
+**Last Updated:** June 4, 2026
+**Version:** 0.3.1
 **Status:** Active

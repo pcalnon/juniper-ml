@@ -43,10 +43,10 @@
 
 | File                                   | Lines | Type       | Purpose                                                                 |
 |----------------------------------------|-------|------------|-------------------------------------------------------------------------|
-| **DOCUMENTATION_OVERVIEW.md**          | ~135  | Overview   | This file -- navigation index                                           |
-| **QUICK_START.md**                     | ~120  | Tutorial   | Install Juniper packages in under a minute                              |
-| **REFERENCE.md**                       | ~275  | Reference  | Complete extras, compatibility, package, and release-workflow reference |
-| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~230  | Cheatsheet | Quick-reference card for common development tasks                       |
+| **DOCUMENTATION_OVERVIEW.md**          | ~90   | Overview   | This file -- navigation index                                           |
+| **QUICK_START.md**                     | ~90   | Tutorial   | Install Juniper packages in under a minute                              |
+| **REFERENCE.md**                       | ~280  | Reference  | Complete extras, compatibility, host-stack operations, package, and release-workflow reference |
+| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~260  | Cheatsheet | Quick-reference card for common development and host-stack tasks        |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
 > was relocated to `notes/history/` in 2026-04 and consolidated into

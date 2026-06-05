@@ -226,7 +226,7 @@ Pitfall: `util/juniper_plant_all.bash` uses the `JUNIPER_CASCOR_*` names, while 
 | Startup exits before launching services | Check the preflight output for missing `curl`, `ss`, conda, sibling repo directories, or occupied ports. |
 | Cascor health times out | Inspect `juniper-cascor/logs/juniper-cascor_*.log`; keep the default `JuniperCascor1` env unless a replacement is known-good. |
 | Worker binary missing | Run `conda activate JuniperCascor1 && pip install juniper-cascor-worker`. |
-| `chop_all` cannot find `JuniperProject.pid` | Confirm `plant_all` finished in `nohup` mode and that `chop_all` is using the same project root; for systemd mode, stop with `util/juniper_chop_all.bash --systemd`. |
+| `chop_all` cannot find `JuniperProject.pid` | Confirm `plant_all` finished in `nohup` mode and rerun with `JUNIPER_PROJECT_DIR` set to the same project root; for systemd mode, stop with `util/juniper_chop_all.bash --systemd`. |
 
 ## Quick Reference Tables
 
