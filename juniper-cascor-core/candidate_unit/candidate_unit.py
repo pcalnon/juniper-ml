@@ -198,7 +198,7 @@ class CandidateUnit:
         self.logger.verbose(f"CandidateUnit: __init__: Input size: {self.input_size}")
         self.output_size = CandidateUnit__output_size
         self.logger.verbose(f"CandidateUnit: __init__: Output size: {self.output_size}")
-        self.activation_fn_base = ActivationWithDerivative._normalize_activation_fn(CandidateUnit__activation_function)
+        self.activation_fn_base = CandidateUnit__activation_function
         self.logger.verbose(f"CandidateUnit: __init__: Base Activation function: {self.activation_fn_base}")
 
         # Cache activation function wrapper to avoid recreating on every forward pass (P2 optimization)

@@ -7,26 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- Remote candidate-result collection timeout constants are exported from
-  `cascor_constants.constants` for the current `juniper-cascor` dual-path trainer:
-  `_CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_SECONDS_PER_EPOCH`,
-  `_CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MIN_TIMEOUT`, and
-  `_CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MAX_TIMEOUT`.
-
-### Changed
-
-- `ActivationWithDerivative` now accepts the worker's legacy
-  `(activation, derivative)` tuple shape and normalizes it to the callable activation
-  before `CandidateUnit.forward()` runs, avoiding unpicklable derivative lambdas in the
-  core wrapper.
-- `tests/test_cascor_core_drift.py` now normalizes only the package-specific
-  `JUNIPER_CASCOR_LOG_DIR` fragment in `cascor_constants/constants.py` instead of
-  allowlisting the whole constants file, so unrelated constants drift is still caught.
-- Package metadata explicitly sets `[tool.setuptools] license-files = []`; keep the build
-  and `twine check` release verification in place before changing that publishing contract.
-
 ## [0.1.0] - 2026-06-04
 
 ### Added
