@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-06-04
+**Last Updated**: 2026-06-05
 
 ---
 
@@ -39,6 +39,7 @@ pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 # Run all tests
 python3 -m unittest -v tests/test_wake_the_claude.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
+python3 -m unittest -v tests/test_worktree_sweep_scripts.py
 python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_requirements_drift_check.py
 python3 -m unittest -v tests/test_workflow_script_paths.py
@@ -165,6 +166,7 @@ juniper-ml/
 ├── tests/                     # Regression test suites (Python unittest)
 │   ├── test_wake_the_claude.py           # Launcher script regression (1470 lines)
 │   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
+│   ├── test_worktree_sweep_scripts.py    # Ad-hoc sweep script safety/contract tests
 │   ├── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
 │   ├── test_requirements_drift_check.py  # Requirements snapshot drift checker tests
 │   ├── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
@@ -243,6 +245,7 @@ juniper-ml/
 - `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 - Doc-link validator regression tests live in [`juniper-doc-tools/tests/`](juniper-doc-tools/tests/) (Wave 4 of the doc-link migration; exercised by the dedicated `CI -- juniper-doc-tools` workflow).
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling
+- `tests/test_worktree_sweep_scripts.py` -- Tests for `util/ad-hoc/worktree_sweep_*.bash`: survey/apply row compatibility, `SAFE`-only removal, and unknown-repo skips
 - `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
 - `tests/test_requirements_drift_check.py` -- Tests for `util/requirements_drift_check.py`: structural range validation, BAD_PATH / BAD_RANGE classification, `--ecosystem-root` rewriting, CLI exit codes, JSON output
 - `tests/test_workflow_script_paths.py` -- Lint test: every `python <path.py>` / `bash <path.bash>` invocation in `.github/workflows/*.yml` must reference a path that exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18.
