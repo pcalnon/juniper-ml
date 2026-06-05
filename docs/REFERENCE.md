@@ -87,7 +87,7 @@ pip install juniper-ml[all]       # Everything
 
 | juniper-ml | juniper-data | juniper-cascor | juniper-canopy | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools  | juniper-observability |
 |------------|--------------|----------------|----------------|---------------------|-----------------------|-----------------------|------------------|--------------------|-----------------------|
-| 0.6.x      | >=0.6.0      | >=0.5.0        | >=0.5.0        | >=0.4.1             | >=0.4.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
+| 0.6.x      | >=0.6.0      | >=0.5.0        | >=0.5.0        | >=0.4.1             | >=0.5.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0     | >=0.2.0               |
 
 ### Service Ports
 
@@ -123,7 +123,13 @@ The split-default is intentional, not an oversight: `juniper-data` is a higher-r
 
 ### juniper-observability
 
-`juniper-observability` lives under `juniper-observability/` in this repository and publishes independently from the `juniper-ml` meta-package. Since `juniper-ml` 0.5.0 it is also aggregated under the `[tools]` and `[all]` extras, so a `pip install juniper-ml[all]` will pull it in alongside the rest of the platform. Services that don't need the full meta-package can still depend on `juniper-observability` directly when they only want the shared health models, request-ID logging/middleware, Prometheus helpers, or Sentry setup.
+`juniper-observability` lives under `juniper-observability/` in this repository and
+publishes independently from the `juniper-ml` meta-package. Since `juniper-ml` 0.5.0 it
+is also aggregated under the `[tools]` and `[all]` extras, so a
+`pip install juniper-ml[all]` will pull it in alongside the rest of the platform.
+Services that don't need the full meta-package can still depend on
+`juniper-observability` directly when they only want the shared health models,
+request-ID logging/middleware, Prometheus helpers, or Sentry setup.
 
 | Field                 | Value                                                                      |
 |-----------------------|----------------------------------------------------------------------------|
@@ -182,6 +188,7 @@ Operational constraints:
 2. `import juniper_cascor_core` must stay lightweight and torch-free because the publish workflow verifies TestPyPI installs with `--no-deps`.
 3. Set `JUNIPER_CASCOR_LOG_DIR` in containers that need file logs in a writable location. If file logging cannot initialize, the logger must degrade to console-only instead of failing candidate training.
 4. Until `juniper-cascor` adopts the package in Wave 2, `tests/test_cascor_core_drift.py` guards extracted modules against unintentional drift from `juniper-cascor/src`; `log_config/logger/logger.py` and `cascor_constants/constants.py` are intentionally allowlisted for the logging fix.
+5. Use the package README's [worker adoption checklist](../juniper-cascor-core/README.md#worker-adoption-checklist) when replacing `--cascor-path` source mounts in `juniper-cascor-worker`.
 
 Publish and CI constraints:
 
@@ -250,22 +257,34 @@ Observability release flow:
 3. **Verify TestPyPI Install** -- sparse-checks out `juniper-observability/pyproject.toml`, reads the package version, retries the TestPyPI install up to five times to tolerate index lag, then imports `juniper_observability` and prints `juniper_observability.__version__`.
 4. **Publish to PyPI** -- runs only after TestPyPI install verification and publishes the same artifact with `packages-dir: dist/` and `verbose: true`.
 
-Both publish workflows require GitHub Actions environments named `testpypi` and `pypi`, plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file, environment, owner, repository, and project name. See [`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md) for the v0.5.0 runbook covering the expanded extras surface and the TestPyPI extras-resolution verify step; the prior [`RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) walkthrough remains the canonical source for the trusted-publisher prerequisite and pending-publisher gotchas.
+Both publish workflows require GitHub Actions environments named `testpypi` and `pypi`,
+plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file,
+environment, owner, repository, and project name. See
+[`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md)
+for the v0.5.0 runbook covering the expanded extras surface and the TestPyPI
+extras-resolution verify step; the prior
+[`RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md)
+walkthrough remains the canonical source for the trusted-publisher prerequisite and
+pending-publisher gotchas.
 
 ---
 
 ## Environment Variables
 
-These variables are used by consumer applications when juniper-ml extras are installed:
+These variables are consumed by installed sub-packages and independently installed sibling
+packages:
 
-| Variable                 | Used By               | Default                 | Description                               |
-|--------------------------|-----------------------|-------------------------|-------------------------------------------|
-| `JUNIPER_DATA_URL`       | juniper-data-client   | `http://localhost:8100` | juniper-data service URL                  |
-| `JUNIPER_DATA_API_KEY`   | juniper-data-client   | *(none)*                | API key for juniper-data authentication   |
-| `CASCOR_SERVICE_URL`     | juniper-cascor-client | `http://localhost:8200` | juniper-cascor service URL                |
-| `JUNIPER_CASCOR_API_KEY` | juniper-cascor-client | *(none)*                | API key for juniper-cascor authentication |
-| `CASCOR_MANAGER_HOST`    | juniper-cascor-worker | `127.0.0.1`             | Worker manager host                       |
-| `CASCOR_MANAGER_PORT`    | juniper-cascor-worker | `50000`                 | Worker manager port                       |
+| Variable                   | Used By               | Default                 | Description                                                               |
+|----------------------------|-----------------------|-------------------------|---------------------------------------------------------------------------|
+| `JUNIPER_DATA_URL`         | juniper-data-client   | `http://localhost:8100` | juniper-data service URL                                                  |
+| `JUNIPER_DATA_API_KEY`     | juniper-data-client   | *(none)*                | API key for juniper-data authentication                                   |
+| `CASCOR_SERVICE_URL`       | juniper-cascor-client | `http://localhost:8200` | juniper-cascor service URL                                                |
+| `JUNIPER_CASCOR_API_KEY`   | juniper-cascor-client | *(none)*                | API key for juniper-cascor authentication                                 |
+| `CASCOR_MANAGER_HOST`      | juniper-cascor-worker | `127.0.0.1`             | Worker manager host                                                       |
+| `CASCOR_MANAGER_PORT`      | juniper-cascor-worker | `50000`                 | Worker manager port                                                       |
+| `JUNIPER_CASCOR_LOG_DIR`   | juniper-cascor-core   | source-relative `logs/` | Writable directory for candidate-core file logs                           |
+| `JUNIPER_CASCOR_LOG_LEVEL` | juniper-cascor-core   | `INFO`                  | Preferred log-level override for candidate-core logging                    |
+| `CASCOR_LOG_LEVEL`         | juniper-cascor-core   | `INFO`                  | Legacy log-level alias; ignored when `JUNIPER_CASCOR_LOG_LEVEL` is set    |
 
 > These are not set by juniper-ml itself — they are consumed by the installed sub-packages.
 

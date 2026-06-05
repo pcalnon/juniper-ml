@@ -71,7 +71,7 @@
 
 | File               | Type             | Purpose                                                                 |
 |--------------------|------------------|-------------------------------------------------------------------------|
-| **README.md**      | Package guide    | Candidate-core import surface, logging constraints, drift guard, release workflow |
+| **README.md**      | Package guide    | Candidate-core import surface, worker adoption checklist, troubleshooting, logging constraints, drift guard, release workflow |
 | **CHANGELOG.md**   | Package history  | Version history for `juniper-cascor-core` releases                      |
 | **pyproject.toml** | Package metadata | Runtime deps (`torch`, `numpy`, `PyYAML`), extras, package discovery    |
 | **tests/**         | Smoke tests      | Version-only import, worker import path, activation map, resilient logging |
@@ -108,7 +108,7 @@ juniper-cascor-core   ─direct install for worker adoption──> shared CasCor
 
 | juniper-ml | juniper-canopy | juniper-cascor | juniper-data | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools | juniper-observability |
 |------------|----------------|----------------|--------------|---------------------|-----------------------|-----------------------|------------------|-------------------|-----------------------|
-| 0.5.x      | >=0.3.0        | >=0.3.17       | >=0.6.0      | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
+| 0.6.x      | >=0.5.0        | >=0.5.0        | >=0.6.0      | >=0.4.1             | >=0.5.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
 
 ---
 
