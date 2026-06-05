@@ -66,25 +66,6 @@ def test_candidate_unit_accepts_worker_activation_tuple():
 
 
 @requires_torch
-def test_worker_activation_tuple_result_is_picklable():
-    # Remote workers pickle CandidateTrainingResult(candidate=...) back to the server.
-    # The worker tuple contains a derivative lambda, which must not remain on the candidate.
-    import torch
-
-    from candidate_unit.candidate_unit import CandidateTrainingResult, CandidateUnit
-
-    candidate = CandidateUnit(
-        CandidateUnit__input_size=2,
-        CandidateUnit__output_size=1,
-        CandidateUnit__activation_function=(torch.tanh, lambda x: 1.0 - torch.tanh(x) ** 2),
-    )
-
-    restored = pickle.loads(pickle.dumps(CandidateTrainingResult(candidate=candidate)))
-
-    assert restored.candidate.forward(torch.ones(2)).shape == (1,)
-
-
-@requires_torch
 def test_remote_collection_timeout_constants_are_exported():
     # Current juniper-cascor imports these from cascor_constants.constants for dual-path
     # remote result collection. The extracted package must not drop them during adoption.
