@@ -4,7 +4,7 @@
 
 **Version:** 0.6.0
 **Status:** Active
-**Last Updated:** May 23, 2026
+**Last Updated:** June 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -74,6 +74,7 @@ pip install juniper-ml[all]       # Everything
 | **juniper-data-client**   | Synchronous HTTP client for the juniper-data REST API (dataset generation)      |
 | **juniper-cascor-client** | Synchronous HTTP + async WebSocket client for the juniper-cascor API (training) |
 | **juniper-cascor-worker** | Remote candidate training worker using multiprocessing IPC                      |
+| **juniper-cascor-core**   | Shared CasCor candidate-training core for worker-side `CandidateUnit` execution |
 | **juniper-ci-tools**      | Dependency-documentation generator (`juniper-generate-dep-docs`) used by every Juniper repo's CI |
 | **juniper-doc-tools**     | Markdown link validator (`juniper-check-doc-links`) for intra- and cross-repo docs |
 | **juniper-observability** | Shared Prometheus collector helpers, structured-JSON logging, Starlette middleware |
@@ -145,6 +146,55 @@ Publish and CI constraints:
 1. `ci-observability.yml` runs package tests on Python 3.12 and 3.13, then builds and validates the distribution.
 2. `publish-observability.yml` runs only for `juniper-observability-v*` tags or manual dispatch, builds from the subdirectory, publishes to TestPyPI, verifies installation, then publishes the same artifact to PyPI.
 3. The publish workflow uses OIDC trusted publishing, GitHub-hosted `ubuntu-latest` runners, and SHA-pinned actions. If the runner type or pinned artifact actions change, verify compatibility before tagging a release.
+
+### juniper-cascor-core
+
+`juniper-cascor-core` lives under `juniper-cascor-core/` in this repository and publishes independently from both `juniper-ml` and `juniper-cascor`. It is the CW-05 Wave 0 candidate-core extraction: the importable model code a distributed `juniper-cascor-worker` needs to execute a CasCor candidate without mounting the `juniper-cascor` source tree.
+
+It is not currently part of a `juniper-ml` extra. Wave 1 makes `juniper-cascor-worker` depend on it directly so worker environments can install only the candidate-training core they need.
+
+| Field                 | Value                                                                 |
+|-----------------------|-----------------------------------------------------------------------|
+| **PyPI Name**         | `juniper-cascor-core`                                                 |
+| **Current Version**   | `0.1.0`                                                               |
+| **Python**            | `>=3.11`                                                              |
+| **Importable Module** | `juniper_cascor_core` for version checks; candidate code uses top-level `candidate_unit`, `utils`, `log_config`, and `cascor_constants` packages |
+| **Package Docs**      | [`../juniper-cascor-core/README.md`](../juniper-cascor-core/README.md) |
+
+Runtime dependencies:
+
+| Dependency | Why it is present |
+|------------|-------------------|
+| `torch>=2.0` | Candidate forward/training tensors and activation modules |
+| `numpy>=1.24` | Tensor/array conversion helpers copied from cascor |
+| `PyYAML>=6.0` | Legacy logging configuration support |
+
+Available extras:
+
+| Extra  | Additional packages |
+|--------|---------------------|
+| `full` | `dill>=0.3.7`, `columnar>=1.4.0` for lazily imported debug helpers |
+| `test` | `pytest>=8.0`, `pytest-cov>=5.0` |
+
+Operational constraints:
+
+1. Consumer code should import `CandidateUnit` from `candidate_unit.candidate_unit`, not from `juniper_cascor_core`; this preserves the existing worker/cascor import path during Wave 0/Wave 1.
+2. `import juniper_cascor_core` must stay lightweight and torch-free because the publish workflow verifies TestPyPI installs with `--no-deps`.
+3. Set `JUNIPER_CASCOR_LOG_DIR` in containers that need file logs in a writable location. If file logging cannot initialize, the logger must degrade to console-only instead of failing candidate training.
+4. Until `juniper-cascor` adopts the package in Wave 2, `tests/test_cascor_core_drift.py` guards extracted modules against unintentional drift from `juniper-cascor/src`; `log_config/logger/logger.py` and `cascor_constants/constants.py` are intentionally allowlisted for the logging fix.
+
+Publish and CI constraints:
+
+1. `juniper-cascor-core/tests/test_smoke.py` covers the worker import path, activation-map casing, version-only import, and resilient logging.
+2. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI.
+3. Before tagging a release, run the package smoke tests and build metadata validation from the subdirectory:
+
+```bash
+cd juniper-cascor-core
+python -m pytest -q
+python -m build --sdist --wheel
+twine check dist/*
+```
 
 ---
 
@@ -221,6 +271,6 @@ These variables are used by consumer applications when juniper-ml extras are ins
 
 ---
 
-**Last Updated:** May 23, 2026
+**Last Updated:** June 4, 2026
 **Version:** 0.6.0
 **Maintainer:** Paul Calnon
