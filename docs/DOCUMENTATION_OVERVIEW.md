@@ -2,9 +2,9 @@
 
 ## Navigation Guide to juniper-ml Documentation
 
-**Version:** 0.2.2
+**Version:** 0.2.3
 **Status:** Active
-**Last Updated:** May 4, 2026
+**Last Updated:** June 5, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -29,6 +29,7 @@
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)       | juniper-observability/ |
+| **Use shared CasCor candidate core**    | [juniper-cascor-core README](../juniper-cascor-core/README.md)           | juniper-cascor-core/   |
 | **See development conventions**         | [AGENTS.md](../AGENTS.md)                                                | Root                   |
 | **See version history**                 | [CHANGELOG.md](../CHANGELOG.md)                                          | Root                   |
 
@@ -66,6 +67,14 @@
 | **CHANGELOG.md**   | Package history  | Version history for `juniper-observability` releases                          |
 | **pyproject.toml** | Package metadata | Dependencies, extras, package version, and pytest/ruff configuration          |
 
+### juniper-cascor-core/ Subpackage
+
+| File               | Type             | Purpose                                                                                              |
+|--------------------|------------------|------------------------------------------------------------------------------------------------------|
+| **README.md**      | Package guide    | Candidate-worker runtime contract, direct install, logging constraints, and CasCor drift relationship |
+| **CHANGELOG.md**   | Package history  | Version history for `juniper-cascor-core` releases                                                   |
+| **pyproject.toml** | Package metadata | Dependencies, optional `[full]` helpers, package version, and top-level package export list           |
+
 ### notes/ Directory (Selected Runbooks)
 
 | File                                          | Lines | Type             | Purpose                                                                                       |
@@ -79,7 +88,9 @@
 
 `juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual servers, client libraries, worker, and shared tooling packages.
 
-This repository also houses the independent `juniper-observability` and `juniper-doc-tools` subpackages, which are published from this repo under their own version tags. Since `juniper-ml` 0.5.0 both are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
+This repository also houses the independent `juniper-observability`, `juniper-doc-tools`, and `juniper-cascor-core` subpackages, which are published from this repo under their own version tags. Since `juniper-ml` 0.5.0 `juniper-observability` and `juniper-doc-tools` are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
+
+`juniper-cascor-core` is direct-install only in the current release because it exists to support the pending worker adoption wave, not to expand the meta-package extras surface.
 
 ### What It Installs
 
@@ -91,6 +102,7 @@ juniper-ml[tools]   ──installs──> juniper-ci-tools, juniper-doc-tools, j
 juniper-ml[all]     ──installs──> all packages from clients + worker + servers + tools
 juniper-observability ─direct install also supported──> shared observability primitives
 juniper-doc-tools     ─direct install also supported──> markdown link validator
+juniper-cascor-core   ─direct install only──> CandidateUnit + worker-side CasCor candidate core
 ```
 
 ### Compatibility
@@ -109,6 +121,7 @@ juniper-doc-tools     ─direct install also supported──> markdown link vali
 - **juniper-cascor-client** -- [Docs](https://github.com/pcalnon/juniper-cascor-client) (HTTP/WS client for juniper-cascor)
 - **juniper-cascor-worker** -- [Docs](https://github.com/pcalnon/juniper-cascor-worker) (distributed training worker)
 - **juniper-observability** -- [Local docs](../juniper-observability/README.md) (shared health, logging, middleware, Prometheus, and Sentry primitives)
+- **juniper-cascor-core** -- [Local docs](../juniper-cascor-core/README.md) (shared CasCor candidate-training core for worker-side execution)
 
 ### Upstream Services
 
@@ -117,6 +130,6 @@ juniper-doc-tools     ─direct install also supported──> markdown link vali
 
 ---
 
-**Last Updated:** May 4, 2026
-**Version:** 0.2.2
+**Last Updated:** June 5, 2026
+**Version:** 0.2.3
 **Maintainer:** Paul Calnon
