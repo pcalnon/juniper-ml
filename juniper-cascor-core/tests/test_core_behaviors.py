@@ -1,0 +1,97 @@
+"""Behavioral coverage for candidate-core paths used by distributed workers."""
+
+import pickle
+
+import pytest
+
+try:
+    import torch
+
+    _HAS_TORCH = True
+except Exception:  # pragma: no cover
+    _HAS_TORCH = False
+
+requires_torch = pytest.mark.skipif(not _HAS_TORCH, reason="torch required for candidate-core")
+
+
+@requires_torch
+def test_activation_wrapper_round_trips_titlecase_softmax_through_pickle():
+    """TitleCase module activations must stay usable after multiprocessing serialization."""
+    from utils.activation import ActivationWithDerivative
+
+    activation = ActivationWithDerivative(torch.nn.Softmax(dim=1))
+    restored = pickle.loads(pickle.dumps(activation))
+
+    x = torch.tensor([1.0, 2.0, 3.0])
+    output = restored(x)
+
+    assert torch.allclose(output, torch.softmax(x, dim=-1))
+    assert torch.isclose(output.sum(), torch.tensor(1.0))
+
+
+@requires_torch
+def test_dataset_save_load_round_trips_tensors(tmp_path):
+    """The torch.save/torch.load helper pair should round-trip real tensor payloads."""
+    from utils.utils import load_dataset, save_dataset
+
+    x = torch.tensor([[0.0, 1.0], [2.0, 3.0]], dtype=torch.float32)
+    y = torch.tensor([[1.0, 0.0], [0.0, 1.0]], dtype=torch.float32)
+    dataset_path = tmp_path / "candidate_dataset.pt"
+
+    save_dataset(x, y, dataset_path)
+    loaded_x, loaded_y = load_dataset(dataset_path)
+
+    assert torch.equal(loaded_x, x)
+    assert torch.equal(loaded_y, y)
+
+
+@requires_torch
+def test_candidate_unit_round_trips_through_pickle_and_preserves_forward_output():
+    """CandidateUnit must remain executable after the worker serializes it."""
+    from candidate_unit.candidate_unit import CandidateUnit
+
+    candidate = CandidateUnit(
+        CandidateUnit__activation_function=torch.nn.Tanh(),
+        CandidateUnit__input_size=2,
+        CandidateUnit__output_size=1,
+        CandidateUnit__display_frequency=0,
+        CandidateUnit__status_frequency=0,
+        CandidateUnit__random_seed=7,
+        CandidateUnit__sequence_max_value=2,
+        CandidateUnit__random_value_scale=0.01,
+        CandidateUnit__log_level_name="CRITICAL",
+        CandidateUnit__candidate_index=3,
+    )
+    candidate.weights = torch.tensor([0.5, -0.25])
+    candidate.bias = torch.tensor([0.1])
+    x = torch.tensor([[2.0, 4.0], [1.0, -1.0]], dtype=torch.float32)
+
+    expected = candidate.forward(x)
+    restored = pickle.loads(pickle.dumps(candidate))
+
+    assert restored.logger is not None
+    assert torch.allclose(restored.forward(x), expected)
+
+
+@requires_torch
+def test_logger_set_level_suppresses_lower_priority_messages(monkeypatch, tmp_path, capsys):
+    """Worker-configured CRITICAL logging must not emit INFO hot-path noise."""
+    from log_config.logger.logger import Logger
+
+    log_file = tmp_path / "candidate.log"
+    monkeypatch.setattr(Logger, "_log_level", Logger._log_level, raising=False)
+    monkeypatch.setattr(Logger, "_level_logger_name", Logger._level_logger_name, raising=False)
+    monkeypatch.setattr(Logger, "_level_logger_config", Logger._level_logger_config, raising=False)
+    monkeypatch.setattr(Logger, "_logging_file", str(log_file), raising=False)
+
+    Logger.set_level("CRITICAL")
+    Logger.info("candidate-core regression: filtered info")
+    Logger.critical("candidate-core regression: visible critical")
+
+    captured = capsys.readouterr()
+    log_text = log_file.read_text()
+
+    assert "filtered info" not in captured.out
+    assert "filtered info" not in log_text
+    assert "visible critical" in captured.out
+    assert "visible critical" in log_text
