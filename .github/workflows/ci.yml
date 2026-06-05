@@ -147,6 +147,14 @@ jobs:
           # docs-full-check.yml. The full cross-repo assertion runs
           # weekly via docs-full-check.yml.
           python3 -m unittest -v tests/test_ci_tools_drift.py
+          # tests/test_cascor_core_drift.py: drift-guard for the CW-05
+          # juniper-cascor-core extraction -- asserts the vendored
+          # candidate-core modules stay byte-identical to juniper-cascor/src
+          # (allowlisting the intentional deployment-agnostic logging
+          # divergence) until cascor adopts the package (plan Wave 2). The
+          # byte-comparison auto-skips when the sibling juniper-cascor repo is
+          # not on disk (per-PR / isolated CI); the present-check still runs.
+          python3 -m unittest -v tests/test_cascor_core_drift.py
           # tests/test_pyproject_extras.py: pins the
           # [project.optional-dependencies] surface so accidental edits
           # to extras (drop, mistype, fail to roll up into [all]) fail
