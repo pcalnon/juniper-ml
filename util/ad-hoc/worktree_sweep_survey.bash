@@ -24,19 +24,20 @@
 
 set -euo pipefail
 
-WORKTREES_ROOT="/home/pcalnon/Development/python/Juniper/worktrees"
+WORKTREES_ROOT="${JUNIPER_WORKTREE_SWEEP_ROOT:-/home/pcalnon/Development/python/Juniper/worktrees}"
+JUNIPER_SWEEP_PROJECT_DIR="${JUNIPER_SWEEP_PROJECT_DIR:-/home/pcalnon/Development/python/Juniper}"
 
 # Map worktree dir name prefix -> the parent repo path that owns it.
 # We use the parent repo to resolve "is this branch in origin/main".
 declare -A REPO_OF=(
-    [juniper-ml]="/home/pcalnon/Development/python/Juniper/juniper-ml"
-    [juniper-canopy]="/home/pcalnon/Development/python/Juniper/juniper-canopy"
-    [juniper-cascor]="/home/pcalnon/Development/python/Juniper/juniper-cascor"
-    [juniper-data]="/home/pcalnon/Development/python/Juniper/juniper-data"
-    [juniper-deploy]="/home/pcalnon/Development/python/Juniper/juniper-deploy"
-    [juniper-cascor-worker]="/home/pcalnon/Development/python/Juniper/juniper-cascor-worker"
-    [juniper-data-client]="/home/pcalnon/Development/python/Juniper/juniper-data-client"
-    [juniper-cascor-client]="/home/pcalnon/Development/python/Juniper/juniper-cascor-client"
+    [juniper-ml]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-ml"
+    [juniper-canopy]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-canopy"
+    [juniper-cascor]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-cascor"
+    [juniper-data]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-data"
+    [juniper-deploy]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-deploy"
+    [juniper-cascor-worker]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-cascor-worker"
+    [juniper-data-client]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-data-client"
+    [juniper-cascor-client]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-cascor-client"
 )
 
 # Pre-fetch origin/main on each parent repo so the merged-status check is
@@ -46,7 +47,7 @@ for repo in "${REPO_OF[@]}"; do
 done
 wait
 
-printf "%-12s\t%-7s\t%-50s\t%s\n" "STATUS" "BEHIND" "BRANCH" "WORKTREE"
+printf "%-12s\t%-18s\t%-7s\t%-50s\t%s\n" "STATUS" "REPO" "BEHIND" "BRANCH" "WORKTREE"
 printf -- '-%.0s' {1..130}; printf "\n"
 
 for wt in "$WORKTREES_ROOT"/*/; do
@@ -63,7 +64,7 @@ for wt in "$WORKTREES_ROOT"/*/; do
         fi
     done
     if [[ -z "$repo_key" ]]; then
-        printf "%-12s\t%-7s\t%-50s\t%s\n" "BROKEN" "?" "(no-repo-match)" "$name"
+        printf "%-12s\t%-18s\t%-7s\t%-50s\t%s\n" "BROKEN" "?" "?" "(no-repo-match)" "$name"
         continue
     fi
     repo="${REPO_OF[$repo_key]}"
@@ -77,7 +78,7 @@ for wt in "$WORKTREES_ROOT"/*/; do
 
     # Dirty?
     if [[ -n "$(git -C "$wt" status --porcelain 2>/dev/null)" ]]; then
-        printf "%-12s\t%-7s\t%-50s\t%s\n" "DIRTY" "?" "$branch" "$name"
+        printf "%-12s\t%-18s\t%-7s\t%-50s\t%s\n" "DIRTY" "$repo_key" "?" "$branch" "$name"
         continue
     fi
 
@@ -85,7 +86,7 @@ for wt in "$WORKTREES_ROOT"/*/; do
     head_sha=$(git -C "$wt" rev-parse HEAD 2>/dev/null || echo "")
     origin_main_sha=$(git -C "$repo" rev-parse origin/main 2>/dev/null || echo "")
     if [[ -z "$head_sha" || -z "$origin_main_sha" ]]; then
-        printf "%-12s\t%-7s\t%-50s\t%s\n" "BROKEN" "?" "$branch" "$name"
+        printf "%-12s\t%-18s\t%-7s\t%-50s\t%s\n" "BROKEN" "$repo_key" "?" "$branch" "$name"
         continue
     fi
 
@@ -94,8 +95,8 @@ for wt in "$WORKTREES_ROOT"/*/; do
     ahead=$(git -C "$wt" rev-list --count "origin/main..HEAD" 2>/dev/null || echo "?")
 
     if [[ "$ahead" == "0" ]]; then
-        printf "%-12s\t%-7s\t%-50s\t%s\n" "SAFE" "$ahead" "$branch" "$name"
+        printf "%-12s\t%-18s\t%-7s\t%-50s\t%s\n" "SAFE" "$repo_key" "$ahead" "$branch" "$name"
     else
-        printf "%-12s\t%-7s\t%-50s\t%s\n" "ACTIVE" "$ahead" "$branch" "$name"
+        printf "%-12s\t%-18s\t%-7s\t%-50s\t%s\n" "ACTIVE" "$repo_key" "$ahead" "$branch" "$name"
     fi
 done
