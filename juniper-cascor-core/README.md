@@ -93,46 +93,39 @@ assert result.success is True
 `train()` preserves the historical float-returning contract. Use `train_detailed()` when a
 worker needs the full `CandidateTrainingResult` payload.
 
-### Candidate training contract
+## Worker adoption checklist
 
-`CandidateUnit` trains against the residual error supplied by `juniper-cascor`; it does not
-compute that error itself. For a candidate pool, pass the same residual-error tensor to every
-candidate in the same round so candidates optimize against a fixed network error.
+`juniper-cascor-worker` should treat this package as the only candidate-core import source
+during CW-05 Wave 1. The worker still owns orchestration, IPC, task parsing, and result
+transport; this package owns the importable model primitives.
 
-- `x` must be a `torch.Tensor` with shape `[batch, input_size]`. `forward()` accepts a
-  1-D input and temporarily expands it to `[1, input_size]`.
-- `residual_error` must be a `torch.Tensor` with shape `[batch]` for single-output
-  training or `[batch, output_size]` for multi-output training.
-- The output and residual-error tensors must share the same batch size, must have one or
-  two dimensions, and must agree on feature count when `residual_error` is 2-D. Violations
-  raise `ValueError` or `TypeError`.
-- The objective is absolute Pearson correlation. For multi-output residuals, each output
-  column is evaluated and the best absolute correlation is selected.
-- `train()` returns the final correlation as `float` and stores the detailed result on
-  `last_training_result`. `train_detailed()` returns `CandidateTrainingResult` directly.
-- `train_detailed(progress_callback=...)` invokes the callback every 50 epochs and on the
-  final epoch with `candidate_id`, `candidate_uuid`, `epoch`, `total_epochs`, and
-  `correlation`.
+When wiring a worker task executor:
 
-### Worker integration pitfalls
+1. Add a direct runtime dependency on `juniper-cascor-core`; it is not pulled in by a
+   `juniper-ml` extra yet.
+2. Import candidate code from the shipped top-level packages:
 
-Remote worker dispatch must preserve the constructor types used by cascor:
+   ```python
+   from candidate_unit.candidate_unit import CandidateUnit
+   from utils.activation import ActivationWithDerivative
+   ```
 
-- `CandidateUnit__random_max_value` and `CandidateUnit__sequence_max_value` are integers.
-  Do not coerce them to floats while serializing JSON or queue payloads; the RNG setup uses
-  `random.randint(...)` and `range(...)`.
-- `CandidateUnit__candidate_index` offsets the random seed (`random_seed + candidate_index`)
-  so candidates in a pool get distinct initial weights.
-- Random sequence rolling is capped at `10000` discarded values to avoid large memory/time
-  spikes; sequences above that cap continue with a warning.
-- `CandidateUnit__uuid` is set once. Calling `set_uuid()` after a UUID already exists logs
-  a fatal error and exits the process.
-- `ActivationWithDerivative` pickles by activation name and restores from
-  `ActivationWithDerivative.ACTIVATION_MAP`; unknown activation names raise `ValueError`
-  while unpickling.
-- `CandidateUnit.__getstate__()` strips the logger and display helpers before
-  multiprocessing / HDF5 serialization. They are recreated or lazily initialized after
-  unpickling.
+3. Resolve serialized activation names through `ActivationWithDerivative.ACTIVATION_MAP`
+   before constructing a candidate. The map includes both lowercase functional names and
+   title-case `torch.nn` module names (`"Tanh"`, `"Sigmoid"`, `"ReLU"`, etc.).
+4. Construct `CandidateUnit` with the legacy `CandidateUnit__...` keyword names. This keeps
+   worker payloads compatible with the current cascor-side constructor contract.
+5. Pass `x` as a two-dimensional tensor shaped like `[samples, input_size]`, and pass
+   `residual_error` with the same sample dimension. Incompatible tensor shapes raise
+   `ValueError` from candidate training.
+6. Use `train_detailed(..., progress_callback=callback)` when the worker needs structured
+   telemetry. The callback receives `candidate_id`, `candidate_uuid`, `epoch`,
+   `total_epochs`, and `correlation` at throttled intervals.
+7. Keep `import juniper_cascor_core` for version checks only. It intentionally does not
+   expose `CandidateUnit`, and it must remain torch-free for publish verification.
+
+The old `--cascor-path` source-mount workflow should become unnecessary once the worker
+depends on this package.
 
 ## Deployment-agnostic logging
 
@@ -148,12 +141,17 @@ export JUNIPER_CASCOR_LOG_LEVEL=WARNING
 If the directory is unset or cannot be created, file logging degrades to console-only
 rather than raising; a missing log file must never fail a candidate-training task. Log
 level is controlled by `JUNIPER_CASCOR_LOG_LEVEL`. The legacy `CASCOR_LOG_LEVEL` variable
-is still honored, but the prefixed variable wins when both are set. Valid log-level names
-are `TRACE`, `VERBOSE`, `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, and `FATAL`.
+is still honored, but the prefixed variable wins when both are set.
 
-If `CASCOR_LOG_LEVEL` is set by itself, import-time configuration emits a
-`DeprecationWarning`. If both variables are set to different values, the prefixed variable
-wins and a `CFG-05` warning is printed to stderr so split configuration is visible.
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| `ModuleNotFoundError: candidate_unit` | Worker environment does not have `juniper-cascor-core` installed, or it is still relying on a cascor source checkout. | Install `juniper-cascor-core` in the worker image and import from `candidate_unit.candidate_unit`. |
+| `Unknown activation 'Tanh'` or similar | Worker payload activation names are not resolved through the core activation registry. | Look up the name in `ActivationWithDerivative.ACTIVATION_MAP` and pass the resulting callable/module to `CandidateUnit__activation_function`. |
+| Candidate task fails while opening `/logs/juniper_cascor.log` | Container log path is missing or unwritable. | Set `JUNIPER_CASCOR_LOG_DIR` to a writable directory. File logging should degrade to console-only if setup still fails. |
+| `import juniper_cascor_core` works, but `CandidateUnit` import fails after `--no-deps` install | Version-only import is dependency-free by design; candidate imports require runtime deps such as `torch`. | Install normally (`pip install juniper-cascor-core`) for worker runtime, not with `--no-deps`. |
+| Drift test skips locally | The sibling `juniper-cascor/src` checkout was not found. | Set `JUNIPER_ECOSYSTEM_ROOT` to the directory containing the `juniper-cascor` repo before running `tests/test_cascor_core_drift.py`. |
 
 ## Relationship to juniper-cascor
 
@@ -176,14 +174,6 @@ JUNIPER_ECOSYSTEM_ROOT=/path/to/Juniper \
 ```
 
 The test skips in isolated checkouts where `juniper-cascor/src` is unavailable.
-
-Run the package smoke tests from the subdirectory when changing the worker import surface,
-activation registry, or logging behavior:
-
-```bash
-cd juniper-cascor-core
-python -m pytest -q
-```
 
 ## Release workflow
 

@@ -4,7 +4,7 @@
 
 **Version:** 0.2.3
 **Status:** Active
-**Last Updated:** June 5, 2026
+**Last Updated:** June 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -30,7 +30,6 @@
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
 | **Use the shared CasCor candidate core** | [juniper-cascor-core README](../juniper-cascor-core/README.md)          | juniper-cascor-core/   |
-| **Maintain cascor-core extraction**     | [juniper-cascor-core README](../juniper-cascor-core/README.md#relationship-to-juniper-cascor) + [CW-05 plan](../notes/JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md) | juniper-cascor-core/ + notes/ |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)       | juniper-observability/ |
 | **See development conventions**         | [AGENTS.md](../AGENTS.md)                                                | Root                   |
 | **See version history**                 | [CHANGELOG.md](../CHANGELOG.md)                                          | Root                   |
@@ -73,7 +72,7 @@
 
 | File               | Type             | Purpose                                                                 |
 |--------------------|------------------|-------------------------------------------------------------------------|
-| **README.md**      | Package guide    | Candidate-core import surface, logging constraints, drift guard, release workflow |
+| **README.md**      | Package guide    | Candidate-core import surface, worker adoption checklist, troubleshooting, logging constraints, drift guard, release workflow |
 | **CHANGELOG.md**   | Package history  | Version history for `juniper-cascor-core` releases                      |
 | **pyproject.toml** | Package metadata | Runtime deps (`torch`, `numpy`, `PyYAML`), extras, package discovery    |
 | **tests/**         | Smoke tests      | Version-only import, worker import path, activation map, resilient logging |
@@ -131,6 +130,6 @@ juniper-cascor-core   ─direct install for worker adoption──> shared CasCor
 
 ---
 
-**Last Updated:** June 5, 2026
+**Last Updated:** June 4, 2026
 **Version:** 0.2.3
 **Maintainer:** Paul Calnon

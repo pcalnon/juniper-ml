@@ -180,7 +180,13 @@ Troubleshooting:
 
 ### juniper-observability
 
-`juniper-observability` lives under `juniper-observability/` in this repository and publishes independently from the `juniper-ml` meta-package. Since `juniper-ml` 0.5.0 it is also aggregated under the `[tools]` and `[all]` extras, so a `pip install juniper-ml[all]` will pull it in alongside the rest of the platform. Services that don't need the full meta-package can still depend on `juniper-observability` directly when they only want the shared health models, request-ID logging/middleware, Prometheus helpers, or Sentry setup.
+`juniper-observability` lives under `juniper-observability/` in this repository and
+publishes independently from the `juniper-ml` meta-package. Since `juniper-ml` 0.5.0 it
+is also aggregated under the `[tools]` and `[all]` extras, so a
+`pip install juniper-ml[all]` will pull it in alongside the rest of the platform.
+Services that don't need the full meta-package can still depend on
+`juniper-observability` directly when they only want the shared health models,
+request-ID logging/middleware, Prometheus helpers, or Sentry setup.
 
 | Field                 | Value                                                                      |
 |-----------------------|----------------------------------------------------------------------------|
@@ -237,26 +243,15 @@ Operational constraints:
 
 1. Consumer code should import `CandidateUnit` from `candidate_unit.candidate_unit`, not from `juniper_cascor_core`; this preserves the existing worker/cascor import path during Wave 0/Wave 1.
 2. `import juniper_cascor_core` must stay lightweight and torch-free because the publish workflow verifies TestPyPI installs with `--no-deps`.
-3. `CandidateUnit__random_max_value` and `CandidateUnit__sequence_max_value` must remain integers end-to-end. Remote worker serialization that coerces them to floats breaks the RNG setup path (`random.randint(...)`, `range(...)`).
-4. `CandidateUnit` trains against externally supplied residual error. The worker must pass a tensor with the same batch size as candidate output, and for a candidate pool/round the residual error should stay fixed across candidates.
-5. Set `JUNIPER_CASCOR_LOG_DIR` in containers that need file logs in a writable location. If file logging cannot initialize, the logger must degrade to console-only instead of failing candidate training.
-6. Until `juniper-cascor` adopts the package in Wave 2, `tests/test_cascor_core_drift.py` guards extracted modules against unintentional drift from `juniper-cascor/src`; `log_config/logger/logger.py` and `cascor_constants/constants.py` are intentionally allowlisted for the logging fix.
-
-Environment variables:
-
-| Variable | Effect |
-|----------|--------|
-| `JUNIPER_CASCOR_LOG_DIR` | Writable directory for `juniper_cascor.log`; unset defaults to the package-relative `logs/` path. |
-| `JUNIPER_CASCOR_LOG_LEVEL` | Preferred log-level override. Valid values: `TRACE`, `VERBOSE`, `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, `FATAL`. |
-| `CASCOR_LOG_LEVEL` | Deprecated log-level alias. It is honored only when the prefixed variable is absent; if both differ, `JUNIPER_CASCOR_LOG_LEVEL` wins and emits a `CFG-05` stderr warning. |
-| `JUNIPER_ECOSYSTEM_ROOT` | Optional path to the directory containing sibling repos; enables `tests/test_cascor_core_drift.py` to compare against `juniper-cascor/src`. |
+3. Set `JUNIPER_CASCOR_LOG_DIR` in containers that need file logs in a writable location. If file logging cannot initialize, the logger must degrade to console-only instead of failing candidate training.
+4. Until `juniper-cascor` adopts the package in Wave 2, `tests/test_cascor_core_drift.py` guards extracted modules against unintentional drift from `juniper-cascor/src`; `log_config/logger/logger.py` and `cascor_constants/constants.py` are intentionally allowlisted for the logging fix.
+5. Use the package README's [worker adoption checklist](../juniper-cascor-core/README.md#worker-adoption-checklist) when replacing `--cascor-path` source mounts in `juniper-cascor-worker`.
 
 Publish and CI constraints:
 
 1. `juniper-cascor-core/tests/test_smoke.py` covers the worker import path, activation-map casing, version-only import, and resilient logging.
-2. The main `ci.yml` runs `tests/test_cascor_core_drift.py`; the byte-comparison portion skips in isolated checkouts that do not have the sibling `juniper-cascor` repo.
-3. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI.
-4. Before tagging a release, run the package smoke tests and build metadata validation from the subdirectory:
+2. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI.
+3. Before tagging a release, run the package smoke tests and build metadata validation from the subdirectory:
 
 ```bash
 cd juniper-cascor-core
@@ -319,22 +314,34 @@ Observability release flow:
 3. **Verify TestPyPI Install** -- sparse-checks out `juniper-observability/pyproject.toml`, reads the package version, retries the TestPyPI install up to five times to tolerate index lag, then imports `juniper_observability` and prints `juniper_observability.__version__`.
 4. **Publish to PyPI** -- runs only after TestPyPI install verification and publishes the same artifact with `packages-dir: dist/` and `verbose: true`.
 
-Both publish workflows require GitHub Actions environments named `testpypi` and `pypi`, plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file, environment, owner, repository, and project name. See [`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md) for the v0.5.0 runbook covering the expanded extras surface and the TestPyPI extras-resolution verify step; the prior [`RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) walkthrough remains the canonical source for the trusted-publisher prerequisite and pending-publisher gotchas.
+Both publish workflows require GitHub Actions environments named `testpypi` and `pypi`,
+plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file,
+environment, owner, repository, and project name. See
+[`notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md)
+for the v0.5.0 runbook covering the expanded extras surface and the TestPyPI
+extras-resolution verify step; the prior
+[`RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md)
+walkthrough remains the canonical source for the trusted-publisher prerequisite and
+pending-publisher gotchas.
 
 ---
 
 ## Environment Variables
 
-These variables are used by consumer applications when juniper-ml extras are installed:
+These variables are consumed by installed sub-packages and independently installed sibling
+packages:
 
-| Variable                 | Used By               | Default                 | Description                               |
-|--------------------------|-----------------------|-------------------------|-------------------------------------------|
-| `JUNIPER_DATA_URL`       | juniper-data-client   | `http://localhost:8100` | juniper-data service URL                  |
-| `JUNIPER_DATA_API_KEY`   | juniper-data-client   | *(none)*                | API key for juniper-data authentication   |
-| `CASCOR_SERVICE_URL`     | juniper-cascor-client | `http://localhost:8200` | juniper-cascor service URL                |
-| `JUNIPER_CASCOR_API_KEY` | juniper-cascor-client | *(none)*                | API key for juniper-cascor authentication |
-| `CASCOR_MANAGER_HOST`    | juniper-cascor-worker | `127.0.0.1`             | Worker manager host                       |
-| `CASCOR_MANAGER_PORT`    | juniper-cascor-worker | `50000`                 | Worker manager port                       |
+| Variable                   | Used By               | Default                 | Description                                                               |
+|----------------------------|-----------------------|-------------------------|---------------------------------------------------------------------------|
+| `JUNIPER_DATA_URL`         | juniper-data-client   | `http://localhost:8100` | juniper-data service URL                                                  |
+| `JUNIPER_DATA_API_KEY`     | juniper-data-client   | *(none)*                | API key for juniper-data authentication                                   |
+| `CASCOR_SERVICE_URL`       | juniper-cascor-client | `http://localhost:8200` | juniper-cascor service URL                                                |
+| `JUNIPER_CASCOR_API_KEY`   | juniper-cascor-client | *(none)*                | API key for juniper-cascor authentication                                 |
+| `CASCOR_MANAGER_HOST`      | juniper-cascor-worker | `127.0.0.1`             | Worker manager host                                                       |
+| `CASCOR_MANAGER_PORT`      | juniper-cascor-worker | `50000`                 | Worker manager port                                                       |
+| `JUNIPER_CASCOR_LOG_DIR`   | juniper-cascor-core   | source-relative `logs/` | Writable directory for candidate-core file logs                           |
+| `JUNIPER_CASCOR_LOG_LEVEL` | juniper-cascor-core   | `INFO`                  | Preferred log-level override for candidate-core logging                    |
+| `CASCOR_LOG_LEVEL`         | juniper-cascor-core   | `INFO`                  | Legacy log-level alias; ignored when `JUNIPER_CASCOR_LOG_LEVEL` is set    |
 
 > These are not set by juniper-ml itself — they are consumed by the installed sub-packages.
 > `CASCOR_SERVICE_URL` defaults to the cascor service/container port (`8200`). The host-level stack and `util/get_cascor_*.bash` helpers target the host-facing port (`8201`) unless overridden.
