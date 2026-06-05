@@ -151,6 +151,19 @@ class WorkflowScriptPathsTest(unittest.TestCase):
             report = "\n".join(f"  {wf.relative_to(self.repo_root)}: references missing path '{p}'" for wf, p in missing)
             self.fail("CI workflow(s) reference script paths that do not exist:\n" + report + "\n\nThis is the failure class that broke 3 juniper-X CIs on " "2026-05-18 (script rename without workflow update).\n" "Either restore the missing path or update the workflow.")
 
+    def test_cascor_core_testpypi_verify_does_not_fall_back_to_pypi(self):
+        workflow = self.workflows_dir / "publish-cascor-core.yml"
+        if not workflow.exists():
+            self.skipTest("publish-cascor-core.yml not present in this checkout")
+
+        workflow_text = workflow.read_text(encoding="utf-8")
+        self.assertNotIn(
+            "--extra-index-url https://pypi.org/simple/",
+            workflow_text,
+            "TestPyPI verification installs juniper-cascor-core with --no-deps; "
+            "falling back to production PyPI can execute a squatted package during a trusted-publishing workflow.",
+        )
+
 
 class WorkflowScriptPathExtractionTest(unittest.TestCase):
     """Direct unit tests for the parsing helpers."""
