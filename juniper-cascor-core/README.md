@@ -144,7 +144,7 @@ The test skips in isolated checkouts where `juniper-cascor/src` is unavailable.
 
 ## Release workflow
 
-`juniper-cascor-core` is configured to publish independently from the `juniper-ml` meta-package:
+`juniper-cascor-core` publishes independently from the `juniper-ml` meta-package:
 
 | Item | Value |
 |------|-------|

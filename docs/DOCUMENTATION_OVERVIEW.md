@@ -90,7 +90,7 @@
 
 `juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual servers, client libraries, worker, and shared tooling packages.
 
-This repository also houses independently versioned sibling packages such as `juniper-observability`, `juniper-doc-tools`, `juniper-ci-tools`, `juniper-config-tools`, and the prepared `juniper-cascor-core` distribution. Tooling packages are aggregated under `[tools]` and `[all]` where appropriate; `juniper-cascor-core` is prepared as the direct dependency for the distributed worker adoption wave rather than a `juniper-ml` extra, and should use source-checkout installs until its first trusted PyPI release is available.
+This repository also houses independently published sibling packages such as `juniper-observability`, `juniper-doc-tools`, `juniper-ci-tools`, `juniper-config-tools`, and `juniper-cascor-core`. Tooling packages are aggregated under `[tools]` and `[all]` where appropriate; `juniper-cascor-core` is prepared as the direct dependency for the distributed worker adoption wave rather than a `juniper-ml` extra.
 
 ### What It Installs
 
@@ -102,7 +102,7 @@ juniper-ml[tools]   ──installs──> juniper-ci-tools, juniper-doc-tools, j
 juniper-ml[all]     ──installs──> all packages from clients + worker + servers + tools
 juniper-observability ─direct install also supported──> shared observability primitives
 juniper-doc-tools     ─direct install also supported──> markdown link validator
-juniper-cascor-core   ─source install until first release──> shared CasCor candidate-training core
+juniper-cascor-core   ─direct install for worker adoption──> shared CasCor candidate-training core
 ```
 
 ### Compatibility
