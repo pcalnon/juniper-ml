@@ -87,7 +87,8 @@ class ActivationWithDerivative:
         self.activation_fn = self._normalize_activation_fn(activation_fn)
         self._activation_name = self._get_activation_name(activation_fn)
 
-    def _normalize_activation_fn(self, activation_fn):
+    @staticmethod
+    def _normalize_activation_fn(activation_fn):
         """Accept the worker's legacy (activation, derivative) tuple without keeping lambdas."""
         if isinstance(activation_fn, tuple):
             if not activation_fn or not callable(activation_fn[0]):
