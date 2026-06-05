@@ -71,3 +71,30 @@ def test_candidate_unit_round_trips_through_pickle_and_preserves_forward_output(
 
     assert restored.logger is not None
     assert torch.allclose(restored.forward(x), expected)
+
+
+@requires_torch
+def test_correlation_rejects_ambiguous_one_dimensional_output_against_multi_output_error():
+    """Correlation validation should fail cleanly before tensor math sees incompatible shapes."""
+    from candidate_unit.candidate_unit import CandidateUnit
+
+    candidate = CandidateUnit(
+        CandidateUnit__activation_function=torch.nn.Tanh(),
+        CandidateUnit__input_size=2,
+        CandidateUnit__output_size=1,
+        CandidateUnit__display_frequency=0,
+        CandidateUnit__status_frequency=0,
+        CandidateUnit__random_seed=11,
+        CandidateUnit__sequence_max_value=2,
+        CandidateUnit__random_value_scale=0.01,
+        CandidateUnit__log_level_name="CRITICAL",
+    )
+
+    output = torch.tensor([0.2, 0.4, 0.6], dtype=torch.float32)
+    residual_error = torch.tensor(
+        [[1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
+        dtype=torch.float32,
+    )
+
+    with pytest.raises(ValueError, match="same number of features"):
+        candidate._calculate_correlation(output=output, residual_error=residual_error)

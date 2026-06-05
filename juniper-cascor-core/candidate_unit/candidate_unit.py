@@ -1109,7 +1109,7 @@ class CandidateUnit:
         dimensions = residual_error.dim() if hasattr(residual_error, "dim") else len(residual_error.shape)
         index = dimensions - 1 if dimensions > 1 else 0
         self.logger.debug(f"CandidateUnit: _validate_correlation_params: Checking if output and residual error have the same number of features at Index {index}, Dimensions: {dimensions}")
-        if output.shape[index] != residual_error.shape[index] and dimensions > 1:
+        if dimensions > 1 and (len(output.shape) <= index or output.shape[index] != residual_error.shape[index]):
             raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must have the same number of features if residual_error has more than one dimension.")
 
         # If all validations pass, log success
