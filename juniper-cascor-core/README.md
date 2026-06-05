@@ -24,7 +24,9 @@ no FastAPI, no `cascade_correlation`, no `api`):
 - `candidate_unit/` — `CandidateUnit` (the trainable candidate node).
 - `utils/` — `utils` helpers + `activation` (the full `ActivationWithDerivative.ACTIVATION_MAP`).
 - `log_config/` — the shared logger (made deployment-agnostic, see below).
-- `cascor_constants/` — candidate-relevant constants.
+- `cascor_constants/` — the copied constants tree (`constants_candidates`,
+  `constants_model`, `constants_problem`, `constants_api`, `constants_hdf5`,
+  logging, activation, and aggregate re-exports).
 
 Per the migration plan these ship under the **same top-level package names** cascor uses,
 so the canonical imports resolve verbatim.

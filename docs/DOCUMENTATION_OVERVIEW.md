@@ -26,6 +26,7 @@
 |-----------------------------------------|--------------------------------------------------------------------------|------------------------|
 | **Install Juniper packages**            | [QUICK_START.md](QUICK_START.md)                                         | docs/                  |
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                             | docs/                  |
+| **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                | docs/                  |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
 | **Use the shared CasCor candidate core** | [juniper-cascor-core README](../juniper-cascor-core/README.md)          | juniper-cascor-core/   |
