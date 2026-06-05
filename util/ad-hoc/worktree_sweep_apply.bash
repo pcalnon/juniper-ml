@@ -40,6 +40,13 @@ declare -A REPO_OF=(
     [juniper-cascor-client]="${JUNIPER_BASE}/juniper-cascor-client"
 )
 
+trim_field() {
+    local value="${1:-}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    printf '%s' "$value"
+}
+
 remove_worktree() {
     local wt="$1" branch="$2" repo_key="$3"
     local repo="${REPO_OF[$repo_key]}"
@@ -65,8 +72,13 @@ remove_worktree() {
 # on SAFE rows so DIRTY / ACTIVE / BROKEN worktrees cannot be removed by
 # accidentally piping the full survey output.
 #
-# Input format (tab-separated): STATUS<TAB>REPO_KEY<TAB>BRANCH<TAB>WORKTREE_NAME
-while IFS=$'\t' read -r status repo_key branch wt_name; do
+# Input format (tab-separated): STATUS<TAB>REPO_KEY<TAB>BEHIND<TAB>BRANCH<TAB>WORKTREE_NAME
+while IFS=$'\t' read -r status repo_key _behind branch wt_name _extra; do
+    status=$(trim_field "$status")
+    repo_key=$(trim_field "$repo_key")
+    branch=$(trim_field "$branch")
+    wt_name=$(trim_field "$wt_name")
+
     [[ -z "${status:-}" ]] && continue
     [[ "$status" =~ ^# ]] && continue   # comment / header
     if [[ "$status" != "SAFE" ]]; then
