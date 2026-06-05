@@ -77,7 +77,7 @@ pip install juniper-ml[all]       # Everything
 | **juniper-ci-tools**      | Dependency-documentation generator (`juniper-generate-dep-docs`) used by every Juniper repo's CI |
 | **juniper-doc-tools**     | Markdown link validator (`juniper-check-doc-links`) for intra- and cross-repo docs |
 | **juniper-observability** | Shared Prometheus collector helpers, structured-JSON logging, Starlette middleware |
-| **juniper-cascor-core**   | Direct-install candidate-training core extracted from `juniper-cascor/src`; not currently aggregated by `juniper-ml` extras |
+| **juniper-cascor-core**   | Source-install candidate-training core extracted from `juniper-cascor/src`; configured for independent release and not currently aggregated by `juniper-ml` extras |
 
 ---
 
@@ -123,19 +123,19 @@ The split-default is intentional, not an oversight: `juniper-data` is a higher-r
 
 ### juniper-cascor-core
 
-`juniper-cascor-core` lives under `juniper-cascor-core/` in this repository and publishes independently from the `juniper-ml` meta-package. It is the CW-05 candidate-core extraction: the importable model code a distributed CasCor worker needs for candidate execution, decoupled from the `juniper-cascor` server/training stack.
+`juniper-cascor-core` lives under `juniper-cascor-core/` in this repository and is configured to publish independently from the `juniper-ml` meta-package. It is the CW-05 candidate-core extraction: the importable model code a distributed CasCor worker needs for candidate execution, decoupled from the `juniper-cascor` server/training stack.
 
-It is **not** included in `[worker]`, `[tools]`, or `[all]` yet. Install it directly until `juniper-cascor-worker` adopts it as a dependency:
+It is **not** included in `[worker]`, `[tools]`, or `[all]` yet. Install it from source until a `juniper-cascor-core-v*` release tag publishes the package and `juniper-cascor-worker` adopts it as a dependency:
 
 ```bash
-pip install juniper-cascor-core
-pip install "juniper-cascor-core[full]"  # optional dill + columnar helpers
+pip install -e juniper-cascor-core
+pip install -e "juniper-cascor-core[full]"  # optional dill + columnar helpers
 ```
 
 | Field                 | Value                                                                  |
 |-----------------------|------------------------------------------------------------------------|
 | **PyPI Name**         | `juniper-cascor-core`                                                  |
-| **Current Version**   | `0.1.0`                                                                |
+| **Package Version**   | `0.1.0`                                                                |
 | **Python**            | `>=3.11`                                                               |
 | **Version Module**    | `juniper_cascor_core`                                                  |
 | **Runtime Packages**  | `candidate_unit`, `utils`, `log_config`, `cascor_constants`            |
@@ -238,7 +238,7 @@ Sibling package release flow:
 3. **Verify TestPyPI Install** -- sparse-checks out the package `pyproject.toml`, reads the package version, retries the TestPyPI install up to five times to tolerate index lag, then imports the package's version module.
 4. **Publish to PyPI** -- runs only after TestPyPI install verification and publishes the same artifact with `packages-dir: dist/` and `verbose: true`.
 
-`publish-cascor-core.yml` verifies the TestPyPI install with `--no-deps` and imports only `juniper_cascor_core`. That is intentional: version-only import is torch-free, while the full `CandidateUnit` runtime path is covered by `juniper-cascor-core/tests/test_smoke.py` in the build stage.
+`publish-cascor-core.yml` verifies the TestPyPI install with `--no-deps` and imports only `juniper_cascor_core`. That is intentional: version-only import is torch-free. Before cutting a `juniper-cascor-core-v*` tag, run `python3 -m pytest -q juniper-cascor-core/tests/test_smoke.py` so the full `CandidateUnit` runtime path is checked separately from the no-deps publish verification.
 
 These publish workflows require GitHub Actions environments named `testpypi` and `pypi`, plus matching trusted-publisher entries on TestPyPI and PyPI for the workflow file, environment, owner, repository, and project name.
 
@@ -251,7 +251,7 @@ Release runbooks:
 
 ## Environment Variables
 
-These variables are used by consumer applications when juniper-ml extras are installed:
+These variables are consumed by Juniper packages documented in this repository. `juniper-ml` itself does not set them; some belong to extras-installed packages, and `juniper-cascor-core` entries apply when that sibling package is installed from source or from a future release.
 
 | Variable                 | Used By               | Default                 | Description                               |
 |--------------------------|-----------------------|-------------------------|-------------------------------------------|

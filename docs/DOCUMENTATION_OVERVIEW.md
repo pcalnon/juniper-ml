@@ -71,7 +71,7 @@
 
 | File               | Type             | Purpose                                                                                              |
 |--------------------|------------------|------------------------------------------------------------------------------------------------------|
-| **README.md**      | Package guide    | Candidate-worker runtime contract, direct install, logging constraints, and CasCor drift relationship |
+| **README.md**      | Package guide    | Candidate-worker runtime contract, source install, logging constraints, and CasCor drift relationship |
 | **CHANGELOG.md**   | Package history  | Version history for `juniper-cascor-core` releases                                                   |
 | **pyproject.toml** | Package metadata | Dependencies, optional `[full]` helpers, package version, and top-level package export list           |
 
@@ -88,9 +88,9 @@
 
 `juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual servers, client libraries, worker, and shared tooling packages.
 
-This repository also houses the independent `juniper-observability`, `juniper-doc-tools`, and `juniper-cascor-core` subpackages, which are published from this repo under their own version tags. Since `juniper-ml` 0.5.0 `juniper-observability` and `juniper-doc-tools` are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
+This repository also houses the independent `juniper-observability`, `juniper-doc-tools`, and `juniper-cascor-core` subpackages, which use their own version tags and publish workflows. Since `juniper-ml` 0.5.0 `juniper-observability` and `juniper-doc-tools` are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
 
-`juniper-cascor-core` is direct-install only in the current release because it exists to support the pending worker adoption wave, not to expand the meta-package extras surface.
+`juniper-cascor-core` is source-install only until its first `juniper-cascor-core-v*` release tag. It exists to support the pending worker adoption wave, not to expand the meta-package extras surface.
 
 ### What It Installs
 
@@ -102,7 +102,7 @@ juniper-ml[tools]   ──installs──> juniper-ci-tools, juniper-doc-tools, j
 juniper-ml[all]     ──installs──> all packages from clients + worker + servers + tools
 juniper-observability ─direct install also supported──> shared observability primitives
 juniper-doc-tools     ─direct install also supported──> markdown link validator
-juniper-cascor-core   ─direct install only──> CandidateUnit + worker-side CasCor candidate core
+juniper-cascor-core   ─source install until first release──> CandidateUnit + worker-side CasCor candidate core
 ```
 
 ### Compatibility

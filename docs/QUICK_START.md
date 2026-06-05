@@ -74,12 +74,14 @@ See [`../juniper-observability/README.md`](../juniper-observability/README.md) f
 
 ### Shared CasCor Candidate Core
 
-`juniper-cascor-core` is published from this repository but is **not** part of any `juniper-ml` extra yet. Install it directly when you need the extracted CasCor candidate-training modules without the full `juniper-cascor` server tree:
+`juniper-cascor-core` is configured for independent publication from this repository but is **not** part of any `juniper-ml` extra yet. In a source checkout, install it directly when you need the extracted CasCor candidate-training modules without the full `juniper-cascor` server tree:
 
 ```bash
-pip install juniper-cascor-core
-pip install "juniper-cascor-core[full]"  # optional dill + columnar debug helpers
+pip install -e juniper-cascor-core
+pip install -e "juniper-cascor-core[full]"  # optional dill + columnar debug helpers
 ```
+
+After a `juniper-cascor-core-v*` release tag publishes the package, use `pip install juniper-cascor-core` from PyPI instead.
 
 The package exposes two surfaces:
 
@@ -122,7 +124,7 @@ from juniper_cascor_worker import CandidateTrainingWorker
 
 ```python
 # Version-only check for the candidate-core sibling package.
-# Install directly first: pip install juniper-cascor-core
+# Install from source first: pip install -e juniper-cascor-core
 import juniper_cascor_core
 
 print(juniper_cascor_core.__version__)

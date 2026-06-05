@@ -15,7 +15,7 @@ Juniper is an AI/ML research platform for investigating dynamic neural network a
 
 ## Juniper ML
 
-`juniper-ml` is the **public face of the Juniper platform on PyPI**. It is the meta-distribution that aggregates the platform's services (`juniper-canopy`, `juniper-cascor`, `juniper-data`), client libraries (`juniper-data-client`, `juniper-cascor-client`), distributed worker (`juniper-cascor-worker`), and shared tooling (`juniper-ci-tools`, `juniper-doc-tools`, `juniper-observability`) behind a single installation entry point. The package additionally serves as the version-anchor for cross-component compatibility, the home of the platform-level documentation index, and the host repository from which the independently-tagged `juniper-observability`, `juniper-doc-tools`, and `juniper-cascor-core` packages are published. External callers who want to interact with Juniper services from their own Python code should start here.
+`juniper-ml` is the **public face of the Juniper platform on PyPI**. It is the meta-distribution that aggregates the platform's services (`juniper-canopy`, `juniper-cascor`, `juniper-data`), client libraries (`juniper-data-client`, `juniper-cascor-client`), distributed worker (`juniper-cascor-worker`), and shared tooling (`juniper-ci-tools`, `juniper-doc-tools`, `juniper-observability`) behind a single installation entry point. The package additionally serves as the version-anchor for cross-component compatibility, the home of the platform-level documentation index, and the host repository for independently-tagged sibling packages such as `juniper-observability`, `juniper-doc-tools`, and the new `juniper-cascor-core` package scaffold. External callers who want to interact with Juniper services from their own Python code should start here.
 
 ## Distribution
 
@@ -25,7 +25,7 @@ Juniper is an AI/ML research platform for investigating dynamic neural network a
 pip install juniper-ml[all]
 ```
 
-Individual components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-ci-tools`, `juniper-doc-tools`, `juniper-observability`, and `juniper-cascor-core` — remain installable in isolation for callers that require finer control over their dependency surface. `juniper-cascor-core` is intentionally direct-install only in this release; it is the candidate-training core extracted for the worker adoption wave, not a new `juniper-ml` extra member yet.
+Published components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-ci-tools`, `juniper-doc-tools`, and `juniper-observability` — remain installable in isolation for callers that require finer control over their dependency surface. `juniper-cascor-core` is the candidate-training core extracted for the worker adoption wave; it has its own source package and publish workflow, but is not a `juniper-ml` extra member yet.
 
 ## Ecosystem Compatibility
 
@@ -61,8 +61,8 @@ juniper-deploy ──orchestrates──> juniper-data, juniper-cascor, juniper-c
 juniper-ml ──meta-package──> juniper-canopy, juniper-cascor, juniper-data,
                               juniper-data-client, juniper-cascor-client, juniper-cascor-worker,
                               juniper-ci-tools, juniper-doc-tools, juniper-observability
-juniper-ml ──hosts (independently published)──> juniper-observability, juniper-doc-tools,
-                                                 juniper-cascor-core
+juniper-ml ──hosts independent package workflows──> juniper-observability, juniper-doc-tools,
+                                                     juniper-cascor-core
 juniper-cascor-core ──extracts──> candidate_unit, utils, log_config, cascor_constants
                                   from juniper-cascor/src for worker-side candidate execution
 ```
@@ -80,7 +80,7 @@ juniper-cascor-core ──extracts──> candidate_unit, utils, log_config, cas
 | [juniper-ci-tools](https://github.com/pcalnon/juniper-ml/tree/main/juniper-ci-tools) | Aggregated under `[tools]` and `[all]`; published from this repository | `pip install juniper-ci-tools` |
 | [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]`, `[tools]`, and `[all]`; published from this repository | `pip install juniper-doc-tools` |
 | [juniper-observability](juniper-observability/README.md) | Aggregated under `[tools]` and `[all]`; published independently from this repository | `pip install "juniper-observability[all]"` |
-| [juniper-cascor-core](juniper-cascor-core/README.md) | Direct-install candidate-training core extracted from `juniper-cascor/src`; intended for worker adoption | `pip install juniper-cascor-core` |
+| [juniper-cascor-core](juniper-cascor-core/README.md) | Source-install candidate-training core extracted from `juniper-cascor/src`; intended for worker adoption and independent PyPI release | `pip install -e juniper-cascor-core` |
 
 ### Extras
 
