@@ -26,18 +26,18 @@ set -euo pipefail
 DRY_RUN=0
 if [[ "${1-}" == "--dry-run" ]]; then DRY_RUN=1; fi
 
-WORKTREES_ROOT="${JUNIPER_WORKTREE_SWEEP_ROOT:-/home/pcalnon/Development/python/Juniper/worktrees}"
-JUNIPER_SWEEP_PROJECT_DIR="${JUNIPER_SWEEP_PROJECT_DIR:-/home/pcalnon/Development/python/Juniper}"
+JUNIPER_BASE="${JUNIPER_WORKTREE_SWEEP_REPO_BASE:-/home/pcalnon/Development/python/Juniper}"
+WORKTREES_ROOT="${JUNIPER_WORKTREE_SWEEP_ROOT:-${JUNIPER_BASE}/worktrees}"
 
 declare -A REPO_OF=(
-    [juniper-ml]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-ml"
-    [juniper-canopy]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-canopy"
-    [juniper-cascor]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-cascor"
-    [juniper-data]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-data"
-    [juniper-deploy]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-deploy"
-    [juniper-cascor-worker]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-cascor-worker"
-    [juniper-data-client]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-data-client"
-    [juniper-cascor-client]="${JUNIPER_SWEEP_PROJECT_DIR}/juniper-cascor-client"
+    [juniper-ml]="${JUNIPER_BASE}/juniper-ml"
+    [juniper-canopy]="${JUNIPER_BASE}/juniper-canopy"
+    [juniper-cascor]="${JUNIPER_BASE}/juniper-cascor"
+    [juniper-data]="${JUNIPER_BASE}/juniper-data"
+    [juniper-deploy]="${JUNIPER_BASE}/juniper-deploy"
+    [juniper-cascor-worker]="${JUNIPER_BASE}/juniper-cascor-worker"
+    [juniper-data-client]="${JUNIPER_BASE}/juniper-data-client"
+    [juniper-cascor-client]="${JUNIPER_BASE}/juniper-cascor-client"
 )
 
 trim_field() {
@@ -68,9 +68,9 @@ remove_worktree() {
     popd >/dev/null
 }
 
-# Iterate the survey output. Survey is pre-fetched; this script just acts
-# on SAFE rows + ACTIVE-but-PR-merged rows (passed in via stdin so we
-# don't duplicate the pre-condition logic).
+# Iterate the survey output. Survey is pre-fetched; this script acts only
+# on SAFE rows so DIRTY / ACTIVE / BROKEN worktrees cannot be removed by
+# accidentally piping the full survey output.
 #
 # Input format (tab-separated): STATUS<TAB>REPO_KEY<TAB>BEHIND<TAB>BRANCH<TAB>WORKTREE_NAME
 while IFS=$'\t' read -r status repo_key _behind branch wt_name _extra; do
@@ -80,15 +80,9 @@ while IFS=$'\t' read -r status repo_key _behind branch wt_name _extra; do
     wt_name=$(trim_field "$wt_name")
 
     [[ -z "${status:-}" ]] && continue
-    [[ "$status" =~ ^# ]] && continue   # comment
-    [[ "$status" == "STATUS" ]] && continue
-    [[ "$status" =~ ^-+$ ]] && continue
+    [[ "$status" =~ ^# ]] && continue   # comment / header
     if [[ "$status" != "SAFE" ]]; then
-        echo "skipped (${status}): ${wt_name:-?}"
-        continue
-    fi
-    if [[ -z "$repo_key" || -z "$branch" || -z "$wt_name" ]]; then
-        echo "skipped (malformed SAFE row): ${status} ${repo_key} ${branch} ${wt_name}"
+        echo "skipped (status $status not safe): $wt_name"
         continue
     fi
     if [[ -z "${REPO_OF[$repo_key]+x}" ]]; then
@@ -98,6 +92,28 @@ while IFS=$'\t' read -r status repo_key _behind branch wt_name _extra; do
     wt="$WORKTREES_ROOT/$wt_name"
     if [[ ! -d "$wt" ]]; then
         echo "skipped (missing dir): $wt_name"
+        continue
+    fi
+    if ! git -C "$wt" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo "skipped (not a git worktree): $wt_name"
+        continue
+    fi
+    current_branch=$(git -C "$wt" symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+    if [[ -z "$current_branch" ]]; then
+        echo "skipped (not on a branch): $wt_name"
+        continue
+    fi
+    if [[ "$current_branch" != "$branch" ]]; then
+        echo "skipped (branch mismatch: row=$branch current=$current_branch): $wt_name"
+        continue
+    fi
+    if [[ -n "$(git -C "$wt" status --porcelain --ignored 2>/dev/null)" ]]; then
+        echo "skipped (no longer safe; dirty): $wt_name"
+        continue
+    fi
+    ahead=$(git -C "$wt" rev-list --count "origin/main..HEAD" 2>/dev/null || echo "?")
+    if [[ "$ahead" != "0" ]]; then
+        echo "skipped (no longer safe; ahead=$ahead): $wt_name"
         continue
     fi
     remove_worktree "$wt" "$branch" "$repo_key"
