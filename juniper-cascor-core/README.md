@@ -64,32 +64,64 @@ from utils.activation import ActivationWithDerivative
 assert "Tanh" in ActivationWithDerivative.ACTIVATION_MAP   # 33 activations, both casings
 ```
 
-Minimal candidate construction mirrors the legacy cascor constructor names:
+## Worker serialization contract
+
+`juniper-cascor-worker` receives candidate-training work through multiprocessing /
+remote-worker serialization boundaries, so the core package must preserve more than
+plain importability:
+
+- `ActivationWithDerivative` serializes by activation name and must round-trip both
+  lowercase functional activations and TitleCase `torch.nn` modules such as
+  `Softmax`, `Tanh`, and `ReLU`.
+- `CandidateUnit` must remain pickleable after removing transient logger / display
+  callbacks in `__getstate__`; `__setstate__` recreates the logger so the restored
+  object can still run `forward()`.
+- `save_dataset()` and `load_dataset()` are a paired `torch.save` /
+  `torch.load(weights_only=True)` checkpoint contract for `{"x": x, "y": y}` tensor
+  payloads.
+- `import juniper_cascor_core` is intentionally version-only and torch-free; import the
+  worker-facing modules (`candidate_unit`, `utils`, `log_config`, `cascor_constants`)
+  when running candidate code.
+
+Concrete smoke path:
 
 ```python
+import pickle
+
 import torch
 
 from candidate_unit.candidate_unit import CandidateUnit
+from utils.activation import ActivationWithDerivative
 
+activation = pickle.loads(pickle.dumps(ActivationWithDerivative(torch.nn.Tanh())))
 candidate = CandidateUnit(
+    CandidateUnit__activation_function=torch.nn.Tanh(),
     CandidateUnit__input_size=2,
     CandidateUnit__output_size=1,
-    CandidateUnit__activation_function=torch.tanh,
-    CandidateUnit__candidate_index=0,
+    CandidateUnit__display_frequency=0,
+    CandidateUnit__status_frequency=0,
+    CandidateUnit__log_level_name="CRITICAL",
 )
 
-x = torch.randn(4, 2)
-residual_error = torch.randn(4, 1)
-
-correlation = candidate.train(x=x, residual_error=residual_error, epochs=1)
-result = candidate.train_detailed(x=x, residual_error=residual_error, epochs=1)
-
-assert isinstance(correlation, float)
-assert result.success is True
+restored = pickle.loads(pickle.dumps(candidate))
+assert restored.logger is not None
+assert torch.is_tensor(restored.forward(torch.ones((1, 2))))
+assert torch.is_tensor(activation(torch.ones(2)))
 ```
 
-`train()` preserves the historical float-returning contract. Use `train_detailed()` when a
-worker needs the full `CandidateTrainingResult` payload.
+## Development checks
+
+Install the package with test dependencies, then run its pytest suite from the repo root:
+
+```bash
+pip install -e "juniper-cascor-core[test]"
+python -m pytest -q juniper-cascor-core/tests
+```
+
+The root CI workflow also runs these tests in the `juniper-cascor-core Tests` job.
+The package publish workflow repeats the same suite before building distributions, then
+verifies the TestPyPI artifact with `--no-deps` plus the version-only
+`import juniper_cascor_core` check.
 
 ## Deployment-agnostic logging
 
