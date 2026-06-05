@@ -2,7 +2,7 @@
 
 **Purpose**: Standardized procedure for completing work in a worktree, merging, creating PRs, and transitioning to a new worktree — without trapping the Claude Code session in an invalid CWD
 **Project**: juniper-ml
-**Last Updated**: 2026-03-11
+**Last Updated**: 2026-06-04
 
 ---
 
@@ -302,6 +302,40 @@ gh pr list --head "$OLD_BRANCH" --state open
 ### Multiple Worktrees Needing Cleanup
 
 Run `util/worktree_cleanup.bash` for each, or use `util/cleanup_open_worktrees.bash` for batch operations.
+
+### Batch Stale-Worktree Sweep
+
+Use the ad-hoc sweep pair only when cleaning the centralized Juniper worktree pool at `/home/pcalnon/Development/python/Juniper/worktrees/`. The scripts are intentionally conservative:
+
+- `util/ad-hoc/worktree_sweep_survey.bash` prints a tab-separated report: `STATUS`, `REPO`, `BRANCH`, `WORKTREE`.
+- `util/ad-hoc/worktree_sweep_apply.bash` reads that report from stdin and acts only on `SAFE` rows.
+- `DIRTY`, `ACTIVE`, `BROKEN`, unknown-repo, missing-directory, non-worktree, and no-longer-safe rows are skipped.
+- Apply revalidates every `SAFE` row immediately before removal: the target directory must still be a git worktree, have a clean working tree, and have `rev-list --count origin/main..HEAD == 0`.
+
+Recommended operator flow:
+
+```bash
+bash util/ad-hoc/worktree_sweep_survey.bash > /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash --dry-run < /tmp/juniper-worktree-sweep.tsv
+bash util/ad-hoc/worktree_sweep_apply.bash < /tmp/juniper-worktree-sweep.tsv
+```
+
+Status meanings:
+
+| Status | Meaning | Action |
+|--------|---------|--------|
+| `SAFE` | Clean worktree whose `HEAD` has no commits beyond the parent repo's `origin/main`. | Eligible for `worktree remove`, local branch deletion, and final `worktree prune`. |
+| `ACTIVE` | Clean worktree with commits not in `origin/main`. | Leave for manual ownership/PR triage. |
+| `DIRTY` | Worktree has uncommitted changes. | Never remove in the sweep. |
+| `BROKEN` | The script could not resolve repo, branch, `HEAD`, or `origin/main` state. | Manual git triage required. |
+
+For tests or unusual local layouts, set both overrides so the scripts do not assume the default Juniper checkout paths:
+
+```bash
+JUNIPER_WORKTREE_SWEEP_REPO_BASE=/path/to/repos \
+JUNIPER_WORKTREE_SWEEP_ROOT=/path/to/worktrees \
+bash util/ad-hoc/worktree_sweep_survey.bash
+```
 
 ### Worktree Removal Fails
 
