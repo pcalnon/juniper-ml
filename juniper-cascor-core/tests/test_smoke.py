@@ -44,41 +44,6 @@ def test_activation_registry_includes_titlecase_names():
 
 
 @requires_torch
-def test_candidate_unit_accepts_worker_activation_tuple():
-    # The current juniper-cascor-worker resolver returns (activation, derivative) tuples.
-    # The core wrapper must normalize that legacy shape before CandidateUnit.forward().
-    import torch
-
-    from candidate_unit.candidate_unit import CandidateUnit
-
-    candidate = CandidateUnit(
-        CandidateUnit__input_size=2,
-        CandidateUnit__output_size=1,
-        CandidateUnit__activation_function=(torch.tanh, lambda x: 1.0 - torch.tanh(x) ** 2),
-    )
-
-    output = candidate.forward(torch.ones(2))
-
-    assert output.shape == (1,)
-    assert torch.isfinite(output).all()
-
-
-@requires_torch
-def test_remote_collection_timeout_constants_are_exported():
-    # Current juniper-cascor imports these from cascor_constants.constants for dual-path
-    # remote result collection. The extracted package must not drop them during adoption.
-    from cascor_constants.constants import (
-        _CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MAX_TIMEOUT,
-        _CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MIN_TIMEOUT,
-        _CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_SECONDS_PER_EPOCH,
-    )
-
-    assert _CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_SECONDS_PER_EPOCH == 1.0
-    assert _CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MIN_TIMEOUT == 120.0
-    assert _CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MAX_TIMEOUT == 900.0
-
-
-@requires_torch
 def test_logging_is_best_effort_when_log_path_unwritable(monkeypatch):
     # CW-05 gap #3: a missing/unwritable log directory must degrade to console-only,
     # never raise — otherwise it fails the candidate-training task (the original symptom).

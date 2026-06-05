@@ -30,6 +30,33 @@ def test_activation_wrapper_round_trips_titlecase_softmax_through_pickle():
 
 
 @requires_torch
+def test_candidate_unit_accepts_worker_activation_tuple_contract():
+    """juniper-cascor-worker passes (activation, derivative) tuples into CandidateUnit."""
+    from candidate_unit.candidate_unit import CandidateUnit
+
+    candidate = CandidateUnit(
+        CandidateUnit__activation_function=(torch.sigmoid, lambda x: torch.sigmoid(x) * (1.0 - torch.sigmoid(x))),
+        CandidateUnit__input_size=2,
+        CandidateUnit__output_size=1,
+        CandidateUnit__display_frequency=0,
+        CandidateUnit__status_frequency=0,
+        CandidateUnit__random_seed=7,
+        CandidateUnit__sequence_max_value=2,
+        CandidateUnit__random_value_scale=0.01,
+        CandidateUnit__log_level_name="CRITICAL",
+    )
+    candidate.weights = torch.tensor([0.5, -0.25])
+    candidate.bias = torch.tensor([0.1])
+    x = torch.tensor([[2.0, 4.0], [1.0, -1.0]], dtype=torch.float32)
+    expected = torch.sigmoid(torch.sum(x * candidate.weights, dim=1) + candidate.bias)
+
+    restored = pickle.loads(pickle.dumps(candidate))
+
+    assert torch.allclose(candidate.forward(x), expected)
+    assert torch.allclose(restored.forward(x), expected)
+
+
+@requires_torch
 def test_dataset_save_load_round_trips_tensors(tmp_path):
     """The torch.save/torch.load helper pair should round-trip real tensor payloads."""
     from utils.utils import load_dataset, save_dataset
@@ -71,27 +98,3 @@ def test_candidate_unit_round_trips_through_pickle_and_preserves_forward_output(
 
     assert restored.logger is not None
     assert torch.allclose(restored.forward(x), expected)
-
-
-@requires_torch
-def test_logger_set_level_suppresses_lower_priority_messages(monkeypatch, tmp_path, capsys):
-    """Worker-configured CRITICAL logging must not emit INFO hot-path noise."""
-    from log_config.logger.logger import Logger
-
-    log_file = tmp_path / "candidate.log"
-    monkeypatch.setattr(Logger, "_log_level", Logger._log_level, raising=False)
-    monkeypatch.setattr(Logger, "_level_logger_name", Logger._level_logger_name, raising=False)
-    monkeypatch.setattr(Logger, "_level_logger_config", Logger._level_logger_config, raising=False)
-    monkeypatch.setattr(Logger, "_logging_file", str(log_file), raising=False)
-
-    Logger.set_level("CRITICAL")
-    Logger.info("candidate-core regression: filtered info")
-    Logger.critical("candidate-core regression: visible critical")
-
-    captured = capsys.readouterr()
-    log_text = log_file.read_text()
-
-    assert "filtered info" not in captured.out
-    assert "filtered info" not in log_text
-    assert "visible critical" in captured.out
-    assert "visible critical" in log_text

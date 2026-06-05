@@ -198,11 +198,10 @@ class CandidateUnit:
         self.logger.verbose(f"CandidateUnit: __init__: Input size: {self.input_size}")
         self.output_size = CandidateUnit__output_size
         self.logger.verbose(f"CandidateUnit: __init__: Output size: {self.output_size}")
-        self.activation_fn_base = CandidateUnit__activation_function
-        self.logger.verbose(f"CandidateUnit: __init__: Base Activation function: {self.activation_fn_base}")
-
         # Cache activation function wrapper to avoid recreating on every forward pass (P2 optimization)
-        self.activation_fn = self._init_activation_with_derivative(self.activation_fn_base)
+        self.activation_fn = self._init_activation_with_derivative(CandidateUnit__activation_function)
+        self.activation_fn_base = self.activation_fn.activation_fn
+        self.logger.verbose(f"CandidateUnit: __init__: Base Activation function: {self.activation_fn_base}")
         self.logger.debug("CandidateUnit: __init__: Cached activation function wrapper")
 
         # Initialize CandidateUnit class attributes for training epochs
