@@ -1073,9 +1073,7 @@ class CandidateUnit:
         self.logger.trace("CandidateUnit: _validate_correlation_params: Starting validation of correlation parameters")
 
         # Check if output and residual error are not None
-        output_shape = getattr(output, "shape", "None" if output is None else "not-a-tensor")
-        residual_error_shape = getattr(residual_error, "shape", "None" if residual_error is None else "not-a-tensor")
-        self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output shape: {output_shape}, Residual error shape: {residual_error_shape}")
+        self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output shape: {output.shape if output is not None else 'None'}, Residual error shape: {residual_error.shape if residual_error is not None else 'None'}")
         self.logger.trace("CandidateUnit: _validate_correlation_params: Validating output and residual error are not None")
         if output is None or residual_error is None:
             raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must not be None.")
@@ -1086,17 +1084,17 @@ class CandidateUnit:
         if not isinstance(output, torch.Tensor) or not isinstance(residual_error, torch.Tensor):
             raise TypeError("CandidateUnit: _validate_correlation_params: Output and residual error must be torch.Tensor types.")
 
-        # Check if output and residual error have compatible dimensions
-        self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output dimensions: {len(output.shape)}, Residual error dimensions: {len(residual_error.shape)}")
-        self.logger.trace("CandidateUnit: _validate_correlation_params: Validating output and residual error dimensions")
-        if len(output.shape) < 1 or len(residual_error.shape) < 1:
-            raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must have at least one dimension.")
-
         # Check if output and residual error have compatible shapes
         self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output shape: {output.shape}, Residual error shape: {residual_error.shape}")
         self.logger.trace("CandidateUnit: _validate_correlation_params: Validating output and residual error shapes")
         if output.shape[0] != residual_error.shape[0]:
             raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must have the same batch size.")
+
+        # Check if output and residual error have compatible dimensions
+        self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output dimensions: {len(output.shape)}, Residual error dimensions: {len(residual_error.shape)}")
+        self.logger.trace("CandidateUnit: _validate_correlation_params: Validating output and residual error dimensions")
+        if len(output.shape) < 1 or len(residual_error.shape) < 1:
+            raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must have at least one dimension.")
 
         # Ensure that output and residual error have compatible dimensions
         self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output shape: {output.shape}, Residual error shape: {residual_error.shape}")
@@ -1111,7 +1109,7 @@ class CandidateUnit:
         dimensions = residual_error.dim() if hasattr(residual_error, "dim") else len(residual_error.shape)
         index = dimensions - 1 if dimensions > 1 else 0
         self.logger.debug(f"CandidateUnit: _validate_correlation_params: Checking if output and residual error have the same number of features at Index {index}, Dimensions: {dimensions}")
-        if dimensions > 1 and (len(output.shape) <= index or output.shape[index] != residual_error.shape[index]):
+        if output.shape[index] != residual_error.shape[index] and dimensions > 1:
             raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must have the same number of features if residual_error has more than one dimension.")
 
         # If all validations pass, log success

@@ -45,7 +45,11 @@ The pyproject pins matching `juniper-ml` 0.6.0:
 | `juniper-doc-tools`     | `>=0.1.0,<0.2.0`  | 0.1.1            |
 | `juniper-observability` | `>=0.2.0`         | 0.2.0            |
 
-For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy). For the non-Docker host-mode stack, use the [Host Orchestration Utilities](docs/REFERENCE.md#host-orchestration-utilities) runbook in this repository.
+`juniper-cascor-core` is published from this repository as a sibling package, but it is not
+part of the `juniper-ml` extras surface yet. CW-05 Wave 1 makes `juniper-cascor-worker`
+depend on it directly.
+
+For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy).
 
 ## Architecture
 
