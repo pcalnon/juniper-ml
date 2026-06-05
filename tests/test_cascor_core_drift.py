@@ -7,9 +7,9 @@ adopts the package (plan Wave 2, deferred). The only correctness risk of that de
 fails if any extracted candidate-core module diverges from its ``juniper-cascor/src``
 counterpart, so divergence is a conscious choice (re-extract, or extend the allowlist).
 
-Two files intentionally diverge -- the deployment-agnostic logging fix (CW-05 gap #3) -- and
-are allowlisted in ``_INTENTIONAL_DIVERGENCE``; they are to be backported to cascor in
-Wave 2.
+Four files intentionally diverge -- the deployment-agnostic logging fix (CW-05 gap #3)
+and the worker activation tuple compatibility fix -- and are allowlisted in
+``_INTENTIONAL_DIVERGENCE``; they are to be backported to cascor in Wave 2.
 
 Skips when the sibling ``juniper-cascor`` repo is not on disk (per-PR / isolated CI),
 mirroring ``test_doc_tools_drift.py``. Set ``JUNIPER_ECOSYSTEM_ROOT`` to point at the
@@ -26,12 +26,14 @@ from pathlib import Path
 # CW-05 plan §3.1 option (i)).
 _EXTRACTED_DIRS = ("candidate_unit", "utils", "log_config", "cascor_constants")
 
-# Files intentionally modified in the package vs cascor src (CW-05 gap #3: env-overridable +
-# best-effort logging). NOT byte-checked; to be backported to cascor in Wave 2.
+# Files intentionally modified in the package vs cascor src. NOT byte-checked; to be
+# backported to cascor in Wave 2.
 _INTENTIONAL_DIVERGENCE = frozenset(
     {
         Path("log_config/logger/logger.py"),
         Path("cascor_constants/constants.py"),
+        Path("candidate_unit/candidate_unit.py"),
+        Path("utils/activation.py"),
     }
 )
 

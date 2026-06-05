@@ -83,8 +83,18 @@ class ActivationWithDerivative:
         Args:
             activation_fn: A PyTorch activation function (e.g., torch.tanh, torch.nn.Tanh())
         """
-        self.activation_fn = activation_fn
-        self._activation_name = self._get_activation_name(activation_fn)
+        self.activation_fn = self._normalize_activation_fn(activation_fn)
+        self._activation_name = self._get_activation_name(self.activation_fn)
+
+    def _normalize_activation_fn(self, activation_fn):
+        """Accept the worker's (activation, derivative) tuple contract."""
+        if isinstance(activation_fn, (tuple, list)):
+            if not activation_fn:
+                raise ValueError("Activation tuple/list must contain an activation callable.")
+            activation_fn = activation_fn[0]
+        if not callable(activation_fn):
+            raise TypeError(f"Activation function must be callable, got {type(activation_fn).__name__}.")
+        return activation_fn
 
     def _get_activation_name(self, activation_fn) -> str:
         """
