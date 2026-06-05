@@ -26,6 +26,7 @@
 |-----------------------------------------|--------------------------------------------------------------------------|------------------------|
 | **Install Juniper packages**            | [QUICK_START.md](QUICK_START.md)                                         | docs/                  |
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                             | docs/                  |
+| **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                | docs/                  |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
 | **Use the shared CasCor candidate core** | [juniper-cascor-core README](../juniper-cascor-core/README.md)          | juniper-cascor-core/   |
@@ -108,7 +109,7 @@ juniper-cascor-core   ─direct install for worker adoption──> shared CasCor
 
 | juniper-ml | juniper-canopy | juniper-cascor | juniper-data | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools | juniper-observability |
 |------------|----------------|----------------|--------------|---------------------|-----------------------|-----------------------|------------------|-------------------|-----------------------|
-| 0.5.x      | >=0.3.0        | >=0.3.17       | >=0.6.0      | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
+| 0.6.x      | >=0.5.0        | >=0.5.0        | >=0.6.0      | >=0.4.1             | >=0.5.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
 
 ---
 
