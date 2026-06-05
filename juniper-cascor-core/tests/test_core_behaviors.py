@@ -98,3 +98,27 @@ def test_correlation_rejects_ambiguous_one_dimensional_output_against_multi_outp
 
     with pytest.raises(ValueError, match="same number of features"):
         candidate._calculate_correlation(output=output, residual_error=residual_error)
+
+
+@requires_torch
+def test_correlation_rejects_scalar_tensors_before_batch_shape_check():
+    """Scalar tensors should be rejected by validation rather than leaking an IndexError."""
+    from candidate_unit.candidate_unit import CandidateUnit
+
+    candidate = CandidateUnit(
+        CandidateUnit__activation_function=torch.nn.Tanh(),
+        CandidateUnit__input_size=1,
+        CandidateUnit__output_size=1,
+        CandidateUnit__display_frequency=0,
+        CandidateUnit__status_frequency=0,
+        CandidateUnit__random_seed=13,
+        CandidateUnit__sequence_max_value=2,
+        CandidateUnit__random_value_scale=0.01,
+        CandidateUnit__log_level_name="CRITICAL",
+    )
+
+    with pytest.raises(ValueError, match="at least one dimension"):
+        candidate._calculate_correlation(
+            output=torch.tensor(0.2, dtype=torch.float32),
+            residual_error=torch.tensor(1.0, dtype=torch.float32),
+        )
