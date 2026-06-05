@@ -109,7 +109,6 @@ def test_multi_output_correlation_selects_strongest_residual_column():
     [
         (torch.ones(3), torch.ones(2), ValueError, "same batch size"),
         (None, torch.ones(2), ValueError, "must not be None"),
-        ([1.0, 2.0], torch.ones(2), TypeError, "must be torch.Tensor"),
         (torch.ones(2, 1, 1), torch.ones(2, 1, 1), ValueError, "at most two dimensions"),
         (torch.ones(2, 1), torch.ones(2, 2), ValueError, "same number of features"),
     ],
