@@ -373,11 +373,17 @@ class Logger(logging.getLoggerClass()):
         level=None,
     ) -> None:
         if cls._is_valid_level_name(level=level):
-            cls._log_level = level.upper() or _LOGGER_LOG_LEVEL_NAME
+            level_name = level.upper()
+            level_number = cls._get_level_number(level_name)
         elif cls._is_valid_level_number(level=level):
-            cls._log_level = cls._get_level_name(level=level) or _LOGGER_LOG_LEVEL_NAME
+            level_number = level
+            level_name = next((name for name, number in cls._level_numbers.items() if number == level_number), _LOGGER_LOG_LEVEL_NAME)
         else:
-            cls._log_level = _LOGGER_LOG_LEVEL_NAME
+            level_name = _LOGGER_LOG_LEVEL_NAME
+            level_number = cls._get_level_number(level_name)
+        cls._log_level = level_name
+        cls._level_logger_name = level_name
+        cls._level_logger_config = level_number
 
     @classmethod
     def get_level(
