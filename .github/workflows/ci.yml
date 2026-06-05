@@ -186,6 +186,38 @@ jobs:
           bash scripts/test_resume_file_safety.bash
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # juniper-cascor-core: Run package-level pytest coverage
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  cascor-core-tests:
+    name: juniper-cascor-core Tests
+    runs-on: ubuntu-latest
+    needs: [pre-commit]
+    defaults:
+      run:
+        working-directory: juniper-cascor-core
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+          cache: pip
+
+      - name: Install juniper-cascor-core test dependencies
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          pip install -e ".[test]"
+
+      - name: Run juniper-cascor-core pytest suite
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - juniper-cascor-core Tests               ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          python3 -m pytest -q
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Build: Build the package and validate with twine
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   build:
@@ -395,7 +427,7 @@ jobs:
     name: Quality Gate
     runs-on: ubuntu-latest
     if: always()
-    needs: [pre-commit, tests, build, docs, security, claude-yaml-audit, dependency-docs]
+    needs: [pre-commit, tests, cascor-core-tests, build, docs, security, claude-yaml-audit, dependency-docs]
     steps:
       - name: Check Quality Gate Status
         run: |
@@ -405,6 +437,7 @@ jobs:
           echo ""
           echo "Pre-commit:           ${{ needs.pre-commit.result }}"
           echo "Tests:                ${{ needs.tests.result }}"
+          echo "cascor-core Tests:    ${{ needs.cascor-core-tests.result }}"
           echo "Build:                ${{ needs.build.result }}"
           echo "Docs:                 ${{ needs.docs.result }}"
           echo "Security:             ${{ needs.security.result }}"
@@ -419,6 +452,11 @@ jobs:
 
           if [[ "${{ needs.tests.result }}" != "success" ]]; then
             echo "::error::Regression tests failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.cascor-core-tests.result }}" != "success" ]]; then
+            echo "::error::juniper-cascor-core tests failed"
             exit 1
           fi
 
