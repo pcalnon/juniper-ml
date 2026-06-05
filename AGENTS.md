@@ -195,7 +195,6 @@ juniper-ml/
     ├── get_cascor_history-plus.bash      # GET /v1/metrics/history?count=100
     ├── get_cascor_network.bash           # GET /v1/network
     ├── get_cascor_topology.bash          # GET /v1/network/topology
-    ├── get_cascor_dkdk.bash              # Cascor query (incomplete)
     ├── kill_all_pythons.bash             # Emergency Python process terminator
     ├── search_file_in_all_repos_and_worktrees.bash   # Cross-repo file search
     └── global_text_replace.bash          # Batch sed find-and-replace

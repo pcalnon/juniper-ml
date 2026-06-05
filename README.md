@@ -45,11 +45,7 @@ The pyproject pins matching `juniper-ml` 0.6.0:
 | `juniper-doc-tools`     | `>=0.1.0,<0.2.0`  | 0.1.1            |
 | `juniper-observability` | `>=0.2.0`         | 0.2.0            |
 
-`juniper-cascor-core` is published from this repository as a sibling package, but it is not
-part of the `juniper-ml` extras surface yet. CW-05 Wave 1 makes `juniper-cascor-worker`
-depend on it directly.
-
-For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy).
+For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy). For the non-Docker host-mode stack, use the [Host Orchestration Utilities](docs/REFERENCE.md#host-orchestration-utilities) runbook in this repository.
 
 ## Architecture
 
@@ -150,7 +146,7 @@ juniper-check-doc-links --version
 ### Next Steps
 
 - [`docs/QUICK_START.md`](docs/QUICK_START.md) — installation and verification guide
-- [`docs/REFERENCE.md`](docs/REFERENCE.md) — extras, compatibility matrix, environment variables, service ports
+- [`docs/REFERENCE.md`](docs/REFERENCE.md) — extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities
 - [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy) — Docker Compose orchestration for the full-stack platform
 
 ## Research Philosophy
@@ -167,7 +163,7 @@ Within this programme, `juniper-ml` is the integration surface: a single install
 |----------|---------|
 | [`docs/DOCUMENTATION_OVERVIEW.md`](docs/DOCUMENTATION_OVERVIEW.md) | Navigation index for all `juniper-ml` documentation |
 | [`docs/QUICK_START.md`](docs/QUICK_START.md) | Installation and verification guide |
-| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports |
+| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities |
 | [`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`](docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | Quick-reference card for development tasks |
 | [`notes/README_NORMALIZATION_PLAN_2026-05-19.md`](notes/README_NORMALIZATION_PLAN_2026-05-19.md) | Ecosystem-wide README normalization plan (this README is its reference implementation) |
 | [`notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md`](notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md) | Source-of-truth for the Research Philosophy text inlined above |
