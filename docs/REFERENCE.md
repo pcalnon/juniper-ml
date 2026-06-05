@@ -180,14 +180,26 @@ Operational constraints:
 
 1. Consumer code should import `CandidateUnit` from `candidate_unit.candidate_unit`, not from `juniper_cascor_core`; this preserves the existing worker/cascor import path during Wave 0/Wave 1.
 2. `import juniper_cascor_core` must stay lightweight and torch-free because the publish workflow verifies TestPyPI installs with `--no-deps`.
-3. Set `JUNIPER_CASCOR_LOG_DIR` in containers that need file logs in a writable location. If file logging cannot initialize, the logger must degrade to console-only instead of failing candidate training.
-4. Until `juniper-cascor` adopts the package in Wave 2, `tests/test_cascor_core_drift.py` guards extracted modules against unintentional drift from `juniper-cascor/src`; `log_config/logger/logger.py` and `cascor_constants/constants.py` are intentionally allowlisted for the logging fix.
+3. `CandidateUnit__random_max_value` and `CandidateUnit__sequence_max_value` must remain integers end-to-end. Remote worker serialization that coerces them to floats breaks the RNG setup path (`random.randint(...)`, `range(...)`).
+4. `CandidateUnit` trains against externally supplied residual error. The worker must pass a tensor with the same batch size as candidate output, and for a candidate pool/round the residual error should stay fixed across candidates.
+5. Set `JUNIPER_CASCOR_LOG_DIR` in containers that need file logs in a writable location. If file logging cannot initialize, the logger must degrade to console-only instead of failing candidate training.
+6. Until `juniper-cascor` adopts the package in Wave 2, `tests/test_cascor_core_drift.py` guards extracted modules against unintentional drift from `juniper-cascor/src`; `log_config/logger/logger.py` and `cascor_constants/constants.py` are intentionally allowlisted for the logging fix.
+
+Environment variables:
+
+| Variable | Effect |
+|----------|--------|
+| `JUNIPER_CASCOR_LOG_DIR` | Writable directory for `juniper_cascor.log`; unset defaults to the package-relative `logs/` path. |
+| `JUNIPER_CASCOR_LOG_LEVEL` | Preferred log-level override. Valid values: `TRACE`, `VERBOSE`, `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, `FATAL`. |
+| `CASCOR_LOG_LEVEL` | Deprecated log-level alias. It is honored only when the prefixed variable is absent; if both differ, `JUNIPER_CASCOR_LOG_LEVEL` wins and emits a `CFG-05` stderr warning. |
+| `JUNIPER_ECOSYSTEM_ROOT` | Optional path to the directory containing sibling repos; enables `tests/test_cascor_core_drift.py` to compare against `juniper-cascor/src`. |
 
 Publish and CI constraints:
 
 1. `juniper-cascor-core/tests/test_smoke.py` covers the worker import path, activation-map casing, version-only import, and resilient logging.
-2. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI.
-3. Before tagging a release, run the package smoke tests and build metadata validation from the subdirectory:
+2. The main `ci.yml` runs `tests/test_cascor_core_drift.py`; the byte-comparison portion skips in isolated checkouts that do not have the sibling `juniper-cascor` repo.
+3. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI.
+4. Before tagging a release, run the package smoke tests and build metadata validation from the subdirectory:
 
 ```bash
 cd juniper-cascor-core

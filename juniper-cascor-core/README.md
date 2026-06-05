@@ -24,7 +24,9 @@ no FastAPI, no `cascade_correlation`, no `api`):
 - `candidate_unit/` — `CandidateUnit` (the trainable candidate node).
 - `utils/` — `utils` helpers + `activation` (the full `ActivationWithDerivative.ACTIVATION_MAP`).
 - `log_config/` — the shared logger (made deployment-agnostic, see below).
-- `cascor_constants/` — candidate-relevant constants.
+- `cascor_constants/` — the copied constants tree (`constants_candidates`,
+  `constants_model`, `constants_problem`, `constants_api`, `constants_hdf5`,
+  logging, activation, and aggregate re-exports).
 
 Per the migration plan these ship under the **same top-level package names** cascor uses,
 so the canonical imports resolve verbatim.
@@ -91,6 +93,47 @@ assert result.success is True
 `train()` preserves the historical float-returning contract. Use `train_detailed()` when a
 worker needs the full `CandidateTrainingResult` payload.
 
+### Candidate training contract
+
+`CandidateUnit` trains against the residual error supplied by `juniper-cascor`; it does not
+compute that error itself. For a candidate pool, pass the same residual-error tensor to every
+candidate in the same round so candidates optimize against a fixed network error.
+
+- `x` must be a `torch.Tensor` with shape `[batch, input_size]`. `forward()` accepts a
+  1-D input and temporarily expands it to `[1, input_size]`.
+- `residual_error` must be a `torch.Tensor` with shape `[batch]` for single-output
+  training or `[batch, output_size]` for multi-output training.
+- The output and residual-error tensors must share the same batch size, must have one or
+  two dimensions, and must agree on feature count when `residual_error` is 2-D. Violations
+  raise `ValueError` or `TypeError`.
+- The objective is absolute Pearson correlation. For multi-output residuals, each output
+  column is evaluated and the best absolute correlation is selected.
+- `train()` returns the final correlation as `float` and stores the detailed result on
+  `last_training_result`. `train_detailed()` returns `CandidateTrainingResult` directly.
+- `train_detailed(progress_callback=...)` invokes the callback every 50 epochs and on the
+  final epoch with `candidate_id`, `candidate_uuid`, `epoch`, `total_epochs`, and
+  `correlation`.
+
+### Worker integration pitfalls
+
+Remote worker dispatch must preserve the constructor types used by cascor:
+
+- `CandidateUnit__random_max_value` and `CandidateUnit__sequence_max_value` are integers.
+  Do not coerce them to floats while serializing JSON or queue payloads; the RNG setup uses
+  `random.randint(...)` and `range(...)`.
+- `CandidateUnit__candidate_index` offsets the random seed (`random_seed + candidate_index`)
+  so candidates in a pool get distinct initial weights.
+- Random sequence rolling is capped at `10000` discarded values to avoid large memory/time
+  spikes; sequences above that cap continue with a warning.
+- `CandidateUnit__uuid` is set once. Calling `set_uuid()` after a UUID already exists logs
+  a fatal error and exits the process.
+- `ActivationWithDerivative` pickles by activation name and restores from
+  `ActivationWithDerivative.ACTIVATION_MAP`; unknown activation names raise `ValueError`
+  while unpickling.
+- `CandidateUnit.__getstate__()` strips the logger and display helpers before
+  multiprocessing / HDF5 serialization. They are recreated or lazily initialized after
+  unpickling.
+
 ## Deployment-agnostic logging
 
 The shared logger writes a log file under a source-relative `logs/` directory by default.
@@ -105,7 +148,12 @@ export JUNIPER_CASCOR_LOG_LEVEL=WARNING
 If the directory is unset or cannot be created, file logging degrades to console-only
 rather than raising; a missing log file must never fail a candidate-training task. Log
 level is controlled by `JUNIPER_CASCOR_LOG_LEVEL`. The legacy `CASCOR_LOG_LEVEL` variable
-is still honored, but the prefixed variable wins when both are set.
+is still honored, but the prefixed variable wins when both are set. Valid log-level names
+are `TRACE`, `VERBOSE`, `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, and `FATAL`.
+
+If `CASCOR_LOG_LEVEL` is set by itself, import-time configuration emits a
+`DeprecationWarning`. If both variables are set to different values, the prefixed variable
+wins and a `CFG-05` warning is printed to stderr so split configuration is visible.
 
 ## Relationship to juniper-cascor
 
@@ -128,6 +176,14 @@ JUNIPER_ECOSYSTEM_ROOT=/path/to/Juniper \
 ```
 
 The test skips in isolated checkouts where `juniper-cascor/src` is unavailable.
+
+Run the package smoke tests from the subdirectory when changing the worker import surface,
+activation registry, or logging behavior:
+
+```bash
+cd juniper-cascor-core
+python -m pytest -q
+```
 
 ## Release workflow
 
