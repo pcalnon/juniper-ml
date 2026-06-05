@@ -89,26 +89,36 @@ def test_multi_output_correlation_selects_strongest_residual_column():
     output = torch.tensor([1.0, 2.0, 3.0, 4.0])
     residual_error = torch.tensor(
         [
-            [2.0, 1.0],
-            [4.0, -1.0],
-            [6.0, 1.0],
-            [8.0, -1.0],
+            [1.0, 2.0],
+            [-1.0, 4.0],
+            [1.0, 6.0],
+            [-1.0, 8.0],
         ],
         dtype=torch.float32,
     )
 
     result = candidate._get_correlations(output=output, residual_error=residual_error)
 
-    assert result.best_corr_idx == 0
+    assert result.best_corr_idx == 1
     assert result.correlation == pytest.approx(1.0)
     assert len(result.all_correlations) == 2
 
 
-def test_validate_correlation_params_rejects_batch_mismatch():
+@pytest.mark.parametrize(
+    ("output", "residual_error", "expected_error", "match"),
+    [
+        (torch.ones(3), torch.ones(2), ValueError, "same batch size"),
+        (None, torch.ones(2), ValueError, "must not be None"),
+        ([1.0, 2.0], torch.ones(2), TypeError, "must be torch.Tensor"),
+        (torch.ones(2, 1, 1), torch.ones(2, 1, 1), ValueError, "at most two dimensions"),
+        (torch.ones(2, 1), torch.ones(2, 2), ValueError, "same number of features"),
+    ],
+)
+def test_validate_correlation_params_rejects_invalid_inputs(output, residual_error, expected_error, match):
     candidate = make_candidate()
 
-    with pytest.raises(ValueError, match="same batch size"):
+    with pytest.raises(expected_error, match=match):
         candidate._validate_correlation_params(
-            output=torch.ones(3),
-            residual_error=torch.ones(2),
+            output=output,
+            residual_error=residual_error,
         )
