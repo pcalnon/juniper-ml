@@ -29,6 +29,25 @@ no FastAPI, no `cascade_correlation`, no `api`):
 Per the migration plan these ship under the **same top-level package names** cascor uses,
 so the canonical imports resolve verbatim.
 
+## Public import surface
+
+`juniper_cascor_core` is intentionally thin: importing it exposes only `__version__` and
+does **not** import `torch`. Candidate-training code lives in the top-level modules below
+so the worker can keep using the same import paths that cascor uses internally.
+
+| Import path | Purpose | Notes |
+|-------------|---------|-------|
+| `juniper_cascor_core.__version__` | Package version check | Safe for lightweight install verification with `pip install --no-deps`. |
+| `candidate_unit.candidate_unit.CandidateUnit` | Trainable candidate node | Requires `torch`; this is the exact import path the worker exercises. |
+| `candidate_unit.candidate_unit.CandidateTrainingResult` | Structured `train_detailed()` result | Includes correlation, best index, normalized tensors, success flag, error message, and optional round ID. |
+| `utils.activation.ActivationWithDerivative` | Picklable activation wrapper and registry | `ACTIVATION_MAP` includes lowercase functional names plus title-case `torch.nn` module names such as `Tanh`, `Sigmoid`, and `ReLU`. |
+| `utils.utils` | Dataset/tensor/display helpers | `dill` and `columnar` are imported lazily by debug helpers and live behind the `[full]` extra. |
+| `log_config.logger.logger.Logger` | Shared CasCor logger | File logging is best-effort; console logging remains available if the log path is not writable. |
+| `cascor_constants.*` | Candidate-relevant defaults | Constants are copied from cascor and guarded against drift until Wave 2 adoption. |
+
+Avoid adding new consumer imports from non-candidate cascor modules here. The extraction
+boundary deliberately excludes service/API/training-orchestration code.
+
 ## Install
 
 ```bash
@@ -170,6 +189,41 @@ This package is **extracted from** `juniper-cascor/src` and kept byte-identical 
 drift-guard test (the candidate-critical modules), pending `juniper-cascor` itself adopting
 the package (CW-05 plan Wave 2). Until then, cascor remains the upstream source of truth for
 the candidate-training code.
+
+Two files intentionally differ from cascor today because they carry the deployment-agnostic
+logging fix and should be backported when Wave 2 begins:
+
+- `log_config/logger/logger.py`
+- `cascor_constants/constants.py`
+
+To verify drift from a checkout that also has sibling repos on disk:
+
+```bash
+JUNIPER_ECOSYSTEM_ROOT=/path/to/Juniper \
+  python3 -m unittest -v tests/test_cascor_core_drift.py
+```
+
+The test skips in isolated checkouts where `juniper-cascor/src` is unavailable.
+
+## Release workflow
+
+`juniper-cascor-core` publishes independently from the `juniper-ml` meta-package:
+
+| Item | Value |
+|------|-------|
+| Package directory | `juniper-cascor-core/` |
+| Tag pattern | `juniper-cascor-core-v*` |
+| Workflow | `.github/workflows/publish-cascor-core.yml` |
+| TestPyPI verification | Installs `juniper-cascor-core==<version>` with `--no-deps` and imports `juniper_cascor_core.__version__`. |
+
+Run the package smoke tests before tagging:
+
+```bash
+cd juniper-cascor-core
+python -m pytest -q
+python -m build --sdist --wheel
+twine check dist/*
+```
 
 ## License
 
