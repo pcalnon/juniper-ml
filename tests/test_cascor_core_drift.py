@@ -60,13 +60,6 @@ def _find_ecosystem_root(juniper_ml_root: Path) -> Path | None:
     return None
 
 
-def _drift_bytes(path: Path, rel: Path, *, is_package: bool) -> bytes:
-    text = path.read_text()
-    if is_package and rel in _NORMALIZED_DIVERGENCE:
-        text = text.replace(_PACKAGE_LOG_DIR_OVERRIDE, _CASCOR_LOG_DIR_DEFAULT)
-    return text.encode()
-
-
 class JuniperCascorCoreDriftTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

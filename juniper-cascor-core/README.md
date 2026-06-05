@@ -29,25 +29,6 @@ no FastAPI, no `cascade_correlation`, no `api`):
 Per the migration plan these ship under the **same top-level package names** cascor uses,
 so the canonical imports resolve verbatim.
 
-## Public import surface
-
-`juniper_cascor_core` is intentionally thin: importing it exposes only `__version__` and
-does **not** import `torch`. Candidate-training code lives in the top-level modules below
-so the worker can keep using the same import paths that cascor uses internally.
-
-| Import path | Purpose | Notes |
-|-------------|---------|-------|
-| `juniper_cascor_core.__version__` | Package version check | Safe for lightweight install verification with `pip install --no-deps`. |
-| `candidate_unit.candidate_unit.CandidateUnit` | Trainable candidate node | Requires `torch`; this is the exact import path the worker exercises. |
-| `candidate_unit.candidate_unit.CandidateTrainingResult` | Structured `train_detailed()` result | Includes correlation, best index, normalized tensors, success flag, error message, and optional round ID. |
-| `utils.activation.ActivationWithDerivative` | Picklable activation wrapper and registry | `ACTIVATION_MAP` includes lowercase functional names plus title-case `torch.nn` module names such as `Tanh`, `Sigmoid`, and `ReLU`. |
-| `utils.utils` | Dataset/tensor/display helpers | `dill` and `columnar` are imported lazily by debug helpers and live behind the `[full]` extra. |
-| `log_config.logger.logger.Logger` | Shared CasCor logger | File logging is best-effort; console logging remains available if the log path is not writable. |
-| `cascor_constants.*` | Candidate-relevant defaults | Constants are copied from cascor and guarded against drift until Wave 2 adoption. |
-
-Avoid adding new consumer imports from non-candidate cascor modules here. The extraction
-boundary deliberately excludes service/API/training-orchestration code.
-
 ## Install
 
 ```bash
@@ -57,98 +38,11 @@ pip install juniper-cascor-core[full]     # + optional dev/debug helpers (dill, 
 
 ## Usage
 
-Use the top-level package names exported by this distribution. `juniper_cascor_core`
-exists for package metadata such as `__version__`; worker/runtime imports should use
-the same paths that `juniper-cascor` uses today.
-
 ```python
 from candidate_unit.candidate_unit import CandidateUnit
 from utils.activation import ActivationWithDerivative
 
 assert "Tanh" in ActivationWithDerivative.ACTIVATION_MAP   # 33 activations, both casings
-```
-
-## Worker-Facing Contracts
-
-These are the compatibility points the distributed worker depends on when a candidate
-is constructed in one process and executed in another.
-
-### Picklable Activations
-
-`ActivationWithDerivative` serializes activation wrappers by activation name, then
-reconstructs the PyTorch callable during unpickle. This supports both lowercase
-functional names (`"tanh"`, `"relu"`) and TitleCase `torch.nn` module names
-(`"Tanh"`, `"ReLU"`, `"Softmax"`). Unknown activation names raise `ValueError`
-during deserialization.
-
-`Softmax` has one extra guard: if the configured module dimension is invalid for
-the current tensor rank, the wrapper falls back to the last dimension. This keeps
-worker-side 1-D candidate vectors executable even when the reconstructed module was
-configured with `dim=1`.
-
-```python
-import pickle
-import torch
-
-from utils.activation import ActivationWithDerivative
-
-activation = ActivationWithDerivative(torch.nn.Softmax(dim=1))
-restored = pickle.loads(pickle.dumps(activation))
-
-scores = restored(torch.tensor([1.0, 2.0, 3.0]))
-assert torch.isclose(scores.sum(), torch.tensor(1.0))
-```
-
-### Tensor Dataset Round Trips
-
-`save_dataset(x, y, path)` writes a `torch.save` checkpoint containing
-`{"x": x, "y": y}`. `load_dataset(path)` inverts that format with
-`torch.load(..., map_location="cpu", weights_only=True)` and returns `(x, y)`.
-The file is not YAML and should not contain arbitrary Python objects.
-
-```python
-import torch
-
-from utils.utils import load_dataset, save_dataset
-
-x = torch.tensor([[0.0, 1.0], [2.0, 3.0]])
-y = torch.tensor([[1.0, 0.0], [0.0, 1.0]])
-
-save_dataset(x, y, "candidate_dataset.pt")
-loaded_x, loaded_y = load_dataset("candidate_dataset.pt")
-assert torch.equal(loaded_x, x)
-assert torch.equal(loaded_y, y)
-```
-
-### CandidateUnit Serialization
-
-`CandidateUnit` removes transient logger and display lambdas from its pickle state.
-On unpickle it restores `Logger`, reapplies the instance log level, and leaves
-display helpers to be recreated lazily by training paths. Forward-pass parameters
-(`weights`, `bias`, activation wrapper, dimensions, UUID/candidate metadata) remain
-part of the serialized state.
-
-```python
-import pickle
-import torch
-
-from candidate_unit.candidate_unit import CandidateUnit
-
-candidate = CandidateUnit(
-    CandidateUnit__activation_function=torch.nn.Tanh(),
-    CandidateUnit__input_size=2,
-    CandidateUnit__output_size=1,
-    CandidateUnit__log_level_name="CRITICAL",
-)
-candidate.weights = torch.tensor([0.5, -0.25])
-candidate.bias = torch.tensor([0.1])
-
-x = torch.tensor([[2.0, 4.0], [1.0, -1.0]])
-expected = candidate.forward(x)
-restored = pickle.loads(pickle.dumps(candidate))
-
-assert restored.logger is not None
-assert torch.allclose(restored.forward(x), expected)
 ```
 
 ## Deployment-agnostic logging
@@ -159,71 +53,12 @@ writable directory — or leave it unset and file logging degrades to console-on
 than raising (a missing log file never fails a candidate-training task). Log level is
 controlled by `JUNIPER_CASCOR_LOG_LEVEL` (legacy `CASCOR_LOG_LEVEL` still honored).
 
-Useful worker settings:
-
-```bash
-export JUNIPER_CASCOR_LOG_DIR=/var/log/juniper-cascor
-export JUNIPER_CASCOR_LOG_LEVEL=WARNING
-```
-
-Supported log levels are `TRACE`, `VERBOSE`, `DEBUG`, `INFO`, `WARNING`, `ERROR`,
-`CRITICAL`, and `FATAL`. When both `JUNIPER_CASCOR_LOG_LEVEL` and legacy
-`CASCOR_LOG_LEVEL` are set, the prefixed variable wins.
-
-## Validation
-
-Run the package's worker-contract tests from the repository root:
-
-```bash
-python -m pytest -q juniper-cascor-core/tests
-```
-
-The same test path is part of the main CI workflow and the
-`publish-cascor-core.yml` release workflow, so activation serialization, dataset
-round-tripping, and `CandidateUnit` pickle/forward behavior block regressions before
-package publication.
-
 ## Relationship to juniper-cascor
 
 This package is **extracted from** `juniper-cascor/src` and kept byte-identical to it by a
 drift-guard test (the candidate-critical modules), pending `juniper-cascor` itself adopting
 the package (CW-05 plan Wave 2). Until then, cascor remains the upstream source of truth for
 the candidate-training code.
-
-Two files intentionally differ from cascor today because they carry the deployment-agnostic
-logging fix and should be backported when Wave 2 begins:
-
-- `log_config/logger/logger.py`
-- `cascor_constants/constants.py`
-
-To verify drift from a checkout that also has sibling repos on disk:
-
-```bash
-JUNIPER_ECOSYSTEM_ROOT=/path/to/Juniper \
-  python3 -m unittest -v tests/test_cascor_core_drift.py
-```
-
-The test skips in isolated checkouts where `juniper-cascor/src` is unavailable.
-
-## Release workflow
-
-`juniper-cascor-core` publishes independently from the `juniper-ml` meta-package:
-
-| Item | Value |
-|------|-------|
-| Package directory | `juniper-cascor-core/` |
-| Tag pattern | `juniper-cascor-core-v*` |
-| Workflow | `.github/workflows/publish-cascor-core.yml` |
-| TestPyPI verification | Installs `juniper-cascor-core==<version>` with `--no-deps` and imports `juniper_cascor_core.__version__`. |
-
-Run the package smoke tests before tagging:
-
-```bash
-cd juniper-cascor-core
-python -m pytest -q
-python -m build --sdist --wheel
-twine check dist/*
-```
 
 ## License
 
