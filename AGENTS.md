@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-05-29
+**Last Updated**: 2026-06-04
 
 ---
 
@@ -39,6 +39,7 @@ pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 # Run all tests
 python3 -m unittest -v tests/test_wake_the_claude.py
 python3 -m unittest -v tests/test_worktree_cleanup.py
+python3 -m unittest -v tests/test_worktree_sweep_scripts.py
 python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_requirements_drift_check.py
 python3 -m unittest -v tests/test_workflow_script_paths.py
@@ -165,6 +166,7 @@ juniper-ml/
 ├── tests/                     # Regression test suites (Python unittest)
 │   ├── test_wake_the_claude.py           # Launcher script regression (1470 lines)
 │   ├── test_worktree_cleanup.py          # Worktree cleanup script tests (225 lines)
+│   ├── test_worktree_sweep_scripts.py    # Ad-hoc sweep script safety/contract tests
 │   ├── test_reap_pytest_orphans.py       # Orphan pytest process reaper tests
 │   ├── test_requirements_drift_check.py  # Requirements snapshot drift checker tests
 │   ├── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
@@ -195,7 +197,6 @@ juniper-ml/
     ├── get_cascor_history-plus.bash      # GET /v1/metrics/history?count=100
     ├── get_cascor_network.bash           # GET /v1/network
     ├── get_cascor_topology.bash          # GET /v1/network/topology
-    ├── get_cascor_dkdk.bash              # Cascor query (incomplete)
     ├── kill_all_pythons.bash             # Emergency Python process terminator
     ├── search_file_in_all_repos_and_worktrees.bash   # Cross-repo file search
     └── global_text_replace.bash          # Batch sed find-and-replace
@@ -235,15 +236,16 @@ juniper-ml/
 - `util/requirements_drift_check.py` -- Drift checker for the requirements snapshot at `notes/requirements/id_assignments.yaml`. Default `--mode quick` validates path resolution + structural line-range integrity for every citation; emits a human report or `--json`. Exit code 1 on any drift. Implements the spec in [`notes/REQUIREMENTS_NEXT_STEPS.md` §7](notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection); `--mode full` / `--mode rewrite` are reserved for future work.
 - `util/ad-hoc/` -- Home for single-use / temporary / unfinished scripts. See `util/ad-hoc/README.md` for file-header conventions and graduation lifecycle. `/tmp/` is prohibited for script source files per the [Script placement](#script-placement-mandatory) rule.
 - Dependency-documentation generator now lives in [`juniper-ci-tools/`](juniper-ci-tools/) and is published to PyPI as `juniper-ci-tools` (Wave 4 of the dep-docs migration plan; install with `pip install juniper-ci-tools` and invoke via `juniper-generate-dep-docs`). The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298.
-- `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` but can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com util/juniper_plant_all.bash`).
+- `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` and `JUNIPER_CASCOR_PORT` defaults to `8201`; both can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com JUNIPER_CASCOR_PORT=8201 util/juniper_plant_all.bash`).
 - `util/juniper_chop_all.bash` -- Stops all Juniper ecosystem services
-- `util/get_cascor_*.bash` -- Cascor REST API query utilities (status, metrics, history, network, topology). All scripts read `JUNIPER_CASCOR_HOST` and `JUNIPER_CASCOR_PORT` from the environment (with `localhost` / `8201` defaults) so a single environment override targets every utility.
+- `util/get_cascor_*.bash` -- Cascor REST API query utilities (status, metrics, history, network, topology). These helpers read legacy `CASCOR_HOST` and `CASCOR_PORT` environment variables (with `localhost` / `8201` defaults). Do not confuse them with the `JUNIPER_CASCOR_*` variables used by `util/juniper_plant_all.bash`.
 
 ### Tests
 
 - `tests/test_wake_the_claude.py` -- Regression tests for resume/session-id and argument handling in `wake_the_claude.bash`
 - Doc-link validator regression tests live in [`juniper-doc-tools/tests/`](juniper-doc-tools/tests/) (Wave 4 of the doc-link migration; exercised by the dedicated `CI -- juniper-doc-tools` workflow).
 - `tests/test_worktree_cleanup.py` -- Tests for `util/worktree_cleanup.bash` argument parsing, dry-run, and error handling
+- `tests/test_worktree_sweep_scripts.py` -- Tests for `util/ad-hoc/worktree_sweep_*.bash`: survey/apply row compatibility, `SAFE`-only removal, and unknown-repo skips
 - `tests/test_reap_pytest_orphans.py` -- Tests for `util/reap_pytest_orphans.bash` dry-run, live-parent safety, orphan detection, and isolated kill invocation
 - `tests/test_requirements_drift_check.py` -- Tests for `util/requirements_drift_check.py`: structural range validation, BAD_PATH / BAD_RANGE classification, `--ecosystem-root` rewriting, CLI exit codes, JSON output
 - `tests/test_workflow_script_paths.py` -- Lint test: every `python <path.py>` / `bash <path.bash>` invocation in `.github/workflows/*.yml` must reference a path that exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18.

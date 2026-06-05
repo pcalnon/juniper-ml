@@ -13,8 +13,9 @@ environment mismatches, so every remote candidate crashed on import
 (`ModuleNotFoundError: candidate_unit`). See
 [juniper-cascor-worker#97 (CW-05)](https://github.com/pcalnon/juniper-cascor-worker/issues/97).
 
-`juniper-cascor-core` is the canonical fix (CW-05 Approach A): a single PyPI package the
-worker depends on, instead of needing the cascor source tree on `sys.path`.
+`juniper-cascor-core` is the canonical fix (CW-05 Approach A): a single package the
+worker will depend on after the first trusted release, instead of needing the cascor source
+tree on `sys.path`.
 
 ## What's inside
 
@@ -49,6 +50,16 @@ Avoid adding new consumer imports from non-candidate cascor modules here. The ex
 boundary deliberately excludes service/API/training-orchestration code.
 
 ## Install
+
+Until the first `juniper-cascor-core-v*` trusted release has completed, install from the
+source checkout for local validation and worker experiments:
+
+```bash
+cd juniper-cascor-core
+python -m pip install -e .
+```
+
+After the trusted PyPI release exists, install from the public package index:
 
 ```bash
 pip install juniper-cascor-core           # core (numpy, torch, PyYAML)

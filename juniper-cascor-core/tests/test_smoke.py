@@ -6,6 +6,8 @@ worker's ``Unknown activation 'Tanh'`` fallback (CW-05 gap #4), and the resilien
 that fixes the ``/logs`` ENOENT training crash (CW-05 gap #3).
 """
 
+import pickle
+
 import pytest
 
 try:

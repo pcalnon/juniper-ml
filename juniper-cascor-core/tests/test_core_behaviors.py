@@ -71,3 +71,27 @@ def test_candidate_unit_round_trips_through_pickle_and_preserves_forward_output(
 
     assert restored.logger is not None
     assert torch.allclose(restored.forward(x), expected)
+
+
+@requires_torch
+def test_logger_set_level_suppresses_lower_priority_messages(monkeypatch, tmp_path, capsys):
+    """Worker-configured CRITICAL logging must not emit INFO hot-path noise."""
+    from log_config.logger.logger import Logger
+
+    log_file = tmp_path / "candidate.log"
+    monkeypatch.setattr(Logger, "_log_level", Logger._log_level, raising=False)
+    monkeypatch.setattr(Logger, "_level_logger_name", Logger._level_logger_name, raising=False)
+    monkeypatch.setattr(Logger, "_level_logger_config", Logger._level_logger_config, raising=False)
+    monkeypatch.setattr(Logger, "_logging_file", str(log_file), raising=False)
+
+    Logger.set_level("CRITICAL")
+    Logger.info("candidate-core regression: filtered info")
+    Logger.critical("candidate-core regression: visible critical")
+
+    captured = capsys.readouterr()
+    log_text = log_file.read_text()
+
+    assert "filtered info" not in captured.out
+    assert "filtered info" not in log_text
+    assert "visible critical" in captured.out
+    assert "visible critical" in log_text
