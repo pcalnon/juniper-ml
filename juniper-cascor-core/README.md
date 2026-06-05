@@ -31,15 +31,10 @@ so the canonical imports resolve verbatim.
 
 ## Install
 
-From this repository before the first `juniper-cascor-core-v*` release:
-
 ```bash
-pip install -e juniper-cascor-core        # core (numpy, torch, PyYAML)
-pip install -e "juniper-cascor-core[full]" # + optional dev/debug helpers (dill, columnar)
+pip install juniper-cascor-core           # core (numpy, torch, PyYAML)
+pip install juniper-cascor-core[full]     # + optional dev/debug helpers (dill, columnar)
 ```
-
-After the package is published to PyPI, use `pip install juniper-cascor-core` or
-`pip install "juniper-cascor-core[full]"`.
 
 ## Usage
 
