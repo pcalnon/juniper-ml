@@ -2,9 +2,9 @@
 
 ## Install Juniper Packages with juniper-ml
 
-**Version:** 0.3.0
+**Version:** 0.3.1
 **Status:** Active
-**Last Updated:** May 21, 2026
+**Last Updated:** June 4, 2026
 **Project:** Juniper - Meta-Package for PyPI Distribution
 
 ---
@@ -85,7 +85,7 @@ Expected output (with `[all]`):
 ```bash
 juniper-canopy           0.5.x
 juniper-cascor           0.5.x
-juniper-cascor-client    0.4.x
+juniper-cascor-client    0.5.x
 juniper-cascor-worker    0.4.x
 juniper-ci-tools         0.4.x
 juniper-config-tools     0.1.x
@@ -109,6 +109,7 @@ from juniper_cascor_worker import CandidateTrainingWorker
 
 - [Documentation Overview](DOCUMENTATION_OVERVIEW.md) -- navigation index
 - [Reference](REFERENCE.md) -- extras, compatibility, and version reference
+- [Host Orchestration Utilities](REFERENCE.md#host-orchestration-utilities) -- run services on-host with `util/juniper_plant_all.bash` and `util/juniper_chop_all.bash`
 - [juniper-observability README](../juniper-observability/README.md) -- shared observability primitives
 - [juniper-data-client Quick Start](https://github.com/pcalnon/juniper-data-client) -- dataset client usage
 - [juniper-cascor-client Quick Start](https://github.com/pcalnon/juniper-cascor-client) -- training client usage
@@ -116,6 +117,6 @@ from juniper_cascor_worker import CandidateTrainingWorker
 
 ---
 
-**Last Updated:** May 21, 2026
-**Version:** 0.3.0
+**Last Updated:** June 4, 2026
+**Version:** 0.3.1
 **Status:** Active
