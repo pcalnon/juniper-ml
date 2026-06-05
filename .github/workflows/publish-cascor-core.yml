@@ -57,6 +57,12 @@ jobs:
       - name: Install build tools
         run: pip install --upgrade build twine
 
+      - name: Install test dependencies
+        run: pip install -e ".[test]"
+
+      - name: Run package tests
+        run: python -m pytest -q tests
+
       - name: Build sdist + wheel
         run: python -m build --sdist --wheel
 
