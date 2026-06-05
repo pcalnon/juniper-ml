@@ -166,6 +166,36 @@ class TestApplySafety(WorktreeSweepTestCase):
             self.assertIn(f"skipped (no longer safe; ahead=1): {worktree_name}", result.stdout)
             self.assertNotIn("worktree remove", result.stdout)
 
+    def test_stale_safe_row_with_branch_mismatch_is_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            worktrees_root = root / "worktrees"
+            repo_base = root / "repos"
+            worktrees_root.mkdir()
+            repo_base.mkdir()
+
+            main_repo = repo_base / "juniper-ml"
+            _init_repo(main_repo)
+            worktree_name = "juniper-ml--renamed-after-survey--20260604-0000--eeee5555"
+            worktree_path = worktrees_root / worktree_name
+            _run_git(main_repo, "worktree", "add", "-q", "-b", "actual-branch", str(worktree_path), "main")
+
+            result = subprocess.run(
+                ["bash", str(APPLY_SCRIPT), "--dry-run"],
+                input=f"SAFE\tjuniper-ml\tstale-branch\t{worktree_name}\n",
+                capture_output=True,
+                text=True,
+                env=self._env(worktrees_root, repo_base),
+                timeout=SCRIPT_TIMEOUT_SECONDS,
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            self.assertIn(
+                f"skipped (no longer safe; branch changed from stale-branch to actual-branch): {worktree_name}",
+                result.stdout,
+            )
+            self.assertNotIn("branch -D stale-branch", result.stdout)
+
 
 class TestSurveyApplyContract(WorktreeSweepTestCase):
     def test_survey_safe_row_can_feed_apply_dry_run(self) -> None:
