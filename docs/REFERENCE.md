@@ -149,9 +149,9 @@ Publish and CI constraints:
 
 ### juniper-cascor-core
 
-`juniper-cascor-core` lives under `juniper-cascor-core/` in this repository and publishes independently from both `juniper-ml` and `juniper-cascor`. It is the CW-05 Wave 0 candidate-core extraction: the importable model code a distributed `juniper-cascor-worker` needs to execute a CasCor candidate without mounting the `juniper-cascor` source tree.
+`juniper-cascor-core` lives under `juniper-cascor-core/` in this repository and is configured to publish independently from both `juniper-ml` and `juniper-cascor` once the first `juniper-cascor-core-v*` trusted release is tagged. It is the CW-05 Wave 0 candidate-core extraction: the importable model code a distributed `juniper-cascor-worker` needs to execute a CasCor candidate without mounting the `juniper-cascor` source tree.
 
-It is not currently part of a `juniper-ml` extra. Wave 1 makes `juniper-cascor-worker` depend on it directly so worker environments can install only the candidate-training core they need.
+It is not currently part of a `juniper-ml` extra. Until the first trusted PyPI release exists, local validation and worker experiments should install from the source checkout rather than from the public package index. Wave 1 makes `juniper-cascor-worker` depend on it directly so worker environments can install only the candidate-training core they need.
 
 | Field                 | Value                                                                 |
 |-----------------------|-----------------------------------------------------------------------|
@@ -186,7 +186,7 @@ Operational constraints:
 Publish and CI constraints:
 
 1. `juniper-cascor-core/tests/test_smoke.py` covers the worker import path, activation-map casing, version-only import, and resilient logging.
-2. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI.
+2. `.github/workflows/publish-cascor-core.yml` runs for tags matching `juniper-cascor-core-v*`, builds from `juniper-cascor-core/`, publishes to TestPyPI, verifies version-only import, then publishes to PyPI. Do not direct users to `pip install juniper-cascor-core` from public indexes until that workflow has completed for the first release.
 3. Before tagging a release, run the package smoke tests and build metadata validation from the subdirectory:
 
 ```bash
