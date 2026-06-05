@@ -223,6 +223,14 @@ from cascor_constants.constants_problem.constants_problem import (
 
 #####################################################################################################################################################################################################
 # Explicit re-exports from sub-modules
+# Ensure intentionally public module constants are listed in __all__.
+try:
+    __all__
+except NameError:
+    __all__ = []
+
+if "_CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MIN_TIMEOUT" not in __all__:
+    __all__.append("_CASCADE_CORRELATION_NETWORK_REMOTE_COLLECT_MIN_TIMEOUT")
 #####################################################################################################################################################################################################
 __all__ = [
     # constants_activation
