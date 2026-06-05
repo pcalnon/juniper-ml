@@ -45,6 +45,10 @@ The pyproject pins matching `juniper-ml` 0.6.0:
 | `juniper-doc-tools`     | `>=0.1.0,<0.2.0`  | 0.1.1            |
 | `juniper-observability` | `>=0.2.0`         | 0.2.0            |
 
+`juniper-cascor-core` is published from this repository as a sibling package, but it is not
+part of the `juniper-ml` extras surface yet. CW-05 Wave 1 makes `juniper-cascor-worker`
+depend on it directly.
+
 For full-stack Docker deployment and integration tests, see [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy).
 
 ## Architecture
@@ -54,6 +58,8 @@ For full-stack Docker deployment and integration tests, see [`juniper-deploy`](h
 ```text
 juniper-cascor ──uses──> juniper-data-client ──calls──> juniper-data
 juniper-cascor ──managed by──> juniper-cascor-worker (distributed training, architectural only — no code import dependency)
+juniper-cascor-worker ──will import in CW-05 Wave 1──> juniper-cascor-core
+                                                     (CandidateUnit, activation registry, logging, constants)
 juniper-cascor-client ──calls──> juniper-cascor (REST/WebSocket)
 juniper-canopy ──uses──> juniper-data-client ──calls──> juniper-data
 juniper-canopy ──uses──> juniper-cascor-client ──calls──> juniper-cascor
@@ -77,6 +83,7 @@ juniper-cascor-core ──extracts──> candidate_unit, utils, log_config, cas
 | [juniper-data-client](https://github.com/pcalnon/juniper-data-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-data-client` |
 | [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | Aggregated under `[clients]` and `[all]` | `pip install juniper-cascor-client` |
 | [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Aggregated under `[worker]` and `[all]` | `pip install juniper-cascor-worker` |
+| [juniper-cascor-core](juniper-cascor-core/README.md) | Published independently from this repository; planned direct worker dependency in CW-05 Wave 1 | `pip install juniper-cascor-core` |
 | [juniper-ci-tools](https://github.com/pcalnon/juniper-ml/tree/main/juniper-ci-tools) | Aggregated under `[tools]` and `[all]`; published from this repository | `pip install juniper-ci-tools` |
 | [juniper-doc-tools](juniper-doc-tools/README.md) | Aggregated under `[doc-tools]`, `[tools]`, and `[all]`; published from this repository | `pip install juniper-doc-tools` |
 | [juniper-observability](juniper-observability/README.md) | Aggregated under `[tools]` and `[all]`; published independently from this repository | `pip install "juniper-observability[all]"` |
@@ -103,6 +110,7 @@ The active research components of the Juniper platform are surfaced through the 
 | [juniper-data](https://github.com/pcalnon/juniper-data) | Dataset-generation service, named-version registry, ARC-AGI dataset families |
 | [juniper-canopy](https://github.com/pcalnon/juniper-canopy) | Real-time training-dynamics visualisation, network-topology renderer, WebSocket control surface |
 | [juniper-cascor-worker](https://github.com/pcalnon/juniper-cascor-worker) | Distributed candidate-unit training over a WebSocket worker protocol |
+| [juniper-cascor-core](juniper-cascor-core/README.md) | Shared worker-side CasCor candidate core: `CandidateUnit`, activation registry, logging, and candidate constants |
 | [juniper-cascor-client](https://github.com/pcalnon/juniper-cascor-client) | REST + WebSocket training-stream and control-stream client protocols |
 | [juniper-observability](juniper-observability/README.md) | Idempotent Prometheus collector helpers (`register_or_reuse` family), structured-JSON logging, Starlette middleware |
 | [juniper-doc-tools](juniper-doc-tools/README.md) | `juniper-check-doc-links` CLI for cross-repo and ecosystem-root markdown link validation |
@@ -145,7 +153,7 @@ juniper-check-doc-links --version
 ### Next Steps
 
 - [`docs/QUICK_START.md`](docs/QUICK_START.md) — installation and verification guide
-- [`docs/REFERENCE.md`](docs/REFERENCE.md) — extras, compatibility matrix, environment variables, service ports
+- [`docs/REFERENCE.md`](docs/REFERENCE.md) — extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities
 - [`juniper-deploy`](https://github.com/pcalnon/juniper-deploy) — Docker Compose orchestration for the full-stack platform
 
 ## Research Philosophy
@@ -162,7 +170,7 @@ Within this programme, `juniper-ml` is the integration surface: a single install
 |----------|---------|
 | [`docs/DOCUMENTATION_OVERVIEW.md`](docs/DOCUMENTATION_OVERVIEW.md) | Navigation index for all `juniper-ml` documentation |
 | [`docs/QUICK_START.md`](docs/QUICK_START.md) | Installation and verification guide |
-| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports |
+| [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities |
 | [`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`](docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | Quick-reference card for development tasks |
 | [`notes/README_NORMALIZATION_PLAN_2026-05-19.md`](notes/README_NORMALIZATION_PLAN_2026-05-19.md) | Ecosystem-wide README normalization plan (this README is its reference implementation) |
 | [`notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md`](notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md) | Source-of-truth for the Research Philosophy text inlined above |

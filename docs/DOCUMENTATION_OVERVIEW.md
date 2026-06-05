@@ -26,8 +26,10 @@
 |-----------------------------------------|--------------------------------------------------------------------------|------------------------|
 | **Install Juniper packages**            | [QUICK_START.md](QUICK_START.md)                                         | docs/                  |
 | **See extras and version info**         | [REFERENCE.md](REFERENCE.md)                                             | docs/                  |
+| **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                | docs/                  |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
+| **Use the shared CasCor candidate core** | [juniper-cascor-core README](../juniper-cascor-core/README.md)          | juniper-cascor-core/   |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)       | juniper-observability/ |
 | **Use shared CasCor candidate core**    | [juniper-cascor-core README](../juniper-cascor-core/README.md)           | juniper-cascor-core/   |
 | **See development conventions**         | [AGENTS.md](../AGENTS.md)                                                | Root                   |
@@ -41,10 +43,10 @@
 
 | File                                   | Lines | Type       | Purpose                                                                 |
 |----------------------------------------|-------|------------|-------------------------------------------------------------------------|
-| **DOCUMENTATION_OVERVIEW.md**          | ~90   | Overview   | This file -- navigation index                                           |
-| **QUICK_START.md**                     | ~90   | Tutorial   | Install Juniper packages in under a minute                              |
-| **REFERENCE.md**                       | ~120  | Reference  | Complete extras, compatibility, package, and release-workflow reference |
-| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~220  | Cheatsheet | Quick-reference card for common development tasks                       |
+| **DOCUMENTATION_OVERVIEW.md**          | ~135  | Overview   | This file -- navigation index                                           |
+| **QUICK_START.md**                     | ~120  | Tutorial   | Install Juniper packages in under a minute                              |
+| **REFERENCE.md**                       | ~275  | Reference  | Complete extras, compatibility, package, and release-workflow reference |
+| **DEVELOPER_CHEATSHEET_JUNIPER-ML.md** | ~230  | Cheatsheet | Quick-reference card for common development tasks                       |
 
 > The deprecated monolithic cheatsheet (`DEVELOPER_CHEATSHEET-ORIGINAL.md`)
 > was relocated to `notes/history/` in 2026-04 and consolidated into
@@ -109,7 +111,7 @@ juniper-cascor-core   ─source install until first release──> CandidateUnit
 
 | juniper-ml | juniper-canopy | juniper-cascor | juniper-data | juniper-data-client | juniper-cascor-client | juniper-cascor-worker | juniper-ci-tools | juniper-doc-tools | juniper-observability |
 |------------|----------------|----------------|--------------|---------------------|-----------------------|-----------------------|------------------|-------------------|-----------------------|
-| 0.5.x      | >=0.3.0        | >=0.3.17       | >=0.6.0      | >=0.4.0             | >=0.3.0               | >=0.3.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
+| 0.6.x      | >=0.5.0        | >=0.5.0        | >=0.6.0      | >=0.4.1             | >=0.5.0               | >=0.4.0               | >=0.1.0          | >=0.1.0,<0.2.0    | >=0.2.0               |
 
 ---
 
@@ -120,6 +122,7 @@ juniper-cascor-core   ─source install until first release──> CandidateUnit
 - **juniper-data-client** -- [Docs](https://github.com/pcalnon/juniper-data-client) (HTTP client for juniper-data)
 - **juniper-cascor-client** -- [Docs](https://github.com/pcalnon/juniper-cascor-client) (HTTP/WS client for juniper-cascor)
 - **juniper-cascor-worker** -- [Docs](https://github.com/pcalnon/juniper-cascor-worker) (distributed training worker)
+- **juniper-cascor-core** -- [Local docs](../juniper-cascor-core/README.md) (shared CandidateUnit, activation registry, logging, and constants for worker-side candidate training)
 - **juniper-observability** -- [Local docs](../juniper-observability/README.md) (shared health, logging, middleware, Prometheus, and Sentry primitives)
 - **juniper-cascor-core** -- [Local docs](../juniper-cascor-core/README.md) (shared CasCor candidate-training core for worker-side execution)
 
