@@ -14,7 +14,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SURVEY_SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "worktree_sweep_survey.bash"
 APPLY_SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "worktree_sweep_apply.bash"

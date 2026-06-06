@@ -748,4 +748,3 @@ Open questions surfaced/clarified here:
 - Refactor/contract design: [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) §0.3 (C1–C5), §2.3–2.4, §2.8–2.9, §3.
 - Equities generator: `juniper-data/juniper_data/generators/equities/{generator.py,defaults.py,params.py}` (v1.0.0).
 - Δt / continuous-time literature: Che et al. 2018 (GRU-D); Rubanova, Chen & Duvenaud 2019 (Latent-ODE); Shukla & Marlin 2021 (mTAN); Horn et al. 2020 (SeFT); Voelker, Kajić & Eliasmith 2019 (LMU); Gu et al. 2020 (HiPPO); Mei & Eisner 2017 (Neural Hawkes); López de Prado 2018 (purged/embargoed CV).
-```
