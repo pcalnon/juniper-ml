@@ -13,7 +13,7 @@
 > **Provenance:** Produced from a working session on irregular-Δt datasets. Grounded against the equities generator on disk (`juniper-data/juniper_data/generators/equities/generator.py` v1.0.0) and both halves of the recurse design:
 > [`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md) (model) and
 > [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) (refactor/contract).
-> **Scope:** This note is effectively an addendum to the recurse model open questions on irregular-Δt handling (tracked there as **[OQ-6]/[OQ-7]** — see §4.3 for an identifier collision to fix). It proposes concrete, C1-compliant answers and is intended as input to WS-1 (data contract), WS-3 (`juniper-model-core` interfaces), and WS-4 (the recurse model).
+> **Scope:** This note is effectively an addendum to the recurse model open questions on irregular-Δt handling (tracked there as **[OQ-7]**, model-owned; the separate NPZ-3-D-contract question is **[OQ-6]**, refactor-owned — see §4.4). It proposes concrete, C1-compliant answers and is intended as input to WS-1 (data contract), WS-3 (`juniper-model-core` interfaces), and WS-4 (the recurse model).
 
 ---
 
@@ -81,7 +81,7 @@ Healthcare/clinical EHR (the motivating domain; MIMIC, PhysioNet); finance (tick
 
 - **equities** (juniper-data #164): S&P 500 *daily* OHLCV has the textbook market-closure irregularity (Fri→Mon = 3 calendar days; holidays more) plus SEC-EDGAR fundamentals at irregular quarterly filing dates → an asynchronous multi-rate panel. The synthetic WS-1 generators (multi-sine, Mackey-Glass, AR(p)) are *regular* by construction, so **equities is the platform's natural first irregular-Δt benchmark**.
 - **juniper-recurse**: the new recurrent model has to take a position on Δt; the "3-D NPZ + `task_type` + `temporal_split`" plan is exactly the representation question (§4).
-- **CasCor angle**: Recurrent Cascade-Correlation has no native Δt notion and separately carries the star-free representational ceiling under research in [OQ-4]. Those are *two distinct* limits (can't express *when*; can't express certain *whats*) — see §4.4.
+- **CasCor angle**: Recurrent Cascade-Correlation has no native Δt notion and separately carries the star-free representational ceiling under research in [OQ-4]. Those are *two distinct* limits (can't express *when*; can't express certain *whats*) — see §4.5.
 
 ---
 
@@ -153,15 +153,11 @@ Refactor §2.4 specifies the 3-D NPZ as `(samples, timesteps, features)` with op
 - **Growing ESN** (§1.3.2): doc caveats *"classic ESN assumes regular Δt"* (§1.2, R4 note).
 - **LMU** (§1.3.3): the only hook — *"Continuous-time formulation adapts to step size (window θ, Δt)"* and a guardrail to expose *"θ/Δt as inspectable, validated hyperparameters."* But θ/Δt is treated as a **fixed scalar**, not a **per-observation input**. The machinery is present; the dots to variable Δt are unconnected (closed in §8).
 
-### 4.4 Tracking + a defect to fix
+### 4.4 Open-question tracking
 
-The irregular-Δt open question is **inconsistently identified**:
+The irregular-Δt question is **model-owned**, tracked as **[OQ-7]** (model §1.4 and §1.6: *"When do irregular-Δt datasets … become relevant? Lean: defer; §1.4"*). The distinct **NPZ-3-D-contract** question (§6) is **refactor-owned** as **[OQ-6]** (refactor §2.4/§2.9). Two separate questions, two identifiers — consistent across both halves: the model half intentionally omits [OQ-6] (the refactor half owns it; the consolidated table lives in refactor Part 5).
 
-- model §1.4 tags it **[OQ-7]** (*"…become central [OQ-7]"*),
-- model §1.6 tags the same question **[OQ-6]** (*"When do irregular-Δt datasets become relevant? Lean: defer"*),
-- refactor §2.9 uses **[OQ-6]** for the unrelated **NPZ-3D-extension** question.
-
-Both halves claim "OQ identifiers are preserved verbatim across both halves." **Fix before opening any Δt workstream:** reserve [OQ-6] for the NPZ-3D-extension (refactor-owned) and [OQ-7] for irregular-Δt relevance (model-owned); correct model §1.6 line accordingly.
+> **Working-copy caveat (2026-06-06):** a concurrent, *uncommitted* edit to the main-repo checkout was mid-rewrite of model §1.6 (adding `Answer-N` blocks and renumbering this question `[OQ-7]→[OQ-6]`), which **would** collide with the refactor's [OQ-6]. That divergence is not on `origin/main`; if it lands, re-assert [OQ-7] for the irregular-Δt question.
 
 ### 4.5 Orthogonality to [OQ-4]
 
@@ -720,8 +716,7 @@ So the Approach-C math is correct as written, the stated tolerances hold with ma
 | R-Δt-5 | Matrix-exp instability / V ill-conditioning (Approach C, large d) | Keep d≤~64; scaling-and-squaring fallback with error bound; `expm1` |
 | R-Δt-6 | Resample fabricates data accepted as real (Approach D) | Always emit `observed_mask`; conformance test that ignoring it fails |
 | R-Δt-7 | NPZ contract change ripples ecosystem | Additive-only; `X.ndim` dispatch; 2-D path byte-identical; version artifact |
-| R-Δt-8 | OQ identifier collision ([OQ-6] vs [OQ-7]) | Fix numbering before opening a Δt workstream (§4.4) |
-| R-Δt-9 | C1 pushback on Approach C | "Transparent ≠ trivial": matrix-exp of a fixed closed-form matrix is fully inspectable, the opposite of an ODE-solver black box (cf. OQ-2 resolution) |
+| R-Δt-8 | C1 pushback on Approach C | "Transparent ≠ trivial": matrix-exp of a fixed closed-form matrix is fully inspectable, the opposite of an ODE-solver black box (cf. OQ-2 resolution) |
 
 Open questions surfaced/clarified here:
 
@@ -744,7 +739,6 @@ Open questions surfaced/clarified here:
 1. **Land the contract first (WS-1):** §6 keys + §7 per-ticker windowing & property test, with the equities sequence variant as the first real consumer. Cheap, additive, independently useful, zero model risk.
 2. **Default model handling = Approach A** (`dt` as an input channel) — works across RCC/ESN/LMU unchanged, maximally C1-clean.
 3. **Principled target = Approach C** when irregular-Δt becomes a priority: it is the *only* option delivering true continuous-time semantics without violating C1, and it is essentially already designed — the LMU's own closed-form math, discretized at the per-step `dt`. This resolves the deferral's own bind (the doc deferred Δt believing the solution required an ODE solver; its third unit type already contains a solver-free one).
-4. **Fix the [OQ-6]/[OQ-7] collision** (§4.4) before opening any Δt workstream.
 
 ---
 
