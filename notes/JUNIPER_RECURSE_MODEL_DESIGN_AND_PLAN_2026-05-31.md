@@ -4,8 +4,8 @@
 **Repository**: (proposed) pcalnon/juniper-recurse — design doc hosted in pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.2.0 (DRAFT — pre-implementation design; split from the master plan 2026-06-03)
-**Last Updated**: 2026-06-03
+**Version**: 0.2.0 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; §1.3.4 Δt amendment 2026-06-06)
+**Last Updated**: 2026-06-06
 
 ---
 
@@ -202,11 +202,48 @@ The six desired characteristics from the brief, plus the two binding constraints
 
 **Recommendation role:** **Strong alternative — the modern, principled option** and the platform's bridge to state-space models.
 
+#### 1.3.4 Amendment (2026-06-06) — solver-free variable-Δt discretization (the Δt-native LMU)
+
+> **⚑ Amendment.** The companion analysis [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md) revisits the irregular-Δt deferral (§1.4, [OQ-7]) and finds the premise incomplete. This subsection records the result; the full data contract, reference implementation, and tests live in that note (§6–§8).
+
+**The premise being refined.** §1.4 defers LTC / Neural-ODE / Latent-ODE because the *ODE-solver dependency undercuts C1* — true for those models. But the LMU memory (③ above) is a **linear** system with **closed-form** matrices, so its *exact* discretization needs only a matrix exponential of a small fixed matrix — no solver, no autodiff-through-solver. The deferral therefore applies to the *solver-based* continuous-time models, **not** to continuous-time handling of irregular Δt per se: the LMU already affords it.
+
+**Mechanism.** Write the memory dynamics `θ·ṁ = A·m + B·u` (closed-form `A`, `B`) as `ṁ = M·m + N·u`, with `M = A/θ`, `N = B/θ`. The *exact* zero-order-hold update over a real gap `Δt` is
+
+```text
+m_{k+1} = Ā(Δt)·m_k + B̄(Δt)·u_k,   Ā(Δt) = exp(M·Δt),   B̄(Δt) = M⁻¹(Ā − I)N = A⁻¹(Ā − I)B
+```
+
+Standard LMU implementations bake `Ā, B̄` as constants for one fixed step; **for irregular sampling, evaluate them at the actual per-step `Δtₖ`** — i.e. the dataset's `dt` channel *is* the discretization step (the same role `Δ` plays in S4/Mamba, reinforcing the SSM-bridge framing). Diagonalize the fixed `A = V·Λ·V⁻¹` **once**; then each step needs only scalar exponentials of the eigenvalues:
+
+```text
+Ā(Δt) = V·diag(e^{λᵢΔt/θ})·V⁻¹,   B̄(Δt) = V·diag(expm1(λᵢΔt/θ)/λᵢ)·(V⁻¹B)
+```
+
+(`expm1` for short-gap accuracy; the `(e^{z}−1)/λ` singularity is removable, → `Δt/θ`.) No solver, no per-step `expm` from scratch; cache by quantized `Δt` to drop even the eigen-recombination.
+
+| Axis | Verdict | Basis |
+|------|---------|-------|
+| Irregular-Δt | ✅ **native** | Exact ZOH integration across the real gap; not a learned approximation |
+| P first-principles (C1) | ✅ | Matrix-exp of a fixed closed-form matrix — the opposite of the §1.4 black box |
+| Scope | 🟧 **LMU-only** | RCC/ESN do not get this for free; LMU is a fixed-order `TrainableModel`, outside the growth loop |
+
+**Strengths.** The only top-3 path delivering true continuous-time semantics *without* violating C1; turns the third unit type into the irregular-Δt workhorse at low marginal cost; directly cashes in the LMU→S4/Mamba bridge.
+
+**Weaknesses / risks & guardrails.**
+- *LMU-only; advantages the 3rd-priority unit.* **Guardrail:** treat as the irregular-Δt answer specifically, **not** a reason to reorder the unit roadmap; for RCC/ESN use Δt-as-input (companion Approach A) or Δt-gated decay (Approach B).
+- *Eigenvector conditioning of `A` degrades for large `d`.* **Guardrail:** keep `d ≲ 64`; Padé scaling-and-squaring fallback with a documented error bound for larger `d`.
+- *Per-step `Ā(Δt)` loses the constant-matrix optimization.* **Guardrail:** cache by quantized `Δt` bucket (integer calendar-day gaps → a handful of distinct values).
+
+**Verification [2026-06-06].** Reference impl executed (numpy 2.4.4): `A` eigenvalues stable (max Re = −6.49); delayed-sinusoid reconstruction `e_reg ≈ 0.035` and **grid-invariant** (`e_irr ≈ 0.039–0.043`, irregular vs regular) — the known-answer proof that the discretization handles irregular Δt where a fixed-Δt scheme would not. Companion §8.4–§8.7 + `util/ad-hoc/verify_delta_t_reference_code.py`.
+
+**Recommendation role:** **The C1-clean continuous-time option for genuinely irregular-Δt datasets** — gated behind [OQ-7] and the LMU unit type. Does **not** change the RCC-first provisional pick ([OQ-4]); it removes the assumption that irregular-Δt support must wait on a solver-based model, reframing [OQ-7] from "*when* do we pay the solver cost" to "*we don't have to*."
+
 ### 1.4 Runners-up and explicit rejections (with rationale)
 
 - **LSTM / GRU — *included as baseline + candidate-cell substrate, not top-3.*** They are the industry workhorses and are regression/time-series-capable, but they are **fixed-topology** (weak R3), advance the platform's constructive thesis the least, and their cascor integration is pure **[speculation]**. *They remain important:* (a) as the comparison baseline every model is measured against (cf. the live "are Transformers even better than linear models?" debate — Zeng et al. 2023 — which cautions that complexity must be *empirically* justified), and (b) a GRU cell (fewer params, single state) is the most plausible *gated* recurrent candidate-unit substrate if the framework later hosts gated units. The tension with R5 ("capability over simplicity") is real and recorded as **[OQ-2]**.
 - **CfC — honorable mention.** The most tractable "liquid" continuous-time net (drops the ODE solver via a closed-form approximation; reported 1–5 orders of magnitude faster than DE-based counterparts — Hasani et al. 2022, *Nature Machine Intelligence*). Strong R3. Not top-3 only because its cascor structural fit is weak and it is gradient-trained end-to-end (less inspectable than ESN/LMU). A good second-wave addition.
-- **LTC / Neural ODE / Latent ODE — deferred.** Best-in-class for *irregularly-sampled* series (Rubanova et al. 2019), but the **ODE-solver dependency** undercuts C1 transparency and there is no clean cascor structural mapping. Revisit if irregular-Δt datasets become central **[OQ-7]**.
+- **LTC / Neural ODE / Latent ODE — deferred.** Best-in-class for *irregularly-sampled* series (Rubanova et al. 2019), but the **ODE-solver dependency** undercuts C1 transparency and there is no clean cascor structural mapping. Revisit if irregular-Δt datasets become central **[OQ-7]**. *(But see §1.3.4: the LMU — ③ — already provides a **solver-free** continuous-time path for irregular Δt without this dependency; this deferral is specific to the solver-based models listed here.)*
 - **S5 / diagonal-S4 — future capability tier.** SOTA long-range performance and explicit state recurrence, but HiPPO + structured-matrix kernels make a transparent from-scratch implementation onerous. Plausible *after* LMU (same HiPPO lineage). **Mamba** is recommended **as an external baseline only** — its selective scan needs a custom CUDA kernel, conflicting hardest with C1.
 - **NEAT / Evolino — different paradigm; now an active [OQ-4] candidate.** Population-based neuroevolution; no shared training loop with cascor (low R6); higher reproducibility variance. Out of scope for a *first* model under the original ranking — but because NEAT grows arbitrary recurrent topology (including the cyclic structures RCC cannot form), it is back under consideration as part of the OQ-4 model-pick review.
 - **TCN — disqualified as the core model.** Strong sequence baseline but **not recurrent** (feed-forward dilated convolutions, fixed receptive field) — fails R3 and the recurrent requirement. Carry it as a *baseline only*; do not let strong baseline numbers tempt a scope change.
@@ -234,7 +271,7 @@ The six desired characteristics from the brief, plus the two binding constraints
 - **[OQ-3]** Is the *framework-hosting-three-unit-types* framing desired, or should the first deliverable be a single model (RCC only) with the others strictly deferred? *(Provisional: framework, RCC first — contingent on OQ-4.)*
 - **[OQ-4]** **REOPENED 2026-06-02 — under research.** (Was: acceptable to ship RCC despite the star-free ceiling, given the regression focus makes it largely benign? Recommended yes, with guardrail.) Paul's concern: the no-count/no-group ceiling is **architectural, not guardrail-fixable**. Literature review in progress — Knorozova & Ronca (AAAI 2024, arXiv:2312.09048) confirms recurrent cascades = **exactly** star-free and that the remedy is **group-implementing units**; ESN/reservoir and NEAT alternatives are under consideration. **Probable redesign of the model pick (OQ-3).**
 - **[OQ-5]** Target first datasets/problems for the CLI "hello-world" (cascor uses two-spiral; recurse needs a time-series-regression analog). *(Provisional 2026-06-02: **multi-sine + Mackey-Glass + AR(p)**.)* Drives the WS-1 generator priorities (companion §2.4).
-- **[OQ-7]** When do irregular-Δt datasets (→ Neural ODE/Latent ODE) become relevant? *(Lean: defer; §1.4.)*
+- **[OQ-7]** When do irregular-Δt datasets become relevant? *(Lean: defer the **solver-based** Neural-ODE/Latent-ODE option; §1.4.)* **Update 2026-06-06 (§1.3.4):** the LMU affords a solver-free, C1-clean variable-Δt path, so irregular-Δt support is *additive* and may not need deferral; the long pole is the data contract (companion note §6). See [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md).
 
 ---
 
