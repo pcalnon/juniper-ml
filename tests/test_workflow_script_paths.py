@@ -160,8 +160,7 @@ class WorkflowScriptPathsTest(unittest.TestCase):
         self.assertNotIn(
             "--extra-index-url https://pypi.org/simple/",
             workflow_text,
-            "TestPyPI verification installs juniper-cascor-core with --no-deps; "
-            "falling back to production PyPI can execute a squatted package during a trusted-publishing workflow.",
+            "TestPyPI verification installs juniper-cascor-core with --no-deps; " "falling back to production PyPI can execute a squatted package during a trusted-publishing workflow.",
         )
 
 
