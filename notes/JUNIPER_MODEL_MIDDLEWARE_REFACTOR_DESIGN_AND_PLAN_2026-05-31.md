@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml (design doc); touches juniper-cascor, juniper-data, juniper-canopy, juniper-deploy, and two new shared packages
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.3.0 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04)
-**Last Updated**: 2026-06-04
+**Version**: 0.3.1 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07)
+**Last Updated**: 2026-06-07
 
 ---
 
@@ -404,6 +404,9 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 | **OQ-13** | Cascor golden-test substrate: trajectory hash vs. tolerance? | 3.7 | WS-6 | Tolerance (nondeterminism) |
 | **OQ-14** | Performance acceptance bands for a research model? | 3.7 | WS-T | TBD with Paul |
 | **OQ-15** | Service port assignment (proposed host 8211→ctr 8210)? | 2.6 | WS-7 | Confirm no conflict |
+| **OQ-16** | Recurse env strategy on-host: dedicated `JuniperRecurse` (copy LIBTORCH hook) vs reuse `JuniperCascor1`? | 8.3 | WS-4 | Dedicated env if CPU-torch (needs the isolate hook); else reuse `JuniperCascor1` |
+| **OQ-17** | TestPyPI soak duration for `service-core`/`model-core` before the cascor docker lock pins them? | 8.3/8.4 | WS-2/6 | Reuse the meta-package "install lightest extra after bare" verify; fixed window TBD |
+| **OQ-18** | On-host recurse port: 8211 (host-port mirror) vs 8202 (next-free)? | 8.4 | WS-4/7 | 8211 (mirrors cascor's on-host 8201); ties to OQ-15 |
 
 **Standing uncertainties (not resolvable by decision — flagged honestly):**
 
@@ -628,7 +631,7 @@ The safe global order — every rung leaves both stacks fully operational:
 
 Because cascor (the production system, and the most-coupled node in both stacks) is repointed **only at the final, gated step**, the stacks are green at every rung 1–6 by construction, and rung 7 is reversible to rung 6's green state.
 
-### 8.6 Open questions — migration (new; fold into the Part 5 canonical table at ratification)
+### 8.6 Open questions — migration (folded into the Part 5 canonical table 2026-06-07)
 
 - **[OQ-16]** Recurse env strategy on-host: dedicated `JuniperRecurse` (with copied LIBTORCH hook) vs reuse `JuniperCascor1`? (Affects torch isolation and the `pip install -e` surface.)
 - **[OQ-17]** TestPyPI soak duration for service-core/model-core before the cascor (WS-6) docker lock pins them — reuse the meta-package "install lightest extra after bare" verify, or a fixed soak window?
