@@ -1092,7 +1092,9 @@ class CandidateUnit:
         self.logger.trace("CandidateUnit: _validate_correlation_params: Starting validation of correlation parameters")
 
         # Check if output and residual error are not None
-        self.logger.debug(f"CandidateUnit: _validate_correlation_params: Output shape: {output.shape if output is not None else 'None'}, Residual error shape: {residual_error.shape if residual_error is not None else 'None'}")
+        # NOTE: shapes are logged after the type check below (line ~1107); logging
+        # output.shape here would AttributeError on non-tensor input before the
+        # TypeError can be raised. Entry-time type detail is logged after the None check.
         self.logger.trace("CandidateUnit: _validate_correlation_params: Validating output and residual error are not None")
         if output is None or residual_error is None:
             raise ValueError("CandidateUnit: _validate_correlation_params: Output and residual error must not be None.")
