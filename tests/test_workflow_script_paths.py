@@ -151,16 +151,25 @@ class WorkflowScriptPathsTest(unittest.TestCase):
             report = "\n".join(f"  {wf.relative_to(self.repo_root)}: references missing path '{p}'" for wf, p in missing)
             self.fail("CI workflow(s) reference script paths that do not exist:\n" + report + "\n\nThis is the failure class that broke 3 juniper-X CIs on " "2026-05-18 (script rename without workflow update).\n" "Either restore the missing path or update the workflow.")
 
-    def test_cascor_core_testpypi_verify_does_not_fall_back_to_pypi(self):
-        workflow = self.workflows_dir / "publish-cascor-core.yml"
-        if not workflow.exists():
-            self.skipTest("publish-cascor-core.yml not present in this checkout")
-
-        workflow_text = workflow.read_text(encoding="utf-8")
-        self.assertNotIn(
-            "--extra-index-url https://pypi.org/simple/",
-            workflow_text,
-            "TestPyPI verification installs juniper-cascor-core with --no-deps; " "falling back to production PyPI can execute a squatted package during a trusted-publishing workflow.",
+    def test_no_deps_testpypi_verify_does_not_fall_back_to_pypi(self):
+        # Security policy (generalized from the original cascor-core-only check):
+        # a TestPyPI install-verification that uses --no-deps must NOT also add
+        # --extra-index-url https://pypi.org/simple/. With --no-deps no dependencies
+        # are fetched, so the fallback serves no functional purpose and only opens a
+        # supply-chain hole: on a TestPyPI index lag pip could resolve the *target*
+        # package from production PyPI and execute a squatted package during a
+        # trusted-publishing run. Workflows that install WITH dependencies (e.g.
+        # publish.yml, publish-ci-tools.yml, publish-observability.yml) legitimately
+        # need --extra-index-url and are out of scope for this check.
+        offenders = []
+        for workflow in sorted(self.workflows_dir.glob("publish*.yml")):
+            text = workflow.read_text(encoding="utf-8")
+            if "--no-deps" in text and "--extra-index-url https://pypi.org/simple/" in text:
+                offenders.append(workflow.name)
+        self.assertEqual(
+            offenders,
+            [],
+            "publish workflow(s) combine --no-deps with an --extra-index-url PyPI fallback in " "TestPyPI verification: " + ", ".join(offenders) + ". Drop the fallback (the retry " "loop already covers TestPyPI index lag) so a squatted package on production PyPI " "cannot be installed.",
         )
 
 

@@ -95,8 +95,8 @@ jobs:
           version=$(grep '^version' juniper-doc-tools/pyproject.toml | head -1 | sed -E 's/version = "(.+)"/\1/')
           for attempt in 1 2 3 4 5; do
             if pip install \
+              --no-deps \
               --index-url https://test.pypi.org/simple/ \
-              --extra-index-url https://pypi.org/simple/ \
               "juniper-doc-tools==${version}"; then
               break
             fi
