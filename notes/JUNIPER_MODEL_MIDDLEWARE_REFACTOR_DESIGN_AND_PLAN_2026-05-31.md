@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml (design doc); touches juniper-cascor, juniper-data, juniper-canopy, juniper-deploy, and two new shared packages
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.3.1 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07)
+**Version**: 0.3.2 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07; Part 5 OQ-1/2/3/4/5/7 statuses reconciled to Paul's answers 2026-06-07)
 **Last Updated**: 2026-06-07
 
 ---
@@ -389,13 +389,13 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 | ID | Question | Part | Owner WS | Author's lean / status |
 |----|----------|------|----------|------------------------|
-| **OQ-1** | "recursive" intended as **recurrent** (temporal), not tree-recursive? | A§0.5 | WS-0 | Recurrent (given time-series focus) |
-| **OQ-2** | Does R5 ("capability over simplicity") override C1 (first-principles) where they conflict? | A§1.6 | WS-0 | No — C1 binds; document exceptions |
-| **OQ-3** | Framework hosting 3 unit types, or single-model (RCC only) first? | A§1.5/1.6 | WS-0 | Framework, RCC first — **contingent on OQ-4** |
-| **OQ-4** | Ship RCC despite star-free ceiling (benign for regression)? | A§1.6 | WS-0 | **REOPENED 2026-06-02 — under research** (was: yes, with guardrail). Paul's concern: the no-count/no-group ceiling is architectural, not guardrail-fixable. Lit review in progress — Knorozova & Ronca, *On the Expressivity of Recurrent Neural Cascades* (AAAI 2024, arXiv:2312.09048) confirms recurrent cascades = **exactly** star-free, remedy = group-implementing units; ESN/reservoir + NEAT alternatives under consideration. Probable redesign of model pick (OQ-3). |
-| **OQ-5** | First CLI/datasets (Mackey-Glass? multi-sine? AR(p)?) — **resolve at WS-0**; WS-1 critical path depends on it | A§1.6 | WS-1 | **Provisional 2026-06-02: multi-sine + Mackey-Glass + AR(p)** |
+| **OQ-1** | "recursive" intended as **recurrent** (temporal), not tree-recursive? | A§0.5 | WS-0 | **Resolved (Paul 2026-06-06): recurrent confirmed** — the relevant special case of recursive NNs |
+| **OQ-2** | Does R5 ("capability over simplicity") override C1 (first-principles) where they conflict? | A§1.6 | WS-0 | **Resolved (Paul): neither overrides — both bind.** The tension is real and deliberately acknowledged; C1's transparency is *complementary to* (it enables) R5's capability — exposing low-level structure is what lets the most capable Juniper NNs reach real-world problems. Balance the two per problem location and document the balance struck. |
+| **OQ-3** | Framework hosting 3 unit types, or single-model (RCC only) first? | A§1.5/1.6 | WS-0 | **Resolved (Paul): framework, RCC-first** — endorsed as a cleaner/lower-risk path to the *full* requirement set; RCC-only is a sequencing step, **not** a reduced final scope. Model pick still **contingent on OQ-4** |
+| **OQ-4** | Ship RCC despite star-free ceiling (benign for regression)? | A§1.6 | WS-0 | **OPEN — under active analysis (Paul, 2026-06-06).** Two (possibly non-mutually-exclusive) design approaches under consideration; final choice pending ongoing analysis/discussion/lit-eval, to be resolved in a dedicated doc/section (cf. #377 RCC OQ-4 proposals, #386 handoff). Knorozova & Ronca (AAAI 2024, arXiv:2312.09048): recurrent cascades = **exactly** star-free, remedy = group-implementing units; ESN/NEAT alternatives in play. Probable model-pick redesign (OQ-3). |
+| **OQ-5** | First CLI/datasets (Mackey-Glass? multi-sine? AR(p)?) — **resolve at WS-0**; WS-1 critical path depends on it | A§1.6 | WS-1 | **Resolved (Paul): juniper-data serves (not limited to) spiral, XOR/non-separable, MNIST, equities, and time-series — multi-sine, Mackey-Glass, AR(p).** Drives WS-1 / juniper-data#168 |
 | **OQ-6** | NPZ 3-D extension additive-only; which optional keys in WS-1? | 2.4/2.9 | WS-1 | Additive; `seq_lengths`+`scaling` in-scope |
-| **OQ-7** | When do irregular-Δt datasets (→ Neural ODE/Latent ODE) become relevant? | A§1.4 | future | Defer |
+| **OQ-7** | When do irregular-Δt datasets become relevant? | A§1.3.4 | WS-1 | **Resolved (Paul): GATING — irregular-Δt regression is required for a *completed* state, NOT deferrable** (intermediate phasing is fine, but completion requires it). The LMU's solver-free ZOH path (A§1.3.4) keeps it C1-clean; the long pole is the data contract (Δt note §6 / juniper-data#168). |
 | **OQ-8** | Migrate spiral/recurse CLI problems into juniper-data? | 2.9 | WS-1 | Lean yes (per C3) |
 | **OQ-9** | Two packages vs. one combined `juniper-core`? | 2.9 | WS-2/3 | Two |
 | **OQ-10** | Abstract model interface: new package vs. inside cascor first? | 2.9 | WS-3 | New package, 2-implementer design |
