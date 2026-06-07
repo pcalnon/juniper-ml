@@ -4,8 +4,8 @@
 **Repository**: (proposed) pcalnon/juniper-recurse — design doc hosted in pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.2.0 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; §1.3.4 Δt amendment 2026-06-06)
-**Last Updated**: 2026-06-06
+**Version**: 0.2.1 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; §1.3.4 Δt amendment 2026-06-06; §1.6 OQ answers (Answer-1..7) recorded 2026-06-07)
+**Last Updated**: 2026-06-07
 
 ---
 
@@ -267,11 +267,25 @@ Standard LMU implementations bake `Ā, B̄` as constants for one fixed step; **f
 > These are the model-owned open questions. The full consolidated table (all OQs, both halves) lives in the companion's Part 5; OQ identifiers are shared.
 
 - **[OQ-1]** Confirm "recursive" is intended as **recurrent** (temporal), not tree-recursive (§0.5). *(Provisional: recurrent.)*
+  - **Answer-1 (Paul, 2026-06-06):** Confirmed. **Recurrent** is the intended meaning, as it is the relevant special case of recursive NNs.
 - **[OQ-2]** Does "prioritize problem-solving ability over simplicity" (R5) override the platform's first-principles transparency commitment (C1) where they conflict (e.g., would a `torch.nn.LSTM` fast-path be acceptable for capability, or must everything be hand-rolled)? This is the single biggest value tension in the model choice. *(Provisional: No — C1 binds; document exceptions.)*
+  - **Answer-2 (Paul, 2026-06-06):** These two principles, as presented, *are* in tension and, arguably, should be — as an explicit acknowledgement of the actual tension experienced during the associated design process.
+    - The **(R5)** principle places the focus on problem-solving capacity — preferencing the more powerful, even if more complex, approach rather than favoring a simpler, more accessible design. Admittedly, many problem classes can often be approached more readily, and more conveniently, using carefully chosen and potentially justified simplifications. While this is certainly a viable, and in some cases even a necessary, approach, this is explicitly *not* the desired design path for the Juniper Project. Instead, Juniper's focus is firmly on the interface between the theory — the simplified generalization of how things ought to work — and the messy complexity of how the "real world" actually does.
+    - The **(C1)** principle, in contrast, emphasizes transparency of implementation and design — not primarily to promote explicit visibility into implementation details as a means of establishing alignment with the primary literature (although that is certainly an important secondary effect), but to avoid encapsulating-away fine-grained structures and low-level functionality that need to be accessible to enable investigation and application of novel design approaches. The visibility into and accessibility of these implementation-specific knobs and levers is critically important to bringing the most capable instances of Juniper NNs to bear on complex real-world applications.
+    - Understood in this manner, the **(C1)** principle's emphasis on transparency is not in direct conflict with **(R5)** but, in fact, rhymes with the requirement for problem-solving capability — providing Juniper with key guidance in a complementary, and critical, direction. As such, while there will be apparent tension between these two principles, it is only in addressing this tension directly — by attempting to balance the relative significance and implications of these principles, realizing their mutual dependence and complementary guidance, for a specific location in problem space — that the overall objectives of the Juniper Project can be realized.
 - **[OQ-3]** Is the *framework-hosting-three-unit-types* framing desired, or should the first deliverable be a single model (RCC only) with the others strictly deferred? *(Provisional: framework, RCC first — contingent on OQ-4.)*
+  - **Answer-3 (Paul, 2026-06-06):** I am certainly not against this approach to the extent that it provides a cleaner, less risky implementation path to meeting the full set of design requirements. My concurrence is not intended to suggest that the RCC-only approach is an acceptable approximation of overall design choices. Instead, it supports deferring required complexity to later steps in the implementation process that precede, and are required for, a completed state.
 - **[OQ-4]** **REOPENED 2026-06-02 — under research.** (Was: acceptable to ship RCC despite the star-free ceiling, given the regression focus makes it largely benign? Recommended yes, with guardrail.) Paul's concern: the no-count/no-group ceiling is **architectural, not guardrail-fixable**. Literature review in progress — Knorozova & Ronca (AAAI 2024, arXiv:2312.09048) confirms recurrent cascades = **exactly** star-free and that the remedy is **group-implementing units**; ESN/reservoir and NEAT alternatives are under consideration. **Probable redesign of the model pick (OQ-3).**
+  - **Answer-4 (Paul, 2026-06-06):** Given the results of additional literature reviews and further evaluation, there are currently two, perhaps not mutually exclusive, design approaches being considered. Final design choices have not yet been made, pending ongoing design analysis, discussion, and literature evaluation. The full discussion and evaluation of these approaches will be carried out separately in a dedicated document or document section. *(This question remains **OPEN**; see #377 RCC OQ-4 proposals and the #386 handoff.)*
 - **[OQ-5]** Target first datasets/problems for the CLI "hello-world" (cascor uses two-spiral; recurse needs a time-series-regression analog). *(Provisional 2026-06-02: **multi-sine + Mackey-Glass + AR(p)**.)* Drives the WS-1 generator priorities (companion §2.4).
+  - **Answer-5 (Paul, 2026-06-06):** Agreed. The juniper-data application should be capable of handling (i.e., retrieving/generating, normalizing appropriately, and formatting as required) datasets that include, but are not limited to, the following:
+    - Spiral datasets
+    - Other non-separable datasets (e.g., XOR, etc.)
+    - MNIST datasets
+    - Equities datasets
+    - Other time-series datasets (e.g., multi-sine, Mackey-Glass, AR(p), etc.)
 - **[OQ-7]** When do irregular-Δt datasets become relevant? *(Lean: defer the **solver-based** Neural-ODE/Latent-ODE option; §1.4.)* **Update 2026-06-06 (§1.3.4):** the LMU affords a solver-free, C1-clean variable-Δt path, so irregular-Δt support is *additive* and may not need deferral; the long pole is the data contract (companion note §6). See [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md).
+  - **Answer-7 (Paul, 2026-06-06):** The ability to process and perform regressions on irregular-Δt datasets represents a critical requirement. Meeting these requirements is **gating** for achieving a completed state for this refactor. If focusing on intermediate steps would be helpful for the development process, that approach is perfectly valid — but it does not constitute a finished state with irregular-Δt datasets deferred as future work.
 
 ---
 
