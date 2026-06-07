@@ -9,18 +9,27 @@
 
 ---
 
-> **Document status:** DRAFT. **Planning and design only** — no application code is written, and no existing code modified, on the basis of this document until the plan is ratified and individual workstreams are opened. This document covers the **service/middleware refactor** (extracting the model↔service seam into shared packages so any new model plugs in) plus the **shared scaffolding** for the whole effort. The companion document covers the recurrent model itself.
+> **Document status:** DRAFT. **Planning and design only** — no application code is written, and no existing code modified, on the basis of this document until the plan is ratified and individual workstreams are opened.
+> This document covers the **service/middleware refactor** (extracting the model↔service seam into shared packages so any new model plugs in) plus the **shared scaffolding** for the whole effort.
+> The companion document covers the recurrent model itself.
 >
-> **Provenance:** This document is the **refactor half** of a 2026-06-03 two-way split of the original single master plan (`JUNIPER_RECURSE_DESIGN_AND_PLAN_2026-05-31.md`). It is also the designated home for content that is **cross-cutting** to both halves (Status Tracker, binding constraints, method, Risk Register, Open-Questions table, Verification Log, internal sources) — each such block is marked **⚑ CROSS-CUTTING (review)**. All WS-*/OQ-*/RK-*/C*/F* identifiers are preserved verbatim across both halves. The original five-lens verification pass (Round 1, 2026-05-31) covered the combined content and is reproduced in full in Part 7.
+> **Provenance:** This document is the **refactor half** of a 2026-06-03 two-way split of the original single master plan (`JUNIPER_RECURSE_DESIGN_AND_PLAN_2026-05-31.md`).
+> It is also the designated home for content that is **cross-cutting** to both halves (Status Tracker, binding constraints, method, Risk Register, Open-Questions table, Verification Log, internal sources) — each such block is marked **⚑ CROSS-CUTTING (review)**.
+> All WS-*/OQ-*/RK-*/C*/F* identifiers are preserved verbatim across both halves.
+> The original five-lens verification pass (Round 1, 2026-05-31) covered the combined content and is reproduced in full in Part 7.
 
 ## Companion documents & how to read them
 
-| Document | Scope |
-|----------|-------|
-| **[Recurrent Model Design & Plan](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)** — *companion* | The recurrent NN capability: requirements, candidate-architecture survey, top-3 deep dives, recommendation, model-level testing, model risks & open questions, external literature survey. **Note:** the model pick is currently provisional pending [OQ-4] (reopened). |
-| **This document** — *Model/Middleware Refactor* | Extracting `juniper-service-core` + `juniper-model-core` from cascor (the "model-addition template"), juniper-data extensions, canopy generalization, ecosystem changes, phased rollout, middleware/cross-cutting testing, and the shared scaffolding. |
+| Document                                                                                               | Scope                                                                                                                                                                                      |
+|:-------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **[Recurrent Model Design & Plan](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)** — *companion* | The recurrent NN capability: requirements, candidate-architecture survey, top-3 deep dives, recommendation, model-level testing, model risks & open questions, external literature survey. |
+|                                                                                                        | -- **Note:** the model pick is currently provisional pending [OQ-4] (reopened).                                                                                                            |
+| **This document** — *Model/Middleware Refactor*                                                        | Extracting `juniper-service-core` + `juniper-model-core` from cascor (the "model-addition template"), juniper-data extensions, canopy generalization, ecosystem changes, phased rollout,   |
+|                                                                                                        | -- middleware/cross-cutting testing, and the shared scaffolding.                                                                                                                           |
 
-> **The coupling (read this):** this refactor defines the **abstractions the new model plugs into** (`juniper-model-core`'s `TrainableModel`/`GrowableModel`; `juniper-service-core`'s app/service scaffolding). The companion model is built **greenfield against these abstractions first**, which is how the template is proven *before* production cascor is refactored (WS-6, trigger-conditioned). So: **the companion decides *what to build*; this document decides *what it plugs into* and *how cascor eventually adopts it*.**
+> **The coupling (read this):** this refactor defines the **abstractions the new model plugs into** (`juniper-model-core`'s `TrainableModel`/`GrowableModel`; `juniper-service-core`'s app/service scaffolding).
+> The companion model is built **greenfield against these abstractions first**, which is how the template is proven *before* production cascor is refactored (WS-6, trigger-conditioned).
+> So: **the companion decides *what to build*; this document decides *what it plugs into* and *how cascor eventually adopts it*.**
 
 ---
 
@@ -30,18 +39,20 @@
 >
 > Update this table as workstreams progress. Statuses: `PLANNED` · `IN DESIGN` · `IN PROGRESS` · `BLOCKED` · `IN REVIEW` · `SHIPPED` · `DEFERRED`. "Trigger" names the condition that must hold before a deferred/conditioned workstream starts. **Size** is a coarse effort estimate (S ≈ days, M ≈ 1–2 weeks, L ≈ 3+ weeks / multi-PR) — refine at workstream open. The **Part** column points to the section (and document) that specifies the workstream; `A§` = companion model document.
 
-| ID | Workstream | Part | Size | Status | Depends on | Trigger / Notes |
-|----|------------|------|------|--------|-----------|-----------------|
-| **WS-0** | Design ratification (this effort) | All | S | `IN REVIEW` | — | **Not ratified.** Provisional 2026-06-02: OQ-1 recurrent · OQ-2 C1-binds · OQ-3 framework/RCC-first · OQ-5 multi-sine+Mackey-Glass+AR(p) — **all contingent on the model pick.** **OQ-4 REOPENED — under research** (RCC's no-count/no-group [star-free] ceiling); model pick may change. See Part 5 OQ-4. |
-| **WS-1** | juniper-data: time-series + regression support | 2.4 | M | `PLANNED` | WS-0 | Foundation; unblocks model training. Additive, low risk. **Resolve [OQ-5] here at ratification** |
-| **WS-2** | Extract `juniper-service-core` (Tier-1 generic infra) | 2.3 | L | `PLANNED` | WS-0 | Additive shared package; cascor adopts behind a no-op shim |
-| **WS-3** | Define `juniper-model-core` abstract interfaces | 2.3 | M | `PLANNED` | WS-0 | ABC/Protocol + event/serialization contracts + conformance test kit |
-| **WS-4** | Build `juniper-recurse` (RCC reference model) + `juniper-recurse-client` | A§1.5 / 2.3 | L | `PLANNED` | WS-1, WS-2, WS-3 | Greenfield; proves the template without touching cascor. Model substance in companion doc. |
-| **WS-5** | Generalize `juniper-canopy` (model-agnostic UI + recurse backend) | 2.5 | M | `PLANNED` | WS-4 | Builds on canopy's existing `BackendProtocol` seam |
-| **WS-6** | Refactor `juniper-cascor` onto shared packages | 2.3 / 2.7 | L | `DEFERRED` | WS-2, WS-3, WS-4 | **Trigger:** interfaces proven by recurse + cascor conformance suite green. De-risks production system |
-| **WS-7** | Ecosystem integration: `juniper-deploy`, `juniper-ml` extras | 2.6 | S | `PLANNED` | WS-4 | Compose service, meta-package extra |
-| **WS-8** | (future) `juniper-recurse-worker` distributed training | 2.6 | L | `DEFERRED` | WS-4 | **Trigger:** recurse training cost justifies distribution |
-| **WS-T** | Testing architecture (cuts across all) | 3 | M | `IN DESIGN` | WS-0 | Conformance kit is a first-class deliverable, not an afterthought |
+| ID       | Workstream                                                               | Part        | Size | Status      | Depends on       | Trigger / Notes                                                                                                                            |
+|:---------|:-------------------------------------------------------------------------|:------------|:-----|:------------|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------|
+| **WS-0** | Design ratification (this effort)                                        | All         | S    | `IN REVIEW` | —                | **Not ratified.** Provisional 2026-06-02: OQ-1 recurrent · OQ-2 C1-binds · OQ-3 framework/RCC-first · OQ-5 multi-sine+Mackey-Glass+AR(p) — |
+|          |                                                                          |             |      |             |                  | -- **all contingent on the model pick.** **OQ-4 REOPENED — under research**                                                                |
+|          |                                                                          |             |      |             |                  | -- (RCC's no-count/no-group [star-free] ceiling); model pick may change. See Part 5 OQ-4.                                                  |
+| **WS-1** | juniper-data: time-series + regression support                           | 2.4         | M    | `PLANNED`   | WS-0             | Foundation; unblocks model training. Additive, low risk. **Resolve [OQ-5] here at ratification**                                           |
+| **WS-2** | Extract `juniper-service-core` (Tier-1 generic infra)                    | 2.3         | L    | `PLANNED`   | WS-0             | Additive shared package; cascor adopts behind a no-op shim                                                                                 |
+| **WS-3** | Define `juniper-model-core` abstract interfaces                          | 2.3         | M    | `PLANNED`   | WS-0             | ABC/Protocol + event/serialization contracts + conformance test kit                                                                        |
+| **WS-4** | Build `juniper-recurse` (RCC reference model) + `juniper-recurse-client` | A§1.5 / 2.3 | L    | `PLANNED`   | WS-1, WS-2, WS-3 | Greenfield; proves the template without touching cascor. Model substance in companion doc.                                                 |
+| **WS-5** | Generalize `juniper-canopy` (model-agnostic UI + recurse backend)        | 2.5         | M    | `PLANNED`   | WS-4             | Builds on canopy's existing `BackendProtocol` seam                                                                                         |
+| **WS-6** | Refactor `juniper-cascor` onto shared packages                           | 2.3 / 2.7   | L    | `DEFERRED`  | WS-2, WS-3, WS-4 | **Trigger:** interfaces proven by recurse + cascor conformance suite green. De-risks production system                                     |
+| **WS-7** | Ecosystem integration: `juniper-deploy`, `juniper-ml` extras             | 2.6         | S    | `PLANNED`   | WS-4             | Compose service, meta-package extra                                                                                                        |
+| **WS-8** | (future) `juniper-recurse-worker` distributed training                   | 2.6         | L    | `DEFERRED`  | WS-4             | **Trigger:** recurse training cost justifies distribution                                                                                  |
+| **WS-T** | Testing architecture (cuts across all)                                   | 3           | M    | `IN DESIGN` | WS-0             | Conformance kit is a first-class deliverable, not an afterthought                                                                          |
 
 ---
 
@@ -49,9 +60,14 @@
 
 The companion document selects a **recurrent neural-network model** (`juniper-recurse`) to extend the platform beyond Cascade-Correlation. This document covers the two coupled deliverables that make that model *cheap to add and safe to integrate*: the middleware refactor and the testing architecture.
 
-1. **Middleware refactor (Part 2).** Grounding confirms ~5.5 KLOC *(grounding-pass estimate)* of *already-generic* service infrastructure in cascor, plus a concentrated model↔service seam (`TrainingLifecycleManager`) and several classification-only assumptions (`argmax`, 2-D decision boundary) that a regression/time-series model would break. The target architecture extracts a **`juniper-service-core`** package (FastAPI factory, settings, security, middleware, websocket/worker infra, generic routes, lifecycle base) and a **`juniper-model-core`** package (the abstract `TrainableModel` / `GrowableModel` interface, training-event contract, serialization interface, and a reusable conformance test kit), reuses the existing `juniper-observability` / `juniper-data-client` / `juniper-config-tools`, and assigns all dataset capability to `juniper-data`. This directly continues documented intent in `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common API, #4 New ABC, #7 Split up juniper-cascor). Per the ratified decision, the **target is comprehensive** but the **cascor refactor is phased and trigger-conditioned** — recurse is built greenfield against the new interfaces *first*, proving the template before the production system is touched.
+1. **Middleware refactor (Part 2).**
+    - Grounding confirms ~5.5 KLOC *(grounding-pass estimate)* of *already-generic* service infrastructure in cascor, plus a concentrated model↔service seam (`TrainingLifecycleManager`) and several classification-only assumptions (`argmax`, 2-D decision boundary) that a regression/time-series model would break.
+    - The target architecture extracts a **`juniper-service-core`** package (FastAPI factory, settings, security, middleware, websocket/worker infra, generic routes, lifecycle base) and a **`juniper-model-core`** package (the abstract `TrainableModel` / `GrowableModel` interface, training-event contract, serialization interface, and a reusable conformance test kit), reuses the existing `juniper-observability` / `juniper-data-client` / `juniper-config-tools`, and assigns all dataset capability to `juniper-data`.
+    - This directly continues documented intent in `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common API, #4 New ABC, #7 Split up juniper-cascor).
+    - Per the ratified decision, the **target is comprehensive** but the **cascor refactor is phased and trigger-conditioned** — recurse is built greenfield against the new interfaces *first*, proving the template before the production system is touched.
 
-2. **Testing architecture (Part 3).** Treated as a first-class deliverable: a reusable **interface-conformance test kit** that any model (cascor included) must pass; numerical-correctness / determinism / growth-loop / regression-metric / temporal-leakage suites for the new model (companion §3.2); contract tests for the shared packages; and regression-safety (golden/snapshot) coverage that gates the cascor refactor.
+2. **Testing architecture (Part 3).**
+    - Treated as a first-class deliverable: a reusable **interface-conformance test kit** that any model (cascor included) must pass; numerical-correctness / determinism / growth-loop / regression-metric / temporal-leakage suites for the new model (companion §3.2); contract tests for the shared packages; and regression-safety (golden/snapshot) coverage that gates the cascor refactor.
 
 **The single most important sequencing insight:** `juniper-data` cannot serve this model today (all nine generators are classification + 2-D tabular; the NPZ contract assumes 2-D; splits shuffle and so destroy temporal order). WS-1 (data foundation) is therefore the critical path and should start first.
 
@@ -70,17 +86,19 @@ The companion document selects a **recurrent neural-network model** (`juniper-re
 
 The following were decided by Paul before drafting and are treated as fixed inputs:
 
-| Decision | Choice | Consequence |
-|----------|--------|-------------|
-| **Model focus** | *Span both* growing and fixed-topology recurrent classes | Companion Part 1 surveys the whole space and the top 3 deliberately spans both classes |
-| **Middleware scope** | *Comprehensive target, phased rollout* | Part 2 designs the full template but stages cascor's adoption behind triggers (WS-6) |
+| Decision               | Choice                                                                                      | Consequence                                                                                                                                                                         |
+|:-----------------------|:--------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Model focus**        | *Span both* growing and fixed-topology recurrent classes                                    | Companion Part 1 surveys the whole space and the top 3 deliberately spans both classes                                                                                              |
+| **Middleware scope**   | *Comprehensive target, phased rollout*                                                      | Part 2 designs the full template but stages cascor's adoption behind triggers (WS-6)                                                                                                |
 | **Document structure** | ~~*Single master document*~~ → **SUPERSEDED 2026-06-03: split into two** (model + refactor) | **⚑ REVIEW:** the original "single master document" decision was reversed by Paul on 2026-06-03; this file and its companion are the result. Status-tracked; sub-parts within each. |
 
 ### 0.3 Binding platform constraints (derived from existing docs, not optional)
 
 These are not requirements the user re-stated; they are pre-existing platform commitments that the design must honor. Each is cited.
 
-- **C1 — First-principles implementation.** *"…implemented from the primary literature without recourse to higher-level abstractions that elide the algorithm's operational detail… candidate units, correlation objectives, weight-freezing semantics, and the structural events that grow the network are first-class artifacts of the codebase rather than internal details of a library wrapper."* (`RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md` §2.) → The recurrent model's recurrence, state, and growth must be inspectable code, **not** a `torch.nn.LSTM` black box. This constraint materially shapes the model ranking (companion Part 1).
+- **C1 — First-principles implementation.** *"…implemented from the primary literature without recourse to higher-level abstractions that elide the algorithm's operational detail… candidate units, correlation objectives, weight-freezing semantics, and the structural events that grow the network are first-class artifacts of the codebase rather than internal details of a library wrapper."*
+  - (`RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md` §2.) → The recurrent model's recurrence, state, and growth must be inspectable code, **not** a `torch.nn.LSTM` black box.
+  - This constraint materially shapes the model ranking (companion Part 1).
 - **C2 — Dual-mode application shape.** Every Juniper service has a FastAPI `create_app()` factory (`server.py`) **and** a standalone CLI (`main.py`), Pydantic settings with an env prefix, and the canonical 6-field `AGENTS.md` header (enforced by `tests/test_agents_md_header_schema.py`). juniper-recurse follows this exactly; env prefix `JUNIPER_RECURSE_`.
 - **C3 — Shared-data contract.** Datasets flow `juniper-data → juniper-data-client → model` as NPZ artifacts. All dataset capability belongs to `juniper-data` (per the user's component-boundary statement). juniper-recurse must consume datasets via `juniper-data-client`, not generate its own.
 - **C4 — Shared observability.** Metrics/logging/health/middleware come from `juniper-observability` (`>=0.3.0`; the on-disk version is 0.3.0 and already provides `MetricsAuthMiddleware` — 0.3.1 only adds an unparseable-client-IP warning); new Prometheus collectors use `register_or_reuse` & friends. (`juniper-cascor/AGENTS.md` "Programming Conventions".)
@@ -95,7 +113,9 @@ This document (and its companion) was produced by:
 3. **Local verification** of flagged claims (port numbers, dependency-pin conventions, generator inventory, prior-art file existence) against the actual repositories.
 4. A **multi-agent verification pass** over the original combined draft (Part 7) to exclude hallucinations and integrate corrections.
 
-> **Anti-hallucination posture.** Where research agents could not read a primary PDF (e.g., scanned 1990s NIPS papers), the affected numbers are explicitly flagged as secondary-sourced. Cascade-Correlation-integration claims for non-cascor architectures are uniformly labeled **[speculative]** — no published work implements them. Specific cascor source line numbers from the grounding pass are **not** reproduced as load-bearing facts; coupling is cited at the module/behavior level that the cascor `AGENTS.md` independently corroborates, with exact lines deferred to implementation-time confirmation.
+> **Anti-hallucination posture.** Where research agents could not read a primary PDF (e.g., scanned 1990s NIPS papers), the affected numbers are explicitly flagged as secondary-sourced.
+> Cascade-Correlation-integration claims for non-cascor architectures are uniformly labeled **[speculative]** — no published work implements them.
+> Specific cascor source line numbers from the grounding pass are **not** reproduced as load-bearing facts; coupling is cited at the module/behavior level that the cascor `AGENTS.md` independently corroborates, with exact lines deferred to implementation-time confirmation.
 
 ### 0.5 Terminology: "recursive" vs. "recurrent"
 
@@ -117,63 +137,75 @@ juniper-cascor (`src/` layout) is a dual-mode app: `src/server.py` (FastAPI) + `
 - **hardcodes the HDF5 serializer** for snapshots;
 - **assumes 2-D classification** in the decision-boundary path (`argmax` over outputs; a `shape[1] == 2` input gate).
 
-The last point is the critical compatibility hazard, and verification confirmed it reaches **further than the decision-boundary route** — the accuracy assumption also surfaces in the metrics-history path, metrics collection, and the "auto-snapshot best" feature. **A regression / time-series model breaks these classification assumptions** (accuracy metric, `argmax`, decision-boundary) baked into routes, monitoring, and the canopy UI. *(These behaviors are corroborated by `juniper-cascor/AGENTS.md`; exact line numbers from the grounding pass are deferred to implementation-time confirmation — see §0.4 anti-hallucination posture.)*
+The last point is the critical compatibility hazard, and verification confirmed it reaches **further than the decision-boundary route** — the accuracy assumption also surfaces in the metrics-history path, metrics collection, and the "auto-snapshot best" feature.
+**A regression / time-series model breaks these classification assumptions** (accuracy metric, `argmax`, decision-boundary) baked into routes, monitoring, and the canopy UI.
+*(These behaviors are corroborated by `juniper-cascor/AGENTS.md`; exact line numbers from the grounding pass are deferred to implementation-time confirmation — see §0.4 anti-hallucination posture.)*
 
-This matches **documented prior intent**: `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` idea **#4 "New ABC"** ("extract shared functionality from `CascadeCorrelationNetwork` and `CandidateUnit` into a new Abstract Base Class") and idea **#7 "Split up juniper-cascor"** ("decompose into ABC, two child classes, and a management layer"). The present plan generalizes that intent from *intra-cascor* (ABC over network/candidate) to *cross-model* (ABC/Protocol over any Juniper learning model).
+This matches **documented prior intent**: `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` idea **#4 "New ABC"** ("extract shared functionality from `CascadeCorrelationNetwork` and `CandidateUnit` into a new Abstract Base Class") and idea **#7 "Split up juniper-cascor"** ("decompose into ABC, two child classes, and a management layer").
+The present plan generalizes that intent from *intra-cascor* (ABC over network/candidate) to *cross-model* (ABC/Protocol over any Juniper learning model).
 
 ### 2.2 Classification of cascor functionality (extract / abstract / keep)
 
 From the grounding cartography (classifications anchored to cascor's documented module map):
 
-| Tier | Cascor modules | Classification | Disposition |
-|------|----------------|----------------|-------------|
-| **T1 — Pure infra (≈5.5 KLOC [grounding estimate]; ~0 model coupling — worker-subsystem inclusion is contingent on [OQ-11])** | `api/app.py`, `api/settings.py` (base), `api/security.py`, `api/secrets.py`, `api/middleware.py`, `api/observability.py`, `api/service_launcher.py`, `api/websocket/manager.py`, `api/websocket/worker_stream.py`, `api/workers/{protocol,registry,audit,metrics,security}.py`, `log_config/**`, `profiling/**`, `utils/**` | GENERIC-INFRA | **Extract → `juniper-service-core`** (mostly lift-and-shift). Several already re-export `juniper-observability`. |
-| **T2 — Semi-generic (needs an interface to decouple)** | `api/lifecycle/{manager,monitor,state_machine}.py`, `api/routes/{training,dataset,history,snapshots,metrics,health}.py`, `api/workers/coordinator.py`, `parallelism/task_distributor.py`, `snapshots/snapshot_serializer.py`, `api/models/training.py` | SEMI-GENERIC | **Extract base + keep cascor subclass.** Base lifecycle/routes/serializer in `juniper-service-core`; cascor-specific bits (cascade events, candidate fields, HDF5 weight layout) move to a cascor subclass. |
-| **T3 — Model-specific (the model)** | `cascade_correlation/**`, `candidate_unit/**`, `cascor_constants/**`, `cascor_plotter/**`, `api/routes/decision_boundary.py`, `spiral_problem/**` | MODEL-SPECIFIC | **Stays in cascor.** (Two-spiral is arguably a *dataset* and could migrate to juniper-data per C3 — see [OQ-8].) |
+| Tier                                                   | Cascor modules                                                                                     | Classification | Disposition                                                                                                      |
+|:-------------------------------------------------------|:---------------------------------------------------------------------------------------------------|:---------------|:-----------------------------------------------------------------------------------------------------------------|
+| **T1 — Pure infra (≈5.5 KLOC [grounding estimate];**   | `api/app.py`, `api/settings.py` (base), `api/security.py`, `api/secrets.py`, `api/middleware.py`,  | GENERIC-INFRA  | **Extract → `juniper-service-core`** (mostly lift-and-shift). Several already re-export `juniper-observability`. |
+| -- **~0 model coupling — worker-subsystem inclusion**  | -- `api/observability.py`, `api/service_launcher.py`, `api/websocket/manager.py`,                  |                |                                                                                                                  |
+| -- **is contingent on [OQ-11])**                       | -- `api/websocket/worker_stream.py`, `api/workers/{protocol,registry,audit,metrics,security}.py`,  |                |                                                                                                                  |
+|                                                        | -- `log_config/**`, `profiling/**`, `utils/**`                                                     |                |                                                                                                                  |
+| **T2 — Semi-generic (needs an interface to decouple)** | `api/lifecycle/{manager,monitor,state_machine}.py`, `api/workers/coordinator.py`,                  | SEMI-GENERIC   | **Extract base + keep cascor subclass.** Base lifecycle/routes/serializer in `juniper-service-core`;             |
+|                                                        | -- `api/routes/{training,dataset,history,snapshots,metrics,health}.py`,                            |                | cascor-specific bits (cascade events, candidate fields, HDF5 weight layout) move to a cascor subclass.           |
+|                                                        | -- `parallelism/task_distributor.py`, `snapshots/snapshot_serializer.py`, `api/models/training.py` |                |                                                                                                                  |
+| **T3 — Model-specific (the model)**                    | `cascade_correlation/**`, `candidate_unit/**`, `cascor_constants/**`, `cascor_plotter/**`,         | MODEL-SPECIFIC | **Stays in cascor.** (Two-spiral is arguably a *dataset* and could migrate to juniper-data per C3 — see [OQ-8].) |
+|                                                        | -- `api/routes/decision_boundary.py`, `spiral_problem/**`                                          |                |                                                                                                                  |
 
-The seam to abstract is therefore precisely the T2 boundary: introduce a model interface so the lifecycle/routes never name `CascadeCorrelationNetwork`.
+Full ecosystem Status Tracker (all workstreams WS-0…WS-T) lives in the companion document. This is the model-only slice.
 
-*Per-module dispositions worth an explicit note:* `cascor_plotter/**` **stays in cascor** (spiral/2-D-classification plotting; live rendering belongs to canopy anyway per the component boundary). `profiling/**` and `utils/**` are lift-and-shift to `juniper-service-core` **only after** confirming `utils/**` is not a grab-bag — any model-specific helper is split out first, honoring the journal's "shared by default, override if needed" rule.
+Two new shared packages, plus reuse of three existing ones, plus the new app.
+(Packaging follows the established Juniper shared-package template: `juniper_<name>/` import package, `pyproject.toml` with setuptools, independent publish workflow on a `juniper-<name>-v*` tag, semver.
+**Pin convention is mixed across the ecosystem** — `juniper-doc-tools`/`juniper-config-tools` pin `>=X.Y.Z,<0.2.0` while `juniper-observability`/`juniper-ci-tools` are floor-only; **recommendation:** new pre-1.0 packages adopt the *capped* form `>=X.Y.Z,<X.(Y+1).0` for safety.)
 
-### 2.3 Target architecture — the model-addition template
-
-Two new shared packages, plus reuse of three existing ones, plus the new app. (Packaging follows the established Juniper shared-package template: `juniper_<name>/` import package, `pyproject.toml` with setuptools, independent publish workflow on a `juniper-<name>-v*` tag, semver. **Pin convention is mixed across the ecosystem** — `juniper-doc-tools`/`juniper-config-tools` pin `>=X.Y.Z,<0.2.0` while `juniper-observability`/`juniper-ci-tools` are floor-only; **recommendation:** new pre-1.0 packages adopt the *capped* form `>=X.Y.Z,<X.(Y+1).0` for safety.)
-
-```
-                         ┌─────────────────────────────────────────────┐
-                         │  EXISTING shared packages (reuse as-is)      │
-                         │  • juniper-observability  (metrics/log/health/mw)
-                         │  • juniper-data-client    (dataset fetch)    │
-                         │  • juniper-config-tools   (env aliases)      │
-                         └─────────────────────────────────────────────┘
-                                        ▲              ▲
-                                        │              │
-   ┌──────────────────────────┐   ┌─────┴──────────────┴─────┐
-   │  juniper-model-core (NEW) │   │  juniper-service-core(NEW)│
-   │  • TrainableModel (ABC/   │   │  • create_app() factory   │
-   │    Protocol)              │◄──│  • SettingsBase (env pfx) │
-   │  • GrowableModel          │   │  • security / middleware  │
-   │  • TrainingEvent contract │   │  • websocket + worker infra│
-   │  • ModelSerializer iface  │   │  • generic routes:        │
-   │  • TrainingLifecycleBase  │   │    health/training/metrics/│
-   │  • conformance test kit   │   │    dataset/snapshots      │
-   └──────────────────────────┘   │  • TaskDistributor        │
-            ▲            ▲          └───────────────────────────┘
+```bash
+                         ┌─────────────────────────────────────────────────────┐
+                         │  EXISTING shared packages (reuse as-is)             │
+                         │  • juniper-observability  (metrics/log/health/mw)   |
+                         │  • juniper-data-client    (dataset fetch)           │
+                         │  • juniper-config-tools   (env aliases)             │
+                         └─────────────────────────────────────────────────────┘
+                                           ▲              ▲
+                                           │              │
+   ┌─────────────────────────────┐   ┌─────┴──────────────┴─────────┐
+   │  juniper-model-core (NEW)   │   │  juniper-service-core(NEW)   │
+   │  • TrainableModel (ABC/     │   │  • create_app() factory      │
+   │    Protocol)                │◄──│  • SettingsBase (env pfx)    │
+   │  • GrowableModel            │   │  • security / middleware     │
+   │  • TrainingEvent contract   │   │  • websocket + worker infra  │
+   │  • ModelSerializer iface    │   │  • generic routes:           │
+   │  • TrainingLifecycleBase    │   │    health/training/metrics/  │
+   │  • conformance test kit     │   │    dataset/snapshots         │
+   └─────────────────────────────┘   │  • TaskDistributor           │
+            ▲            ▲           └──────────────────────────────┘
             │            │                    ▲           ▲
-   ┌────────┴───┐  ┌─────┴────────┐   ┌───────┴───┐  ┌────┴──────────────┐
-   │ juniper-   │  │ juniper-     │   │ juniper-  │  │ juniper-recurse    │
-   │ cascor     │  │ recurse      │   │ cascor    │  │ (NEW app, WS-4)    │
-   │ (CascadeCC │  │ (RCC, then   │   │ refactor  │  │ • RCC model        │
-   │  impl T3)  │  │  ESN, LMU)   │   │ WS-6      │  │ • recurrent        │
-   │ WS-6       │  │              │   │ trigger'd │  │   lifecycle subclass│
-   └────────────┘  └──────────────┘   └───────────┘  └────────────────────┘
+            |            |                    |           |
+   ┌────────┴───┐  ┌─────┴────────┐   ┌───────┴───┐  ┌────┴──────────────────┐
+   │ juniper-   │  │ juniper-     │   │ juniper-  │  │ juniper-recurse       │
+   │ cascor     │  │ recurse      │   │ cascor    │  │ (NEW app, WS-4)       │
+   │ (CascadeCC │  │ (RCC, then   │   │ refactor  │  │ • RCC model           │
+   │  impl T3)  │  │  ESN, LMU)   │   │ WS-6      │  │ • recurrent           │
+   │ WS-6       │  │              │   │ triggered │  │   lifecycle subclass  │
+   └────────────┘  └──────────────┘   └───────────┘  └───────────────────────┘
 ```
 
 **`juniper-model-core` (the *model* template).** The linchpin (cf. journal idea #4). Defines:
 
 - `TrainableModel` — the minimal contract the service layer needs: `fit(X, y, X_val=, y_val=, **kw)`, `predict(X)` / `forward(X)`, `input_shape` / `output_shape`, `task_type ∈ {classification, regression}`, `metrics() -> dict`, plus model-introspection (`describe_topology()`).
 - `GrowableModel(TrainableModel)` — for constructive models (RCC, Growing ESN): `grow_step()`, `n_units`, growth-event hooks, `freeze()`. Fixed-topology models (LMU, LSTM) implement only `TrainableModel`.
-- `TrainingEvent` contract — a generalized, model-agnostic event vocabulary (`training_start/end`, `epoch_end`, `unit_added`, `phase_change`) that *subsumes* cascor's events. The monitor consumes the generic vocabulary; each model maps its events onto it. **Illustrative mapping:** cascor `cascade_add` → `unit_added`; `candidate_progress` → `phase_change` (phase=`candidate_training`, per-candidate detail in payload); `epoch_end`/`training_start`/`training_end` map 1:1. RCC reuses `unit_added`; Growing-ESN maps sub-reservoir addition → `unit_added`. (Confirming this mapping preserves cascor's monitoring fidelity is a WS-6 acceptance criterion.)
+- `TrainingEvent` contract — a generalized, model-agnostic event vocabulary (`training_start/end`, `epoch_end`, `unit_added`, `phase_change`) that *subsumes* cascor's events.
+  - The monitor consumes the generic vocabulary; each model maps its events onto it.
+  - **Illustrative mapping:** cascor `cascade_add` → `unit_added`; `candidate_progress` → `phase_change` (phase=`candidate_training`, per-candidate detail in payload); `epoch_end`/`training_start`/`training_end` map 1:1.
+  - RCC reuses `unit_added`; Growing-ESN maps sub-reservoir addition → `unit_added`.
+  - (Confirming this mapping preserves cascor's monitoring fidelity is a WS-6 acceptance criterion.)
 - `ModelSerializer` interface — `save(model, path)` / `load(path)`; cascor's HDF5 serializer becomes one implementation.
 - `TrainingLifecycleBase` — the de-cascored manager (threading, FSM, dataset mgmt, monitoring hooks) that operates only against `TrainableModel`/`GrowableModel`.
 - The **conformance test kit** (see §3.3) — a reusable pytest suite any implementer must pass.
@@ -221,14 +253,17 @@ Two new shared packages, plus reuse of three existing ones, plus the new app. (P
 
 Per C3, *all* dataset capability belongs to juniper-data. Grounding found it **cannot serve this model today**:
 
-| Capability | Today | Needed | Gap |
-|------------|-------|--------|-----|
-| Generators | 9, **all classification, all 2-D tabular** (arc_agi, checkerboard, circles, csv_import, gaussian, mnist, moon, spiral, xor — confirmed on disk) | ≥1 regression + ≥1 time-series generator | **MISSING** |
-| NPZ shape | 2-D assumed (`X.shape[1]`=features; one-hot `y`) | 3-D `(samples, timesteps, features)`; scalar/vector regression `y` | **MISSING** |
-| Splits | shuffle-based | **temporal** (non-shuffled) train/val/test; walk-forward option | **MISSING** |
-| Sequence metadata | none | optional `seq_lengths`, `padding_mask`, target `scaling` params | **MISSING** |
+| Capability        | Today                                                                                                                                           | Needed                                                             | Gap         |
+|:------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------|:------------|
+| Generators        | 9, **all classification, all 2-D tabular** (arc_agi, checkerboard, circles, csv_import, gaussian, mnist, moon, spiral, xor — confirmed on disk) | ≥1 regression + ≥1 time-series generator                           | **MISSING** |
+| NPZ shape         | 2-D assumed (`X.shape[1]`=features; one-hot `y`)                                                                                                | 3-D `(samples, timesteps, features)`; scalar/vector regression `y` | **MISSING** |
+| Splits            | shuffle-based                                                                                                                                   | **temporal** (non-shuffled) train/val/test; walk-forward option    | **MISSING** |
+| Sequence metadata | none                                                                                                                                            | optional `seq_lengths`, `padding_mask`, target `scaling` params    | **MISSING** |
 
-WS-1 adds: regression generators (**multi-sine, Mackey-Glass, AR(p)** — per [OQ-5], provisionally resolved 2026-06-02); a 3-D-aware NPZ contract (back-compatible: 2-D still valid); a `temporal_split`; and task-type/scaling metadata in the artifact + data-client. **This is additive and low-risk to existing consumers** and must precede WS-4. The NPZ contract change is the one ecosystem-wide ripple — it touches the data-client and any shape-validating consumer; design it as an *extension* (new optional keys, `X.ndim` dispatch) not a breaking change. Recorded as **[OQ-6]**.
+WS-1 adds: regression generators (**multi-sine, Mackey-Glass, AR(p)** — per [OQ-5], provisionally resolved 2026-06-02); a 3-D-aware NPZ contract (back-compatible: 2-D still valid); a `temporal_split`; and task-type/scaling metadata in the artifact + data-client.
+**This is additive and low-risk to existing consumers** and must precede WS-4.
+The NPZ contract change is the one ecosystem-wide ripple — it touches the data-client and any shape-validating consumer; design it as an *extension* (new optional keys, `X.ndim` dispatch) not a breaking change.
+Recorded as **[OQ-6]**.
 
 ### 2.5 juniper-canopy generalization (WS-5)
 
@@ -243,16 +278,16 @@ The clean path is **schema-driven UI**: backends advertise their param schema, a
 
 ### 2.6 Ecosystem changes
 
-| Repo | Change | Risk |
-|------|--------|------|
-| **(new) juniper-recurse** | New service app (WS-4) | New code, isolated |
-| **(new) juniper-recurse-client** | HTTP/WS client, mirrors juniper-cascor-client (cf. journal idea #5) | Low |
-| **juniper-data** | Time-series/regression support (WS-1) | Additive |
-| **juniper-canopy** | Model-agnostic UI + recurse backend (WS-5) | Moderate (UI) |
-| **juniper-cascor** | Adopt service-core + implement model-core (WS-6) | **Highest — production system; trigger-conditioned** |
-| **juniper-deploy** | Compose service + port (suggest host 8211→ctr 8210, mirroring cascor's 8201→8200) **[OQ-15]** (WS-7) | Low |
-| **juniper-ml** | Add `juniper-recurse-client` to extras; new shared packages to `[tools]`/`[all]`; lint contracts (`test_pyproject_extras.py`) (WS-7) | Low; must update extras lint in same PR |
-| **(future) juniper-recurse-worker** | Distributed training (WS-8) | Deferred |
+| Repo                                | Change                                                                                                                               | Risk                                                 |
+|:------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------|
+| **(new) juniper-recurse**           | New service app (WS-4)                                                                                                               | New code, isolated                                   |
+| **(new) juniper-recurse-client**    | HTTP/WS client, mirrors juniper-cascor-client (cf. journal idea #5)                                                                  | Low                                                  |
+| **juniper-data**                    | Time-series/regression support (WS-1)                                                                                                | Additive                                             |
+| **juniper-canopy**                  | Model-agnostic UI + recurse backend (WS-5)                                                                                           | Moderate (UI)                                        |
+| **juniper-cascor**                  | Adopt service-core + implement model-core (WS-6)                                                                                     | **Highest — production system; trigger-conditioned** |
+| **juniper-deploy**                  | Compose service + port (suggest host 8211→ctr 8210, mirroring cascor's 8201→8200) **[OQ-15]** (WS-7)                                 | Low                                                  |
+| **juniper-ml**                      | Add `juniper-recurse-client` to extras; new shared packages to `[tools]`/`[all]`; lint contracts (`test_pyproject_extras.py`) (WS-7) | Low; must update extras lint in same PR              |
+| **(future) juniper-recurse-worker** | Distributed training (WS-8)                                                                                                          | Deferred                                             |
 
 ### 2.7 Phased rollout (comprehensive target, trigger-conditioned cascor)
 
@@ -263,20 +298,25 @@ Sequencing embodies the ratified "comprehensive target, phased rollout" decision
 3. **WS-3 — Define `juniper-model-core`** interfaces + conformance kit (design + tests; no app disruption).
 4. **WS-4 — Build juniper-recurse** (RCC) + client, greenfield against WS-2/WS-3. **This validates the abstractions without risk to cascor.** (Model substance: companion Part 1.)
 5. **WS-5 — Generalize canopy** + add recurse backend.
-6. **WS-6 — Refactor cascor** onto service-core + model-core. **DEFERRED. Trigger:** WS-4 has shipped *and* a cascor golden/snapshot regression suite + the conformance suite are green for cascor. Until then, cascor stays as-is (it loses nothing; it simply doesn't yet consume the shared packages). **Kill-criterion:** if the conformance suite cannot be made green for cascor without changing observable behavior, WS-6 is abandoned — cascor keeps its own service stack, recurse still benefits from the shared packages, and the one-sided extraction is documented rather than forced.
+6. **WS-6 — Refactor cascor** onto service-core + model-core.
+    - **DEFERRED. Trigger:** WS-4 has shipped *and* a cascor golden/snapshot regression suite + the conformance suite are green for cascor.
+      - Until then, cascor stays as-is (it loses nothing; it simply doesn't yet consume the shared packages).
+    - **Kill-criterion:** if the conformance suite cannot be made green for cascor without changing observable behavior, WS-6 is abandoned — cascor keeps its own service stack, recurse still benefits from the shared packages, and the one-sided extraction is documented rather than forced.
 7. **WS-7 — deploy/meta-package** integration. **WS-8 — recurse-worker** (deferred; trigger = training cost).
 
 ### 2.8 Risks & guardrails — the refactor
 
-| Risk | Guardrail |
-|------|-----------|
-| **Premature/over-abstraction** (journal's own §4 risk: "putting too much in the ABC makes child classes trivial; too little defeats the purpose") | Adopt the journal's rule (paraphrasing its two clauses): *"shared by default, override if needed,"* and *"move to children only when semantically necessary."* Drive the interface from **two** real implementers (cascor + RCC) before freezing it — never design the ABC from cascor alone. |
-| **Destabilizing production cascor** | WS-6 is trigger-conditioned and gated by a golden-regression suite captured *before* any refactor. service-core extraction (WS-2) ships behind a no-op re-export shim. |
-| **NPZ contract change ripples** | Make it purely additive (optional new keys, `X.ndim` dispatch); 2-D path byte-identical; version the artifact. |
-| **Classification assumptions leak into "generic" routes** | The conformance kit asserts a *regression* model round-trips through every generic route (no `argmax`, no accuracy assumption). |
-| **Shared-package proliferation / maintenance burden** | Exactly two new packages; justify each against the ≥2-consumer bar that `juniper-observability` set. Resist a third (`juniper-serialization`) until a second serializer exists. |
-| **Cross-repo version skew** | Reuse the existing drift-lint pattern (`test_doc_tools_drift.py` / `test_ci_tools_drift.py`) for the new packages. |
-| **Concurrent-session race on shared CI files** (known ecosystem hazard) | Land shared-package + workflow edits in dedicated PRs; verify each new workflow with `gh workflow run` before relying on it. |
+| Risk                                                                    | Guardrail                                                                                                                                                                       |
+|:------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Premature/over-abstraction**                                          | Adopt the journal's rule (paraphrasing its two clauses): *"shared by default, override if needed,"* and *"move to children only when semantically necessary."*                  |
+| -- (journal's own §4 risk: "putting too much in the ABC                 | -- Drive the interface from **two** real implementers (cascor + RCC) before freezing it — never design the ABC from cascor alone.                                               |
+| --  makes child classes trivial; too little defeats the purpose")       |                                                                                                                                                                                 |
+| **Destabilizing production cascor**                                     | WS-6 is trigger-conditioned and gated by a golden-regression suite captured *before* any refactor. service-core extraction (WS-2) ships behind a no-op re-export shim.          |
+| **NPZ contract change ripples**                                         | Make it purely additive (optional new keys, `X.ndim` dispatch); 2-D path byte-identical; version the artifact.                                                                  |
+| **Classification assumptions leak into "generic" routes**               | The conformance kit asserts a *regression* model round-trips through every generic route (no `argmax`, no accuracy assumption).                                                 |
+| **Shared-package proliferation / maintenance burden**                   | Exactly two new packages; justify each against the ≥2-consumer bar that `juniper-observability` set. Resist a third (`juniper-serialization`) until a second serializer exists. |
+| **Cross-repo version skew**                                             | Reuse the existing drift-lint pattern (`test_doc_tools_drift.py` / `test_ci_tools_drift.py`) for the new packages.                                                              |
+| **Concurrent-session race on shared CI files** (known ecosystem hazard) | Land shared-package + workflow edits in dedicated PRs; verify each new workflow with `gh workflow run` before relying on it.                                                    |
 
 ### 2.9 Open questions — refactor
 
@@ -341,17 +381,17 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 ### 3.6 Toolset summary
 
-| Concern | Tool | Notes |
-|---------|------|-------|
-| Test runner | pytest | markers, `--run-long`, coverage |
-| Coverage | pytest-cov / coverage[toml] | 80% gate |
-| Async / API | pytest-asyncio, httpx | FastAPI `TestClient` pattern |
-| Property-based | hypothesis | shapes, splits, round-trips |
-| Parallel | pytest-xdist | mind multiprocessing-orphan reaping |
-| Numerical | numpy/torch finite-diff helpers | gradient checks |
-| Perf | pytest-benchmark or cascor's micro-bench harness | baselines |
-| Prometheus | `juniper_observability.testing.reset_prometheus_registry` | registry isolation |
-| Lint/security | flake8/black/isort/mypy/bandit, gitleaks, pip-audit | pre-commit + CI |
+| Concern        | Tool                                                      | Notes                               |
+|----------------|-----------------------------------------------------------|-------------------------------------|
+| Test runner    | pytest                                                    | markers, `--run-long`, coverage     |
+| Coverage       | pytest-cov / coverage[toml]                               | 80% gate                            |
+| Async / API    | pytest-asyncio, httpx                                     | FastAPI `TestClient` pattern        |
+| Property-based | hypothesis                                                | shapes, splits, round-trips         |
+| Parallel       | pytest-xdist                                              | mind multiprocessing-orphan reaping |
+| Numerical      | numpy/torch finite-diff helpers                           | gradient checks                     |
+| Perf           | pytest-benchmark or cascor's micro-bench harness          | baselines                           |
+| Prometheus     | `juniper_observability.testing.reset_prometheus_registry` | registry isolation                  |
+| Lint/security  | flake8/black/isort/mypy/bandit, gitleaks, pip-audit       | pre-commit + CI                     |
 
 ### 3.7 Open questions — testing
 
@@ -365,21 +405,21 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 > **⚑ CROSS-CUTTING (review):** the Risk Register spans both halves and is the **canonical** register for the whole effort. The companion model document carries a model-only slice (RK-2, RK-3, RK-7, RK-13).
 
-| # | Risk | L×I | Mitigation / Guardrail | WS |
-|---|------|-----|------------------------|----|
-| RK-1 | **juniper-data can't serve time-series regression** — blocks everything | High × High | WS-1 first; additive NPZ extension | WS-1 |
-| RK-2 | **RCC representational ceiling** (star-free only) bites on a chosen task | Med × Med → **under [OQ-4] re-evaluation 2026-06-02** | Scope to regression/smooth signals; framework can fall back to LMU/gated/group-implementing unit; OQ-4 may change the model pick | WS-4 |
-| RK-3 | **RCC regression is unproven** in the literature | Med × Med | Treat as research; golden known-answer tests; ESN (native regression) as parallel track | WS-4 |
-| RK-4 | **Premature/over-abstraction** of the model interface | Med × High | Design ABC against ≥2 implementers (cascor+RCC); "shared by default, override if needed" | WS-3 |
-| RK-5 | **Destabilizing production cascor** during refactor | Med × High | WS-6 trigger-conditioned; pre-refactor golden suite; service-core via no-op shim | WS-6 |
-| RK-6 | **Classification assumptions leak** into "generic" routes | Med × Med | Conformance kit drives a regression model through every route | WS-3 |
-| RK-7 | **First-principles vs. capability tension** (C1 vs. R5) unresolved | Med × Med | [OQ-2]; default to first-principles per C1, document any exception | WS-0 |
-| RK-8 | **Shared-package proliferation / maintenance** | Low × Med | Exactly two packages; ≥2-consumer bar; drift-lint | WS-2/3 |
-| RK-9 | **NPZ contract change breaks existing consumers** | Low × High | Additive-only; 2-D path byte-identical; version artifact | WS-1 |
-| RK-10 | **New CI workflows pass lint but fail first run** (observed pattern) | Med × Low | `gh workflow run` each new workflow immediately | WS-2/4/7 |
-| RK-11 | **Concurrent-session races on shared CI/extras files** | Med × Low | Dedicated PRs; update extras lint in same PR | WS-7 |
-| RK-12 | **Canopy UI test fragility** (Dash/Playwright `type=number` gap; event-loop leak) | Med × Low | POST param endpoint directly; isolate UI subsuite | WS-5 |
-| RK-13 | **SSM/Mamba temptation** pulls scope toward black-box dependencies | Low × Med | Mamba is baseline-only; S5/diagonal-S4 deferred behind LMU | WS-4 |
+| #     | Risk                                                                              | L×I                                                   | Mitigation / Guardrail                                                                                        | WS       |
+|-------|-----------------------------------------------------------------------------------|-------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|----------|
+| RK-1  | **juniper-data can't serve time-series regression** — blocks everything           | High × High                                           | WS-1 first; additive NPZ extension                                                                            | WS-1     |
+| RK-2  | **RCC representational ceiling** (star-free only) bites on a chosen task          | Med × Med → **under [OQ-4] re-evaluation 2026-06-02** | Scope regression/smooth signals; framework fallback LMU/gated/group-implementing unit; OQ-4 change model pick | WS-4     |
+| RK-3  | **RCC regression is unproven** in the literature                                  | Med × Med                                             | Treat as research; golden known-answer tests; ESN (native regression) as parallel track                       | WS-4     |
+| RK-4  | **Premature/over-abstraction** of the model interface                             | Med × High                                            | Design ABC against ≥2 implementers (cascor+RCC); "shared by default, override if needed"                      | WS-3     |
+| RK-5  | **Destabilizing production cascor** during refactor                               | Med × High                                            | WS-6 trigger-conditioned; pre-refactor golden suite; service-core via no-op shim                              | WS-6     |
+| RK-6  | **Classification assumptions leak** into "generic" routes                         | Med × Med                                             | Conformance kit drives a regression model through every route                                                 | WS-3     |
+| RK-7  | **First-principles vs. capability tension** (C1 vs. R5) unresolved                | Med × Med                                             | [OQ-2]; default to first-principles per C1, document any exception                                            | WS-0     |
+| RK-8  | **Shared-package proliferation / maintenance**                                    | Low × Med                                             | Exactly two packages; ≥2-consumer bar; drift-lint                                                             | WS-2/3   |
+| RK-9  | **NPZ contract change breaks existing consumers**                                 | Low × High                                            | Additive-only; 2-D path byte-identical; version artifact                                                      | WS-1     |
+| RK-10 | **New CI workflows pass lint but fail first run** (observed pattern)              | Med × Low                                             | `gh workflow run` each new workflow immediately                                                               | WS-2/4/7 |
+| RK-11 | **Concurrent-session races on shared CI/extras files**                            | Med × Low                                             | Dedicated PRs; update extras lint in same PR                                                                  | WS-7     |
+| RK-12 | **Canopy UI test fragility** (Dash/Playwright `type=number` gap; event-loop leak) | Med × Low                                             | POST param endpoint directly; isolate UI subsuite                                                             | WS-5     |
+| RK-13 | **SSM/Mamba temptation** pulls scope toward black-box dependencies                | Low × Med                                             | Mamba is baseline-only; S5/diagonal-S4 deferred behind LMU                                                    | WS-4     |
 
 ---
 
@@ -387,26 +427,35 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 > **⚑ CROSS-CUTTING (review):** the consolidated Open-Questions table spans both halves and is **canonical**. The companion model document discusses the model-owned questions (OQ-1..5, OQ-7) inline in its §1.6; this table is the single source of truth for status.
 
-| ID | Question | Part | Owner WS | Author's lean / status |
-|----|----------|------|----------|------------------------|
-| **OQ-1** | "recursive" intended as **recurrent** (temporal), not tree-recursive? | A§0.5 | WS-0 | **Resolved (Paul 2026-06-06): recurrent confirmed** — the relevant special case of recursive NNs |
-| **OQ-2** | Does R5 ("capability over simplicity") override C1 (first-principles) where they conflict? | A§1.6 | WS-0 | **Resolved (Paul): neither overrides — both bind.** The tension is real and deliberately acknowledged; C1's transparency is *complementary to* (it enables) R5's capability — exposing low-level structure is what lets the most capable Juniper NNs reach real-world problems. Balance the two per problem location and document the balance struck. |
-| **OQ-3** | Framework hosting 3 unit types, or single-model (RCC only) first? | A§1.5/1.6 | WS-0 | **Resolved (Paul): framework, RCC-first** — endorsed as a cleaner/lower-risk path to the *full* requirement set; RCC-only is a sequencing step, **not** a reduced final scope. Model pick still **contingent on OQ-4** |
-| **OQ-4** | Ship RCC despite star-free ceiling (benign for regression)? | A§1.6 | WS-0 | **OPEN — under active analysis (Paul, 2026-06-06).** Two (possibly non-mutually-exclusive) design approaches under consideration; final choice pending ongoing analysis/discussion/lit-eval, to be resolved in a dedicated doc/section (cf. #377 RCC OQ-4 proposals, #386 handoff). Knorozova & Ronca (AAAI 2024, arXiv:2312.09048): recurrent cascades = **exactly** star-free, remedy = group-implementing units; ESN/NEAT alternatives in play. Probable model-pick redesign (OQ-3). |
-| **OQ-5** | First CLI/datasets (Mackey-Glass? multi-sine? AR(p)?) — **resolve at WS-0**; WS-1 critical path depends on it | A§1.6 | WS-1 | **Resolved (Paul): juniper-data serves (not limited to) spiral, XOR/non-separable, MNIST, equities, and time-series — multi-sine, Mackey-Glass, AR(p).** Drives WS-1 / juniper-data#168 |
-| **OQ-6** | NPZ 3-D extension additive-only; which optional keys in WS-1? | 2.4/2.9 | WS-1 | Additive; `seq_lengths`+`scaling` in-scope |
-| **OQ-7** | When do irregular-Δt datasets become relevant? | A§1.3.4 | WS-1 | **Resolved (Paul): GATING — irregular-Δt regression is required for a *completed* state, NOT deferrable** (intermediate phasing is fine, but completion requires it). The LMU's solver-free ZOH path (A§1.3.4) keeps it C1-clean; the long pole is the data contract (Δt note §6 / juniper-data#168). |
-| **OQ-8** | Migrate spiral/recurse CLI problems into juniper-data? | 2.9 | WS-1 | Lean yes (per C3) |
-| **OQ-9** | Two packages vs. one combined `juniper-core`? | 2.9 | WS-2/3 | Two |
-| **OQ-10** | Abstract model interface: new package vs. inside cascor first? | 2.9 | WS-3 | New package, 2-implementer design |
-| **OQ-11** | Is recurrent unit training parallelizable via cascor's worker protocol? | 2.9 | WS-3 | Unknown — investigate |
-| **OQ-12** | Conformance kit packaging (pytest plugin vs. `[test]` extra)? | 3.7 | WS-3 | Installable kit + wrapper |
-| **OQ-13** | Cascor golden-test substrate: trajectory hash vs. tolerance? | 3.7 | WS-6 | Tolerance (nondeterminism) |
-| **OQ-14** | Performance acceptance bands for a research model? | 3.7 | WS-T | TBD with Paul |
-| **OQ-15** | Service port assignment (proposed host 8211→ctr 8210)? | 2.6 | WS-7 | Confirm no conflict |
-| **OQ-16** | Recurse env strategy on-host: dedicated `JuniperRecurse` (copy LIBTORCH hook) vs reuse `JuniperCascor1`? | 8.3 | WS-4 | Dedicated env if CPU-torch (needs the isolate hook); else reuse `JuniperCascor1` |
-| **OQ-17** | TestPyPI soak duration for `service-core`/`model-core` before the cascor docker lock pins them? | 8.3/8.4 | WS-2/6 | Reuse the meta-package "install lightest extra after bare" verify; fixed window TBD |
-| **OQ-18** | On-host recurse port: 8211 (host-port mirror) vs 8202 (next-free)? | 8.4 | WS-4/7 | 8211 (mirrors cascor's on-host 8201); ties to OQ-15 |
+| ID        | Question                                                                                        | Part      | Owner WS | Author's lean / status                                                                                                                        |
+|:----------|:------------------------------------------------------------------------------------------------|:----------|:---------|:----------------------------------------------------------------------------------------------------------------------------------------------|
+| **OQ-1**  | "recursive" intended as **recurrent** (temporal), not tree-recursive?                           | A§0.5     | WS-0     | **Resolved (Paul 2026-06-06): recurrent confirmed** — the relevant special case of recursive NNs                                              |
+| **OQ-2**  | Does R5 ("capability over simplicity") override C1 (first-principles) where they conflict?      | A§1.6     | WS-0     | **Resolved (Paul): neither overrides — both bind.** The tension is real and deliberately acknowledged;                                        |
+|           |                                                                                                 |           |          | -- C1's transparency is *complementary to* (it enables) R5's capability — exposing low-level structure is what lets most                      |
+|           |                                                                                                 |           |          | -- capable Juniper NNs reach real-world problems. Balance the two per problem location and document the balance struck.                       |
+| **OQ-3**  | Framework hosting 3 unit types, or single-model (RCC only) first?                               | A§1.5/1.6 | WS-0     | **Resolved (Paul): framework, RCC-first** — endorsed as a cleaner/lower-risk path to the *full* requirement set;                              |
+|           |                                                                                                 |           |          | -- RCC-only is a sequencing step, **not** a reduced final scope. Model pick still **contingent on OQ-4**                                      |
+| **OQ-4**  | Ship RCC despite star-free ceiling (benign for regression)?                                     | A§1.6     | WS-0     | **OPEN — under active analysis (Paul, 2026-06-06).** Two (non-mutually-exclusive?) design approaches considered;                              |
+|           |                                                                                                 |           |          | -- final choice pending ongoing analysis/discussion/lit-eval, resolving in dedicated doc/section (cf. #377 RCC OQ-4 proposals, #386 handoff). |
+|           |                                                                                                 |           |          | -- Knorozova & Ronca (AAAI 2024, arXiv:2312.09048): recurrent cascades = **exactly** star-free, remedy = group-implementing units;            |
+|           |                                                                                                 |           |          | -- ESN/NEAT alternatives in play. Probable model-pick redesign (OQ-3).                                                                        |
+| **OQ-5**  | First CLI/datasets (Mackey-Glass? multi-sine? AR(p)?) — **resolve at WS-0**; WS-1 critical path | A§1.6     | WS-1     | **Resolved (Paul): juniper-data serves (not limited to) spiral, XOR/non-separable, MNIST, equities, and time-series**                         |
+|           |                                                                                                 |           |          | -- **Time-series datasets — multi-sine, Mackey-Glass, AR(p).** Drives WS-1 / juniper-data#168                                                 |
+| **OQ-6**  | NPZ 3-D extension additive-only; which optional keys in WS-1?                                   | 2.4/2.9   | WS-1     | Additive; `seq_lengths`+`scaling` in-scope                                                                                                    |
+| **OQ-7**  | When do irregular-Δt datasets become relevant?                                                  | A§1.3.4   | WS-1     | **Resolved (Paul): GATING — irregular-Δt regression required for *completed* state, NOT deferrable**                                          |
+|           |                                                                                                 |           |          | -- (intermediate phasing is fine, but completion requires it). The LMU's solver-free ZOH path (A§1.3.4) keeps it C1-clean;                    |
+|           |                                                                                                 |           |          | -- the long pole is the data contract (Δt note §6 / juniper-data#168).                                                                        |
+| **OQ-8**  | Migrate spiral/recurse CLI problems into juniper-data?                                          | 2.9       | WS-1     | Lean yes (per C3)                                                                                                                             |
+| **OQ-9**  | Two packages vs. one combined `juniper-core`?                                                   | 2.9       | WS-2/3   | Two                                                                                                                                           |
+| **OQ-10** | Abstract model interface: new package vs. inside cascor first?                                  | 2.9       | WS-3     | New package, 2-implementer design                                                                                                             |
+| **OQ-11** | Is recurrent unit training parallelizable via cascor's worker protocol?                         | 2.9       | WS-3     | Unknown — investigate                                                                                                                         |
+| **OQ-12** | Conformance kit packaging (pytest plugin vs. `[test]` extra)?                                   | 3.7       | WS-3     | Installable kit + wrapper                                                                                                                     |
+| **OQ-13** | Cascor golden-test substrate: trajectory hash vs. tolerance?                                    | 3.7       | WS-6     | Tolerance (nondeterminism)                                                                                                                    |
+| **OQ-14** | Performance acceptance bands for a research model?                                              | 3.7       | WS-T     | TBD with Paul                                                                                                                                 |
+| **OQ-15** | Service port assignment (proposed host 8211→ctr 8210)?                                          | 2.6       | WS-7     | Confirm no conflict                                                                                                                           |
+| **OQ-16** | Recurrent env strategy: dedicated `JuniperRecurrent` (LIBTORCH hook) or reuse `JuniperCascor1`? | 8.3       | WS-4     | Dedicated env if CPU-torch (needs the isolate hook); else reuse `JuniperCascor1`                                                              |
+| **OQ-17** | TestPyPI soak duration for `service-core`/`model-core` before the cascor docker lock pins them? | 8.3/8.4   | WS-2/6   | Reuse the meta-package "install lightest extra after bare" verify; fixed window TBD                                                           |
+| **OQ-18** | On-host recurse port: 8211 (host-port mirror) vs 8202 (next-free)?                              | 8.4       | WS-4/7   | 8211 (mirrors cascor's on-host 8201); ties to OQ-15                                                                                           |
 
 **Standing uncertainties (not resolvable by decision — flagged honestly):**
 
@@ -423,21 +472,21 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 ### 6.1 Internal Juniper sources (consulted, with paths)
 
-| Source | Path | Used for |
-|--------|------|----------|
-| Cascor architecture & conventions | `juniper-cascor/AGENTS.md` | §2.1–2.2 seam, conventions, testing |
-| Cascor model↔service seam | `juniper-cascor/src/api/lifecycle/manager.py`, `src/api/routes/**`, `src/snapshots/**` | §2.1 coupling (module-level) |
-| Cascor architecture guide | `juniper-cascor/notes/ARCHITECTURE_GUIDE.md` | Context (not deep-read) |
-| Research philosophy (canonical) | `juniper-ml/notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md` | C1, platform thesis, §0.3 |
-| Architectural design journal | `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common-API, #4 New-ABC, #5 ABC-client, #7 split-cascor) | §2.1–2.3 prior intent, ABC, split-cascor; #5 ↔ juniper-recurse-client |
-| Multi-network orchestration design | `juniper-ml/notes/PHASE_6E_MULTI_NETWORK_DESIGN.md` | "network populations" context |
-| Observability exports (0.3.x) | `juniper-ml/juniper-observability/juniper_observability/**` | C4, reuse inventory |
-| Shared-package template | `juniper-ml/juniper-{config,ci,doc}-tools/**`, `juniper-ml/pyproject.toml` | §2.3 packaging/pin convention |
-| Data service & contract | `juniper-data/juniper_data/**` (generators/, api/routes/datasets.py, core/split.py) | §2.4 gap analysis |
-| Data client | `juniper-data-client/juniper_data_client/client.py` | §2.4 client surface |
-| Canopy coupling & BackendProtocol | `juniper-canopy/src/{main.py,backend/protocol.py,backend/*adapter*.py,frontend/components/**}` | §2.5 |
-| Ecosystem conventions | `Juniper/AGENTS.md`, `juniper-ml/AGENTS.md` | C2–C5, ports, worktrees |
-| (Note) `prompt116_2026-05-31.md` | `juniper-ml/prompts/` | This task's own archived brief — *not independent prior art* |
+| Source                             | Path                                                                                                                      | Used for                                                              |
+|------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| Cascor architecture & conventions  | `juniper-cascor/AGENTS.md`                                                                                                | §2.1–2.2 seam, conventions, testing                                   |
+| Cascor model↔service seam          | `juniper-cascor/src/api/lifecycle/manager.py`, `src/api/routes/**`, `src/snapshots/**`                                    | §2.1 coupling (module-level)                                          |
+| Cascor architecture guide          | `juniper-cascor/notes/ARCHITECTURE_GUIDE.md`                                                                              | Context (not deep-read)                                               |
+| Research philosophy (canonical)    | `juniper-ml/notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md`                                                      | C1, platform thesis, §0.3                                             |
+| Architectural design journal       | `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common-API, #4 New-ABC, #5 ABC-client, #7 split-cascor) | §2.1–2.3 prior intent, ABC, split-cascor; #5 ↔ juniper-recurse-client |
+| Multi-network orchestration design | `juniper-ml/notes/PHASE_6E_MULTI_NETWORK_DESIGN.md`                                                                       | "network populations" context                                         |
+| Observability exports (0.3.x)      | `juniper-ml/juniper-observability/juniper_observability/**`                                                               | C4, reuse inventory                                                   |
+| Shared-package template            | `juniper-ml/juniper-{config,ci,doc}-tools/**`, `juniper-ml/pyproject.toml`                                                | §2.3 packaging/pin convention                                         |
+| Data service & contract            | `juniper-data/juniper_data/**` (generators/, api/routes/datasets.py, core/split.py)                                       | §2.4 gap analysis                                                     |
+| Data client                        | `juniper-data-client/juniper_data_client/client.py`                                                                       | §2.4 client surface                                                   |
+| Canopy coupling & BackendProtocol  | `juniper-canopy/src/{main.py,backend/protocol.py,backend/*adapter*.py,frontend/components/**}`                            | §2.5                                                                  |
+| Ecosystem conventions              | `Juniper/AGENTS.md`, `juniper-ml/AGENTS.md`                                                                               | C2–C5, ports, worktrees                                               |
+| (Note) `prompt116_2026-05-31.md`   | `juniper-ml/prompts/`                                                                                                     | This task's own archived brief — *not independent prior art*          |
 
 ### 6.2 External sources (literature survey)
 
@@ -445,6 +494,7 @@ Moved to the companion model document (§"Sources — external literature survey
 
 ### 6.3 Method / tooling
 
+final choice pending ongoing analysis/discussion/lit-eval, resolving in dedicated doc/section (cf. #377 RCC OQ-4 proposals, #386 handoff).
 Grounding + literature surveys conducted via independent sub-agents (read-only `Explore` for code; `general-purpose` with web/arXiv/Hugging Face paper search for literature), each required to cite primary sources and self-flag unverifiable claims. Local verification via repository inspection. See Part 7.
 
 ---
@@ -460,33 +510,55 @@ Grounding + literature surveys conducted via independent sub-agents (read-only `
 **Status: COMPLETE.** Five independent adversarial sub-agents each verified a distinct lens against the *primary sources / live code* (not this document's restatement). **No CRITICAL or factually-WRONG claims were found.** Citations verified accurate to an unusually high degree; every cascor / juniper-data / juniper-canopy / juniper-observability code claim was CONFIRMED against the live repositories. The valid findings below are integrated into the Parts above (across both documents).
 
 **Verifier coverage:**
+
 - **V1 — model claims & citations** (web/arXiv/DOI): all 13 candidate architectures + ~50 references, the RCC representational-ceiling chain, ESN/LMU/SSM/gated/continuous-time clusters.
 - **V2 — cascor grounding** (live `juniper-cascor/src`): the model↔service seam, T1/T3 module existence, dual-mode shape, port, serializer, classification assumptions.
 - **V3 — feasibility + internal consistency + prior-art** (doc + journal): journal quotes, WS/OQ-ID integrity, two-package acyclicity, port non-conflict, decision logic under C1.
 - **V4 — data/canopy/observability/testing** (live repos): generator inventory, NPZ shape, split, BackendProtocol, observability exports + version, pin convention, pytest defenses.
 - **V5 — completeness** vs. every brief deliverable.
 
-| ID | Lens | Finding | Severity | Resolution |
-|----|------|---------|----------|------------|
-| F1 | V4 | `juniper-observability` on-disk version is **0.3.0**, not the 0.3.1 the C4 pin claimed | HIGH (pin) | **Fixed** — C4 & §3.5 pin `>=0.3.0` (`MetricsAuthMiddleware` ships in 0.3.0; 0.3.1 only adds the IP warning) |
-| F2 | V3/V5 | Header asserted a *completed* verification while Part 7 read PENDING | MEDIUM | **Fixed** — this log populated; header now scoped to "Round 1, 2026-05-31" |
-| F3 | V3 | §1.3 deep dives mis-numbered `1.4.x` under a `1.3` parent (no `1.4` existed) | MEDIUM | **Fixed** — renumbered to 1.3.1–1.3.3; following sections → 1.4/1.5/1.6; all cross-refs updated |
-| F4 | V1 | Giles et al. 1995 author list incomplete (six authors) | MINOR | **Fixed** — §1.3.1 & §6.2 corrected |
-| F5 | V1 | LMU `O(θω/d)` not traceable to the cited paper (its stated bound is `O(d/√m)`, spiking impl) | MINOR | **Fixed** — §1.3.3 reworded; spurious big-O removed |
-| F6 | V1 | Knorozova-Ronca result is for *recurrent neural cascades* (sign/tanh, +recurrent weights), applied to Fahlman's RCC by analogy | MINOR | **Fixed** — scoping clause added in §1.3.1 |
-| F7 | V3 | §2.8 labelled a two-clause splice "verbatim" | MINOR | **Fixed** — now "paraphrasing"; clauses quoted separately |
-| F8 | V2 | The classification-only assumption breaks **more** than decision-boundary (metrics history, collection, auto-snapshot-best) | MAJOR (strengthen) | **Integrated** — §2.1 broadened; RK-6 already covers |
-| F9 | V5 | No per-workstream effort sizing | MEDIUM | **Integrated** — Size (S/M/L) column added to Status Tracker |
-| F10 | V5 | Framework unit-swap mechanism unspecified | MEDIUM | **Integrated** — candidate-unit-factory hypothesis added to companion §1.5 |
-| F11 | V5 | `describe_topology()` → canopy contract undefined | MEDIUM | **Integrated** — illustrative schema added to the §2.3 sketch |
-| F12 | V5 | `TrainingEvent` "subsumes" cascor events with no mapping shown | LOW-MED | **Integrated** — explicit event mapping added to §2.3 |
-| F13 | V5/V3 | 5.5 KLOC stated as fact; worker-layer genericity is contingent on OQ-11 | LOW-MED | **Integrated** — tagged "[grounding estimate]" + OQ-11 contingency (exec summary, §2.2) |
-| F14 | V5 | No WS-6 kill-criterion / abort path | LOW | **Integrated** — kill-criterion added to §2.7 |
-| F15 | V3 | OQ-15 not inline-tagged in §2.6; §6.1 idea-#5 set mismatch | LOW | **Fixed** — OQ-15 tag added; journal idea-#5 ↔ recurse-client noted |
-| F16 | V5/V3 | OQ-5 (dataset choice) blocks the WS-1 critical path | LOW | **Fixed** — flagged "resolve at WS-0" in Status Tracker + OQ table |
-| F17 | V5 | `cascor_plotter`/`profiling`/`utils` extraction rationale missing | LOW | **Integrated** — per-module dispositions added after §2.2 |
+| ID  | Lens  | Finding                                                                                                                        | Severity           | Resolution                                                                                          |
+|-----|-------|--------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------------------------------|
+| F1  | V4    | `juniper-observability` on-disk version is **0.3.0**, not the 0.3.1 the C4 pin claimed                                         | HIGH (pin)         | **Fixed** — C4 & §3.5 pin `>=0.3.0` (`MetricsAuthMiddleware` ships in 0.3.0; 0.3.1 adds IP warning) |
+| F2  | V3/V5 | Header asserted a *completed* verification while Part 7 read PENDING                                                           | MEDIUM             | **Fixed** — this log populated; header now scoped to "Round 1, 2026-05-31"                          |
+| F3  | V3    | §1.3 deep dives mis-numbered `1.4.x` under a `1.3` parent (no `1.4` existed)                                                   | MEDIUM             | **Fixed** — renumbered to 1.3.1–1.3.3; following sections → 1.4/1.5/1.6; all cross-refs updated     |
+| F4  | V1    | Giles et al. 1995 author list incomplete (six authors)                                                                         | MINOR              | **Fixed** — §1.3.1 & §6.2 corrected                                                                 |
+| F5  | V1    | LMU `O(θω/d)` not traceable to the cited paper (its stated bound is `O(d/√m)`, spiking impl)                                   | MINOR              | **Fixed** — §1.3.3 reworded; spurious big-O removed                                                 |
+| F6  | V1    | Knorozova-Ronca result is for *recurrent neural cascades* (sign/tanh, +recurrent weights), applied to Fahlman's RCC by analogy | MINOR              | **Fixed** — scoping clause added in §1.3.1                                                          |
+| F7  | V3    | §2.8 labelled a two-clause splice "verbatim"                                                                                   | MINOR              | **Fixed** — now "paraphrasing"; clauses quoted separately                                           |
+| F8  | V2    | The classification-only assumption breaks **more** than decision-boundary (metrics history, collection, auto-snapshot-best)    | MAJOR (strengthen) | **Integrated** — §2.1 broadened; RK-6 already covers                                                |
+| F9  | V5    | No per-workstream effort sizing                                                                                                | MEDIUM             | **Integrated** — Size (S/M/L) column added to Status Tracker                                        |
+| F10 | V5    | Framework unit-swap mechanism unspecified                                                                                      | MEDIUM             | **Integrated** — candidate-unit-factory hypothesis added to companion §1.5                          |
+| F11 | V5    | `describe_topology()` → canopy contract undefined                                                                              | MEDIUM             | **Integrated** — illustrative schema added to the §2.3 sketch                                       |
+| F12 | V5    | `TrainingEvent` "subsumes" cascor events with no mapping shown                                                                 | LOW-MED            | **Integrated** — explicit event mapping added to §2.3                                               |
+| F13 | V5/V3 | 5.5 KLOC stated as fact; worker-layer genericity is contingent on OQ-11                                                        | LOW-MED            | **Integrated** — tagged "[grounding estimate]" + OQ-11 contingency (exec summary, §2.2)             |
+| F14 | V5    | No WS-6 kill-criterion / abort path                                                                                            | LOW                | **Integrated** — kill-criterion added to §2.7                                                       |
+| F15 | V3    | OQ-15 not inline-tagged in §2.6; §6.1 idea-#5 set mismatch                                                                     | LOW                | **Fixed** — OQ-15 tag added; journal idea-#5 ↔ recurse-client noted                                 |
+| F16 | V5/V3 | OQ-5 (dataset choice) blocks the WS-1 critical path                                                                            | LOW                | **Fixed** — flagged "resolve at WS-0" in Status Tracker + OQ table                                  |
+| F17 | V5    | `cascor_plotter`/`profiling`/`utils` extraction rationale missing                                                              | LOW                | **Integrated** — per-module dispositions added after §2.2                                           |
 
-**Confirmed clean (no change needed):** all 13 candidate-architecture citations and the full Fahlman→Giles→Kremer→Knorozova-Ronca ceiling chain with correct DOIs/pages/venues (V1); the cascor model↔service seam, monkey-patched `fit()`, `hidden_units`/`input_size`/`output_size` introspection, hardcoded `CascadeHDF5Serializer`, the 2-D/`argmax` decision-boundary, dual-mode `server.py`+`main.py`, env prefix `JUNIPER_CASCOR_`, default port 8200, and all T1/T3 module existence (V2); the 9 classification-only 2-D generators, the `X.shape[1]` NPZ assumption, and the shuffling split (V4); canopy's `BackendProtocol` + demo/service backends + the reusable/adapt/replace split (V4); every observability export named in C4/§3 and the *mixed* pin convention (V4); pytest autoload + orphan-reaper defenses and the 80% gate (V4); the two-package split's acyclicity, component-boundary consistency, and 8210/8211 port non-conflict, plus the top-3 recommendation following soundly from the scoring under C1 (V3); all WS/OQ IDs defined; all journal prior-art quotes accurate (V3); every brief deliverable FULLY or PARTIALLY met (V5).
+**Confirmed clean (no change needed):**
+
+- All 13 candidate-architecture citations and the full Fahlman→Giles→Kremer→Knorozova-Ronca ceiling chain with correct DOIs/pages/venues (V1).
+- The cascor model↔service seam:
+  - monkey-patched `fit()`
+  - `hidden_units`/`input_size`/`output_size` introspection
+  - hardcoded `CascadeHDF5Serializer`
+  - the 2-D/`argmax` decision-boundary
+  - dual-mode `server.py`+`main.py`
+  - env prefix `JUNIPER_CASCOR_`
+  - default port 8200
+  - all T1/T3 module existence (V2)
+- The 9 classification-only 2-D generators, the `X.shape[1]` NPZ assumption, and the shuffling split (V4); canopy's `BackendProtocol` + demo/service backends + the reusable/adapt/replace split (V4)
+- Every observability export named in C4/§3 and the *mixed* pin convention (V4)
+- pytest autoload + orphan-reaper defenses and the 80% gate (V4)
+- The two-package split's characteristics: (following soundly from the scoring under C1 (V3)):
+  - acyclicity
+  - component-boundary consistency
+  - 8210/8211 port non-conflict
+  - plus the top-3 recommendation
+  following soundly from the scoring under C1 (V3)
+- all WS/OQ IDs defined; all journal prior-art quotes accurate (V3); every brief deliverable FULLY or PARTIALLY met (V5).
 
 **Residual `[unverified]` / `[speculative]` items (by design, not defects):** RCC time-series-*regression* benchmark (none published); all non-RCC cascor-integration hypotheses (no published hybrid exists); RCC's exact 1990s experiment counts (image-only scanned PDF); the unit-swap interface (design hypothesis, pending ≥2-implementer validation). These are intentionally surfaced, not hidden.
 
@@ -494,21 +566,42 @@ Grounding + literature surveys conducted via independent sub-agents (read-only `
 
 ### Round 2 — refactor-scope re-verification against live code (2026-06-04)
 
-**Status: COMPLETE (refactor scope).** Seven independent read-only agents re-verified this document's *refactor-half* claims against the **current** repositories (commits through 2026-06-03), under strict anti-hallucination rules: exactly one of CONFIRMED / REFUTED / DRIFTED / CANNOT-VERIFY per claim, primary-source (file:line or command output) evidence mandatory, adversarial-falsification posture, no reliance on this document's own restatement. Scope covered the **(b)** split-integrity check the Round-1 note deferred, plus a full live-code drift sweep of Parts 0/2/3/4/5/6 and a grounding pass over both deployment stacks (feeding Part 8). **The (a) OQ-4 model-pick re-verification remains PENDING** in the companion (model scope; gated on the OQ-4 research landing).
+**Status: COMPLETE (refactor scope).**
+Seven independent read-only agents re-verified this document's *refactor-half* claims against the **current** repositories (commits through 2026-06-03), under strict anti-hallucination rules: exactly one of CONFIRMED / REFUTED / DRIFTED / CANNOT-VERIFY per claim, primary-source (file:line or command output) evidence mandatory, adversarial-falsification posture, no reliance on this document's own restatement.
+Scope covered the **(b)** split-integrity check the Round-1 note deferred, plus a full live-code drift sweep of Parts 0/2/3/4/5/6 and a grounding pass over both deployment stacks (feeding Part 8).
+**The (a) OQ-4 model-pick re-verification remains PENDING** in the companion (model scope; gated on the OQ-4 research landing).
 
-**Outcome:** the document is **structurally sound and was accurate when written** — no hallucinations, no dangling IDs/cross-references, the §2.3 diagram is a true DAG, and every architectural claim re-confirmed against today's code. Three days of active development introduced the drift below; all findings are integrated **append-only** (original Parts 0–7 are left as the as-written record; this log and Part 8 carry the corrections). Round-2 finding IDs use the `G` prefix to avoid collision with Round-1's `F1–F17`.
+**Outcome:** the document is **structurally sound and was accurate when written** — no hallucinations, no dangling IDs/cross-references, the §2.3 diagram is a true DAG, and every architectural claim re-confirmed against today's code.
+Three days of active development introduced the drift below; all findings are integrated **append-only** (original Parts 0–7 are left as the as-written record; this log and Part 8 carry the corrections).
+Round-2 finding IDs use the `G` prefix to avoid collision with Round-1's `F1–F17`.
 
 **Verifier coverage (Round 2):** R1 cascor seam (live `src`); R2 juniper-data gap (live); R3 canopy coupling (live); R4 shared-pkgs / observability / ports (live + juniper-deploy); R5 doc internal-consistency + cited sources; R6 on-host stack grounding; R7 docker stack grounding.
 
-| ID | Lens | Finding | Severity | Resolution |
-|----|------|---------|----------|------------|
-| G1 | R2 | **`equities` generator (juniper-data #164) landed 2026-06-03, after the content freeze.** It ships a regression target (`y_reg_*` next-close), time-ordered OHLCV, and a temporal (non-shuffled) split — verified end-to-end (`generators/equities/generator.py:197-198,174-184` → `storage/local_fs.py:143` `np.savez_compressed(**arrays)` → data-client passthrough `client.py:554`). | **MAJOR (load-bearing)** | **Integrated** — the Exec-Summary "single most important sequencing insight," §2.4 table, and RK-1 are **re-scoped**: juniper-data is no longer "cannot serve this model today" but **"~30–40% demonstrated via #164; needs generalization."** WS-1 is reframed from build-from-zero to *generalize the equities pattern* (see §8.4 WS-1); RK-1 likelihood downgraded. |
-| G2 | R2 | equities closes the gap by **bypassing** the classification contract, not fixing it — it emits a dummy one-hot `y_*` so `api/routes/datasets.py:172` (`n_classes=y.shape[1]`, `argmax`, required `class_distribution`) won't crash, and rides the real target in extra `y_reg_*` keys. X stays 2-D `(n,10)` — no 3-D windowing. | MAJOR (strengthen) | **Integrated** — **reinforces RK-6**: classification assumptions are baked into routes/metadata, independently confirmed by how #164 had to contort around them. WS-1's *architectural* work (optional `n_classes`, `task_type`, `X.ndim` dispatch, shared `temporal_split`, persisted scaling, 3-D contract) is still required; the §2.4 "3-D NPZ MISSING" row stays accurate. |
-| G3 | R4 | `juniper-observability` on-disk is **0.3.1**, not 0.3.0 (cascor `pyproject.toml:66` and data `:76` already pin `>=0.3.1`). | LOW (pin) | **Integrated** — C4/F1's "on-disk is 0.3.0" phrasing is stale; the new recurse app should pin **`>=0.3.1`** to match the fleet floor. (The doc's `>=0.3.0` still resolves, but sits one patch below every live sibling.) |
-| G4 | R1 | New cascor seam attributes since 2026-05-31: `current_hidden_units` on the monitor (#316); `completion_reason` plumbed into `get_status` via model-private `_completion_reason` (#320); `round_id` distributed-dispatch tagging (#321). **`api/routes/network.py`** mutates `hidden_units` (POST/DELETE) but is absent from the §2.2 T3 route list. | MEDIUM | **Integrated** — the `describe_topology()` / `TrainingEvent` contract (§2.3) must cover these three attributes; `routes/network.py` is **T3-adjacent** (model-topology-mutating) and should be classified alongside `decision_boundary.py`. Folds into the §2.3 abstraction surface and the WS-6 acceptance criteria. |
-| G5 | R1/R3/R4 | Precision corrections: **(a)** "~5.5 KLOC T1" is *conservative* — the 14 named `api/` files are ~5.0 KLOC, and adding `log_config/`+`profiling/`+`utils/` brings T1 to ~8.3 KLOC; **(b)** canopy's UI-test isolation is **path-exclusion (`--ignore=src/tests/ui`) + a separate CI job**, *not* "plugin-autoload blocking"; **(c)** the "ci-tools floor-only" pin claim holds in `pyproject.toml` but consumer CI workflows cap it `<0.5.0`. | LOW | **Integrated** — (a) effort sizing for WS-2/WS-6 should budget against the larger figure; (b) §3.1/§3.4 wording corrected — the carried-forward constraint is "POST to the param endpoint + an isolated, separately-invoked UI subsuite"; (c) noted in the §2.3 pin discussion. |
-| G6 | R5 | Split-integrity (the Round-1-deferred **(b)** check): WS-0..8/WS-T, OQ-1..15, RK-1..13, F1..17, C1..5 are all defined with no gaps; the companion cross-reference (`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`) resolves in **both** directions; journal idea #2/#4/#5/#7 quotes, the C1 RESEARCH_PHILOSOPHY §2 quote, and all §6.1 source paths verify against live files. | — (clean) | **No change** — the A/B split introduced no dangling cross-references or dropped content. (Sole nuance: journal idea #5's literal title is "New juniper-cascor Client"; the doc's "ABC-client" shorthand is a faithful paraphrase.) |
-| G7 | R4/R7 | Port proposal **host 8211 → ctr 8210 confirmed free** (OQ-15) across `docker-compose.yml` and the published port set. Nuance: **8210 is already the cascor-worker's container-internal health port** (no host mapping → no conflict). On-host, **8200 is occupied by `duplicati-serve`** — cascor stays on 8201 (forced by plant_all). | LOW | **Integrated** — OQ-15 resolves to host 8211 / ctr 8210; §8 records the on-host 8200 collision and recommends on-host recurse bind **8211** (mirroring cascor's on-host 8201 = the docker *host* port). |
+| ID | Lens     | Finding                                                                                                         | Severity                 | Resolution                                                                                                                              |
+|:---|:---------|:----------------------------------------------------------------------------------------------------------------|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------|
+| G1 | R2       | **`equities` generator (juniper-data #164) landed 2026-06-03, after the content freeze.**                       | **MAJOR (load-bearing)** | **Integrated** — the Exec-Summary "single most important sequencing insight," §2.4 table, and RK-1 are **re-scoped**:                   |
+|    |          | Ships regression target (`y_reg_*` next-close), time-ordered OHLCV, & temporal (non-shuffled) split —           |                          | juniper-data is no longer "cannot serve this model today" but **"~30–40% demonstrated via #164; needs generalization."**                |
+|    |          | verified end-to-end (`generators/equities/generator.py:197-198,174-184` → `storage/local_fs.py:143`             |                          | WS-1 is reframed from build-from-zero to *generalize the equities pattern* (see §8.4 WS-1); RK-1 likelihood downgraded.                 |
+|    |          | `np.savez_compressed(**arrays)` → data-client passthrough `client.py:554`).                                     |                          |                                                                                                                                         |
+| G2 | R2       | equities closes the gap by **bypassing** the classification contract, not fixing it —                           | MAJOR (strengthen)       | **Integrated** — **reinforces RK-6**: classification assumptions are baked into routes/metadata, independently confirmed by how #164    |
+|    |          | it emits a dummy one-hot `y_*` so `api/routes/datasets.py:172` (`n_classes=y.shape[1]`, `argmax`,               |                          | had to contort around them. WS-1's *architectural* work (optional `n_classes`, `task_type`, `X.ndim` dispatch, shared `temporal_split`, |
+|    |          | required `class_distribution`) won't crash, and rides the real target in extra `y_reg_*` keys.                  |                          | persisted scaling, 3-D contract) is still required; the §2.4 "3-D NPZ MISSING" row stays accurate.                                      |
+|    |          | X stays 2-D `(n,10)` — no 3-D windowing.                                                                        |                          |                                                                                                                                         |
+| G3 | R4       | `juniper-observability` on-disk: **0.3.1**, not 0.3.0 (cascor `pyproject.toml:66` & data `:76` pin `>=0.3.1`).  | LOW (pin)                | **Integrated** — C4/F1's "on-disk is 0.3.0" phrasing is stale; the new recurse app should pin **`>=0.3.1`** to match the fleet floor.   |
+|    |          |                                                                                                                 |                          | (The doc's `>=0.3.0` still resolves, but sits one patch below every live sibling.)                                                      |
+| G4 | R1       | New cascor seam attributes since 2026-05-31: `current_hidden_units` on the monitor (#316);                      | MEDIUM                   | **Integrated** — the `describe_topology()` / `TrainingEvent` contract (§2.3) must cover these three attributes; `routes/network.py`     |
+|    |          | `completion_reason` plumbed into `get_status` via model-private `_completion_reason` (#320);                    |                          | is **T3-adjacent** (model-topology-mutating) and should be classified alongside `decision_boundary.py`.                                 |
+|    |          | `round_id` distributed-dispatch tagging (#321). **`api/routes/network.py`** mutates `hidden_units`              |                          | Folds into the §2.3 abstraction surface and the WS-6 acceptance criteria.                                                               |
+|    |          | (POST/DELETE) but is absent from the §2.2 T3 route list.                                                        |                          |                                                                                                                                         |
+| G5 | R1/R3/R4 | Precision corrections: **(a)** "~5.5 KLOC T1" is *conservative* — the 14 named `api/` files are ~5.0 KLOC,      | LOW                      | **Integrated** — (a) effort sizing for WS-2/WS-6 should budget against the larger figure; (b) §3.1/§3.4 wording corrected —             |
+|    |          | adding `log_config/`+`profiling/`+`utils/` brings T1 to ~8.3 KLOC; **(b)** canopy's UI-test isolation is        |                          | the carried-forward constraint is "POST to the param endpoint + an isolated, separately-invoked UI subsuite";                           |
+|    |          | **path-exclusion (`--ignore=src/tests/ui`) + a separate CI job**, *not* "plugin-autoload blocking";             |                          | (c) noted in the §2.3 pin discussion.                                                                                                   |
+|    |          | **(c)** "ci-tools floor-only" pin claim holds in `pyproject.toml` but consumer CI workflows cap it `<0.5.0`     |                          |                                                                                                                                         |
+| G6 | R5       | Split-integrity (the Round-1-deferred **(b)** check): WS-0..8/WS-T, OQ-1..15, RK-1..13, F1..17, C1..5           | — (clean)                | **No change** — the A/B split introduced no dangling cross-references or dropped content. (Sole nuance: journal idea #5's literal title |
+|    |          |                                                                                                                 |                          | is "New juniper-cascor Client"; the doc's "ABC-client" shorthand is a faithful paraphrase.)                                             |
+| G7 | R4/R7    | Port proposal **host 8211 → ctr 8210 confirmed free** (OQ-15) across `docker-compose.yml` & published port set. | LOW                      | **Integrated** — OQ-15 resolves to host 8211 / ctr 8210; §8 records the on-host 8200 collision and recommends on-host recurse bind      |
+|    |          | Nuance: **8210 is already the cascor-worker's container-internal health port** (no host mapping → no conflict). |                          | **8211** (mirroring cascor's on-host 8201 = the docker *host* port).                                                                    |
+|    |          | On-host, **8200 is occupied by `duplicati-serve`** — cascor stays on 8201 (forced by plant_all).                |                          |                                                                                                                                         |
 
 **Process note:** this document was **merged to `main` (juniper-ml #344, `22c32bd`)** during the Round-2 pass; it is now canonical (no longer branch-only). Round-2 was produced from a fresh worktree off `origin/main`.
 
@@ -524,24 +617,24 @@ Grounding + literature surveys conducted via independent sub-agents (read-only `
 
 **On-host stack** — `util/juniper_plant_all.bash` starts services sequentially, each gated on `/v1/health` before the next, after `conda activate`-ing a per-service env:
 
-| Service | Conda env (Python) | Launch | On-host bind | Health |
-|---------|--------------------|--------|--------------|--------|
-| juniper-data | `JuniperData` (3.14) | `uvicorn juniper_data.api.app:app` | `0.0.0.0:8100` | `:8100/v1/health` |
-| juniper-cascor | `JuniperCascor1` (3.13, torch 2.11) | `cd src; python server.py` | `127.0.0.1:8201` (forced via `JUNIPER_CASCOR_PORT`) | `:8201/v1/health` |
-| juniper-canopy | `JuniperCanopy1` (3.13) | `cd src; python main.py` | `127.0.0.1:8050` | `:8050/v1/health` |
-| juniper-cascor-worker | `JuniperCascor1` | console-script (WS client) | health `127.0.0.1:8210/v1/health/ready` | (no inbound app port) |
+| Service               | Conda env (Python)                  | Launch                             | On-host bind                                        | Health                |
+|-----------------------|-------------------------------------|------------------------------------|-----------------------------------------------------|-----------------------|
+| juniper-data          | `JuniperData` (3.14)                | `uvicorn juniper_data.api.app:app` | `0.0.0.0:8100`                                      | `:8100/v1/health`     |
+| juniper-cascor        | `JuniperCascor1` (3.13, torch 2.11) | `cd src; python server.py`         | `127.0.0.1:8201` (forced via `JUNIPER_CASCOR_PORT`) | `:8201/v1/health`     |
+| juniper-canopy        | `JuniperCanopy1` (3.13)             | `cd src; python main.py`           | `127.0.0.1:8050`                                    | `:8050/v1/health`     |
+| juniper-cascor-worker | `JuniperCascor1`                    | console-script (WS client)         | health `127.0.0.1:8210/v1/health/ready`             | (no inbound app port) |
 
 Teardown: `util/juniper_chop_all.bash` (reads `JuniperProject.pid`). **Hazards (R6):** cascor's *default* port 8200 is occupied on-host by `duplicati-serve` — the stack only works because plant_all forces 8201; **`JuniperCascor1` has no LIBTORCH activate hooks** (only `JuniperCanopy1` does), so a fresh torch-using `JuniperRecurse` env replicating the CPU-torch pattern would need the isolate hook copied in; the `get_cascor_*.bash` utilities read **`CASCOR_HOST`/`CASCOR_PORT`** (not `JUNIPER_CASCOR_*`).
 
 **Docker stack** — `juniper-deploy/docker-compose.yml`; 4 images **built** from sibling repos (data/cascor/canopy/worker), infra **pulled** (prometheus/grafana/alertmanager/redis); profiles `full | demo | dev | test | observability`:
 
-| Service | Build/Image | host:ctr | depends_on | profile |
-|---------|-------------|----------|-----------|---------|
-| juniper-data | build `../juniper-data` | 8100:8100 | — | full,demo,dev,test |
-| juniper-cascor | build `../juniper-cascor` | 8201:8200 | data (healthy) | full,dev,test |
-| juniper-cascor-worker | build `../juniper-cascor-worker` | none | cascor (healthy) | full,test |
-| juniper-canopy | build `../juniper-canopy` | 8050:8050 | data,cascor,redis | full,test |
-| prometheus / grafana | pulled | 9090 / 3001:3000 | — | observability |
+| Service               | Build/Image                      | host:ctr         | depends_on        | profile            |
+|-----------------------|----------------------------------|------------------|-------------------|--------------------|
+| juniper-data          | build `../juniper-data`          | 8100:8100        | —                 | full,demo,dev,test |
+| juniper-cascor        | build `../juniper-cascor`        | 8201:8200        | data (healthy)    | full,dev,test      |
+| juniper-cascor-worker | build `../juniper-cascor-worker` | none             | cascor (healthy)  | full,test          |
+| juniper-canopy        | build `../juniper-canopy`        | 8050:8050        | data,cascor,redis | full,test          |
+| prometheus / grafana  | pulled                           | 9090 / 3001:3000 | —                 | observability      |
 
 Validation: `docker compose --profile full config` (exits 0 today); `make up && make wait && make health`; `make test` (3-service e2e in `tests/test_full_stack.py`).
 
@@ -549,11 +642,11 @@ Validation: `docker compose --profile full config` (exits 0 today); `make up && 
 
 This is the crux of the entire migration. The two new packages reach the two stacks by **incompatible mechanisms**:
 
-| | On-host | Docker |
-|---|---------|--------|
-| How `juniper-*` deps arrive | **editable** `pip install -e` from the local sibling repo into the conda env | **PyPI wheels** pinned in `requirements.lock`; build context is the single repo (no sibling source copied in) |
-| To introduce a new shared package | `pip install -e <new-repo>` into each consuming env | **publish to PyPI/TestPyPI _first_**, then add the pin, **regenerate `requirements.lock`**, rebuild the image |
-| Failure mode if the step is skipped | `ImportError` at service boot → `/v1/health` never comes up | **build stays green, container dies at runtime** with `ModuleNotFoundError` (pin is in `pyproject.toml`, package absent from the locked set) |
+|                                     | On-host                                                                      | Docker                                                                                                                                       |
+|-------------------------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| How `juniper-*` deps arrive         | **editable** `pip install -e` from the local sibling repo into the conda env | **PyPI wheels** pinned in `requirements.lock`; build context is the single repo (no sibling source copied in)                                |
+| To introduce a new shared package   | `pip install -e <new-repo>` into each consuming env                          | **publish to PyPI/TestPyPI _first_**, then add the pin, **regenerate `requirements.lock`**, rebuild the image                                |
+| Failure mode if the step is skipped | `ImportError` at service boot → `/v1/health` never comes up                  | **build stays green, container dies at runtime** with `ModuleNotFoundError` (pin is in `pyproject.toml`, package absent from the locked set) |
 
 **Two consequences that shape every step below:**
 
@@ -581,6 +674,7 @@ This is the crux of the entire migration. The two new packages reach the two sta
 Each step lists **precondition → on-host actions → docker actions → verification gate → rollback**. Order follows §2.7; the defining principle holds — **prove the template on greenfield recurse before touching production cascor.**
 
 **WS-1 — juniper-data: time-series + regression** (additive; critical path; now ~30–40% demonstrated via #164).
+
 - *Re-scope (Round-2 G1/G2):* generalize the equities-demonstrated patterns rather than build from zero — promote its temporal split into a reusable `core/temporal_split`; make `DatasetMeta.n_classes`/`class_distribution` optional and add `task_type`; add `X.ndim` dispatch in `api/routes/datasets.py`; persist scaling params; and add the deterministic synthetic generators ([OQ-5] multi-sine / Mackey-Glass / AR(p)) that real-market, network-dependent equities cannot be.
 - *On-host:* pure-Python additive changes in the `JuniperData` env; **no env or launcher change**, no new import.
 - *Docker:* `juniper-data` image rebuild picks up new code. **No new external dependency** unless a synthetic generator needs a new lib (then: pin + regen `juniper-data/requirements.lock` in the same change).
@@ -588,6 +682,7 @@ Each step lists **precondition → on-host actions → docker actions → verifi
 - *Rollback:* additive keys only → revert the generator/route commit; existing artifacts unaffected.
 
 **WS-2 — extract `juniper-service-core` (T1 infra) + publish. Cascor NOT yet repointed.**
+
 - *Clarification the migration surfaces:* §2.7 step 2 / RK-5 describe cascor "adopting behind a no-op shim." To honor the overriding *greenfield-first* principle, **the cascor→service-core repoint is deferred to the start of WS-6** (behind the golden gate). At WS-2, service-core is extracted and **published**, but **cascor keeps its own `src/api/**` copy** and is byte-unchanged on both stacks. The first real consumer is recurse (WS-4).
 - *On-host:* nothing changes for cascor/canopy/data. (`pip install -e juniper-service-core` happens only in the recurse env, at WS-4.)
 - *Docker:* no consumer image changes. service-core's own CI builds/tests it standalone (clone the `juniper-observability` package-test + publish gating; add a **drift-lint** clone of `test_doc_tools_drift.py`).
@@ -597,22 +692,39 @@ Each step lists **precondition → on-host actions → docker actions → verifi
 **WS-3 — define `juniper-model-core` interfaces + conformance kit + publish.** Same shape as WS-2 (design + tests + publish; no consumer repoint; both stacks untouched). The conformance kit ships as an installable pytest plugin ([OQ-12]). *Gate:* kit self-tests green against a reference stub; both-stack invariants unchanged.
 
 **WS-4 — build `juniper-recurse` greenfield** (FIRST real consumer; this validates the template).
-- *On-host:* create/select the recurse env; `pip install -e juniper-service-core juniper-model-core juniper-recurse` into it. Add a launch block to `plant_all.bash` mirroring the cascor block (constants, pre-flight `check_port_available`, `cd src; python server.py`, `wait_for_health`, a `juniper-recurse=PID` line in the PID writer). **On-host bind = 8211** (mirrors cascor's on-host = the docker *host* port; 8200 is duplicati, 8210 is the worker health port — avoid both; [OQ-18]). `chop_all.bash` needs no change (it iterates the PID file); only the `--systemd` reverse-order list would.
-- *Docker:* add `juniper-recurse/Dockerfile` cloning the **worker's CPU-lock two-stage pattern** (NOT cascor's — cascor's lock pulls the full CUDA stack → 7.5 GB image); `EXPOSE 8210`; recurse's own `requirements.lock` pins service-core/model-core/data-client/observability from PyPI. Add a compose service block after canopy (build `../juniper-recurse`; `ports "${BIND_HOST:-127.0.0.1}:${RECURSE_HOST_PORT:-8211}:${RECURSE_PORT:-8210}"`; `JUNIPER_DATA_URL`; metrics trusted-IPs; `juniper_data_api_keys` secret mount; `depends_on: juniper-data healthy`; healthcheck `:8210/v1/health/ready`; `networks: [backend, data]`). Add `RECURSE_PORT`/`RECURSE_HOST_PORT` to `.env.example`; add `juniper-recurse:${RECURSE_HOST_PORT}` to `scripts/health_check.sh` `SERVICES=` and `wait_for_services.sh`; add a prometheus scrape job to **both** `prometheus.yml` and the hand-mirrored `prometheus.demo.yml`.
-- *Gate:* **the conformance kit is the acceptance test** — recurse's model passes every `TrainableModel`/`GrowableModel` assertion and traverses every generic route as a *regression* model (no `argmax`, no accuracy). On-host `curl :8211/v1/health` + PID line present. Docker `docker compose build juniper-recurse && docker compose --profile full up -d juniper-recurse && curl :8211/v1/health/ready`; `docker compose exec juniper-recurse python -c "...reach juniper-data:8100..."`; prometheus target `up`. **Existing services untouched → §8.2 invariants still green.**
+
+- *On-host:* create/select the recurse env; `pip install -e juniper-service-core juniper-model-core juniper-recurse` into it.
+  - Add a launch block to `plant_all.bash` mirroring the cascor block (constants, pre-flight `check_port_available`, `cd src; python server.py`, `wait_for_health`, a `juniper-recurse=PID` line in the PID writer).
+  - **On-host bind = 8211** (mirrors cascor's on-host = the docker *host* port; 8200 is duplicati, 8210 is the worker health port — avoid both; [OQ-18]).
+  - `chop_all.bash` needs no change (it iterates the PID file); only the `--systemd` reverse-order list would.
+- *Docker:* add `juniper-recurse/Dockerfile` cloning the **worker's CPU-lock two-stage pattern** (NOT cascor's — cascor's lock pulls the full CUDA stack → 7.5 GB image); `EXPOSE 8210`; recurse's own `requirements.lock` pins service-core/model-core/data-client/observability from PyPI.
+  - Add a compose service block after canopy (build `../juniper-recurse`; `ports "${BIND_HOST:-127.0.0.1}:${RECURSE_HOST_PORT:-8211}:${RECURSE_PORT:-8210}"`; `JUNIPER_DATA_URL`; metrics trusted-IPs; `juniper_data_api_keys` secret mount; `depends_on: juniper-data healthy`; healthcheck `:8210/v1/health/ready`; `networks: [backend, data]`).
+  - Add `RECURSE_PORT`/`RECURSE_HOST_PORT` to `.env.example`; add `juniper-recurse:${RECURSE_HOST_PORT}` to `scripts/health_check.sh` `SERVICES=` and `wait_for_services.sh`; add a prometheus scrape job to **both** `prometheus.yml` and the hand-mirrored `prometheus.demo.yml`.
+- *Gate:* **the conformance kit is the acceptance test** — recurse's model passes every `TrainableModel`/`GrowableModel` assertion and traverses every generic route as a *regression* model (no `argmax`, no accuracy).
+  - On-host `curl :8211/v1/health` + PID line present.
+  - Docker `docker compose build juniper-recurse && docker compose --profile full up -d juniper-recurse && curl :8211/v1/health/ready`; `docker compose exec juniper-recurse python -c "...reach juniper-data:8100..."`; prometheus target `up`.
+  - **Existing services untouched → §8.2 invariants still green.**
 - *Rollback:* remove the compose block + plant_all block; recurse is isolated, nothing else depends on it.
 
 **WS-5 — generalize canopy + recurse backend** (moderate; UI).
+
 - *On-host / Docker:* canopy gains a `juniper-recurse-client` backend behind the existing `BackendProtocol`; conditional/schema-driven panels (render decision-boundary/candidate/cascade only when the backend advertises them). Add `JUNIPER_CANOPY_RECURSE_SERVICE_URL` to the on-host launcher + compose env + `.env.example`.
 - *Gate:* canopy unit + the **isolated, separately-invoked** UI subsuite (Round-2 G5: POST to the param endpoint; `--ignore=src/tests/ui` + a separate job — *not* autoload-blocking); regression backend → MSE panel, no decision-boundary. The cascor path is unchanged → existing canopy↔cascor stays green on both stacks.
 - *Rollback:* the recurse backend is additive behind the protocol; revert leaves cascor monitoring intact.
 
 **WS-6 — refactor cascor onto shared packages** (DEFERRED; trigger-gated; the only behavior-risky step).
+
 - *Trigger (unchanged):* WS-4 shipped **and** a cascor golden/snapshot regression suite + the conformance suite are green for cascor.
-- *Step 6a — service-core repoint (mechanical):* cascor's `src/api/**` become thin re-export shims importing from `juniper_service_core` (the "no-op shim"). **On-host:** `pip install -e juniper-service-core juniper-model-core` into `JuniperCascor1` **before** re-running cascor — R6's single riskiest on-host action; skip it and boot dies at import. Launcher unchanged (`cd src; python server.py` still resolves). **Docker:** add the pins to `juniper-cascor/pyproject.toml` **and regenerate `juniper-cascor/requirements.lock` in the same commit**; `docker compose build --no-cache juniper-cascor`; `up -d` and **grep the container log for `ModuleNotFoundError`** (catches the build-green/runtime-red gap).
+- *Step 6a — service-core repoint (mechanical):* cascor's `src/api/**` become thin re-export shims importing from `juniper_service_core` (the "no-op shim").
+  - **On-host:** `pip install -e juniper-service-core juniper-model-core` into `JuniperCascor1` **before** re-running cascor — R6's single riskiest on-host action; skip it and boot dies at import.
+  - Launcher unchanged (`cd src; python server.py` still resolves).
+  - **Docker:** add the pins to `juniper-cascor/pyproject.toml` **and regenerate `juniper-cascor/requirements.lock` in the same commit**; `docker compose build --no-cache juniper-cascor`; `up -d` and **grep the container log for `ModuleNotFoundError`** (catches the build-green/runtime-red gap).
 - *Step 6b — model-core interface adoption (behavioral):* the lifecycle/routes stop naming `CascadeCorrelationNetwork` and operate against `TrainableModel`/`GrowableModel`; the new seam attributes (G4: `current_hidden_units`, `_completion_reason`, `round_id`) and `routes/network.py` are covered by `describe_topology()`/`TrainingEvent`.
-- *Gate:* the **pre-captured golden suite + conformance kit must stay green** (training trajectories on two-spiral at fixed seed; API response snapshots; HDF5 round-trips). On-host: `python -c "import juniper_service_core, juniper_model_core"` in the env, then `cd src; python -c "import api.app"`, then plant_all + full health + `get_cascor_status`. Docker: `make test` (3-service e2e) green.
-- *Kill-criterion (unchanged):* if the conformance suite cannot be made green for cascor without changing observable behavior, **WS-6 is abandoned** — cascor keeps its own service stack, recurse still benefits, the one-sided extraction is documented. Both stacks revert to the WS-5 state (cascor never repointed), which stayed green throughout.
+- *Gate:* the **pre-captured golden suite + conformance kit must stay green** (training trajectories on two-spiral at fixed seed; API response snapshots; HDF5 round-trips).
+  - On-host: `python -c "import juniper_service_core, juniper_model_core"` in the env, then `cd src; python -c "import api.app"`, then plant_all + full health + `get_cascor_status`.
+  - Docker: `make test` (3-service e2e) green.
+- *Kill-criterion (unchanged):* if the conformance suite cannot be made green for cascor without changing observable behavior, **WS-6 is abandoned** — cascor keeps its own service stack, recurse still benefits, the one-sided extraction is documented.
+  - Both stacks revert to the WS-5 state (cascor never repointed), which stayed green throughout.
 - *Rollback:* because 6a/6b land as separate commits behind the golden gate, revert to cascor's own `src/api` copy (still present until WS-6) — on-host the editable installs are inert if unused; docker rebuilds from the reverted lock.
 
 **WS-7 — deploy / meta-package integration.** Add `juniper-recurse-client` to `juniper-ml` extras + the two shared packages to `[tools]`/`[all]`; **update `test_pyproject_extras.py` in the same PR** (the lint fails otherwise). Land shared-CI/extras edits in **dedicated PRs** (RK-11 concurrent-session race). **WS-8** (recurse-worker) deferred.
