@@ -72,8 +72,9 @@ remove_worktree() {
 # on SAFE rows so DIRTY / ACTIVE / BROKEN worktrees cannot be removed by
 # accidentally piping the full survey output.
 #
-# Input format (tab-separated): STATUS<TAB>REPO_KEY<TAB>BEHIND<TAB>BRANCH<TAB>WORKTREE_NAME
-while IFS=$'\t' read -r status repo_key _behind branch wt_name _extra; do
+# Input format (tab-separated): STATUS<TAB>REPO_KEY<TAB>BRANCH<TAB>WORKTREE_NAME
+# (matches worktree_sweep_survey.bash's 4-column output exactly.)
+while IFS=$'\t' read -r status repo_key branch wt_name _extra; do
     status=$(trim_field "$status")
     repo_key=$(trim_field "$repo_key")
     branch=$(trim_field "$branch")
