@@ -52,9 +52,14 @@ Continue the **recurrent-structure add-on** effort for juniper-recurse (how to a
 
 - **cascor has NO temporal substrate today** (stateless 2-D `(batch, features)`, single-shot autograd / no BPTT, 4-key frozen-unit dict with no state slot). Gating prerequisite for any recurrent unit.
 - **Window variable, T ∈ 1..~30 ⇒ BPTT-over-window is the default candidate gradient**; readout-mask for dense-state / sparse-supervision; output-layer training stays a static solve; **T=1 ⇒ today's cascor** (safe identity migration). RTRL deferred (proposals §8).
-- **Ceiling reality (validated):** P1 *inherits* it; P2 *breaks* it but has no constructive training recipe; P3 does **not** escape it (ESP fading memory ≠ counting). Knorozova-Ronca remedy = negative-weight second-order / multiplicative neurons, **not** rotation matrices.
-- **Migration constraint (Part 8 §8.1) — durable:** the two deploy stacks resolve shared packages by INCOMPATIBLE mechanisms — on-host = editable `pip install -e` into conda envs (`JuniperData` / `JuniperCascor1` / `JuniperCanopy1`); docker = PyPI-pinned `requirements.lock` with single-repo build context → **publish-first is mandatory, and pyproject-pin + lock-regen must land in the SAME change** (else green build → runtime `ModuleNotFoundError`). This is exactly why cascor-core thread step (1) blocks step (2). On-host hazard: host `8200` is held by `duplicati` (cascor stays on 8201); `JuniperCascor1` lacks LIBTORCH activate hooks.
-- **CONCURRENCY (resolved this thread):** the earlier shared-`main`-checkout hazard is CLEARED — the stale/destructive uncommitted doc edits were stashed to `stash@{0}` ("tier-1-prep stash") and local `main` was fast-forwarded. **But a parallel session keeps advancing juniper-ml `main` — run `gh pr list` + check recent `main` before editing shared docs; coordinate, don't race.** A `feature/juniper-cascor-core` worktree may still exist.
+- **Ceiling reality (validated):** P1 *inherits* it; P2 *breaks* it but has no constructive training recipe; P3 does **not** escape it (ESP fading memory ≠ counting).
+Knorozova-Ronca remedy = negative-weight second-order / multiplicative neurons, **not** rotation matrices.
+- **Migration constraint (Part 8 §8.1) — durable:** the two deploy stacks resolve shared packages by INCOMPATIBLE mechanisms — on-host = editable `pip install -e` into conda envs (`JuniperData` / `JuniperCascor1` / `JuniperCanopy1`); docker = PyPI-pinned `requirements.lock` with single-repo build context → **publish-first is mandatory, and pyproject-pin + lock-regen must land in the SAME change** (else green build → runtime `ModuleNotFoundError`).
+This is exactly why cascor-core thread step (1) blocks step (2).
+On-host hazard: host `8200` is held by `duplicati` (cascor stays on 8201); `JuniperCascor1` lacks LIBTORCH activate hooks.
+- **CONCURRENCY (resolved this thread):** the earlier shared-`main`-checkout hazard is CLEARED — the stale/destructive uncommitted doc edits were stashed to `stash@{0}` ("tier-1-prep stash") and local `main` was fast-forwarded.
+**But a parallel session keeps advancing juniper-ml `main` — run `gh pr list` + check recent `main` before editing shared docs; coordinate, don't race.**
+A `feature/juniper-cascor-core` worktree may still exist.
 
 ## Git status
 
