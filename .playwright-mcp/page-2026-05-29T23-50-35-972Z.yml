@@ -1,0 +1,295 @@
+- main [ref=e7]:
+  - generic [ref=e8]:
+    - generic [ref=e10]:
+      - generic [ref=e12]:
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - button "Move 7m 30s backward" [ref=e16] [cursor=pointer]:
+              - img [ref=e17]
+            - 'button "Time range selected: Last 15 minutes" [ref=e19] [cursor=pointer]':
+              - img [ref=e20]
+              - generic [ref=e24]: Last 15 minutes
+              - img [ref=e25]
+            - button "Move time range forwards" [ref=e27] [cursor=pointer]:
+              - img [ref=e28]
+            - button "Zoom out time range" [ref=e30] [cursor=pointer]:
+              - img [ref=e31]
+          - generic [ref=e33]:
+            - button "Refresh" [ref=e34] [cursor=pointer]:
+              - img [ref=e35]
+              - generic [ref=e37]: Refresh
+            - button "Choose refresh time interval with current interval 10 seconds selected" [ref=e38] [cursor=pointer]:
+              - generic [ref=e39]: 10s
+              - img [ref=e40]
+        - generic [ref=e42]:
+          - generic [ref=e43]: datasource
+          - generic [ref=e44] [cursor=pointer]:
+            - log [ref=e46]
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - generic [ref=e49]: Prometheus
+                - combobox [ref=e51]
+              - img [ref=e53]
+        - generic [ref=e55]:
+          - generic [ref=e56]: interval
+          - generic [ref=e57] [cursor=pointer]:
+            - log [ref=e59]
+            - generic [ref=e60]:
+              - generic [ref=e61]:
+                - generic [ref=e62]: 5m
+                - combobox [ref=e64]
+              - img [ref=e66]
+      - generic [ref=e72]:
+        - button "Collapse row" [ref=e76] [cursor=pointer]:
+          - img [ref=e77]
+          - heading "Service Status" [ref=e79]
+        - region "JuniperData" [ref=e85]:
+          - heading "JuniperData" [level=2] [ref=e88]
+          - 'generic "up{environment=\"docker\", instance=\"juniper-data:8100\", job=\"juniper-data\", service=\"juniper-data\"}" [ref=e92]':
+            - generic [ref=e95]: UP
+        - region "JuniperCascor" [ref=e101]:
+          - heading "JuniperCascor" [level=2] [ref=e104]
+          - 'generic "up{environment=\"docker\", instance=\"juniper-cascor:8200\", job=\"juniper-cascor\", service=\"juniper-cascor\"}" [ref=e108]':
+            - generic [ref=e111]: UP
+        - region "JuniperCanopy" [ref=e117]:
+          - heading "JuniperCanopy" [level=2] [ref=e120]
+          - 'generic "up{environment=\"docker\", instance=\"juniper-canopy:8050\", job=\"juniper-canopy\", service=\"juniper-canopy\"}" [ref=e124]':
+            - generic [ref=e127]: UP
+        - button "Collapse row" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+          - heading "Request Rate" [ref=e134]
+        - region "Request Rate (per second)" [ref=e140]:
+          - heading "Request Rate (per second)" [level=2] [ref=e143]
+          - table [ref=e159]:
+            - rowgroup [ref=e160]:
+              - row "Name Mean Max" [ref=e161]:
+                - columnheader "Name" [ref=e162] [cursor=pointer]
+                - columnheader "Mean" [ref=e163] [cursor=pointer]
+                - columnheader "Max" [ref=e164] [cursor=pointer]
+            - rowgroup [ref=e165]:
+              - row "juniper-data POST /v1/datasets 201 0 req/s 0 req/s" [ref=e166]:
+                - cell "juniper-data POST /v1/datasets 201" [ref=e167]:
+                  - button "juniper-data POST /v1/datasets 201" [ref=e170] [cursor=pointer]
+                - cell "0 req/s" [ref=e171]
+                - cell "0 req/s" [ref=e172]
+              - 'row "juniper-data GET /v1/datasets/{dataset_id}/artifact 200 0 req/s 0 req/s" [ref=e173]':
+                - 'cell "juniper-data GET /v1/datasets/{dataset_id}/artifact 200" [ref=e174]':
+                  - 'button "juniper-data GET /v1/datasets/{dataset_id}/artifact 200" [ref=e177] [cursor=pointer]'
+                - cell "0 req/s" [ref=e178]
+                - cell "0 req/s" [ref=e179]
+              - row "juniper-data GET /v1/health 200 0.0153 req/s 0.0232 req/s" [ref=e180]:
+                - cell "juniper-data GET /v1/health 200" [ref=e181]:
+                  - button "juniper-data GET /v1/health 200" [ref=e184] [cursor=pointer]
+                - cell "0.0153 req/s" [ref=e185]
+                - cell "0.0232 req/s" [ref=e186]
+              - row "juniper-data GET /v1/health/live 200 0 req/s 0 req/s" [ref=e187]:
+                - cell "juniper-data GET /v1/health/live 200" [ref=e188]:
+                  - button "juniper-data GET /v1/health/live 200" [ref=e191] [cursor=pointer]
+                - cell "0 req/s" [ref=e192]
+                - cell "0 req/s" [ref=e193]
+              - row "juniper-data GET /v1/health/ready 200 0 req/s 0 req/s" [ref=e194]:
+                - cell "juniper-data GET /v1/health/ready 200" [ref=e195]:
+                  - button "juniper-data GET /v1/health/ready 200" [ref=e198] [cursor=pointer]
+                - cell "0 req/s" [ref=e199]
+                - cell "0 req/s" [ref=e200]
+              - row "juniper-data GET _unmatched 200 0.0215 req/s 0.0348 req/s" [ref=e201]:
+                - cell "juniper-data GET _unmatched 200" [ref=e202]:
+                  - button "juniper-data GET _unmatched 200" [ref=e205] [cursor=pointer]
+                - cell "0.0215 req/s" [ref=e206]
+                - cell "0.0348 req/s" [ref=e207]
+              - row "juniper-data GET _unmatched 307 0.0232 req/s 0.0382 req/s" [ref=e208]:
+                - cell "juniper-data GET _unmatched 307" [ref=e209]:
+                  - button "juniper-data GET _unmatched 307" [ref=e212] [cursor=pointer]
+                - cell "0.0232 req/s" [ref=e213]
+                - cell "0.0382 req/s" [ref=e214]
+              - row "juniper-cascor GET /v1/health 200 0.0116 req/s 0.0219 req/s" [ref=e215]:
+                - cell "juniper-cascor GET /v1/health 200" [ref=e216]:
+                  - button "juniper-cascor GET /v1/health 200" [ref=e219] [cursor=pointer]
+                - cell "0.0116 req/s" [ref=e220]
+                - cell "0.0219 req/s" [ref=e221]
+              - row "juniper-cascor GET /v1/health/live 200 0 req/s 0 req/s" [ref=e222]:
+                - cell "juniper-cascor GET /v1/health/live 200" [ref=e223]:
+                  - button "juniper-cascor GET /v1/health/live 200" [ref=e226] [cursor=pointer]
+                - cell "0 req/s" [ref=e227]
+                - cell "0 req/s" [ref=e228]
+              - row "juniper-cascor GET /v1/metrics/history 200 0.00244 req/s 0.00414 req/s" [ref=e229]:
+                - cell "juniper-cascor GET /v1/metrics/history 200" [ref=e230]:
+                  - button "juniper-cascor GET /v1/metrics/history 200" [ref=e233] [cursor=pointer]
+                - cell "0.00244 req/s" [ref=e234]
+                - cell "0.00414 req/s" [ref=e235]
+              - row "juniper-cascor GET /v1/network 200 0 req/s 0 req/s" [ref=e236]:
+                - cell "juniper-cascor GET /v1/network 200" [ref=e237]:
+                  - button "juniper-cascor GET /v1/network 200" [ref=e240] [cursor=pointer]
+                - cell "0 req/s" [ref=e241]
+                - cell "0 req/s" [ref=e242]
+              - row "juniper-cascor GET /v1/network/topology 200 0 req/s 0 req/s" [ref=e243]:
+                - cell "juniper-cascor GET /v1/network/topology 200" [ref=e244]:
+                  - button "juniper-cascor GET /v1/network/topology 200" [ref=e247] [cursor=pointer]
+                - cell "0 req/s" [ref=e248]
+                - cell "0 req/s" [ref=e249]
+              - row "juniper-cascor GET /v1/training/params 200 0 req/s 0 req/s" [ref=e250]:
+                - cell "juniper-cascor GET /v1/training/params 200" [ref=e251]:
+                  - button "juniper-cascor GET /v1/training/params 200" [ref=e254] [cursor=pointer]
+                - cell "0 req/s" [ref=e255]
+                - cell "0 req/s" [ref=e256]
+              - row "juniper-cascor GET /v1/training/status 200 0.0161 req/s 0.0262 req/s" [ref=e257]:
+                - cell "juniper-cascor GET /v1/training/status 200" [ref=e258]:
+                  - button "juniper-cascor GET /v1/training/status 200" [ref=e261] [cursor=pointer]
+                - cell "0.0161 req/s" [ref=e262]
+                - cell "0.0262 req/s" [ref=e263]
+              - row "juniper-cascor GET _unmatched 200 0.0199 req/s 0.0332 req/s" [ref=e264]:
+                - cell "juniper-cascor GET _unmatched 200" [ref=e265]:
+                  - button "juniper-cascor GET _unmatched 200" [ref=e268] [cursor=pointer]
+                - cell "0.0199 req/s" [ref=e269]
+                - cell "0.0332 req/s" [ref=e270]
+              - row "juniper-cascor GET _unmatched 307 0.0216 req/s 0.0366 req/s" [ref=e271]:
+                - cell "juniper-cascor GET _unmatched 307" [ref=e272]:
+                  - button "juniper-cascor GET _unmatched 307" [ref=e275] [cursor=pointer]
+                - cell "0.0216 req/s" [ref=e276]
+                - cell "0.0366 req/s" [ref=e277]
+              - row "juniper-canopy GET /api/metrics/history 200 0 req/s 0 req/s" [ref=e278]:
+                - cell "juniper-canopy GET /api/metrics/history 200" [ref=e279]:
+                  - button "juniper-canopy GET /api/metrics/history 200" [ref=e282] [cursor=pointer]
+                - cell "0 req/s" [ref=e283]
+                - cell "0 req/s" [ref=e284]
+              - row "juniper-canopy GET /api/status 200 0 req/s 0 req/s" [ref=e285]:
+                - cell "juniper-canopy GET /api/status 200" [ref=e286]:
+                  - button "juniper-canopy GET /api/status 200" [ref=e289] [cursor=pointer]
+                - cell "0 req/s" [ref=e290]
+                - cell "0 req/s" [ref=e291]
+              - row "juniper-canopy GET /v1/health 200 0.0122 req/s 0.0172 req/s" [ref=e292]:
+                - cell "juniper-canopy GET /v1/health 200" [ref=e293]:
+                  - button "juniper-canopy GET /v1/health 200" [ref=e296] [cursor=pointer]
+                - cell "0.0122 req/s" [ref=e297]
+                - cell "0.0172 req/s" [ref=e298]
+              - row "juniper-canopy GET _unmatched 200 0.0126 req/s 0.0182 req/s" [ref=e299]:
+                - cell "juniper-canopy GET _unmatched 200" [ref=e300]:
+                  - button "juniper-canopy GET _unmatched 200" [ref=e303] [cursor=pointer]
+                - cell "0.0126 req/s" [ref=e304]
+                - cell "0.0182 req/s" [ref=e305]
+              - row "juniper-canopy GET _unmatched 307 0.0137 req/s 0.0215 req/s" [ref=e306]:
+                - cell "juniper-canopy GET _unmatched 307" [ref=e307]:
+                  - button "juniper-canopy GET _unmatched 307" [ref=e310] [cursor=pointer]
+                - cell "0.0137 req/s" [ref=e311]
+                - cell "0.0215 req/s" [ref=e312]
+              - row "juniper-canopy POST _unmatched 200 0.0138 req/s 0.0230 req/s" [ref=e313]:
+                - cell "juniper-canopy POST _unmatched 200" [ref=e314]:
+                  - button "juniper-canopy POST _unmatched 200" [ref=e317] [cursor=pointer]
+                - cell "0.0138 req/s" [ref=e318]
+                - cell "0.0230 req/s" [ref=e319]
+        - button "Collapse row" [ref=e323] [cursor=pointer]:
+          - img [ref=e324]
+          - heading "Error Rate" [ref=e326]
+        - region "Error Rate (%)" [ref=e332]:
+          - heading "Error Rate (%)" [level=2] [ref=e335]
+          - generic [ref=e338]: No data
+        - button "Collapse row" [ref=e342] [cursor=pointer]:
+          - img [ref=e343]
+          - heading "Latency" [ref=e345]
+        - region "Request Latency — p50 / p95 / p99" [ref=e351]:
+          - heading "Request Latency — p50 / p95 / p99" [level=2] [ref=e354]
+          - table [ref=e370]:
+            - rowgroup [ref=e371]:
+              - row "Name Mean Max" [ref=e372]:
+                - columnheader "Name" [ref=e373] [cursor=pointer]
+                - columnheader "Mean" [ref=e374] [cursor=pointer]
+                - columnheader "Max" [ref=e375] [cursor=pointer]
+            - rowgroup [ref=e376]:
+              - row "juniper-data p50 4.00 ms 4.17 ms" [ref=e377]:
+                - cell "juniper-data p50" [ref=e378]:
+                  - button "juniper-data p50" [ref=e381] [cursor=pointer]
+                - cell "4.00 ms" [ref=e382]
+                - cell "4.17 ms" [ref=e383]
+              - row "juniper-data p95 12.3 ms 19.0 ms" [ref=e384]:
+                - cell "juniper-data p95" [ref=e385]:
+                  - button "juniper-data p95" [ref=e388] [cursor=pointer]
+                - cell "12.3 ms" [ref=e389]
+                - cell "19.0 ms" [ref=e390]
+              - row "juniper-data p99 19.9 ms 23.8 ms" [ref=e391]:
+                - cell "juniper-data p99" [ref=e392]:
+                  - button "juniper-data p99" [ref=e395] [cursor=pointer]
+                - cell "19.9 ms" [ref=e396]
+                - cell "23.8 ms" [ref=e397]
+              - row "juniper-cascor p50 4.41 ms 6.25 ms" [ref=e398]:
+                - cell "juniper-cascor p50" [ref=e399]:
+                  - button "juniper-cascor p50" [ref=e402] [cursor=pointer]
+                - cell "4.41 ms" [ref=e403]
+                - cell "6.25 ms" [ref=e404]
+              - row "juniper-cascor p95 20.8 ms 22.5 ms" [ref=e405]:
+                - cell "juniper-cascor p95" [ref=e406]:
+                  - button "juniper-cascor p95" [ref=e409] [cursor=pointer]
+                - cell "20.8 ms" [ref=e410]
+                - cell "22.5 ms" [ref=e411]
+              - row "juniper-cascor p99 23.0 ms 24.5 ms" [ref=e412]:
+                - cell "juniper-cascor p99" [ref=e413]:
+                  - button "juniper-cascor p99" [ref=e416] [cursor=pointer]
+                - cell "23.0 ms" [ref=e417]
+                - cell "24.5 ms" [ref=e418]
+              - row "juniper-canopy p50 7.36 ms 8.78 ms" [ref=e419]:
+                - cell "juniper-canopy p50" [ref=e420]:
+                  - button "juniper-canopy p50" [ref=e423] [cursor=pointer]
+                - cell "7.36 ms" [ref=e424]
+                - cell "8.78 ms" [ref=e425]
+              - row "juniper-canopy p95 234 ms 819 ms" [ref=e426]:
+                - cell "juniper-canopy p95" [ref=e427]:
+                  - button "juniper-canopy p95" [ref=e430] [cursor=pointer]
+                - cell "234 ms" [ref=e431]
+                - cell "819 ms" [ref=e432]
+              - row "juniper-canopy p99 277 ms 964 ms" [ref=e433]:
+                - cell "juniper-canopy p99" [ref=e434]:
+                  - button "juniper-canopy p99" [ref=e437] [cursor=pointer]
+                - cell "277 ms" [ref=e438]
+                - cell "964 ms" [ref=e439]
+        - button "Collapse row" [ref=e443] [cursor=pointer]:
+          - img [ref=e444]
+          - heading "Cross-Cutting KPIs (R4)" [ref=e446]
+        - region "Canopy Data-Client Error Rate (R4.3)" [ref=e452]:
+          - heading "Canopy Data-Client Error Rate (R4.3)" [level=2] [ref=e455]
+          - generic [ref=e462]: No data
+        - region "Juniper-Data Cache Miss Ratio (R4.5)" [ref=e468]:
+          - heading "Juniper-Data Cache Miss Ratio (R4.5)" [level=2] [ref=e471]
+          - generic [ref=e478]: No data
+        - button "Collapse row" [ref=e482] [cursor=pointer]:
+          - img [ref=e483]
+          - heading "Worker Heartbeat (R5.4-pre)" [ref=e485]
+        - region "Cascor worker GPU saturation (max across workers)" [ref=e491]:
+          - generic [ref=e492]:
+            - heading "Cascor worker GPU saturation (max across workers)" [level=2] [ref=e494]
+            - img [ref=e497]
+          - generic [ref=e501]: No data
+        - button "Collapse row" [ref=e505] [cursor=pointer]:
+          - img [ref=e506]
+          - heading "Resource Usage (PoC)" [ref=e508]
+        - region "Service Memory — Resident Set Size (PoC)" [ref=e514]:
+          - generic [ref=e515]:
+            - heading "Service Memory — Resident Set Size (PoC)" [level=2] [ref=e517]
+            - img [ref=e520]
+          - table [ref=e537]:
+            - rowgroup [ref=e538]:
+              - row "Name Last Max Mean" [ref=e539]:
+                - columnheader "Name" [ref=e540] [cursor=pointer]
+                - columnheader "Last" [ref=e541] [cursor=pointer]
+                - columnheader "Max" [ref=e542] [cursor=pointer]
+                - columnheader "Mean" [ref=e543] [cursor=pointer]
+            - rowgroup [ref=e544]:
+              - row "juniper-canopy 397 MiB 397 MiB 375 MiB" [ref=e545]:
+                - cell "juniper-canopy" [ref=e546]:
+                  - button "juniper-canopy" [ref=e549] [cursor=pointer]
+                - cell "397 MiB" [ref=e550]
+                - cell "397 MiB" [ref=e551]
+                - cell "375 MiB" [ref=e552]
+              - row "juniper-cascor 451 MiB 455 MiB 453 MiB" [ref=e553]:
+                - cell "juniper-cascor" [ref=e554]:
+                  - button "juniper-cascor" [ref=e557] [cursor=pointer]
+                - cell "451 MiB" [ref=e558]
+                - cell "455 MiB" [ref=e559]
+                - cell "453 MiB" [ref=e560]
+              - row "juniper-data 73.6 MiB 73.6 MiB 73.2 MiB" [ref=e561]:
+                - cell "juniper-data" [ref=e562]:
+                  - button "juniper-data" [ref=e565] [cursor=pointer]
+                - cell "73.6 MiB" [ref=e566]
+                - cell "73.6 MiB" [ref=e567]
+                - cell "73.2 MiB" [ref=e568]
+    - link "Powered by" [ref=e570] [cursor=pointer]:
+      - /url: https://grafana.com/?src=grafananet&cnt=kiosk-dashboard
+      - generic [ref=e571]: Powered by
