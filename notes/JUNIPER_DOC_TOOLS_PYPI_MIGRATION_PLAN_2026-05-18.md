@@ -74,7 +74,7 @@ This piggy-backs on the established polyrepo-companion pattern and keeps
 
 ### 3.2 Layout
 
-```
+```text
 juniper-ml/
   juniper-doc-tools/
     pyproject.toml
@@ -118,7 +118,7 @@ runtime dependencies are required — the validator is stdlib-only.
 The console script `juniper-check-doc-links` accepts **all** the flags the
 current `scripts/check_doc_links.py` accepts:
 
-```
+```bash
 juniper-check-doc-links \
   --exclude templates --exclude history --exclude legacy \
   --exclude pull_requests --exclude releases --exclude analysis \
@@ -178,10 +178,12 @@ has already landed and CI is green across all 4 affected repos.
 
 1. Cut tag `juniper-doc-tools-v0.1.0` from `main`.
 2. Verify TestPyPI install + smoke test:
-   ```
+
+   ```bash
    pip install --index-url https://test.pypi.org/simple/ juniper-doc-tools==0.1.0
    juniper-check-doc-links --help
    ```
+
 3. Promote to PyPI (automatic via publish workflow).
 4. Pin a `juniper-ml` requirement: `juniper-doc-tools>=0.1.0,<0.2.0` in
    `juniper-ml/pyproject.toml` under a new `[project.optional-dependencies]`
@@ -196,6 +198,7 @@ For **each** consuming repo (in the order: `juniper-ml`, `juniper-canopy`,
 `juniper-cascor`, `juniper-data`, then the three with standalone copies):
 
 1. Update the repo's `.github/workflows/ci.yml` doc-links job:
+
    ```yaml
    - name: Install juniper-doc-tools
      run: pip install "juniper-doc-tools>=0.1.0,<0.2.0"
@@ -207,6 +210,7 @@ For **each** consuming repo (in the order: `juniper-ml`, `juniper-canopy`,
          --exclude fixes --exclude development --exclude CHANGELOG.md \
          --cross-repo skip
    ```
+
 2. **Do NOT** delete `scripts/check_doc_links.py` yet. The standalone copy
    stays in place as the local-development fallback (for engineers running
    pre-commit hooks without the PyPI package installed).

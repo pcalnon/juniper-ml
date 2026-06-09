@@ -185,7 +185,7 @@ juniper-config-tools' internal site.
 
 Mirrors `juniper-doc-tools/` and `juniper-ci-tools/` exactly:
 
-```
+```text
 juniper-ml/
 └── juniper-config-tools/
     ├── pyproject.toml            # name=juniper-config-tools, version=0.1.0, no runtime deps
