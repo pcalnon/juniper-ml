@@ -197,9 +197,9 @@ Low-risk because the package is unpublished and consumer pins are name-stable:
 
 ## 11. Open questions
 
-- **OQ-1 — Registry convention.**
-  - What discovery mechanism do the `*-core` ports use for adapters (Python entry points group name? an explicit `register()` call at import?)?
-    - To be pinned by the recurse `juniper-model-core` work.
+- **OQ-1 — Registry convention. RESOLVED 2026-06-09.**
+  - The recurse middleware-refactor design adopts **compile-time subclassing + dependency injection** (apps subclass routes/lifecycle and inject their `TrainableModel`), *not* a runtime entry-point registry. The §3 rule's "discovered (e.g. Python entry points)" is illustrative only; the operative mechanism is subclass + inject.
+  - Placement conclusions are mechanism-independent, so nothing in §5/§8 changes. (Original question, now answered: what discovery mechanism do the `*-core` ports use for adapters — entry-points group, or an explicit `register()` at import?)
 - **OQ-2 — Where do the shared `*-core` packages physically live?**
   - Same `juniper-ml` subdirectory-published pattern as the other shared packages, or standalone repos?
     - (They are genuinely common, so the `juniper-ml` tier is consistent — but the volume of model-core / service-core code may argue for standalone.)

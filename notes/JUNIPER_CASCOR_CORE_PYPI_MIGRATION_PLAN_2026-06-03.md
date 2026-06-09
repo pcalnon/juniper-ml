@@ -38,7 +38,7 @@ This document plans that package.
 | Attribute | Decision |
 |---|---|
 | **Name (PyPI)** | `juniper-cascor-core` |
-| **Home** | `juniper-ml/juniper-cascor-core/` subdirectory (matches `juniper-observability` / `juniper-ci-tools` / `juniper-doc-tools` / `juniper-config-tools`); published by `juniper-ml/.github/workflows/publish-cascor-core.yml` on `juniper-cascor-core-v*` tags |
+| **Home** | **SUPERSEDED 2026-06-09** — see [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md) (D1/D2 ratified). The package relocates to the **cascor family** as a subdirectory of `juniper-cascor`, and is **renamed `juniper-cascor-model`**, before first publish. The interim `juniper-ml/juniper-cascor-core/` home and the `juniper-cascor-core` name are retired; every other mechanic in this plan still applies — only the home and distribution name change. |
 | **Python** | `>=3.11` (worker floor) — note worker runs 3.14 in-container |
 | **Runtime deps** | `torch`, `numpy`, `PyYAML` (+ optional `dill`, `columnar` behind an extra) |
 | **Build** | setuptools, MIT, mirrors the other shared-package `pyproject.toml` |

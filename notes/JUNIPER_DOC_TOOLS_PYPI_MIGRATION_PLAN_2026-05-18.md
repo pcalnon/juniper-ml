@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-18
 **Author:** Paul Calnon (drafted by Claude)
-**Status:** Proposed
+**Status:** Shipped — `juniper-doc-tools` v0.1.x on PyPI (Waves 0/1/2/4 merged 2026-05-19; latest 0.1.1)
 **Estimated effort:** 5–7 working days, single owner
 
 ---
