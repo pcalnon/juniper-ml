@@ -200,15 +200,14 @@ Low-risk because the package is unpublished and consumer pins are name-stable:
 - **OQ-1 — Registry convention. RESOLVED 2026-06-09.**
   - The recurse middleware-refactor design adopts **compile-time subclassing + dependency injection** (apps subclass routes/lifecycle and inject their `TrainableModel`), *not* a runtime entry-point registry. The §3 rule's "discovered (e.g. Python entry points)" is illustrative only; the operative mechanism is subclass + inject.
   - Placement conclusions are mechanism-independent, so nothing in §5/§8 changes. (Original question, now answered: what discovery mechanism do the `*-core` ports use for adapters — entry-points group, or an explicit `register()` at import?)
-- **OQ-2 — Where do the shared `*-core` packages physically live?**
-  - Same `juniper-ml` subdirectory-published pattern as the other shared packages, or standalone repos?
-    - (They are genuinely common, so the `juniper-ml` tier is consistent — but the volume of model-core / service-core code may argue for standalone.)
+- **OQ-2 — Where do the shared `*-core` packages physically live? RESOLVED 2026-06-09 (D4).**
+  - **Decision:** the `juniper-ml` subdirectory-published pattern — the established approach, alongside observability / ci-tools / doc-tools / config-tools. Revisit only if `model-core` / `service-core` code volume later argues for standalone repos. (See [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md) §8.)
 - **OQ-3 — Client libraries.**
   - `juniper-cascor-client` / future `juniper-recurse-client` are model-specific by name but thin; confirm they follow the per-model-family rule (they already do).
-- **OQ-4 — Naming.**
-  - "core" is doing double duty (`model-core`/`service-core` = shared abstractions; `cascor-core` = a specific model's code).
-  - Consider a clearer convention to avoid implying `cascor-core` is shared.
-    - (e.g. `juniper-cascor-model` for the specific tier)
+- **OQ-4 — Naming. RESOLVED 2026-06-09 (D2/D4).**
+  - "core" was doing double duty (`model-core`/`service-core` = shared abstractions; `cascor-core` = a specific model's code).
+  - **Convention (ratified):** the `-core` suffix is reserved for genuinely-shared abstractions (`juniper-model-core`, `juniper-service-core`); a model's *specific* implementation core takes the **`juniper-<model>-model`** suffix.
+    - Consequence: `juniper-cascor-core` is renamed **`juniper-cascor-model`** before its first publish; a future recurrent core would be `juniper-recurse-model`.
 
 ---
 
