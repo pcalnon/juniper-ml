@@ -71,7 +71,6 @@ function redact_uuid() {
 # Claude Code parameter flags
 ########################################################################################################################################################################
 debug_log "Define Claude Code parameter flags"
-
 CLAUDE_PERMISSIONS_FLAGS="--dangerously-skip-permissions"
 CLAUDE_REMOTE_CONTROL_FLAGS="--remote-control"
 CLAUDE_SESSION_ID_FLAGS="--session-id"
@@ -82,6 +81,11 @@ CLAUDE_HEADLESS_FLAGS="--print"
 CLAUDE_RESUME_FLAGS="--resume"
 CLAUDE_EFFORT_FLAGS="--effort"
 CLAUDE_MODEL_FLAGS="--model"
+
+debug_log "Define Claude Code Model Values"
+MODEL_FABLE="fable"
+MODEL_OPUS="opus"
+MODEL_SONNET="sonnet"
 
 debug_log "Define Claude Code Effort values"
 EFFORT_LOW="low"
@@ -444,8 +448,17 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing session id flags"
 
         # Parse and init Session ID param unless Resume Previous Session is in progress 
-        if [[ "${CLAUDE_RESUME_VALUE}" == "" ]]; then
+        debug_log "Handle Session ID edge cases"
+        if [[ ( "${CLAUDE_RESUME_VALUE}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
             SESSION_ID="${1}"
+
+            # Handle session id bool flag edge case
+            if [[ "${SESSION_ID}" == "${TRUE}" ]]; then
+                shift
+                SESSION_ID=""
+            fi
+
+            # Validate Session ID
             debug_log "Validating Session ID"
             SESSION_ID="$(validate_session_id "${SESSION_ID}")"
             RETURN_VALUE=$?
@@ -453,7 +466,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
                 shift
             else
-                debug_log "Warning: Received Session ID Flag but no Session ID Name."
+                debug_log "Warning: Received Session ID Flag but no Valid Session ID Name."
                 debug_log "Session ID Value not Provided, Assigning a new UUID as Session ID."
                 SESSION_ID="$(generate_uuid)"
                 RESULT="$?"
@@ -470,18 +483,25 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             fi
         else
             CLAUDE_SESSION_ID_VALUE=""
-            debug_log "Warning: Ignoring Session ID Value Param since Resume Previous Thread has been specified."
+            debug_log "Warning: Ignoring Session ID Value Param since ID Flagged as False or Resume Previous Thread has been specified."
         fi
 
     # Add worktree flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${WORKTREE_FLAGS}"; then
         debug_log "Parsing worktree flags"
-        if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
-            CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}" "${1}")
-            shift
-        else
-            debug_log "Warning: Received Worktree Flag but no Worktree Name. Letting Claude Code assign one."
+        WORKTREE_VALUE="${1}"
+        if [[ "${WORKTREE_VALUE}" == "${FALSE}" ]]; then
+            CLAUDE_WORKTREE_VALUE=""
+        elif [[ ( "${WORKTREE_VALUE}" == "" ) || ( "${1:0:2}" == "${SPACER_FLAGS}" ) || ( "${WORKTREE_VALUE}" == "${TRUE}" ) ]]; then
+            # Handle Edgecase of worktree boolean true value
+            debug_log "Warning: Received Worktree Flag but no valid Worktree Name. Letting Claude Code assign one."
+            if [[ "${WORKTREE_VALUE}" == "${TRUE}" ]]; then
+                shift
+            fi
             CLAUDE_WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS}"
+        else
+            shift
+            CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}" "${WORKTREE_VALUE}")
         fi
 
     # Add Remote Control flag
@@ -511,10 +531,16 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${MODEL_FLAGS}"; then
         debug_log "Parsing model flags"
         if [[ "${1}" != "" ]]; then
-
-            # TODO: Validate Model value
-            CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${1}")
-
+            CLAUDE_MODEL_NAME="${1}"
+            case ${CLAUDE_MODEL_NAME} in
+                "${MODEL_FABLE}" | "${MODEL_OPUS}" | "${MODEL_SONNET}") debug_log "Selected Model Name Validated" ;;
+                *)
+                    debug_log "Error: Received an Ivalid Model Name. Exiting..."
+                    usage "${FALSE}"
+                ;;
+            esac
+            debug_log "Selected Claude Model: ${CLAUDE_MODEL_NAME}"
+            CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CLAUDE_MODEL_NAME}")
             shift
         else
             debug_log "Error: Received Model Flag but no Model Name. Exiting..."

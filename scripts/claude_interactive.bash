@@ -27,8 +27,20 @@ WAKE_THE_CLAUDE_SCRIPT="${SCRIPT_PATH}/${WAKE_THE_CLAUDE_SCRIPT_NAME}"
 
 
 ########################################################################################################################################################################################################
+# Parse Command Line Input Parameters if provided
+########################################################################################################################################################################################################
+CLAUDE_MODEL="${1}"
+shift
+CLAUDE_EFFORT="${1}"
+
+
+########################################################################################################################################################################################################
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
+export MODEL_FABLE="fable"
+export MODEL_OPUS="opus"
+export MODEL_SONNET="sonnet"
+
 export AUTO="auto"
 export MAX="max"
 export XHIGH="xhigh"
@@ -36,6 +48,7 @@ export HIGH="high"
 export MEDIUM="medium"
 export LOW="low"
 
+export DEFAULT_MODEL="${MODEL_FABLE}"
 # export DEFAULT_EFFORT="${HIGH}"
 export DEFAULT_EFFORT="${MAX}"
 export DEFAULT_PROMPT="Hello World, Claude!"
@@ -46,6 +59,7 @@ export DEFAULT_PROMPT="Hello World, Claude!"
 ########################################################################################################################################################################################################
 CLAUDE_SKIP_PERMISSIONS="${CLAUDE_SKIP_PERMISSIONS:-${FALSE}}"
 CLAUDE_REMOTE_CONTROL="${CLAUDE_REMOTE_CONTROL:-${TRUE}}"
+CLAUDE_MODEL="${CLAUDE_MODEL:-${DEFAULT_MODEL}}"
 CLAUDE_EFFORT="${CLAUDE_EFFORT:-${DEFAULT_EFFORT}}"
 CLAUDE_ID="${CLAUDE_ID:-${TRUE}}"
 CLAUDE_WORKTREE="${CLAUDE_WORKTREE:-${TRUE}}"
@@ -60,6 +74,7 @@ export CLAUDE_REMOTE_CONTROL_FLAG="--remote-control"
 export CLAUDE_WORKTREE_FLAG="--worktree"
 export CLAUDE_PROMPT_FLAG="--prompt"
 export CLAUDE_EFFORT_FLAG="--effort"
+export CLAUDE_MODEL_FLAG="--model"
 export CLAUDE_SEPERATOR_FLAG="--"
 export CLAUDE_ID_FLAG="--id"
 
@@ -68,8 +83,9 @@ export CLAUDE_ID_FLAG="--id"
 # Define the default arguments for the Claude Code interactive session
 ########################################################################################################################################################################################################
 CLAUDE_ARGS=""
-CLAUDE_ARGS+="${CLAUDE_ID_FLAG} "
-CLAUDE_ARGS+="${CLAUDE_WORKTREE_FLAG} "
+CLAUDE_ARGS+="${CLAUDE_ID_FLAG} ${CLAUDE_ID} "
+CLAUDE_ARGS+="${CLAUDE_WORKTREE_FLAG} ${CLAUDE_WORKTREE} "
+CLAUDE_ARGS+="${CLAUDE_MODEL_FLAG} ${CLAUDE_MODEL} "
 CLAUDE_ARGS+="${CLAUDE_EFFORT_FLAG} ${CLAUDE_EFFORT} "
 CLAUDE_ARGS+="${CLAUDE_PROMPT_FLAG} \\\"${CLAUDE_PROMPT}\\\" "
 CLAUDE_ARGS+="${CLAUDE_SEPERATOR_FLAG} "
@@ -86,6 +102,7 @@ fi
 ########################################################################################################################################################################################################
 # Opt in to --dangerously-skip-permissions only when explicitly requested
 ########################################################################################################################################################################################################
+
 if [[ "${CLAUDE_SKIP_PERMISSIONS}" == "${TRUE}" ]]; then
     CLAUDE_ARGS+="${CLAUDE_SKIP_PERMISSIONS_FLAG} "
 fi
