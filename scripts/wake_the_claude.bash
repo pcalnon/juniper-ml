@@ -447,11 +447,12 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     elif matches_pattern "${CURRENT_ELEMENT}" "${SESSION_ID_FLAGS}"; then
         debug_log "Parsing session id flags"
 
-        # Parse and init Session ID param unless Resume Previous Session is in progress 
+        # Parse and init Session ID param unless Resume Previous Session is in progress
         debug_log "Handle Session ID edge cases"
-        if [[ ( "${CLAUDE_RESUME_VALUE[@]}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
-            SESSION_ID="${1}"
-
+        SESSION_ID="${1}"
+        # if [[ ( "${CLAUDE_RESUME_VALUE[@]}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
+        if [[ ( ( "${CLAUDE_RESUME_VALUE[*]}" == "" ) || ( "${#CLAUDE_RESUME_VALUE[@]}" == "0" ) ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
+            # SESSION_ID="${1}"
             # Handle session id bool flag edge case
             if [[ "${SESSION_ID}" == "${TRUE}" ]]; then
                 shift
