@@ -449,7 +449,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
 
         # Parse and init Session ID param unless Resume Previous Session is in progress 
         debug_log "Handle Session ID edge cases"
-        if [[ ( "${CLAUDE_RESUME_VALUE}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
+        if [[ ( "${CLAUDE_RESUME_VALUE[@]}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
             SESSION_ID="${1}"
 
             # Handle session id bool flag edge case
@@ -482,7 +482,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 debug_log "Warning: Failed to Save Session ID value."
             fi
         else
-            CLAUDE_SESSION_ID_VALUE=""
+            CLAUDE_SESSION_ID_VALUE=("")
             debug_log "Warning: Ignoring Session ID Value Param since ID Flagged as False or Resume Previous Thread has been specified."
         fi
 
@@ -678,7 +678,7 @@ CLAUDE_CODE_PARAMS+=("${CLAUDE_FORK_SESSION_VALUE[@]}")
 CLAUDE_CODE_PARAMS+=("${CLAUDE_PERMISSIONS_VALUE[@]}")
 
 debug_log "Completed Appending Claude Code Params: ${#CLAUDE_CODE_PARAMS[@]}"
-debug_log "Claude Code Params: ${CLAUDE_CODE_PARAMS[@]}"
+debug_log "Claude Code Params: ${CLAUDE_CODE_PARAMS[*]}"
 debug_log "Completed Parsing input parameters"
 
 
