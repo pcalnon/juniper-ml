@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.1.0 (WORKING DRAFT — exploration, not ratified)
-**Last Updated**: 2026-06-09
+**Last Updated**: 2026-06-10
 
 ---
 
@@ -17,6 +17,7 @@
 > - **ARM A** (as written — the shift register *stores* past outputs, no feedback) is a **constructively-grown Time-Delay Neural Network (TDNN / FIR)**. It is *not* recurrence in the dynamical-systems sense.
 > - **ARM B** (feedback — the taps feed back into the activation) is **genuine recurrence (IIR)**, a K-tap generalization of P1/RCC's single self-loop, but single-neuron-class and still ceiling-bound.
 > - **Neither arm lifts the star-free / no-count ceiling, and neither is Δt-aware.** ARM A is nearly free to integrate and is mini-batch-friendly; ARM B needs a real recurrence-aware gradient plus worker/snapshot schema changes.
+> - **2026-06-10 update — P5:** a *trained recurrent (NARX) output layer* added on top of the P4-FIR cascade (this doc's ARM A) **also does not lift the ceiling** — a single self-recurrent output node cannot form the `x(t)·o(t−1)` XOR cross-term parity needs. It buys only a modest fading-memory tail, at *lower* integration cost than ARM B (the worker subsystem is untouched). Full evaluation in the **P5 update section** below.
 
 ---
 
@@ -197,6 +198,45 @@ Validity notes: E1/E5 are exact asserts; E4 uses a fixed **real-time** delay tar
 4. **If feedback is desired**, prefer P1 (single self-loop, cheapest) or P4-IIR (multi-tap, richer memory, heavier)? They are the `K=1` and `K>1` ends of the same axis.
 
 **Recommended next step.** Treat ARM A (P4-FIR) as the front-runner for a bounded-horizon-regression substrate, fold this evaluation's conclusions into the OQ-4 model pick (proposals-doc §-level, alongside P1/P2/P3), and keep ARM B as the documented feedback upgrade. Do **not** ship code until Workstream 0 (the temporal substrate) is opened — every arm depends on it.
+
+---
+
+## Update (2026-06-10) — P5: a trained recurrent (NARX) output layer
+
+> **What P5 is.** P5 builds *directly on this P4 design*: take the most charitable P4 — the **ARM A / P4-FIR** frozen delay-line hidden cascade above — and **add a trained recurrent output layer**. Each output node gets its own TDNN module whose delayed outputs feed *back* as additional inputs to that same node — an order-K **self-recurrent NARX neuron** `o(t)=g(W·h(t)+Σ vₖ·o(t−k)+b)` — and the now-recurrent output layer is retrained by BPTT after each hidden addition. **Headline form `g=tanh` (nonlinear); contrast `g=identity` (linear — what cascor ships today).** The hidden cascade stays FIR-frozen, so the *only* live recurrence is at the output. Evaluated by the same adversarial + empirical method (13-agent workflow, no synth agent); POC: [`../util/ad-hoc/verify_p5_recurrent_output_eval.py`](../util/ad-hoc/verify_p5_recurrent_output_eval.py) (numpy, seed-fixed, PE1–PE7, incl. a folded decisive held-out diagnostic). P5 *relocates* recurrence from the frozen cascade (where RCC's ceiling is proven) to a *trained* output — architecturally more promising than either P4 arm, which is why it was worth testing.
+
+### P5.1 Ceiling verdict (the question that motivated P5) — NOT lifted
+
+**P5 does *not* lift the star-free / no-count ceiling — for either the nonlinear headline or the linear contrast.** Unanimous across all four lenses; the refuters tried to break it and failed. The obstruction is **representational, not a training failure** — the BPTT gradient is verified correct (PE3 `7.82e-09`), capacity is ample, multi-restart, and negative feedback weights are permitted.
+
+- **Decisive held-out evidence (PE7):** train a self-recurrent output on running parity, freeze `(W,b,v)`, evaluate on a *disjoint* stream → accuracy **collapses to the majority-class floor** (tanh `0.568→0.482`, identity `0.561→0.497`, floor `0.500`; held-out `|corr|≈0.02`). The tempting in-sample `|corr|≈0.2–0.25` (PE1/PE2) is **spurious finite-sample correlation, not computed parity**.
+- **Mechanism.** Parity is `o(t)=XOR(x(t),o(t−1))`, which needs the second-order cross-term `x(t)·o(t−1)`; a single neuron cannot represent XOR (Minsky–Papert 1969), and P5's FIR drive is **output-state-blind** (`_compute_hidden_outputs` fills its buffer from inputs + prior *hidden* units and never reads any output: `cascade_correlation.py:1942-1946`, verified), so it cannot supply that cross-term. NARX universality (Siegelmann–Horne & Giles 1997) **does not transfer** — it requires a hidden MLP output map P5 lacks. P5's sign-free feedback weights do reach Knorozova–Ronca Thm-7 territory, but a negative weight buys *autonomous* period-2 oscillation under constant input, **not** the *input-gated* toggle parity needs. The refuter's escape hatch — a second, cross-fed recurrent output node — makes it *worse* (`|corr|=0.08`). General Zₙ>2 counting is left a **conjecture** by Knorozova–Ronca; **parity/C2 is closed**.
+- **What P5 *does* buy (measured, modest):** a learnable **fading-memory tail** (PE4: lag-40 `|corr|≈0.42–0.45` vs FIR-only `0.16`) — but **below threshold**, so the effective-horizon cutoff is **unchanged (34, all arms)**. Better memory, no group structure, same ceiling.
+
+### P5.2 The four questions (cf. P4 above)
+
+- **Q1 recurrence.** A genuinely new, BPTT-correct training mode for cascor — today the output is a *static linear fit* (`output = matmul(output_input, output_weights) + output_bias`, `cascade_correlation.py:1979`; `train_output_layer` at `:1986` retrains a stock `nn.Linear` each round). But the recurrence is in the *wrong place / too thin* (one self-recurrent output, output-state-blind features) to change the expressivity class.
+- **Q2 irregular-Δt.** Not Δt-aware, both arms; the output IIR does not restore grid-invariance. PE5 `116×` (FIR-only) vs `2.04×` (P5-tanh) is **confounded** by P5-tanh's worse regular-grid fit — both are grid-*dependent*; the LMU (Δt-doc §8.7) is `~1.15×`.
+- **Q3 horizon.** Cutoff unchanged (34); on equities, persistence dominates (baseline `0.998`), residual `0.081` (tanh) / `0.048` (linear) — P4 ref FIR `0.196` / IIR `0.018`, suggestive (close-only FIR drive).
+- **Q4 mini-batch/perf.** The recurrent output forces a *sequential* BPTT-over-window, but only through the **thin** output layer (hidden FIR frozen → cacheable). Cost shape ~order 10× a static fit (environment-dependent); ranking **P4-FIR ≪ P5 ≪ P4-IIR**; crucially the **worker subsystem is untouched** (output training is in-process) — so P5 is *cheaper to integrate than P4-IIR*.
+
+### P5.3 POC results (measured — `util/ad-hoc/verify_p5_recurrent_output_eval.py`, seed 20260610, numpy 2.4.4)
+
+```
+PE3 BPTT vs finite-diff : 7.82e-09 PASS (hard assert; tanh & identity)
+PE1 parity/counting     : FIR-base ≈ P5-tanh ≈ P5-linear at all m; acc 0.55–0.59 (chance 0.50); +~0.01 |corr|
+PE2 one-step XOR        : in-sample tanh 0.25 / linear 0.20 (spurious); 2-cross-fed hatch 0.08 (worse)
+PE7 DECISIVE held-out   : tanh 0.568→0.482, identity 0.561→0.497, floor 0.500 → parity NOT computed
+PE4 horizon             : cutoff 34 ALL arms; P5 lag-40 0.42–0.45 vs FIR 0.16 (sub-threshold tail)
+PE5 irregular-Δt        : FIR 116× ; P5-tanh 2.04× (confounded) ; both grid-dependent ; LMU §8.7 1.15×
+PE6 equities (AAPL)     : baseline 0.998 ; residual P5-tanh 0.081 / P5-linear 0.048
+```
+
+### P5.4 Position & verdict
+
+P5 ⊃ P4-FIR (it *is* P4-FIR plus the recurrent output). It adds genuine — if weak — recurrence at **lower worker-integration cost than ARM B / P4-IIR**, but the **same ceiling** as every proposal except P2. Across the family: **P1, P3, P4, and now P5 all leave the star-free ceiling intact; only P2's group-implementing units break it (and still have no training recipe).** If the ceiling is acceptable for bounded-horizon regression, **P4-FIR (ARM A) remains the cheapest temporal-reach option**, with P5 a heavier variant buying a small memory tail; if breaking the ceiling is required, the route is **group-implementing units (the P2 track), not output recurrence.** A *richer* output map — a hidden MLP making it a true NARX net — *could* clear the bar, but that is a recurrent sub-network, not "a recurrent output layer," and would warrant a separate proposal.
+
+*P5-specific sources (verified):* Minsky & Papert 1969 (a single linear-threshold neuron cannot represent XOR); Siegelmann, Horne & Giles 1997, *Computational capabilities of recurrent NARX neural networks*, IEEE Trans. SMC-B 27(2):208-215 (NARX ⇔ fully-recurrent **with an MLP output map**). Shared with P4 (below): Giles 1995; Kremer 1996; Knorozova & Ronca 2024 (arXiv:2312.09048; Thm 7 negative-weight; Props 5/6 second-order; Zₙ>2 conjecture).
 
 ---
 
