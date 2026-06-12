@@ -4,7 +4,7 @@
 **Scope**: Cross-repo (juniper-ml + its 5 sub-packages, juniper-cascor\*, juniper-data\*, juniper-canopy, the planned `*-core` packages, future model apps)
 **Author**: Paul Calnon
 **Date**: 2026-06-09
-**Status**: **Decisions D1–D5 RATIFIED by Paul 2026-06-09** (recorded in §8). Execution — the actual relocation/rename PRs — is a separate step and out of scope for this planning doc. The governing §3 rule lives in the [strategy doc](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md).
+**Status**: **Proposal — pending ratification** (planning only; no code moved, no package published on the basis of this document until Paul ratifies)
 **Builds on**: [`JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md`](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md) (the governing rule)
 **Reconciles**: [`JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md`](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md), [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md), [`CI_TOOLS_EXTRACTION_PLAYBOOK.md`](CI_TOOLS_EXTRACTION_PLAYBOOK.md)
 
@@ -34,7 +34,7 @@ It did **not** apply the rule package-by-package to the whole ecosystem, nor did
 - **The single misplacement is `juniper-cascor-core`.** It is a *model-specific* package (it bundles cascor's `candidate_unit` implementation) currently sitting in `juniper-ml`, the *shared/common* tier. It is **version 0.1.0 and not yet on PyPI (verified 404 on 2026-06-09)**, so moving it is cheap and risk-free *right now* — and decisively so *before its first publish*.
 - **A working precedent already proves the target pattern.** `juniper-cascor-protocol` (v0.1.0, **published**) lives as an independently-versioned, independently-published **subdirectory of `juniper-cascor`**, consumed by the cascor app via a plain PyPI pin. This is the exact "model-family package homed in the model repo" shape that `juniper-cascor-core` should adopt — and it shows the worker↔server symmetric-dependency concern is already a solved problem in the cascor repo.
 - **The relocation unblocks the PyPI deployment chain.** Deciding `juniper-cascor-core`'s home *before* first publish avoids ever binding a live PyPI project + OIDC trusted-publisher to the wrong repo (`juniper-ml`) and later having to migrate it. Publishing from the correct home → worker pin + lockfile regen → worker `main` green → remove the live `juniper-deploy` CW-05 stopgap → close `juniper-cascor#319` / `juniper-cascor-worker#97`.
-- **The open decisions are now RATIFIED (Paul, 2026-06-09; §8):** (a) `juniper-cascor-core` moves to a **subdirectory of `juniper-cascor`** (not a standalone repo); (b) it is **renamed `juniper-cascor-model`** before first publish; (c) the future shared `*-core` packages live as **juniper-ml subdirectories** (established approach), under a platform-wide naming convention — **`-core` for shared abstractions, `juniper-<model>-model` for model-specific cores**.
+- **Three genuinely open decisions need Paul's ratification** (consolidated in §8): (a) **standalone `juniper-cascor-core` repo vs. subdirectory of `juniper-cascor`**; (b) **whether to rename** the distribution to `juniper-cascor-model` while it is still unpublished (the strategy doc's OQ-4 naming concern); (c) **where the future `*-core` shared packages physically live** (juniper-ml subdir vs. standalone — the strategy doc's OQ-2). This plan recommends an answer to each.
 - **Nothing here depends on the un-ratified recurse refactor.** The `juniper-cascor-core` relocation is independent of, and should not wait for, WS-0 ratification or the OQ-4 recurrent-model pick. The refactor later *refines* the relocated package's internal boundary; it does not gate the move.
 
 ---
@@ -105,7 +105,7 @@ All rows below were verified live against the real repos under `/home/pcalnon/De
 | 3 | `juniper-ci-tools` | juniper-ml (subdir) | 0.4.0 | `publish-ci-tools.yml` (`juniper-ci-tools-v*`) | **0.4.0** | cross-cutting dev tool (agnostic) | **VALIDATED** |
 | 4 | `juniper-doc-tools` | juniper-ml (subdir) | 0.1.1 | `publish-doc-tools.yml` (`juniper-doc-tools-v*`) | **0.1.1** | cross-cutting dev tool (agnostic) | **VALIDATED** |
 | 5 | `juniper-config-tools` | juniper-ml (subdir) | 0.1.0 | `publish-config-tools.yml` (`juniper-config-tools-v*`) | **0.1.0** | cross-cutting lib (agnostic) | **VALIDATED** |
-| 6 | **`juniper-cascor-core`** | **juniper-ml (subdir)** | 0.1.0 | `publish-cascor-core.yml` (`juniper-cascor-core-v*`) | **404 — NOT published** | **model implementation (specific)** | **RELOCATE → `juniper-cascor` subdir + RENAME → `juniper-cascor-model`** (D1/D2) |
+| 6 | **`juniper-cascor-core`** | **juniper-ml (subdir)** | 0.1.0 | `publish-cascor-core.yml` (`juniper-cascor-core-v*`) | **404 — NOT published** | **model implementation (specific)** | **RELOCATE → cascor family** |
 | 7 | `juniper-cascor` | juniper-cascor (root) | 0.5.0 | `publish.yml` (release) | **0.5.0** | model app (specific) | **VALIDATED** |
 | 8 | `juniper-cascor-protocol` | juniper-cascor (subdir) | 0.1.0 | `publish-protocol.yml` (`juniper-cascor-protocol-v*`) | **0.1.0** | model-family wire schema (specific) | **VALIDATED** (precedent) |
 | 9 | `juniper-data` | juniper-data (root) | 0.6.0 | `publish.yml` (release) | **0.6.0** | dataset tier (agnostic) | **VALIDATED** |
@@ -183,9 +183,9 @@ Because it is **unpublished (404)**, the move is cheap now and gets more expensi
 These do not exist yet and are **gated on WS-0 ratification** (the refactor is in-review, *not ratified*) and, for the recurse app, on the **OQ-4** recurrent-model pick (open, under active research). Placement guidance under the rule:
 
 - **`juniper-service-core` and `juniper-model-core` are genuinely agnostic → shared tier.** Under the rule they belong with the other shared libraries.
-  **D4 ratified (2026-06-09): they live as juniper-ml subdirectories** (the established approach, alongside observability / ci-tools / doc-tools / config-tools) — revisit only if their code volume later argues for standalone repos. This resolves strategy OQ-2.
-  **Naming convention ratified (resolves strategy OQ-4):** the `-core` suffix is reserved for genuinely-shared abstractions (`juniper-model-core`, `juniper-service-core`); a model's *specific* implementation core takes the **`juniper-<model>-model`** suffix (hence `juniper-cascor-core` → `juniper-cascor-model`; a future recurrent core would be `juniper-recurse-model`). Model-specific cores keep the model-repo-subdirectory home, like `juniper-cascor-protocol`.
-  The §5 *classification* (agnostic, shared tier) and the physical hosting (juniper-ml subdir) are now both settled.
+  **Where they *physically* live (a juniper-ml subdirectory like the existing four, vs. their own standalone repos) is strategy OQ-2 and remains open.**
+  Recommendation (§8): default to the **juniper-ml subdirectory** pattern for consistency with the four proven shared packages, unless their code volume grows large enough to justify standalone repos — a judgment best made when WS-2/WS-3 are actually scoped.
+  Either way, the §5 *classification* (agnostic, shared tier) is settled; only the physical hosting is open.
 - **`juniper-recurse` (+ future `-client`, `-worker`) are model-specific → own repos.** This is already the decided direction and is consistent with the cascor family. No new question.
 - **Sequencing note:** the refactor's own Part 8 makes "**publish-first is mandatory**" and "**bump the pin and regenerate the lock in the same change**" the load-bearing rules for *its* PyPI rollout. Those rules are downstream of WS-0 and are **not** part of this plan's critical path, but they reinforce the same lesson that drives the cascor-core move: decide the home, publish from it, and pin+lock atomically.
 
@@ -199,9 +199,7 @@ These do not exist yet and are **gated on WS-0 ratification** (the refactor is i
 
 This is the actionable core of the document. It is the one relocation, and it is the PyPI-deployment blocker.
 
-### 6.1 Decision D1 — standalone repo vs. subdirectory of `juniper-cascor` (RATIFIED: subdirectory)
-
-**RATIFIED (Paul, 2026-06-09): Option D — the package becomes a subdirectory of `juniper-cascor`** (`juniper-cascor/juniper-cascor-model/`, with the D2 rename). The analysis below is retained as the rationale.
+### 6.1 Decision required — standalone repo vs. subdirectory of `juniper-cascor`
 
 Both options place the package in the **cascor family** and both satisfy the rule; the choice is about release cadence and operational overhead. The strategy doc §9 *leaned standalone*. The audit surfaced **new, decisive evidence** that the strategy doc did not weigh: the `juniper-cascor-protocol` precedent.
 
@@ -257,7 +255,7 @@ The choice is coupled to the Wave-2 timing decision (§6.6) and must be reconcil
 
 This reuses the [migration plan](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md)'s Wave 0/1/2 mechanics (valid) with the **home corrected to the cascor family** per R2, and follows the strategy §10 migration sketch.
 
-**Phase 1 — Home + name (RATIFIED 2026-06-09).** D1: **subdirectory of `juniper-cascor`** (`juniper-cascor/juniper-cascor-model/`). D2: **renamed `juniper-cascor-model`**. With these decided, the remaining phases are mechanical execution.
+**Phase 1 — Ratify the home (Paul).** Choose Option S or D (§6.1) and the name (§6.5). This is the only true blocker; everything else is mechanical.
 
 **Phase 2 — Stand up the new home.**
 
@@ -279,8 +277,7 @@ Also remove or update the drift-guard `ci.yml` invocation **atomically with** de
 
 **Phase 4 — Publish `v0.1.0` from the new home.** Tag `juniper-cascor-core-v0.1.0`; the workflow gates at TestPyPI then PyPI (both manual-approval). Verify with the PyPI JSON endpoint.
 
-**Phase 5 — Worker adoption (migration-plan Wave 1).** Update the worker dependency to **`juniper-cascor-model>=0.1.0`** (the pin string changes with the D2 rename, but because the old name was never published there is **no PyPI migration** — just adopt the new name).
-**Regenerate `requirements.lock`** (currently stale — it predates the dependency and omits the package), drop the `--cascor-path` indirection, use the core's `ACTIVATION_MAP` (gap #4), fix the float/int param coercion (gap #5), set `JUNIPER_CASCOR_LOG_DIR`, and rebuild the worker image.
+**Phase 5 — Worker adoption (migration-plan Wave 1).** Add/confirm `juniper-cascor-core>=0.1.0` in `juniper-cascor-worker` (**the pin string does not change** — the PyPI name is host-repo-independent), **regenerate `requirements.lock`** (currently stale — it predates the dependency and omits cascor-core), drop the `--cascor-path` indirection, use core's `ACTIVATION_MAP` (gap #4), fix the float/int param coercion (gap #5), set `JUNIPER_CASCOR_LOG_DIR`, rebuild the worker image.
 
 **Phase 6 — Acceptance + stopgap removal.** Run the `juniper-cascor#319` repro on the deploy stack (spiral, `max_hidden_units=3`, network grows 0→3, `worker tasks_completed > 0`, `All N remote tasks completed successfully`). Then **remove the temporary `juniper-deploy/docker-compose.cw05-stopgap.yml`**. Close `juniper-cascor-worker#97` and `juniper-cascor#319`.
 
@@ -296,11 +293,10 @@ PyPI trusted publishing binds the project to an exact **(owner, repository, work
 
 ### 6.5 Naming decision — keep `juniper-cascor-core` or rename to `juniper-cascor-model`?
 
-**RATIFIED (D2, Paul, 2026-06-09): rename to `juniper-cascor-model` before first publish.** The strategy doc's **OQ-4** noted "core" wrongly implies *shared*; `juniper-cascor-model` honestly marks the model-specific tier. The package is **unpublished**, so the rename is **free now** (a published name is effectively permanent), and before-first-publish is the only cheap window — so it is folded into the relocation rather than deferred.
+The strategy doc's **OQ-4** notes "core" wrongly implies *shared*. `juniper-cascor-model` would more honestly mark the specific tier. The package is **unpublished**, so renaming is **free now and costly after first publish** (a published name is effectively permanent; a rename means a new project + deprecation of the old).
 
-This sets the **platform-wide naming convention** (resolves OQ-4): `-core` is reserved for shared abstractions (`juniper-model-core`, `juniper-service-core`); a model's *specific* implementation core uses **`juniper-<model>-model`**.
-The rename touches (all cheap pre-publish): the distribution `[project].name`, the thin import package dir `juniper_cascor_core/` → `juniper_cascor_model/`, the publish workflow + tag (`juniper-cascor-model-v*`), the subdirectory name, the worker dependency pin, and the ~48 doc references.
-Because the old name was never published, there is **no PyPI migration** — the new name is simply adopted everywhere before the first publish.
+- **Lean: ship `v0.1.0` as `juniper-cascor-core`** to keep the unblock minimal and because the name is already threaded through the migration plan and the worker pin. Treat the broader "core" naming convention (OQ-4) as a *platform-wide* decision to settle alongside `service-core`/`model-core` naming, not as a rider on the time-sensitive unblock.
+- **Counter-argument worth Paul's explicit ruling:** because before-first-publish is the *only cheap moment to rename*, if a rename to `juniper-cascor-model` is at all likely, doing it now (a one-line worker-pin change, since both are unpublished) is far cheaper than later. **This is a genuine "decide now" because publishing forecloses it.** Recorded as an open decision in §8.
 
 ### 6.6 Relationship to the recurse middleware refactor (do not couple)
 
@@ -313,10 +309,10 @@ The relocated package is an **interim bundle**: its generic `utils`/`log_config`
 
 ## 7. PyPI deployment unblock — the critical path
 
-The user-stated blocker — "completing this package relocation is a blocker for the PyPI deployment of the new and modified packages created during the refactor" — resolves to this chain. The sole decision node (home + name) was **ratified 2026-06-09 (D1/D2)**; the rest is mechanical execution.
+The user-stated blocker — "completing this package relocation is a blocker for the PyPI deployment of the new and modified packages created during the refactor" — resolves to this chain. The **only** item requiring a decision is the first; the rest are mechanical.
 
 ```text
-[✓ home + name RATIFIED 2026-06-09]  ← D1 subdir-of-cascor, D2 rename → juniper-cascor-model (§6.1, §6.5)
+[Paul ratifies home + name]          ← the sole blocking decision (§6.1, §6.5)
         │
         ▼
 [Stand up new home + trusted publisher]   (§6.3 Phase 2, §6.4)
@@ -325,10 +321,10 @@ The user-stated blocker — "completing this package relocation is a blocker for
 [Revert cascor-core from juniper-ml]      (§6.3 Phase 3, §6.2 inventory)
         │
         ▼
-[Publish juniper-cascor-model v0.1.0 from the cascor family]   (§6.3 Phase 4)
+[Publish juniper-cascor-core v0.1.0 from the cascor family]   (§6.3 Phase 4)
         │
         ▼
-[Worker: pin juniper-cascor-model + regen stale lock + drop --cascor-path + gap fixes + rebuild]  (Phase 5)
+[Worker: pin (unchanged string) + regen stale lock + drop --cascor-path + gap fixes + rebuild]  (Phase 5)
         │
         ▼
 [#319 acceptance on deploy stack 0→3]  →  [remove docker-compose.cw05-stopgap.yml]  →  [close #97 / #319]  (Phase 6)
@@ -341,19 +337,17 @@ The user-stated blocker — "completing this package relocation is a blocker for
 
 ---
 
-## 8. Decisions — RATIFIED by Paul, 2026-06-09
+## 8. Open decisions requiring ratification (consolidated)
 
-> All five decisions below are now decided. Execution (the relocation/rename PRs across `juniper-ml`, `juniper-cascor`, and `juniper-cascor-worker`) is a separate task — this document remains planning only.
+| # | Decision | Options | Recommendation | Blocks | Time-sensitivity |
+|---|---|---|---|---|---|
+| D1 | `juniper-cascor-core` home | **S** standalone repo · **D** subdir of `juniper-cascor` | **D** (proven by the protocol precedent, lowest friction); S valid if maximal release decoupling is wanted | The entire §7 unblock chain | **High** — first publish should not happen from the wrong home |
+| D2 | Rename to `juniper-cascor-model`? | keep `juniper-cascor-core` · rename now | **Lean keep** for a minimal unblock; **but rename-now is the only cheap window** if a rename is at all likely | Worker pin + package name + publish-workflow bindings + ~49 doc refs (all cheap pre-publish, permanent post-publish) | **High** — first publish forecloses a cheap rename |
+| D3 | Drift-guard disposition | move to new home · move to `juniper-cascor` · delete at Wave 2 | Co-locate with the package in cascor; retire at Wave 2 | The `ci.yml` drift invocation edit | Medium |
+| D4 | Where do `juniper-service-core` / `juniper-model-core` physically live? (strategy OQ-2) | juniper-ml subdir (like the 4 shared pkgs) · standalone repos | **Default to juniper-ml subdir** for consistency; revisit if code volume is large | The refactor's PyPI rollout (downstream of WS-0) | Low — decide when WS-2/WS-3 are scoped |
+| D5 | Extension mechanism wording (strategy OQ-1) | entry-point discovery (as §3 reads) · subclass+inject (as the refactor chose) | **Subclass+inject**; annotate the strategy doc | Nothing (placement is mechanism-independent) | Low — doc hygiene |
 
-| # | Decision | Ratified outcome (2026-06-09) | Notes |
-|---|---|---|---|
-| D1 | `juniper-cascor-core` home | **Subdirectory of `juniper-cascor`** (`juniper-cascor/juniper-cascor-model/`) — not a standalone repo | Lowest friction; copies the `juniper-cascor-protocol` wiring |
-| D2 | Distribution name | **Rename to `juniper-cascor-model`** before first publish | Free while unpublished; sets the platform naming convention (see D4) |
-| D3 | Drift-guard disposition | **Settled in the relocation PR** — co-locate with the package in `juniper-cascor`, retire at Wave 2 | Reconcile with the `ci.yml` invocation in the same change |
-| D4 | Future homes + naming convention | **Shared `*-core` → juniper-ml subdir** (established approach; resolves OQ-2). **Naming: `-core` = shared abstraction; `juniper-<model>-model` = model-specific core** (resolves OQ-4) | Model-specific cores follow the model-repo-subdir home, like `juniper-cascor-protocol` |
-| D5 | Extension mechanism wording | **Off the critical path** — operative mechanism is subclass + inject; strategy OQ-1 annotated RESOLVED | Placement is mechanism-independent |
-
-**Execution gate:** D1 + D2 were the inputs needed to start the relocation/rename. The actual PRs (relocate + rename in `juniper-ml` / `juniper-cascor`, repoint the worker, publish `juniper-cascor-model` 0.1.0) are the next, separate step.
+Decisions **D1** and **D2** are the gates for starting the relocation. **D3** is settled inside the relocation PR. **D4** and **D5** are not on the critical path.
 
 ---
 
