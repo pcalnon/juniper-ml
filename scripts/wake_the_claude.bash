@@ -492,9 +492,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         # Parse and init Session ID param unless Resume Previous Session is in progress
         debug_log "Handle Session ID edge cases"
         SESSION_ID="${1}"
-        # if [[ ( "${CLAUDE_RESUME_VALUE[@]}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
         if [[ ( ( "${CLAUDE_RESUME_VALUE[*]}" == "" ) || ( "${#CLAUDE_RESUME_VALUE[@]}" == "0" ) ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
-            # SESSION_ID="${1}"
             # Handle session id bool flag edge case
             if [[ "${SESSION_ID}" == "${TRUE}" ]]; then
                 shift
@@ -510,6 +508,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 shift
             else
                 debug_log "Warning: Received Session ID Flag but no Valid Session ID Name."
+                # debug_log "Warning: Received Session ID Flag but no Session ID Name."
                 debug_log "Session ID Value not Provided, Assigning a new UUID as Session ID."
                 SESSION_ID="$(generate_uuid)"
                 RESULT="$?"
