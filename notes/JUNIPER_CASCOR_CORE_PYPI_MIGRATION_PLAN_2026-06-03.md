@@ -29,6 +29,7 @@ This document plans that package.
 **Goal:** a working dual-path where remote workers actually train candidates and contribute to cascade growth.
 
 **Ratified scope — Wave 0 + Wave 1:**
+
 - **Wave 0** — create the `juniper-cascor-core` package (extract the candidate-training core from cascor src; make logging deployment-agnostic; publish workflow + drift-guard).
 - **Wave 1** — the worker depends on `juniper-cascor-core`, drops the `--cascor-path` indirection, uses the shared activation registry, and the remote param-typing bug is fixed. **This unblocks #319 end-to-end.**
 - **Wave 2 (deferred)** — cascor *itself* adopts the package (delete inline copies → single source of truth). Held behind a **drift-guard test** until scheduled (see §7).
@@ -38,7 +39,7 @@ This document plans that package.
 | Attribute | Decision |
 |---|---|
 | **Name (PyPI)** | `juniper-cascor-core` |
-| **Home** | `juniper-ml/juniper-cascor-core/` subdirectory (matches `juniper-observability` / `juniper-ci-tools` / `juniper-doc-tools` / `juniper-config-tools`); published by `juniper-ml/.github/workflows/publish-cascor-core.yml` on `juniper-cascor-core-v*` tags |
+| **Home** | **SUPERSEDED 2026-06-09** — see [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md) (D1/D2 ratified). The package relocates to the **cascor family** as a subdirectory of `juniper-cascor`, and is **renamed `juniper-cascor-model`**, before first publish. The interim `juniper-ml/juniper-cascor-core/` home and the `juniper-cascor-core` name are retired; every other mechanic in this plan still applies — only the home and distribution name change. |
 | **Python** | `>=3.11` (worker floor) — note worker runs 3.14 in-container |
 | **Runtime deps** | `torch`, `numpy`, `PyYAML` (+ optional `dill`, `columnar` behind an extra) |
 | **Build** | setuptools, MIT, mirrors the other shared-package `pyproject.toml` |
@@ -121,7 +122,7 @@ cascor migrates its server/training code to import the candidate core from `juni
 
 ## 10. Appendix — stopgap evidence (2026-06-03 deploy stack)
 
-```
+```text
 # cascor side proven (#3 + #5):
 22:14:17  Dispatching 2 tasks to remote workers (round 2d822113)
 22:14:20  Collected 2/2 results from remote workers          # was 0/2 pre-#322

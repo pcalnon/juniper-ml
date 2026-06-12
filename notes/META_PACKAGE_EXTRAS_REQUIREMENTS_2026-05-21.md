@@ -45,7 +45,7 @@ The meta-package MUST declare the following optional-dependency groups, with at 
 | `clients`   | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                                              |
 | `worker`    | `juniper-cascor-worker>=0.3.0`                                                                                            |
 | `servers`   | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0`                                                  |
-| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0`                              |
+| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` — retained as a back-compat alias for the same dependency listed in `tools`             |
 | `all`       | Recursive reference of the form `juniper-ml[<group1>,<group2>,...]` that aggregates every non-alias group exactly once    |
 
@@ -100,7 +100,8 @@ The test MUST be wired into `.github/workflows/ci.yml` so the contract is enforc
 
 `docs/QUICK_START.md` and `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md` SHOULD include an advisory note that `pip install juniper-ml[all]` transitively pulls a multi-GB dependency tree (notably `torch`, brought in via `juniper-cascor-worker` and `juniper-cascor`). Callers who do not need the worker or server distributions SHOULD use a narrower extra (`[clients]`, `[tools]`, or `[doc-tools]`).
 
-**Rationale.** The size jump between v0.4.x `[all]` (clients + worker only) and v0.5.x `[all]` (clients + worker + servers + tools) is the difference between roughly 30 MB of wheels and approximately 5 GB on disk after install (measured on Python 3.13 + Linux x86_64 against PyPI on 2026-05-21; the original v0.5.0 estimate of "roughly 2 GB" was wheel-size-only and understated the resolved disk footprint by ~2.5x). Users who learn this only after running `pip install` in a constrained environment lose minutes per attempt.
+**Rationale.** The size jump between v0.4.x `[all]` (clients + worker only) and v0.5.x `[all]` (clients + worker + servers + tools) is the difference between roughly 30 MB of wheels and approximately 5 GB on disk after install (measured on Python 3.13 + Linux x86_64 against PyPI on 2026-05-21; the original v0.5.0 estimate of "roughly 2 GB" was wheel-size-only and understated the resolved disk footprint by ~2.5x).
+Users who learn this only after running `pip install` in a constrained environment lose minutes per attempt.
 
 ---
 

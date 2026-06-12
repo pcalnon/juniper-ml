@@ -37,9 +37,15 @@ CLAUDE_EFFORT="${1}"
 ########################################################################################################################################################################################################
 # Define Script Constants for Claude Code interaction
 ########################################################################################################################################################################################################
-export MODEL_FABLE="fable"
-export MODEL_OPUS="opus"
-export MODEL_SONNET="sonnet"
+export MODEL_FABLE_NAME="claude-fable-5"
+export MODEL_OPUS_NAME="claude-opus-4-8"
+export MODEL_SONNET_NAME="claude-sonnet-4-6"
+export MODEL_HAIKU_NAME="claud-haiku-4-5"
+
+export MODEL_FABLE_ALIAS="fable"
+export MODEL_OPUS_ALIAS="opus"
+export MODEL_SONNET_ALIAS="sonnet"
+export MODEL_HAIKU_ALIAS="haiku"
 
 export AUTO="auto"
 export MAX="max"
@@ -48,9 +54,14 @@ export HIGH="high"
 export MEDIUM="medium"
 export LOW="low"
 
-export DEFAULT_MODEL="${MODEL_FABLE}"
+########################################################################################################################################################################################################
+# Define Script Defaults
+########################################################################################################################################################################################################
+export DEFAULT_MODEL="${MODEL_FABLE_ALIAS}"
+
 # export DEFAULT_EFFORT="${HIGH}"
 export DEFAULT_EFFORT="${MAX}"
+
 export DEFAULT_PROMPT="Hello World, Claude!"
 
 
