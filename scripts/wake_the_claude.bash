@@ -82,10 +82,17 @@ CLAUDE_RESUME_FLAGS="--resume"
 CLAUDE_EFFORT_FLAGS="--effort"
 CLAUDE_MODEL_FLAGS="--model"
 
-debug_log "Define Claude Code Model Values"
-MODEL_FABLE="fable"
-MODEL_OPUS="opus"
-MODEL_SONNET="sonnet"
+debug_log "Define Model Name Constants"
+MODEL_FABLE_NAME="claude-fable-5"
+MODEL_OPUS_NAME="claude-opus-4-8"
+MODEL_SONNET_NAME="claude-sonnet-4-6"
+MODEL_HAIKU_NAME="claud-haiku-4-5"
+
+debug_log "Define Model Name Alias Constants"
+MODEL_FABLE_ALIAS="fable"
+MODEL_OPUS_ALIAS="opus"
+MODEL_SONNET_ALIAS="sonnet"
+MODEL_HAIKU_ALIAS="haiku"
 
 debug_log "Define Claude Code Effort values"
 EFFORT_LOW="low"
@@ -94,6 +101,19 @@ EFFORT_HIGH="high"
 EFFORT_XHIGH="xhigh"
 EFFORT_MAX="max"
 EFFORT_AUTO="auto"
+
+
+########################################################################################################################################################
+# Define Array for Model Name and Alias Testing
+declare -a MODEL_TEST_ARRAY
+MODEL_TEST_ARRAY+=("${MODEL_OPUS_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_HAIKU_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_SONNET_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_FABLE_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_OPUS_ALIAS}")
+MODEL_TEST_ARRAY+=("${MODEL_HAIKU_ALIAS}")
+MODEL_TEST_ARRAY+=("${MODEL_SONNET_ALIAS}")
+MODEL_TEST_ARRAY+=("${MODEL_FABLE_ALIAS}")
 
 
 ########################################################################################################################################################################
@@ -297,6 +317,28 @@ function validate_session_id() {
     echo "${session_id}"
     return "${TRUE}"
 }
+
+function validate_model() {
+    MODEL_PARAM="${1,,}"
+    VALID_MODEL="${FALSE}"
+    debug_log "Validate Claude Code Model Param Value"
+    case "${MODEL_PARAM}" in 
+	"${MODEL_FABLE_ALIAS,,}" | \
+	"${MODEL_OPUS_ALIAS,,}" | \
+	"${MODEL_SONNET_ALIAS,,}" | \
+	"${MODEL_HAIKU_ALIAS,,}" | \
+	"${MODEL_FABLE_NAME,,}" | \
+	"${MODEL_OPUS_NAME,,}" | \
+	"${MODEL_SONNET_NAME,,}" | \
+	"${MODEL_HAIKU_NAME,,}")
+            debug_log "Model Valiated: ${MODEL_PARAM}"
+            VALID_MODEL="${TRUE}"
+        ;;
+        *) debug_log "Error: Specified Model is not Valid: ${MODEL_PARAM}"; usage ${FALSE};;
+    esac
+    return "${VALID_MODEL}"
+}
+
 
 function usage() {
     INPUT_PARAM="$1"
@@ -533,13 +575,13 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing model flags"
         if [[ "${1}" != "" ]]; then
             CLAUDE_MODEL_NAME="${1}"
-            case ${CLAUDE_MODEL_NAME} in
-                "${MODEL_FABLE}" | "${MODEL_OPUS}" | "${MODEL_SONNET}") debug_log "Selected Model Name Validated" ;;
-                *)
-                    debug_log "Error: Received an Ivalid Model Name. Exiting..."
-                    usage "${FALSE}"
-                ;;
-            esac
+	    validate_model "${CLAUDE_MODEL_NAME}"
+            VALID_MODEL_NAME="$?"
+            if [[ "${VALID_MODEL_NAME}" != "${TRUE}" ]]; then
+                debug_log "Error: Received an Ivalid Model Name. Exiting..."
+                usage "${FALSE}"
+            fi
+            debug_log "Selected Model Name Validated" ;;
             debug_log "Selected Claude Model: ${CLAUDE_MODEL_NAME}"
             CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CLAUDE_MODEL_NAME}")
             shift
