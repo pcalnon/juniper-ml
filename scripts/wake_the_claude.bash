@@ -581,7 +581,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
                 debug_log "Error: Received an Ivalid Model Name. Exiting..."
                 usage "${FALSE}"
             fi
-            debug_log "Selected Model Name Validated" ;;
+            debug_log "Selected Model Name Validated"
             debug_log "Selected Claude Model: ${CLAUDE_MODEL_NAME}"
             CLAUDE_MODEL_VALUE=("${CLAUDE_MODEL_FLAGS}" "${CLAUDE_MODEL_NAME}")
             shift
