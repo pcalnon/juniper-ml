@@ -322,7 +322,7 @@ function validate_model() {
     MODEL_PARAM="${1,,}"
     VALID_MODEL="${FALSE}"
     debug_log "Validate Claude Code Model Param Value"
-    case "${MODEL_PARAM}" in 
+    case "${MODEL_PARAM}" in
 	"${MODEL_FABLE_ALIAS,,}" | \
 	"${MODEL_OPUS_ALIAS,,}" | \
 	"${MODEL_SONNET_ALIAS,,}" | \
