@@ -4,8 +4,8 @@
 **Repository**: (proposed) pcalnon/juniper-recurse — design doc hosted in pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.2.1 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; §1.3.4 Δt amendment 2026-06-06; §1.6 OQ answers (Answer-1..7) recorded 2026-06-07)
-**Last Updated**: 2026-06-07
+**Version**: 0.2.2 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; §1.3.4 Δt amendment 2026-06-06; §1.6 OQ answers (Answer-1..7) recorded 2026-06-07; [OQ-4] RESOLVED + ESN/LMU star-free category-error corrected 2026-06-13)
+**Last Updated**: 2026-06-13
 
 ---
 
@@ -150,8 +150,13 @@ The same work shows the remedy is to **introduce group-implementing neurons**.
 > **⚑ Active review ([OQ-4]).**
 > This ceiling is the reason the RCC-primary pick was reopened on 2026-06-02.
 > The concern (Paul's): the no-count/no-group limitation is *architectural*, so the previously-proposed "scope-to-regression guardrail" mitigates symptoms rather than the cause.
-> Live options under research: (a) keep a growable cascade but add a group-implementing unit type to break aperiodicity; (b) lead with a model that never had the ceiling (ESN/reservoir is regression-native; NEAT grows true recurrent cycles).
+> Live options under research: (a) keep a growable cascade but add a group-implementing unit type to break aperiodicity; (b) lead with a model that genuinely escapes the ceiling — **NEAT** grows true recurrent cycles, or a **negative-eigenvalue linear-RNN block** (Grazzi et al. ICLR 2025). *(Correction 2026-06-13: ESN/reservoir is regression-native but does NOT escape the ceiling — it is fading-memory / star-free-bound; see the RESOLVED callout above.)*
 > See §1.6 [OQ-4] and companion RK-2.
+
+> **✅ [OQ-4] RESOLVED (2026-06-13) — superseded by the [exhaustive reevaluation](JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md).** A held-out generalization POC plus an operational-demands audit of every juniper-data dataset settle the question:
+> - **The entire star-free family inherits the ceiling.** RCC, the P4/P5/P6 delay-line + output-recurrence variants, **ESN, LMU, and vanilla (nonnegative) SSMs** all fail to recognize parity / modular counting (fading memory / nonnegative spectrum ≠ counting — Grigoryeva & Ortega 2018; Sarrof, Veitsman & Hahn 2024; *measured:* held-out parity collapses to the majority floor for every one). **The "ESN/LMU escape the ceiling" framing in §1.3.2 / §1.3.3 below is a category error, corrected in place.** The only genuine breakers add group structure / negative recurrence: **P2** group-implementing units (no training recipe), a **negative-eigenvalue input-dependent linear-RNN** (Grazzi et al. ICLR 2025 — general *and* trainable), or **NEAT** (topological, non-cascor paradigm).
+> - **The ceiling is not binding for the current catalog.** No juniper-data dataset demands counting/group structure (equities is persistence-dominated; `xor`/`checkerboard` are static-spatial parity; `arc_agi` is program synthesis). **⇒ Default next development step: the cheap star-free path — P4-FIR (tapped delay line) + Δt-as-feature**, with the LMU / variable-Δt path (§1.3.4) reserved for if continuous-time Δt becomes a priority.
+> - **Near-term vs mid/long-term (load-bearing).** The ceilinged default is acceptable **near-term only**. It will **not** meet **mid-term or long-term** requirements once a task genuinely needs modular / parity / group counting (or the platform's reasoning ambitions grow) — at which point a true ceiling-breaker is required. The **"P7"** option (a negative-eigenvalue Grazzi block grown in cascor's constructive frame) is under design for exactly this; its open problem is a correlation-compatible growth recipe.
 
 | Axis                       | Verdict              | Basis                                                                                                                      |
 |----------------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------|
@@ -167,7 +172,7 @@ The same work shows the remedy is to **introduce group-implementing neurons**.
 
 **Weaknesses / risks & guardrails.**
 
-- *Representational ceiling* (star-free only). **Guardrail (under [OQ-4] review — see callout above):** scope RCC to regression / short-memory / smooth-signal tasks where the discrete-automata pathologies are largely irrelevant; if a task needs parity/long modular cycles, expect failure and fall back to a cyclic recurrent unit (e.g., an LMU or gated cell hosted in the same framework), or a group-implementing unit per Knorozova & Ronca (2024).
+- *Representational ceiling* (star-free only). **Guardrail (under [OQ-4] review — see callout above):** scope RCC to regression / short-memory / smooth-signal tasks where the discrete-automata pathologies are largely irrelevant; if a task needs parity/long modular cycles, expect failure and fall back to a **genuine ceiling-breaker** — a group-implementing unit (Knorozova & Ronca 2024), a negative-eigenvalue input-dependent linear-RNN (Grazzi et al. ICLR 2025), NEAT, or a gated LSTM cell (which can count in practice). *(Correction 2026-06-13: an LMU is NOT such a fallback — a diagonal/nonnegative SSM is star-free-bound; see the RESOLVED callout.)*
 - *Frozen cascade can build deep narrow recurrence* — watch latency and signal attenuation through many frozen layers. **Guardrail:** cap depth; monitor per-unit contribution.
 - *1990s-scale, sparse modern reproductions; Quickprop-specific.* **Guardrail:** re-validate on modern data; provide a golden Reber-grammar regression test as a known-answer anchor.
 
@@ -187,7 +192,7 @@ The same work shows the remedy is to **introduce group-implementing neurons**.
 | R6 cascor integration      | 🔬 **best analog**   | Readout training ↔ cascor output-layer training; grown sub-reservoirs ↔ candidate units — **[speculative]**, no cited hybrid |
 | P first-principles         | ✅ **best-in-class** | Random matrices + spectral-radius scaling + closed-form ridge solve; no solver, no autodiff required                         |
 
-**Strengths.** Regression is native (R2) — and the readout maps *directly* onto machinery cascor already has (output-layer training), making it the strongest *mechanistic* analog among non-RCC options. Cheapest to train; extremely transparent (P). Growth is verified in the literature (R3). **Does not share RCC's star-free ceiling** — a random nonlinear reservoir realizes cyclic/periodic dynamics — which is why it is the leading [OQ-4] alternative.
+**Strengths.** Regression is native (R2) — and the readout maps *directly* onto machinery cascor already has (output-layer training), making it the strongest *mechanistic* analog among non-RCC options. Cheapest to train; extremely transparent (P). Growth is verified in the literature (R3). **(Correction 2026-06-13 — category error, retracted.)** ~~Does not share RCC's star-free ceiling — a random nonlinear reservoir realizes cyclic/periodic dynamics — which is why it is the leading [OQ-4] alternative.~~ An Echo-State reservoir has **fading memory** (Grigoryeva & Ortega 2018: ESNs are universal approximants *of the fading-memory class*), which **cannot** implement parity / modular counting, so it **inherits** the star-free ceiling; the OQ-4 expressivity POC measured ESN as the *worst* parity performer (held-out 0.456 vs floor 0.531). Its real strength is the regression-native readout + cheap training, **not** a wider expressivity class. (Cyclic/periodic *dynamics* in a reservoir is not the same as *recognizing* a cyclic group like parity.)
 
 **Weaknesses / risks & guardrails.**
 
@@ -221,6 +226,7 @@ HiPPO (Gu et al. 2020) later re-derives the LMU "from first principles," making 
 **Weaknesses / risks & guardrails.**
 
 - *Lower large-scale SOTA ceiling than Mamba/S4*; headline results are RNN-scale (psMNIST, chaotic series). **Guardrail:** acceptable for a research platform centered on transparency + time-series regression; document the ceiling.
+- *Inherits the star-free ceiling (added 2026-06-13):* a diagonal/nonnegative SSM, the LMU **cannot** do parity / modular counting (Sarrof, Veitsman & Hahn 2024; the OQ-4 POC measured LMU at the parity floor). Its advantage is **Δt-nativeness + transparency**, not a wider expressivity class — and "future-proofing toward S4/Mamba" buys continuous-time + scale, **not** counting (all SSMs are in TC⁰; Merrill, Petty & Sabharwal 2024). **Guardrail:** do not position LMU/SSM as a ceiling-breaker.
 - *Smaller ecosystem/tooling* than the SSM family. **Guardrail:** rely on the closed-form spec (well-defined) rather than third-party impls.
 - *Timescale mis-setting* (θ/Δt) degrades memory. **Guardrail:** expose θ/Δt as inspectable, validated hyperparameters; add an analytic delay-line unit test.
 
