@@ -1,4 +1,4 @@
-#!/usr/bin/env bash  
+#!/usr/bin/env bash
 ########################################################################################################################################################
 #
 ########################################################################################################################################################
@@ -11,7 +11,7 @@
 # MODEL_NAME_CHECK="claude-haiku-4-6"
 # MODEL_NAME_CHECK="claude-sonnet-4-6"
 # MODEL_NAME_CHECK="claude-fable-4-6"
- 
+
 # MODEL_NAME_CHECK="opus"
 # MODEL_NAME_CHECK="haiku"
 # MODEL_NAME_CHECK="sonnet"
@@ -51,7 +51,7 @@ MODEL_TEST_ARRAY+=("${CLAUDE_FABLE_ALIAS}")
 ########################################################################################################################################################
 echo -ne "\n\nValidating Model Names and Aliases: ${MODEL_TEST_ARRAY[*]}\n\n"
 
-for MODEL_NAME_CHECK in ${MODEL_TEST_ARRAY[@]}; do
+for MODEL_NAME_CHECK in "${MODEL_TEST_ARRAY[@]}"; do
     echo -ne "\tValidate Model: ${MODEL_NAME_CHECK} (${MODEL_NAME_CHECK^^}):      \t"
     case "${MODEL_NAME_CHECK^^}" in
         "${CLAUDE_HAIKU_NAME^^}" | \
