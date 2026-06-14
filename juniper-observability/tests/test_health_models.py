@@ -92,3 +92,27 @@ class TestReadinessResponse:
         )
         round_tripped = ReadinessResponse(**original.model_dump())
         assert round_tripped.model_dump() == original.model_dump()
+
+    def test_build_provenance_defaults_to_none(self):
+        """git_sha / build_date are optional and default to None — pre-0.4.0
+        wire compatibility (consumers that never set them are unaffected)."""
+        resp = ReadinessResponse(status="ready", version="0.1.0a0", service="juniper-test")
+        assert resp.git_sha is None
+        assert resp.build_date is None
+
+    def test_build_provenance_fields_round_trip(self):
+        """When supplied, git_sha / build_date are carried and survive a
+        model_dump round-trip."""
+        original = ReadinessResponse(
+            status="ready",
+            version="0.1.0a0",
+            service="juniper-test",
+            git_sha="abc1234",
+            build_date="2026-06-14T00:00:00Z",
+        )
+        assert original.git_sha == "abc1234"
+        assert original.build_date == "2026-06-14T00:00:00Z"
+        dump = original.model_dump()
+        assert dump["git_sha"] == "abc1234"
+        assert dump["build_date"] == "2026-06-14T00:00:00Z"
+        assert ReadinessResponse(**dump).model_dump() == dump

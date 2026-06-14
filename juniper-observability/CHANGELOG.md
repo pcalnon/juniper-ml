@@ -8,6 +8,25 @@ with [PEP 440](https://peps.python.org/pep-0440/) pre-release identifiers.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-14
+
+### Added
+
+- **Build provenance.** ``set_build_info(namespace, version, *, git_sha=None,
+  build_date=None)`` now accepts keyword-only ``git_sha`` and ``build_date``
+  and, when provided, emits them as additional labels on the
+  ``<namespace>_build`` Info metric so the deployed source revision is
+  visible in Prometheus/Grafana. They are omitted (not blank) when ``None``.
+- ``ReadinessResponse`` gains optional ``git_sha`` / ``build_date`` fields
+  (default ``None``) so ``/v1/health/ready`` can carry the same provenance.
+
+Both changes are additive and backward-compatible: existing two-argument
+``set_build_info`` callers and pre-0.4.0 ``ReadinessResponse`` consumers are
+unaffected (no public-symbol change). This is the foundation release for the
+ecosystem build-provenance / stale-image-detection effort — see juniper-ml
+``notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md``. Consumers wanting the
+provenance labels should pin ``juniper-observability>=0.4.0``.
+
 ## [0.3.1] - 2026-05-30
 
 ### Changed
