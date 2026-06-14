@@ -36,6 +36,7 @@ DEBUG="${TRUE}"
 
 WTC_DEBUG="${WTC_DEBUG:-${DEBUG}}"
 EXIT_AFTER_USAGE_DEFAULT="${TRUE}"
+REQUIRE_SAVED_SESSION_ID="$(( ( WTC_DEBUG + 1 ) % 2 ))"  # Only require saving session ID when not in wtc debug mode
 
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -49,7 +50,6 @@ mkdir -p "${SESSIONS_DIR}" "${LOGS_DIR}"
 # Early function definitions (must precede top-level calls below)
 ########################################################################################################################################################################
 
-# TODO: this isn't going to stderr?????
 function debug_log() {
     if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
         echo "wake_the_claude: ${*}" 1>&2
@@ -68,6 +68,47 @@ function redact_uuid() {
 
 
 ########################################################################################################################################################################
+# Define Claude Code Models' names, aliases, and add them to validation checks array
+#     NOTE: This is where you would add new model names and aliases
+########################################################################################################################################################################
+
+########################################################################################################################################################################
+# Define Model Full Name Constants
+debug_log "Define Model Name Constants"
+
+# NOTE: Add new Model Full Name here
+MODEL_FABLE_NAME="claude-fable-5"
+MODEL_OPUS_NAME="claude-opus-4-8"
+MODEL_SONNET_NAME="claude-sonnet-4-6"
+MODEL_HAIKU_NAME="claud-haiku-4-5"
+
+########################################################################################################################################################
+# Define Model name Alias Constants
+debug_log "Define Model Name Alias Constants"
+
+# NOTE: Add new Model Name Alias here
+MODEL_FABLE_ALIAS="fable"
+MODEL_OPUS_ALIAS="opus"
+MODEL_SONNET_ALIAS="sonnet"
+MODEL_HAIKU_ALIAS="haiku"
+
+########################################################################################################################################################
+# Define Array for Model Name and Alias Validation Checks
+debug_log "Define Model Name and Alias Validation Array"
+declare -a MODEL_TEST_ARRAY
+
+# NOTE: Add new Model Name and Alias to Validation Array
+MODEL_TEST_ARRAY+=("${MODEL_OPUS_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_HAIKU_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_SONNET_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_FABLE_NAME}")
+MODEL_TEST_ARRAY+=("${MODEL_OPUS_ALIAS}")
+MODEL_TEST_ARRAY+=("${MODEL_HAIKU_ALIAS}")
+MODEL_TEST_ARRAY+=("${MODEL_SONNET_ALIAS}")
+MODEL_TEST_ARRAY+=("${MODEL_FABLE_ALIAS}")
+
+
+########################################################################################################################################################################
 # Claude Code parameter flags
 ########################################################################################################################################################################
 debug_log "Define Claude Code parameter flags"
@@ -82,18 +123,10 @@ CLAUDE_RESUME_FLAGS="--resume"
 CLAUDE_EFFORT_FLAGS="--effort"
 CLAUDE_MODEL_FLAGS="--model"
 
-debug_log "Define Model Name Constants"
-MODEL_FABLE_NAME="claude-fable-5"
-MODEL_OPUS_NAME="claude-opus-4-8"
-MODEL_SONNET_NAME="claude-sonnet-4-6"
-MODEL_HAIKU_NAME="claud-haiku-4-5"
 
-debug_log "Define Model Name Alias Constants"
-MODEL_FABLE_ALIAS="fable"
-MODEL_OPUS_ALIAS="opus"
-MODEL_SONNET_ALIAS="sonnet"
-MODEL_HAIKU_ALIAS="haiku"
-
+########################################################################################################################################################################
+# Claude Code Level of Effort Values
+########################################################################################################################################################################
 debug_log "Define Claude Code Effort values"
 EFFORT_LOW="low"
 EFFORT_MED="medium"
@@ -103,24 +136,10 @@ EFFORT_MAX="max"
 EFFORT_AUTO="auto"
 
 
-########################################################################################################################################################
-# Define Array for Model Name and Alias Testing
-declare -a MODEL_TEST_ARRAY
-MODEL_TEST_ARRAY+=("${MODEL_OPUS_NAME}")
-MODEL_TEST_ARRAY+=("${MODEL_HAIKU_NAME}")
-MODEL_TEST_ARRAY+=("${MODEL_SONNET_NAME}")
-MODEL_TEST_ARRAY+=("${MODEL_FABLE_NAME}")
-MODEL_TEST_ARRAY+=("${MODEL_OPUS_ALIAS}")
-MODEL_TEST_ARRAY+=("${MODEL_HAIKU_ALIAS}")
-MODEL_TEST_ARRAY+=("${MODEL_SONNET_ALIAS}")
-MODEL_TEST_ARRAY+=("${MODEL_FABLE_ALIAS}")
-
-
 ########################################################################################################################################################################
 # Input parameter flags:
 ########################################################################################################################################################################
 debug_log "Define Input parameter flags"
-
 SPACER_FLAGS="--"
 USAGE_FLAGS="-u | --usage"
 HELP_FLAGS="-h | --help | -?"
@@ -140,9 +159,41 @@ FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION} | --resume-fork | --resume-f
 
 
 ########################################################################################################################################################################
+# Initialize Parsed Param values
+########################################################################################################################################################################
+debug_log "Define Parsed Param values"
+PATH_NAME=""
+FILE_NAME=""
+PROMPT_FILE=""
+PROMPT_VALUE=""
+
+# Define Parameter Flag and Value Arrays
+debug_log "Define Parameter Flag and Value Arrays"
+declare -a CLAUDE_EFFORT_VALUE
+declare -a CLAUDE_FORK_SESSION_VALUE
+declare -a CLAUDE_HEADLESS_VALUE
+declare -a CLAUDE_MODEL_VALUE
+declare -a CLAUDE_PERMISSIONS_VALUE
+declare -a CLAUDE_REMOTE_CONTROL_VALUE
+declare -a CLAUDE_RESUME_VALUE
+declare -a CLAUDE_SESSION_ID_VALUE
+declare -a CLAUDE_WORKTREE_VALUE
+
+# Param values to be passed to Claude
+debug_log "Define Param values to be passed to Claude"
+CLAUDE_CODE_PROMPT=""
+CLAUDE_CODE_PARAMS=()
+
+# Valid Prompt Boolean Flags
+debug_log "Define Valid Prompt Boolean Flags"
+VALID_FILE_PARAM="${FALSE}"
+VALID_PATH_PARAM="${FALSE}"
+VALID_PROMPT_PARAM="${FALSE}"
+
+
+########################################################################################################################################################################
 # Define functions for wake_the_claude.bash script
 ########################################################################################################################################################################
-
 # matches_pattern(): Match a value against a pipe-delimited pattern string
 function matches_pattern() {
     local ip_value="$1"
@@ -161,10 +212,10 @@ function matches_pattern() {
 
 # is_valid_uuid(): Validate UUID format (32 hex digits with optional hyphens)
 function is_valid_uuid() {
-
     # example uuid="7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
     local uuid="$1"
-    debug_log "Validating UUID format: ${uuid}"
+    # debug_log "Validating UUID format: ${uuid}"
+    debug_log "Validating UUID format: $(redact_uuid "${uuid}")"
     if [[ ${uuid//-/} =~ ^[[:xdigit:]]{32}$ ]]; then
         debug_log "UUID is valid: $(redact_uuid "${uuid}")"
         return "${TRUE}"
@@ -322,20 +373,17 @@ function validate_model() {
     MODEL_PARAM="${1,,}"
     VALID_MODEL="${FALSE}"
     debug_log "Validate Claude Code Model Param Value"
-    case "${MODEL_PARAM}" in
-	"${MODEL_FABLE_ALIAS,,}" | \
-	"${MODEL_OPUS_ALIAS,,}" | \
-	"${MODEL_SONNET_ALIAS,,}" | \
-	"${MODEL_HAIKU_ALIAS,,}" | \
-	"${MODEL_FABLE_NAME,,}" | \
-	"${MODEL_OPUS_NAME,,}" | \
-	"${MODEL_SONNET_NAME,,}" | \
-	"${MODEL_HAIKU_NAME,,}")
+    for (( i=0; i<"${#MODEL_TEST_ARRAY[@]}"; )); do
+        if [[ "${MODEL_PARAM}" == "${MODEL_TEST_ARRAY[${i}],,}" ]]; then
             debug_log "Model Valiated: ${MODEL_PARAM}"
             VALID_MODEL="${TRUE}"
-        ;;
-        *) debug_log "Error: Specified Model is not Valid: ${MODEL_PARAM}"; usage ${FALSE};;
-    esac
+            break
+        fi
+    done
+    if [[ "${VALID_MODEL}" != "${TRUE}" ]]; then
+        debug_log "Error: Specified Model is not Valid: ${MODEL_PARAM}"
+        usage ${FALSE}
+    fi
     return "${VALID_MODEL}"
 }
 
@@ -389,50 +437,8 @@ function usage() {
     echo -ne "\t ${SPACER_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a spacer to be specified.  Spacer is used to separate flags and values in the input parameters.\n"
 
-    set -e
     [[ ( "${EXIT_AFTER}" == "${TRUE}" ) || ( "${EXIT_AFTER}" == "${FALSE}" ) ]] && exit "${EXIT_AFTER}" || exit "${FALSE}"
 }
-
-
-########################################################################################################################################################################
-# Valid Prompt Boolean Flags
-########################################################################################################################################################################
-debug_log "Define Valid Prompt Boolean Flags"
-
-VALID_FILE_PARAM="${FALSE}"
-VALID_PATH_PARAM="${FALSE}"
-VALID_PROMPT_PARAM="${FALSE}"
-
-
-########################################################################################################################################################################
-# Parsed Param values
-########################################################################################################################################################################
-debug_log "Define Parsed Param values"
-
-PATH_NAME=""
-FILE_NAME=""
-
-PROMPT_FILE=""
-PROMPT_VALUE=""
-
-CLAUDE_EFFORT_VALUE=""
-CLAUDE_FORK_SESSION_VALUE=""
-CLAUDE_HEADLESS_VALUE=""
-CLAUDE_MODEL_VALUE=""
-CLAUDE_PERMISSIONS_VALUE=""
-CLAUDE_REMOTE_CONTROL_VALUE=""
-CLAUDE_RESUME_VALUE=""
-CLAUDE_SESSION_ID_VALUE=""
-CLAUDE_WORKTREE_VALUE=""
-
-
-########################################################################################################################################################################
-# Param values to be passed to Claude
-########################################################################################################################################################################
-debug_log "Define Param values to be passed to Claude"
-
-CLAUDE_CODE_PROMPT=""
-CLAUDE_CODE_PARAMS=()
 
 
 ########################################################################################################################################################################
@@ -521,7 +527,10 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             CLAUDE_SESSION_ID_VALUE=("${CLAUDE_SESSION_ID_FLAGS}" "${SESSION_ID}")
             save_session_id "${CLAUDE_SESSION_ID_VALUE[@]}"
             RESULT="$?"
-            if [[ "${RESULT}" != "${TRUE}" ]]; then
+            if [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then 
+                debug_log "Error: Failed to Save Session ID value."
+                usage "${FALSE}"
+            elif [[ "${RESULT}" != "${TRUE}" ]]; then
                 debug_log "Warning: Failed to Save Session ID value."
             fi
         else
@@ -754,7 +763,7 @@ if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
     exit 1
 fi
 
-if [[ "${HEADLESS_VALUE}" != "" ]]; then
+if [[ "${CLAUDE_HEADLESS_VALUE}" != "" ]]; then
     NOHUP_LOG_FILE=""
     NOHUP_LOG_CANDIDATE="${LOGS_DIR}/wake_the_claude.nohup.log"
     if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then

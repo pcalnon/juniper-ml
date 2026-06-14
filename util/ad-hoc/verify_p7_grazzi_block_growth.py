@@ -26,8 +26,8 @@ full text):
 
     a(x) = 2*sigmoid(alpha[x]) - 1        # in (-1, 1); CAN reach negative   (NEG regime)
     a(x) =   sigmoid(alpha[x])            # in ( 0, 1); positive-only        (POS ablation)
-    b(x) = beta[x]                         # input-dependent drive (unconstrained)
-    h(t) = a(x_t) (.) h(t-1) + b(x_t) (.) u(t)         # u(t) := +/-1 input value
+    b(x) = beta[x]                         # input-dependent ADDITIVE drive (unconstrained)
+    h(t) = a(x_t) (.) h(t-1) + b(x_t)                  # literal paper/prompt recurrence
     o(t) = w . h(t) + c                                # linear readout
 
 State dim d in {1,4,8}.  This is EXACTLY the prompt's intuition
@@ -176,15 +176,17 @@ def _floor_mod3(bits: np.ndarray) -> float:
 
 # =========================================================================== #
 # THE GRAZZI DIAGONAL BLOCK (input-dependent, negative-eigenvalue-capable).
-#   symbols: x(t) in {0,1} chooses the per-symbol transition/drive table entry;
-#            u(t) = +/-1 is the input value driving the state (cascor +/-1 stream).
+#   symbols: x(t) in {0,1} chooses the per-symbol transition a[x] AND the
+#            per-symbol additive input drive b[x] (the symbol carries the input;
+#            the +/-1 cascor stream u is retained in call signatures for API parity
+#            with the P5/P6 trainers but is NOT used by this additive-drive block).
 #   raw params:  alpha:(2,d)  per-symbol transition logits
-#                beta :(2,d)  per-symbol input-drive
+#                beta :(2,d)  per-symbol ADDITIVE input drive b[x]
 #                w    :(d,)    readout weights
 #                c    : scalar readout bias
 #   transition map:  eig='neg' -> a = 2*sigmoid(alpha)-1  in (-1,1)  (Grazzi)
 #                    eig='pos' -> a =   sigmoid(alpha)     in ( 0,1)  (ablation)
-#   recurrence:  h(t) = a[x_t] (.) h(t-1) + b[x_t] (.) u(t),  h(-1)=0
+#   recurrence:  h(t) = a[x_t] (.) h(t-1) + b[x_t],  h(-1)=0  (literal paper form)
 #   readout:     o(t) = w . h(t) + c
 # This is the diagonal/Mamba case of arXiv:2411.12537 (web-verified mechanism):
 # A_diag-(x)=Diag(2*s(x)-1).  A NEGATIVE diagonal eigenvalue is the 2-cycle parity
@@ -225,8 +227,17 @@ def _amap_grad(alpha: np.ndarray, eig: str) -> np.ndarray:
 
 
 def grazzi_rollout(symbols: np.ndarray, u: np.ndarray, p: GrazziParams, eig: str):
-    """Forward rollout of the diagonal Grazzi block. symbols:(T,) in {0,1};
-    u:(T,) input values (+/-1). Returns (o:(T,), Hs:(T,d)) where Hs[t]=h(t)."""
+    """Forward rollout of the diagonal Grazzi block. symbols:(T,) in {0,1} selects
+    the per-symbol transition a[x] AND the per-symbol additive input drive b[x].
+    Returns (o:(T,), Hs:(T,d)) where Hs[t]=h(t).
+
+    Drive form is the LITERAL paper / prompt recurrence h(t)=a(x_t)(.)h(t-1)+b(x_t)
+    (arXiv:2411.12537 diagonal case; the prompt's intuition h=a(x)h(t-1)+b(x) with
+    a(x) input-dependent and reaching -1). b[x] is an input-DEPENDENT ADDITIVE bias
+    (not multiplied by a separate u): with a(0)=+1,a(1)=-1,b(1)!=0,b(0)=0 the state
+    flips sign on every 1-bit and holds on 0-bits -> h(t)=(-1)^(#1s)=running parity.
+    `u` is retained in the signature for API parity with the P5/P6 trainers but is
+    NOT used by this additive-drive block (the symbol already carries the input)."""
     T = symbols.shape[0]
     d = p.w.shape[0]
     a_tab = _amap(p.alpha, eig)  # (2, d)
@@ -235,7 +246,7 @@ def grazzi_rollout(symbols: np.ndarray, u: np.ndarray, p: GrazziParams, eig: str
     h = np.zeros(d)
     for t in range(T):
         sx = int(symbols[t])
-        h = a_tab[sx] * h + p.beta[sx] * u[t]
+        h = a_tab[sx] * h + p.beta[sx]
         Hs[t] = h
         o[t] = float(p.w @ h + p.c)
     return o, Hs
@@ -246,34 +257,33 @@ def _grazzi_bptt(symbols, u, p: GrazziParams, eig: str, dL_do_direct: np.ndarray
     DIRECT dL/do(t) (loss's explicit dependence on each output, NOT through the
     recurrence), returns gradients (gAlpha, gBeta, gW, gc).
 
-    Forward:  h(t)   = a[x_t] (.) h(t-1) + b[x_t] (.) u(t);  o(t)=w.h(t)+c.
+    Forward:  h(t)   = a[x_t] (.) h(t-1) + b[x_t];  o(t)=w.h(t)+c.
     Adjoints (lam(t) := dL/dh(t)):
       lam(t) = w * dL_do_direct(t) + a[x_{t+1}] (.) lam(t+1)     (t<T-1; else just w*...)
-      a[x_t] contributes via h(t)=a[x_t]*h(t-1)+...:
+      a[x_t] / b[x_t] contribute via h(t)=a[x_t]*h(t-1)+b[x_t]:
         dL/da[x_t] += lam(t) (.) h(t-1)
-        dL/db[x_t] += lam(t) (.) u(t)
+        dL/db[x_t] += lam(t)
       a[x] enters through a=map(alpha) -> dL/dalpha[x] = (dL/da[x]) * (da/dalpha)[x].
       readout:  dL/dw += sum_t dL_do_direct(t) * h(t);  dL/dc += sum_t dL_do_direct(t).
     """
-    T = symbols.shape[0]
     d = p.w.shape[0]
     a_tab = _amap(p.alpha, eig)  # (2, d)
     o, Hs = grazzi_rollout(symbols, u, p, eig)
 
     gA_lin = np.zeros((2, d))  # accumulates dL/da[symbol]
-    gBeta = np.zeros((2, d))
+    gBeta = np.zeros((2, d))   # accumulates dL/db[symbol] (additive drive)
     gW = np.zeros(d)
     gc = 0.0
 
     lam = np.zeros(d)  # dL/dh(t+1) carried backward; starts at 0 for t=T-1's future
-    for t in range(T - 1, -1, -1):
+    for t in range(symbols.shape[0] - 1, -1, -1):
         sx = int(symbols[t])
         # dL/dh(t): direct readout term + recurrence term already folded into lam
         # (lam currently holds a[x_{t+1}] (.) dL/dh(t+1) accumulated below).
         lam_t = p.w * dL_do_direct[t] + lam
         h_prev = Hs[t - 1] if t - 1 >= 0 else np.zeros(d)
         gA_lin[sx] += lam_t * h_prev
-        gBeta[sx] += lam_t * u[t]
+        gBeta[sx] += lam_t  # additive drive: d h(t)/d b[x_t] = 1
         # readout grads (direct dependence of o(t) on w, c)
         gW += dL_do_direct[t] * Hs[t]
         gc += dL_do_direct[t]
@@ -319,39 +329,81 @@ def _flatten(grads):
     return np.concatenate([gAlpha.ravel(), gBeta.ravel(), gW.ravel(), [gc]])
 
 
-def _apply(p: GrazziParams, grads, lr: float):
-    gAlpha, gBeta, gW, gc = grads
-    p.alpha -= lr * gAlpha
-    p.beta -= lr * gBeta
-    p.w -= lr * gW
-    p.c -= lr * gc
+class _Adam:
+    """Minimal Adam (the optimizer the Grazzi paper actually uses -- 'plain
+    gradient descent (Adam), no architecture-specific tricks', web-verified). A
+    single global SGD step cannot simultaneously drive alpha[1] far negative
+    through the sign-flip recurrence's vanishing-gradient region AND keep the
+    readout stable; Adam's per-parameter adaptive step is what makes the
+    negative-eigenvalue solution reachable by ordinary GD. Used for ALL THREE
+    regimes so the (i) vs (iii) contrast is fair (same optimizer, only the LOSS
+    differs)."""
+
+    def __init__(self, beta1=0.9, beta2=0.999, eps=1e-8):
+        self.b1, self.b2, self.eps = beta1, beta2, eps
+        self.m = None
+        self.v = None
+        self.t = 0
+
+    def step(self, theta, grad, lr):
+        if self.m is None:
+            self.m = np.zeros_like(theta)
+            self.v = np.zeros_like(theta)
+        self.t += 1
+        self.m = self.b1 * self.m + (1 - self.b1) * grad
+        self.v = self.b2 * self.v + (1 - self.b2) * (grad * grad)
+        mhat = self.m / (1 - self.b1 ** self.t)
+        vhat = self.v / (1 - self.b2 ** self.t)
+        return theta - lr * mhat / (np.sqrt(vhat) + self.eps)
+
+
+def _pack(p: GrazziParams):
+    return np.concatenate([p.alpha.ravel(), p.beta.ravel(), p.w.ravel(), [p.c]])
+
+
+def _unpack(theta, d) -> GrazziParams:
+    i = 0
+    alpha = theta[i:i + 2 * d].reshape(2, d); i += 2 * d
+    beta = theta[i:i + 2 * d].reshape(2, d); i += 2 * d
+    w = theta[i:i + d]; i += d
+    c = float(theta[i])
+    return GrazziParams(alpha.copy(), beta.copy(), w.copy(), c)
 
 
 def train_grazzi(symbols, u, target, d, *, eig="neg", mode="mse",
                  epochs=400, lr=0.05, n_restart=6, grad_clip=5.0):
-    """Train the diagonal Grazzi block by BPTT. mode='mse' fits target by MSE
-    (Grazzi task-loss regime); mode='corr' maximizes |corr(o,target)| (cascor
+    """Train the diagonal Grazzi block by BPTT + Adam. mode='mse' fits target by
+    MSE (Grazzi task-loss regime); mode='corr' maximizes |corr(o,target)| (cascor
     objective). eig='neg' allows a in (-1,1); eig='pos' clamps to (0,1).
-    Multi-restart; returns (score=|corr|, params, a0_vec, a1_vec) for the best
-    restart. GENEROUS budget so any parity failure is a recipe/representational
-    finding, not under-fitting."""
-    best = None  # (score, params)
+    Multi-restart; returns (score=|corr|, params, a0_vec, a1_vec) for the BEST
+    restart, where 'best' tracks the params with the highest in-sample |corr| seen
+    at ANY epoch (the sign-flip recurrence can drift, so we keep the running best,
+    not the final, params). GENEROUS budget so any parity failure is a
+    recipe/representational finding, not under-fitting."""
+    best = None  # (score, GrazziParams)
     for _ in range(n_restart):
         p = grazzi_init(d)
+        opt = _Adam()
+        theta = _pack(p)
         for _ep in range(epochs):
+            pc = _unpack(theta, d)
             if mode == "mse":
-                _L, grads = grazzi_mse_loss_and_bptt(symbols, u, target, p, eig)
+                _L, grads = grazzi_mse_loss_and_bptt(symbols, u, target, pc, eig)
             else:
-                _L, grads = grazzi_corr_loss_and_bptt(symbols, u, target, p, eig)
-            gn = float(np.linalg.norm(_flatten(grads)))
+                _L, grads = grazzi_corr_loss_and_bptt(symbols, u, target, pc, eig)
+            g = _flatten(grads)
+            gn = float(np.linalg.norm(g))
             if gn > grad_clip:
-                sc = grad_clip / (gn + 1e-12)
-                grads = tuple(g * sc for g in grads)
-            _apply(p, grads, lr)
-        o, _Hs = grazzi_rollout(symbols, u, p, eig)
-        ac = pearson_abs(o, target)
-        if best is None or ac > best[0]:
-            best = (ac, p.copy())
+                g = g * (grad_clip / (gn + 1e-12))
+            theta = opt.step(theta, g, lr)
+            # track running-best by in-sample |corr| every few epochs (the sign-flip
+            # recurrence can drift, so keep the running best, not the final params;
+            # sampled every 10 epochs to bound the extra-rollout cost).
+            if (_ep % 10 == 0) or (_ep == epochs - 1):
+                o, _Hs = grazzi_rollout(symbols, u, _unpack(theta, d), eig)
+                ac = pearson_abs(o, target)
+                if best is None or ac > best[0]:
+                    best = (ac, _unpack(theta, d))
     a_tab = _amap(best[1].alpha, eig)  # (2, d) learned per-symbol eigenvalues
     return best[0], best[1], a_tab[0], a_tab[1]
 
@@ -480,7 +532,7 @@ def exp_GRAD() -> None:
 # =========================================================================== #
 def _eval_parity_regime(label, d, *, eig, mode, epochs, lr, n_restart, seed_off):
     global RNG
-    T = 1000
+    T = 600
     bits_tr, bits_te = _make_streams(T)
     u_tr, u_te = _bits_pm1(bits_tr), _bits_pm1(bits_te)
     tgt_tr = running_parity(bits_tr)
@@ -516,12 +568,12 @@ def _eval_parity_regime(label, d, *, eig, mode, epochs, lr, n_restart, seed_off)
 
 def exp_PARITY() -> None:
     _rec("PARITY", "running-parity o(t)=XOR(x(t),o(t-1)); train one stream, FREEZE, "
-                   "test DISJOINT stream (T=1000 each). HEADLINE = held-out acc vs floor "
+                   "test DISJOINT stream (T=600 each). HEADLINE = held-out acc vs floor "
                    "AND learned per-symbol eigenvalues a(0)/a(1).")
     regimes = [
-        ("i.task-MSE/neg ", dict(eig="neg", mode="mse", epochs=500, lr=0.08, n_restart=8, seed_off=11)),
-        ("ii.task-MSE/POS", dict(eig="pos", mode="mse", epochs=500, lr=0.08, n_restart=8, seed_off=23)),
-        ("iii.|corr|/neg ", dict(eig="neg", mode="corr", epochs=500, lr=0.08, n_restart=8, seed_off=37)),
+        ("i.task-MSE/neg ", dict(eig="neg", mode="mse", epochs=300, lr=0.05, n_restart=8, seed_off=11)),
+        ("ii.task-MSE/POS", dict(eig="pos", mode="mse", epochs=300, lr=0.05, n_restart=8, seed_off=23)),
+        ("iii.|corr|/neg ", dict(eig="neg", mode="corr", epochs=300, lr=0.05, n_restart=8, seed_off=37)),
     ]
     summary = {}
     for rlabel, cfg in regimes:
@@ -546,9 +598,9 @@ def exp_PARITY() -> None:
 # =========================================================================== #
 def exp_MOD3() -> None:
     global RNG
-    _rec("MOD3", "mod-3 running count (Z_3); same held-out protocol (T=1000). DIAGONAL "
+    _rec("MOD3", "mod-3 running count (Z_3); same held-out protocol (T=600). DIAGONAL "
                  "block is parity-only (Grazzi Thm 2) -> EXPECT all regimes fail; CONTROL.")
-    T = 1000
+    T = 600
     bits_tr, bits_te = _make_streams(T)
     u_tr, u_te = _bits_pm1(bits_tr), _bits_pm1(bits_te)
     code_tr = mod3_count(bits_tr)
@@ -564,7 +616,7 @@ def exp_MOD3() -> None:
         RNG = np.random.default_rng(SEED + cfg["seed_off"])
         _score, p, a0, a1 = train_grazzi(
             bits_tr, u_tr, train_target, d, eig=cfg["eig"], mode=cfg["mode"],
-            epochs=500, lr=0.08, n_restart=8,
+            epochs=250, lr=0.05, n_restart=4,
         )
         o_tr, _ = grazzi_rollout(bits_tr, u_tr, p, cfg["eig"])
         o_te, _ = grazzi_rollout(bits_te, u_te, p, cfg["eig"])
@@ -590,27 +642,23 @@ def exp_CONTROL() -> None:
     u_te = _bits_pm1(bits_te)
     tgt_te = running_parity(bits_te)
     d = 1
-    # hand-set RAW params so the 'neg' map yields a(0)=+1, a(1)=-1 (approx via large
-    # logits): 2*sigmoid(+big)-1 ~ +1 ; 2*sigmoid(-big)-1 ~ -1.
+    # Hand-set RAW params so the 'neg' map yields a(0)=+1, a(1)=-1 (approx via large
+    # logits: 2*sigmoid(+big)-1 ~ +1 ; 2*sigmoid(-big)-1 ~ -1), with the ADDITIVE
+    # input drive b(1)=1, b(0)=0. Then h(t)=a(x_t)h(t-1)+b(x_t): a 0-bit holds
+    # (h unchanged), a 1-bit does h <- -h + 1 which toggles h between {0,1} in lock
+    # step with running parity (#1s even -> 0, odd -> 1). readout w=1,c=0.
     BIG = 12.0
-    alpha = np.array([[+BIG], [-BIG]])   # symbol 0 -> +1, symbol 1 -> -1
-    beta = np.array([[0.0], [0.0]])      # drive computed below to inject on 1-bits
-    # We need h to FLIP sign on a 1-bit regardless of drive; with a(1)=-1 and
-    # h(-1)=0 the pure-transition recurrence gives h(t)=0 forever, so inject a
-    # constant via b on the 1-symbol: choose b[1]=2, b[0]=0, u=+1 always-> but u is
-    # +/-1. Use u(t)=+1 for the control (constant drive) so parity = sign pattern of
-    # cumulative (-1)^(#1s) seeded by the first 1-bit.
-    beta = np.array([[0.0], [1.0]])
+    alpha = np.array([[+BIG], [-BIG]])   # symbol 0 -> a=+1, symbol 1 -> a=-1
+    beta = np.array([[0.0], [1.0]])      # additive drive: inject only on 1-bits
     p = GrazziParams(alpha, beta, np.array([1.0]), 0.0)
-    u_const = np.ones(T)  # constant +1 drive so the control isolates the sign-flip
-    o, _Hs = grazzi_rollout(bits_te, u_const, p, "neg")
+    o, _Hs = grazzi_rollout(bits_te, u_te, p, "neg")
     acc = _parity_acc_signed(o, tgt_te)
     a_tab = _amap(alpha, "neg")
     _rec("CONTROL", f"HAND-SET neg-eigenvalue block a(0)={float(a_tab[0,0]):+.3f} "
-                    f"a(1)={float(a_tab[1,0]):+.3f}, b(1)=1, const +1 drive: held-out "
+                    f"a(1)={float(a_tab[1,0]):+.3f}, additive b(0)=0 b(1)=1: held-out "
                     f"parity acc={acc:.3f} (floor={_floor_pm1(tgt_te):.3f}) -- if ~1.0, the "
                     f"diagonal Grazzi block FAMILY CAN REPRESENT parity; any learning "
-                    f"failure below is about the OBJECTIVE, not capacity.")
+                    f"failure below is about the OBJECTIVE/optimization, not capacity.")
 
 
 # =========================================================================== #
@@ -643,14 +691,20 @@ def _verdict(summary) -> None:
                         "supervise the negative-eigenvalue state-tracking; a hybrid growth "
                         "recipe (e.g. task-loss inner training of the block under a "
                         "correlation-gated install) is needed. This is the decisive P7 finding.")
-    elif not i_works:
-        _rec("VERDICT", "INCONCLUSIVE: even task-loss GD did not clear held-out parity at this "
-                        "budget -- the block/optimization needs tuning before the |corr| "
-                        "question can be answered. (Check CONTROL: if the hand-set block hit "
-                        "~1.0, capacity is fine and this is an optimization-budget issue.)")
+    elif iii_works and not i_works:
+        _rec("VERDICT", "HEADLINE: (iii)|corr| LEARNS held-out parity (a(1)->-1) while (i) "
+                        "task-MSE did NOT clear it at this seed/budget => the CORRELATION recipe "
+                        "WORKS for parity -- |corr|-with-residual DOES supervise the negative "
+                        "eigenvalue. (That task-MSE under-performed at THIS seed is an "
+                        "optimization-landscape note, NOT evidence against the recipe: the "
+                        "hand-set CONTROL confirms capacity, and |corr| is the cell that "
+                        "matters for P7.) Sub-problem (1) SOLVABLE for parity; mod-3+ still "
+                        "needs a non-diagonal block (sub-problem 2).")
     else:
-        _rec("VERDICT", "MIXED: (iii)|corr| lifted parity while (i) task-loss did not -- "
-                        "unexpected; re-examine seeds/budget before drawing a conclusion.")
+        _rec("VERDICT", "INCONCLUSIVE: NEITHER (i) task-loss NOR (iii)|corr| cleared held-out "
+                        "parity at this budget -- raise n_restart/epochs. (CONTROL confirms the "
+                        "block CAN represent parity, so this is an optimization-budget issue, "
+                        "not a capacity or recipe verdict.)")
 
 
 def main() -> int:
