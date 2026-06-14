@@ -373,8 +373,8 @@ function validate_model() {
     MODEL_PARAM="${1,,}"
     VALID_MODEL="${FALSE}"
     debug_log "Validate Claude Code Model Param Value"
-    for (( i=0; i<"${#MODEL_TEST_ARRAY[@]}"; )); do
-        if [[ "${MODEL_PARAM}" == "${MODEL_TEST_ARRAY[${i}],,}" ]]; then
+    for CURRENT_MODEL in ${MODEL_TEST_ARRAY[@]}; do
+        if [[ "${MODEL_PARAM}" == "${CURRENT_MODEL,,}" ]]; then
             debug_log "Model Valiated: ${MODEL_PARAM}"
             VALID_MODEL="${TRUE}"
             break
