@@ -70,6 +70,7 @@ POC, same diagonal block under three regimes (all Adam + BPTT; held-out = train 
 Supporting cells: **GRAD** analytic-BPTT vs finite-diff `1.25e-06` PASS; **CONTROL** (hand-set `a(0)=+1, a(1)=−1`) `0.988` ⇒ the block *can represent* parity, so any failure is optimization not capacity; **MOD-3** all three regimes `~0.33` (fail) ⇒ the diagonal block is **parity-only**.
 
 **Reading it:**
+
 - **(iii) ≡ (i):** the cascor `|corr|` objective reaches the *same* held-out accuracy and drives `a(1)` to the *same* `−1.00` as the task loss.
   - **Correlation is not blind to the C2 sign.**
 - **(ii) fails:** same block, same optimizer, only the eigenvalue range differs ⇒ the **negative eigenvalue is the causal mechanism** (Grazzi Thm 1: positive-only LRNNs cannot solve parity — web-verified).
@@ -86,7 +87,10 @@ The load-bearing distinction — conflating these two objects is the central err
 | `corr(o, residual)`                      | one scalar over the window | centered **2nd-order** statistic; **sequence-position-blind** |
 | `∂ corr / ∂α_{1}` (the eigenvalue logit) | the BPTT adjoint           | a **per-timestep credit signal summed over the window**       |
 
-The correlation *value* genuinely cannot see the sign flip (it is invariant to global readout-sign and to temporal ordering within the centered moment). But the correlation *gradient* is computed by back-propagating through the recurrence, so it carries the sequential credit that distinguishes `a(1)=−1` from `a(1)=+1`. The POC proves this gradient **suffices for parity when the residual already encodes the running-parity trajectory.** It does **not** prove correlation can supervise group structure in general (§4).
+The correlation *value* genuinely cannot see the sign flip (it is invariant to global readout-sign and to temporal ordering within the centered moment).
+But the correlation *gradient* is computed by back-propagating through the recurrence, so it carries the sequential credit that distinguishes `a(1)=−1` from `a(1)=+1`.
+The POC proves this gradient **suffices for parity when the residual already encodes the running-parity trajectory.**
+It does **not** prove correlation can supervise group structure in general (§4).
 
 ---
 
@@ -101,9 +105,14 @@ The correlation *value* genuinely cannot see the sign flip (it is invariant to g
 
 **Candidate solutions to (2)** (developed + refuted; none yet measured end-to-end):
 
-- **B — decouple training from selection (most viable).** GD-train each candidate block (internally, Adam+BPTT, on a local residual-prediction loss) and keep cascor's **correlation-based *selection*** (`_select_best_candidates` ranks by `abs(correlation)`, `cascade_correlation.py:4214`) and freeze-on-tenure. Cascor's `|corr|` does *selection*, not unit-training — which the POC shows is unnecessary for the *recurrence* (GD trains it) yet preserved for the *constructive* loop. This sidesteps "can correlation train a non-diagonal block."
-- **C — joint "macro-candidate" per round.** Grow a small multi-dimensional non-diagonal (Generalized-Householder) block as a cohort jointly trained, then tenure it as one unit — relaxing greedy *single-neuron* growth to greedy *single-block* growth.
-- **D — parameterization bias.** Parameterize the transition so the correlation gradient is pushed toward negative eigenvalues / Householder structure when the residual carries periodic structure.
+- **B — decouple training from selection (most viable).**
+  - GD-train each candidate block (internally, Adam+BPTT, on a local residual-prediction loss) and keep cascor's **correlation-based *selection*** (`_select_best_candidates` ranks by `abs(correlation)`, `cascade_correlation.py:4214`) and freeze-on-tenure.
+  - Cascor's `|corr|` does *selection*, not unit-training — which the POC shows is unnecessary for the *recurrence* (GD trains it) yet preserved for the *constructive* loop.
+  - This sidesteps "can correlation train a non-diagonal block."
+- **C — joint "macro-candidate" per round.**
+  - Grow a small multi-dimensional non-diagonal (Generalized-Householder) block as a cohort jointly trained, then tenure it as one unit — relaxing greedy *single-neuron* growth to greedy *single-block* growth.
+- **D — parameterization bias.**
+  - Parameterize the transition so the correlation gradient is pushed toward negative eigenvalues / Householder structure when the residual carries periodic structure.
 - **Hypothetical-solution shape (if B/C/D under-deliver).**
   - Any correlation-compatible recipe for state-tracking beyond C2 must supply: (a) a **residual that already encodes the target state-trajectory** (so the BPTT adjoint has signal), (b) a **per-timestep credit signal** (not just a window-global scalar), and (c) a **surrogate objective that is correlation-compatible *and* structure-sensitive**.
   - The open research question is whether such an objective exists for non-Abelian groups, or whether greedy growth is fundamentally limited to solvable (Abelian) structure.

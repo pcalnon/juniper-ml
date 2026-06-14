@@ -95,6 +95,7 @@ The six desired characteristics from the brief, plus the two binding constraints
 | **E**  | (C2–C5) Ecosystem fit                               | Fits dual-mode service shape, data contract, observability, Python/test conventions                             |
 
 > Scoring is **qualitative and evidence-anchored**, not a single composite number — a weighted score would imply false precision given that several cells rest on architectural inference rather than published benchmarks. Legend: ✅ strong/native · 🟧 partial/conditional · ⚠️ weak/needs-work · 🔬 speculative (no direct source).
+
 | #  | Architecture                            | Class                     | R1  | R2  | R3  | R4  | R5  | R6  | P                                                      | Verdict                                 |
 |----|-----------------------------------------|---------------------------|-----|-----|-----|-----|-----|-----|--------------------------------------------------------|-----------------------------------------|
 | 1  | **Recurrent Cascade-Correlation (RCC)** | Growing                   | ✅  | 🟧¹ | ✅  | 🟧  | 🟧² | ✅  | ✅                                                     | **TOP-3 ①**                            |

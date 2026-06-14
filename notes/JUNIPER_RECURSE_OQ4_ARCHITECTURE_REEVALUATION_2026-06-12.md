@@ -41,15 +41,19 @@ See the provenance blockquote above. Lens strands: **P6** (richer NARX output �
 **Design.** P5's FIR hidden cascade, but the recurrent readout is a **small hidden MLP**: `y(t) = Ψ( FIR_features(t), y(t−1..t−D) )`, where the fed-back outputs **re-enter the hidden layer Ψ and mix with the exogenous features across hidden units**.
 
 ### 3.1 Representability — FULL break (VERIFIED-PRIMARY + INFERRED)
+
 P6 *is* the literal Siegelmann-Horne-Giles 1997 NARX form `y(t)=Ψ(u-taps, y-taps)` with Ψ an MLP, which SHG "constructively prove … computationally as strong as fully connected recurrent networks and thus **Turing machines**" (PubMed 18255858, abstract, opened this session). Turing-universality strictly dominates the full-regular/FSM class, so **P6 clears the entire star-free ceiling** — the strongest break in the strand set. The lift comes from **feedback × hidden-unit mixing** (the MLP Ψ), which is exactly the K&R cascade-vs-network distinction (VERIFIED-PRIMARY, local PDF: a network/MLP component "has access to the state of all components" vs a cascade's "preceding components" only). This is the precise enabling hypothesis **P5 lacked** (siloed single-nonlinearity ⇒ NOT NARX-universal, only bounded mod-k).
 
 ### 3.2 Deployed — RE-CAPPED to finite memory (VERIFIED-SECONDARY)
+
 A recurrence that resets every ≤30 steps unrolls the IIR to ≤30 lags = a finite-window FIR-of-outputs = **a finite-memory machine**. This is exactly SHG's own hard-limiter converse (NARX with hard-limiting nonlinearities collapse to **FMM ⊊ FSM**; paper body, not in the scrambled PDF/abstract). So the headline Turing/FSM-universality is an **unbounded-state / offline idealization**; under the ratified window, **mod-k for k>30 is architecturally impossible** with no state crossing the window boundary. The deployed bound is identical to P5's; cross-output coupling (shared vs per-output MLP) is moot here.
 
 ### 3.3 Learnability — strictly below representability (INFERRED)
+
 BPTT through MLP+recurrence at the marginal-stability poles (|λ|≈1) a counter needs is the classic vanishing/exploding-gradient knife-edge, with no MSE pressure toward a cycle. The most P6-favorable result (**Lin-Horne-Tiňo-Giles 1996**) caps the NARX benefit at a **2–3× constant on the SAME vanishing-gradient decay** and provably does *not* circumvent it; even Dyck-1 counting is empirically unlearnable-to-extrapolation. Consistent with the empirically-grounded P5 learnability finding.
 
 ### 3.4 Cost — highest in the set (VERIFIED-CODE)
+
 - **C1 transparency: LOWEST** — the MLP readout is the least transparent piece evaluated. Not a *violation* (a hand-rolled small MLP is inspectable) but the C1 cost of NARX.
 - **Cascade-correlation identity: weakest of any strand** — the universality-bearing piece is a grafted NARX-MLP readout, orthogonal to the grow→correlate→freeze machinery.
 - **Output-state contract: shattered** — pickle (`:3012-3041`), HDF5 (`:4914-4933`), grow (`:921-946`), resize (`:4051-4086`) all assume exactly `output_weights + output_bias`; the CR-060 hoist (`:2047-2051`) is invalidated for the AR term; the epoch call (`:2067`) becomes a windowed BPTT unroll.
@@ -63,15 +67,19 @@ BPTT through MLP+recurrence at the marginal-stability poles (|λ|≈1) a counter
 **Design.** A *heterogeneous* candidate pool with both P2 group-implementing units (2nd-order multiplicative, for the ceiling) and P3 LMU cells (for Δt/horizon); grow by best-correlating candidate from the mixed pool.
 
 ### 4.1 Ceiling — `breaks_partially`, to C2 only (VERIFIED-PRIMARY)
+
 The break is to the **cyclic group C2 (= Z2 = mod-2/parity)**, **PROVEN** (K&R Prop 5/6: second-order multiplicative neurons are core C2-neurons; Thm 7: a single negative-weight sign/tanh neuron escapes group-free via the toggle/period-2 semiautomaton). **Full-regular is NOT proven** — C2 is explicitly "a first step" toward "finite simple groups," and K&R *conjectures* (does not prove) that sign/tanh neurons cannot capture an arbitrary grouplike semiautomaton. The break is sourced **entirely from the P2 arm**; the P3/LMU arm inherits star-free (Sarrof-Veitsman-Hahn 2024 Cor 14) and buys Δt/horizon orthogonally.
 
 ### 4.2 Learnability — blocked (VERIFIED-CODE)
+
 The central OQ-4 gap, fully inherited: K&R is representability-only (hand-specified weight partitions, zero training); cascor's order-invariant scalar Pearson objective (`candidate_unit.py:935-941`) is **group-structure-blind**, and the additive forward (`:479`) is the wrong parameterization vs K&R's required *product* form. Heterogeneity buys only deployment-**gating** leverage (argmax can decline a useless unit), **not** a training recipe.
 
 ### 4.3 Deployed — asymmetric
+
 Too shallow to cap the C2/mod-2 break (depth-1 state survives the window), but it **truncates the LMU's ~10⁵-step horizon to ≤30**, and a 3-D window hits the `ndim>2` worker wall (`cascade_correlation.py:272-273`).
 
 ### 4.4 Composition (VERIFIED-PRIMARY + VERIFIED-CODE)
+
 The cascade *mechanically* supports mixed frozen units (lower-triangular read `:1944-1946`; untyped install dict `:4032-4037`), and **K&R's mixed-cascade theorem (Lemma 7** — corrected from a three-angle mislabel "Lemma 2") makes a *single* group neuron suffice to lift the class. But group-break and fading-memory **co-exist side-by-side, not fused** into a Δt-aware counter, and the 2-state C2 unit needs a multi-column buffer the one-column-per-unit schema lacks. **The hybrid internally cannibalizes**: its ceiling arm can't be grown (no recipe) or even evaluated (homogeneous stateless-scalar substrate); its horizon arm is window-truncated. **Its only clean win — LMU Approach-C grid-invariance — is delivered by P3-C alone, without the P2 baggage.** Highest risk in the set.
 
 ---
@@ -111,19 +119,19 @@ The cascade *mechanically* supports mixed frozen units (lower-triangular read `:
 
 ## 8. Updated OQ-4 Option Matrix (P1–P6 + P3-C + P2/P3 + LMU/SSM)
 
-| Option | Recurrence | Star-free ceiling | Irregular-Δt | Horizon | Growable / faithful | C1 | Recipe | Overall risk |
-|---|---|---|---|---|---|---|---|---|
-| **P1** RCC self-loop | hidden depth-1 IIR | INHERITS (+mod-2 via −weight) | weak | short | **HIGH** | HIGH | **MATURE** | **LOWEST** |
-| **P2** group units | hidden IIR + group | **BREAKS→full-regular** (conj.; only C2 built) | weak | short | shape-only | hi-form | **ABSENT** | HIGH |
-| **P3** reservoir/LMU | hidden evolving state | INHERITS | good (LMU) | long (LMU) | MEDIUM (unproven) | MED | partial | MEDIUM |
-| **P4** output FIR | **none** | INHERITS (weakest) | worst | ≤D | hi (attach) | **HIGHEST** | trivial | low-value |
-| **P5** output AR | readout IIR (siloed) | partial mod-k (cond., ≤30) | poor | ≤30 | LOW | HIGH | BPTT-fragile | MEDIUM |
-| **P6** NARX-MLP | readout IIR via MLP Ψ | **FULL (repr.)** / FMM deployed | poor | ≤30 dep. | **LOWEST** | **LOWEST** | BPTT (can't learn counting) | HIGH |
-| **P3-C** LMU+Approach-C | hidden LMU state | INHERITS (n/a needed) | **BEST (measured)** | long→≤30 | MED (grown open) | HIGH | mature (Δt); growth open | **MED-LOW** |
-| **P2/P3** hybrid | both arms | partial C2 (P2 arm only) | good (LMU arm) | ≤30 | LOW | MIXED | ABSENT (break) | **HIGHEST** |
-| **LMU/SSM** | d-dim linear state | INHERITS (Mamba sel. no help) | **BEST** | **longest→≤30** | not a unit (fixed-order) | **HIGHEST** | mature (fixed-order) | LOW-MED |
+| Option                  | Recurrence            | Star-free ceiling                              | Irregular-Δt        | Horizon         | Growable / faithful      | C1          | Recipe                      | Overall risk |
+|-------------------------|-----------------------|------------------------------------------------|---------------------|-----------------|--------------------------|-------------|-----------------------------|--------------|
+| **P1** RCC self-loop    | hidden depth-1 IIR    | INHERITS (+mod-2 via −weight)                  | weak                | short           | **HIGH**                 | HIGH        | **MATURE**                  | **LOWEST**   |
+| **P2** group units      | hidden IIR + group    | **BREAKS→full-regular** (conj.; only C2 built) | weak                | short           | shape-only               | hi-form     | **ABSENT**                  | HIGH         |
+| **P3** reservoir/LMU    | hidden evolving state | INHERITS                                       | good (LMU)          | long (LMU)      | MEDIUM (unproven)        | MED         | partial                     | MEDIUM       |
+| **P4** output FIR       | **none**              | INHERITS (weakest)                             | worst               | ≤D              | hi (attach)              | **HIGHEST** | trivial                     | low-value    |
+| **P5** output AR        | readout IIR (siloed)  | partial mod-k (cond., ≤30)                     | poor                | ≤30             | LOW                      | HIGH        | BPTT-fragile                | MEDIUM       |
+| **P6** NARX-MLP         | readout IIR via MLP Ψ | **FULL (repr.)** / FMM deployed                | poor                | ≤30 dep.        | **LOWEST**               | **LOWEST**  | BPTT (can't learn counting) | HIGH         |
+| **P3-C** LMU+Approach-C | hidden LMU state      | INHERITS (n/a needed)                          | **BEST (measured)** | long→≤30        | MED (grown open)         | HIGH        | mature (Δt); growth open    | **MED-LOW**  |
+| **P2/P3** hybrid        | both arms             | partial C2 (P2 arm only)                       | good (LMU arm)      | ≤30             | LOW                      | MIXED       | ABSENT (break)              | **HIGHEST**  |
+| **LMU/SSM**             | d-dim linear state    | INHERITS (Mamba sel. no help)                  | **BEST**            | **longest→≤30** | not a unit (fixed-order) | **HIGHEST** | mature (fixed-order)        | LOW-MED      |
 
-*(Full per-axis cell detail in the source comparison; terse here.)*
+*(Full per-axis cell detail in the source comparison; terse here.)*:
 
 ---
 
@@ -137,15 +145,15 @@ The entire ceiling-break debate is downstream of one unanswered question: **does
 
 ## 10. Risks & Guardrails
 
-| # | Risk | Guardrail |
-|---|---|---|
-| R1 | Conflating P6's **representational** full-break with a deployed capability | Always state the axis; the deployed P6 is finite-memory (≤30) and BPTT can't learn counting — keep §3.1/§3.2/§3.3 separate |
-| R2 | Treating the ceiling-break as a *requirement* before the audit | Run the dataset audit first (§9); do not fund P2/P6 research until a real counting dataset is shown |
-| R3 | Shipping LMU "grown-as-a-unit" on the unproven §1.3.3 framing | Ship **fixed-order LMU** first; reconcile the §1.3.3↔§1.3.4 contradiction; treat growth as separate research |
-| R4 | Asserting "fixed-Δt fails" without measuring it | Add a **fixed-Δt negative control** to `verify_delta_t_reference_code.py` so the grid-invariance claim is measured, not analytic |
-| R5 | The recurrent path being unreachable | **Wire the 3-D sequence contract into cascor** (`equities_seq` consumer / `X.ndim` dispatch); the `ndim>2` worker cap (`:272-273`) blocks 3-D payloads today |
-| R6 | Funding the P2/hybrid ceiling-break without the recipe | The **group-unit training recipe is the gating research deliverable**, not an implementation task — do it *before* any integration |
-| R7 | Adopting P6 and breaking the output-state contract | If P6 is ever built, it must extend pickle/HDF5/grow/resize off the two-tensor assumption — treat as a representability *reference*, not a near-term target |
+| #  | Risk                                                                       | Guardrail                                                                                                                                                    |
+|----|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| R1 | Conflating P6's **representational** full-break with a deployed capability | Always state the axis; the deployed P6 is finite-memory (≤30) and BPTT can't learn counting — keep §3.1/§3.2/§3.3 separate                                   |
+| R2 | Treating the ceiling-break as a *requirement* before the audit             | Run the dataset audit first (§9); do not fund P2/P6 research until a real counting dataset is shown                                                          |
+| R3 | Shipping LMU "grown-as-a-unit" on the unproven §1.3.3 framing              | Ship **fixed-order LMU** first; reconcile the §1.3.3↔§1.3.4 contradiction; treat growth as separate research                                                 |
+| R4 | Asserting "fixed-Δt fails" without measuring it                            | Add a **fixed-Δt negative control** to `verify_delta_t_reference_code.py` so the grid-invariance claim is measured, not analytic                             |
+| R5 | The recurrent path being unreachable                                       | **Wire the 3-D sequence contract into cascor** (`equities_seq` consumer / `X.ndim` dispatch); the `ndim>2` worker cap (`:272-273`) blocks 3-D payloads today |
+| R6 | Funding the P2/hybrid ceiling-break without the recipe                     | The **group-unit training recipe is the gating research deliverable**, not an implementation task — do it *before* any integration                           |
+| R7 | Adopting P6 and breaking the output-state contract                         | If P6 is ever built, it must extend pickle/HDF5/grow/resize off the two-tensor assumption — treat as a representability *reference*, not a near-term target  |
 
 ---
 

@@ -77,22 +77,22 @@ Recurrent cascades (RCC, and by Sarrof-Veitsman-Hahn the whole SSM/LMU family) c
 
 ## 3. The Demand Matrix
 
-| Dataset | Built? | Task | Temporal | Counting | Recurrence | Horizon | Irreg-Δt | Ceiling-break? |
-|---|---|---|---|---|---|---|---|---|
-| **spiral** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **xor** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **checkerboard** | ✅ VERIFIED | classification | STATIC (spatial) | **NONE** | NONE | none | no | **no** |
-| **circles** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **moon** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **gaussian** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **mnist** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **arc_agi** | ✅ VERIFIED | other (grid map) | SPATIAL | **NONE** | NONE | none | no | **no** |
-| **csv_import** | ✅ VERIFIED | classification | STATIC | **NONE** | NONE | none | no | **no** |
-| **equities** | ✅ VERIFIED | mixed (dir + reg) | SEQUENTIAL | **NONE** | FADING (bounded as shipped) | 1-step | **YES** | **no** |
-| **equities_seq** | ✅ VERIFIED (built 2026-06-13) | mixed (dir + reg) | SEQUENTIAL | **NONE** | FADING/BOUNDED | L (lookback default 64; ≤30 under cascor cap) | **YES (explicit dt)** | **no** |
-| **multi_sine** | ❌ INFERRED | regression | SEQUENTIAL | **NONE** | FADING (~one period) | ~one period | no | **no** |
-| **mackey_glass** | ❌ INFERRED | regression | SEQUENTIAL | **NONE** | FADING (~τ delay) | Lyapunov-capped | no | **no** |
-| **ar_p** | ❌ INFERRED | regression | SEQUENTIAL | **NONE** | BOUNDED-WINDOW (p lags) | ~p steps | no | **no** |
+| Dataset          | Built?                         | Task              | Temporal         | Counting | Recurrence                  | Horizon                                       | Irreg-Δt              | Ceiling-break? |
+|------------------|--------------------------------|-------------------|------------------|----------|-----------------------------|-----------------------------------------------|-----------------------|----------------|
+| **spiral**       | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **xor**          | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **checkerboard** | ✅ VERIFIED                    | classification    | STATIC (spatial) | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **circles**      | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **moon**         | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **gaussian**     | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **mnist**        | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **arc_agi**      | ✅ VERIFIED                    | other (grid map)  | SPATIAL          | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **csv_import**   | ✅ VERIFIED                    | classification    | STATIC           | **NONE** | NONE                        | none                                          | no                    | **no**         |
+| **equities**     | ✅ VERIFIED                    | mixed (dir + reg) | SEQUENTIAL       | **NONE** | FADING (bounded as shipped) | 1-step                                        | **YES**               | **no**         |
+| **equities_seq** | ✅ VERIFIED (built 2026-06-13) | mixed (dir + reg) | SEQUENTIAL       | **NONE** | FADING/BOUNDED              | L (lookback default 64; ≤30 under cascor cap) | **YES (explicit dt)** | **no**         |
+| **multi_sine**   | ❌ INFERRED                    | regression        | SEQUENTIAL       | **NONE** | FADING (~one period)        | ~one period                                   | no                    | **no**         |
+| **mackey_glass** | ❌ INFERRED                    | regression        | SEQUENTIAL       | **NONE** | FADING (~τ delay)           | Lyapunov-capped                               | no                    | **no**         |
+| **ar_p**         | ❌ INFERRED                    | regression        | SEQUENTIAL       | **NONE** | BOUNDED-WINDOW (p lags)     | ~p steps                                      | no                    | **no**         |
 
 **Ceiling-break-required column is uniformly `no`. Counting column is uniformly `NONE`.**
 
