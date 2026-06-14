@@ -400,7 +400,7 @@ function usage() {
     echo -ne "\t\tFlags that allow the display of this Usage statement.\n"
     echo -ne "\t ${HELP_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the Display of this Help statement.\n"
-    echo -ne "\t ${VERSION_FLAGS}:\n"
+    echo -ne "\t ${VERSION_FLAGS[*]}:\n"
     echo -ne "\t\tFlags that allow the version of the Claude Code model to be displayed.\n"
     echo -ne "\t ${FILE_FLAGS}:\n"
     echo -ne "\t\tFlags to allow a filename to be specified for this script.\n"
@@ -481,7 +481,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             if [[ ( "${RETURN_VALUE}" == "${TRUE}" ) && ( "${SESSION_ID}" != "" ) ]]; then
                 debug_log "Session ID validated: $(redact_uuid "${SESSION_ID}")"
                 CLAUDE_RESUME_VALUE=("${CLAUDE_RESUME_FLAGS}" "${SESSION_ID}")
-                CLAUDE_SESSION_ID_VALUE=""
+                CLAUDE_SESSION_ID_VALUE=()
             else
                 debug_log "Error: Session ID is invalid. Exiting..."
                 usage "${FALSE}"
@@ -527,14 +527,14 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             CLAUDE_SESSION_ID_VALUE=("${CLAUDE_SESSION_ID_FLAGS}" "${SESSION_ID}")
             save_session_id "${CLAUDE_SESSION_ID_VALUE[@]}"
             RESULT="$?"
-            if [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then 
+            if [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then
                 debug_log "Error: Failed to Save Session ID value."
                 usage "${FALSE}"
             elif [[ "${RESULT}" != "${TRUE}" ]]; then
                 debug_log "Warning: Failed to Save Session ID value."
             fi
         else
-            CLAUDE_SESSION_ID_VALUE=("")
+            CLAUDE_SESSION_ID_VALUE=()
             debug_log "Warning: Ignoring Session ID Value Param since ID Flagged as False or Resume Previous Thread has been specified."
         fi
 
@@ -543,14 +543,14 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing worktree flags"
         WORKTREE_VALUE="${1}"
         if [[ "${WORKTREE_VALUE}" == "${FALSE}" ]]; then
-            CLAUDE_WORKTREE_VALUE=""
+            CLAUDE_WORKTREE_VALUE=()
         elif [[ ( "${WORKTREE_VALUE}" == "" ) || ( "${1:0:2}" == "${SPACER_FLAGS}" ) || ( "${WORKTREE_VALUE}" == "${TRUE}" ) ]]; then
             # Handle Edgecase of worktree boolean true value
             debug_log "Warning: Received Worktree Flag but no valid Worktree Name. Letting Claude Code assign one."
             if [[ "${WORKTREE_VALUE}" == "${TRUE}" ]]; then
                 shift
             fi
-            CLAUDE_WORKTREE_VALUE="${CLAUDE_WORKTREE_FLAGS}"
+            CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}")
         else
             shift
             CLAUDE_WORKTREE_VALUE=("${CLAUDE_WORKTREE_FLAGS}" "${WORKTREE_VALUE}")
@@ -602,17 +602,17 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     # Add headless flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${HEADLESS_FLAGS}"; then
         debug_log "Parsing headless flags"
-        CLAUDE_HEADLESS_VALUE="${CLAUDE_HEADLESS_FLAGS}"
+        CLAUDE_HEADLESS_VALUE=("${CLAUDE_HEADLESS_FLAGS}")
 
     # Add fork session flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${FORK_SESSION_FLAGS}"; then
         debug_log "Parsing fork session flags"
-        CLAUDE_FORK_SESSION_VALUE="${CLAUDE_FORK_SESSION}"
+        CLAUDE_FORK_SESSION_VALUE=("${CLAUDE_FORK_SESSION}")
 
     # Add Permissions Flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${PERMISSIONS_FLAGS}"; then
         debug_log "Parsing permissions flags"
-        CLAUDE_PERMISSIONS_VALUE="${CLAUDE_PERMISSIONS_FLAGS}"
+        CLAUDE_PERMISSIONS_VALUE=("${CLAUDE_PERMISSIONS_FLAGS}")
 
     # Parse Command Line Provided Prompt
     elif matches_pattern "${CURRENT_ELEMENT}" "${PROMPT_FLAGS}"; then
@@ -763,7 +763,7 @@ if [[ "${CLAUDE_BIN}" == "" ]] || [[ ! -x "${CLAUDE_BIN}" ]]; then
     exit 1
 fi
 
-if [[ "${CLAUDE_HEADLESS_VALUE}" != "" ]]; then
+if [[ "${CLAUDE_HEADLESS_VALUE[*]}" != "" ]]; then
     NOHUP_LOG_FILE=""
     NOHUP_LOG_CANDIDATE="${LOGS_DIR}/wake_the_claude.nohup.log"
     if touch "${NOHUP_LOG_CANDIDATE}" 2>/dev/null; then
