@@ -206,3 +206,5 @@ That is the dividing line.
 ---
 
 *Working draft. Consolidated decision map for the OQ-4 recurrent-Cascade-Correlation model pick across P1–P6 + ESN/NEAT/LMU-SSM + the genuine ceiling-breakers, grounded in a held-out generalization POC and a juniper-data operational-demands audit. No code ships on this basis until ratified and Workstream 0 is opened.*
+
+yeah, good catch, this is my mistake--i said protocol but i should have referenced juniper-service (or juniper-service-core?). there's a future work goal to refactor juniper-cascor to pull out the portions of cascor nn operation code that are common to all--or some subset of--neural networks
