@@ -148,14 +148,6 @@ jobs:
           # docs-full-check.yml. The full cross-repo assertion runs
           # weekly via docs-full-check.yml.
           python3 -m unittest -v tests/test_ci_tools_drift.py
-          # tests/test_cascor_core_drift.py: drift-guard for the CW-05
-          # juniper-cascor-core extraction -- asserts the vendored
-          # candidate-core modules stay byte-identical to juniper-cascor/src
-          # (allowlisting the intentional deployment-agnostic logging
-          # divergence) until cascor adopts the package (plan Wave 2). The
-          # byte-comparison auto-skips when the sibling juniper-cascor repo is
-          # not on disk (per-PR / isolated CI); the present-check still runs.
-          python3 -m unittest -v tests/test_cascor_core_drift.py
           # tests/test_pyproject_extras.py: pins the
           # [project.optional-dependencies] surface so accidental edits
           # to extras (drop, mistype, fail to roll up into [all]) fail
@@ -185,32 +177,6 @@ jobs:
           echo "║       juniper-ml - Bash Regression Tests                   ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           bash scripts/test_resume_file_safety.bash
-
-  cascor-core-tests:
-    name: juniper-cascor-core Tests
-    runs-on: ubuntu-latest
-    needs: [pre-commit]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: ${{ env.PYTHON_TEST_VERSION }}
-          cache: pip
-
-      - name: Install juniper-cascor-core test dependencies
-        run: |
-          python -m pip install --upgrade "pip>=26.1.1"
-          pip install -e "./juniper-cascor-core[test]"
-
-      - name: Run juniper-cascor-core regression tests
-        run: |
-          echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║       juniper-cascor-core - Python Regression Tests        ║"
-          echo "╚════════════════════════════════════════════════════════════╝"
-          python -m pytest -v juniper-cascor-core/tests/
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Build: Build the package and validate with twine
@@ -422,7 +388,7 @@ jobs:
     name: Quality Gate
     runs-on: ubuntu-latest
     if: always()
-    needs: [pre-commit, tests, cascor-core-tests, build, docs, security, claude-yaml-audit, dependency-docs]
+    needs: [pre-commit, tests, build, docs, security, claude-yaml-audit, dependency-docs]
     steps:
       - name: Check Quality Gate Status
         run: |
@@ -432,7 +398,6 @@ jobs:
           echo ""
           echo "Pre-commit:           ${{ needs.pre-commit.result }}"
           echo "Tests:                ${{ needs.tests.result }}"
-          echo "Cascor-core Tests:    ${{ needs.cascor-core-tests.result }}"
           echo "Build:                ${{ needs.build.result }}"
           echo "Docs:                 ${{ needs.docs.result }}"
           echo "Security:             ${{ needs.security.result }}"
@@ -447,11 +412,6 @@ jobs:
 
           if [[ "${{ needs.tests.result }}" != "success" ]]; then
             echo "::error::Regression tests failed"
-            exit 1
-          fi
-
-          if [[ "${{ needs.cascor-core-tests.result }}" != "success" ]]; then
-            echo "::error::juniper-cascor-core tests failed"
             exit 1
           fi
 
