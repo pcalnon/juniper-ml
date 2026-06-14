@@ -6,7 +6,7 @@
 # Status: Development
 # License: MIT
 # Copyright: 2026 Paul Calnon
-# Repository: https://github.com/paulcalnon/juniper-ml
+# Repository: https://github.com/pcalnon/juniper-ml
 #
 # Description:
 #    this script is a wrapper for the claude code agent.
@@ -30,13 +30,19 @@
 ########################################################################################################################################################################
 TRUE="0"
 FALSE="1"
+UNSAFE_TARGET="2"  # Distinct save_session_id() status for a security refusal (e.g. a symlink target)
 
-# DEBUG="${FALSE}"
 DEBUG="${TRUE}"
 
 WTC_DEBUG="${WTC_DEBUG:-${DEBUG}}"
 EXIT_AFTER_USAGE_DEFAULT="${TRUE}"
-REQUIRE_SAVED_SESSION_ID="$(( ( WTC_DEBUG + 1 ) % 2 ))"  # Only require saving session ID when not in wtc debug mode
+
+# Only require a successful session-ID save when NOT in wtc debug mode. Explicit comparison
+# (robust to non-numeric/empty WTC_DEBUG, unlike the previous parity arithmetic).
+REQUIRE_SAVED_SESSION_ID="${TRUE}"
+if [[ "${WTC_DEBUG}" == "${TRUE}" ]]; then
+    REQUIRE_SAVED_SESSION_ID="${FALSE}"
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -58,7 +64,6 @@ function debug_log() {
 
 function redact_uuid() {
     local value="$1"
-    # if [[ ${#value} -ge 12 ]]; then
     if (( ${#value} >= 12 )); then
         echo "${value:0:8}...${value: -4}"
     else
@@ -80,7 +85,7 @@ debug_log "Define Model Name Constants"
 MODEL_FABLE_NAME="claude-fable-5"
 MODEL_OPUS_NAME="claude-opus-4-8"
 MODEL_SONNET_NAME="claude-sonnet-4-6"
-MODEL_HAIKU_NAME="claud-haiku-4-5"
+MODEL_HAIKU_NAME="claude-haiku-4-5"
 
 ########################################################################################################################################################
 # Define Model name Alias Constants
@@ -115,7 +120,7 @@ debug_log "Define Claude Code parameter flags"
 CLAUDE_PERMISSIONS_FLAGS="--dangerously-skip-permissions"
 CLAUDE_REMOTE_CONTROL_FLAGS="--remote-control"
 CLAUDE_SESSION_ID_FLAGS="--session-id"
-CLAUDE_FORK_SESSION="--fork-session"
+CLAUDE_FORK_SESSION_FLAGS="--fork-session"
 CLAUDE_WORKTREE_FLAGS="--worktree"
 CLAUDE_VERSION_FLAGS="--version"
 CLAUDE_HEADLESS_FLAGS="--print"
@@ -151,11 +156,11 @@ VERSION_FLAGS="-v | ${CLAUDE_VERSION_FLAGS} | --claude-version"
 EFFORT_FLAGS="-e | ${CLAUDE_EFFORT_FLAGS} | --effort-type | --effort-level"
 HEADLESS_FLAGS="-a | ${CLAUDE_HEADLESS_FLAGS} | --agent | --silent | --headless"
 REMOTE_CONTROL_FLAGS="-c | --remote | --control | ${CLAUDE_REMOTE_CONTROL_FLAGS}"
-PERMISSIONS_FLAGS="-s | --slient | --skip | --skip-permissions | ${CLAUDE_PERMISSIONS_FLAGS}"
+PERMISSIONS_FLAGS="-s | --skip | --skip-permissions | ${CLAUDE_PERMISSIONS_FLAGS}"
 SESSION_ID_FLAGS="-i | --id | --session | ${CLAUDE_SESSION_ID_FLAGS} | --session-name | -t | --thread | --thread-name | --thread-id"
 MODEL_FLAGS="-m | ${CLAUDE_MODEL_FLAGS} | --llm-model | --ai-model | --model-type"
 RESUME_FLAGS="-r | ${CLAUDE_RESUME_FLAGS} | --resume-thread | --resume-session"
-FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION} | --resume-fork | --resume-fork_session"
+FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION_FLAGS} | --resume-fork | --resume-fork_session"
 
 
 ########################################################################################################################################################################
@@ -214,7 +219,6 @@ function matches_pattern() {
 function is_valid_uuid() {
     # example uuid="7632f5ab-4bac-11e6-bcb7-0cc47a6c4dbd"
     local uuid="$1"
-    # debug_log "Validating UUID format: ${uuid}"
     debug_log "Validating UUID format: $(redact_uuid "${uuid}")"
     if [[ ${uuid//-/} =~ ^[[:xdigit:]]{32}$ ]]; then
         debug_log "UUID is valid: $(redact_uuid "${uuid}")"
@@ -283,9 +287,8 @@ function save_session_id() {
     local target_path="${SESSIONS_DIR}/${safe_filename}"
     debug_log "Target Path: ${target_path}"
     if [[ -L "${target_path}" ]]; then
-        # echo "Error: target file is a symlink — refusing to write"
         debug_log "Error: target file is a symlink — refusing to write"
-        return "${FALSE}"
+        return "${UNSAFE_TARGET}"
     fi
     debug_log "Validated Target Path: ${target_path}"
     echo "${session_id}" > "${target_path}"
@@ -302,23 +305,6 @@ function retrieve_session_id() {
     debug_log "Completed retrieving Session ID from file: \"${session_id_file}\""
     echo "${session_id}"
     return "${TRUE}"
-}
-
-function remove_generated_session_id_file() {
-    # shellcheck disable=SC2317
-    local session_id_filename="$1"
-    # shellcheck disable=SC2317
-    local session_id="$2"
-    # shellcheck disable=SC2317
-    local expected_filename="${session_id}.txt"
-    # shellcheck disable=SC2317
-    if [[ "${session_id_filename}" == "${expected_filename}" ]]; then
-        debug_log "Removing generated session id file: \"${SESSIONS_DIR}/${session_id_filename}\""
-        rm -f "${SESSIONS_DIR}/${session_id_filename}"
-        debug_log "Completed removing generated session id file: \"${session_id_filename}\""
-    else
-        debug_log "Preserving session id file because filename is not generated by this script: \"${session_id_filename}\""
-    fi
 }
 
 # validate_session_id(): Validate session ID as UUID or resolve from session file
@@ -373,16 +359,16 @@ function validate_model() {
     MODEL_PARAM="${1,,}"
     VALID_MODEL="${FALSE}"
     debug_log "Validate Claude Code Model Param Value"
-    for CURRENT_MODEL in ${MODEL_TEST_ARRAY[@]}; do
+    for CURRENT_MODEL in "${MODEL_TEST_ARRAY[@]}"; do
         if [[ "${MODEL_PARAM}" == "${CURRENT_MODEL,,}" ]]; then
-            debug_log "Model Valiated: ${MODEL_PARAM}"
+            debug_log "Model Validated: ${MODEL_PARAM}"
             VALID_MODEL="${TRUE}"
             break
         fi
     done
     if [[ "${VALID_MODEL}" != "${TRUE}" ]]; then
         debug_log "Error: Specified Model is not Valid: ${MODEL_PARAM}"
-        usage ${FALSE}
+        usage "${FALSE}"
     fi
     return "${VALID_MODEL}"
 }
@@ -400,7 +386,7 @@ function usage() {
     echo -ne "\t\tFlags that allow the display of this Usage statement.\n"
     echo -ne "\t ${HELP_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the Display of this Help statement.\n"
-    echo -ne "\t ${VERSION_FLAGS[*]}:\n"
+    echo -ne "\t ${VERSION_FLAGS}:\n"
     echo -ne "\t\tFlags that allow the version of the Claude Code model to be displayed.\n"
     echo -ne "\t ${FILE_FLAGS}:\n"
     echo -ne "\t\tFlags to allow a filename to be specified for this script.\n"
@@ -418,7 +404,7 @@ function usage() {
     echo -ne "\t\tFlags that allow a previously created session to be resumed for use by the Claude Code model.\n"
     echo -ne "\t\tNOTE: Session value must be a valid session id.  If no session id is provided, operation will not continue.\n"
     echo -ne "\t ${FORK_SESSION_FLAGS}:\n"
-    echo -ne "\t\tFlags that allow a previously forked session to be resumed for use by the Claude Code model.\n"
+    echo -ne "\t\tFlags that fork the resumed session into a new session id (use together with --resume; the original session is left untouched).\n"
     echo -ne "\t ${PROMPT_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a prompt string to be specified for use by the Claude Code model.\n"
     echo -ne "\t\tNOTE: Prompt string can be provided either as a string of text or as a file name or pathname to a file containing the prompt string.\n"
@@ -433,7 +419,7 @@ function usage() {
     echo -ne "\t\tFlags that allow Claude Code's remote control to be specified--either remote if remote control flag is provided or local if remote control flag is omitted.\n"
     echo -ne "\t\tNOTE: Remote control value must be a valid remote control name.  If no remote control name is provided, Claude Code will assign a new remote control name.\n"
     echo -ne "\t ${PERMISSIONS_FLAGS}:\n"
-    echo -ne "\t\tFlags that allow the level of supervision applied to Claude Code's actions to be specfied.\n"
+    echo -ne "\t\tFlags that allow the level of supervision applied to Claude Code's actions to be specified.\n"
     echo -ne "\t ${SPACER_FLAGS}:\n"
     echo -ne "\t\tFlags that allow a spacer to be specified.  Spacer is used to separate flags and values in the input parameters.\n"
 
@@ -450,8 +436,6 @@ if [[ "${*}" != "" ]]; then
     echo "Input Params: \"${*}\""
 else
     debug_log "No input params provided."
-    debug_log "Next time try these:"
-    debug_log "${PARAMS_TEST}"
     usage "${FALSE}"
 fi
 debug_log "Completed verifying that input parameters have been provided"
@@ -498,9 +482,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         # Parse and init Session ID param unless Resume Previous Session is in progress
         debug_log "Handle Session ID edge cases"
         SESSION_ID="${1}"
-        # if [[ ( "${CLAUDE_RESUME_VALUE[@]}" == "" ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
         if [[ ( ( "${CLAUDE_RESUME_VALUE[*]}" == "" ) || ( "${#CLAUDE_RESUME_VALUE[@]}" == "0" ) ) && ( "${SESSION_ID}" != "${FALSE}" ) ]]; then
-            # SESSION_ID="${1}"
             # Handle session id bool flag edge case
             if [[ "${SESSION_ID}" == "${TRUE}" ]]; then
                 shift
@@ -527,8 +509,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             CLAUDE_SESSION_ID_VALUE=("${CLAUDE_SESSION_ID_FLAGS}" "${SESSION_ID}")
             save_session_id "${CLAUDE_SESSION_ID_VALUE[@]}"
             RESULT="$?"
-            if [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then
-                debug_log "Error: Failed to Save Session ID value."
+            if [[ "${RESULT}" == "${UNSAFE_TARGET}" ]]; then
+                debug_log "Error: Refusing to save Session ID to an unsafe (symlink) target. Exiting..."
+                usage "${FALSE}"
+            elif [[ ( "${RESULT}" != "${TRUE}" ) && ( "${REQUIRE_SAVED_SESSION_ID}" == "${TRUE}" ) ]]; then
+                debug_log "Error: Failed to Save Session ID value. Exiting..."
                 usage "${FALSE}"
             elif [[ "${RESULT}" != "${TRUE}" ]]; then
                 debug_log "Warning: Failed to Save Session ID value."
@@ -536,6 +521,10 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         else
             CLAUDE_SESSION_ID_VALUE=()
             debug_log "Warning: Ignoring Session ID Value Param since ID Flagged as False or Resume Previous Thread has been specified."
+            # Consume the ignored session-id value (if present) so it does not fall through as an unknown param.
+            if [[ ( "${1}" != "" ) && ( "${1:0:2}" != "${SPACER_FLAGS}" ) ]]; then
+                shift
+            fi
         fi
 
     # Add worktree flag
@@ -563,10 +552,11 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
             REMOTE_CONTROL_VALUE="${1}"
             shift
             debug_log "Received Remote Control Value: \"${REMOTE_CONTROL_VALUE}\""
+            CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}" "${REMOTE_CONTROL_VALUE}")
         else
             debug_log "Warning: Received Remote Control Flag but no Remote Control Name. Letting Claude Code assign one."
+            CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}")
         fi
-        CLAUDE_REMOTE_CONTROL_VALUE=("${CLAUDE_REMOTE_CONTROL_FLAGS}" "${REMOTE_CONTROL_VALUE}")
 
     # Add Effort Flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${EFFORT_FLAGS}"; then
@@ -584,10 +574,10 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
         debug_log "Parsing model flags"
         if [[ "${1}" != "" ]]; then
             CLAUDE_MODEL_NAME="${1}"
-	    validate_model "${CLAUDE_MODEL_NAME}"
+            validate_model "${CLAUDE_MODEL_NAME}"
             VALID_MODEL_NAME="$?"
             if [[ "${VALID_MODEL_NAME}" != "${TRUE}" ]]; then
-                debug_log "Error: Received an Ivalid Model Name. Exiting..."
+                debug_log "Error: Received an Invalid Model Name. Exiting..."
                 usage "${FALSE}"
             fi
             debug_log "Selected Model Name Validated"
@@ -607,7 +597,7 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     # Add fork session flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${FORK_SESSION_FLAGS}"; then
         debug_log "Parsing fork session flags"
-        CLAUDE_FORK_SESSION_VALUE=("${CLAUDE_FORK_SESSION}")
+        CLAUDE_FORK_SESSION_VALUE=("${CLAUDE_FORK_SESSION_FLAGS}")
 
     # Add Permissions Flag
     elif matches_pattern "${CURRENT_ELEMENT}" "${PERMISSIONS_FLAGS}"; then
@@ -699,8 +689,13 @@ while [[ "${TRUE}" != "${FALSE}" ]]; do
     # Print claude version and exit
     elif matches_pattern "${CURRENT_ELEMENT}" "${VERSION_FLAGS}"; then
         debug_log "Parsing version flags"
-        claude "${CLAUDE_VERSION_FLAGS}"
-        exit "${TRUE}"
+        VERSION_BIN="$(type -P claude 2>/dev/null || true)"
+        if [[ "${VERSION_BIN}" == "" ]] || [[ ! -x "${VERSION_BIN}" ]]; then
+            debug_log "Error: claude command not found in PATH"
+            exit 1
+        fi
+        "${VERSION_BIN}" "${CLAUDE_VERSION_FLAGS}"
+        exit "$?"
 
     # Print script usage and exit with fail
     elif matches_pattern "${CURRENT_ELEMENT}" "${USAGE_FLAGS}"; then
@@ -780,15 +775,16 @@ if [[ "${CLAUDE_HEADLESS_VALUE[*]}" != "" ]]; then
     debug_log "Nohup log file: ${NOHUP_LOG_FILE}"
     echo "nohup claude ${CLAUDE_CODE_PARAMS[*]} >> ${NOHUP_LOG_FILE} 2>&1 &"
     nohup "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}" >> "${NOHUP_LOG_FILE}" 2>&1 &
+    debug_log "Launched claude headless via nohup (pid $!)"
 else
     debug_log "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
     echo "\"${CLAUDE_BIN}\" ${CLAUDE_CODE_PARAMS[*]}"
     "${CLAUDE_BIN}" "${CLAUDE_CODE_PARAMS[@]}"
-fi
-NOHUP_STATUS=$?
-if [[ "${NOHUP_STATUS}" != "0" ]]; then
-    debug_log "Error: Failed to launch claude with nohup"
-    exit 1
+    CLAUDE_STATUS=$?
+    if [[ "${CLAUDE_STATUS}" != "0" ]]; then
+        debug_log "Error: claude exited with non-zero status ${CLAUDE_STATUS}"
+        exit "${CLAUDE_STATUS}"
+    fi
 fi
 debug_log "Completed Executing Claude Code"
 exit 0
