@@ -30,7 +30,7 @@
 
 | ID       | Workstream                                                               | Size | Status      | Depends on       | Trigger / Notes                                                                                                                                                                                                                                                                                              |
 |----------|--------------------------------------------------------------------------|------|-------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **WS-0** | Design ratification (model pick)                                         | S    | `IN REVIEW` | —                | **Not ratified.** Provisional 2026-06-02: OQ-1 recurrent · OQ-2 C1-binds · OQ-3 framework/RCC-first · OQ-5 multi-sine+Mackey-Glass+AR(p) — **all contingent on the model pick.** **OQ-4 REOPENED — under research** (RCC's no-count/no-group [star-free] ceiling); model pick may change. See §1.6 + [OQ-4]. |
+| **WS-0** | Design ratification (model pick)                                         | S    | `SHIPPED`   | —                | **RATIFIED 2026-06-14 (Paul, ml#411).** OQ-1/2/3/5 resolved; **OQ-4 RESOLVED** — the star-free ceiling is not binding (dataset audit, exception list empty); **model pick = P3-C / LMU + Approach-C, shipped fixed-order first** (design-of-record: `JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`). See §1.6 + [OQ-4]. |
 | **WS-4** | Build `juniper-recurse` (RCC reference model) + `juniper-recurse-client` | L    | `PLANNED`   | WS-1, WS-2, WS-3 | Greenfield; proves the template without touching cascor. WS-1/2/3 are companion-doc workstreams.                                                                                                                                                                                                             |
 
 ---
@@ -43,7 +43,7 @@
 
 - **① Recurrent Cascade-Correlation (RCC)** — Fahlman (1991). The direct constructive-recurrent analog of cascor; native integration, maximal first-principles transparency, grows its own topology. Carries a *known representational ceiling* (captures exactly the star-free/group-free regular languages). **Whether that ceiling is acceptable is the reopened [OQ-4] now under active research** — see §1.3.1 and §1.6.
 - **② Growing Echo State Network (Growing ESN / Reservoir Computing)** — Jaeger (2001); incremental-growth variant Qiao et al. (2017). Regression is *native* (the readout is literally ridge regression — mirroring cascor's output-layer training); highly transparent; reservoir grows in sub-reservoir blocks.
-- **③ Legendre Memory Unit (LMU)** — Voelker, Kajić & Eliasmith (2019). Modern continuous-time recurrent memory with **closed-form** dynamics matrices (no ODE solver, no custom kernel), a single principled growth knob, and a clean migration path toward structured state-space models (S4/Mamba) for future capability.
+- **③ Legendre Memory Unit (LMU)** — Voelker, Kajić & Eliasmith (2019). Modern continuous-time recurrent memory with **closed-form** dynamics matrices (no ODE solver, no custom kernel), a single principled order knob (fixed at construction), and a clean migration path toward structured state-space models (S4/Mamba) for future capability.
 
 These three span both architecture classes (per the ratified "span both" decision), are all implementable from primary literature without black-box layers, and each has a credible — if in places **[speculative]** — Cascade-Correlation integration story. The recommended construction is a **growable-recurrent *framework*** (juniper-recurse) with **RCC as the first concrete model**, the framework being able to host ESN and LMU units behind a common growth loop.
 
@@ -216,13 +216,15 @@ HiPPO (Gu et al. 2020) later re-derives the LMU "from first principles," making 
 |----------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------------|
 | R1 time-series             | ✅       | Outperformed equivalently-sized LSTM on a chaotic time-series task; handles 10⁵-step dependencies [published]                            |
 | R2 regression              | ✅       | Continuous-output recurrent model; chaotic-series prediction is regression                                                               |
-| R3 dynamic                 | ✅       | Explicit continuous-time dynamical system; **growth = increase order d** (principled single knob)                                        |
+| R3 dynamic                 | ✅       | Explicit continuous-time dynamical system; capacity set by a **fixed construction-time order `d`** (single principled knob — NOT a runtime grow loop; see the fixed-order note below)                                        |
 | R4 dataset flexibility     | ✅       | Continuous-time formulation adapts to step size (window θ, Δt)                                                                           |
 | R5 capability > simplicity | ✅       | Strong results at tiny parameter counts; favorable capability/footprint balance                                                          |
-| R6 cascor integration      | 🔬       | Clean linear-memory/nonlinear-unit split + single growth knob → conceptually compatible with incremental unit addition **[speculative]** |
+| R6 cascor integration      | 🔬       | Clean linear-memory/nonlinear-unit split; deployed **fixed-order** (hosted, not grown). A grown-cascade-block LMU is deferred research **[speculative — detailed design §4.2]** |
 | P first-principles         | ✅       | Closed-form matrices, elementary discretization, plain-framework reference impl — satisfies C1 without heavy libraries                   |
 
-**Strengths.** Best modern combination of recurrence + continuous-time dynamics + first-principles transparency + principled growth. Tiny footprint. **Future-proofing:** because HiPPO unifies LMU with S4, an LMU implementation is a low-risk stepping stone toward structured state-space capability later, preserving conceptual continuity.
+> **Fixed-order vs grown — reconciliation (2026-06-14; WS-0 ratified ml#411).** The deployed LMU is a **fixed-order `TrainableModel`** — it implements `TrainableModel`, **not** `GrowableModel`. Its order `d` is a construction-time capacity hyperparameter chosen up front and held fixed, **not** a runtime `grow_step()`. This resolves the §1.3.3-vs-§1.3.4 tension: "growth = increase order `d`" means *pick a larger `d` at build time*, not *grow during training*. The **grown-cascade-block** LMU (a memory cell installed by the cascade growth loop) is an **open research question, deferred** — see the detailed design (`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md` §4.2; OQ-20 — ship fixed-order first). The LMU is hosted as a non-growing model alongside the growable RCC/ESN unit types (§1.5).
+
+**Strengths.** Best modern combination of recurrence + continuous-time dynamics + first-principles transparency + principled order selection. Tiny footprint. **Future-proofing:** because HiPPO unifies LMU with S4, an LMU implementation is a low-risk stepping stone toward structured state-space capability later, preserving conceptual continuity.
 
 **Weaknesses / risks & guardrails.**
 
@@ -300,7 +302,7 @@ Carry it as a *baseline only*; do not let strong baseline numbers tempt a scope 
 
 ### 1.5 Recommendation
 
-> **Status: PROVISIONAL — contingent on [OQ-4] (reopened 2026-06-02).** The recommendation below stands as the original analysis; the model pick may change pending the OQ-4 literature review.
+> **Status: superseded-in-part by the OQ-4 resolution (WS-0 RATIFIED 2026-06-14, ml#411).** The framework framing below — a growable recurrent-network framework hosting multiple unit types — **stands**. The *Δt-axis model pick* was resolved to **P3-C / LMU + Approach-C, shipped fixed-order first** (OQ-20); the design-of-record is `JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`. Read §1.5's "RCC-first" ordering as the original analysis, refined there: P3-C/LMU fixed-order first, with P1/RCC as the cheap hidden-recurrence increment.
 
 **Build `juniper-recurse` as a "growable recurrent-network framework," with Recurrent Cascade-Correlation as the first concrete model.** Rationale:
 
@@ -312,7 +314,7 @@ Carry it as a *baseline only*; do not let strong baseline numbers tempt a scope 
 
 ***How unit types swap (design hypothesis, [OQ-3]).***
 The `GrowableModel` growth loop is parameterized by a **candidate-unit factory**: RCC contributes a self-recurrent candidate, Growing-ESN a sub-reservoir block, and (where growth applies) a memory cell — each sharing one `grow_step()` → train-candidate → freeze/install → emit `unit_added` interface.
-RCC and Growing-ESN are genuinely *growable*; LMU is naturally a fixed-order `TrainableModel` (its "growth" is choosing order `d`), so it is hosted as a non-growing model rather than swapped into the growth loop.
+RCC and Growing-ESN are genuinely *growable* (`GrowableModel`); the LMU is a fixed-order `TrainableModel` — **not** a `GrowableModel` — its "growth" being the construction-time choice of order `d`, so it is hosted as a non-growing model rather than swapped into the growth loop. The grown-cascade-block LMU is deferred research (detailed design §4.2; OQ-20).
 This unit-swap interface is the riskiest abstraction in the framework and **must be validated against ≥2 unit types before it is frozen** (see companion RK-4).
 The `GrowableModel` / `TrainableModel` interfaces themselves are defined in the companion's `juniper-model-core` (§2.3).
 
