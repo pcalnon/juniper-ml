@@ -69,15 +69,15 @@ This is Dependency Inversion + Open/Closed applied to repos: the common tier is 
 
 ### 3.2 The placement table (strategy doc §5, restated)
 
-| Kind of code | Commonality | Home |
-|---|---|---|
-| Generic service/middleware infra | agnostic | `juniper-service-core` (future shared pkg) |
-| Abstract model interface + contracts | agnostic | `juniper-model-core` (future shared pkg) |
-| Cross-cutting libraries | agnostic | shared pkgs in the **juniper-ml tier** |
-| Dataset generation/handling/delivery | agnostic | `juniper-data` (+ `juniper-data-client`) |
-| Model implementation | **specific** | the model's **app family** |
+| Kind of code                                 | Commonality  | Home                                                    |
+|----------------------------------------------|--------------|---------------------------------------------------------|
+| Generic service/middleware infra             | agnostic     | `juniper-service-core` (future shared pkg)              |
+| Abstract model interface + contracts         | agnostic     | `juniper-model-core` (future shared pkg)                |
+| Cross-cutting libraries                      | agnostic     | shared pkgs in the **juniper-ml tier**                  |
+| Dataset generation/handling/delivery         | agnostic     | `juniper-data` (+ `juniper-data-client`)                |
+| Model implementation                         | **specific** | the model's **app family**                              |
 | Model↔middleware adapter (translation layer) | **specific** | the model's **app family** (implements a `*-core` port) |
-| Model-specific data adaptation (rare) | **specific** | the model's **app family** |
+| Model-specific data adaptation (rare)        | **specific** | the model's **app family**                              |
 
 ### 3.3 Reconciliations this plan applies
 
@@ -98,32 +98,32 @@ The audit surfaced three points where the source documents are inconsistent or s
 
 All rows below were verified live against the real repos under `/home/pcalnon/Development/python/Juniper/` and against PyPI on 2026-06-09. "Home" is the **repo** that owns the package; "subdir" marks a package published from a subdirectory of a larger repo.
 
-| # | Package | Physical home | Version | Publish workflow (trigger) | PyPI (live 2026-06-09) | §5 class | Disposition |
-|---|---|---|---|---|---|---|---|
-| 1 | `juniper-ml` | juniper-ml (root) | 0.6.0 | `publish.yml` (release) | **0.6.0** | meta / shared-tier host | **VALIDATED** |
-| 2 | `juniper-observability` | juniper-ml (subdir) | 0.3.1 | `publish-observability.yml` (`juniper-observability-v*`) | **0.3.1** | cross-cutting lib (agnostic) | **VALIDATED** |
-| 3 | `juniper-ci-tools` | juniper-ml (subdir) | 0.4.0 | `publish-ci-tools.yml` (`juniper-ci-tools-v*`) | **0.4.0** | cross-cutting dev tool (agnostic) | **VALIDATED** |
-| 4 | `juniper-doc-tools` | juniper-ml (subdir) | 0.1.1 | `publish-doc-tools.yml` (`juniper-doc-tools-v*`) | **0.1.1** | cross-cutting dev tool (agnostic) | **VALIDATED** |
-| 5 | `juniper-config-tools` | juniper-ml (subdir) | 0.1.0 | `publish-config-tools.yml` (`juniper-config-tools-v*`) | **0.1.0** | cross-cutting lib (agnostic) | **VALIDATED** |
-| 6 | **`juniper-cascor-core`** | **juniper-ml (subdir)** | 0.1.0 | `publish-cascor-core.yml` (`juniper-cascor-core-v*`) | **404 — NOT published** | **model implementation (specific)** | **RELOCATE → `juniper-cascor` subdir + RENAME → `juniper-cascor-model`** (D1/D2) |
-| 7 | `juniper-cascor` | juniper-cascor (root) | 0.5.0 | `publish.yml` (release) | **0.5.0** | model app (specific) | **VALIDATED** |
-| 8 | `juniper-cascor-protocol` | juniper-cascor (subdir) | 0.1.0 | `publish-protocol.yml` (`juniper-cascor-protocol-v*`) | **0.1.0** | model-family wire schema (specific) | **VALIDATED** (precedent) |
-| 9 | `juniper-data` | juniper-data (root) | 0.6.0 | `publish.yml` (release) | **0.6.0** | dataset tier (agnostic) | **VALIDATED** |
-| 10 | `juniper-data-client` | juniper-data-client (root) | 0.4.1 | `publish.yml` (release) | **0.4.1** | dataset-tier client (agnostic) | **VALIDATED** |
-| 11 | `juniper-cascor-client` | juniper-cascor-client (root) | 0.5.0 | `publish.yml` (release) | **0.5.0** | model-family client (specific) | **VALIDATED** |
-| 12 | `juniper-cascor-worker` | juniper-cascor-worker (root) | 0.4.0 | `publish.yml` (release) | **0.4.0** | model-family worker (specific) | **VALIDATED** |
-| 13 | `juniper-canopy` | juniper-canopy (root) | 0.5.0 | `publish.yml` (release) | **0.5.0** | UI app (agnostic by design) | **VALIDATED** |
-| — | `juniper-deploy` | juniper-deploy (root) | n/a (no `[project]`) | none | n/a | orchestration (not a package) | **N/A** |
+| #  | Package                   | Physical home                | Version              | Publish workflow (trigger)                               | PyPI (live 2026-06-09)  | §5 class                            | Disposition                                                                      |
+|----|---------------------------|------------------------------|----------------------|----------------------------------------------------------|-------------------------|-------------------------------------|----------------------------------------------------------------------------------|
+| 1  | `juniper-ml`              | juniper-ml (root)            | 0.6.0                | `publish.yml` (release)                                  | **0.6.0**               | meta / shared-tier host             | **VALIDATED**                                                                    |
+| 2  | `juniper-observability`   | juniper-ml (subdir)          | 0.3.1                | `publish-observability.yml` (`juniper-observability-v*`) | **0.3.1**               | cross-cutting lib (agnostic)        | **VALIDATED**                                                                    |
+| 3  | `juniper-ci-tools`        | juniper-ml (subdir)          | 0.4.0                | `publish-ci-tools.yml` (`juniper-ci-tools-v*`)           | **0.4.0**               | cross-cutting dev tool (agnostic)   | **VALIDATED**                                                                    |
+| 4  | `juniper-doc-tools`       | juniper-ml (subdir)          | 0.1.1                | `publish-doc-tools.yml` (`juniper-doc-tools-v*`)         | **0.1.1**               | cross-cutting dev tool (agnostic)   | **VALIDATED**                                                                    |
+| 5  | `juniper-config-tools`    | juniper-ml (subdir)          | 0.1.0                | `publish-config-tools.yml` (`juniper-config-tools-v*`)   | **0.1.0**               | cross-cutting lib (agnostic)        | **VALIDATED**                                                                    |
+| 6  | **`juniper-cascor-core`** | **juniper-ml (subdir)**      | 0.1.0                | `publish-cascor-core.yml` (`juniper-cascor-core-v*`)     | **404 — NOT published** | **model implementation (specific)** | **RELOCATE → `juniper-cascor` subdir + RENAME → `juniper-cascor-model`** (D1/D2) |
+| 7  | `juniper-cascor`          | juniper-cascor (root)        | 0.5.0                | `publish.yml` (release)                                  | **0.5.0**               | model app (specific)                | **VALIDATED**                                                                    |
+| 8  | `juniper-cascor-protocol` | juniper-cascor (subdir)      | 0.1.0                | `publish-protocol.yml` (`juniper-cascor-protocol-v*`)    | **0.1.0**               | model-family wire schema (specific) | **VALIDATED** (precedent)                                                        |
+| 9  | `juniper-data`            | juniper-data (root)          | 0.6.0                | `publish.yml` (release)                                  | **0.6.0**               | dataset tier (agnostic)             | **VALIDATED**                                                                    |
+| 10 | `juniper-data-client`     | juniper-data-client (root)   | 0.4.1                | `publish.yml` (release)                                  | **0.4.1**               | dataset-tier client (agnostic)      | **VALIDATED**                                                                    |
+| 11 | `juniper-cascor-client`   | juniper-cascor-client (root) | 0.5.0                | `publish.yml` (release)                                  | **0.5.0**               | model-family client (specific)      | **VALIDATED**                                                                    |
+| 12 | `juniper-cascor-worker`   | juniper-cascor-worker (root) | 0.4.0                | `publish.yml` (release)                                  | **0.4.0**               | model-family worker (specific)      | **VALIDATED**                                                                    |
+| 13 | `juniper-canopy`          | juniper-canopy (root)        | 0.5.0                | `publish.yml` (release)                                  | **0.5.0**               | UI app (agnostic by design)         | **VALIDATED**                                                                    |
+| —  | `juniper-deploy`          | juniper-deploy (root)        | n/a (no `[project]`) | none                                                     | n/a                     | orchestration (not a package)       | **N/A**                                                                          |
 
 ### Future packages (named in design docs; do not yet exist on disk or PyPI)
 
-| Package | Source doc | Planned class | Planned home | Placement status |
-|---|---|---|---|---|
-| `juniper-service-core` | [refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) | generic infra (agnostic) | shared tier | **home OPEN** (juniper-ml subdir vs standalone — strategy OQ-2) |
-| `juniper-model-core` | [refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) | abstract model interface (agnostic) | shared tier | **home OPEN** (strategy OQ-2) |
-| `juniper-recurse` | [recurse model](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md) | model app (specific) | own repo `pcalnon/juniper-recurse` | DECIDED (own repo); gated on WS-0 ratification + OQ-4 model pick |
-| `juniper-recurse-client` | refactor (WS-7) | model client (specific) | own repo (implied) | follows per-family rule; not yet scoped |
-| `juniper-recurse-worker` | refactor (WS-8) | model worker (specific) | own repo (implied) | DEFERRED (trigger-gated) |
+| Package                  | Source doc                                                                  | Planned class                       | Planned home                       | Placement status                                                 |
+|--------------------------|-----------------------------------------------------------------------------|-------------------------------------|------------------------------------|------------------------------------------------------------------|
+| `juniper-service-core`   | [refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) | generic infra (agnostic)            | shared tier                        | **home OPEN** (juniper-ml subdir vs standalone — strategy OQ-2)  |
+| `juniper-model-core`     | [refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) | abstract model interface (agnostic) | shared tier                        | **home OPEN** (strategy OQ-2)                                    |
+| `juniper-recurse`        | [recurse model](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)        | model app (specific)                | own repo `pcalnon/juniper-recurse` | DECIDED (own repo); gated on WS-0 ratification + OQ-4 model pick |
+| `juniper-recurse-client` | refactor (WS-7)                                                             | model client (specific)             | own repo (implied)                 | follows per-family rule; not yet scoped                          |
+| `juniper-recurse-worker` | refactor (WS-8)                                                             | model worker (specific)             | own repo (implied)                 | DEFERRED (trigger-gated)                                         |
 
 ### Out of scope
 
@@ -210,16 +210,16 @@ It is published by a dedicated `publish-protocol.yml` on `juniper-cascor-protoco
 The cascor app consumes it via a **plain PyPI pin** (`juniper-cascor-protocol>=0.1.0a0` in `[project].dependencies`), *not* a path/editable reference; the worker and canopy pin the same package at `>=0.1.0`, so the symmetric server+worker consumption is real and already in production.
 This is exactly the shape `juniper-cascor-core` needs, already working in the destination repo.
 
-| Criterion | Option S — standalone `juniper-cascor-core` repo | Option D — subdirectory of `juniper-cascor` |
-|---|---|---|
-| Satisfies the §5 rule (in cascor family) | ✅ | ✅ |
-| Symmetric server+worker dependency | ✅ (peer of both) | ✅ — **already demonstrated**: worker already depends on cascor-protocol, published from the cascor repo, with no problem |
-| Release cadence decoupled from cascor app | ✅ strongest | ✅ namespaced `*-v*` tag already decouples it from app `v*` releases (proven by protocol) |
-| Operational overhead to stand up | Higher — new repo, branch protection, CODEOWNERS, CI bootstrap, fresh trusted-publisher | **Lower — copy the protocol wiring; trusted publisher is a new project on an existing repo** |
-| Wiring template available | Must be authored | **Exists verbatim** (`publish-protocol.yml` + `ci-protocol.yml`) |
-| Conceptual "peer of cascor/worker/client" cleanliness | ✅ cleanest | Slightly less (lives "inside" the server repo), but protocol already accepts this |
-| Drift-guard simplification (vs. cascor `src`) | Cross-repo (needs sibling clone) | In-repo once cascor adopts (Wave 2) — simplest end state |
-| Insulation from host-repo incidents | Isolated (standalone) | Shared fate — a cascor-repo history-rewrite / CI outage also affects the core's release |
+| Criterion                                             | Option S — standalone `juniper-cascor-core` repo                                        | Option D — subdirectory of `juniper-cascor`                                                                               |
+|-------------------------------------------------------|-----------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| Satisfies the §5 rule (in cascor family)              | ✅                                                                                      | ✅                                                                                                                        |
+| Symmetric server+worker dependency                    | ✅ (peer of both)                                                                       | ✅ — **already demonstrated**: worker already depends on cascor-protocol, published from the cascor repo, with no problem |
+| Release cadence decoupled from cascor app             | ✅ strongest                                                                            | ✅ namespaced `*-v*` tag already decouples it from app `v*` releases (proven by protocol)                                 |
+| Operational overhead to stand up                      | Higher — new repo, branch protection, CODEOWNERS, CI bootstrap, fresh trusted-publisher | **Lower — copy the protocol wiring; trusted publisher is a new project on an existing repo**                              |
+| Wiring template available                             | Must be authored                                                                        | **Exists verbatim** (`publish-protocol.yml` + `ci-protocol.yml`)                                                          |
+| Conceptual "peer of cascor/worker/client" cleanliness | ✅ cleanest                                                                             | Slightly less (lives "inside" the server repo), but protocol already accepts this                                         |
+| Drift-guard simplification (vs. cascor `src`)         | Cross-repo (needs sibling clone)                                                        | In-repo once cascor adopts (Wave 2) — simplest end state                                                                  |
+| Insulation from host-repo incidents                   | Isolated (standalone)                                                                   | Shared fate — a cascor-repo history-rewrite / CI outage also affects the core's release                                   |
 
 **Recommendation:** **Option D — subdirectory of `juniper-cascor`** — as the default, because it is a proven, lower-friction path whose entire publish + CI + consumption wiring can be copied from `juniper-cascor-protocol`, and because the protocol precedent demonstrates that the strategy doc's stated reason for leaning standalone (symmetric server+worker dependency) is *already satisfied* by a cascor-subdirectory package.
 **Option S remains fully valid** and is preferable if Paul wants the strongest possible release decoupling, a clean peer-of-the-family conceptual model, and insulation of the core's release from cascor-repo incidents; the cost is one-time repo bootstrap + a fresh trusted-publisher registration.
@@ -229,26 +229,29 @@ This is exactly the shape `juniper-cascor-core` needs, already working in the de
 
 Verified file-by-file. On relocation, each artifact either **MOVES** with the package, **STAYS** in juniper-ml, is **DELETED** from juniper-ml, or has a **reference UPDATED**.
 
-| Artifact (in juniper-ml) | On relocation |
-|---|---|
-| `juniper-cascor-core/` (entire tree, 41 git-tracked files: `pyproject.toml`, `juniper_cascor_core/{__init__,_version}.py`, `candidate_unit/`, `utils/`, `log_config/`, `cascor_constants/`, `tests/`, `README.md`, `CHANGELOG.md`, `LICENSE`) | **MOVES** with the package |
-| `juniper-cascor-core/pyproject.toml` repo URLs → `pcalnon/juniper-ml` | **MOVES + UPDATE** to the new home's repo URL |
-| `juniper-cascor-core/images/Juniper_Logo_150px.png` (Git-LFS tracked via juniper-ml root `.gitattributes`) | **MOVES** — new home must replicate LFS config or de-LFS the asset |
-| `.github/workflows/publish-cascor-core.yml` (trigger `juniper-cascor-core-v*`; `working-directory: juniper-cascor-core`; `sparse-checkout: juniper-cascor-core/pyproject.toml`; artifact path `juniper-cascor-core/dist/`) | **MOVES + UPDATE** the 3 layout bindings (drop the subdir prefix if standalone; or copy `publish-protocol.yml`'s subdir form if Option D) |
-| `.github/workflows/ci.yml` — `cascor-core-tests` job (`pip install -e "./juniper-cascor-core[test]"`, `pytest -v juniper-cascor-core/tests/`) | **DELETE from juniper-ml**; recreate in the new home's CI (Option D: copy `ci-protocol.yml`) |
-| `.github/workflows/ci.yml` — `required-checks` gate (`needs: […, cascor-core-tests, …]`, status echo, gate `if`) | **UPDATE** — remove `cascor-core-tests` from `needs`/gate in the same change, or the gate fails on a missing job |
-| `.github/workflows/ci.yml` — drift-guard invocation (`python3 -m unittest -v tests/test_cascor_core_drift.py`) | **DELETE or UPDATE** — coupled to the drift-guard disposition (below) |
-| `tests/test_cascor_core_drift.py` (locates the package via `…/juniper-cascor-core`; compares byte-identity vs sibling `juniper-cascor/src`) | **AMBIGUOUS — see disposition below** |
-| `docs/REFERENCE.md`, `docs/QUICK_START.md`, `docs/DOCUMENTATION_OVERVIEW.md`, `README.md` (subpackage listings, install snippets, "not an extra yet" notes) | **UPDATE references** to point at the new home |
-| Root `pyproject.toml` `[project.optional-dependencies]` | **STAYS — no change.** Verified: cascor-core is **not** in any extra (`clients`/`worker`/`doc-tools`/`servers`/`tools`/`all`) |
-| `tests/test_pyproject_extras.py` | **STAYS — no change** (cascor-core was never an extra) |
-| `MANIFEST.in`, `.github/dependabot.yml`, `security-scan.yml`, `docs-full-check.yml`, `agents-md-touch-up.yml`, `claude.yml`, `lockfile-update.yml`, `.pre-commit-config.yaml`, `AGENTS.md`/`CLAUDE.md`, `CHANGELOG.md` | **STAYS — no change** (grep-verified: no cascor-core coupling) |
-| `notes/*` planning docs (this plan, the migration plan, the strategy doc, roadmaps, handoffs) | **STAY** in juniper-ml (authoring repo); optional cross-link updates |
+| Artifact (in juniper-ml)                                                                                                                                                                                                                      | On relocation                                                                                                                             |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `juniper-cascor-core/` (entire tree, 41 git-tracked files: `pyproject.toml`, `juniper_cascor_core/{__init__,_version}.py`, `candidate_unit/`, `utils/`, `log_config/`, `cascor_constants/`, `tests/`, `README.md`, `CHANGELOG.md`, `LICENSE`) | **MOVES** with the package                                                                                                                |
+| `juniper-cascor-core/pyproject.toml` repo URLs → `pcalnon/juniper-ml`                                                                                                                                                                         | **MOVES + UPDATE** to the new home's repo URL                                                                                             |
+| `juniper-cascor-core/images/Juniper_Logo_150px.png` (Git-LFS tracked via juniper-ml root `.gitattributes`)                                                                                                                                    | **MOVES** — new home must replicate LFS config or de-LFS the asset                                                                        |
+| `.github/workflows/publish-cascor-core.yml` (trigger `juniper-cascor-core-v*`; `working-directory: juniper-cascor-core`; `sparse-checkout: juniper-cascor-core/pyproject.toml`; artifact path `juniper-cascor-core/dist/`)                    | **MOVES + UPDATE** the 3 layout bindings (drop the subdir prefix if standalone; or copy `publish-protocol.yml`'s subdir form if Option D) |
+| `.github/workflows/ci.yml` — `cascor-core-tests` job (`pip install -e "./juniper-cascor-core[test]"`, `pytest -v juniper-cascor-core/tests/`)                                                                                                 | **DELETE from juniper-ml**; recreate in the new home's CI (Option D: copy `ci-protocol.yml`)                                              |
+| `.github/workflows/ci.yml` — `required-checks` gate (`needs: […, cascor-core-tests, …]`, status echo, gate `if`)                                                                                                                              | **UPDATE** — remove `cascor-core-tests` from `needs`/gate in the same change, or the gate fails on a missing job                          |
+| `.github/workflows/ci.yml` — drift-guard invocation (`python3 -m unittest -v tests/test_cascor_core_drift.py`)                                                                                                                                | **DELETE or UPDATE** — coupled to the drift-guard disposition (below)                                                                     |
+| `tests/test_cascor_core_drift.py` (locates the package via `…/juniper-cascor-core`; compares byte-identity vs sibling `juniper-cascor/src`)                                                                                                   | **AMBIGUOUS — see disposition below**                                                                                                     |
+| `docs/REFERENCE.md`, `docs/QUICK_START.md`, `docs/DOCUMENTATION_OVERVIEW.md`, `README.md` (subpackage listings, install snippets, "not an extra yet" notes)                                                                                   | **UPDATE references** to point at the new home                                                                                            |
+| Root `pyproject.toml` `[project.optional-dependencies]`                                                                                                                                                                                       | **STAYS — no change.** Verified: cascor-core is **not** in any extra (`clients`/`worker`/`doc-tools`/`servers`/`tools`/`all`)             |
+| `tests/test_pyproject_extras.py`                                                                                                                                                                                                              | **STAYS — no change** (cascor-core was never an extra)                                                                                    |
+| `MANIFEST.in`, `.github/dependabot.yml`, `security-scan.yml`, `docs-full-check.yml`, `agents-md-touch-up.yml`, `claude.yml`, `lockfile-update.yml`, `.pre-commit-config.yaml`, `AGENTS.md`/`CLAUDE.md`, `CHANGELOG.md`                        | **STAYS — no change** (grep-verified: no cascor-core coupling)                                                                            |
+| `notes/*` planning docs (this plan, the migration plan, the strategy doc, roadmaps, handoffs)                                                                                                                                                 | **STAY** in juniper-ml (authoring repo); optional cross-link updates                                                                      |
 
 **Drift-guard disposition (the one real ambiguity).** `tests/test_cascor_core_drift.py` enforces byte-identity between the extracted modules and `juniper-cascor/src` — its purpose is *cross-repo* (cascor src ↔ the extracted copy), so it is not intrinsically a juniper-ml concern.
 On relocation it can: (1) **move into the new cascor-core home** (still needs `juniper-cascor` as a sibling clone), (2) **move into `juniper-cascor`** (the most natural home for "my src vs. the extracted copy"), or (3) be **deleted** if Wave 2 (cascor adopts the package and deletes its inline copies) lands as part of the move, which eliminates the two-copies-can-drift risk entirely.
 **Recommendation:** under Option D, the cleanest end state is to **co-locate the drift-guard with the package in `juniper-cascor`** during the interim, and **retire it at Wave 2** when cascor imports from the subdir package and the two copies collapse into one.
 The choice is coupled to the Wave-2 timing decision (§6.6) and must be reconciled with the `ci.yml` invocation in the same change.
+During the P7 workflow, sub-agents committed the POC and pushed to my Phase A branch, and #403 got merged (cf4c9b8) — so a plain-SGD (non-working) POC inadvertently landed on main alongside my intended doc correction.
+I did not touch main's history.
+Phase B fixes it cleanly: this branch (docs/oq4-p7-gra
 
 > **Scope note on `tests/test_workflow_script_paths.py` (precise coupling).** This lint's path regex matches only invocations ending in `.py`/`.sh`/`.bash`, so it does **not** couple to the two non-script cascor-core lines (`pip install -e "./juniper-cascor-core[test]"` and `pytest … juniper-cascor-core/tests/` — neither ends in a script extension).
 > It **does**, however, validate the drift-guard invocation `python3 -m unittest -v tests/test_cascor_core_drift.py` (a real `.py` path). Therefore the drift-guard test file and that `ci.yml` line must be removed/updated **atomically** (already required by the drift-guard row above), or this lint goes red. The lint module itself **STAYS** in juniper-ml.
@@ -345,13 +348,13 @@ The user-stated blocker — "completing this package relocation is a blocker for
 
 > All five decisions below are now decided. Execution (the relocation/rename PRs across `juniper-ml`, `juniper-cascor`, and `juniper-cascor-worker`) is a separate task — this document remains planning only.
 
-| # | Decision | Ratified outcome (2026-06-09) | Notes |
-|---|---|---|---|
-| D1 | `juniper-cascor-core` home | **Subdirectory of `juniper-cascor`** (`juniper-cascor/juniper-cascor-model/`) — not a standalone repo | Lowest friction; copies the `juniper-cascor-protocol` wiring |
-| D2 | Distribution name | **Rename to `juniper-cascor-model`** before first publish | Free while unpublished; sets the platform naming convention (see D4) |
-| D3 | Drift-guard disposition | **Settled in the relocation PR** — co-locate with the package in `juniper-cascor`, retire at Wave 2 | Reconcile with the `ci.yml` invocation in the same change |
+| #  | Decision                         | Ratified outcome (2026-06-09)                                                                                                                                                          | Notes                                                                                  |
+|----|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| D1 | `juniper-cascor-core` home       | **Subdirectory of `juniper-cascor`** (`juniper-cascor/juniper-cascor-model/`) — not a standalone repo                                                                                  | Lowest friction; copies the `juniper-cascor-protocol` wiring                           |
+| D2 | Distribution name                | **Rename to `juniper-cascor-model`** before first publish                                                                                                                              | Free while unpublished; sets the platform naming convention (see D4)                   |
+| D3 | Drift-guard disposition          | **Settled in the relocation PR** — co-locate with the package in `juniper-cascor`, retire at Wave 2                                                                                    | Reconcile with the `ci.yml` invocation in the same change                              |
 | D4 | Future homes + naming convention | **Shared `*-core` → juniper-ml subdir** (established approach; resolves OQ-2). **Naming: `-core` = shared abstraction; `juniper-<model>-model` = model-specific core** (resolves OQ-4) | Model-specific cores follow the model-repo-subdir home, like `juniper-cascor-protocol` |
-| D5 | Extension mechanism wording | **Off the critical path** — operative mechanism is subclass + inject; strategy OQ-1 annotated RESOLVED | Placement is mechanism-independent |
+| D5 | Extension mechanism wording      | **Off the critical path** — operative mechanism is subclass + inject; strategy OQ-1 annotated RESOLVED                                                                                 | Placement is mechanism-independent                                                     |
 
 **Execution gate:** D1 + D2 were the inputs needed to start the relocation/rename. The actual PRs (relocate + rename in `juniper-ml` / `juniper-cascor`, repoint the worker, publish `juniper-cascor-model` 0.1.0) are the next, separate step.
 
