@@ -65,7 +65,15 @@ def test_no_unexpected_public_symbols():
 
 
 def test_version_is_stable_string():
-    """0.3.1 — patch bump that adds a ``logging.warning`` to
+    """0.4.0 — additive minor: build provenance. ``set_build_info`` gains
+    keyword-only ``git_sha`` / ``build_date`` passthrough labels, and
+    ``ReadinessResponse`` gains optional ``git_sha`` / ``build_date`` fields
+    (juniper-ml ``notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md``). Both are
+    backward-compatible — no public-symbol change vs ``0.3.1``. Consumers
+    wanting the deployed-revision labels should pin
+    ``juniper-observability>=0.4.0``.
+
+    0.3.1 — patch bump that adds a ``logging.warning`` to
     ``MetricsAuthMiddleware`` when ``scope["client"][0]`` is not a
     parseable IP. No API change vs ``0.3.0``; aligns the wrapper with
     the behaviour juniper-cascor added inline in its #313 merge so the
@@ -81,7 +89,7 @@ def test_version_is_stable_string():
     ``juniper_observability.testing.reset_prometheus_registry``; 0.1.1
     was the pre-helpers baseline.
     """
-    assert juniper_observability.__version__ == "0.3.1"
+    assert juniper_observability.__version__ == "0.4.0"
 
 
 def test_constants_match_documented_values():

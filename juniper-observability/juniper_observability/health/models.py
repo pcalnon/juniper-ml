@@ -34,6 +34,14 @@ class ReadinessResponse(BaseModel):
     status: Literal["ready", "degraded", "not_ready"]
     version: str
     service: str
+    # Build provenance (juniper-ml notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md):
+    # the source git SHA and ISO-8601 build timestamp baked into the image
+    # at build time. ``None`` when the service runs outside a provenance-
+    # stamped image (local dev / pre-rollout). Surfaced here so stale-image
+    # drift is detectable straight from a readiness probe. Optional with
+    # ``None`` defaults — wire-compatible with pre-0.4.0 consumers.
+    git_sha: str | None = None
+    build_date: str | None = None
     # METRICS-MON R1.2 / BUG-JD-06: timezone-aware UTC. Always epoch
     # seconds from a tz-aware datetime — never naive.
     timestamp: float = Field(default_factory=lambda: datetime.now(UTC).timestamp())
