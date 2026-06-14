@@ -1,0 +1,130 @@
+---
+#####################################################################################################################################################################################################
+# Project:       Juniper
+# Application:   juniper-model-core (subdirectory of juniper-ml)
+# File Name:     publish-model-core.yml
+# Author:        Paul Calnon
+#
+# Date Created:  2026-06-14
+#
+# License:       MIT License
+# Copyright:     Copyright (c) 2024-2026 Paul Calnon
+#
+# Description:
+#    GitHub Actions publish pipeline for the juniper-model-core package (WS-3 of the
+#    model/middleware refactor). Triggered by tags matching ``juniper-model-core-v*`` so it
+#    stays decoupled from the juniper-ml meta-package's own ``v*`` release tags. Publishes to
+#    TestPyPI first (with a lightweight install verification), then PyPI, via OIDC trusted
+#    publishing. Mirrors publish-cascor-core.yml.
+#
+#    The TestPyPI verify uses ``--no-deps`` on purpose: ``import juniper_model_core`` is
+#    intentionally dependency-free (the contract references numpy only in type annotations),
+#    so the check validates the published artifact installs and imports without pulling numpy.
+#    Per the ecosystem verify policy it must NOT fall back to production PyPI for the target
+#    package (no extra-index URL pointing at pypi.org) -- a target-squatting vector that the
+#    --no-deps flag, plus the retry loop for TestPyPI index lag, makes unnecessary here.
+#
+#####################################################################################################################################################################################################
+
+name: Publish juniper-model-core to PyPI
+
+on:
+  push:
+    tags:
+      - "juniper-model-core-v*"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Build and Validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: juniper-model-core
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: pip install --upgrade build twine
+
+      - name: Build sdist + wheel
+        run: python -m build --sdist --wheel
+
+      - name: Validate distribution metadata
+        run: twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: juniper-model-core-dist
+          path: juniper-model-core/dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/juniper-model-core
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: juniper-model-core-dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/
+          verbose: true
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          sparse-checkout: |
+            juniper-model-core/juniper_model_core/_version.py
+
+      - name: Verify install from TestPyPI (no-deps, version-only import)
+        run: |
+          set -euo pipefail
+          version=$(grep -E '^__version__' juniper-model-core/juniper_model_core/_version.py | sed -E 's/.*"(.+)".*/\1/')
+          for attempt in 1 2 3 4 5; do
+            if pip install \
+              --no-deps \
+              --index-url https://test.pypi.org/simple/ \
+              "juniper-model-core==${version}"; then
+              break
+            fi
+            echo "TestPyPI index lag — retrying in 10s (attempt ${attempt}/5)"
+            sleep 10
+          done
+          python -c "import juniper_model_core; print('TestPyPI install OK', juniper_model_core.__version__)"
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/juniper-model-core
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: juniper-model-core-dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # v1.14.0
+        with:
+          packages-dir: dist/
+          verbose: true
