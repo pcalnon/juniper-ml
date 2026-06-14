@@ -29,9 +29,7 @@
 | **Run the local host stack**            | [REFERENCE.md](REFERENCE.md#host-orchestration-utilities)                | docs/                  |
 | **Quick-reference dev tasks**           | [DEVELOPER_CHEATSHEET_JUNIPER-ML.md](DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | docs/                  |
 | **Understand the project**              | [README.md](../README.md)                                                | Root                   |
-| **Use the shared CasCor candidate core** | [juniper-cascor-core README](../juniper-cascor-core/README.md)          | juniper-cascor-core/   |
 | **Use shared observability primitives** | [juniper-observability README](../juniper-observability/README.md)       | juniper-observability/ |
-| **Use shared CasCor candidate core**    | [juniper-cascor-core README](../juniper-cascor-core/README.md)           | juniper-cascor-core/   |
 | **See development conventions**         | [AGENTS.md](../AGENTS.md)                                                | Root                   |
 | **See version history**                 | [CHANGELOG.md](../CHANGELOG.md)                                          | Root                   |
 
@@ -69,14 +67,6 @@
 | **CHANGELOG.md**   | Package history  | Version history for `juniper-observability` releases                          |
 | **pyproject.toml** | Package metadata | Dependencies, extras, package version, and pytest/ruff configuration          |
 
-### juniper-cascor-core/ Subpackage
-
-| File               | Type             | Purpose                                                                                              |
-|--------------------|------------------|------------------------------------------------------------------------------------------------------|
-| **README.md**      | Package guide    | Candidate-worker runtime contract, source install, logging constraints, and CasCor drift relationship |
-| **CHANGELOG.md**   | Package history  | Version history for `juniper-cascor-core` releases                                                   |
-| **pyproject.toml** | Package metadata | Dependencies, optional `[full]` helpers, package version, and top-level package export list           |
-
 ### notes/ Directory (Selected Runbooks)
 
 | File                                          | Lines | Type             | Purpose                                                                                       |
@@ -90,9 +80,7 @@
 
 `juniper-ml` is a meta-package that provides a single `pip install` entry point for the Juniper ecosystem. The root package contains no importable Python code -- only optional dependency groups that install the actual servers, client libraries, worker, and shared tooling packages.
 
-This repository also houses the independent `juniper-observability`, `juniper-doc-tools`, and `juniper-cascor-core` subpackages, which use their own version tags and publish workflows. Since `juniper-ml` 0.5.0 `juniper-observability` and `juniper-doc-tools` are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
-
-`juniper-cascor-core` is source-install only until its first `juniper-cascor-core-v*` release tag. It exists to support the pending worker adoption wave, not to expand the meta-package extras surface.
+This repository also houses the independent `juniper-observability` and `juniper-doc-tools` subpackages, which use their own version tags and publish workflows. Since `juniper-ml` 0.5.0 `juniper-observability` and `juniper-doc-tools` are aggregated under the `[tools]` and `[all]` extras; they can also still be installed directly when callers only want the individual library without the full meta-package.
 
 ### What It Installs
 
@@ -104,7 +92,6 @@ juniper-ml[tools]   ──installs──> juniper-ci-tools, juniper-doc-tools, j
 juniper-ml[all]     ──installs──> all packages from clients + worker + servers + tools
 juniper-observability ─direct install also supported──> shared observability primitives
 juniper-doc-tools     ─direct install also supported──> markdown link validator
-juniper-cascor-core   ─source install until first release──> CandidateUnit + worker-side CasCor candidate core
 ```
 
 ### Compatibility
@@ -122,9 +109,7 @@ juniper-cascor-core   ─source install until first release──> CandidateUnit
 - **juniper-data-client** -- [Docs](https://github.com/pcalnon/juniper-data-client) (HTTP client for juniper-data)
 - **juniper-cascor-client** -- [Docs](https://github.com/pcalnon/juniper-cascor-client) (HTTP/WS client for juniper-cascor)
 - **juniper-cascor-worker** -- [Docs](https://github.com/pcalnon/juniper-cascor-worker) (distributed training worker)
-- **juniper-cascor-core** -- [Local docs](../juniper-cascor-core/README.md) (shared CandidateUnit, activation registry, logging, and constants for worker-side candidate training)
 - **juniper-observability** -- [Local docs](../juniper-observability/README.md) (shared health, logging, middleware, Prometheus, and Sentry primitives)
-- **juniper-cascor-core** -- [Local docs](../juniper-cascor-core/README.md) (shared CasCor candidate-training core for worker-side execution)
 
 ### Upstream Services
 
