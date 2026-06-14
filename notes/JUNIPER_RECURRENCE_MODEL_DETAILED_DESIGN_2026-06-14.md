@@ -4,7 +4,7 @@
 **Repository**: (proposed) pcalnon/juniper-recurrence — design doc hosted in pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.0.0 (DRAFT — consolidated detailed design for the selected model; pre-implementation; WS-0 not yet ratified)
+**Version**: 1.0.0 (DRAFT — consolidated detailed design for the selected model; pre-implementation; **WS-0 RATIFIED 2026-06-14**)
 **Last Updated**: 2026-06-14
 
 ---
@@ -14,7 +14,7 @@
 >
 > It **synthesizes and does not duplicate** the companion documents (§0.4). Where those documents are the breadth (the whole option space), this is the depth (the one chosen model).
 >
-> **Nothing here ships until WS-0 is ratified.** This is the design of record for the model pick on the Δt axis; it is not itself the ratification.
+> **WS-0 RATIFIED 2026-06-14 (Paul) — workstream PRs (WS-1…WS-4) may now open** (each as its own reviewed PR). This is the design of record for the model pick on the Δt axis.
 
 ---
 
@@ -118,7 +118,7 @@ These constrain every design choice below. The most load-bearing is **C1**.
 
 | Item | State |
 |---|---|
-| Model pick on the **Δt axis** | **P3-C / LMU + Approach-C** — selected (this doc); **WS-0 not ratified** |
+| Model pick on the **Δt axis** | **P3-C / LMU + Approach-C** — selected; **WS-0 RATIFIED 2026-06-14 (Paul)** |
 | Star-free ceiling-breaker | **deferred** (P7/Grazzi route; trigger-gated, §9.2) — not part of this model |
 | Data foundation (3-D NPZ + Δt keys + temporal split) | **SHIPPED** in juniper-data (#168 → #169/#170/#171 + data-client #87, merged 2026-06-09); `equities_seq` 3-D generator shipped 2026-06-13 |
 | Model build (WS-4) | `PLANNED` — this document is its design input |
@@ -609,8 +609,8 @@ The genuinely hard, cross-cutting items (in rough difficulty order):
 | OQ-11 | Recurrent training parallelizable via worker protocol? | **Open** — the `ndim>2` cap; deferred (WS-8) |
 | OQ-15/18 | Service port? | host **8211** → ctr **8210** |
 | OQ-16 | Recurrence env strategy? | Dedicated `JuniperRecurrence` if CPU-torch (copy LIBTORCH hook); else reuse `JuniperCascor1` |
-| **OQ-19 (new)** | Lock the `recurse → recurrence` rename before first publish? | **Recommend yes** — cost-free now; ripple per §0.2 |
-| **OQ-20 (new)** | Fixed-order LMU as the first deliverable, grown-LMU as research? | **Recommend yes** (§4.1/§4.2) |
+| **OQ-19 (new)** | Lock the `recurse → recurrence` rename before first publish? | **RATIFIED yes (2026-06-14)** — cost-free now; ripple per §0.2 |
+| **OQ-20 (new)** | Fixed-order LMU as the first deliverable, grown-LMU as research? | **RATIFIED yes (2026-06-14)** (§4.1/§4.2) |
 
 ---
 
@@ -794,4 +794,4 @@ def test_lmu_grid_invariance():
 
 ---
 
-*Draft 1.0.0. Consolidated detailed design for the selected juniper-recurrence model — P3-C (LMU + Approach-C), the Δt-native continuous-time memory. Synthesizes the full prior corpus (literature review, P1–P7/ESN/NEAT/LMU-SSM architecture evaluation, POC verification, OQ-4 reevaluation, dataset audit, Δt-handling analysis) and augments it with theory, reference source code, the Juniper integration plan, and a model-specific risk/guardrail register. No code ships until WS-0 is ratified.*
+*Draft 1.0.0. Consolidated detailed design for the selected juniper-recurrence model — P3-C (LMU + Approach-C), the Δt-native continuous-time memory. Synthesizes the full prior corpus (literature review, P1–P7/ESN/NEAT/LMU-SSM architecture evaluation, POC verification, OQ-4 reevaluation, dataset audit, Δt-handling analysis) and augments it with theory, reference source code, the Juniper integration plan, and a model-specific risk/guardrail register. WS-0 ratified 2026-06-14; workstream PRs (WS-1…WS-4) may now open, each as its own reviewed PR.*
