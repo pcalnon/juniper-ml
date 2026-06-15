@@ -62,3 +62,5 @@ cd <PATH>/juniper-recurrence && git fetch && git log --oneline -3 origin/main &&
 ## Suggested first move
 
 Start with the cheap, unblocking sequence (1 → 2 → 3): merge PR #1, then drive the `service-core` + `recurrence-model` publishes and the `service-core` extras follow-up. In parallel, propose the **WS-4b app** design (it is the next substantial build and the first real consumer of `service-core`'s `create_app` + `TrainingLifecycle`). Treat item 6 (model-core 0.2.0 `predict(**kw)`) as a low-risk cleanup to fold in when convenient.
+
+---
