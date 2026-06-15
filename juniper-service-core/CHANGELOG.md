@@ -20,12 +20,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dependency-free top-level import: `import juniper_service_core` exposes only
   `__version__` eagerly; `create_app` / `SettingsBase` load lazily via PEP 562
   `__getattr__`.
+- Generic service-infra extraction from `juniper-cascor` (de-cascored, zero cascor
+  coupling): `security` (`APIKeyAuth`, `RateLimiter`, `api_key_header`, plus the
+  config-injected `build_api_key_auth` / `build_rate_limiter` factories replacing
+  cascor's global-settings singletons), `secrets` (`get_secret` Docker file-secret
+  reader), and `middleware` (`SecurityHeadersMiddleware`, `RequestBodyLimitMiddleware`,
+  `SecurityMiddleware`, `EXEMPT_PATHS`) — with cascor's `cascor_constants` body-size /
+  status-code imports replaced by local module constants. All exported lazily via the
+  PEP 562 `__getattr__` so the dependency-free top-level import still holds.
 - Publish (`publish-service-core.yml`) and CI (`ci-service-core.yml`) workflows.
 
 ### Notes
 
-- Additive only: does **not** extract cascor service code yet, and does **not** depend
-  on `juniper-model-core` yet (the `TrainingLifecycleBase` body is a deferred
-  follow-up).
+- Additive only: extracts the first slice of cascor's generic service infra (security /
+  secrets / middleware, above); the websocket / worker / generic-route helpers are not
+  extracted yet, and this package does **not** depend on `juniper-model-core` yet (the
+  `TrainingLifecycleBase` body is a deferred follow-up).
 
 [0.1.0]: https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.1.0
