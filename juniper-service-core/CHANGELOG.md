@@ -37,13 +37,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the log-dir resolution is generic (`JUNIPER_SERVICE_LOG_DIR`, else `./logs`).
   Exported lazily via the PEP 562 `__getattr__` (stdlib-only, so the dependency-free
   top-level import still holds).
+- `lifecycle` — the **synchronous** `TrainingLifecycleBase` body: `TrainingLifecycle`
+  drives a `juniper-model-core` `TrainableModel`'s `fit()` to completion and forwards its
+  `TrainingEvent`s to the injected sink, stamping a monotonic run-scoped `seq` so the
+  lifecycle owns event ordering; plus an `EventCollector` ordered sink. Growable models
+  grow inside `fit()` (model-core contract), so this one body drives both fixed-topology
+  and growable models. The threaded / FSM / worker-coordinated bodies (OQ-11) are
+  deferred. Exported lazily so the dependency-free top-level import still holds.
 - Publish (`publish-service-core.yml`) and CI (`ci-service-core.yml`) workflows.
 
 ### Notes
 
-- Additive only: extracts the first slice of cascor's generic service infra (security /
-  secrets / middleware, above); the websocket / worker / generic-route helpers are not
-  extracted yet, and this package does **not** depend on `juniper-model-core` yet (the
-  `TrainingLifecycleBase` body is a deferred follow-up).
+- Additive only. Extracts cascor's generic service infra (security / secrets / middleware /
+  launcher); the websocket / worker / generic-route helpers are not extracted yet.
+- The `lifecycle` body adds a dependency on **`juniper-model-core`** (the model contract).
+  **Publish-first:** `juniper-model-core` must be on PyPI before `juniper-service-core` is
+  published; in the monorepo, CI installs it editable from the sibling subdir first. The
+  dependency-free top-level import is preserved (the lifecycle module is imported lazily).
 
 [0.1.0]: https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.1.0

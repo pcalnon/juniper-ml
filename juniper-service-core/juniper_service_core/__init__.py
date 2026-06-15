@@ -15,12 +15,15 @@ secrets helper, and the middleware classes) is imported lazily on attribute acce
 ``pydantic-settings`` / ``starlette``. This is what lets the TestPyPI publish-verify
 run a clean ``--no-deps`` ``import juniper_service_core`` check.
 
-The first slice of cascor's generic service infra is now extracted (de-cascored):
-API-key auth + rate limiting (:mod:`~juniper_service_core.security`), Docker-secrets
-reading (:mod:`~juniper_service_core.secrets`), and the security / body-limit
-middleware (:mod:`~juniper_service_core.middleware`). The websocket / worker /
-generic-route helpers and the ``TrainingLifecycleBase`` body remain deferred until
-``juniper-model-core`` is wired in (later WS-2 follow-ups).
+cascor's generic service infra extracted so far (de-cascored): API-key auth + rate
+limiting (:mod:`~juniper_service_core.security`), Docker-secrets reading
+(:mod:`~juniper_service_core.secrets`), the security / body-limit middleware
+(:mod:`~juniper_service_core.middleware`), the subprocess service launcher
+(:mod:`~juniper_service_core.launcher`), and the **synchronous**
+``TrainingLifecycleBase`` body (:mod:`~juniper_service_core.lifecycle`, which drives a
+``juniper-model-core`` ``TrainableModel``). The websocket / worker / generic-route
+helpers -- and the threaded / worker-coordinated lifecycle bodies (OQ-11) -- remain
+deferred (later WS-2 follow-ups).
 """
 
 from __future__ import annotations
@@ -47,6 +50,9 @@ __all__ = [
     "ManagedService",
     "start_service",
     "wait_for_health",
+    # Lifecycle (lazy, from .lifecycle -- requires juniper-model-core)
+    "TrainingLifecycle",
+    "EventCollector",
 ]
 
 # Maps each lazily-resolved public name to the submodule that defines it. Keeping
@@ -71,6 +77,10 @@ _LAZY_EXPORTS = {
     "ManagedService": "juniper_service_core.launcher",
     "start_service": "juniper_service_core.launcher",
     "wait_for_health": "juniper_service_core.launcher",
+    # .lifecycle requires juniper-model-core; kept lazy so the top-level import stays
+    # dependency-free and the --no-deps publish-verify still works.
+    "TrainingLifecycle": "juniper_service_core.lifecycle",
+    "EventCollector": "juniper_service_core.lifecycle",
 }
 
 
