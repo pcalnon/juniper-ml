@@ -25,6 +25,11 @@ dependencies = [
     "fastapi>=0.110",
     "pydantic>=2.0",
     "pydantic-settings>=2.0",
+    # The lifecycle body drives a model-core TrainableModel via its TrainingLifecycleBase /
+    # TrainingEvent contracts. PUBLISH-FIRST: juniper-model-core must be on PyPI before
+    # juniper-service-core is published; in the monorepo, CI installs it editable from the
+    # sibling subdir first (see .github/workflows/ci-service-core.yml).
+    "juniper-model-core>=0.1.0",
 ]
 
 [project.optional-dependencies]

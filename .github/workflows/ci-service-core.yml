@@ -53,7 +53,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install package + test extras
-        run: pip install --upgrade "pip>=26.1.1" && pip install -e "juniper-service-core/.[test]"
+        run: |
+          pip install --upgrade "pip>=26.1.1"
+          # juniper-service-core depends on juniper-model-core, which is not yet on PyPI;
+          # install the sibling editable first so the dependency resolves inside the monorepo
+          # (publish-first: model-core ships to PyPI before service-core).
+          pip install -e juniper-model-core
+          pip install -e "juniper-service-core/.[test]"
 
       - name: Run unit tests
         run: pytest juniper-service-core/tests/ -v
