@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `SecurityMiddleware`, `EXEMPT_PATHS`) — with cascor's `cascor_constants` body-size /
   status-code imports replaced by local module constants. All exported lazily via the
   PEP 562 `__getattr__` so the dependency-free top-level import still holds.
+- `launcher` — generic subprocess-managed companion-service runner extracted from
+  `juniper-cascor` (de-cascored, zero cascor coupling): `ManagedService` (subprocess
+  wrapper with `is_running` / `terminate`), `wait_for_health` (poll an HTTP health
+  endpoint), `start_service` (`Popen` a service and wait for health), plus the
+  `atexit`-registered cleanup of the module-level active-services registry. Cascor's
+  `cascor_constants` timeout/interval imports are replaced by local module constants,
+  and the log-dir resolution is generic (`JUNIPER_SERVICE_LOG_DIR`, else `./logs`).
+  Exported lazily via the PEP 562 `__getattr__` (stdlib-only, so the dependency-free
+  top-level import still holds).
 - Publish (`publish-service-core.yml`) and CI (`ci-service-core.yml`) workflows.
 
 ### Notes

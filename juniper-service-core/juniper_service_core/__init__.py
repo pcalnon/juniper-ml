@@ -43,6 +43,10 @@ __all__ = [
     "SecurityHeadersMiddleware",
     "RequestBodyLimitMiddleware",
     "SecurityMiddleware",
+    # Launcher (lazy, from .launcher -- stdlib-only)
+    "ManagedService",
+    "start_service",
+    "wait_for_health",
 ]
 
 # Maps each lazily-resolved public name to the submodule that defines it. Keeping
@@ -62,6 +66,11 @@ _LAZY_EXPORTS = {
     "SecurityHeadersMiddleware": "juniper_service_core.middleware",
     "RequestBodyLimitMiddleware": "juniper_service_core.middleware",
     "SecurityMiddleware": "juniper_service_core.middleware",
+    # .launcher is stdlib-only (asyncio / subprocess / urllib), but is routed
+    # through the lazy path too so the PEP 562 pattern stays uniform.
+    "ManagedService": "juniper_service_core.launcher",
+    "start_service": "juniper_service_core.launcher",
+    "wait_for_health": "juniper_service_core.launcher",
 }
 
 
