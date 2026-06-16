@@ -398,8 +398,8 @@ echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] cd \"${JUNIPER_DATA_DIR}\""
 cd "${JUNIPER_DATA_DIR}" || exit 1
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_DATA_CONDA}\""
 safe_conda_activate "${JUNIPER_DATA_CONDA}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host \"${JUNIPER_DATA_HOST}\" --port \"${JUNIPER_DATA_PORT}\" >\"${JUNIPER_DATA_LOG}\" 2>&1 &"
-PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:app --host "${JUNIPER_DATA_HOST}" --port "${JUNIPER_DATA_PORT}" >"${JUNIPER_DATA_LOG}" 2>&1 &
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:get_app --factory --host \"${JUNIPER_DATA_HOST}\" --port \"${JUNIPER_DATA_PORT}\" >\"${JUNIPER_DATA_LOG}\" 2>&1 &"
+PYTHON_GIL=0 nohup uvicorn juniper_data.api.app:get_app --factory --host "${JUNIPER_DATA_HOST}" --port "${JUNIPER_DATA_PORT}" >"${JUNIPER_DATA_LOG}" 2>&1 &
 JUNIPER_DATA_PID=$!
 STARTED_PIDS+=("${JUNIPER_DATA_PID}")
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_DATA_PID=${JUNIPER_DATA_PID}"
