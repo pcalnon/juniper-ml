@@ -148,6 +148,15 @@ jobs:
           # docs-full-check.yml. The full cross-repo assertion runs
           # weekly via docs-full-check.yml.
           python3 -m unittest -v tests/test_ci_tools_drift.py
+          # tests/test_model_core_drift.py + tests/test_service_core_drift.py:
+          # same idea as the doc-tools/ci-tools drift lints, but the pin lives in
+          # pyproject.toml's [tools] extra (library deps, not CI-workflow installs).
+          # Each asserts juniper-ml's [tools] pin still admits the current in-repo
+          # version of the shared-core package. (test_model_core_drift.py shipped in
+          # #418 but was never wired into this list -- fixed here alongside the
+          # service-core sibling added with juniper-service-core 0.1.0.)
+          python3 -m unittest -v tests/test_model_core_drift.py
+          python3 -m unittest -v tests/test_service_core_drift.py
           # tests/test_pyproject_extras.py: pins the
           # [project.optional-dependencies] surface so accidental edits
           # to extras (drop, mistype, fail to roll up into [all]) fail
