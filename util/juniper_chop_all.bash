@@ -335,7 +335,12 @@ done
 
 # Optionally clean up orphaned worker processes
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] KILL_WORKERS flag to Optionally clean up orphaned worker processes: ${KILL_WORKERS}"
-orphaned_worker_cleanup "${KILL_WORKERS}" "${WORKER_SEARCH_TERM}" "${SIGTERM_TIMEOUT}"
+# `|| true`: orphaned_worker_cleanup returns 1 as a benign "nothing to clean"
+# signal (KILL_WORKERS=0 by default, or no orphaned workers found). Without this
+# guard, `set -e` aborts the script here — before the shutdown summary below
+# clears the PID file — so chop_all exits 1 even when every service stopped
+# gracefully (STOP_FAILURES=0). Guarding lets the normal success path run.
+orphaned_worker_cleanup "${KILL_WORKERS}" "${WORKER_SEARCH_TERM}" "${SIGTERM_TIMEOUT}" || true
 
 
 ###########################################################################################################################################################################################################
