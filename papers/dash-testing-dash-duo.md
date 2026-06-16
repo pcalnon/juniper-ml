@@ -24,7 +24,7 @@ the bracket in zsh: `dash\[testing]`).
 
 1. **End-to-end intent** — *"dash.testing also supports end-to-end tests. End-to-end tests run programmatically, start a real browser session, and click through the Dash app UI."* (Section: "End-to-End Tests")
 
-2. **Fixture / server startup** — *"the `start_server` API from `dash_duo` is called. This hosts the defined Dash app within a Python `threading.Thread` and initializes a Selenium WebDriver to navigate to the local server URL."* (Section: testing.md — start_server behavior)
+2. **Fixture / server startup** (the page renders this as a bullet list, not one sentence; verbatim bullets below) — calling the `start_server` API from `dash_duo`: *"The defined app is hosted inside a light Python `threading.Thread`"* and *"A Selenium WebDriver is initialized and navigates to the local server URL using `server_url`"*. (Section: testing.md — start_server behavior)
 
 3. **WebDriver requirement** — *"We recommend the ChromeDriver WebDriver, which we use for dash end-to-end tests."* (Section: "Installing a WebDriver"); Firefox geckodriver is also supported via a run-time flag.
 

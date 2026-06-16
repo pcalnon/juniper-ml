@@ -70,7 +70,7 @@ trivially-scoped proven dead control; (c) this audit/design document.
 | `apply-dataset-button` | Button | dataset section | `apply_dataset` → `POST /api/stage_dataset` (`dashboard_manager.py:3522`) |
 | `cancel-pending-dataset-button` | Button | banner | `cancel_pending_dataset` → `DELETE /api/cancel_pending_dataset` (`dashboard_manager.py:3564`) |
 | `restart-with-new-dataset-button` | Button | banner (`dashboard_manager.py:1409`) | **was orphan; fixed this iteration** (§3.1) |
-| `pending-dataset-banner` | Alert | `dashboard_manager.py:1424` | `is_open` driven by 4 callbacks incl. `reconcile_pending_dataset_banner` (`dashboard_manager.py:3616`*) |
+| `pending-dataset-banner` | Alert | `dashboard_manager.py:1424` | `is_open` driven by 4 callbacks incl. `reconcile_pending_dataset_banner` (base `:3588` / post-fix `:3621`) |
 | `nn-dataset-type-dropdown` | Dropdown | `dashboard_manager.py:1113` | State-only by design (read on apply-dataset click) — **not** an orphan |
 | `nn-init-output-weights-dropdown` | Dropdown | `dashboard_manager.py:880` | **orphan; deferred** (§3.2) |
 | `nn-learning-rate-input` | Input(number) | `dashboard_manager.py:904` | `debounce=350` (`canopy_constants.py:267`); apply roundtrip |
@@ -79,6 +79,11 @@ trivially-scoped proven dead control; (c) this audit/design document.
 \* Line numbers in `dashboard_manager.py` ≥ 3583 shift by +33 on the fix branch
 because the fix inserts the `restart_with_new_dataset` callback there; the table
 cites post-fix lines where relevant.
+
+This table is a **selected** sample, not the full surface: `util/ui_control_graph.py`
+enumerates *every* actionable control programmatically by walking the realized
+layout tree, so the orphan analysis in §3 is exhaustive even though this table is
+illustrative.
 
 ### 2.3 The "dead button" taxonomy
 
@@ -125,12 +130,12 @@ below with root cause, severity, and fix-now-vs-defer.
   (`FRONTEND_ISSUES_PLAN_2026-05-09.md §3` designed the cold swap but left this
   button unwired).
 - **Fix (trivially scoped → done):**
-  1. **Callback** (`dashboard_manager.py:3583`, fix branch): new server-side
-     `restart_with_new_dataset` mirrors `cancel_pending_dataset` — on `n_clicks`
+  1. **Callback** (`dashboard_manager.py:3583` decorator / `:3588` def, fix branch):
+     new server-side `restart_with_new_dataset` mirrors `cancel_pending_dataset` — on `n_clicks`
      it `POST /api/train/start?reset=true` and returns `False` to close the
      banner.
-  2. **Demo parity** (`demo_mode.py:1466`): `DemoMode.start(reset=True)` now
-     clears `self._pending_dataset_config`. The real cascor backend clears its
+  2. **Demo parity** (`demo_mode.py:1475`, inside `DemoMode.start`'s `if reset:`
+     block at `:1466`): `DemoMode.start(reset=True)` now clears `self._pending_dataset_config`. The real cascor backend clears its
      `pending_dataset` on `start_training(reset=True)` — the assumption baked
      into `reconcile_pending_dataset_banner`'s docstring
      (`dashboard_manager.py:3589-3595`). Demo mode did **not** mirror that, so the
@@ -155,10 +160,12 @@ below with root cause, severity, and fix-now-vs-defer.
   1. **Frontend:** the dropdown is read by no callback `Input`/`State`, so its
      value never reaches the Apply callback and is never POSTed.
   2. **Backend model:** even if it were POSTed, `nn_init_output_weights` is **not
-     a declared field on `SetParamsRequest`** (`main.py:2831-2876`), so Pydantic's
-     `model_dump(exclude_none=True)` (`main.py:2889`) drops it at validation —
-     despite the handler's `nn_keys` list being ready for it (`main.py:2909`) and
-     `/api/state` already round-tripping it (`main.py:938`, `:974`).
+     a declared field on `SetParamsRequest`** (`main.py:2831-2876`), so the value is
+     silently discarded at request parsing (Pydantic's default `extra="ignore"`),
+     before `model_dump(exclude_none=True)` (`main.py:2889`) ever runs — despite the
+     handler's `nn_keys` list being ready for it (`main.py:2909`) and `/api/state`
+     already round-tripping it (`main.py:938`, `:974`). (Verified: the outcome is a
+     silent drop; the cause is parse-time `extra` handling, not `model_dump`.)
 - **Severity:** Medium — silent no-op of a real hyperparameter.
 - **Disposition:** **Deferred to its own PR.** Non-trivial: needs the frontend
   callback wiring **and** the `SetParamsRequest` field **and** a demo mirror.
@@ -200,6 +207,22 @@ Seed:
 |---|---|---|---|---|
 | `cascor` | yes | {2} | {classification, regression} | current backend |
 | `recurrence` | **gated** | {3} | {time_series, irregular_dt} | "coming soon" |
+
+**Compatibility matrix** (the bidirectional gate, derived from `task_type` ∩
+`input_ndim`). Every dataset canopy ships today is 2-D classification, so all are
+cascor-compatible and recurrence-incompatible; the matrix becomes interesting once
+juniper-data's 3-D irregular-Δt time-series generators land (WS-1):
+
+| dataset (task_type, ndim) | `cascor` | `recurrence` |
+|---|---|---|
+| spirals / xor / circles / moons (classification, 2-D) | ✓ | ✗ hard-disable (ndim/task mismatch) |
+| mnist (classification, 2-D) | ✓ | ✗ hard-disable |
+| *future* time-series (time_series, 3-D) | ✗ hard-disable | soft-gate ("coming soon") |
+| *future* irregular-Δt (irregular_dt, 3-D) | ✗ hard-disable | soft-gate |
+
+"✓" = trainable now; "✗ hard-disable" = genuine incompatibility (`aria-disabled` +
+tooltip, §4.3); "soft-gate" = compatible-but-not-yet-live (selectable + toast +
+revert, so users discover it).
 
 The registry also becomes the single source for the **dataset-type options
 currently hardcoded inline** at `dashboard_manager.py:1115-1119`
@@ -301,9 +324,11 @@ auto-extending core (~90% of the value); L3 is a thin real-browser proof.**
   (dash-bootstrap-components) has its own value-tracking that swallows the synthetic
   event, exactly as it swallows `el.value = x`. This **confirms the prior team's
   finding** (`test_apply_button_flow.py` history) with the canonical incantation, so
-  it is now a settled negative result, not an untried idea. The throwaway POC was
-  removed; the xfail's record was upgraded to cite this evidence
-  (commit `1cea5d9`).
+  it is now a settled negative result, not an untried idea. It is committed as a
+  reproducible **strict-xfail** artifact, `src/tests/ui/test_l3_native_setter_poc.py`
+  (it flips to XPASS if a future Dash release fixes the synthetic-event path — a
+  canary for taking the un-xfail), and the `test_apply_button_flow.py` xfail record
+  was upgraded to cite this evidence (commits `1cea5d9`, `c7b5dbc`).
 - **POC #1 (dash_duo) — the working path, DEFERRED.** Dash's official
   `dash.testing`/`dash_duo` drives inputs via Selenium **`send_keys`** (real
   keystroke events that fire React's `onChange` natively) —
@@ -335,12 +360,12 @@ JuniperCanopy1`):
 | Claim | Command | Observed |
 |---|---|---|
 | 3 orphans pre-fix | `cd src && python ../util/ui_control_graph.py` | exit 1, lists the 3 of §3 |
-| Bug is real (demo parity) | regression test on **base** code | **FAILED** — `pending_dataset` not cleared after restart |
+| Bug is real (demo parity) | regression test applied to **base** *without* the `demo_mode.start` clear | **FAILED** — `pending_dataset` not cleared after restart |
 | Fix works | regression test on **fix** branch | **PASSED** |
 | 2 orphans post-fix | `python ../util/ui_control_graph.py` (fix branch) | exit 1, lists only §3.2 + §3.3 |
-| L1 gate + L2 + regression | `pytest tests/unit/test_control_graph_lint.py tests/integration/test_control_manifest_behavioral.py tests/integration/test_restart_with_new_dataset.py -q` | **11 passed** |
+| L1 gate + L2 + regression (run on **fix** branch, which stacks both) | `pytest tests/unit/test_control_graph_lint.py tests/integration/test_control_manifest_behavioral.py tests/integration/test_restart_with_new_dataset.py -q` | **11 passed** (the harness branch alone yields 10; +1 is the fix's regression test) |
 | No new regressions | `pytest -m "unit or integration" -q` | only a **pre-existing** `test_security` rate-limiter ordering flake (fails identically on base — confirmed) |
-| L3 POC #2 fails | corrected native-setter POC via `make test-ui` | Apply pushed default `0.01`, not `0.0123` |
+| L3 POC #2 fails (committed artifact) | `pytest src/tests/ui/test_l3_native_setter_poc.py --override-ini=addopts= -q` | `1 xfailed` — native-setter pushed default `0.01`, not `0.0123` |
 | xfail intact | `pytest src/tests/ui/test_apply_button_flow.py --override-ini=addopts= -q` | `1 xfailed` |
 | Lint/format | `flake8` + `black --check` + pre-commit on changed files | clean / all hooks pass |
 
