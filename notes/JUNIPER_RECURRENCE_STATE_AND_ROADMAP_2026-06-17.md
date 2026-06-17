@@ -18,6 +18,15 @@
 > five independent, primary-source-grounded analysis sub-agents and re-validated by a second,
 > independent validation pass (see [§11](#11-method-validation--evidence-base) and Appendix A).
 
+> **Status update (2026-06-17, same session).** This document was landed as
+> [juniper-ml#438](https://github.com/pcalnon/juniper-ml/pull/438). The Group-A recovery it
+> recommends — PR [juniper-recurrence#9](https://github.com/pcalnon/juniper-recurrence/pull/9),
+> `feature/ws4b-app-publish-docs → main`, opened independently by a concurrent session — is **green
+> and `MERGEABLE` / `CLEAN`** (20 files / +1,362/-24; all CI checks pass on Python 3.12 / 3.13 /
+> 3.14). This **retires discrepancy [D-2](#4-validated-discrepancies-and-their-consequences)** (the
+> unverified first-CI-run risk): **A1 and A2 are effectively complete**, awaiting only Paul's merge
+> signal. Publishing the app (A4) remains Paul-gated.
+
 ---
 
 ## Table of contents
