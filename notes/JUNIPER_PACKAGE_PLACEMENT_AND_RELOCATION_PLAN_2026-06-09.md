@@ -10,6 +10,8 @@
 
 ---
 
+> **⚠️ EXECUTION STATUS UPDATE (2026-06-17): SHIPPED.** The relocation + rename planned here is **complete**: `juniper-cascor-core` left `juniper-ml` and is published as **`juniper-cascor-model` 0.1.0** on PyPI (juniper-ml#410, juniper-cascor#328, juniper-cascor-worker#102); the CW-05 stopgap was removed (juniper-deploy#115) and cascor#319 / worker#97 are closed. Only the deferred **Wave 2** (cascor self-adoption of the package, retiring the drift-guard) remains. The "execution is a separate step / out of scope" framing in the header and the §4 "404 — NOT published" row are now **historical**. Current reconciled state + remaining tail: [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+
 ## 0. Purpose and how to read this document
 
 The [Code Organization Strategy](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md) (2026-06-05) established **the rule** for where Juniper code should live: *place by commonality; the dependency arrow points specific → common; extend via ports/adapters, not by bundling model code into common repos.*
