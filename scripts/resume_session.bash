@@ -116,6 +116,3 @@ fi
 ########################################################################################################################################################################
 # ${CLAUDE_LAUNCH_SCRIPT} ${RESUME_FLAGS} ${WORKTREE_FLAGS} ${EFFORT_FLAGS} ${PROMPT_FLAGS} -- ${PERMISSIONS_FLAGS} ${REMOTE_CONTROL_FLAGS}
 ${CLAUDE_LAUNCH_SCRIPT} ${RESUME_FLAGS} ${WORKTREE_FLAGS} ${EFFORT_FLAGS} ${PROMPT_FLAG} "${PROMPT}" -- ${PERMISSIONS_FLAGS} ${REMOTE_CONTROL_FLAGS}
-
-
-
