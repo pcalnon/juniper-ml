@@ -29,18 +29,19 @@ sys.path.insert(0, str(UTIL_DIR))
 import editable_install_drift_check as mod  # noqa: E402
 
 
-def write_editable(site_pkgs: Path, dist_name: str, target: str,
-                   *, version: str = "1.0.0", editable: bool = True) -> None:
+def write_editable(site_pkgs: Path, dist_name: str, target: str, *, version: str = "1.0.0", editable: bool = True) -> None:
     """Create a <dist>-<ver>.dist-info with a direct_url.json in site_pkgs."""
     dist_info = site_pkgs / f"{dist_name.replace('-', '_')}-{version}.dist-info"
     dist_info.mkdir(parents=True, exist_ok=True)
-    (dist_info / "METADATA").write_text(
-        f"Metadata-Version: 2.1\nName: {dist_name}\nVersion: {version}\n\nbody\n"
+    (dist_info / "METADATA").write_text(f"Metadata-Version: 2.1\nName: {dist_name}\nVersion: {version}\n\nbody\n")
+    (dist_info / "direct_url.json").write_text(
+        json.dumps(
+            {
+                "url": f"file://{target}",
+                "dir_info": {"editable": editable},
+            }
+        )
     )
-    (dist_info / "direct_url.json").write_text(json.dumps({
-        "url": f"file://{target}",
-        "dir_info": {"editable": editable},
-    }))
 
 
 class DriftCheckTest(unittest.TestCase):
@@ -53,9 +54,7 @@ class DriftCheckTest(unittest.TestCase):
         # Canonical (non-worktree) source repo that EXISTS.
         self.canonical = self.eco / "juniper-data"
         self.canonical.mkdir(parents=True)
-        (self.canonical / "pyproject.toml").write_text(
-            '[project]\nname = "juniper-data"\nversion = "0.6.0"\n'
-        )
+        (self.canonical / "pyproject.toml").write_text('[project]\nname = "juniper-data"\nversion = "0.6.0"\n')
         # A worktree dir that EXISTS -> WORKTREE_PINNED.
         self.worktree_live = self.eco / "worktrees" / "wt-a" / "juniper-cascor-client"
         self.worktree_live.mkdir(parents=True)
@@ -74,8 +73,7 @@ class DriftCheckTest(unittest.TestCase):
     def run_main(self, *argv: str) -> tuple[int, str]:
         buf = io.StringIO()
         with redirect_stdout(buf):
-            code = mod.main(["--conda-dir", str(self.conda),
-                             "--ecosystem-root", str(self.eco), *argv])
+            code = mod.main(["--conda-dir", str(self.conda), "--ecosystem-root", str(self.eco), *argv])
         return code, buf.getvalue()
 
     # ── classify ────────────────────────────────────────────────────────────
@@ -98,25 +96,26 @@ class DriftCheckTest(unittest.TestCase):
 
         findings = mod.collect(self.conda, None)
         by_pkg = {f.package: f.status for f in findings}
-        self.assertEqual(by_pkg, {
-            "juniper-data": mod.STATUS_FRESH,
-            "juniper-cascor-client": mod.STATUS_WORKTREE,
-            "juniper-canopy": mod.STATUS_ORPHANED,
-            "juniper-data-client": mod.STATUS_ORPHANED,
-        })
+        self.assertEqual(
+            by_pkg,
+            {
+                "juniper-data": mod.STATUS_FRESH,
+                "juniper-cascor-client": mod.STATUS_WORKTREE,
+                "juniper-canopy": mod.STATUS_ORPHANED,
+                "juniper-data-client": mod.STATUS_ORPHANED,
+            },
+        )
 
     def test_non_juniper_and_non_editable_ignored(self) -> None:
         sp = self.site_packages("JuniperX")
-        write_editable(sp, "requests", str(self.canonical))          # not juniper
+        write_editable(sp, "requests", str(self.canonical))  # not juniper
         write_editable(sp, "juniper-data", str(self.canonical), editable=False)  # wheel
         self.assertEqual(mod.collect(self.conda, None), [])
 
     def test_dedup_across_site_packages(self) -> None:
         # Same package editable in two interpreter trees -> reported once.
-        write_editable(self.site_packages("JuniperX", "python3.13"),
-                       "juniper-data", str(self.canonical))
-        write_editable(self.site_packages("JuniperX", "python3.14t"),
-                       "juniper-data", str(self.canonical))
+        write_editable(self.site_packages("JuniperX", "python3.13"), "juniper-data", str(self.canonical))
+        write_editable(self.site_packages("JuniperX", "python3.14t"), "juniper-data", str(self.canonical))
         findings = [f for f in mod.collect(self.conda, None) if f.env == "JuniperX"]
         self.assertEqual(len(findings), 1)
 
@@ -124,16 +123,14 @@ class DriftCheckTest(unittest.TestCase):
 
     def test_deprecated_excluded_by_default_included_with_flag(self) -> None:
         write_editable(self.site_packages("JuniperLive"), "juniper-data", str(self.canonical))
-        write_editable(self.site_packages("JuniperOld-DEPRECATED"), "juniper-canopy",
-                       str(self.gone_plain))
+        write_editable(self.site_packages("JuniperOld-DEPRECATED"), "juniper-canopy", str(self.gone_plain))
         default_envs = {f.env for f in mod.collect(self.conda, None)}
         self.assertEqual(default_envs, {"JuniperLive"})
         all_envs = {f.env for f in mod.collect(self.conda, None, include_deprecated=True)}
         self.assertEqual(all_envs, {"JuniperLive", "JuniperOld-DEPRECATED"})
 
     def test_env_filter_overrides_glob_and_deprecation(self) -> None:
-        write_editable(self.site_packages("JuniperOld-DEPRECATED"), "juniper-data",
-                       str(self.canonical))
+        write_editable(self.site_packages("JuniperOld-DEPRECATED"), "juniper-data", str(self.canonical))
         # Explicit --env selects it even though it is deprecated.
         findings = mod.collect(self.conda, ["JuniperOld-DEPRECATED"])
         self.assertEqual([f.env for f in findings], ["JuniperOld-DEPRECATED"])
@@ -148,8 +145,7 @@ class DriftCheckTest(unittest.TestCase):
         self.assertEqual(code, 0)
 
     def test_strict_fails_on_worktree_pinned(self) -> None:
-        write_editable(self.site_packages("JuniperX"), "juniper-cascor-client",
-                       str(self.worktree_live))
+        write_editable(self.site_packages("JuniperX"), "juniper-cascor-client", str(self.worktree_live))
         self.assertEqual(self.run_main()[0], 0)
         self.assertEqual(self.run_main("--strict")[0], 1)
 
