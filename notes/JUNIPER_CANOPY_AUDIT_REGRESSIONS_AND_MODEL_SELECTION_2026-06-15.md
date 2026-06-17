@@ -6,6 +6,14 @@
 **Status**: Empirically-validated deliverable (supersedes the working plan `JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md`)
 **Last Updated**: 2026-06-16
 
+> **⚠️ STATUS UPDATE (2026-06-17): §3 and §7 are now stale.** Canopy `#366` (merged
+> 2026-06-16, *after* this doc) wired **all three** orphan controls — including
+> `nn-init-output-weights-dropdown` and `dataset-plotter-dataset-selector`, which
+> §3.2/§3.3 mark "deferred"; `KNOWN_ORPHANS` is now empty. The model-selection design
+> (§4) and accessibility analysis remain the design of record. Current state +
+> go-forward roadmap:
+> [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md).
+>
 > This is the evidence-backed deliverable produced after the empirical phase. It
 > supersedes the approved working plan
 > [`JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md).

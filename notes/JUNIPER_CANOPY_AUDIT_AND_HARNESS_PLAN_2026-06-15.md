@@ -7,6 +7,12 @@
 **Last Updated**: 2026-06-15
 **Plan file (ephemeral)**: `/home/pcalnon/.claude/plans/atomic-painting-phoenix.md`
 
+> **⚠️ STATUS UPDATE (2026-06-17): SUPERSEDED execution framing.** This plan's "in
+> progress" state is stale — the entire iteration merged 2026-06-16 (canopy `#364`
+> harness, `#366` wired **all three** orphan controls, juniper-ml `#430` docs/papers).
+> Current state + go-forward roadmap:
+> [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md).
+>
 > This is the durable, version-controlled copy of the **approved execution plan**.
 > It guides the build of the automated UI-regression harness, the trivially-scoped
 > dead-control fixes, and the model-selection design. It is **distinct from — and
