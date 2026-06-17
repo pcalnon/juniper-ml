@@ -109,12 +109,18 @@ class TrainableModel(ABC):
         """
 
     @abstractmethod
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, X: np.ndarray, **kw: Any) -> np.ndarray:
         """Return model outputs for ``X``.
 
         Continuous values for ``regression``; class scores (logits / probabilities) for
         ``classification``. NEVER an ``argmax`` -- collapsing scores to labels is a
         classification-only concern and must not live in the generic contract (RK-6).
+
+        Sequence models read their auxiliary arrays (``dt`` / ``readout_mask`` / ``seq_lengths``)
+        from ``**kw`` -- symmetric with :meth:`fit` (D3); tabular models ignore them. Callers that
+        pass no auxiliary arrays get the plain ``predict(X)`` behavior, so an implementer that takes
+        no auxiliary input MAY narrow the signature to ``predict(self, X)`` (the conformance kit and
+        the fold executor both call ``predict(X)`` with no extra keywords unless ``aux`` is given).
         """
 
     @abstractmethod
