@@ -9,7 +9,7 @@
 
 ---
 
-> **Document status:** DRAFT design of record. **WS-0 RATIFIED 2026-06-14 (Paul)** — individual workstreams (WS-1…WS-4) may now be opened, each as its own reviewed PR; WS-6 (cascor adoption) stays trigger-gated.
+> **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **⚠️ EXECUTION UPDATE (2026-06-17): the Status Tracker below is STALE.** **WS-1, WS-2, WS-3, WS-4 have all shipped & published** (juniper-data 3-D/temporal NPZ; `juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0 on PyPI; `juniper-recurrence-model` 0.1.0; the WS-4b app was recovered onto `main` 2026-06-17 via juniper-recurrence#9/#10). **WS-5/6/7/8 are not started** (WS-6/WS-8 deferred); the model-core **cross-validation layer** is design-only. Current reconciled state + roadmap: [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
 > This document covers the **service/middleware refactor** (extracting the model↔service seam into shared packages so any new model plugs in) plus the **shared scaffolding** for the whole effort.
 > The companion document covers the recurrent model itself.
 >

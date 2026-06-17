@@ -16,6 +16,8 @@
 
 ---
 
+> **⚠️ EXECUTION STATUS UPDATE (2026-06-17): SHIPPED.** This design is **fully implemented and live-verified** across all 6 repos — observability **0.4.0** on PyPI (`set_build_info` git_sha/build_date + `ReadinessResponse`); `ARG GIT_SHA`/`BUILD_DATE` in every service Dockerfile; per-service-SHA `make build`; `make doctor` + `scripts/doctor.sh`; the 7-service compose-args regression test. PRs: obs#414, data#180, cascor#333, canopy#360, worker#103, juniper-deploy#118/#119/#122. **OQ-4** (automated drift CI lane) was **declined** by Paul (on-demand `make doctor` suffices). The "0.1.0 (DRAFT — pre-implementation)" header is now **historical**. Current reconciled state: [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+
 ## Table of contents
 
 - **Part 1** — Problem statement & motivating evidence

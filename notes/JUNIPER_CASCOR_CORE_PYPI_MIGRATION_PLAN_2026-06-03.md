@@ -4,7 +4,7 @@
 **Component**: juniper-cascor-core (new shared package) · juniper-cascor-worker · juniper-cascor
 **Author**: Paul Calnon
 **Date**: 2026-06-03
-**Status**: Draft — design ratified to **Wave 0 + Wave 1** scope (Wave 2 deferred behind a drift-guard)
+**Status**: **EXECUTED (2026-06-17)** — Wave 0 + Wave 1 shipped; the package is published as **`juniper-cascor-model` 0.1.0** on PyPI (renamed per the platform naming convention; home corrected to the **cascor family** per the [strategy doc](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md), so the §3 "Home = `juniper-ml` subdirectory" row is **superseded**). Wave 2 (cascor self-adoption, retiring the drift-guard) is still deferred. See [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
 
 ---
 
