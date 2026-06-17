@@ -3,10 +3,10 @@
 **Project**: Juniper — Cascade Correlation Neural Network Research Platform
 **Application**: juniper-model-core (subdirectory of juniper-ml)
 **Author**: Paul Calnon
-**Status**: Design ratified (D1–D10), scaffold landed; pre-WS-0-ratification
+**Status**: Design ratified (D1–D10), scaffold landed + published 0.1.0; **WS-0 ratified 2026-06-14**
 **Version**: 0.1.0
 **Date Created**: 2026-06-14
-**Last Updated**: 2026-06-14
+**Last Updated**: 2026-06-17
 
 ---
 
@@ -89,7 +89,7 @@ minimal and provisional. This is the central RK-4 move.
 
 ## 4. Package layout (as built)
 
-```
+```text
 juniper-ml/juniper-model-core/
 ├── pyproject.toml              # setuptools, dynamic version, py>=3.12, ruff @ 512, [conformance]/[test] extras
 ├── README.md  CHANGELOG.md  LICENSE
@@ -127,7 +127,7 @@ job's bare-wheel smoke test both enforce this. It is what lets the publish-verif
 
 ### 5.1 `TrainableModel` (ABC)
 
-```
+```text
 task_type: TaskType                         # "classification" | "regression"
 random_seed: int | None
 fit(X, y, *, X_val=None, y_val=None, on_event=None, **kw) -> TrainResult
@@ -144,7 +144,7 @@ legal order. `TrainResult` = `{final_metrics, n_epochs, history?, stopped_reason
 
 ### 5.2 `GrowableModel(TrainableModel)` — minimal & provisional
 
-```
+```text
 n_units -> int
 grow_step(**kw) -> GrowthOutcome             # add+freeze one unit; emit unit_added (within fit)
 freeze() -> None                             # finalize topology; further grow_step is a no-op
@@ -302,7 +302,7 @@ published. This PR follows that precedent exactly:
    growable implementer); wire the LMU model to `TrainableModel` + run the kit.
 4. **Verify the two new workflows** with `gh workflow run` immediately after merge (RK-10 —
    workflows can pass lint yet fail first run).
-5. **WS-0** (overall design ratification) remains the gate before WS-4/WS-6 implementation.
+5. **WS-0** (overall design ratification) — **RATIFIED 2026-06-14 (Paul)**; WS-4 has since shipped, WS-6 stays trigger-gated.
 
 ---
 
