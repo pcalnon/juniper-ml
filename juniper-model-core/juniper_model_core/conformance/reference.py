@@ -16,6 +16,7 @@ import os
 
 import numpy as np
 
+from juniper_model_core._metrics import regression_metrics as _regression_metrics
 from juniper_model_core.events import TrainingEvent
 from juniper_model_core.interfaces import GrowableModel, GrowthOutcome, TaskType, TrainableModel, TrainResult
 from juniper_model_core.serialization import ModelSerializer
@@ -32,16 +33,6 @@ def _flatten(X: np.ndarray) -> np.ndarray:
 def _design(flat: np.ndarray) -> np.ndarray:
     """Append a bias column to a flattened design matrix."""
     return np.concatenate([flat, np.ones((flat.shape[0], 1))], axis=1)
-
-
-def _regression_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
-    err = y_pred - y_true
-    mse = float(np.mean(err**2))
-    mae = float(np.mean(np.abs(err)))
-    ss_res = float(np.sum(err**2))
-    ss_tot = float(np.sum((y_true - y_true.mean(axis=0)) ** 2))
-    r2 = 1.0 - ss_res / ss_tot if ss_tot > 0 else 0.0
-    return {"mse": mse, "rmse": mse**0.5, "mae": mae, "r2": r2, "loss": mse}
 
 
 class ReferenceLinearModel(TrainableModel):
