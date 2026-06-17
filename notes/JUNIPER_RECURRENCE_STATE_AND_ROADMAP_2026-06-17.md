@@ -17,7 +17,7 @@
 > and guardrails rather than a single prescribed answer. Every factual claim here was produced by
 > five independent, primary-source-grounded analysis sub-agents and re-validated by a second,
 > independent validation pass (see [§11](#11-method-validation--evidence-base) and Appendix A).
-
+>
 > **Status update (2026-06-17, same session).** This document was landed as
 > [juniper-ml#438](https://github.com/pcalnon/juniper-ml/pull/438). The Group-A recovery it
 > recommends — PR [juniper-recurrence#9](https://github.com/pcalnon/juniper-recurrence/pull/9),
@@ -121,13 +121,15 @@ build plans ([§10](#10-cross-references)); they are not redefined here.
 
 5. **Multiple design-doc status claims are now stale.** The WS-4b plan's §0 table ("service-core
    404 / not in extras", "recurrence-model `0.1.0a0`", "app greenfield"), the model-core CHANGELOG
-   ("not yet published"), the recurrence-model `egg-info` (`0.1.0a0`), and the MEMORY note
-   ("data-client 0.4.1 lacks `validate_npz_contract`") are each contradicted by verified reality.
-   These are harmless to runtime but actively misleading to a reader.
+   ("not yet published"), and the recurrence-model `egg-info` (`0.1.0a0`) are each contradicted by verified reality.
+   These are harmless to runtime but actively misleading to a reader. (The separate MEMORY note that
+   the *published* `data-client 0.4.1` lacks `validate_npz_contract` is **correct**, not stale — see
+   [§4 D-5](#4-validated-discrepancies-and-their-consequences).)
 
 6. **The substrate is wired and verified.** `juniper-service-core` and `juniper-model-core` are both
    in juniper-ml `[tools]`/`[all]` with the extras lint (`test_pyproject_extras.py`) in lockstep;
-   `juniper-data-client 0.4.1` exposes the full `validate_npz_contract` 3-D sequence validator; the
+   `juniper-data-client 0.4.1` serves the 3-D `equities_seq` path the app consumes (its
+   `validate_npz_contract` helper is post-0.4.1 / unreleased, so the app guards it — see §4 D-5); the
    service-core "as-built is simpler than the design" reconciliation (no auto-middleware, concrete
    synchronous `TrainingLifecycle`, no dual-mode CLI helper) is confirmed exactly as the WS-4b plan
    described.
@@ -146,7 +148,7 @@ build plans ([§10](#10-cross-references)); they are not redefined here.
 | WS | Item | Plan-claimed (as of doc date) | Verified reality (2026-06-17) | Verdict |
 |---|---|---|---|---|
 | WS-0 | Model pick P3-C / LMU / Approach-C | RATIFIED (#411, 2026-06-14) | Ratification commit present; design corpus consistent | ✅ Matches |
-| WS-1 | 3-D NPZ + Δt + temporal split + `equities_seq` | SHIPPED (data #169-171 + data-client #87) | `data-client 0.4.1` on PyPI exposes full `validate_npz_contract` (tabular/sequence) | ✅ Matches (exceeds — see §4) |
+| WS-1 | 3-D NPZ + Δt + temporal split + `equities_seq` | SHIPPED (data #169-171 + data-client #87) | `data-client 0.4.1` on PyPI serves the 3-D `equities_seq` path; the `validate_npz_contract` helper (#87) is post-0.4.1/unreleased — app guards it (§4 D-5) | ✅ Matches |
 | WS-2 | `juniper-service-core` framework | MERGED to juniper-ml main; **NOT on PyPI**; **NOT in extras** | **On PyPI 0.1.0** (2026-06-16); **in `[tools]`/`[all]`**; lint in lockstep | ⚠️ Plan stale — further along |
 | WS-3 | `juniper-model-core` contract + kit | SHIPPED (#416/#418); PyPI 0.1.0; in `[tools]`/`[all]` | On PyPI 0.1.0 (2026-06-14); 66 tests / 97% cov; CHANGELOG says "not yet published" | ✅ Matches (CHANGELOG stale) |
 | WS-4 | `LMURegressor` model | SHIPPED to recurrence main @ `18815b7`; dist `0.1.0a0`; NOT on PyPI | **`0.1.0` on PyPI** (2026-06-16); **53/53 tests pass**; full conformance | ⚠️ Plan stale — DONE |
@@ -184,9 +186,11 @@ build plans ([§10](#10-cross-references)); they are not redefined here.
 - **`publish-recurrence-app.yml`** uses the hardened `--no-deps` TestPyPI verify (no
   `--extra-index-url` fallback). **`publish-recurrence-model.yml` was already aligned** off
   `--extra-index-url` in PR #4 — the WS-4b §15 concern is resolved.
-- **`validate_npz_contract` guard** in the app's `data.py` is defensive (optional import → `None` on
-  `ImportError`); since `data-client 0.4.1` actually ships the validator, the guard is
-  belt-and-suspenders, not load-bearing.
+- **`validate_npz_contract` guard** in the app's `data.py` is **load-bearing**: the published
+  `data-client 0.4.1` does *not* export `validate_npz_contract` (added post-0.4.1 in #87, present in
+  no 0.4.x tag), so the guard's optional import → `None` → fall back to the model's
+  `sequence_data_from_arrays` checks is the real validation floor today. Tighten the `data-client`
+  pin to make the contract gate mandatory once the helper ships.
 
 ---
 
@@ -198,7 +202,7 @@ build plans ([§10](#10-cross-references)); they are not redefined here.
 | D-2 | **Full app never CI-tested** — `ci-recurrence-app.yml` filters `branches:[main]`; PR #7/#8 bases were non-main | `gh pr checks 7/8` → "no checks reported"; only PR #6 skeleton runs exist | First green-on-`main` is unverified; remediation PR is the first real CI exercise | **High** (latent-failure risk) |
 | D-3 | **Publish-first claims stale** — service-core/recurrence-model shown as 404 in plans | Live `curl pypi.org/pypi/<pkg>/json`: both 200, uploaded 2026-06-16 | The roadmap's critical path is *shorter* than the plans imply; app publish is unblocked | Low (good news) |
 | D-4 | **`0.1.0a0` alpha trap already resolved** — plan lists it as a gate | `_version.py = 0.1.0`; tag `juniper-recurrence-model-v0.1.0`; PyPI 0.1.0; only a stale `egg-info` still says `0.1.0a0` | A planned gate is already cleared; rebuild the stale egg-info to avoid confusion | Low |
-| D-5 | **`validate_npz_contract` present** — MEMORY note says absent in 0.4.1 | `juniper_data_client/contract.py:41`; exported in `__all__` | The app guard is unnecessary defensiveness; the pin can be tightened to make validation mandatory | Low |
+| D-5 | **`validate_npz_contract` is *not* in published `data-client 0.4.1`** — the MEMORY/CHANGELOG note is **correct**; an earlier draft of this doc wrongly called it stale (a source-vs-published-wheel conflation) | introducing commit `5690177` (#87) is in **no** 0.4.x tag; the `v0.4.1` tree exports it 0× (on-disk source has it) | The app's `data.py` guard is load-bearing; tighten the `data-client` pin to make validation mandatory once the helper ships (≥0.4.2/0.5.0) | Low |
 | D-6 | **`TrainingLifecycleBase` wording** — WS-4b §2 says "there is no `TrainingLifecycleBase`" | The ABC *does* exist in `model-core/lifecycle.py`; service-core ships the concrete `TrainingLifecycle` subclass | Semantic only — the app correctly needs no subclass; future readers should not infer the base is absent | Low |
 | D-7 | **`predict(**kw)` ABC asymmetry (D3)** — model-core ABC has `**kw` on `fit` but `predict(self, X)` is 2-arg | `model-core/interfaces.py`; recurrence model widens `predict` covariantly | A generic caller cannot pass `dt` through the typed ABC; harmless today (sequence models widen on their side); ABC doc deferred to 0.2.0 | Low |
 | D-8 | **Doc/CHANGELOG staleness** — model-core CHANGELOG "not yet published"; WS-4/WS-4b plans not marked "executed" | CHANGELOG text; plan §0 tables | Reader confusion; the plans read as future tense for already-done work | Low (hygiene) |
@@ -657,7 +661,7 @@ A1/A2).
 | app on `main` | PR-1/2/3 sequencing | only PR-1 (skeleton) on `main`; PR-2/3 stranded | Partial |
 | app CI status | RK-10 "verify immediately" | full suite never ran (non-main PR bases) | Gap |
 | publish-recurrence-model.yml verify | "uses `--extra-index-url`, align it" (§15) | already aligned to `--no-deps` in PR #4 | Resolved |
-| `validate_npz_contract` in data-client 0.4.1 | "absent" (MEMORY) | present + exported (`contract.py:41`) | Stale memory |
+| `validate_npz_contract` in *published* data-client 0.4.1 | "absent" (MEMORY) | **absent** — added post-0.4.1 (#87 `5690177`), in no 0.4.x tag; only on-disk source has it | MEMORY correct |
 | `crossval` layer | ratified design 2026-06-16 | design-only; zero code; targets 0.2.0 | Matches (unbuilt) |
 | `predict(**kw)` on ABC | deferred to 0.2.0 (Paul's call) | ABC `predict(self, X)` 2-arg; model widens covariantly | Matches |
 
