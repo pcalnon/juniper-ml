@@ -53,7 +53,12 @@ A second consumer of the model contract reveals two gaps (the CV-analogue of the
 - **D-CV-6 (Paul, 2026-06-17) — 2nd-implementer test:** an **in-repo 3-D `TrainableModel` stub** in model-core's tests proves the executor is model-agnostic (3-D + `aux` slicing); the *real* LMU-CV test lives on the recurrence side. Keeps model-core dependency-clean (no model-core→recurrence import edge / cycle; the dep-free top-level import is preserved).
 - **D-CV-7 — Bundle `predict(**kw)` (D3) into 0.2.0:** add `**kw` to the `TrainableModel.predict` ABC **and** widen `ReferenceLinearModel.predict` (`reference.py`) + the 3-D stub to accept-and-ignore it, all in the **same PR**. The ABC edit alone is insufficient — the executor's `m.predict(X[ev], **aux[ev])` raises `TypeError` against an un-widened concrete `predict`.
 - **D-CV-8 — Shared metric math:** the regression-metric formulas live in a single private **`juniper_model_core/_metrics.py`** (numpy), imported by both `crossval/metrics.py` and `conformance/reference.py`. It is **never re-exported from `__init__`**, so the dep-free top-level import is preserved (only the numpy-gated consumers import it). A parity test asserts both call sites agree.
-- **D-CV-9 — Val-set policy (reconciled to the merged #442 default; Paul concurred 2026-06-17):** `cross_validate` keeps the eval fold **held-out by default** (`pass_eval_as_val=False`) — the rigorous default that avoids eval-fold leakage for models that early-stop on the validation set; `pass_eval_as_val=True` doubles the eval fold as `X_val`/`y_val` for callers that want it. `scheme` is typed **`Literal["expanding", "rolling"]`**. (This supersedes the initially-proposed eval-as-val default after the concurrent #442 build landed the held-out default in working, tested code — the safer scientific choice.)
+- **D-CV-9 — Val-set policy (reconciled to the merged #442 default; Paul concurred 2026-06-17):**
+  `cross_validate` keeps the eval fold **held-out by default** (`pass_eval_as_val=False`) — the rigorous default
+  that avoids eval-fold leakage for models that early-stop on the validation set; `pass_eval_as_val=True` doubles
+  the eval fold as `X_val`/`y_val` for callers that want it. `scheme` is typed **`Literal["expanding", "rolling"]`**.
+  (This supersedes the initially-proposed eval-as-val default after the concurrent #442 build landed the held-out
+  default in working, tested code — the safer scientific choice.)
 - **D-CV-10 — Parallelism seam:** per-fold execution is factored into a pure `_run_fold(...)` that `cross_validate` applies via a serial `map` (no parallel impl — honors D-CV-5); this localizes the future WS-8 parallelization to swapping the map.
 
 ---
