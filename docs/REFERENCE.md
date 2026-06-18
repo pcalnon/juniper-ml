@@ -52,7 +52,9 @@
 |             | `juniper-doc-tools`                                                                      | `>=0.1.0,<0.2.0`  |
 |             | `juniper-observability`                                                                  | `>=0.2.0`         |
 | `doc-tools` | `juniper-doc-tools` (back-compat alias for the doc-tools entry in `tools`)               | `>=0.1.0,<0.2.0`  |
-| `all`       | All packages from `clients` + `worker` + `servers` + `tools`                             | --                |
+| `recurrence`| `juniper-recurrence-model`                                                               | `>=0.1.0,<0.2.0`  |
+|             | `juniper-recurrence`                                                                     | `>=0.1.0,<0.2.0`  |
+| `all`       | All packages from `clients` + `worker` + `servers` + `tools` + `recurrence`              | --                |
 
 ### Installation Commands
 
@@ -67,17 +69,17 @@ pip install juniper-ml[all]       # Everything
 
 ### Package Descriptions
 
-| Package                   | Purpose                                                                         |
-|---------------------------|---------------------------------------------------------------------------------|
-| **juniper-canopy**        | Real-time monitoring dashboard (Dash/FastAPI) for training dynamics             |
-| **juniper-cascor**        | Cascade-Correlation training service (REST + WebSocket)                         |
-| **juniper-data**          | Dataset-generation REST service (FastAPI)                                       |
-| **juniper-data-client**   | Synchronous HTTP client for the juniper-data REST API (dataset generation)      |
-| **juniper-cascor-client** | Synchronous HTTP + async WebSocket client for the juniper-cascor API (training) |
-| **juniper-cascor-worker** | Remote candidate training worker using multiprocessing IPC                      |
+| Package                   | Purpose                                                                                          |
+|---------------------------|--------------------------------------------------------------------------------------------------|
+| **juniper-canopy**        | Real-time monitoring dashboard (Dash/FastAPI) for training dynamics                              |
+| **juniper-cascor**        | Cascade-Correlation training service (REST + WebSocket)                                          |
+| **juniper-data**          | Dataset-generation REST service (FastAPI)                                                        |
+| **juniper-data-client**   | Synchronous HTTP client for the juniper-data REST API (dataset generation)                       |
+| **juniper-cascor-client** | Synchronous HTTP + async WebSocket client for the juniper-cascor API (training)                  |
+| **juniper-cascor-worker** | Remote candidate training worker using multiprocessing IPC                                       |
 | **juniper-ci-tools**      | Dependency-documentation generator (`juniper-generate-dep-docs`) used by every Juniper repo's CI |
-| **juniper-doc-tools**     | Markdown link validator (`juniper-check-doc-links`) for intra- and cross-repo docs |
-| **juniper-observability** | Shared Prometheus collector helpers, structured-JSON logging, Starlette middleware |
+| **juniper-doc-tools**     | Markdown link validator (`juniper-check-doc-links`) for intra- and cross-repo docs               |
+| **juniper-observability** | Shared Prometheus collector helpers, structured-JSON logging, Starlette middleware               |
 
 ---
 
@@ -149,14 +151,14 @@ util/juniper_chop_all.bash
 
 Query helpers:
 
-| Script | Endpoint |
-|--------|----------|
-| `util/get_cascor_status.bash` | `/v1/training/status` |
-| `util/get_cascor_metrics.bash` | `/v1/metrics` |
-| `util/get_cascor_history.bash` | `/v1/metrics/history?count=10` |
+| Script                              | Endpoint                        |
+|-------------------------------------|---------------------------------|
+| `util/get_cascor_status.bash`       | `/v1/training/status`           |
+| `util/get_cascor_metrics.bash`      | `/v1/metrics`                   |
+| `util/get_cascor_history.bash`      | `/v1/metrics/history?count=10`  |
 | `util/get_cascor_history-plus.bash` | `/v1/metrics/history?count=100` |
-| `util/get_cascor_network.bash` | `/v1/network` |
-| `util/get_cascor_topology.bash` | `/v1/network/topology` |
+| `util/get_cascor_network.bash`      | `/v1/network`                   |
+| `util/get_cascor_topology.bash`     | `/v1/network/topology`          |
 
 Lifecycle details:
 
@@ -209,14 +211,14 @@ Publish and CI constraints:
 
 ## Version History
 
-| Version | Date       | Changes                                                                                   |
-|---------|------------|-------------------------------------------------------------------------------------------|
+| Version | Date       | Changes                                                                                                                                                                  |
+|---------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 0.6.0   | 2026-05-23 | Floor-bumped `[clients]` / `[worker]` / `[servers]` extras to today's ecosystem release wave (cascor/canopy 0.5.0, cascor-client/cascor-worker 0.4.0, data-client 0.4.1) |
-| 0.5.0   | 2026-05-21 | Added `[servers]` and `[tools]` extras; expanded `[all]` to install every Juniper package |
-| 0.4.1   | 2026-04-28 | Added `juniper-observability` sibling package and dedicated CI/publish workflows          |
-| 0.4.0   | 2026-04-09 | Added service orchestration utilities, worktree cleanup tooling, and updated package pins |
-| 0.2.0   | 2026-02-27 | Added CLAUDE.md, raised Python to >=3.12, renamed from "juniper"                          |
-| 0.1.0   | 2026-02-22 | Initial release with TestPyPI + PyPI publishing                                           |
+| 0.5.0   | 2026-05-21 | Added `[servers]` and `[tools]` extras; expanded `[all]` to install every Juniper package                                                                                |
+| 0.4.1   | 2026-04-28 | Added `juniper-observability` sibling package and dedicated CI/publish workflows                                                                                         |
+| 0.4.0   | 2026-04-09 | Added service orchestration utilities, worktree cleanup tooling, and updated package pins                                                                                |
+| 0.2.0   | 2026-02-27 | Added CLAUDE.md, raised Python to >=3.12, renamed from "juniper"                                                                                                         |
+| 0.1.0   | 2026-02-22 | Initial release with TestPyPI + PyPI publishing                                                                                                                          |
 
 ---
 
