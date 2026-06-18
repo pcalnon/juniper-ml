@@ -471,6 +471,13 @@ Create two environments in **GitHub > Repository > Settings > Environments**:
 
 This is the complete procedure from "code is ready" to "package is live on PyPI."
 
+> **Release convention (mandatory).** Every PyPI deploy — the meta-package **and** every shared /
+> sub-package — is performed by **cutting a GitHub Release**, never by pushing a bare tag, and the
+> release notes are **archived under `notes/releases/`**. The Release (and its archived notes) is the
+> durable, auditable record of the deploy; the tag the Release creates is what triggers the publish
+> workflow. This convention drifted during rapid concurrent development (several sub-packages shipped
+> tag-only, with no Release and no archived notes) and is being restored — see §11.3–§11.4.
+
 ### 11.1 Bump the version
 
 Edit `pyproject.toml`:
@@ -487,31 +494,41 @@ git commit -m "Bump version to 0.2.0"
 git push origin main
 ```
 
-### 11.3 Tag the release
+### 11.3 Author and archive the release notes
 
-```bash
-git tag v0.2.0
-git push origin v0.2.0
-```
+Write the notes from [`notes/templates/TEMPLATE_RELEASE_NOTES.md`](templates/TEMPLATE_RELEASE_NOTES.md)
+and **archive a copy under `notes/releases/`** (committed in the release PR) so every release has an
+in-repo record alongside the GitHub Release body:
 
-### 11.4 Create the GitHub Release
+- Meta-package: `notes/releases/RELEASE_NOTES_v<version>.md`
+- Shared / sub-package: `notes/releases/RELEASE_NOTES_<pkg>_v<version>.md` (e.g. `RELEASE_NOTES_juniper-model-core_v0.2.0.md`)
+
+### 11.4 Cut the GitHub Release (this is the deploy — never a bare tag)
+
+Cutting the Release is what creates the tag and triggers the publish workflow. **Do not
+`git push <tag>` by hand** — always go through a Release so the deploy has a durable, auditable
+record. For the meta-package the Release event triggers `publish.yml`; for a shared / sub-package the
+Release **creates the `juniper-<pkg>-v*` tag**, which triggers that package's `publish-<pkg>.yml`.
 
 #### Option A: GitHub CLI
 
 ```bash
-gh release create v0.2.0 \
-    --title "v0.2.0" \
-    --notes "Release notes here." \
-    --latest
+# Meta-package (tag v<version>):
+gh release create v0.2.0 --title "v0.2.0" \
+    --notes-file notes/releases/RELEASE_NOTES_v0.2.0.md --latest
+
+# Shared / sub-package (tag juniper-<pkg>-v<version>); --latest=false keeps the meta-package's badge:
+gh release create juniper-model-core-v0.2.0 \
+    --title "juniper-model-core v0.2.0 — <headline>" \
+    --notes-file notes/releases/RELEASE_NOTES_juniper-model-core_v0.2.0.md --latest=false
 ```
 
 #### Option B: GitHub Web UI
 
 1. Go to **Releases > Draft a new release**
-2. Choose the tag `v0.2.0`
-3. Set the title to `v0.2.0`
-4. Write release notes
-5. Click **Publish release**
+2. **Create** the tag inline — `v<version>` (meta) or `juniper-<pkg>-v<version>` (sub-package)
+3. Set the title and paste the archived release notes
+4. Click **Publish release**
 
 ### 11.5 Monitor the workflow
 
