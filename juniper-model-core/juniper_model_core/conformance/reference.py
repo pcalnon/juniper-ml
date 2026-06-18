@@ -69,7 +69,7 @@ class ReferenceLinearModel(TrainableModel):
             on_event(TrainingEvent("training_end", {"metrics": dict(self._metrics)}, seq))
         return TrainResult(final_metrics=dict(self._metrics), n_epochs=1, history=[dict(self._metrics)], stopped_reason="converged")
 
-    def predict(self, X) -> np.ndarray:
+    def predict(self, X, **kw) -> np.ndarray:  # **kw accepted and ignored: a 2-D model reads no aux (D3)
         if self._coef is None:
             raise RuntimeError("model is not fitted")
         X = np.asarray(X, dtype=np.float64)

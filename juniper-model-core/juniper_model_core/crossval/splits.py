@@ -13,6 +13,7 @@ trusts that boundary sees consistent behavior here.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 
@@ -35,7 +36,7 @@ def walk_forward_folds(
     n_samples: int,
     *,
     n_folds: int,
-    scheme: str = "expanding",
+    scheme: Literal["expanding", "rolling"] = "expanding",
     min_train: int | None = None,
     embargo: int = 0,
     order: np.ndarray | None = None,
