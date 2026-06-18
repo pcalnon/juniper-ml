@@ -9,10 +9,13 @@ those siblings:
    so their drift lints scan ``.github/workflows/*.yml``. juniper-model-core is a
    library dependency pinned in juniper-ml's ``pyproject.toml`` ``[tools]`` extra,
    so this lint reads the pin from there.
-2. **Consumers.** No repo consumes ``juniper-model-core`` yet -- the recurrence app
-   (WS-4) and cascor (WS-6) adopt it later, pinning it in *their* ``pyproject.toml``
-   ``dependencies``. The cross-repo machinery below is therefore dormant
-   (``_CONSUMER_REPOS`` is empty) and activates when those consumers land.
+2. **Consumers.** The WS-4b recurrence app pins ``juniper-model-core[crossval]`` in its
+   ``pyproject.toml`` (it drives ``POST /v1/crossval``); it is registered in
+   ``_CONSUMER_REPOS`` below so the cross-repo assertion checks its pin still admits the
+   current version. cascor (WS-6) joins when it adopts model-core. Each entry points at the
+   *consuming package's* pyproject (which may be nested), so a multi-package repo only has
+   its real consumer checked -- e.g. ``juniper-recurrence-model/`` deliberately stays on the
+   0.1.x contract (it does not use crossval) and is intentionally not checked.
 
 "Current version" is read from this repo's
 ``juniper-model-core/juniper_model_core/_version.py`` -- the source of truth for the
@@ -31,16 +34,23 @@ import tomllib
 import unittest
 from pathlib import Path
 
-# Pin-range pattern: juniper-model-core>=0.1.0,<0.2.0 (whitespace-forgiving).
-_PIN_PATTERN = re.compile(r"juniper-model-core\s*>=\s*([0-9]+(?:\.[0-9]+)+)\s*,\s*<\s*([0-9]+(?:\.[0-9]+)+)")
+# Pin-range pattern: juniper-model-core>=0.1.0,<0.2.0 (whitespace-forgiving). An optional
+# extras bracket is tolerated so consumer pins like juniper-model-core[crossval]>=0.2.0,<0.3.0
+# (the recurrence app) match too.
+_PIN_PATTERN = re.compile(r"juniper-model-core(?:\[[^\]]+\])?\s*>=\s*([0-9]+(?:\.[0-9]+)+)\s*,\s*<\s*([0-9]+(?:\.[0-9]+)+)")
 
 # How many minor versions back is still "supported" before a soft warning.
 _SUPPORTED_MINORS_BACK = 2
 
-# Consumer repos that pin juniper-model-core in their own pyproject.toml. EMPTY today:
-# the recurrence app (WS-4) and cascor (WS-6) adopt model-core later. Populate this tuple
-# when they do, and the cross-repo assertion below starts checking their pins.
-_CONSUMER_REPOS: tuple[str, ...] = ()
+# Consumer repos that pin juniper-model-core, as ``(repo_dir, pyproject_relpath)``. The
+# relpath points at the *consuming package's* pyproject within the repo (which may be nested),
+# so a multi-package repo only has its real consumer checked. cascor (WS-6) joins here later.
+_CONSUMER_REPOS: tuple[tuple[str, str], ...] = (
+    # The WS-4b recurrence app drives POST /v1/crossval and pins model-core's [crossval] extra.
+    # Its pin lives in the nested app package, NOT the repo root, and NOT in
+    # juniper-recurrence-model/ (the model deliberately stays on the 0.1.x contract).
+    ("juniper-recurrence", "juniper-recurrence/pyproject.toml"),
+)
 
 
 def _parse_version(v: str) -> tuple[int, ...]:
@@ -86,7 +96,7 @@ def _find_ecosystem_root(juniper_ml_root: Path) -> Path | None:
     None when there are no declared consumers (the dormant state)."""
     if not _CONSUMER_REPOS:
         return None
-    known = set(_CONSUMER_REPOS)
+    known = {repo for repo, _ in _CONSUMER_REPOS}
     for candidate in (juniper_ml_root.parent, juniper_ml_root.parent.parent):
         try:
             found = sum(1 for repo in known if (candidate / repo).is_dir())
@@ -153,15 +163,15 @@ class JuniperModelCoreDriftTest(unittest.TestCase):
 
         current_tuple = _parse_version(self.current_version)
         warnings: list[str] = []
-        for repo in _CONSUMER_REPOS:
+        for repo, relpath in _CONSUMER_REPOS:
             with self.subTest(repo=repo):
-                pyproject = self.ecosystem_root / repo / "pyproject.toml"
+                pyproject = self.ecosystem_root / repo / relpath
                 if not pyproject.exists():
-                    print(f"WARN: {repo}/pyproject.toml not present (clone failure?)")
+                    print(f"WARN: {repo}/{relpath} not present (clone failure?)")
                     continue
                 pins = _extract_pins_from_text(pyproject.read_text(encoding="utf-8"))
                 if not pins:
-                    self.fail(f"{repo}/pyproject.toml has no juniper-model-core pin")
+                    self.fail(f"{repo}/{relpath} has no juniper-model-core pin")
                 for lower, upper in pins:
                     upper_tuple = _parse_version(upper)
                     self.assertLessEqual(
@@ -189,8 +199,18 @@ class PinParsingHelperTest(unittest.TestCase):
     def test_extracts_simple_pin(self):
         self.assertEqual(_extract_pins_from_text('"juniper-model-core>=0.1.0,<0.2.0"'), [("0.1.0", "0.2.0")])
 
+    def test_extracts_pin_with_extra(self):
+        # the recurrence app pins the [crossval] extra: juniper-model-core[crossval]>=0.2.0,<0.3.0
+        self.assertEqual(_extract_pins_from_text('"juniper-model-core[crossval]>=0.2.0,<0.3.0"'), [("0.2.0", "0.3.0")])
+
     def test_ignores_unrelated_pins(self):
         self.assertEqual(_extract_pins_from_text('"juniper-doc-tools>=0.1.0,<0.2.0"'), [])
+
+    def test_consumer_repos_are_repo_relpath_pairs(self):
+        for entry in _CONSUMER_REPOS:
+            self.assertEqual(len(entry), 2, f"each _CONSUMER_REPOS entry is (repo_dir, pyproject_relpath); got {entry!r}")
+            _repo, relpath = entry
+            self.assertTrue(relpath.endswith("pyproject.toml"), f"relpath should point at a pyproject.toml, got {relpath!r}")
 
     def test_parses_versions(self):
         self.assertEqual(_parse_version("0.1.0"), (0, 1, 0))
