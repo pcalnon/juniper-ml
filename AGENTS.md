@@ -67,6 +67,17 @@ juniper-check-doc-links --exclude templates --exclude history --exclude legacy -
 
 Releases are published via GitHub Actions (`.github/workflows/publish.yml`). The workflow is triggered by a GitHub release event and publishes first to TestPyPI (with install verification), then to PyPI. Both environments use trusted publishing (OIDC, no API tokens).
 
+**Release convention (mandatory, all packages).** Every PyPI deploy — the meta-package and every
+shared / sub-package — is performed by **cutting a GitHub Release** (never a bare `git push <tag>`),
+and the release notes are authored from
+[`notes/templates/TEMPLATE_RELEASE_NOTES.md`](notes/templates/TEMPLATE_RELEASE_NOTES.md) and
+**archived under `notes/releases/`** (`RELEASE_NOTES_v<version>.md` for the meta-package;
+`RELEASE_NOTES_<pkg>_v<version>.md` for a shared / sub-package). For the meta-package the Release
+event triggers `publish.yml`; for a tag-triggered shared / sub-package, cutting the Release
+**creates** the `juniper-<pkg>-v*` tag, which triggers its `publish-<pkg>.yml`. Full steps:
+[`notes/PYPI-PUBLISH-PROCEDURE.md` §11](notes/PYPI-PUBLISH-PROCEDURE.md). (This convention drifted
+during rapid concurrent refactoring — several sub-packages shipped tag-only — and is being restored.)
+
 The shared `juniper-observability` package is published separately from the same repo (subdirectory `juniper-observability/`) by `.github/workflows/publish-observability.yml`, triggered by tags matching `juniper-observability-v*`.
 
 The shared `juniper-doc-tools` package (Wave 0 scaffold, plan
