@@ -471,5 +471,29 @@ analysis; `pytest -q` for the model suite (53 passed).
 
 ---
 
+## Appendix — Package naming map (consolidated from the companion roadmap)
+
+> Folded in from the companion analysis `JUNIPER_RECURRENCE_STATE_AND_ROADMAP_2026-06-17.md` (an
+> independent, parallel state-evaluation produced the same session), which has been **consolidated
+> into this canonical roadmap**. Its other unique material — the detailed design/dev options (this
+> doc's §7 is canonical), the verified status-claim diff ledger (covered by §3), and the git/PyPI
+> forensic anchors (a now-historical pre-publish snapshot) — remains in git history.
+
+There is **no package literally named `juniper-recurrence-core`**. The "core / application" split
+maps onto three real artifacts plus one shared contract:
+
+| Informal name | Real artifact | Lives in | Role |
+|---|---|---|---|
+| "the contract / core" | `juniper-model-core` | `juniper-ml/juniper-model-core/` (subdir pkg) | Shared `TrainableModel`/`GrowableModel` ABCs + conformance kit the model plugs into (WS-3) |
+| "the model / core model" | `juniper-recurrence-model` | `juniper-recurrence/juniper-recurrence-model/` (subdir pkg) | The Δt-native LMU regressor implementing `TrainableModel` (WS-4) |
+| "the application" | `juniper-recurrence` | `juniper-recurrence/juniper-recurrence/` (subdir pkg) | FastAPI + CLI service wrapping the model on `juniper-service-core` (WS-4b) |
+| "the service framework" | `juniper-service-core` | `juniper-ml/juniper-service-core/` (subdir pkg) | Generic FastAPI/lifecycle/security framework the app builds on (WS-2) |
+
+The `juniper-recurrence` **git repository** is the umbrella holding *two* published distributions:
+the model (`juniper-recurrence-model`) and the app (`juniper-recurrence`). The `*-core` shared
+packages are juniper-ml subdirectories per the ratified placement convention (D4).
+
+---
+
 *Generated 2026-06-17. Current-state claims validated by independent sub-agents against source, git, and live registry
 state. Forward-looking sections (roadmap, options) are recommendations pending Paul's decisions in §10.*
