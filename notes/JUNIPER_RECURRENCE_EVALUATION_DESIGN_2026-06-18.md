@@ -36,9 +36,9 @@ a Grafana dashboard; real-money trading claims.
 
 ## 2. The two tracks
 
-- **C2 — benchmark (direct library).** `model-core.crossval` (`walk_forward_folds` + `cross_validate`
-  + `score`) over the LMU and baselines on generated datasets. No running service — fully
-  reproducible from a seed. This is the *evidence*.
+- **C2 — benchmark (direct library).** `model-core.crossval` (`walk_forward_folds`, `cross_validate`,
+  `score`) over the LMU and baselines on generated datasets. No running service — fully reproducible
+  from a seed. This is the *evidence*.
 - **I2 — end-to-end Δt proof (through the app).** Generate an `irregular_sine` NPZ → `POST /v1/train`
   → `POST /v1/predict` (and `POST /v1/crossval`) → assert the deployed path runs and its LMU metrics
   match the direct-library path within tolerance. This is the *OQ-7 "completed-state" gate* — the app
