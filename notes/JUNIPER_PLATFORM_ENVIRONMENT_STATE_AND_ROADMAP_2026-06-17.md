@@ -52,6 +52,18 @@ Method mirrors the ecosystem's verification discipline (the same adversarial, mu
 
 ## §1. Executive summary
 
+> **STATUS UPDATE — 2026-06-18 (reconciliation; supersedes the §1/§3/§4 status below where noted).**
+> The tail advanced substantially the day after this doc was written. Verified against live PyPI releases, GitHub PRs, and repo trees:
+>
+> - **OUT-1 WS-4b stacked-merge — ✅ RESOLVED.** The recurrence app tree is on `origin/main`; **`juniper-recurrence` 0.1.0 is live on PyPI**. The "Priority-0 defect" in item 3 below no longer applies.
+> - **OUT-3 data-client release — ✅ DONE.** **`juniper-data-client` 0.4.2** published, carrying `validate_npz_contract` (item 4b cleared).
+> - **OUT-10 cross-validation layer — ✅ BUILT & PUBLISHED.** **`juniper-model-core` 0.2.0** (crossval / fold-executor) is live and the juniper-ml `[tools]` pin admits it. Crossval-API doc/polish PRs (#449, #450) are in flight in a parallel session (item 4c cleared).
+> - **OUT-12 golden/snapshot gate — ✅ DONE.** Shipped to `juniper-cascor` (PR #340, merged) and **promoted to a required status check**. The first half of the WS-6 trigger-gate is armed.
+> - **OUT-4 recurrence app — 🟡 PARTIAL.** Published, but **no Dockerfile exists yet** — Wave-B deploy (OUT-5) is blocked on writing it first.
+> - **OUT-13 conformance wiring — ▶ NEXT.** cascor has zero `juniper_model_core` references; the kit to consume is `juniper_model_core.conformance` (`suite` / `reference` / `fixtures`; ABCs in `interfaces.py`; `[conformance]` extra).
+>
+> **Net:** Wave A is closed and Wave D's cross-val is shipped. The live tail is **Wave B (OUT-4 Dockerfile → OUT-5/6), Wave C (client → canopy), Wave D (OUT-11 T2 surface), and Wave E (OUT-13 → WS-6)**. The §6.2 wave ordering still holds — only the completed rungs change. The per-§3/§4 status cells below are point-in-time (2026-06-17) and were not individually rewritten.
+
 1. **Two of the three anchor efforts are done; the third is ~70% done.** Package placement and build provenance are **shipped and (provenance) live-verified**. The model/middleware refactor has shipped WS-0 through WS-4 (data foundation, both shared packages, and the first recurrence model) — all published to PyPI — and stalls at the recurrence **application** layer and its consumers.
 
 2. **The anchor docs' status headers are stale.** All three still read as pre/partial-execution; the refactor's Status Tracker lists WS-1…WS-5 as `PLANNED` when WS-1–WS-4 have shipped. A reader trusting the headers would badly mis-sequence. Re-baselining is the first job of this document (§2).
