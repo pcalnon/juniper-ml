@@ -6,6 +6,8 @@ the 2-D and 3-D fixtures also proves the contract is shape-agnostic, and the gro
 exercises the ``GrowableModel`` half of the kit.
 """
 
+import numpy as np
+
 from juniper_model_core.conformance import (
     GrowableModelConformance,
     ReferenceGrowableModel,
@@ -48,3 +50,14 @@ class TestReferenceGrowableConformance(GrowableModelConformance):
 
     def make_serializer(self):
         return None
+
+
+def test_reference_predict_accepts_and_ignores_kwargs():
+    """D-CV-7: a 2-D model's ``predict`` accepts auxiliary ``**kw`` and ignores them, so the fold
+    executor can call ``predict(X, **aux)`` uniformly across 2-D and 3-D models without a TypeError."""
+    data = tiny_regression_2d()
+    model = ReferenceLinearModel(task_type="regression")
+    model.fit(data.X, data.y)
+    baseline = model.predict(data.X)
+    with_kw = model.predict(data.X, dt=np.ones(data.X.shape[0]), readout_mask=None, seq_lengths=None)
+    assert np.array_equal(baseline, with_kw)
