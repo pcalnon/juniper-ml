@@ -61,7 +61,7 @@ tools = [
 # are published to PyPI; capped inside the 0.1.x range per the pre-1.0
 # convention so a future 0.2.x doesn't auto-adopt before consumers migrate.
 # A dedicated extra (rather than folding the app into [servers] and the model
-# into [tools]) keeps those aggregates' semantics intact and lets 
+# into [tools]) keeps those aggregates' semantics intact and lets
 # `pip install juniper-ml[recurrence]` pull the whole stack.
 recurrence = [
     "juniper-recurrence-model>=0.1.0,<0.2.0",
