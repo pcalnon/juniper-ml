@@ -4,7 +4,7 @@
 **Repository**: design notes hosted in pcalnon/juniper-ml; build lands in pcalnon/juniper-recurrence
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.0.0 (design ratified; pending build)
+**Version**: 1.1.0 (as-built; aligned with the implementation PR)
 **Last Updated**: 2026-06-18
 
 ---
@@ -83,8 +83,9 @@ extend it via `JUNIPER_RECURRENCE_METRICS_TRUSTED_IPS` to include the compose-ne
 - **HTTP** — `PrometheusMiddleware(service_name="juniper-recurrence")` →
   `juniper_http_requests_total{method,path,status}` + `juniper_http_request_duration_seconds`. **No
   router edits required** — the middleware captures every request.
-- **Build-info** — `set_build_info("juniper-recurrence", __version__)` → `juniper_build_info` Info
-  metric (version + python; git SHA / build date if available).
+- **Build-info** — `set_build_info("juniper_recurrence", __version__)` → `juniper_recurrence_build_info`
+  Info metric (version + python; git SHA / build date if available). The namespace is the underscored
+  service name — Prometheus metric names disallow hyphens.
 - **Default process / GC metrics** from `prometheus_client`'s default registry.
 
 App-specific domain counters (train / predict counts, last-training metrics) are deferred (§9); the
@@ -105,16 +106,18 @@ Env examples: `JUNIPER_RECURRENCE_METRICS_ENABLED=false`;
 
 `[observability]` stays an **optional** extra. `app.py` guards the import: if `juniper_observability`
 is absent, the app still builds and runs and `/metrics` is simply not mounted (a warning is logged
-when `metrics_enabled` is true, so the misconfiguration is visible). The extra's pin is bumped
-**`juniper-observability>=0.3.1` → `>=0.4.0`** (the floor that provides `set_build_info`).
+when `metrics_enabled` is true, so the misconfiguration is visible). The extra is bumped
+**`juniper-observability>=0.3.1` → `juniper-observability[prometheus]>=0.4.0`** — `>=0.4.0` is the
+floor that provides `set_build_info`, and the `[prometheus]` marker pulls `prometheus-client` (which
+`juniper-observability` keeps optional, so the bare package would `ModuleNotFoundError` at scrape time).
 
 ## 4. Architecture / wiring (`app.py`)
 
-The metrics wiring is added inside `build_app()` after the existing
-`RequestBodyLimit → SecurityHeaders → Security` stack:
+The metrics wiring is added inside `build_app()` **between `SecurityHeadersMiddleware` and
+`SecurityMiddleware`** (so `SecurityMiddleware` is still added last and stays the outermost handler):
 
 ```python
-# After the security/middleware stack is added:
+# After RequestBodyLimit + SecurityHeaders, before SecurityMiddleware:
 if settings.metrics_enabled:
     try:
         from juniper_observability import (
@@ -130,17 +133,20 @@ if settings.metrics_enabled:
         )
     else:
         application.add_middleware(PrometheusMiddleware, service_name=settings.service_name)
-        set_build_info(settings.service_name, __version__)
+        # underscored namespace -> metric name juniper_recurrence_build_info
+        set_build_info(settings.service_name.replace("-", "_"), __version__)
         application.mount(
             "/metrics",
             MetricsAuthMiddleware(get_prometheus_app(), trusted_ips=settings.metrics_trusted_ips),
         )
 ```
 
-**Middleware ordering.** `PrometheusMiddleware` is a `BaseHTTPMiddleware`; added after
-`SecurityMiddleware` it sits outermost under Starlette's LIFO execution and therefore records every
-request, including auth rejections (401 / 429) — the desired operational view. `/metrics` scrapes are
-themselves recorded (minor, acceptable). The mounted `/metrics` sub-app is reached only for
+**Middleware ordering.** `PrometheusMiddleware` is added **before** `SecurityMiddleware`, so under
+Starlette's LIFO execution `SecurityMiddleware` remains the outermost handler — the canonical
+cascor / canopy / data invariant, asserted by `test_app_smoke`. Consequently unauthenticated or
+rate-limited requests are rejected by `SecurityMiddleware` **before** `PrometheusMiddleware` runs, so
+they add no metric cardinality (the more secure choice). `PrometheusMiddleware` records requests that
+pass the security gate (200s plus app-level 4xx/5xx); the `/metrics` mount is reached only for
 trusted IPs.
 
 ## 5. Test matrix
@@ -150,7 +156,7 @@ trusted IPs.
 
 | Test | Asserts |
 |---|---|
-| trusted-IP scrape | `GET /metrics` from `127.0.0.1` → `200`, Prometheus content-type, body contains `juniper_build_info` |
+| trusted-IP scrape | `GET /metrics` from `127.0.0.1` → `200`, Prometheus content-type, body contains `juniper_recurrence_build_info` |
 | untrusted-IP | app built with `metrics_trusted_ips=["10.0.0.0/8"]` → `GET /metrics` → `403` |
 | API-key exempt | `GET /metrics` with no `X-API-Key` → **not** `401` (the service-core exemption holds) |
 | disabled | `metrics_enabled=False` → `GET /metrics` → `404` (not mounted) |
@@ -183,7 +189,7 @@ the extra installed.
 
 ## 9. Implementation plan (one PR, `pcalnon/juniper-recurrence`)
 
-1. `pyproject.toml` — bump the `[observability]` extra pin to `>=0.4.0`.
+1. `pyproject.toml` — bump the `[observability]` extra to `juniper-observability[prometheus]>=0.4.0`.
 2. `juniper_recurrence/settings.py` — add `metrics_enabled`, `metrics_trusted_ips` + validator.
 3. `juniper_recurrence/app.py` — guarded metrics wiring (§4).
 4. `tests/test_metrics.py` — the §5 matrix.
