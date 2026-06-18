@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml (package subdir `juniper-model-core/`)
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.0.0 (RATIFIED — placement concurred by Paul 2026-06-16)
-**Last Updated**: 2026-06-16
+**Version**: 1.1.0 (RATIFIED — placement concurred 2026-06-16; §4 API ratified D-CV-6…10 by Paul 2026-06-17)
+**Last Updated**: 2026-06-17
 
 ---
 
@@ -50,12 +50,22 @@ A second consumer of the model contract reveals two gaps (the CV-analogue of the
 - **D-CV-3 — External held-out scoring** (forced by §1.2): a small `metrics` helper computes regression metrics; classification deferred.
 - **D-CV-4 — No `juniper-data` change for v1:** the NPZ already ships `*_full` arrays (+ `window_end_date` / `ticker_code` for leakage-safe ordering), so folds are re-derived **client-side** from `_full`. juniper-data#168 scope C (server-side fold materialization) becomes an optional future optimization, not a prerequisite.
 - **D-CV-5 — Serial v1:** folds are independent and *could* parallelize, but parallel/distributed execution is deferred to the worker subsystem (OQ-11 / WS-8).
+- **D-CV-6 (Paul, 2026-06-17) — 2nd-implementer test:** an **in-repo 3-D `TrainableModel` stub** in model-core's tests proves the executor is model-agnostic (3-D + `aux` slicing); the *real* LMU-CV test lives on the recurrence side. Keeps model-core dependency-clean (no model-core→recurrence import edge / cycle; the dep-free top-level import is preserved).
+- **D-CV-7 — Bundle `predict(**kw)` (D3) into 0.2.0:** add `**kw` to the `TrainableModel.predict` ABC **and** widen `ReferenceLinearModel.predict` (`reference.py`) + the 3-D stub to accept-and-ignore it, all in the **same PR**. The ABC edit alone is insufficient — the executor's `m.predict(X[ev], **aux[ev])` raises `TypeError` against an un-widened concrete `predict`.
+- **D-CV-8 — Shared metric math:** the regression-metric formulas live in a single private **`juniper_model_core/_metrics.py`** (numpy), imported by both `crossval/metrics.py` and `conformance/reference.py`. It is **never re-exported from `__init__`**, so the dep-free top-level import is preserved (only the numpy-gated consumers import it). A parity test asserts both call sites agree.
+- **D-CV-9 — Val-set policy (reconciled to the merged #442 default; Paul concurred 2026-06-17):**
+  `cross_validate` keeps the eval fold **held-out by default** (`pass_eval_as_val=False`) — the rigorous default
+  that avoids eval-fold leakage for models that early-stop on the validation set; `pass_eval_as_val=True` doubles
+  the eval fold as `X_val`/`y_val` for callers that want it. `scheme` is typed **`Literal["expanding", "rolling"]`**.
+  (This supersedes the initially-proposed eval-as-val default after the concurrent #442 build landed the held-out
+  default in working, tested code — the safer scientific choice.)
+- **D-CV-10 — Parallelism seam:** per-fold execution is factored into a pure `_run_fold(...)` that `cross_validate` applies via a serial `map` (no parallel impl — honors D-CV-5); this localizes the future WS-8 parallelization to swapping the map.
 
 ---
 
 ## 3. Architecture (model-agnostic; numpy-only; built on `TrainableModel`)
 
-```
+```text
 ordered full arrays            model factory               (X, y, aux: dt/target_dt/seq_lengths)
  X_full,y_full,aux,order  ──►  fold_idx → fresh model  ──►  sliced per fold by index
         │                              │
@@ -79,7 +89,7 @@ Three small parts (all under `juniper_model_core/crossval/`):
 
 ---
 
-## 4. Concrete interfaces (proposed — please redline)
+## 4. Concrete interfaces (RATIFIED 2026-06-17 — D-CV-6…10)
 
 ```python
 # crossval/metrics.py
@@ -96,7 +106,7 @@ class Fold:
     eval_idx:  np.ndarray
 
 def walk_forward_folds(
-    n_samples: int, *, n_folds: int, scheme: str = "expanding",   # "expanding" | "rolling"
+    n_samples: int, *, n_folds: int, scheme: Literal["expanding", "rolling"] = "expanding",
     min_train: int | None = None, embargo: int = 0,
     order: np.ndarray | None = None,                              # e.g. window_end_date; enforces chronology
 ) -> list[Fold]:
@@ -123,6 +133,8 @@ def cross_validate(
     X: np.ndarray, y: np.ndarray, folds: Sequence[Fold], *,
     aux: dict[str, np.ndarray] | None = None,                    # dt/target_dt/seq_lengths; sliced axis-0 per fold
     on_event: Callable[[int, TrainingEvent], None] | None = None, # (fold_idx, event)
+    pass_eval_as_val: bool = False,                              # D-CV-9: default held-out; True doubles eval as X_val/y_val
+    map_fn: Callable = map,                                       # D-CV-10 seam: serial map; inject a parallel map (WS-8)
 ) -> CrossValResult:
     ...
 ```
@@ -133,9 +145,14 @@ def cross_validate(
 
 ## 5. Packaging — model-core 0.2.0
 
-- `pyproject.toml`: add `[project.optional-dependencies] crossval = ["numpy>=1.24"]`; bump version `0.1.0 → 0.2.0` (the `crossval` submodule is the headline; the deferred `predict(**kw)` ABC documentation may ride along in 0.2.0 — **Paul's call whether to bundle**).
+- `pyproject.toml`: add `[project.optional-dependencies] crossval = ["numpy>=1.24"]`; bump version `0.1.0 → 0.2.0` (the `crossval` submodule is the headline; **`predict(**kw)` is bundled into 0.2.0 per D-CV-7** — the ABC + `ReferenceLinearModel.predict` + the 3-D stub are widened together).
 - **Publish-first:** 0.2.0 must reach PyPI before any consumer pins `>=0.2.0`. Existing `>=0.1.0,<0.2.0` pins (juniper-ml `[tools]`, recurrence-model) keep resolving 0.1.x and are unaffected until a consumer opts into a `crossval` feature; the `test_model_core_drift.py` lint guards the pin/version relationship.
-- CHANGELOG (model-core) `[0.2.0]` entry; juniper-ml `[tools]` pin widening to admit 0.2.0 is a **separate follow-up** (only when a consumer needs crossval), updated with `test_pyproject_extras.py` in lockstep (RK-11).
+- CHANGELOG (model-core) `[0.2.0]` entry. **F-CRIT-1 (supersedes the earlier "separate follow-up" pin plan):**
+  bumping `_version` → 0.2.0 reds required CI — `test_model_core_drift.py` reads `_version.py` dynamically and
+  `test_pyproject_extras.py` hardcodes the pin string — unless the juniper-ml `[tools]` pin widens to
+  `>=0.1.0,<0.3.0` **in the same PR** as the version bump. Safe pre-publish (still resolves 0.1.0 until 0.2.0 is
+  on PyPI). Widen surgically (negative-control at `test_model_core_drift.py:190`); `[all]` needs no edit
+  (recursive `juniper-ml[…,tools]` ref); leave the external recurrence-model `<0.2.0` pin alone (not lint-coupled).
 
 ---
 
