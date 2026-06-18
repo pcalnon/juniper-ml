@@ -8,14 +8,24 @@
 
 ########################################################################################################################################################################
 # Define Parameters
-# TODO: Update these parameters to your own values
-# TODO: Consider using conf file or command line parameters
+#     TODO: Update these parameters to your own values
+#     TODO: Consider using conf file or command line parameters
 ########################################################################################################################################################################
-SESSION_ID_PARAM="3b3755b9-b379-411a-89e5-ba9f80abe1e2"
-WORKTREE_NAME_PARAM="dynamic-drifting-newt"
+# SESSION_ID_PARAM="3b3755b9-b379-411a-89e5-ba9f80abe1e2"
+# SESSION_ID_PARAM="7bf590e8-204b-4e03-bc6c-5eef743365d8"
+# SESSION_ID_PARAM="3a4f2d46-28c1-40b7-8c26-92ec5edfea3b"
+ SESSION_ID_PARAM="da3f230a-90a8-4a08-a30d-b9721c4fd785"
 
+# WORKTREE_NAME_PARAM="dynamic-drifting-newt"
+# WORKTREE_NAME_PARAM="serene-splashing-meadow"
+# WORKTREE_NAME_PARAM="calm-winding-stream"
+WORKTREE_NAME_PARAM="clever-frolicking-beach"
+
+
+########################################################################################################################################################################
 # Infrequently Changed Parameters
-# TODO: Consider using conf file or command line parameters
+#     TODO: Consider using conf file or command line parameters
+########################################################################################################################################################################
 EFFORT_LEVEL_PARAM="max"
 PROMPT_PARAM="Hello World, Claude!"
 REMOTE_CONTROL_PARAM="1"
