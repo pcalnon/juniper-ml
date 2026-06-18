@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-17
+
+### Added
+
+- **Cross-validation / fold-executor layer (`juniper_model_core.crossval`).** An optional,
+  model-agnostic orchestration tier above a single model: `walk_forward_folds` (index-based,
+  expanding/rolling, `embargo` + chronological `order`), `cross_validate` (fresh model per fold via
+  a factory -> held-out predict -> external score -> per-metric mean/std aggregate), and the
+  `Fold` / `FoldResult` / `CrossValResult` value types. Built purely on the `TrainableModel`
+  contract; serial by default with an optional `map_fn` seam for a future parallel/distributed
+  worker. Behind the new `[crossval]` extra (numpy); **not** re-exported from the top-level
+  package, so `import juniper_model_core` stays dependency-free.
+- **Held-out scoring (`crossval.metrics`).** `regression_metrics` plus a `score(task_type, ...)`
+  dispatch (regression implemented; classification raises `NotImplementedError` -- an additive
+  drop-in later).
+- **Shared metric source (`juniper_model_core._metrics`).** The canonical regression-metric math
+  now lives in one private module that both `crossval.metrics` and the conformance kit's reference
+  model call, so the two implementations cannot drift.
+
+### Changed
+
+- **`TrainableModel.predict` contract widened to `predict(self, X, **kw)`** (additive, LSP-safe):
+  sequence models may read `dt` / `readout_mask` / `seq_lengths` from `**kw`, symmetric with `fit`
+  (decision D3). Existing bare `predict(X)` implementers and callers are unaffected.
+
 ## [0.1.0] - 2026-06-14
 
 ### Added

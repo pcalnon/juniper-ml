@@ -45,7 +45,7 @@ The meta-package MUST declare the following optional-dependency groups, with at 
 | `clients`   | `juniper-data-client>=0.4.0`, `juniper-cascor-client>=0.3.0`                                                              |
 | `worker`    | `juniper-cascor-worker>=0.3.0`                                                                                            |
 | `servers`   | `juniper-canopy>=0.3.0`, `juniper-cascor>=0.3.17`, `juniper-data>=0.6.0`                                                  |
-| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0` |
+| `tools`     | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.2.0`, `juniper-observability>=0.2.0`, `juniper-service-core>=0.1.0,<0.2.0` |
 | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` — retained as a back-compat alias for the same dependency listed in `tools`             |
 | `all`       | Recursive reference of the form `juniper-ml[<group1>,<group2>,...]` that aggregates every non-alias group exactly once    |
 
