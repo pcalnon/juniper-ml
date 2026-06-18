@@ -68,7 +68,7 @@ jobs:
           python -m pytest \
             --cov=juniper_model_core \
             --cov-report=term-missing \
-            --cov-fail-under=85
+            --cov-fail-under=95
 
   build:
     name: Build distribution
