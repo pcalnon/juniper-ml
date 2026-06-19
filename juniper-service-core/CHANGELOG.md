@@ -5,6 +5,51 @@ All notable changes to `juniper-service-core` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Generic training-lifecycle orchestrator (OUT-11 T2, step 1).** `ServiceLifecycleManager`
+  — the model-agnostic, background-threaded lifecycle body that `juniper-model-core`'s
+  `TrainingLifecycleBase` deferred to WS-2: it drives an injected `TrainableModel` through
+  `fit()` on a worker thread, tracks a `LifecycleStateMachine`
+  (`STOPPED → STARTED → {PAUSED, COMPLETED, FAILED}`), folds the model's `TrainingEvent`s into
+  a thread-safe `LifecycleMonitor` (live-state snapshot + bounded metric history), and honors
+  cooperative pause/stop at event boundaries. Extracted from cascor's cascade-bound
+  `api/lifecycle/` (state machine = CLEAN; monitor re-expressed onto the model-core
+  `TrainingEvent` vocabulary; manager = generic base) — cascade orchestration stays in
+  cascor's subclass.
+- **Generic HTTP routes (`juniper_service_core.routes`).** Model-agnostic training-control
+  (`/v1/training/{start,stop,pause,resume,reset,status,params}`), metrics (`/v1/metrics`,
+  `/v1/metrics/history`), dataset (`/v1/dataset`, `/v1/dataset/data`) and read-only
+  model-introspection (`/v1/network`, `/v1/network/topology`) routes over the injected
+  lifecycle (`app.state.lifecycle`), plus the shared `ResponseEnvelope` / `success_response`
+  (with numpy-scalar coercion). Mount via `create_app(routers=build_routers())`.
+- Both-stacks-green contract test: model-core's **regression** `ReferenceGrowableModel` drives
+  every generic route end-to-end — the RK-6 guard against classification (argmax / accuracy)
+  assumptions leaking into "generic" code.
+
+### Changed
+
+- `lifecycle` is now a subpackage (`lifecycle/{sync,manager,monitor,state_machine}.py`). The
+  synchronous `TrainingLifecycle` / `EventCollector` moved to `lifecycle/sync.py` and are
+  re-exported, so `from juniper_service_core.lifecycle import TrainingLifecycle` is unchanged.
+- The new lifecycle and route public names (`ServiceLifecycleManager`, `LifecycleStateMachine`,
+  `LifecycleStatus`, `LifecycleCommand`, `LifecycleMonitor`, `build_routers`, `get_lifecycle`,
+  `success_response`, `error_response`, `ResponseEnvelope`) are exported lazily via the PEP 562
+  `__getattr__`, so the dependency-free top-level import (`import juniper_service_core`) still
+  holds (`fastapi` loads only when `routes` is accessed).
+
+### Notes
+
+- Additive; cascor is untouched (its adoption of the base is WS-6's A-phase). The websocket
+  and worker subsystems (OUT-11 steps 2–3) and snapshot/replay persistence are deferred.
+- Adds a `numpy>=1.24` runtime dependency (the generic routes marshal inline request arrays
+  to numpy at the model boundary). It loads lazily with `.routes`, so the dependency-free
+  top-level import is preserved. This also repairs `ci-service-core`, which had been red on
+  `main` since the synchronous-lifecycle PR — `numpy` was a missing test dependency (the
+  `lifecycle` tests and model-core's conformance kit both import it).
+
 ## [0.1.0] - 2026-06-14
 
 ### Added
