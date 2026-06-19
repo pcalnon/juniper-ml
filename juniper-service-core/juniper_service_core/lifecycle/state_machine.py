@@ -44,10 +44,12 @@ PHASE_INFERENCE = "inference"
 class LifecycleStatus(Enum):
     """The model-agnostic training-lifecycle status.
 
-    The closed set every Juniper model service shares. cascor's snapshot-replay states
-    (``RESUME_READY`` / ``INVESTIGATING`` / ``REPLAYING``) are intentionally absent -- they
-    are coupled to its HDF5 persistence feature and stay in the cascor subclass / a later
-    T2 slice (snapshots), not in the generic base.
+    The closed set every Juniper model service shares. ``INVESTIGATING`` and ``RESUME_READY``
+    are the snapshot-loaded states (added with the generic snapshot seam, OUT-11 T2 step 1b):
+    a snapshot can be loaded for inspection (``INVESTIGATING`` -- training is rejected until a
+    retrain/resume promotes it) or to continue training (``RESUME_READY`` -- the next ``START``
+    resumes and the manager preserves the loaded history). cascor's ``REPLAYING`` stays
+    cascor-side until replay is extracted.
     """
 
     STOPPED = auto()
@@ -55,6 +57,8 @@ class LifecycleStatus(Enum):
     PAUSED = auto()
     COMPLETED = auto()
     FAILED = auto()
+    INVESTIGATING = auto()
+    RESUME_READY = auto()
 
 
 class LifecycleCommand(Enum):
@@ -123,6 +127,12 @@ class LifecycleStateMachine:
     def is_failed(self) -> bool:
         return self._status is LifecycleStatus.FAILED
 
+    def is_investigating(self) -> bool:
+        return self._status is LifecycleStatus.INVESTIGATING
+
+    def is_resume_ready(self) -> bool:
+        return self._status is LifecycleStatus.RESUME_READY
+
     def is_active(self) -> bool:
         """True while a run can make progress (``STARTED`` or ``PAUSED``)."""
         return self._status in (LifecycleStatus.STARTED, LifecycleStatus.PAUSED)
@@ -146,14 +156,21 @@ class LifecycleStateMachine:
         return handler()
 
     def _handle_start(self) -> bool:
+        # A snapshot loaded for inspection must be promoted via retrain/resume first.
+        if self._status is LifecycleStatus.INVESTIGATING:
+            logger.warning("Invalid transition: START while Investigating -- retrain or resume the snapshot first")
+            return False
         if self._status in (LifecycleStatus.FAILED, LifecycleStatus.COMPLETED):
             logger.info("Auto-resetting from terminal state %s before start", self._status.name)
             self._reset_to_stopped()
-        if self._status is LifecycleStatus.STOPPED:
+        # STOPPED (a fresh run) and RESUME_READY (continue from a loaded snapshot) both start;
+        # the history difference is the manager's concern, not the FSM's.
+        if self._status in (LifecycleStatus.STOPPED, LifecycleStatus.RESUME_READY):
+            prev = self._status.name
             self._status = LifecycleStatus.STARTED
             self._phase = PHASE_RUNNING
             self._paused_phase = None
-            logger.info("State transition: Stopped -> Started")
+            logger.info("State transition: %s -> Started", prev)
             return True
         if self._status is LifecycleStatus.PAUSED:
             return self._restore_from_paused()
@@ -237,6 +254,30 @@ class LifecycleStateMachine:
             return True
         logger.warning("Invalid transition: mark_failed while %s", self._status.name)
         return False
+
+    def mark_investigating(self) -> bool:
+        """Enter ``INVESTIGATING`` -- a snapshot loaded for inspection (training rejected until a
+        retrain/resume). Permitted only from a non-active state (not ``STARTED`` / ``PAUSED``)."""
+        if self.is_active():
+            logger.warning("Invalid transition: mark_investigating while %s", self._status.name)
+            return False
+        self._status = LifecycleStatus.INVESTIGATING
+        self._phase = PHASE_IDLE
+        self._paused_phase = None
+        logger.info("State transition: -> Investigating")
+        return True
+
+    def mark_resume_ready(self) -> bool:
+        """Enter ``RESUME_READY`` -- a snapshot loaded to continue training; the next ``START``
+        resumes (the manager preserves the loaded history). Permitted only from a non-active state."""
+        if self.is_active():
+            logger.warning("Invalid transition: mark_resume_ready while %s", self._status.name)
+            return False
+        self._status = LifecycleStatus.RESUME_READY
+        self._phase = PHASE_IDLE
+        self._paused_phase = None
+        logger.info("State transition: -> ResumeReady")
+        return True
 
     def get_state_summary(self) -> dict:
         """The machine's state as a JSON-ready dict.

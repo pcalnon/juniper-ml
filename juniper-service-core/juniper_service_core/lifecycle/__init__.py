@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from juniper_service_core.lifecycle.manager import ServiceLifecycleManager, TrainingInterrupted
 from juniper_service_core.lifecycle.monitor import LifecycleMonitor
+from juniper_service_core.lifecycle.snapshots import SnapshotNotFoundError, SnapshotStore
 from juniper_service_core.lifecycle.state_machine import (
     LifecycleCommand,
     LifecycleStateMachine,
@@ -40,4 +41,6 @@ __all__ = [
     "LifecycleStatus",
     "LifecycleCommand",
     "LifecycleMonitor",
+    "SnapshotStore",
+    "SnapshotNotFoundError",
 ]

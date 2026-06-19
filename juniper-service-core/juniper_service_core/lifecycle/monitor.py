@@ -147,6 +147,38 @@ class LifecycleMonitor:
             self._started_at = None
             self._updated_at = None
 
+    def restore(
+        self,
+        history: list[dict[str, Any]],
+        *,
+        current_epoch: int | None = None,
+        latest_metrics: dict[str, float] | None = None,
+        n_units: int | None = None,
+        status: str | None = None,
+        phase: str | None = None,
+    ) -> None:
+        """Repopulate the monitor from a loaded snapshot's sidecar (thread-safe).
+
+        Replaces the metric history and (optionally) the scalar fields; ``current_epoch`` /
+        ``latest_metrics`` / ``n_units`` default to the last restored history entry.
+        """
+        with self._lock:
+            self._history.clear()
+            self._history.extend(dict(entry) for entry in history)
+            last = self._history[-1] if self._history else {}
+            self._current_epoch = int(current_epoch if current_epoch is not None else last.get("epoch", 0))
+            source_metrics = latest_metrics if latest_metrics is not None else last.get("metrics", {})
+            self._latest_metrics = {key: float(value) for key, value in dict(source_metrics).items()}
+            if n_units is not None:
+                self._n_units = int(n_units)
+            elif "n_units" in last:
+                self._n_units = int(last["n_units"])
+            if status is not None:
+                self._status = status
+            if phase is not None:
+                self._phase = phase
+            self._updated_at = time.time()
+
     # -- snapshots (read by HTTP routes) ---------------------------------------------------
 
     def get_state(self) -> dict[str, Any]:

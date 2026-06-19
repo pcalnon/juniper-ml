@@ -28,6 +28,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Both-stacks-green contract test: model-core's **regression** `ReferenceGrowableModel` drives
   every generic route end-to-end — the RK-6 guard against classification (argmax / accuracy)
   assumptions leaking into "generic" code.
+- **Generic snapshot persistence (OUT-11 T2, step 1b).** A serializer-injected `SnapshotStore`
+  (one bundle directory per snapshot: the model written by an injected `juniper-model-core`
+  `ModelSerializer` + a JSON sidecar of model-agnostic lifecycle state) plus the
+  `ServiceLifecycleManager` methods `save_snapshot` / `list_snapshots` / `get_snapshot` /
+  `load_snapshot` (→ `INVESTIGATING`) / `restore_for_retrain` (→ `STOPPED`, history cleared) /
+  `resume_from_snapshot` (→ `RESUME_READY`, history kept), and the `/v1/snapshots` routes
+  (save / list / get / restore / retrain / resume; disk I/O off the event loop). Snapshots are
+  enabled only when a service injects a `ModelSerializer` (otherwise the routes return `501`).
+  The FSM gains the `INVESTIGATING` and `RESUME_READY` snapshot-loaded states. Replay
+  (`/replay` + controls) and dataset-swap history stay deferred / cascor-bound. Driven in tests
+  by model-core's `ReferenceLinearSerializer` (lossless `.npz` + JSON round-trip).
 
 ### Changed
 

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
-__all__ = ["InlineData", "TrainingStartRequest"]
+__all__ = ["InlineData", "TrainingStartRequest", "SnapshotCreateRequest"]
 
 
 class InlineData(BaseModel):
@@ -45,3 +45,11 @@ class TrainingStartRequest(BaseModel):
     inline_data: InlineData | None = None
     params: dict | None = None
     epochs: int | None = None
+
+
+class SnapshotCreateRequest(BaseModel):
+    """Optional body for ``POST /snapshots`` -- a human-readable label for the snapshot."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    description: str = ""
