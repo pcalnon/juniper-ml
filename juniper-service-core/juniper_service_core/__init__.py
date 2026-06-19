@@ -49,6 +49,7 @@ if TYPE_CHECKING:
         LifecycleMonitor,
         LifecycleStateMachine,
         LifecycleStatus,
+        ReplaySession,
         ServiceLifecycleManager,
         SnapshotNotFoundError,
         SnapshotStore,
@@ -106,6 +107,7 @@ __all__ = [
     "LifecycleMonitor",
     "SnapshotStore",
     "SnapshotNotFoundError",
+    "ReplaySession",
     # Generic routes (lazy, from .routes -- requires fastapi)
     "build_routers",
     "get_lifecycle",
@@ -147,6 +149,7 @@ _LAZY_EXPORTS = {
     "LifecycleMonitor": "juniper_service_core.lifecycle",
     "SnapshotStore": "juniper_service_core.lifecycle",
     "SnapshotNotFoundError": "juniper_service_core.lifecycle",
+    "ReplaySession": "juniper_service_core.lifecycle",
     # .routes requires fastapi; kept lazy so the top-level import stays dependency-free.
     "build_routers": "juniper_service_core.routes",
     "get_lifecycle": "juniper_service_core.routes",

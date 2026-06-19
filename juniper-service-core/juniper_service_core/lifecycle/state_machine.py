@@ -48,8 +48,8 @@ class LifecycleStatus(Enum):
     are the snapshot-loaded states (added with the generic snapshot seam, OUT-11 T2 step 1b):
     a snapshot can be loaded for inspection (``INVESTIGATING`` -- training is rejected until a
     retrain/resume promotes it) or to continue training (``RESUME_READY`` -- the next ``START``
-    resumes and the manager preserves the loaded history). cascor's ``REPLAYING`` stays
-    cascor-side until replay is extracted.
+    resumes and the manager preserves the loaded history). ``REPLAYING`` plays a snapshot's
+    stored history back as timed frames (OUT-11 T2 step 1c).
     """
 
     STOPPED = auto()
@@ -59,6 +59,7 @@ class LifecycleStatus(Enum):
     FAILED = auto()
     INVESTIGATING = auto()
     RESUME_READY = auto()
+    REPLAYING = auto()
 
 
 class LifecycleCommand(Enum):
@@ -133,6 +134,9 @@ class LifecycleStateMachine:
     def is_resume_ready(self) -> bool:
         return self._status is LifecycleStatus.RESUME_READY
 
+    def is_replaying(self) -> bool:
+        return self._status is LifecycleStatus.REPLAYING
+
     def is_active(self) -> bool:
         """True while a run can make progress (``STARTED`` or ``PAUSED``)."""
         return self._status in (LifecycleStatus.STARTED, LifecycleStatus.PAUSED)
@@ -156,9 +160,9 @@ class LifecycleStateMachine:
         return handler()
 
     def _handle_start(self) -> bool:
-        # A snapshot loaded for inspection must be promoted via retrain/resume first.
-        if self._status is LifecycleStatus.INVESTIGATING:
-            logger.warning("Invalid transition: START while Investigating -- retrain or resume the snapshot first")
+        # A loaded-for-inspection snapshot / an active replay must be exited first.
+        if self._status in (LifecycleStatus.INVESTIGATING, LifecycleStatus.REPLAYING):
+            logger.warning("Invalid transition: START while %s -- exit it first (retrain/resume, or stop replay)", self._status.name)
             return False
         if self._status in (LifecycleStatus.FAILED, LifecycleStatus.COMPLETED):
             logger.info("Auto-resetting from terminal state %s before start", self._status.name)
@@ -277,6 +281,18 @@ class LifecycleStateMachine:
         self._phase = PHASE_IDLE
         self._paused_phase = None
         logger.info("State transition: -> ResumeReady")
+        return True
+
+    def mark_replaying(self) -> bool:
+        """Enter ``REPLAYING`` -- a snapshot's history is being played back. Permitted only from a
+        non-active state (not ``STARTED`` / ``PAUSED``)."""
+        if self.is_active():
+            logger.warning("Invalid transition: mark_replaying while %s", self._status.name)
+            return False
+        self._status = LifecycleStatus.REPLAYING
+        self._phase = PHASE_IDLE
+        self._paused_phase = None
+        logger.info("State transition: -> Replaying")
         return True
 
     def get_state_summary(self) -> dict:
