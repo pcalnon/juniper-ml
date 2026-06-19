@@ -93,3 +93,88 @@ def test_no_valid_folds_raises():
     # huge embargo wipes out every training block
     with pytest.raises(ValueError, match="no valid folds"):
         walk_forward_folds(30, n_folds=2, embargo=100)
+
+
+# --- multi-entity ("panel") folds via groups= ---------------------------------------------------
+
+
+def _panel(n_dates: int = 12, n_tickers: int = 2):
+    """A panel where row r has date ``r // n_tickers`` and entity ``r % n_tickers`` (windows
+    interleaved by date across entities). Returns ``(n_samples, order, groups)``."""
+    order = np.repeat(np.arange(n_dates), n_tickers).astype(float)  # [0,0,1,1,2,2,...]
+    groups = np.tile(np.arange(n_tickers), n_dates)  # [0,1,0,1,...]
+    return n_dates * n_tickers, order, groups
+
+
+def _signature(folds):
+    return [(f.train_idx.tolist(), f.eval_idx.tolist()) for f in folds]
+
+
+def test_groups_none_matches_omitted():
+    # groups=None must be byte-identical to not passing groups at all (backward compatibility).
+    assert _signature(walk_forward_folds(60, n_folds=3, embargo=2)) == _signature(
+        walk_forward_folds(60, n_folds=3, embargo=2, groups=None)
+    )
+
+
+def test_groups_eval_is_pooled_across_entities():
+    n, order, groups = _panel(12, 2)
+    for f in walk_forward_folds(n, n_folds=3, order=order, groups=groups):
+        assert set(groups[f.eval_idx].tolist()) == {0, 1}  # eval block spans both entities (pooled)
+
+
+def test_groups_per_group_embargo_drops_each_entitys_latest_train():
+    n, order, groups = _panel(12, 2)
+    base = walk_forward_folds(n, n_folds=3, embargo=0, order=order, groups=groups)
+    purged = walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups)
+    for a, b in zip(base, purged, strict=True):
+        assert set(a.eval_idx.tolist()) == set(b.eval_idx.tolist())  # same pooled eval block
+        dropped = set(a.train_idx.tolist()) - set(b.train_idx.tolist())
+        groups_with_train = {g for g in np.unique(groups) if (groups[a.train_idx] == g).any()}
+        # embargo=1 drops exactly one window per entity that had any train windows...
+        assert len(dropped) == len(groups_with_train)
+        # ...and the dropped one is that entity's most-recent (by order) train window.
+        for g in groups_with_train:
+            g_train = a.train_idx[groups[a.train_idx] == g]
+            assert g_train[np.argmax(order[g_train])] in dropped
+
+
+def test_groups_per_group_leakage_guard():
+    n, order, groups = _panel(12, 2)
+    for f in walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups):
+        for g in np.unique(groups):
+            tr = f.train_idx[groups[f.train_idx] == g]
+            ev = f.eval_idx[groups[f.eval_idx] == g]
+            if tr.size and ev.size:
+                # each entity's own train strictly precedes its own eval (no same-entity backflow)
+                assert order[tr].max() < order[ev].min()
+
+
+def test_groups_length_mismatch_raises():
+    n, order, groups = _panel(12, 2)
+    with pytest.raises(ValueError, match="groups length"):
+        walk_forward_folds(n, n_folds=3, order=order, groups=groups[:-1])
+
+
+def test_groups_determinism():
+    n, order, groups = _panel(12, 2)
+    assert _signature(walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups)) == _signature(
+        walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups)
+    )
+
+
+def test_groups_embargo_skips_early_fold_but_keeps_later():
+    # fold_size=4; embargo=2 fully purges fold 0's 4-window train (2 per entity), but fold 1's
+    # 8-window candidate keeps 4 after the per-entity purge -> only the later fold survives.
+    n, order, groups = _panel(6, 2)  # 12 windows
+    folds = walk_forward_folds(n, n_folds=2, embargo=2, order=order, groups=groups)
+    assert len(folds) == 1
+    assert folds[0].train_idx.size == 4
+
+
+def test_groups_min_train_skips_small_expanding_folds():
+    # fold_size=6; expanding min_train=10 drops fold 0 (6 train rows); folds 1,2 (12,18) qualify.
+    n, order, groups = _panel(12, 2)  # 24 windows
+    folds = walk_forward_folds(n, n_folds=3, min_train=10, order=order, groups=groups)
+    assert len(folds) == 2
+    assert all(f.train_idx.size >= 10 for f in folds)

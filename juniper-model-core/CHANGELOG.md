@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-18
+
+### Added
+
+- **Multi-entity ("panel") walk-forward folds (`walk_forward_folds(..., groups=)`).** An additive,
+  keyword-only `groups` parameter (per-sample entity id, e.g. `ticker_code`) generalizes the splitter
+  to panel data. Folds stay pooled and date-ordered (train = all entities' windows before each cut;
+  eval = the next block across all entities), but the `embargo` purge is applied **per group** -- from
+  each fold's train side, the last `embargo` windows *of each entity* (by that entity's own `order`)
+  are dropped. This closes the same-entity look-back leak at the fold boundary that a single
+  global-rank embargo leaves open on a panel (where a global gap mostly drops *other* entities'
+  rows). `groups=None` (default) is byte-identical to the prior single-series behavior, so the
+  change is fully backward compatible.
+
 ## [0.2.0] - 2026-06-17
 
 ### Added
