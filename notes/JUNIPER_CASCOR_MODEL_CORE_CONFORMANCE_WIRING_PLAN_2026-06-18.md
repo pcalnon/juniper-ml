@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-cascor (the wiring lands here); plan hosted in pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.0.0 (DRAFT — scoped from a live read of juniper-model-core's conformance kit + cascor, 2026-06-18; pending Paul's §0 ratification)
+**Version**: 1.1.0 (RATIFIED — §0 decisions D-C1…D-C5 confirmed by Paul + plan independently audited against reality, 2026-06-18)
 **Last Updated**: 2026-06-18
 
 ---
@@ -31,30 +31,62 @@
 
 ---
 
-## §0. Status & decisions needing Paul
+## §0. Status & ratified decisions
+
+> **RATIFIED 2026-06-18 (Paul).** D-C1…D-C5 confirmed as proposed, on the evidence of the
+> independent audit recorded in §0.1 (all plan claims verified against cascor #340 + model-core 0.2.0).
 
 - **D-C1 — Adapter is TEST-ONLY** (lives in cascor `src/tests/`, imports nothing into production).
-  OUT-13 proves cascor *can* conform pre-refactor (insurance); WS-6-6b makes it native. **Concur?**
+  OUT-13 proves cascor *can* conform pre-refactor (insurance); WS-6-6b makes it native. **RATIFIED: test-only.**
 - **D-C2 — Implement the full `GrowableModel`** (not `TrainableModel`-only). cascor is the kit's
-  canonical growable classifier; the baseline should exercise both halves. **Concur?**
+  canonical growable classifier; the baseline should exercise both halves. **RATIFIED: full GrowableModel.**
 - **D-C3 — `grow_step` is best-effort.** cascor grows *inside* `fit()`; it exposes no clean
   "add exactly one frozen unit" public API. The conformance suite tolerates this: its growth test
   is guarded by `if outcome.added:` (see §3.1). **Proposed:** ship `grow_step` returning
   `added=False` (a no-op that still satisfies the contract) + `freeze()` flag, and capture the
   REAL growth dynamics through OUT-12's trajectory golden instead. Option B (wire a genuine
   single-step growth by driving cascor's internal cascade machinery) is deferred to WS-6-6b where
-  native growth is built. **Pick A (no-op grow_step now) or B (real, heavier).**
+  native growth is built. **RATIFIED: Option A (no-op grow_step now).** The audit confirmed it is
+  contract-legal (`suite.py:133` `if outcome.added:` guard), that cascor exposes no public single-step
+  grow API, and that OUT-12's trajectory golden already pins the real growth dynamics.
 - **D-C4 — Skip the serialization conformance check** (`make_serializer = None`). The kit's
   `test_serialization_roundtrip_lossless` asserts **`np.array_equal` (bit-exact)**; cascor's HDF5
   round-trip is `torch.allclose(atol=1e-6)`-stable, not bit-exact (OUT-12 evidence). OUT-12's
   `test_golden_serialization_roundtrip` already covers serialization *at the correct tolerance*.
   **Proposed:** skip it here and cross-reference OUT-12. (Alternative, separate: relax the kit's
-  check to `allclose` — a juniper-model-core change, out of scope for OUT-13.) **Concur?**
+  check to `allclose` — a juniper-model-core change, out of scope for OUT-13.) **RATIFIED: skip here +
+  cross-reference OUT-12; the kit's bit-exact default stands (it is correct for the LMU + reference model).**
 - **D-C5 — CI lane.** Reuse the existing `golden` marker/`--golden` serial lane, **or** add a
   sibling `conformance` marker + lane. **Proposed:** a new `conformance` marker sharing the same
-  serial/GIL/BLAS-pinned harness, so the two gate-halves report as distinct checks. **Concur?**
+  serial/GIL/BLAS-pinned harness, so the two gate-halves report as distinct checks. **RATIFIED: new
+  `conformance` marker, shared serial/BLAS harness, distinct check** (build-detail: lean a second job in
+  the existing `golden-regression.yml`).
 
 Everything else is mechanical (§7).
+
+## §0.1 Audit record (2026-06-18)
+
+The plan's claims were independently audited against ground truth before ratification —
+juniper-model-core's conformance kit @ v0.2.0 (`conformance/suite.py`) and juniper-cascor @
+`origin/main` (post-#340). **Every claim confirmed; no breaking discrepancies; the plan is buildable
+as written.**
+
+- **Kit side** (`suite.py`): the growth test's `if outcome.added:` guard (`suite.py:133`) makes a
+  no-op `grow_step` contract-legal (D-C3); `test_serialization_roundtrip_lossless` asserts
+  `np.array_equal` (bit-exact, `suite.py:119`) and `make_serializer=None` early-returns (D-C4); exactly
+  13 contract methods (10 base + 3 growable); classification `{accuracy, loss}` ∈ `CLASSIFICATION_METRIC_KEYS`.
+- **cascor side** (`cascade_correlation.py`): `fit(...) -> Dict[str, List]` returning `self.history`;
+  `early_stopping=True` default; `history` carries `train_loss`/`train_accuracy` + `hidden_units_added`
+  (with a `correlation` score, plus the `unit_index=-1` sentinel §3.3 already skips); `predict ->
+  torch.Tensor`; `input_size`/`output_size`/`hidden_units`/`_completion_reason` all present; growth is
+  internal to `fit()` (no public single-step grow API); cascor is not yet model-core-wired; OUT-12's
+  golden suite + `two_spiral_seed42.npz` `(60,2)`/`(60,2)` one-hot shipped in #340.
+
+**Build-thread notes (non-blocking):** (1) the adapter must use cascor's real
+`fit(x_train, y_train, x_val, y_val, …)` param names, not the `x, y` shorthand in §2; (2) `add_unit()`
+is internal machinery (it needs a `CandidateUnit`), not a single-step grow API — worth a one-line
+adapter comment; (3) `grow_network()` returns `ValidateTrainingResults`, not a dict (moot for the
+no-op `grow_step`).
 
 ## §1. The contract (model-core `GrowableModel`)
 
@@ -97,6 +129,7 @@ pytest then runs ~13 `test_*` contract methods against the adapter.
 ## §3. The three non-trivial mappings
 
 ### §3.1 `grow_step` / `freeze` (D-C3)
+
 cascor has no public "add one frozen unit" call. The suite's growth test is:
 `before=n_units; outcome=grow_step(); if outcome.added: assert n_units==before+1`. So `added=False`
 is contract-legal. **Plan:** `freeze()` sets `self._frozen=True`; `grow_step()` returns
@@ -106,13 +139,16 @@ is contract-legal. **Plan:** `freeze()` sets `self._frozen=True`; `grow_step()` 
 trajectory golden — the conformance kit asserts the *interface*, OUT-12 asserts the *behavior*.
 
 ### §3.2 `describe_topology() -> Topology`
+
 Build the model-agnostic graph (`validate_topology` rules: ≥1 node, unique non-empty ids,
 `kind ∈ {input,hidden,output,...}`, edges reference existing nodes, `meta.task_type` present):
+
 - nodes: one `input` node, one `hidden` node per `net.hidden_units` (`frozen=True`), one `output`.
 - edges: input→output; input→each hidden; hidden→each later hidden (cascade); each hidden→output.
 - meta: `{"task_type": "classification", "n_units": n, "n_in": input_size, "n_out": output_size}`.
 
 ### §3.3 `on_event` → `TrainingEvent` (legal order)
+
 cascor's `fit()` has no event sink, so the adapter reconstructs events **post-hoc from `history`**
 after `net.fit()` returns (the suite checks *order*, not timing): emit `training_start` (seq 0),
 then one `unit_added` per real `hidden_units_added` entry (skip the sentinel; seq increments,
@@ -120,18 +156,21 @@ payload `{"n_units": k, "unit_id": f"h{k}", "score": correlation}`), then `train
 seq). `legal_event_order` ⇒ first=start, last=end, each once, seq non-decreasing. ✓
 
 ## §4. Dataset (classification)
+
 The kit's fixtures are **regression-only** (RK-6 canary). cascor is classification, so the adapter
 supplies its own `ConformanceDataset(X, y, X_val, y_val, task_type="classification")`. **Reuse
 OUT-12's frozen `src/tests/fixtures/golden/two_spiral_seed42.npz`** (X `(60,2)`, y `(60,2)` one-hot)
 split into train/val — one fixed dataset shared by both gate-halves. `fit_kwargs={}` (2-D model).
 
 ## §5. File layout, dependency, CI
+
 ```text
 src/tests/conformance/                         # NEW
   __init__.py                                  # (namespace ok; mirrors existing test dirs)
   cascor_model_core_adapter.py                 # CascorModelCoreAdapter(GrowableModel) + dataset/serializer factories
   test_model_core_conformance.py               # class TestCascorConformance(GrowableModelConformance)
 ```
+
 - **Dependency:** add `juniper-model-core[conformance]>=0.2.0,<0.3.0` to cascor's test/dev deps
   (pyproject `[project.optional-dependencies].test` or the dev group). It pulls numpy (already present).
 - **Marker + lane (D-C5):** add a `conformance` marker; run serially on the GIL env, BLAS-pinned,
@@ -139,11 +178,13 @@ src/tests/conformance/                         # NEW
   a second marker in the same workflow).
 
 ## §6. Determinism
+
 Reuse the OUT-12 hardening verbatim (`CASCOR_NUM_PROCESSES=1`, single-thread BLAS,
 `torch.set_num_threads(1)`, `seed=42`). The suite instantiates `make_model()`/`make_dataset()`
 fresh per `test_*` (~13 trainings ≈ 15–20 s on the serial lane — acceptable; `slow`-tagged).
 
 ## §7. Implementation steps (for the build thread)
+
 1. Add `juniper-model-core[conformance]` test dep + `conformance` marker (+ `--conformance` gate if
    matching the `--golden` isolation pattern).
 2. Write `CascorModelCoreAdapter(GrowableModel)` — fit/predict/metrics/describe_topology/shapes/
@@ -156,6 +197,7 @@ fresh per `test_*` (~13 trainings ≈ 15–20 s on the serial lane — acceptabl
    this plan + OUT-13; note the OUT-12 cross-reference for serialization.
 
 ## §8. Risks & guardrails
+
 | Risk | Guardrail |
 |------|-----------|
 | Adapter drifts from cascor's real API | Test-only; trains the real network; OUT-12 golden pins behavior |
@@ -166,6 +208,7 @@ fresh per `test_*` (~13 trainings ≈ 15–20 s on the serial lane — acceptabl
 | WS-6 changes break conformance | Re-run after 6a/6b; any new failure blocks the cutover (kill-criterion) |
 
 ## §9. Provenance
+
 Scoped from a live read of juniper-model-core's conformance kit (v0.2.0) and cascor `origin/main`
 (post-#340), 2026-06-18. Pairs with the OUT-12 golden suite as the two halves of the WS-6 gate.
 Implementation is a separate build phase (needs `JuniperCascor1` to run the suite).
