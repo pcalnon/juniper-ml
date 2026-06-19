@@ -42,6 +42,7 @@ remaining phases — per the **ratified design + gate-audit** in juniper-ml **PR
 tests. The decoupling seam is the **model-core interfaces** (`TrainableModel`/`GrowableModel`/`TrainingEvent`/`Topology`).
 
 **Audit verdict — GO, ~70% extractable** (see #468 §5.6 for the per-module ledger):
+
 - **Routes/lifecycle:** CLEAN = most routes (admin/dataset/health/history/metrics/workers/snapshots + most of
   training) + `state_machine`; ADAPTER = `network`/`training`/`monitor`; CASCOR-BOUND = `manager` (3k-line) +
   `decision_boundary` → build a generic `ServiceLifecycleManager` base, cascor subclasses it.
@@ -53,6 +54,7 @@ tests. The decoupling seam is the **model-core interfaces** (`TrainableModel`/`G
   **defer the generic Task envelope to WS-8**).
 
 **Build phasing (each a PR, both-stacks-green; cascor unchanged via its subclass, stub model proves the base):**
+
 1. **Generic routes + lifecycle base** (`ServiceLifecycleManager`) onto the model-core interfaces + a stub-model
    contract test (the lowest-coupling, WS-6-relevant first slice). ← **start here.**
 2. **WebSocket subsystem** (drop `cascade_add`/`candidate_progress` + `worker_stream`).
@@ -74,7 +76,7 @@ tests. The decoupling seam is the **model-core interfaces** (`TrainableModel`/`G
 
 ## Stale worktrees from THIS session to clean up (merged PRs; do NOT touch other sessions')
 
-```
+```bash
 juniper-cascor--test--model-core-conformance--…        (cascor #341 MERGED)
 juniper-deploy--feat--recurrence-compose--…            (deploy #124 MERGED)
 juniper-ml--docs--out-13-conformance-plan--…           (ml #453 MERGED)
