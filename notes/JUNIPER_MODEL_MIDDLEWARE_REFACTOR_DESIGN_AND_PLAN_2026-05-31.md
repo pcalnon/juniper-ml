@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-ml (design doc); touches juniper-cascor, juniper-data, juniper-canopy, juniper-deploy, and two new shared packages
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.3.3 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07; Part 5 OQ-1/2/3/4/5/7 statuses reconciled to Paul's answers 2026-06-07; Status Tracker reconciled to shipped reality + nomenclature refresh 2026-06-17)
-**Last Updated**: 2026-06-17
+**Version**: 0.3.4 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07; Part 5 OQ-1/2/3/4/5/7 statuses reconciled to Paul's answers 2026-06-07; Status Tracker reconciled to shipped reality + nomenclature refresh 2026-06-17; WS-4b app + WS-6 trigger marked met 2026-06-18)
+**Last Updated**: 2026-06-18
 
 ---
 
@@ -47,9 +47,9 @@
 | **WS-1** | juniper-data: time-series + regression support                           | 2.4         | M    | `SHIPPED`   | WS-0             | Foundation; unblocks model training. Additive, low risk. **Resolve [OQ-5] here at ratification**                                           |
 | **WS-2** | Extract `juniper-service-core` (Tier-1 generic infra)                    | 2.3         | L    | `SHIPPED`   | WS-0             | Additive shared package; cascor adopts behind a no-op shim                                                                                 |
 | **WS-3** | Define `juniper-model-core` abstract interfaces                          | 2.3         | M    | `SHIPPED`   | WS-0             | **SHIPPED** — 0.1.0 on PyPI; ABCs + event/serialization contracts + conformance kit (66 tests / ~97%); 0.2.0 crossval designed, not built                                                                        |
-| **WS-4** | Build `juniper-recurrence` (LMU reference model) + `juniper-recurrence-client` | A§1.5 / 2.3 | L    | `SHIPPED`   | WS-1, WS-2, WS-3 | **Model SHIPPED** — `juniper-recurrence-model` LMU passes the model-core conformance kit 10/10. **App (WS-4b) IN PROGRESS** — skeleton on `main`; routes/publish PRs not yet landed.                                                 |
+| **WS-4** | Build `juniper-recurrence` (LMU reference model) + `juniper-recurrence-client` | A§1.5 / 2.3 | L    | `SHIPPED`   | WS-1, WS-2, WS-3 | **Model SHIPPED** — LMU passes the model-core conformance kit 10/10. **App (WS-4b) SHIPPED** — full FastAPI app on `juniper-recurrence` main (#6–#19), incl. `POST /v1/crossval` consuming model-core 0.2.0; pins `juniper-model-core[crossval]>=0.2.0`.                                                 |
 | **WS-5** | Generalize `juniper-canopy` (model-agnostic UI + recurrence backend)        | 2.5         | M    | `PLANNED`   | WS-4             | Builds on canopy's existing `BackendProtocol` seam                                                                                         |
-| **WS-6** | Refactor `juniper-cascor` onto shared packages                           | 2.3 / 2.7   | L    | `DEFERRED`  | WS-2, WS-3, WS-4 | **Trigger:** interfaces proven by recurrence + cascor conformance suite green. De-risks production system                                     |
+| **WS-6** | Refactor `juniper-cascor` onto shared packages                           | 2.3 / 2.7   | L    | `PLANNED`   | WS-2, WS-3, WS-4 | **TRIGGER MET 2026-06-18** — recurrence interfaces proven (LMU conformance 10/10 + live `/crossval` app) **and** cascor conformance suite green (#341); golden regression-safety captured (#340). The 6a/6b cutover may now begin (kill-criterion §2.7). De-risks production system                                     |
 | **WS-7** | Ecosystem integration: `juniper-deploy`, `juniper-ml` extras             | 2.6         | S    | `IN PROGRESS`   | WS-4             | **IN PROGRESS** — juniper-ml `[tools]` extras done (model-core + service-core); juniper-deploy compose service still pending                                                                                                        |
 | **WS-8** | (future) `juniper-recurrence-worker` distributed training                   | 2.6         | L    | `DEFERRED`  | WS-4             | **Trigger:** recurrence training cost justifies distribution                                                                                  |
 | **WS-T** | Testing architecture (cuts across all)                                   | 3           | M    | `IN PROGRESS` | WS-0             | Conformance kit is a first-class deliverable, not an afterthought                                                                          |
@@ -299,8 +299,8 @@ Sequencing embodies the ratified "comprehensive target, phased rollout" decision
 4. **WS-4 — Build juniper-recurrence** (RCC) + client, greenfield against WS-2/WS-3. **This validates the abstractions without risk to cascor.** (Model substance: companion Part 1.)
 5. **WS-5 — Generalize canopy** + add recurrence backend.
 6. **WS-6 — Refactor cascor** onto service-core + model-core.
-    - **DEFERRED. Trigger:** WS-4 has shipped *and* a cascor golden/snapshot regression suite + the conformance suite are green for cascor.
-      - Until then, cascor stays as-is (it loses nothing; it simply doesn't yet consume the shared packages).
+    - **TRIGGER MET (2026-06-18).** WS-4 has shipped, and the cascor golden/snapshot regression suite (#340) and the model-core conformance suite (#341) are both green — so WS-6 may now begin.
+      - Through the deferred period cascor stayed as-is (it lost nothing; it simply did not yet consume the shared packages).
     - **Kill-criterion:** if the conformance suite cannot be made green for cascor without changing observable behavior, WS-6 is abandoned — cascor keeps its own service stack, recurrence still benefits from the shared packages, and the one-sided extraction is documented rather than forced.
 7. **WS-7 — deploy/meta-package** integration. **WS-8 — recurrence-worker** (deferred; trigger = training cost).
 
