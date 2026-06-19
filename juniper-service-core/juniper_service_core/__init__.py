@@ -50,6 +50,8 @@ if TYPE_CHECKING:
         LifecycleStateMachine,
         LifecycleStatus,
         ServiceLifecycleManager,
+        SnapshotNotFoundError,
+        SnapshotStore,
         TrainingLifecycle,
     )
     from juniper_service_core.middleware import (
@@ -102,6 +104,8 @@ __all__ = [
     "LifecycleStatus",
     "LifecycleCommand",
     "LifecycleMonitor",
+    "SnapshotStore",
+    "SnapshotNotFoundError",
     # Generic routes (lazy, from .routes -- requires fastapi)
     "build_routers",
     "get_lifecycle",
@@ -141,6 +145,8 @@ _LAZY_EXPORTS = {
     "LifecycleStatus": "juniper_service_core.lifecycle",
     "LifecycleCommand": "juniper_service_core.lifecycle",
     "LifecycleMonitor": "juniper_service_core.lifecycle",
+    "SnapshotStore": "juniper_service_core.lifecycle",
+    "SnapshotNotFoundError": "juniper_service_core.lifecycle",
     # .routes requires fastapi; kept lazy so the top-level import stays dependency-free.
     "build_routers": "juniper_service_core.routes",
     "get_lifecycle": "juniper_service_core.routes",

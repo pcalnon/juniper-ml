@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from juniper_service_core.routes import dataset, metrics, network, training
+from juniper_service_core.routes import dataset, metrics, network, snapshots, training
 from juniper_service_core.routes.dependencies import LIFECYCLE_STATE_ATTR, get_lifecycle
 from juniper_service_core.routes.responses import ResponseEnvelope, error_response, success_response
 
@@ -35,6 +35,7 @@ __all__ = [
     "metrics_router",
     "dataset_router",
     "network_router",
+    "snapshots_router",
     "get_lifecycle",
     "success_response",
     "error_response",
@@ -47,11 +48,13 @@ training_router: APIRouter = training.router
 metrics_router: APIRouter = metrics.router
 dataset_router: APIRouter = dataset.router
 network_router: APIRouter = network.router
+snapshots_router: APIRouter = snapshots.router
 
 
 def build_routers() -> list[APIRouter]:
     """Return the generic model-service routers, ready for ``create_app(routers=...)``.
 
-    Order is stable (training, metrics, dataset, network) for deterministic OpenAPI output.
+    Order is stable (training, metrics, dataset, network, snapshots) for deterministic OpenAPI
+    output. The snapshot routes self-report ``501`` until a service injects a model serializer.
     """
-    return [training_router, metrics_router, dataset_router, network_router]
+    return [training_router, metrics_router, dataset_router, network_router, snapshots_router]

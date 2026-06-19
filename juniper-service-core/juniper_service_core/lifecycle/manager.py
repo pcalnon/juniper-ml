@@ -26,7 +26,9 @@ with no model-specific hook.
 
 from __future__ import annotations
 
+import datetime
 import logging
+import os
 import threading
 import time
 from dataclasses import replace
@@ -35,6 +37,7 @@ from typing import TYPE_CHECKING, Any
 from juniper_model_core.lifecycle import TrainingLifecycleBase
 
 from juniper_service_core.lifecycle.monitor import DEFAULT_HISTORY_LIMIT, LifecycleMonitor
+from juniper_service_core.lifecycle.snapshots import SnapshotStore
 from juniper_service_core.lifecycle.state_machine import LifecycleCommand, LifecycleStateMachine
 
 if TYPE_CHECKING:
@@ -42,6 +45,7 @@ if TYPE_CHECKING:
 
     from juniper_model_core.events import TrainingEvent
     from juniper_model_core.interfaces import TrainableModel, TrainResult
+    from juniper_model_core.serialization import ModelSerializer
 
 __all__ = ["ServiceLifecycleManager", "TrainingInterrupted"]
 
@@ -69,10 +73,23 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
     attached before training starts.
     """
 
-    def __init__(self, model: TrainableModel | None = None, *, history_limit: int = DEFAULT_HISTORY_LIMIT) -> None:
+    def __init__(
+        self,
+        model: TrainableModel | None = None,
+        *,
+        history_limit: int = DEFAULT_HISTORY_LIMIT,
+        serializer: ModelSerializer | None = None,
+        snapshot_dir: str | os.PathLike[str] | None = None,
+    ) -> None:
         super().__init__(model, on_event=None)
         self.state_machine = LifecycleStateMachine()
         self.monitor = LifecycleMonitor(history_limit=history_limit)
+        # Snapshots are enabled iff a model serializer is injected. The dir defaults to
+        # JUNIPER_SERVICE_SNAPSHOT_DIR (else ``./snapshots``); cascor/etc. pass an explicit path.
+        self._snapshot_store: SnapshotStore | None = None
+        if serializer is not None:
+            resolved_dir = snapshot_dir if snapshot_dir is not None else os.environ.get("JUNIPER_SERVICE_SNAPSHOT_DIR", "snapshots")
+            self._snapshot_store = SnapshotStore(serializer, resolved_dir)
         self._lock = threading.RLock()
         self._stop_event = threading.Event()
         self._pause_event = threading.Event()
@@ -358,6 +375,102 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         with self._lock:
             self._params.update(params)
             return dict(self._params)
+
+    # -- snapshots (OUT-11 T2 step 1b; enabled when a ModelSerializer is injected) ----------
+
+    def snapshots_enabled(self) -> bool:
+        """True if this manager was built with a model serializer (snapshots are configured)."""
+        return self._snapshot_store is not None
+
+    def save_snapshot(self, description: str = "") -> dict[str, Any]:
+        """Persist the current model + lifecycle state as a new snapshot; return its metadata.
+
+        Raises ``RuntimeError`` if snapshots are not configured or no model is attached.
+        """
+        with self._lock:
+            store = self._require_snapshots()
+            if self.model is None:
+                raise RuntimeError("No model attached")
+            sidecar = {
+                "description": description,
+                "status": self.state_machine.status.name,
+                "model_type": self._safe_model_type(),
+                "dataset_name": self._dataset_name,
+                "params": dict(self._params),
+                "state": self.monitor.get_state(),
+                "history": self.monitor.get_history(),
+            }
+            return store.save(self.model, self._new_snapshot_id(), sidecar)
+
+    def list_snapshots(self) -> list[dict[str, Any]]:
+        """List all stored snapshots' metadata (drives ``GET /snapshots``)."""
+        return self._require_snapshots().list()
+
+    def get_snapshot(self, snapshot_id: str) -> dict[str, Any] | None:
+        """Return one snapshot's metadata, or ``None`` if absent (drives ``GET /snapshots/{id}``)."""
+        return self._require_snapshots().get(snapshot_id)
+
+    def load_snapshot(self, snapshot_id: str) -> dict[str, Any]:
+        """Restore a snapshot for **inspection** -> ``INVESTIGATING`` (training rejected until a
+        retrain/resume promotes it). Returns the post-load status. Raises
+        :class:`~juniper_service_core.lifecycle.snapshots.SnapshotNotFoundError` if absent.
+        """
+        with self._lock:
+            sidecar = self._load_snapshot_model(snapshot_id)
+            self.monitor.restore(sidecar.get("history", []), status="investigating", phase="idle")
+            self.state_machine.mark_investigating()
+            return self._status_dict()
+
+    def restore_for_retrain(self, snapshot_id: str) -> dict[str, Any]:
+        """Restore a snapshot's model but **clear** its history -> ``STOPPED`` (a fresh run from
+        this network). Returns the post-load status."""
+        with self._lock:
+            self._load_snapshot_model(snapshot_id)
+            self.monitor.reset()
+            self.monitor.set_run_context(model_type=self._safe_model_type())
+            self.state_machine.handle_command(LifecycleCommand.RESET)
+            return self._status_dict()
+
+    def resume_from_snapshot(self, snapshot_id: str) -> dict[str, Any]:
+        """Restore a snapshot's model **and** history -> ``RESUME_READY`` (the next ``start``
+        continues). Returns the post-load status with ``resume_point_epoch``."""
+        with self._lock:
+            sidecar = self._load_snapshot_model(snapshot_id)
+            history = sidecar.get("history", [])
+            self.monitor.restore(history, status="resume_ready", phase="idle")
+            self.state_machine.mark_resume_ready()
+            result = self._status_dict()
+            result["resume_point_epoch"] = len(history)
+            return result
+
+    def _require_snapshots(self) -> SnapshotStore:
+        if self._snapshot_store is None:
+            raise RuntimeError("Snapshots are not configured (no model serializer was provided)")
+        return self._snapshot_store
+
+    def _new_snapshot_id(self) -> str:
+        """A unique, sortable, UTC-timestamp snapshot id (collision-suffixed ``_2`` … ``_1000``)."""
+        base = "snapshot_" + datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        store = self._snapshot_store
+        if store is None or not store.exists(base):
+            return base
+        for suffix in range(2, 1001):
+            candidate = f"{base}_{suffix}"
+            if not store.exists(candidate):
+                return candidate
+        return base  # pragma: no cover - 1000 same-second snapshots is not a real scenario
+
+    def _load_snapshot_model(self, snapshot_id: str) -> dict[str, Any]:
+        """Shared restore core: reject-if-active, deserialize model + sidecar, attach. Caller holds the lock."""
+        store = self._require_snapshots()
+        if self.state_machine.is_active():
+            raise RuntimeError("Cannot load a snapshot while training is active")
+        model, sidecar = store.load(snapshot_id)  # raises SnapshotNotFoundError if absent
+        self.model = model
+        self._last_result = None
+        self._last_error = None
+        self.monitor.set_run_context(model_type=self._safe_model_type())
+        return sidecar
 
     def is_alive(self, stale_after_seconds: float = 30.0) -> bool:
         """Basic liveness: an idle service is alive; an active run is alive while its monitor
