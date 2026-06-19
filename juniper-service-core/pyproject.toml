@@ -30,6 +30,11 @@ dependencies = [
     # juniper-service-core is published; in the monorepo, CI installs it editable from the
     # sibling subdir first (see .github/workflows/ci-service-core.yml).
     "juniper-model-core>=0.1.0",
+    # The generic routes (juniper_service_core.routes) convert inline request arrays to numpy
+    # at the model boundary (model-core D2 -- numpy at the interface); model-core's conformance
+    # kit (used by the contract tests) also imports numpy. numpy loads only when `.routes` is
+    # accessed, so the dependency-free top-level `import juniper_service_core` still holds.
+    "numpy>=1.24",
 ]
 
 [project.optional-dependencies]

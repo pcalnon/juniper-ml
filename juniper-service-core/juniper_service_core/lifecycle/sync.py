@@ -1,15 +1,15 @@
-"""Generic training-lifecycle bodies (WS-2).
+"""Synchronous training-lifecycle body (WS-2).
 
-Concrete :class:`juniper_model_core.lifecycle.TrainingLifecycleBase` implementations that
-drive a model-core :class:`~juniper_model_core.interfaces.TrainableModel` through training
-and forward the model's :class:`~juniper_model_core.events.TrainingEvent`s to the injected
-sink. This is the **synchronous foundation**; the threaded / finite-state-machine /
-dataset-hot-swap / worker-coordinated bodies -- and the worker-parallelism question
-(OQ-11) -- are deferred follow-ups (model-core ``lifecycle.py`` decision D8).
+The simplest concrete :class:`juniper_model_core.lifecycle.TrainingLifecycleBase`: it drives a
+model-core :class:`~juniper_model_core.interfaces.TrainableModel` through ``fit`` to completion
+on the *calling* thread and forwards the model's :class:`~juniper_model_core.events.TrainingEvent`s
+to the injected sink. The threaded / state-machine-orchestrated body lives in
+:mod:`juniper_service_core.lifecycle.manager`
+(:class:`~juniper_service_core.lifecycle.manager.ServiceLifecycleManager`).
 
-Importing this module requires ``juniper-model-core`` (the model contract); it is therefore
-NOT imported at the top level of :mod:`juniper_service_core` (it is exposed lazily) so the
-dependency-free top-level import is preserved.
+Importing this module requires ``juniper-model-core`` (the model contract); the
+:mod:`juniper_service_core` top-level package keeps it off the eager import path (PEP 562
+lazy export) so the dependency-free ``import juniper_service_core`` guarantee is preserved.
 """
 
 from __future__ import annotations

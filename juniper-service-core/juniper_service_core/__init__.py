@@ -19,16 +19,60 @@ cascor's generic service infra extracted so far (de-cascored): API-key auth + ra
 limiting (:mod:`~juniper_service_core.security`), Docker-secrets reading
 (:mod:`~juniper_service_core.secrets`), the security / body-limit middleware
 (:mod:`~juniper_service_core.middleware`), the subprocess service launcher
-(:mod:`~juniper_service_core.launcher`), and the **synchronous**
-``TrainingLifecycleBase`` body (:mod:`~juniper_service_core.lifecycle`, which drives a
-``juniper-model-core`` ``TrainableModel``). The websocket / worker / generic-route
-helpers -- and the threaded / worker-coordinated lifecycle bodies (OQ-11) -- remain
-deferred (later WS-2 follow-ups).
+(:mod:`~juniper_service_core.launcher`), the **synchronous** and **threaded-orchestrator**
+lifecycle bodies (:mod:`~juniper_service_core.lifecycle` -- ``TrainingLifecycle`` and
+``ServiceLifecycleManager``, which drive a ``juniper-model-core`` ``TrainableModel`` through a
+status FSM + a ``TrainingEvent`` monitor), and the **generic HTTP routes**
+(:mod:`~juniper_service_core.routes` -- training control, metrics, dataset, and model
+introspection over the injected lifecycle). The websocket / worker subsystems -- and the
+worker-coordinated lifecycle body (OQ-11) -- remain deferred (later T2 follow-ups; OUT-11
+steps 2-3).
 """
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from juniper_service_core._version import __version__
+
+if TYPE_CHECKING:
+    # Static-analysis-only imports. ``TYPE_CHECKING`` is False at run time, so these never
+    # execute -- the dependency-free top-level import is preserved and the PEP 562
+    # ``__getattr__`` below does the real lazy resolution. Their purpose is to make every
+    # lazily-exported name resolvable for type checkers and for CodeQL's ``py/undefined-export``
+    # query, which cannot see through ``__getattr__``.
+    from juniper_service_core.app import create_app
+    from juniper_service_core.launcher import ManagedService, start_service, wait_for_health
+    from juniper_service_core.lifecycle import (
+        EventCollector,
+        LifecycleCommand,
+        LifecycleMonitor,
+        LifecycleStateMachine,
+        LifecycleStatus,
+        ServiceLifecycleManager,
+        TrainingLifecycle,
+    )
+    from juniper_service_core.middleware import (
+        RequestBodyLimitMiddleware,
+        SecurityHeadersMiddleware,
+        SecurityMiddleware,
+    )
+    from juniper_service_core.routes import (
+        ResponseEnvelope,
+        build_routers,
+        error_response,
+        get_lifecycle,
+        success_response,
+    )
+    from juniper_service_core.secrets import get_secret
+    from juniper_service_core.security import (
+        APIKeyAuth,
+        RateLimiter,
+        api_key_header,
+        build_api_key_auth,
+        build_rate_limiter,
+    )
+    from juniper_service_core.settings import SettingsBase
 
 __all__ = [
     "__version__",
@@ -53,6 +97,17 @@ __all__ = [
     # Lifecycle (lazy, from .lifecycle -- requires juniper-model-core)
     "TrainingLifecycle",
     "EventCollector",
+    "ServiceLifecycleManager",
+    "LifecycleStateMachine",
+    "LifecycleStatus",
+    "LifecycleCommand",
+    "LifecycleMonitor",
+    # Generic routes (lazy, from .routes -- requires fastapi)
+    "build_routers",
+    "get_lifecycle",
+    "success_response",
+    "error_response",
+    "ResponseEnvelope",
 ]
 
 # Maps each lazily-resolved public name to the submodule that defines it. Keeping
@@ -81,6 +136,17 @@ _LAZY_EXPORTS = {
     # dependency-free and the --no-deps publish-verify still works.
     "TrainingLifecycle": "juniper_service_core.lifecycle",
     "EventCollector": "juniper_service_core.lifecycle",
+    "ServiceLifecycleManager": "juniper_service_core.lifecycle",
+    "LifecycleStateMachine": "juniper_service_core.lifecycle",
+    "LifecycleStatus": "juniper_service_core.lifecycle",
+    "LifecycleCommand": "juniper_service_core.lifecycle",
+    "LifecycleMonitor": "juniper_service_core.lifecycle",
+    # .routes requires fastapi; kept lazy so the top-level import stays dependency-free.
+    "build_routers": "juniper_service_core.routes",
+    "get_lifecycle": "juniper_service_core.routes",
+    "success_response": "juniper_service_core.routes",
+    "error_response": "juniper_service_core.routes",
+    "ResponseEnvelope": "juniper_service_core.routes",
 }
 
 
