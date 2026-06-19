@@ -497,11 +497,16 @@ git push origin main
 ### 11.3 Author and archive the release notes
 
 Write the notes from [`notes/templates/TEMPLATE_RELEASE_NOTES.md`](templates/TEMPLATE_RELEASE_NOTES.md)
-and **archive a copy under `notes/releases/`** (committed in the release PR) so every release has an
-in-repo record alongside the GitHub Release body:
+and **archive a copy in the central `juniper-ml/notes/releases/` archive** (committed in the release
+PR) so every ecosystem release has one in-repo record alongside its GitHub Release body. The archive
+is **central**: releases cut from *other* repos (e.g. juniper-recurrence, juniper-cascor) are archived
+here too, not in their own repos.
 
-- Meta-package: `notes/releases/RELEASE_NOTES_v<version>.md`
-- Shared / sub-package: `notes/releases/RELEASE_NOTES_<pkg>_v<version>.md` (e.g. `RELEASE_NOTES_juniper-model-core_v0.2.0.md`)
+- Meta-package (`juniper-ml`): `RELEASE_NOTES_v<version>.md`
+- Every other package — a shared sub-package *or* a package from another repo: `RELEASE_NOTES_<pkg>_v<version>.md`
+  (e.g. `RELEASE_NOTES_juniper-model-core_v0.2.0.md`, `RELEASE_NOTES_juniper-cascor_v0.5.0.md`). The
+  package prefix is required so same-version tags across packages (e.g. juniper-ml `v0.5.0` vs
+  juniper-cascor `v0.5.0`) never collide.
 
 ### 11.4 Cut the GitHub Release (this is the deploy — never a bare tag)
 
