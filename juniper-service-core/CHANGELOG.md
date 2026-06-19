@@ -36,9 +36,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `resume_from_snapshot` (→ `RESUME_READY`, history kept), and the `/v1/snapshots` routes
   (save / list / get / restore / retrain / resume; disk I/O off the event loop). Snapshots are
   enabled only when a service injects a `ModelSerializer` (otherwise the routes return `501`).
-  The FSM gains the `INVESTIGATING` and `RESUME_READY` snapshot-loaded states. Replay
-  (`/replay` + controls) and dataset-swap history stay deferred / cascor-bound. Driven in tests
-  by model-core's `ReferenceLinearSerializer` (lossless `.npz` + JSON round-trip).
+  The FSM gains the `INVESTIGATING` and `RESUME_READY` snapshot-loaded states. Dataset-swap
+  history stays deferred / cascor-bound (no generic equivalent — it is cascor's P2 live-swap
+  feature). Driven in tests by model-core's `ReferenceLinearSerializer` (lossless `.npz` + JSON
+  round-trip).
+- **Generic snapshot replay (OUT-11 T2, step 1c).** `ReplaySession` plays a snapshot's stored
+  metric history back as timed frames on a background daemon (controls: play / pause / seek /
+  speed / range / stop / status; an injectable `on_frame` sink for the step-2 websocket), plus
+  the `ServiceLifecycleManager` methods `start_replay` (→ `REPLAYING`) / `replay_control` /
+  `stop_replay` / `get_replay_state` and the `POST /v1/snapshots/{id}/replay[/control]` routes.
+  The FSM gains the `REPLAYING` state (a `START` is rejected while replaying). Only the
+  model-agnostic metric history is replayed — cascor's topology-evolution + per-sample-weight
+  playback stays cascor-side.
 
 ### Changed
 

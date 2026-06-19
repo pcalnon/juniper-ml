@@ -37,6 +37,7 @@ from typing import TYPE_CHECKING, Any
 from juniper_model_core.lifecycle import TrainingLifecycleBase
 
 from juniper_service_core.lifecycle.monitor import DEFAULT_HISTORY_LIMIT, LifecycleMonitor
+from juniper_service_core.lifecycle.replay import ReplaySession
 from juniper_service_core.lifecycle.snapshots import SnapshotStore
 from juniper_service_core.lifecycle.state_machine import LifecycleCommand, LifecycleStateMachine
 
@@ -104,6 +105,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         self._params: dict[str, Any] = {}
         self._last_result: TrainResult | None = None
         self._last_error: str | None = None
+        self._replay_session: ReplaySession | None = None
 
     # -- model attachment ------------------------------------------------------------------
 
@@ -203,6 +205,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         with self._lock:
             self._stop_event.set()
             self._pause_event.set()
+            self._teardown_replay()
             self.state_machine.handle_command(LifecycleCommand.RESET)
             self._train_x = self._train_y = self._val_x = self._val_y = None
             self._dataset_name = None
@@ -225,10 +228,11 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         return not thread.is_alive()
 
     def shutdown(self) -> None:
-        """Signal any run to stop and join its thread (best-effort)."""
+        """Signal any run / replay to stop and join its thread (best-effort)."""
         with self._lock:
             self._stop_event.set()
             self._pause_event.set()
+            self._teardown_replay()
         self.join(timeout=5.0)
 
     # -- the synchronous body (model-core TrainingLifecycleBase.run) -----------------------
@@ -471,6 +475,58 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         self._last_error = None
         self.monitor.set_run_context(model_type=self._safe_model_type())
         return sidecar
+
+    # -- replay (OUT-11 T2 step 1c; plays a snapshot's stored history back as timed frames) --
+
+    def start_replay(self, snapshot_id: str) -> dict[str, Any]:
+        """Load a snapshot and begin replaying its metric history -> ``REPLAYING`` (paused at
+        frame 0). Returns the status with a ``replay`` block. Raises ``SnapshotNotFoundError`` /
+        ``RuntimeError`` (training active)."""
+        with self._lock:
+            sidecar = self._load_snapshot_model(snapshot_id)
+            self._teardown_replay()
+            self._replay_session = ReplaySession(snapshot_id, sidecar.get("history", []))
+            self.state_machine.mark_replaying()
+            self.monitor.set_run_context(status="replaying", phase="replay")
+            started = self._replay_session.start()
+            result = self._status_dict()
+            result["replay"] = started
+            return result
+
+    def replay_control(self, action: str, **params: Any) -> dict[str, Any]:
+        """Control the active replay (play/pause/seek/speed/range/stop/status). ``stop`` exits to
+        ``STOPPED``. Raises ``RuntimeError`` if no replay is active, ``ValueError`` on a bad action."""
+        with self._lock:
+            if self._replay_session is None:
+                raise RuntimeError("No replay session is active")
+            replay_state = self._replay_session.control(action, **params)
+            if action == "stop":
+                self._teardown_replay()
+                self.state_machine.handle_command(LifecycleCommand.RESET)
+                self.monitor.set_run_context(status="stopped", phase="idle")
+            result = self._status_dict()
+            result["replay"] = replay_state
+            return result
+
+    def stop_replay(self) -> dict[str, Any]:
+        """Stop the active replay -> ``STOPPED`` (idempotent)."""
+        with self._lock:
+            self._teardown_replay()
+            if self.state_machine.is_replaying():
+                self.state_machine.handle_command(LifecycleCommand.RESET)
+            self.monitor.set_run_context(status="stopped", phase="idle")
+            return self._status_dict()
+
+    def get_replay_state(self) -> dict[str, Any] | None:
+        """The active replay session's state, or ``None`` if no replay is active."""
+        session = self._replay_session
+        return session.state() if session is not None else None
+
+    def _teardown_replay(self) -> None:
+        """Stop and drop the replay session, if any. Caller holds the lock."""
+        if self._replay_session is not None:
+            self._replay_session.stop()
+            self._replay_session = None
 
     def is_alive(self, stale_after_seconds: float = 30.0) -> bool:
         """Basic liveness: an idle service is alive; an active run is alive while its monitor

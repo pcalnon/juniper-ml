@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
-__all__ = ["InlineData", "TrainingStartRequest", "SnapshotCreateRequest"]
+__all__ = ["InlineData", "TrainingStartRequest", "SnapshotCreateRequest", "ReplayControlRequest"]
 
 
 class InlineData(BaseModel):
@@ -53,3 +53,20 @@ class SnapshotCreateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     description: str = ""
+
+
+class ReplayControlRequest(BaseModel):
+    """Body for ``POST /snapshots/{id}/replay/control``.
+
+    ``action`` is one of play / pause / seek / speed / range / stop / status; the other fields
+    are the action's parameters (``seek`` uses ``time_index``; ``speed`` uses ``value``;
+    ``range`` uses ``start`` + ``end``) and are forwarded only when set.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    action: str
+    time_index: int | None = None
+    value: float | None = None
+    start: int | None = None
+    end: int | None = None

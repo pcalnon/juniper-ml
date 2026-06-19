@@ -20,7 +20,7 @@ from starlette.concurrency import run_in_threadpool
 
 from juniper_service_core.lifecycle.snapshots import SnapshotNotFoundError
 from juniper_service_core.routes.dependencies import get_lifecycle
-from juniper_service_core.routes.models import SnapshotCreateRequest
+from juniper_service_core.routes.models import ReplayControlRequest, SnapshotCreateRequest
 from juniper_service_core.routes.responses import success_response
 
 logger = logging.getLogger("juniper_service_core.routes.snapshots")
@@ -99,3 +99,34 @@ async def retrain_snapshot(request: Request, snapshot_id: str) -> dict:
 async def resume_snapshot(request: Request, snapshot_id: str) -> dict:
     """Load a snapshot's model + history (FSM -> ``RESUME_READY``) to continue training."""
     return await _load_operation(request, snapshot_id, "resume_from_snapshot", "resume")
+
+
+@router.post("/{snapshot_id}/replay")
+async def start_replay(request: Request, snapshot_id: str) -> dict:
+    """Load a snapshot and begin replaying its metric history (FSM -> ``REPLAYING``, paused at frame 0)."""
+    lifecycle = get_lifecycle(request)
+    _require_enabled(lifecycle)
+    try:
+        result = await run_in_threadpool(lifecycle.start_replay, snapshot_id)
+    except SnapshotNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=f"Snapshot not found: {snapshot_id}") from exc
+    except RuntimeError as exc:  # training is active
+        logger.debug("Start replay rejected: %s", exc)
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return success_response(result)
+
+
+@router.post("/{snapshot_id}/replay/control")
+async def replay_control(request: Request, snapshot_id: str, body: ReplayControlRequest) -> dict:
+    """Control the active replay: play / pause / seek / speed / range / stop / status."""
+    lifecycle = get_lifecycle(request)
+    _require_enabled(lifecycle)
+    params = body.model_dump(exclude_none=True, exclude={"action"})
+    try:
+        result = await run_in_threadpool(lifecycle.replay_control, body.action, **params)
+    except ValueError as exc:  # unknown action
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except RuntimeError as exc:  # no replay session active
+        logger.debug("Replay control rejected: %s", exc)
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return success_response(result)
