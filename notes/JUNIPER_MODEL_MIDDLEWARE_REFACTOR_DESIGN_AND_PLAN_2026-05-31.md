@@ -4,12 +4,15 @@
 **Repository**: pcalnon/juniper-ml (design doc); touches juniper-cascor, juniper-data, juniper-canopy, juniper-deploy, and two new shared packages
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.3.3 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07; Part 5 OQ-1/2/3/4/5/7 statuses reconciled to Paul's answers 2026-06-07; Status Tracker reconciled to shipped reality + nomenclature refresh 2026-06-17)
-**Last Updated**: 2026-06-17
+**Version**: 0.3.4 (DRAFT — pre-implementation design; split from the master plan 2026-06-03; Round-2 live-code re-verification + Part 8 migration/cutover path added 2026-06-04; OQ-16/17/18 folded into Part 5 2026-06-07; Part 5 OQ-1/2/3/4/5/7 statuses reconciled to Paul's answers 2026-06-07; Status Tracker reconciled to shipped reality + nomenclature refresh 2026-06-17; WS-4b app + WS-6 trigger marked met 2026-06-18)
+**Last Updated**: 2026-06-18
 
 ---
 
-> **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **⚠️ EXECUTION UPDATE (2026-06-17): the Status Tracker below is STALE.** **WS-1, WS-2, WS-3, WS-4 have all shipped & published** (juniper-data 3-D/temporal NPZ; `juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0 on PyPI; `juniper-recurrence-model` 0.1.0; the WS-4b app was recovered onto `main` 2026-06-17 via juniper-recurrence#9/#10). **WS-5/6/7/8 are not started** (WS-6/WS-8 deferred); the model-core **cross-validation layer** is design-only. Current reconciled state + roadmap: [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+> **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **Execution state (2026-06-18, reconciled into the Status Tracker below):** WS-1/WS-2/WS-3/WS-4 shipped & published
+> (`juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0/0.2.0 on PyPI; the WS-4b recurrence app + `POST /v1/crossval` landed on `juniper-recurrence` main). The model-core **cross-validation
+> layer** (0.2.0) is **shipped**, and the **WS-6 trigger is MET** (cascor golden #340 + conformance #341 both green). **WS-5 / WS-7 remain** (WS-8 deferred). Broader reconciled roadmap:
+> [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
 > This document covers the **service/middleware refactor** (extracting the model↔service seam into shared packages so any new model plugs in) plus the **shared scaffolding** for the whole effort.
 > The companion document covers the recurrent model itself.
 >
@@ -47,9 +50,9 @@
 | **WS-1** | juniper-data: time-series + regression support                           | 2.4         | M    | `SHIPPED`   | WS-0             | Foundation; unblocks model training. Additive, low risk. **Resolve [OQ-5] here at ratification**                                           |
 | **WS-2** | Extract `juniper-service-core` (Tier-1 generic infra)                    | 2.3         | L    | `SHIPPED`   | WS-0             | Additive shared package; cascor adopts behind a no-op shim                                                                                 |
 | **WS-3** | Define `juniper-model-core` abstract interfaces                          | 2.3         | M    | `SHIPPED`   | WS-0             | **SHIPPED** — 0.1.0 on PyPI; ABCs + event/serialization contracts + conformance kit (66 tests / ~97%); 0.2.0 crossval designed, not built                                                                        |
-| **WS-4** | Build `juniper-recurrence` (LMU reference model) + `juniper-recurrence-client` | A§1.5 / 2.3 | L    | `SHIPPED`   | WS-1, WS-2, WS-3 | **Model SHIPPED** — `juniper-recurrence-model` LMU passes the model-core conformance kit 10/10. **App (WS-4b) IN PROGRESS** — skeleton on `main`; routes/publish PRs not yet landed.                                                 |
+| **WS-4** | Build `juniper-recurrence` (LMU reference model) + `juniper-recurrence-client` | A§1.5 / 2.3 | L    | `SHIPPED`   | WS-1, WS-2, WS-3 | **Model SHIPPED** — LMU passes the model-core conformance kit 10/10. **App (WS-4b) SHIPPED** — full FastAPI app on `juniper-recurrence` main (#6–#19), incl. `POST /v1/crossval` consuming model-core 0.2.0; pins `juniper-model-core[crossval]>=0.2.0`.                                                 |
 | **WS-5** | Generalize `juniper-canopy` (model-agnostic UI + recurrence backend)        | 2.5         | M    | `PLANNED`   | WS-4             | Builds on canopy's existing `BackendProtocol` seam                                                                                         |
-| **WS-6** | Refactor `juniper-cascor` onto shared packages                           | 2.3 / 2.7   | L    | `DEFERRED`  | WS-2, WS-3, WS-4 | **Trigger:** interfaces proven by recurrence + cascor conformance suite green. De-risks production system                                     |
+| **WS-6** | Refactor `juniper-cascor` onto shared packages                           | 2.3 / 2.7   | L    | `PLANNED`   | WS-2, WS-3, WS-4 | **TRIGGER MET 2026-06-18** — recurrence interfaces proven (LMU conformance 10/10 + live `/crossval` app) **and** cascor conformance suite green (#341); golden regression-safety captured (#340). The 6a/6b cutover may now begin (kill-criterion §2.7). De-risks production system                                     |
 | **WS-7** | Ecosystem integration: `juniper-deploy`, `juniper-ml` extras             | 2.6         | S    | `IN PROGRESS`   | WS-4             | **IN PROGRESS** — juniper-ml `[tools]` extras done (model-core + service-core); juniper-deploy compose service still pending                                                                                                        |
 | **WS-8** | (future) `juniper-recurrence-worker` distributed training                   | 2.6         | L    | `DEFERRED`  | WS-4             | **Trigger:** recurrence training cost justifies distribution                                                                                  |
 | **WS-T** | Testing architecture (cuts across all)                                   | 3           | M    | `IN PROGRESS` | WS-0             | Conformance kit is a first-class deliverable, not an afterthought                                                                          |
@@ -62,7 +65,9 @@ The companion document selects a **recurrent neural-network model** (`juniper-re
 
 1. **Middleware refactor (Part 2).**
     - Grounding confirms ~5.5 KLOC *(grounding-pass estimate)* of *already-generic* service infrastructure in cascor, plus a concentrated model↔service seam (`TrainingLifecycleManager`) and several classification-only assumptions (`argmax`, 2-D decision boundary) that a regression/time-series model would break.
-    - The target architecture extracts a **`juniper-service-core`** package (FastAPI factory, settings, security, middleware, websocket/worker infra, generic routes, lifecycle base) and a **`juniper-model-core`** package (the abstract `TrainableModel` / `GrowableModel` interface, training-event contract, serialization interface, and a reusable conformance test kit), reuses the existing `juniper-observability` / `juniper-data-client` / `juniper-config-tools`, and assigns all dataset capability to `juniper-data`.
+    - The target architecture extracts a **`juniper-service-core`** package (FastAPI factory, settings, security, middleware, websocket/worker infra, generic routes, lifecycle base) and a
+      **`juniper-model-core`** package (the abstract `TrainableModel` / `GrowableModel` interface, training-event contract, serialization interface, and a reusable conformance test kit), reuses
+      the existing `juniper-observability` / `juniper-data-client` / `juniper-config-tools`, and assigns all dataset capability to `juniper-data`.
     - This directly continues documented intent in `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common API, #4 New ABC, #7 Split up juniper-cascor).
     - Per the ratified decision, the **target is comprehensive** but the **cascor refactor is phased and trigger-conditioned** — recurrence is built greenfield against the new interfaces *first*, proving the template before the production system is touched.
 
@@ -125,7 +130,9 @@ Moved to the companion model document (§0.5). Summary: the target is interprete
 
 ## Part 2 — Middleware Refactor
 
-> **Goal (from the brief):** identify all functionality currently in juniper-cascor that should be **extracted** so the new model need not duplicate it, move it to new or existing middleware applications, and thereby *"create a template for the addition of new neural-network models."* Component boundaries (the brief's own words): canopy = front-end/monitoring/control GUI; cascor = the Cascade-Correlation model; data = all dataset functionality for any model; observability = metrics/status extraction for monitoring.
+> **Goal (from the brief):** identify all functionality currently in juniper-cascor that should be **extracted** so the new model need not duplicate it, move it to new or existing middleware
+> applications, and thereby *"create a template for the addition of new neural-network models."* Component boundaries (the brief's own words): canopy = front-end/monitoring/control GUI;
+> cascor = the Cascade-Correlation model; data = all dataset functionality for any model; observability = metrics/status extraction for monitoring.
 
 ### 2.1 The current cascor architecture and the model↔service seam
 
@@ -299,8 +306,8 @@ Sequencing embodies the ratified "comprehensive target, phased rollout" decision
 4. **WS-4 — Build juniper-recurrence** (RCC) + client, greenfield against WS-2/WS-3. **This validates the abstractions without risk to cascor.** (Model substance: companion Part 1.)
 5. **WS-5 — Generalize canopy** + add recurrence backend.
 6. **WS-6 — Refactor cascor** onto service-core + model-core.
-    - **DEFERRED. Trigger:** WS-4 has shipped *and* a cascor golden/snapshot regression suite + the conformance suite are green for cascor.
-      - Until then, cascor stays as-is (it loses nothing; it simply doesn't yet consume the shared packages).
+    - **TRIGGER MET (2026-06-18).** WS-4 has shipped, and the cascor golden/snapshot regression suite (#340) and the model-core conformance suite (#341) are both green — so WS-6 may now begin.
+      - Through the deferred period cascor stayed as-is (it lost nothing; it simply did not yet consume the shared packages).
     - **Kill-criterion:** if the conformance suite cannot be made green for cascor without changing observable behavior, WS-6 is abandoned — cascor keeps its own service stack, recurrence still benefits from the shared packages, and the one-sided extraction is documented rather than forced.
 7. **WS-7 — deploy/meta-package** integration. **WS-8 — recurrence-worker** (deferred; trigger = training cost).
 
@@ -364,7 +371,9 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 ### 3.4 Testing the middleware packages & modifications to existing apps
 
-- **`juniper-service-core` / `juniper-model-core`:** unit tests per module; **contract tests** that a minimal stub model drives every generic route + websocket channel; backward-compat tests proving the extracted code matches cascor's prior behavior (golden responses captured pre-extraction). Follow the `juniper-observability` package-test pattern (isolated registry, own CI lane, `juniper-<name>-v*` publish gating). Add a **drift lint** (clone of `test_doc_tools_drift.py`) so consumer pins can't fall behind.
+- **`juniper-service-core` / `juniper-model-core`:** unit tests per module; **contract tests** that a minimal stub model drives every generic route + websocket channel; backward-compat tests
+  proving the extracted code matches cascor's prior behavior (golden responses captured pre-extraction). Follow the `juniper-observability` package-test pattern (isolated registry, own CI lane,
+  `juniper-<name>-v*` publish gating). Add a **drift lint** (clone of `test_doc_tools_drift.py`) so consumer pins can't fall behind.
 - **juniper-cascor (WS-6 regression safety):** **before** any refactor, capture a golden/snapshot suite (training trajectories on two-spiral with fixed seed; API response snapshots; snapshot-serialization round-trips). The refactor is accepted only if golden suite + conformance kit stay green. This is the concrete guardrail behind the WS-6 trigger.
 - **juniper-data (WS-1):** generator output-shape/dtype tests (2-D *and* 3-D); **temporal-split leakage** tests (property-based: for any split, `max(train_time) < min(test_time)`); NPZ contract back-compat (2-D artifacts still load); scaling round-trip (denormalize recovers originals).
 - **juniper-canopy (WS-5):** model-agnostic rendering tests (regression backend → MSE panel, no decision-boundary); conditional-panel tests; backend-protocol conformance for the recurrence backend. **Known constraint:** Playwright cannot drive Dash `dbc.Input(type=number)` React state — UI param tests must **POST to the param endpoint directly**, and the UI subsuite must run isolated (autoload-blocked) to avoid the documented event-loop leak.
