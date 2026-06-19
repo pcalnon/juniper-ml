@@ -149,3 +149,34 @@ Each step leaves **both stacks green** (cascor unchanged via its subclass; the s
 Scoped from a live read of cascor `origin/main` `api/` (the extraction source) + service-core T1 (the target),
 2026-06-19. Dup-guarded (worktrees dir + remote: no in-flight T2 extraction). OUT-11 confirmed greenfield-in-
 service-core / extraction-from-cascor. Build is gated on the §5 audit.
+
+## §9. As-built status & deferred follow-ups (updated 2026-06-19)
+
+**As-built.** Step 1 grew in scope and was split into three PRs, all merged to `main`:
+
+| Step | PR | Delivered |
+|------|----|-----------|
+| 1a | #473 | `ServiceLifecycleManager` (threaded orchestrator + cooperative pause/stop) + `LifecycleStateMachine` (open-string phase) + `LifecycleMonitor` (`TrainingEvent` accumulator) + generic `/v1/{training,metrics,dataset,network}` routes + `ResponseEnvelope` |
+| 1b | #476 | Snapshot persistence — `SnapshotStore` (injected model-core `ModelSerializer` + JSON sidecar) + manager `save`/`list`/`get`/`load`(→`INVESTIGATING`)/`restore_for_retrain`(→`STOPPED`)/`resume_from_snapshot`(→`RESUME_READY`) + `/v1/snapshots` routes |
+| 1c | #478 | Snapshot replay — `ReplaySession` (timed playback; play/pause/seek/speed/range/stop) + manager `start_replay`(→`REPLAYING`)/`replay_control`/`stop_replay`/`get_replay_state` + `/v1/snapshots/{id}/replay[/control]` |
+
+Steps **2** (WebSocket subsystem), **3** (worker-pool infra), **4** (publish-rail + `[tools]` drift-lint) remain.
+
+**Deferred follow-ups (future work):**
+
+- **FW-1 — Generic dataset-swap-history.** cascor's `get_snapshot_dataset_swaps` /
+  `/snapshots/{id}/history/dataset_swaps` reads **live-dataset-swap** events from a snapshot — its
+  P2 live-swap feature. The generic service-core base has no live-swap concept, so a generic snapshot
+  carries no swap events; this is **kept cascor-only for now**. *Future work:* once a second service
+  needs a live-dataset-swap (or a generic "dataset-change log"), generalize a `DatasetEvent` log on the
+  lifecycle, capture it in the snapshot sidecar (mirroring how metric history already is), and expose a
+  generic `/v1/snapshots/{id}/history/…` route. Until a real second consumer exists it stays
+  cascor-subclassed (RK-4: don't force-generalize a single-consumer feature).
+- **FW-2 — Replay history-continuation.** On `resume_from_snapshot` → `RESUME_READY`, the generic base
+  reloads the model (weights preserved) but a subsequent `start` begins a *fresh* metric history rather
+  than appending from `resume_point_epoch` (cascor appends). Genericizing continuation (the monitor seeds
+  from the restored history instead of clearing on `training_start`) is deferred.
+- **FW-3 — Replay live push.** Replay frames currently update only the pollable replay state; the
+  `ReplaySession.on_frame` sink exists for the **step-2 WebSocket** to push frames live — wire it in step 2.
+- **FW-4 — cascor topology-evolution + per-sample-weight replay (CAN-015g).** Cascade-specific; stays
+  cascor-side.
