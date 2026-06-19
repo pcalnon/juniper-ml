@@ -103,6 +103,25 @@ A focused, read-only audit of cascor's T2 to confirm the build premise and surfa
 
 The audit's output is a go/no-go + a per-module extraction ledger that the §6 build follows.
 
+### §5.6 Audit findings (executed 2026-06-19, three parallel module audits) — GATE: **GO (scoped)**
+
+**Routes + lifecycle (~70% extractable).**
+- **CLEAN** (extract as-is): `routes/{admin,dataset,health,history,metrics,workers,snapshots}` + most of `routes/training` + `lifecycle/state_machine`.
+- **ADAPTER** (thin shim): `routes/network` (→ `GrowableModel` topology/unit iface), `routes/training` (move spiral helper + candidate-pool validation to a cascor adapter), `lifecycle/monitor` (candidate/correlation become cascor `TrainingEvent` *payload*, not base monitor state).
+- **CASCOR-BOUND** (cascor keeps subclass): `routes/decision_boundary` (intrinsic 2-D viz), `lifecycle/manager` (3k-line orchestrator). ⇒ Build a generic `ServiceLifecycleManager` base; cascor subclasses it.
+
+**WebSocket (~70-80% extractable).**
+- **CLEAN**: `manager` (broadcast/seq/replay/chunk infra), `training_stream`, `control_security`, `messages` (the generic 7 of 9 frames).
+- **ADAPTER**: `control_stream` (command dispatch → injectable `CommandExecutor` callback).
+- **OUT OF SCOPE / stub**: `worker_stream` (belongs with the worker subsystem, not the client ws), and the `cascade_add` / `candidate_progress` frames (cascor-specific — drop/stub).
+
+**OQ-11 worker — RESOLVED by evidence: model-agnostic at the pool-infra layer, cascade-bound at the protocol/reduction layer.**
+- **GENERIC** (extract now): `workers/{registry,coordinator,audit,metrics,security}` — registration, heartbeat, dispatch/collect, health, mTLS/rate-limit/anomaly, metrics.
+- **ADAPTER/DEFER**: the task-payload + `TaskResult` schema (`candidate_data`, `correlation`, `all_correlations`, …) is cascade-specific; `task_distributor` dispatch is generic but the task tuples encode cascade data. ⇒ defer a generic `Task`/`TaskResult` envelope to WS-8 / a 2nd consumer.
+- **CASCADE-BOUND** (stays cascor / WS-8): result reduction (correlation-based candidate selection, `CandidateUnit` reconstruction).
+
+**Conclusion.** OUT-11 is a viable, well-bounded extraction — ~70% reusable; the cascor-bound parts are clearly identified and stay subclassed. The §6 build is "extract base, keep cascor subclass," driven by a stub regression model, **deferring the cascade-bound task-envelope to WS-8**. It spans 4 subsystems ⇒ **phase it** (routes+lifecycle base → ws → worker-pool infra), each a PR, each both-stacks-green.
+
 ## §6. Build plan (Option 3 — full T2, consumer-priority order)
 
 1. **Routes + lifecycle base** (lowest coupling; WS-6's first need): extract a model-agnostic route set
