@@ -60,9 +60,9 @@ Method mirrors the ecosystem's verification discipline (the same adversarial, mu
 > - **OUT-10 cross-validation layer — ✅ BUILT & PUBLISHED.** **`juniper-model-core` 0.2.0** (crossval / fold-executor) is live and the juniper-ml `[tools]` pin admits it. Crossval-API doc/polish PRs (#449, #450) are in flight in a parallel session (item 4c cleared).
 > - **OUT-12 golden/snapshot gate — ✅ DONE.** Shipped to `juniper-cascor` (PR #340, merged) and **promoted to a required status check**. The first half of the WS-6 trigger-gate is armed.
 > - **OUT-4 recurrence app — 🟡 PARTIAL.** Published, but **no Dockerfile exists yet** — Wave-B deploy (OUT-5) is blocked on writing it first.
-> - **OUT-13 conformance wiring — ▶ NEXT.** cascor has zero `juniper_model_core` references; the kit to consume is `juniper_model_core.conformance` (`suite` / `reference` / `fixtures`; ABCs in `interfaces.py`; `[conformance]` extra).
+> - **OUT-13 conformance wiring — ✅ DONE.** Shipped to `juniper-cascor` (PR #341, merged 2026-06-18) and **promoted to a required status check** (`model-core Conformance`). Test-only `CascorModelCoreAdapter(GrowableModel)`; no production change. **Both halves of the WS-6 trigger-gate are now armed.**
 >
-> **Net:** Wave A is closed and Wave D's cross-val is shipped. The live tail is **Wave B (OUT-4 Dockerfile → OUT-5/6), Wave C (client → canopy), Wave D (OUT-11 T2 surface), and Wave E (OUT-13 → WS-6)**. The §6.2 wave ordering still holds — only the completed rungs change. The per-§3/§4 status cells below are point-in-time (2026-06-17) and were not individually rewritten.
+> **Net:** Wave A is closed and Wave D's cross-val is shipped. The live tail is **Wave B (OUT-4 Dockerfile → OUT-5/6), Wave C (client → canopy), Wave D (OUT-11 T2 surface), and Wave E (OUT-13 → WS-6)**. The §6.2 wave ordering still holds — only the completed rungs change. The per-§3/§4 status cells below are point-in-time (2026-06-17); the WS-5/WS-6 and OUT-12/13 cells were reconciled to merged reality on 2026-06-19 (see [`JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md`](JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md)); other cells remain point-in-time.
 
 1. **Two of the three anchor efforts are done; the third is ~70% done.** Package placement and build provenance are **shipped and (provenance) live-verified**. The model/middleware refactor has shipped WS-0 through WS-4 (data foundation, both shared packages, and the first recurrence model) — all published to PyPI — and stalls at the recurrence **application** layer and its consumers.
 
@@ -143,8 +143,8 @@ Maximal scope delivered across all 6 repos (obs#414, data#180/#185, cascor#333/#
 | **WS-3+** | **Cross-validation / fold-executor layer** | 🟡 **DESIGN-ONLY** | [Design ratified v1.0.0 (#431, 2026-06-16)](JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md) but **no `crossval/` code**; model-core still 0.1.0; the targeted 0.2.0 + `[crossval]` extra are unpublished |
 | **WS-4** | Build the recurrence model | ✅ **Shipped & conformant** | `LMURegressor(TrainableModel)` (fixed-order; not Growable, per D-WS4-1); **passes conformance 10/10** (run live); `juniper-recurrence-model` **0.1.0 on PyPI**; pins real PyPI versions |
 | **WS-4b** | Recurrence FastAPI/CLI app | 🔴 **BROKEN STACKED-MERGE** | Skeleton (PR#6) on `origin/main`; **PR#7 routes + PR#8 publish stranded on stale stacked bases, not on `main`**; app serves health-only (`routers=()`); **no Dockerfile**; app **unpublished (404)** |
-| **WS-5** | Generalize canopy (model-agnostic UI + recurrence backend) | ⚪ **Not started** | No recurrence backend; `BackendProtocol` hardcodes `accuracy`/`cascade_phase`; metrics panel accuracy-only; no `JUNIPER_CANOPY_RECURRENCE_SERVICE_URL` |
-| **WS-6** | Refactor cascor onto shared packages | ⚪ **Not started (correctly deferred)** | cascor keeps own `src/api/**`; no `juniper_service_core`/`juniper_model_core` imports; **golden/snapshot trigger-gate not yet captured**; no conformance-kit consumption |
+| **WS-5** | Generalize canopy (model-agnostic UI + recurrence backend) | 🟡 **In progress (A0 shipped)** | A0 model registry merged (canopy #372); A1 surface + D2 3-D display designed-only; no recurrence backend yet; `BackendProtocol` still hardcodes `accuracy`/`cascade_phase`. See [reeval](JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md) |
+| **WS-6** | Refactor cascor onto shared packages | 🟡 **Gate ARMED; cutover not started** | Golden (#340) + conformance (#341) **merged + required**; cascor still keeps own `src/api/**` (zero `juniper_service_core`/`juniper_model_core` prod imports — correct). **B-phase dependency-clear; A-phase blocked on OUT-11** (service-core T2 unpublished). See [reeval](JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md) |
 | **WS-7** | deploy + juniper-ml extras integration | ⚪ **Not started** | No recurrence compose block; no `juniper-recurrence-client` in extras; no on-host launcher block (shared pkgs already in `[tools]` — that was WS-2/3) |
 | **WS-8** | recurrence-worker (distributed) | ⚪ **Not started (correctly deferred)** | No package; trigger = training cost + OQ-11 |
 | **—** | **`juniper-recurrence-client`** | 🟡 **Does not exist** | New package (mirrors `juniper-cascor-client`); **blocks WS-5** |
@@ -184,8 +184,8 @@ Grouped by theme; dependency-ordered within each. IDs (`OUT-n`) are local to thi
 
 ### E. Production cascor cutover (gated, last)
 
-- **OUT-12 — Capture the cascor golden/snapshot regression suite** (two-spiral fixed-seed trajectories + API response snapshots + HDF5 round-trips). This **is** the WS-6 trigger-gate and does not exist yet — WS-6 cannot legitimately start without it.
-- **OUT-13 — Wire cascor to the model-core conformance kit** against `CascadeCorrelationNetwork` (the other half of the trigger).
+- **OUT-12 — Capture the cascor golden/snapshot regression suite** (two-spiral fixed-seed trajectories + API response snapshots + HDF5 round-trips). This **is** the WS-6 trigger-gate. ✅ **DONE** — cascor #340, merged + required check (`Golden / Snapshot Regression`).
+- **OUT-13 — Wire cascor to the model-core conformance kit** against `CascadeCorrelationNetwork` (the other half of the trigger). ✅ **DONE** — cascor #341, merged + required check (`model-core Conformance`); test-only adapter, no production change.
 - **OUT-14 — WS-6 cutover (6a mechanical re-export shim → 6b behavioral interface adoption)** behind the golden gate, honoring the kill-criterion. **Approach options in §5.4.**
 
 ### F. Deferred / housekeeping
