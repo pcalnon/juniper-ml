@@ -9,7 +9,10 @@
 
 ---
 
-> **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **⚠️ EXECUTION UPDATE (2026-06-17): the Status Tracker below is STALE.** **WS-1, WS-2, WS-3, WS-4 have all shipped & published** (juniper-data 3-D/temporal NPZ; `juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0 on PyPI; `juniper-recurrence-model` 0.1.0; the WS-4b app was recovered onto `main` 2026-06-17 via juniper-recurrence#9/#10). **WS-5/6/7/8 are not started** (WS-6/WS-8 deferred); the model-core **cross-validation layer** is design-only. Current reconciled state + roadmap: [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+> **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **Execution state (2026-06-18, reconciled into the Status Tracker below):** WS-1/WS-2/WS-3/WS-4 shipped & published
+> (`juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0/0.2.0 on PyPI; the WS-4b recurrence app + `POST /v1/crossval` landed on `juniper-recurrence` main). The model-core **cross-validation
+> layer** (0.2.0) is **shipped**, and the **WS-6 trigger is MET** (cascor golden #340 + conformance #341 both green). **WS-5 / WS-7 remain** (WS-8 deferred). Broader reconciled roadmap:
+> [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
 > This document covers the **service/middleware refactor** (extracting the model↔service seam into shared packages so any new model plugs in) plus the **shared scaffolding** for the whole effort.
 > The companion document covers the recurrent model itself.
 >
@@ -62,7 +65,9 @@ The companion document selects a **recurrent neural-network model** (`juniper-re
 
 1. **Middleware refactor (Part 2).**
     - Grounding confirms ~5.5 KLOC *(grounding-pass estimate)* of *already-generic* service infrastructure in cascor, plus a concentrated model↔service seam (`TrainingLifecycleManager`) and several classification-only assumptions (`argmax`, 2-D decision boundary) that a regression/time-series model would break.
-    - The target architecture extracts a **`juniper-service-core`** package (FastAPI factory, settings, security, middleware, websocket/worker infra, generic routes, lifecycle base) and a **`juniper-model-core`** package (the abstract `TrainableModel` / `GrowableModel` interface, training-event contract, serialization interface, and a reusable conformance test kit), reuses the existing `juniper-observability` / `juniper-data-client` / `juniper-config-tools`, and assigns all dataset capability to `juniper-data`.
+    - The target architecture extracts a **`juniper-service-core`** package (FastAPI factory, settings, security, middleware, websocket/worker infra, generic routes, lifecycle base) and a
+      **`juniper-model-core`** package (the abstract `TrainableModel` / `GrowableModel` interface, training-event contract, serialization interface, and a reusable conformance test kit), reuses
+      the existing `juniper-observability` / `juniper-data-client` / `juniper-config-tools`, and assigns all dataset capability to `juniper-data`.
     - This directly continues documented intent in `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common API, #4 New ABC, #7 Split up juniper-cascor).
     - Per the ratified decision, the **target is comprehensive** but the **cascor refactor is phased and trigger-conditioned** — recurrence is built greenfield against the new interfaces *first*, proving the template before the production system is touched.
 
@@ -125,7 +130,9 @@ Moved to the companion model document (§0.5). Summary: the target is interprete
 
 ## Part 2 — Middleware Refactor
 
-> **Goal (from the brief):** identify all functionality currently in juniper-cascor that should be **extracted** so the new model need not duplicate it, move it to new or existing middleware applications, and thereby *"create a template for the addition of new neural-network models."* Component boundaries (the brief's own words): canopy = front-end/monitoring/control GUI; cascor = the Cascade-Correlation model; data = all dataset functionality for any model; observability = metrics/status extraction for monitoring.
+> **Goal (from the brief):** identify all functionality currently in juniper-cascor that should be **extracted** so the new model need not duplicate it, move it to new or existing middleware
+> applications, and thereby *"create a template for the addition of new neural-network models."* Component boundaries (the brief's own words): canopy = front-end/monitoring/control GUI;
+> cascor = the Cascade-Correlation model; data = all dataset functionality for any model; observability = metrics/status extraction for monitoring.
 
 ### 2.1 The current cascor architecture and the model↔service seam
 
@@ -364,7 +371,9 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 
 ### 3.4 Testing the middleware packages & modifications to existing apps
 
-- **`juniper-service-core` / `juniper-model-core`:** unit tests per module; **contract tests** that a minimal stub model drives every generic route + websocket channel; backward-compat tests proving the extracted code matches cascor's prior behavior (golden responses captured pre-extraction). Follow the `juniper-observability` package-test pattern (isolated registry, own CI lane, `juniper-<name>-v*` publish gating). Add a **drift lint** (clone of `test_doc_tools_drift.py`) so consumer pins can't fall behind.
+- **`juniper-service-core` / `juniper-model-core`:** unit tests per module; **contract tests** that a minimal stub model drives every generic route + websocket channel; backward-compat tests
+  proving the extracted code matches cascor's prior behavior (golden responses captured pre-extraction). Follow the `juniper-observability` package-test pattern (isolated registry, own CI lane,
+  `juniper-<name>-v*` publish gating). Add a **drift lint** (clone of `test_doc_tools_drift.py`) so consumer pins can't fall behind.
 - **juniper-cascor (WS-6 regression safety):** **before** any refactor, capture a golden/snapshot suite (training trajectories on two-spiral with fixed seed; API response snapshots; snapshot-serialization round-trips). The refactor is accepted only if golden suite + conformance kit stay green. This is the concrete guardrail behind the WS-6 trigger.
 - **juniper-data (WS-1):** generator output-shape/dtype tests (2-D *and* 3-D); **temporal-split leakage** tests (property-based: for any split, `max(train_time) < min(test_time)`); NPZ contract back-compat (2-D artifacts still load); scaling round-trip (denormalize recovers originals).
 - **juniper-canopy (WS-5):** model-agnostic rendering tests (regression backend → MSE panel, no decision-boundary); conditional-panel tests; backend-protocol conformance for the recurrence backend. **Known constraint:** Playwright cannot drive Dash `dbc.Input(type=number)` React state — UI param tests must **POST to the param endpoint directly**, and the UI subsuite must run isolated (autoload-blocked) to avoid the documented event-loop leak.
