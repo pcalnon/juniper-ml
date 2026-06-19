@@ -10,7 +10,9 @@ Auxiliary per-sample arrays (``dt`` / ``target_dt`` / ``readout_mask`` / ``seq_l
 sequence path) are passed through ``aux`` and sliced on axis 0 by the fold indices exactly like
 ``X`` / ``y``; a guard rejects any ``aux`` entry that is not per-sample (decision D-CV-4 / F-REFINE-4).
 Execution is serial by default; an optional ``map_fn`` seam lets a later parallel/distributed worker
-(WS-8 / OQ-11) inject a parallel map with no API change (D-CV-5 / OPT-F F2).
+(WS-8 / OQ-11) inject a parallel map with no API change (D-CV-5 / OPT-F F2) -- a thread-pool map works
+today, while a process/distributed map needs the per-fold closure refactored to be picklable (see the
+``map_fn`` parameter on :func:`cross_validate`).
 """
 
 from __future__ import annotations
@@ -93,9 +95,14 @@ def cross_validate(
             ``fit``; default ``False`` keeps the held-out eval set out of the fit (decision OPT-B B3 --
             avoids eval-fold leakage for models that early-stop on the validation set).
         map_fn: the mapping primitive used to run folds; defaults to the builtin serial ``map``. A
-            parallel/distributed worker may inject an order-preserving parallel map with no other API
-            change (OPT-F F2). Must return one result per fold (order need not be preserved -- results
-            are re-sorted by fold index).
+            parallel/distributed worker may inject a parallel map with no other API change (OPT-F F2).
+            Must return one result per fold (order need not be preserved -- results are re-sorted by
+            fold index). **Constraint for a parallel backend:** the per-fold work is an in-process
+            closure over ``X`` / ``y`` / ``aux`` / ``model_factory``, so a *thread*-pool ``map`` drops
+            in unchanged, but a *process*-pool or distributed ``map`` (which must pickle the work)
+            requires refactoring the per-fold step into a top-level / picklable callable with a
+            picklable ``model_factory`` -- and note a thread pool gives no GIL relief for CPU-bound
+            (e.g. torch) fits. This is the WS-8 / OQ-11 territory the seam defers to.
 
     Returns:
         A :class:`CrossValResult` with per-fold results and per-metric mean / std aggregates.
