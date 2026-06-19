@@ -4,8 +4,8 @@
 **Repository**: pcalnon/juniper-recurrence (model + app); assessment doc hosted in pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.0.0 (DRAFT — multi-agent-validated state assessment + forward roadmap)
-**Last Updated**: 2026-06-17
+**Version**: 1.1.0 (status update 2026-06-18 — Waves 0–2 shipped; original 2026-06-17 assessment preserved below)
+**Last Updated**: 2026-06-18
 
 ---
 
@@ -20,6 +20,52 @@
 > This document **synthesizes and does not duplicate** the design corpus it references (see
 > [§9 Source Corpus](#9-source-corpus--evidence-base)). Where those documents are the *intent*, this is
 > the *reconciliation of intent against reality* plus the *path forward*.
+
+---
+
+## Status Update (2026-06-18)
+
+> The assessment and roadmap below are the **2026-06-17 Wave-0 baseline**, preserved unchanged as the
+> historical record. This section records what has since shipped — much of it via parallel Claude
+> sessions executing the roadmap's waves concurrently.
+
+**Wave 0 — Recover the orphaned WS-4b app: ✅ DONE.** The routes + publish stack were re-landed on `main`
+via a single conflict-free merge PR; the base-branch guard (**G-1**) shipped to prevent a recurrence;
+`main` branch protection is on; the stale ws4b worktrees were cleaned up.
+
+**Wave 1 — Publish & polish: ✅ DONE.**
+
+- App published: `juniper-recurrence` 0.1.0 → **0.1.1** on PyPI.
+- README API drift fixed; `juniper-recurrence-model` **0.1.1** published (refreshed the broken PyPI quick-start).
+- `juniper-data-client` **0.4.2** published with `validate_npz_contract`; the app's Δt contract gate is now
+  **mandatory** (optional-import guard dropped) — closes **I1 / D-2**.
+- `juniper-ml` **`[recurrence]`** extra added (R5); new-repo governance — CODEOWNERS + AGENTS.md (R6).
+
+**Wave 2 — Crossval + evaluation: build ✅ DONE (C2 report in progress).**
+
+- `juniper-model-core` **0.2.0** cross-validation / fold-executor layer published (**C1**) —
+  `walk_forward_folds` / `cross_validate` / `Fold` / `FoldResult` / `CrossValResult` + `metrics.score`,
+  behind a `[crossval]` extra.
+- `juniper-recurrence-model` **0.1.2** published — the cross-validation **second-implementer proof**
+  (`LMURegressor` driven through `cross_validate` over irregular-Δt 3-D data, with shuffle-`dt` and
+  determinism guardrails). Covers the **I2** Δt end-to-end proof.
+- App **`POST /v1/crossval`** + `GET /v1/crossval/status` route and Prometheus **`GET /metrics`** shipped in
+  app 0.1.1.
+- **C3** synthetic generators (`ar_p` / `mackey_glass` / `multi_sine` / `irregular_sine`) landed in juniper-data.
+- **In progress (parallel session):** the **C2** reproducible cross-validation benchmark report (the OQ-7
+  "completed-state" capstone — walk-forward CV on irregular- and regular-Δt datasets with baselines).
+
+**Defect register (§4) status:** **D-1** (orphaned app) ✅ recovered · **D-2** (data-client validator) ✅
+shipped in 0.4.2 · **D-3** (README drift) ✅ fixed in 0.1.1 · **D-4** (empty `models/` dir) — n/a (untracked,
+absent from a clean checkout) · **D-5** (`predict(**_)` forward-compat sink) — open, minor · **D-6** (doc
+staleness) — partially addressed by this update.
+
+**Published versions (live on PyPI):** model-core `0.2.0` · service-core `0.1.0` · recurrence-model `0.1.2`
+· recurrence app `0.1.1` · data-client `0.4.2`.
+
+**Remaining (Wave 3 — mostly trigger-gated):** app `Dockerfile` (**H6a**, in progress) + juniper-deploy
+compose service + prometheus scrape (**H6**); canopy generalization (**WS-5 / H2**); distributed worker
+(**WS-8**); cascor 3-D ingestion (**WS-6**); grown-cascade LMU (research).
 
 ---
 
