@@ -40,6 +40,13 @@ from juniper_service_core.websocket.messages import create_control_ack_message
 
 __all__ = ["control_stream_handler"]
 
+
+def _sanitize_for_log(value: object) -> str:
+    """Return a single-line, control-char-safe representation for logging."""
+    text = str(value)
+    text = text.replace("\r", "").replace("\n", "")
+    return "".join(ch for ch in text if ch >= " " or ch == "\t")
+
 logger = logging.getLogger("juniper_service_core.websocket.control")
 
 _MAX_MESSAGE_SIZE = 65536  # 64KB
@@ -116,6 +123,7 @@ async def _check_handshake_gates(websocket: WebSocket, client_ip: str) -> bool:
 async def _handle_command_message(websocket: WebSocket, executor, valid_commands: set[str], msg: dict, bucket: LeakyBucket) -> None:
     """Validate and dispatch a single command message; send the response."""
     command = msg.get("command", "")
+    safe_command = _sanitize_for_log(command)
     command_id = msg.get("command_id")
 
     if not bucket.try_acquire():
@@ -136,14 +144,14 @@ async def _handle_command_message(websocket: WebSocket, executor, valid_commands
         result = await asyncio.wait_for(asyncio.to_thread(executor.execute, command, msg.get("params")), timeout=timeout)
         await websocket.send_json(create_control_ack_message(command, "success", data=result, command_id=command_id))
     except asyncio.TimeoutError:
-        logger.error("Command '%s' timed out after %ss", command, timeout)
+        logger.error("Command '%s' timed out after %ss", safe_command, timeout)
         await websocket.send_json(create_control_ack_message(command, "error", error=f"Command timed out after {timeout}s", command_id=command_id))
     except (ValueError, RuntimeError) as exc:
         # Expected control errors (bad params / invalid state transition) -- surface the message.
-        logger.info("Command '%s' rejected: %s", command, exc)
+        logger.info("Command '%s' rejected: %s", safe_command, exc)
         await websocket.send_json(create_control_ack_message(command, "error", error=str(exc), command_id=command_id))
     except Exception as exc:  # noqa: BLE001 - an unexpected executor failure stays opaque to the client
-        logger.error("Command '%s' failed: %s", command, exc)
+        logger.error("Command '%s' failed: %s", safe_command, exc)
         await websocket.send_json(create_control_ack_message(command, "error", error="Command execution failed", command_id=command_id))
 
 
