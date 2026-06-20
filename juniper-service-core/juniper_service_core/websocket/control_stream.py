@@ -47,6 +47,7 @@ def _sanitize_for_log(value: object) -> str:
     text = text.replace("\r", "").replace("\n", "")
     return "".join(ch for ch in text if ch >= " " or ch == "\t")
 
+
 logger = logging.getLogger("juniper_service_core.websocket.control")
 
 _MAX_MESSAGE_SIZE = 65536  # 64KB
@@ -233,7 +234,7 @@ async def control_stream_handler(websocket: WebSocket) -> None:
 
     hb_interval = _setting(websocket, "ws_heartbeat_interval_sec", 30)
     hb_timeout = _setting(websocket, "ws_heartbeat_pong_timeout_sec", 10)
-    logging.debug("Control websocket disconnected (client_ip=%s)", client_ip)
+    pong_received = asyncio.Event()
     pong_received.set()  # No outstanding ping at start
 
     ping_task = asyncio.create_task(_control_ping_loop(websocket, client_ip, hb_interval, hb_timeout, pong_received))
