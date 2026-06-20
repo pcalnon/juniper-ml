@@ -76,6 +76,17 @@ if TYPE_CHECKING:
         build_rate_limiter,
     )
     from juniper_service_core.settings import SettingsBase
+    from juniper_service_core.websocket import (
+        CommandExecutor,
+        LifecycleCommandExecutor,
+        ReplayOutOfRange,
+        WebSocketManager,
+        attach_websocket,
+        build_websocket_router,
+        control_stream_handler,
+        training_stream_handler,
+        ws_authenticate,
+    )
 
 __all__ = [
     "__version__",
@@ -114,6 +125,16 @@ __all__ = [
     "success_response",
     "error_response",
     "ResponseEnvelope",
+    # WebSocket subsystem (lazy, from .websocket -- requires fastapi)
+    "WebSocketManager",
+    "ws_authenticate",
+    "ReplayOutOfRange",
+    "CommandExecutor",
+    "LifecycleCommandExecutor",
+    "training_stream_handler",
+    "control_stream_handler",
+    "build_websocket_router",
+    "attach_websocket",
 ]
 
 # Maps each lazily-resolved public name to the submodule that defines it. Keeping
@@ -156,6 +177,16 @@ _LAZY_EXPORTS = {
     "success_response": "juniper_service_core.routes",
     "error_response": "juniper_service_core.routes",
     "ResponseEnvelope": "juniper_service_core.routes",
+    # .websocket requires fastapi; kept lazy so the top-level import stays dependency-free.
+    "WebSocketManager": "juniper_service_core.websocket",
+    "ws_authenticate": "juniper_service_core.websocket",
+    "ReplayOutOfRange": "juniper_service_core.websocket",
+    "CommandExecutor": "juniper_service_core.websocket",
+    "LifecycleCommandExecutor": "juniper_service_core.websocket",
+    "training_stream_handler": "juniper_service_core.websocket",
+    "control_stream_handler": "juniper_service_core.websocket",
+    "build_websocket_router": "juniper_service_core.websocket",
+    "attach_websocket": "juniper_service_core.websocket",
 }
 
 
