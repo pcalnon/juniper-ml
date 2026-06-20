@@ -26,6 +26,11 @@ __all__ = ["validate_control_origin", "LeakyBucket", "HandshakeCooldown"]
 logger = logging.getLogger("juniper_service_core.websocket.control_security")
 
 
+def _sanitize_for_log(value: str) -> str:
+    """Sanitize untrusted text for single-line log output."""
+    return value.replace("\r", "").replace("\n", "")
+
+
 def validate_control_origin(websocket: WebSocket, allowed_origins: list[str]) -> bool:
     """Validate the ``Origin`` header against an allowlist for ``/ws/control``.
 
@@ -41,7 +46,7 @@ def validate_control_origin(websocket: WebSocket, allowed_origins: list[str]) ->
     normalized_allowed = [o.rstrip("/").lower() for o in allowed_origins]
     if origin in normalized_allowed:
         return True
-    logger.info("Control WS: origin %r not in allowlist -- rejecting", origin)
+    logger.info("Control WS: origin %r not in allowlist -- rejecting", _sanitize_for_log(origin))
     return False
 
 
