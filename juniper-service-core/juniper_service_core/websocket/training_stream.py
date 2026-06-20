@@ -132,7 +132,8 @@ async def _recv_pong_loop(websocket: WebSocket, pong_received: asyncio.Event, ws
             elif mtype == "subscribe_metrics" and ws_manager is not None and lifecycle is not None:
                 await _handle_subscribe_metrics(websocket, ws_manager, lifecycle, msg, subscribe_metrics_max_count)
     except WebSocketDisconnect:
-        pass
+        logger.debug("Training WS: receive loop ended due to client disconnect")
+        return
 
 
 async def _handle_subscribe_metrics(websocket: WebSocket, ws_manager, lifecycle, msg: dict, default_count: int) -> None:
