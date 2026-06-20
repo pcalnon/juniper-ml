@@ -211,6 +211,7 @@ async def training_stream_handler(websocket: WebSocket) -> None:
             ping_task.cancel()
             try:
                 await ping_task
+                # Expected when awaiting a task after explicit cancellation during shutdown.
             except asyncio.CancelledError:
                 pass
     finally:
