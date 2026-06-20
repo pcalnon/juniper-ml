@@ -247,6 +247,6 @@ async def control_stream_handler(websocket: WebSocket) -> None:
         try:
             await ping_task
         except asyncio.CancelledError:
-            pass
+            logger.debug("Control WS: ping task cancelled during connection teardown: %s", client_ip)
         if ws_manager is not None:
             ws_manager.unregister_endpoint_connection(websocket)
