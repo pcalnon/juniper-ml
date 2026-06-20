@@ -19,6 +19,7 @@ Pure stdlib + typing -- no ``fastapi`` import (the control handler owns the tran
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
@@ -45,13 +46,15 @@ class CommandExecutor(Protocol):
     """
 
     @property
+    @abstractmethod
     def commands(self) -> tuple[str, ...]:
         """The closed set of command names this executor accepts (drives the early reject)."""
-        ...
+        raise NotImplementedError
 
+    @abstractmethod
     def execute(self, command: str, params: dict[str, Any] | None) -> dict[str, Any]:
         """Execute one validated command and return its JSON-ready result."""
-        ...
+        raise NotImplementedError
 
 
 class LifecycleCommandExecutor:
