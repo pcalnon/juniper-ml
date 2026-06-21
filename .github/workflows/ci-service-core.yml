@@ -62,7 +62,7 @@ jobs:
           pip install -e "juniper-service-core/.[test]"
 
       - name: Run unit tests
-        run: pytest juniper-service-core/tests/ -v
+        run: pytest juniper-service-core/tests/ -v --cov=juniper_service_core --cov-report=term-missing --cov-fail-under=80
 
   build:
     name: Build distribution

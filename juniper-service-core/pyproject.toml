@@ -79,6 +79,14 @@ addopts = [
 ]
 filterwarnings = ["ignore::pytest.PytestUnraisableExceptionWarning"]
 
+[tool.coverage.run]
+source_pkgs = ["juniper_service_core"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
 [tool.ruff]
 line-length = 512
 target-version = "py312"
