@@ -48,4 +48,10 @@ python_functions = ["test_*"]
 addopts = [
     "-ra",
     "-q",
+    "--strict-markers",
+    "--strict-config",
+    "-p",
+    "no:dash",
+    "-p",
+    "no:playwright",
 ]
