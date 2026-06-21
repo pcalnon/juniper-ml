@@ -150,17 +150,19 @@ Scoped from a live read of cascor `origin/main` `api/` (the extraction source) +
 2026-06-19. Dup-guarded (worktrees dir + remote: no in-flight T2 extraction). OUT-11 confirmed greenfield-in-
 service-core / extraction-from-cascor. Build is gated on the §5 audit.
 
-## §9. As-built status & deferred follow-ups (updated 2026-06-19)
+## §9. As-built status & deferred follow-ups (updated 2026-06-19; step 2 appended)
 
-**As-built.** Step 1 grew in scope and was split into three PRs, all merged to `main`:
+**As-built.** Step 1 grew in scope and was split into three PRs; step 2 (the WebSocket subsystem)
+follows. All merged to `main`:
 
 | Step | PR | Delivered |
 |------|----|-----------|
 | 1a | #473 | `ServiceLifecycleManager` (threaded orchestrator + cooperative pause/stop) + `LifecycleStateMachine` (open-string phase) + `LifecycleMonitor` (`TrainingEvent` accumulator) + generic `/v1/{training,metrics,dataset,network}` routes + `ResponseEnvelope` |
 | 1b | #476 | Snapshot persistence — `SnapshotStore` (injected model-core `ModelSerializer` + JSON sidecar) + manager `save`/`list`/`get`/`load`(→`INVESTIGATING`)/`restore_for_retrain`(→`STOPPED`)/`resume_from_snapshot`(→`RESUME_READY`) + `/v1/snapshots` routes |
 | 1c | #478 | Snapshot replay — `ReplaySession` (timed playback; play/pause/seek/speed/range/stop) + manager `start_replay`(→`REPLAYING`)/`replay_control`/`stop_replay`/`get_replay_state` + `/v1/snapshots/{id}/replay[/control]` |
+| 2 | #484 | WebSocket subsystem (`juniper_service_core.websocket`) — `WebSocketManager` (seq / replay-buffer / oversized-message chunking / thread-safe broadcast, `api.observability` emissions dropped) + plain-dict message builders (the generic 7 frames; `cascade_add` / `candidate_progress` dropped) + control-path security (`validate_control_origin` / `LeakyBucket` / `HandshakeCooldown`) + `training_stream` / `control_stream` handlers + an **injectable `CommandExecutor`** (control-dispatch adapter; default `LifecycleCommandExecutor`) + `build_websocket_router` (`/ws/training` + `/ws/control`) + `attach_websocket` broadcast bridge. Live-training **and** replay frames push via a new additive manager `frame_sink` (resolves **FW-3**). `worker_stream` deferred to step 3. 25-test both-stacks-green contract drives every channel with the regression stub (RK-6); cascor untouched |
 
-Steps **2** (WebSocket subsystem), **3** (worker-pool infra), **4** (publish-rail + `[tools]` drift-lint) remain.
+Steps **3** (worker-pool infra) and **4** (publish-rail + `[tools]` drift-lint) remain.
 
 **Deferred follow-ups (future work):**
 
@@ -176,7 +178,10 @@ Steps **2** (WebSocket subsystem), **3** (worker-pool infra), **4** (publish-rai
   reloads the model (weights preserved) but a subsequent `start` begins a *fresh* metric history rather
   than appending from `resume_point_epoch` (cascor appends). Genericizing continuation (the monitor seeds
   from the restored history instead of clearing on `training_start`) is deferred.
-- **FW-3 — Replay live push.** Replay frames currently update only the pollable replay state; the
-  `ReplaySession.on_frame` sink exists for the **step-2 WebSocket** to push frames live — wire it in step 2.
+- **FW-3 — Replay live push. RESOLVED (step 2, #484).** Replay frames now push live: the manager's
+  `frame_sink` is passed to `ReplaySession.on_frame`, and the step-2 `attach_websocket` bridge routes
+  it (alongside live-training metrics/state frames) to the `/ws/training` broadcast. Without a wired
+  transport the sink is a no-op and only the pollable replay state advances — the step-1c behavior is
+  preserved.
 - **FW-4 — cascor topology-evolution + per-sample-weight replay (CAN-015g).** Cascade-specific; stays
   cascor-side.

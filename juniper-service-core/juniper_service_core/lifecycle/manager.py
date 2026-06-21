@@ -42,8 +42,9 @@ from juniper_service_core.lifecycle.snapshots import SnapshotStore
 from juniper_service_core.lifecycle.state_machine import LifecycleCommand, LifecycleStateMachine
 
 if TYPE_CHECKING:
-    import numpy as np
+    from collections.abc import Callable
 
+    import numpy as np
     from juniper_model_core.events import TrainingEvent
     from juniper_model_core.interfaces import TrainableModel, TrainResult
     from juniper_model_core.serialization import ModelSerializer
@@ -81,6 +82,7 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         history_limit: int = DEFAULT_HISTORY_LIMIT,
         serializer: ModelSerializer | None = None,
         snapshot_dir: str | os.PathLike[str] | None = None,
+        frame_sink: Callable[[dict[str, Any]], None] | None = None,
     ) -> None:
         super().__init__(model, on_event=None)
         self.state_machine = LifecycleStateMachine()
@@ -106,6 +108,9 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         self._last_result: TrainResult | None = None
         self._last_error: str | None = None
         self._replay_session: ReplaySession | None = None
+        # Optional live-frame sink (set by the step-2 websocket bridge). When None, the manager
+        # pushes no live frames; only the pollable monitor/replay state is updated.
+        self._frame_sink: Callable[[dict[str, Any]], None] | None = frame_sink
 
     # -- model attachment ------------------------------------------------------------------
 
@@ -123,6 +128,16 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
     def has_model(self) -> bool:
         """True once a model is attached."""
         return self.model is not None
+
+    def set_frame_sink(self, frame_sink: Callable[[dict[str, Any]], None] | None) -> None:
+        """Set (or clear) the live-frame sink that pushes training / replay frames to a transport.
+
+        The step-2 websocket bridge sets this to broadcast frames to connected clients; when unset
+        (the default), the manager emits no live frames and only the pollable monitor / replay
+        state is updated. The sink receives ``{"type": "metrics"|"state", "data": {...}}`` frames
+        and runs on the training (or replay) thread, so it must be non-blocking and thread-safe.
+        """
+        self._frame_sink = frame_sink
 
     # -- training control ------------------------------------------------------------------
 
@@ -294,6 +309,8 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
             if isinstance(phase, str):
                 with self._lock:
                     self.state_machine.set_phase(phase)
+        # Push a live frame to the transport sink, if one is wired (step-2 websocket).
+        self._emit_live_frame(stamped.type)
 
     # -- query surface (read by HTTP routes) -----------------------------------------------
 
@@ -485,7 +502,9 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         with self._lock:
             sidecar = self._load_snapshot_model(snapshot_id)
             self._teardown_replay()
-            self._replay_session = ReplaySession(snapshot_id, sidecar.get("history", []))
+            # Pass the frame-sink adapter so replay frames push live when a transport is wired
+            # (FW-3); without a sink the adapter is a no-op and only the pollable state advances.
+            self._replay_session = ReplaySession(snapshot_id, sidecar.get("history", []), on_frame=self._emit_replay_frame)
             self.state_machine.mark_replaying()
             self.monitor.set_run_context(status="replaying", phase="replay")
             started = self._replay_session.start()
@@ -527,6 +546,38 @@ class ServiceLifecycleManager(TrainingLifecycleBase):
         if self._replay_session is not None:
             self._replay_session.stop()
             self._replay_session = None
+
+    def _emit_live_frame(self, event_type: str) -> None:
+        """Push a live training frame to the frame sink, if one is wired (best-effort).
+
+        Runs on the training thread (called from :meth:`_handle_event` outside the manager lock).
+        ``epoch_end`` emits a ``metrics`` frame; every other event type emits a ``state`` frame.
+        """
+        sink = self._frame_sink
+        if sink is None:
+            return
+        if event_type == "epoch_end":
+            frame: dict[str, Any] = {"type": "metrics", "data": self.monitor.get_metrics()}
+        else:
+            frame = {"type": "state", "data": self.monitor.get_state()}
+        try:
+            sink(frame)
+        except Exception:  # noqa: BLE001 - a transport error must not break training
+            logger.debug("frame_sink raised on a live training frame", exc_info=True)
+
+    def _emit_replay_frame(self, replay_frame: dict[str, Any]) -> None:
+        """``ReplaySession.on_frame`` adapter: push a replay frame to the frame sink (FW-3).
+
+        Runs on the replay daemon thread. A no-op when no sink is wired, so replay still advances
+        its pollable position over wall-clock without a transport.
+        """
+        sink = self._frame_sink
+        if sink is None:
+            return
+        try:
+            sink({"type": "metrics", "data": replay_frame})
+        except Exception:  # noqa: BLE001 - a transport error must not wedge the replay daemon
+            logger.debug("frame_sink raised on a replay frame", exc_info=True)
 
     def is_alive(self, stale_after_seconds: float = 30.0) -> bool:
         """Basic liveness: an idle service is alive; an active run is alive while its monitor
