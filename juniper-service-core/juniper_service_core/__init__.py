@@ -87,6 +87,18 @@ if TYPE_CHECKING:
         training_stream_handler,
         ws_authenticate,
     )
+    from juniper_service_core.workers import (
+        AnomalyDetector,
+        AuditEventType,
+        AuditLogger,
+        ConnectionRateLimiter,
+        TLSConfig,
+        WorkerMetrics,
+        WorkerRegistration,
+        WorkerRegistry,
+        WorkerRegistryCollector,
+        WorkerRegistryFullError,
+    )
 
 __all__ = [
     "__version__",
@@ -135,6 +147,17 @@ __all__ = [
     "control_stream_handler",
     "build_websocket_router",
     "attach_websocket",
+    # Worker-pool subsystem (lazy, from .workers -- stdlib-only foundations)
+    "WorkerRegistry",
+    "WorkerRegistration",
+    "WorkerRegistryFullError",
+    "TLSConfig",
+    "ConnectionRateLimiter",
+    "AnomalyDetector",
+    "AuditLogger",
+    "WorkerMetrics",
+    "AuditEventType",
+    "WorkerRegistryCollector",
 ]
 
 # Maps each lazily-resolved public name to the submodule that defines it. Keeping
@@ -187,6 +210,18 @@ _LAZY_EXPORTS = {
     "control_stream_handler": "juniper_service_core.websocket",
     "build_websocket_router": "juniper_service_core.websocket",
     "attach_websocket": "juniper_service_core.websocket",
+    # .workers is stdlib-only (prometheus_client is a lazy import inside the collector's
+    # collect()); routed through the lazy path too so the PEP 562 pattern stays uniform.
+    "WorkerRegistry": "juniper_service_core.workers",
+    "WorkerRegistration": "juniper_service_core.workers",
+    "WorkerRegistryFullError": "juniper_service_core.workers",
+    "TLSConfig": "juniper_service_core.workers",
+    "ConnectionRateLimiter": "juniper_service_core.workers",
+    "AnomalyDetector": "juniper_service_core.workers",
+    "AuditLogger": "juniper_service_core.workers",
+    "WorkerMetrics": "juniper_service_core.workers",
+    "AuditEventType": "juniper_service_core.workers",
+    "WorkerRegistryCollector": "juniper_service_core.workers",
 }
 
 
