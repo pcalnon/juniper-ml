@@ -58,4 +58,8 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
+    "-p",
+    "no:dash",
+    "-p",
+    "no:playwright",
 ]
