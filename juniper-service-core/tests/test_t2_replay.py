@@ -44,22 +44,23 @@ def test_replay_starts_paused_at_zero() -> None:
 
 
 def test_replay_controls_are_synchronous() -> None:
+    # Exercise the synchronous control surface WITHOUT start(): control() / step() / state()
+    # all mutate under the session lock and need no daemon. Starting the daemon here would let
+    # its _run loop call step() concurrently with the explicit step() below -- both advance
+    # _time_index, so the deterministic index assertion ("== 2") would intermittently see the
+    # daemon's extra step ("== 3"). Not starting the daemon makes this test deterministic and
+    # is the honest scope for a test named "controls_are_synchronous".
     session = ReplaySession("s", _history(5))
-    session.start()
-    try:
-        assert session.control("seek", time_index=3)["time_index"] == 3
-        assert session.control("speed", value=2.0)["speed"] == 2.0
-        assert session.control("range", start=1, end=4)["range"] == {"start": 1, "end": 4}
-        # seek clamps into the active range [1, 4) -> max index 3
-        assert session.control("seek", time_index=10)["time_index"] == 3
-        # step() advances by sign(speed) once playing
-        session.control("seek", time_index=1)
-        session.control("play")
-        assert session.step() is True
-        assert session.state()["time_index"] == 2
-    finally:
-        session.stop()
-        assert session.join(timeout=2.0)
+    assert session.control("seek", time_index=3)["time_index"] == 3
+    assert session.control("speed", value=2.0)["speed"] == 2.0
+    assert session.control("range", start=1, end=4)["range"] == {"start": 1, "end": 4}
+    # seek clamps into the active range [1, 4) -> max index 3
+    assert session.control("seek", time_index=10)["time_index"] == 3
+    # step() advances by sign(speed) once playing
+    session.control("seek", time_index=1)
+    session.control("play")
+    assert session.step() is True
+    assert session.state()["time_index"] == 2
 
 
 def test_replay_step_auto_pauses_at_boundary() -> None:
