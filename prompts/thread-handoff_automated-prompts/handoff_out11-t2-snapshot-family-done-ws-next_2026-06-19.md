@@ -15,7 +15,7 @@ adoption is WS-6.
   `/v1/{training,metrics,dataset,network}` routes + shared `ResponseEnvelope`. Also repaired
   `ci-service-core` (RED on main since #422) by adding `numpy>=1.24` to service-core deps.
 - **Step 1b (#476):** snapshot persistence — `SnapshotStore` (injected model-core `ModelSerializer`
-  + JSON sidecar of lifecycle state), manager `save`/`list`/`get`/`load`(→`INVESTIGATING`)/
+  `+` JSON sidecar of lifecycle state), manager `save`/`list`/`get`/`load`(→`INVESTIGATING`)/
   `restore_for_retrain`(→`STOPPED`)/`resume_from_snapshot`(→`RESUME_READY`), `/v1/snapshots` routes.
 - **Step 1c (#478):** snapshot replay — `ReplaySession` (timed playback; play/pause/seek/speed/
   range/stop + an injectable `on_frame` sink), manager `start_replay`(→`REPLAYING`)/`replay_control`/
@@ -29,7 +29,7 @@ adoption is WS-6.
    control_stream,control_security}` onto model-core `TrainingEvent`/state/metrics frames.
    `control_stream` → an injectable `CommandExecutor`. **DROP** `cascade_add`/`candidate_progress`
    frames + `worker_stream` (worker = step 3). The push source is the existing `LifecycleMonitor`
-   + the **`ReplaySession.on_frame` sink** (built in 1c for exactly this). Contract test drives every
+   `+` the **`ReplaySession.on_frame` sink** (built in 1c for exactly this). Contract test drives every
    channel with the stub model.
 2. **Step 3 — worker-pool infra** (registry/coordinator/audit/metrics/security; defer the generic
    `Task`/`TaskResult` envelope to WS-8 per OQ-11).
