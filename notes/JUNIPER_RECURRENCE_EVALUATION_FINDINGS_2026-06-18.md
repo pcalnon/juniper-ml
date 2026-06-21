@@ -4,7 +4,7 @@
 **Repository**: design notes hosted in pcalnon/juniper-ml; harness in pcalnon/juniper-recurrence
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.1.0 (findings + noise/real-data extensions)
+**Version**: 1.2.0 (findings + noise/real-data extensions + data-conditioning re-bench)
 **Last Updated**: 2026-06-19
 
 ---
@@ -13,9 +13,12 @@
 > question the whole effort was built for: *does the Δt-native LMU actually exploit irregular timing,
 > and does it beat honest baselines?* **Yes, decisively.** This records the verdict and meets the
 > roadmap's OQ-7 "completed-state" gate. **v1.1 adds §3.1** — a noise-robustness sweep + a real-data
-> `equities_seq` run — and the **DP-3 ranking** they produce (§5). Method + bands:
+> `equities_seq` run — and the **DP-3 ranking** they produce (§5). **v1.2 adds §3.2** — a direct
+> data-conditioning re-bench that revises the §3.1 equities reading (the r²≈−50 failure was *mostly* a
+> readout-regularization artifact, not non-stationarity) and refines the DP-3 ranking accordingly.
+> Method + bands:
 > [`JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md);
-> harness + raw results: `bench/` in pcalnon/juniper-recurrence (PRs #23, #27; `bench/results/REPORT.md`).
+> harness + raw results: `bench/` in pcalnon/juniper-recurrence (PRs #23, #27, #29; `bench/results/REPORT.md`).
 
 ---
 
@@ -77,9 +80,50 @@ the fixed-Δt control at r² ≈ −88, while the trivial **`linear_ridge` basel
 RMSE 0.96)**. The Δt-aware LMU is still *less bad* than the fixed-Δt one (+22.8% RMSE), so the Δt
 contribution is directionally real even here — but the headline is that a closed-form Legendre-memory
 regressor extrapolates badly on a trending, non-stationary price level where last-step linear
-persistence is near-optimal. This is almost certainly a **target-conditioning** problem (the raw price
-is non-stationary; predicting returns or a normalized target is the standard fix), not a deficiency of
-the Δt mechanism itself.
+persistence is near-optimal. The §3.1 read was that this is a **target-conditioning** problem (predict
+returns); the **§3.2 re-bench revises that** — it was *dominantly* an unregularized-readout artifact,
+with target non-stationarity a secondary effect. Either way it is not a deficiency of the Δt mechanism.
+
+## 3.2 Data-conditioning re-bench — the equities failure was mostly a readout artifact (2026-06-19)
+
+§3.1 predicted a stationary target would fix the `equities_seq` failure ("predicting returns … is the
+standard fix"). A direct re-bench — juniper-data 0.8.0's new `regression_target` option (juniper-data
+#195) plus a ridge sweep on the LMU readout (harness juniper-recurrence #29) — shows that prediction was
+**only partly right**, and the fuller picture is more useful. AAPL 2010–2022, single ticker, 5-fold
+walk-forward CV, mean r² across folds:
+
+| readout | `next_close` (std 38) | `log_return` (std 0.018) |
+|---|---|---|
+| LMU **ridge=0** (the bench default) | **−50.6** | **−4422** |
+| LMU ridge=1e-3 | +0.905 | −3.84 |
+| LMU ridge=0.1 | +0.829 | −0.051 |
+| LMU ridge=1.0 | −0.029 | −0.038 |
+| LMU ridge=100 | — | **−0.001** |
+| `linear_ridge` (ridge=1e-3) | **+0.985** | **−1.72** |
+| `naive_persistence` | −34.2 | −238.7 |
+
+1. **The r²≈−50 catastrophe was dominantly an *unregularized-readout* artifact, not target
+   non-stationarity.** The bench builds `LMURegressor` with the default `ridge=0.0` — a plain `lstsq`
+   over the 162-column LMU-memory map — while the `linear_ridge` baseline uses `ridge=1e-3`. On the
+   *raw* `next_close` target, simply adding `ridge=1e-3` lifts the LMU from **−50.6 → +0.905**. Per the
+   model docstring, `ridge=0` is an intentional `juniper-model-core` conformance default (the
+   "overfit-tiny exactly" guarantee) — the wrong setting for real low-signal data. So the catastrophe
+   was a **bench-configuration** issue, not a model bug, and not (primarily) the target.
+2. **Target conditioning is real but secondary.** `linear_ridge`'s headline +0.985 on `next_close` was
+   a **non-stationarity artifact** (last-step close ≈ next close); it dissolves to **−1.72** on the
+   stationary log-return target. The genuine predictability ceiling for daily AAPL returns is **≈0** —
+   the efficient-market floor; no model here has return-forecasting *skill* (as expected).
+3. **On the stationary target with a regularized readout, the Δt-LMU is the *best* model.** It reaches
+   the ≈0 ceiling (ridge ≥ 0.1 → r² −0.05 … −0.001) and **beats `linear_ridge`** (−1.72). The
+   variable-Δt and fixed-Δt regularized LMUs are ~tied here (var −0.038, fixed −0.030): at the
+   efficient-market floor there is no temporal signal for Δt-awareness to exploit, so it neither helps
+   nor hurts — consistent with the synthetic result that Δt only helps where timing carries information.
+
+**Net:** two independent fixes — a stationary target (shipped: juniper-data 0.8.0 `regression_target`)
+*and* a regularized readout (the dominant lever; applied in the bench, model-default question tracked in
+juniper-recurrence #28). With both, the real-data row stops being a catastrophe and the Δt-LMU is
+competitive at the (low) ceiling. Read this as a **model-fit / fairness diagnostic**, not a forecasting
+claim.
 
 ## 4. Acceptance bands (OQ-14)
 
@@ -90,7 +134,7 @@ All six bands **PASS**:
 3. **No regular-grid penalty** (`multi_sine`, `mackey_glass`): var ≡ fixed (0% gap) ✅
 
 The ratified verdict is scored only on the three pre-registered datasets (DP-5 guardrail) and is
-**unchanged** by the §3.1 extensions, which are reported as informational.
+**unchanged** by the §3.1/§3.2 extensions, which are reported as informational.
 
 ## 5. Conclusion
 
@@ -98,14 +142,19 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
   measured results, not just design argument.
 - The roadmap's **OQ-7 "completed-state" gate is met**: the deployed app trains, predicts, and
   cross-validates on irregular-Δt data end-to-end (`/v1/train` r²=0.939 over HTTP).
-- **DP-3 ranking (the instrument's verdict).** The extensions give a clear signal. The LMU's
-  closed-form linear readout is **noise-robust** — the Δt advantage survives to `noise_std=0.25`
-  without collapse — so a more expressive readout is not motivated by noise. And the `equities_seq`
-  failure is a **data-conditioning** symptom (a non-stationary raw-price target), which a nonlinear
-  readout would not fix. **DP-3 (a trained / nonlinear torch readout) is therefore not clearly
-  indicated** — de-prioritized pending a measured need. The higher-value next step the data ranks is
-  **target conditioning for non-stationary real data** (predict returns or a normalized target), on
-  the juniper-data side, *before* any model-capacity increment.
+- **DP-3 ranking (the instrument's verdict) — refined by the §3.2 re-bench.** The LMU's closed-form
+  linear readout is **noise-robust** — the Δt advantage survives to `noise_std=0.25` without collapse —
+  so a more expressive readout is not motivated by noise. The §3.1 read attributed the `equities_seq`
+  failure to data-conditioning; the **§3.2 re-bench revises that**: it was *dominantly* an
+  unregularized-readout artifact (the bench's `ridge=0` conformance default), with target
+  non-stationarity secondary. On a stationary target with a *regularized* readout the Δt-LMU reaches the
+  efficient-market ceiling and beats linear ridge — i.e. there is **no measured return-forecasting skill
+  to unlock on this data for any readout** (the ceiling is ≈0). **DP-3 (a trained / nonlinear torch
+  readout) therefore remains not strictly indicated by the data** — its value is analytical / insight
+  (which is why it is being built regardless of the ranking). What the re-bench *does* rank highest is a
+  cheaper lever: a **regularized-readout default for real low-signal data** (a one-line bench fix,
+  applied; the model-default question tracked in juniper-recurrence #28) — alongside the **target
+  conditioning** that shipped in juniper-data 0.8.0 (#195).
 
 ## 6. Caveats (reported honestly)
 
@@ -113,15 +162,15 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
   discriminating test is the irregular sampling in `irregular_sine`. The §3.1 noise sweep (the
   "cheap follow-up" this section originally flagged) now confirms the Δt contribution holds under
   observation noise.
-- The synthetic signals are a research Δt-thesis check, not a forecasting/trading claim. The §3.1
-  `equities_seq` run is the real-data confirmation flagged here; read it as a **model-fit diagnostic**
-  (the LMU needs conditioned targets on non-stationary data), not an investment signal.
-- **juniper-data 0.7.0 published the generators** (#187/#188/#189), so the synthetic rows now install
-  from PyPI — the editable-sibling caveat is retired. **However**, the 0.7.0 wheel **omits the bundled
-  `sp500_constituents.csv`** (a packaging defect — no `package_data` entry), so `equities_seq` raises
-  `FileNotFoundError` from a pip install of `juniper-data[equities]==0.7.0`; the §3.1 equities numbers
-  were generated from a source install. A **juniper-data 0.7.1** packaging fix is the remedy; until
-  then the equities row reproduces only from source.
+- The synthetic signals are a research Δt-thesis check, not a forecasting/trading claim. Read the
+  `equities_seq` run as a **model-fit / fairness diagnostic** (per §3.2: the LMU needs a regularized
+  readout — and, secondarily, a stationary target — on real low-signal data), not an investment signal.
+  Daily single-name returns are near-efficient: the measured ceiling for every model is r² ≈ 0.
+- **Reproducibility.** juniper-data 0.7.0 published the generators (#187/#188/#189); **0.7.1** fixed the
+  wheel to ship the bundled `sp500_constituents.csv`; **0.8.0** added the `regression_target` option
+  (#195). The §3.2 numbers reproduce from `juniper-data[equities]>=0.8.0` (the bench `[bench]` extra
+  pins it) — no source / editable-sibling step. The §3.1 numbers (raw-close target) were generated
+  before 0.7.1 from a source install.
 
 ## 7. Cross-references
 
@@ -129,3 +178,5 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
 - Canonical roadmap (Wave-2 / OQ-7): [`JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md)
 - LMU numeric design + the fixed-Δt negative control: [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md)
 - Harness + raw results: `bench/` in pcalnon/juniper-recurrence (`bench/results/REPORT.md`)
+- §3.2 re-bench: juniper-data #195 (`regression_target`), juniper-recurrence #29 (bench), and the
+  readout-regularization follow-up juniper-recurrence #28
