@@ -101,7 +101,7 @@ class WorkerTaskProtocol(Protocol):
 
     def build_assignment(self, task: PendingTask) -> tuple[dict[str, Any], list[bytes]]:
         """Encode a dispatched task as a JSON envelope + ordered binary frames (the list may be empty)."""
-        ...
+        pass
 
     def result_attachments(self, msg: dict[str, Any]) -> list[str]:
         """Names of the binary frames that follow a result ``msg`` (in receive order); ``[]`` if none.
@@ -109,7 +109,7 @@ class WorkerTaskProtocol(Protocol):
         The ``/ws/workers`` stream uses this to know how many binary frames to read after a
         ``task_result`` envelope before handing ``(msg, frames)`` to :meth:`parse_result`.
         """
-        ...
+        pass
 
     def parse_result(self, worker_id: str, msg: dict[str, Any], frames: dict[str, bytes]) -> ParsedResult | None:
         """Validate + build a result object. Return ``None`` to reject (schema / validation failure).
@@ -117,7 +117,7 @@ class WorkerTaskProtocol(Protocol):
         ``frames`` maps each attachment name from :meth:`result_attachments` to its raw bytes; the
         protocol owns any decode (cascor: numpy ``BinaryFrame.decode``) + validation.
         """
-        ...
+        pass
 
 
 class WorkerCoordinator:
