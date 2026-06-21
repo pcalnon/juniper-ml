@@ -150,10 +150,11 @@ Scoped from a live read of cascor `origin/main` `api/` (the extraction source) +
 2026-06-19. Dup-guarded (worktrees dir + remote: no in-flight T2 extraction). OUT-11 confirmed greenfield-in-
 service-core / extraction-from-cascor. Build is gated on the §5 audit.
 
-## §9. As-built status & deferred follow-ups (updated 2026-06-19; step 2 appended)
+## §9. As-built status & deferred follow-ups (updated 2026-06-21; steps 2 + 3a + 3b appended)
 
 **As-built.** Step 1 grew in scope and was split into three PRs; step 2 (the WebSocket subsystem)
-follows. All merged to `main`:
+and step 3 (the worker subsystem, itself split 3a/3b) follow. All merged to `main` except step 3b
+(open PR):
 
 | Step | PR | Delivered |
 |------|----|-----------|
@@ -164,9 +165,11 @@ follows. All merged to `main`:
 
 | 3a | #492 | Worker-pool foundations (`juniper_service_core.workers`) — the GENERIC pool-infra layer the OQ-11 audit cleared: `WorkerRegistry` / `WorkerRegistration` / `WorkerRegistryFullError` (registration, heartbeat, health-score, idle/stale queries, capacity cap) + security primitives (`TLSConfig` mTLS, `ConnectionRateLimiter` token-bucket, `AnomalyDetector` generalized from cascade `correlation` → a generic bounded quality `score`) + audit (`AuditLogger` + `WorkerMetrics` + `AuditEventType`) + `WorkerRegistryCollector` (Prometheus bridge; `juniper_cascor_worker_` prefix → configurable `metric_prefix`, pending-tasks via an injected callable, no coordinator import). De-cascored: `api.observability` emissions dropped, `cascor_constants` → local consts, loggers renamed. Lazy-exported (stdlib-only; dependency-free import preserved). 17-unit-test pool-infra coverage (RK-6 stub-free); cascor untouched |
 
-**Step 3 split** (scope grew, mirroring step 1's 1a/1b/1c): **3a** (this row) ships the four clean pool-infra foundation modules. **3b** (next) extracts the `WorkerCoordinator` — task dispatch/collect/timeout/retry over an **injectable task-protocol + result-reducer seam** (the analogue of step 2's `CommandExecutor`, because the `Task`/`TaskResult` envelope is cascade-bound) — plus the `/ws/workers` stream handler (adding a `"worker"` endpoint bucket to the websocket manager). The cascade-bound `Task`/`TaskResult` envelope (`protocol.py`: `candidate_data` / `correlation` / …) + correlation-based result reduction stay deferred to **WS-8** / cascor-side per OQ-11.
+| 3b | #496 | Worker coordinator + `/ws/workers` stream. `WorkerCoordinator` (`juniper_service_core.workers.coordinator`, stdlib-only): generic idle-worker assignment, per-task timeout/retry, result collection (+ worker-liveness early-exit), `pending_tasks_count` (wired into 3a's `WorkerRegistryCollector`), and the background health monitor — with the two cascade-bound operations injected behind a `WorkerTaskProtocol` seam (the step-2 `CommandExecutor` analogue): `build_assignment(task)→(msg, frames)` + `parse_result(worker_id, msg, frames)→ParsedResult\|None` (+ `result_attachments` to drive binary-frame receipt). Anomaly detection runs over 3a's generic `score` (not `correlation`). **Result reduction stays consumer-side** — `collect_results` returns the raw list and the consumer reduces (cascor's `TaskDistributor`), so no reducer hook is added (faithful to OQ-11; avoids RK-4 dead surface). Generic `/ws/workers` handler (`juniper_service_core.websocket.worker_stream`): origin-reject / `X-API-Key` auth / per-source rate-limit / registration handshake (server-assigned id, untrusted `client_name`) / heartbeat + enriched-field forwarding / dispatch + binary-frame transport, with `attach_worker_pool` app-wiring + `build_worker_router` (default `/ws/workers`, `path=` for cascor's `/ws/v1/workers`); `"worker"` added to `DEFAULT_WS_ENDPOINTS`. Cascade-bound `protocol.py` (`Task`/`TaskResult` envelope + numpy `BinaryFrame`) + `task_distributor` reduction stay deferred to **WS-8** / cascor. Lazy-exported (dependency-free top-level import preserved). 36-test both-stacks-green contract drives register→heartbeat→dispatch→collect→timeout (+ transport edge paths) with a trivial protocol (RK-6); full suite **185 green** (≥80% coverage gate held — `worker_stream` 94%, `router` 100%); cascor untouched |
 
-Steps **3b** (worker coordinator + `/ws/workers`) and **4** (publish-rail + `[tools]` drift-lint) remain.
+**Step 3 split** (scope grew, mirroring step 1's 1a/1b/1c): **3a** ships the four clean pool-infra foundation modules. **3b** (this PR) extracts the `WorkerCoordinator` — task dispatch/collect/timeout/retry over an **injectable task-protocol seam** (`build_assignment` + `parse_result`, the analogue of step 2's `CommandExecutor`) — plus the `/ws/workers` stream handler (adding a `"worker"` endpoint bucket to the websocket manager). As-built refinement: the seam is encode/parse only; **result reduction is left to the consumer** (cascor's `TaskDistributor` reduces the `collect_results` list), faithful to the cascor source where the coordinator never reduces — so no `reduce_results` hook was added. The cascade-bound `Task`/`TaskResult` envelope (`protocol.py`: `candidate_data` / `correlation` / …) + correlation-based result reduction stay deferred to **WS-8** / cascor-side per OQ-11.
+
+Step **4** (publish-rail + `[tools]` drift-lint) remains.
 
 **Deferred follow-ups (future work):**
 

@@ -159,6 +159,16 @@ class WorkerRegistry:
         return self._max_workers
 
     @property
+    def heartbeat_timeout(self) -> float:
+        """The heartbeat timeout (seconds) used for liveness checks.
+
+        Exposes the construction-time timeout so a collaborator (the step-3b ``WorkerCoordinator``
+        health monitor) can re-check a stale worker's liveness via :meth:`WorkerRegistration.is_alive`
+        without reaching into the private ``_heartbeat_timeout`` attribute.
+        """
+        return self._heartbeat_timeout
+
+    @property
     def available_worker_count(self) -> int:
         """Number of idle, alive workers available for task assignment."""
         with self._lock:

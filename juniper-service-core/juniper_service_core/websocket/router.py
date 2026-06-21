@@ -24,8 +24,9 @@ from fastapi import APIRouter, WebSocket
 
 from juniper_service_core.websocket.control_stream import control_stream_handler
 from juniper_service_core.websocket.training_stream import training_stream_handler
+from juniper_service_core.websocket.worker_stream import worker_stream_handler
 
-__all__ = ["build_websocket_router"]
+__all__ = ["build_websocket_router", "build_worker_router"]
 
 
 def build_websocket_router(*, training: bool = True, control: bool = True) -> APIRouter:
@@ -51,5 +52,32 @@ def build_websocket_router(*, training: bool = True, control: bool = True) -> AP
         @router.websocket("/ws/control")
         async def _control(websocket: WebSocket) -> None:
             await control_stream_handler(websocket)
+
+    return router
+
+
+def build_worker_router(*, path: str = "/ws/workers") -> APIRouter:
+    """Return an APIRouter mounting the worker channel (the step-3b ``/ws/workers`` stream).
+
+    Separate from :func:`build_websocket_router` because the worker channel is machine-to-machine
+    (its own auth / origin / rate-limit rules) and a service wires it only when it runs a remote
+    worker pool. The ``path`` defaults to ``/ws/workers`` (parity with the singular ``/ws/training`` /
+    ``/ws/control``); pass ``path="/ws/v1/workers"`` to match cascor's existing route verbatim.
+
+    A service still wires ``app.state.worker_registry`` / ``worker_coordinator`` (and the optional
+    rate-limiter / audit / metrics / ws-manager) via
+    :func:`~juniper_service_core.websocket.worker_stream.attach_worker_pool`.
+
+    Args:
+        path: The websocket route to mount the worker handler at.
+
+    Returns:
+        An :class:`~fastapi.APIRouter` ready for ``create_app(routers=[...])``.
+    """
+    router = APIRouter()
+
+    @router.websocket(path)
+    async def _workers(websocket: WebSocket) -> None:
+        await worker_stream_handler(websocket)
 
     return router

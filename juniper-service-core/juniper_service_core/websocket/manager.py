@@ -40,10 +40,12 @@ __all__ = ["WebSocketManager", "ws_authenticate", "ReplayOutOfRange", "DEFAULT_W
 
 logger = logging.getLogger("juniper_service_core.websocket")
 
-#: The per-endpoint connection buckets the generic base tracks. The worker endpoint is a
-#: step-3 (worker subsystem) concern, so the client-facing base ships training + control only;
-#: a service (or step 3) can pass a wider tuple to :class:`WebSocketManager`.
-DEFAULT_WS_ENDPOINTS: tuple[str, ...] = ("training", "control")
+#: The per-endpoint connection buckets the generic base tracks: the two client-facing channels
+#: (``training`` / ``control``) plus the machine-to-machine ``worker`` channel (step-3b
+#: ``/ws/workers``). A service can pass a different tuple to :class:`WebSocketManager`; the worker
+#: stream registers under :data:`~juniper_service_core.websocket.worker_stream.WORKER_WS_ENDPOINT`
+#: (``"worker"``), so that name must be present for the per-endpoint gauge to count worker sockets.
+DEFAULT_WS_ENDPOINTS: tuple[str, ...] = ("training", "control", "worker")
 
 
 class ReplayOutOfRange(Exception):

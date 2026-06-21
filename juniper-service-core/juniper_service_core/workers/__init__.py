@@ -15,10 +15,15 @@ pool-infra layer the OQ-11 audit cleared, design §5.6):
 - :class:`~juniper_service_core.workers.metrics.WorkerRegistryCollector` -- a ``prometheus_client``
   custom collector bridging registry snapshots to per-worker gauges.
 
-**Deferred (step 3b):** the ``WorkerCoordinator`` (task dispatch/collect over an injectable
-task-protocol seam) and the ``/ws/workers`` stream handler. **Deferred (WS-8):** the cascade-bound
-``Task`` / ``TaskResult`` envelope (cascor's ``api/workers/protocol.py`` -- ``candidate_data`` /
-``correlation`` / ...) and the correlation-based result reduction, which stay cascor-side.
+- :class:`~juniper_service_core.workers.coordinator.WorkerCoordinator` -- generic task
+  dispatch / collect / timeout / retry over an injectable
+  :class:`~juniper_service_core.workers.coordinator.WorkerTaskProtocol` seam (step 3b).
+
+The ``/ws/workers`` stream handler that drives the coordinator lives in the websocket subsystem
+(:func:`~juniper_service_core.websocket.worker_stream.worker_stream_handler`). **Deferred (WS-8):**
+the cascade-bound ``Task`` / ``TaskResult`` envelope (cascor's ``api/workers/protocol.py`` --
+``candidate_data`` / ``correlation`` / ...) and the correlation-based result reduction, which stay
+cascor-side (``collect_results`` returns the raw list; the consumer reduces it).
 
 These primitives are pure stdlib (``prometheus_client`` is imported lazily inside the collector's
 ``collect()``), so this subpackage adds no third-party runtime dependency; the
@@ -29,6 +34,7 @@ These primitives are pure stdlib (``prometheus_client`` is imported lazily insid
 from __future__ import annotations
 
 from juniper_service_core.workers.audit import AUDIT_LEVEL, AuditEventType, AuditLogger, WorkerMetrics
+from juniper_service_core.workers.coordinator import ParsedResult, PendingTask, WorkerCoordinator, WorkerTaskProtocol
 from juniper_service_core.workers.metrics import WorkerRegistryCollector
 from juniper_service_core.workers.registry import DEFAULT_MAX_WORKERS, WorkerRegistration, WorkerRegistry, WorkerRegistryFullError
 from juniper_service_core.workers.security import AnomalyDetector, ConnectionRateLimiter, TLSConfig
@@ -50,4 +56,9 @@ __all__ = [
     "AUDIT_LEVEL",
     # Metrics
     "WorkerRegistryCollector",
+    # Coordinator (step 3b -- task dispatch/collect over the injectable protocol seam)
+    "WorkerCoordinator",
+    "PendingTask",
+    "WorkerTaskProtocol",
+    "ParsedResult",
 ]
