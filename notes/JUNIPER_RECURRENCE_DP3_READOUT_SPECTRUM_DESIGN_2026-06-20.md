@@ -261,6 +261,27 @@ of recent history) is possible future work (§8 Q3).
    pins would also need updating if a new package appeared).
 6. **HTTP exposure** — expose readout selection over the app API in P2, or defer (internal-only first)?
 
+## 8a. Ratification (2026-06-20)
+
+Ratified by Paul:
+
+- **Q1–Q4 accepted as recommended** — immutable readout spec internally + tagged enum at the HTTP edge
+  (Q1); `ridge=0.0` hard invariant + GCV opt-in via `ridge="gcv"`, type-widening lands in P1 (Q2);
+  gate Rung 2b (torch) on a measured 2a lift (Q3); RFF/RBF feature map for 2a (Q4).
+- **Q3 sub-question → YES, add a capacity-demonstrating nonlinear dataset** so 2a/2b can show an
+  *upside* (a measurable linear→nonlinear gap), not merely confirm a tie at the existing ceiling. This
+  is now committed P2 scope (see §9). Design: an irregular-Δt signal whose **regression target is a
+  genuine second-order (multiplicative) functional of two delayed values** — e.g.
+  `y = x(t−τ₁)·x(t−τ₂)` (optionally summed over a few delay pairs). The LMU memory linearly encodes the
+  history `{x(t−τ)}`, so a **linear** readout (any ridge) can only form linear combinations and
+  **provably cannot** represent the bilinear product → its r² is bounded well below 1; an RFF/MLP
+  readout *can* approximate it. The expected signature is a **clear r² gap (nonlinear ≫ linear)** on
+  this dataset, which validates nonlinear-readout *capacity* — complementing the *tie* on the existing
+  near-linear datasets. **Home (P2 sub-decision):** a juniper-data generator (ecosystem-consistent,
+  reusable, the bench delegates to it — preferred) vs. a bench-local synthetic (faster, no release
+  dependency); pick at P2.
+- **Q6 (HTTP exposure) → in P2.**
+
 ## 9. Phasing (PR plan)
 
 - **P1 — readout-spec refactor + Rung 1 (GCV).** Extract the `Readout` protocol + `LinearReadoutSpec`;
@@ -268,10 +289,11 @@ of recent history) is possible future work (§8 Q3).
   old-format `LMUSerializer.load` fallback, exact 3-event stream for the linear path); GCV ridge
   selection; `ridge: float|Literal["gcv"]` widening propagated to the app schemas/CLI/settings.
   Resolves juniper-recurrence#28. *(numpy; a careful two-repo refactor — not trivial.)*
-- **P2 — Rung 2a (RFF).** `RFFReadoutSpec` (standardize → RFF → GCV-ridge, train-fold-only, `D` capped
-  to the smallest fold) + RFF conformance subclass + serializer registry/schema-version + bench row +
-  findings-doc update (linear-vs-nonlinear: expect a tie, confirm the ceiling) + (decision §8 Q6) the
-  HTTP enum. *(numpy)*
+- **P2 — Rung 2a (RFF) + the capacity dataset.** `RFFReadoutSpec` (standardize → RFF → GCV-ridge,
+  train-fold-only, `D` capped to the smallest fold) + RFF conformance subclass + serializer
+  registry/schema-version + **the capacity-demonstrating nonlinear dataset (§8a; `y=x(t−τ₁)·x(t−τ₂)`)**
+  + bench rows (existing datasets: expect a tie, confirm the ceiling; capacity dataset: expect a clear
+  nonlinear≫linear r² gap) + findings-doc update + (§8 Q6) the HTTP enum. *(numpy)*
 - **P3 — Rung 2b (torch), gated.** `MLPReadoutSpec` behind `[torch]`; CPU/dtype/thread determinism;
   named-npz state; separate optional CI job + coverage exclusion; bench row. Build only if P2 warrants.
   *(torch)*
