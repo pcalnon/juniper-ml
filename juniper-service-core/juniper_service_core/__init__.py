@@ -82,9 +82,12 @@ if TYPE_CHECKING:
         ReplayOutOfRange,
         WebSocketManager,
         attach_websocket,
+        attach_worker_pool,
         build_websocket_router,
+        build_worker_router,
         control_stream_handler,
         training_stream_handler,
+        worker_stream_handler,
         ws_authenticate,
     )
     from juniper_service_core.workers import (
@@ -92,12 +95,16 @@ if TYPE_CHECKING:
         AuditEventType,
         AuditLogger,
         ConnectionRateLimiter,
+        ParsedResult,
+        PendingTask,
         TLSConfig,
+        WorkerCoordinator,
         WorkerMetrics,
         WorkerRegistration,
         WorkerRegistry,
         WorkerRegistryCollector,
         WorkerRegistryFullError,
+        WorkerTaskProtocol,
     )
 
 __all__ = [
@@ -147,6 +154,10 @@ __all__ = [
     "control_stream_handler",
     "build_websocket_router",
     "attach_websocket",
+    # Worker channel (lazy, from .websocket -- requires fastapi; step 3b /ws/workers)
+    "worker_stream_handler",
+    "build_worker_router",
+    "attach_worker_pool",
     # Worker-pool subsystem (lazy, from .workers -- stdlib-only foundations)
     "WorkerRegistry",
     "WorkerRegistration",
@@ -158,6 +169,11 @@ __all__ = [
     "WorkerMetrics",
     "AuditEventType",
     "WorkerRegistryCollector",
+    # Worker coordinator (lazy, from .workers -- stdlib-only; step 3b)
+    "WorkerCoordinator",
+    "PendingTask",
+    "WorkerTaskProtocol",
+    "ParsedResult",
 ]
 
 # Maps each lazily-resolved public name to the submodule that defines it. Keeping
@@ -210,6 +226,10 @@ _LAZY_EXPORTS = {
     "control_stream_handler": "juniper_service_core.websocket",
     "build_websocket_router": "juniper_service_core.websocket",
     "attach_websocket": "juniper_service_core.websocket",
+    # Worker channel (.websocket; requires fastapi). The /ws/workers handler + its app wiring.
+    "worker_stream_handler": "juniper_service_core.websocket",
+    "build_worker_router": "juniper_service_core.websocket",
+    "attach_worker_pool": "juniper_service_core.websocket",
     # .workers is stdlib-only (prometheus_client is a lazy import inside the collector's
     # collect()); routed through the lazy path too so the PEP 562 pattern stays uniform.
     "WorkerRegistry": "juniper_service_core.workers",
@@ -222,6 +242,11 @@ _LAZY_EXPORTS = {
     "WorkerMetrics": "juniper_service_core.workers",
     "AuditEventType": "juniper_service_core.workers",
     "WorkerRegistryCollector": "juniper_service_core.workers",
+    # Worker coordinator (.workers; stdlib-only). Task dispatch/collect over the protocol seam.
+    "WorkerCoordinator": "juniper_service_core.workers",
+    "PendingTask": "juniper_service_core.workers",
+    "WorkerTaskProtocol": "juniper_service_core.workers",
+    "ParsedResult": "juniper_service_core.workers",
 }
 
 

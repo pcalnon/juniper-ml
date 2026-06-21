@@ -49,8 +49,9 @@ from juniper_service_core.websocket.messages import (
     create_state_message,
     create_topology_message,
 )
-from juniper_service_core.websocket.router import build_websocket_router
+from juniper_service_core.websocket.router import build_websocket_router, build_worker_router
 from juniper_service_core.websocket.training_stream import training_stream_handler
+from juniper_service_core.websocket.worker_stream import attach_worker_pool, worker_stream_handler
 
 __all__ = [
     # Connection manager + auth
@@ -70,6 +71,10 @@ __all__ = [
     "training_stream_handler",
     "control_stream_handler",
     "build_websocket_router",
+    # Worker channel (step 3b -- /ws/workers)
+    "worker_stream_handler",
+    "build_worker_router",
+    "attach_worker_pool",
     # Broadcast bridge
     "attach_websocket",
     "build_frame_sink",
