@@ -4,8 +4,8 @@
 **Repository**: design notes hosted in pcalnon/juniper-ml; harness in pcalnon/juniper-recurrence
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 1.2.0 (findings + noise/real-data extensions + data-conditioning re-bench)
-**Last Updated**: 2026-06-19
+**Version**: 1.3.0 (findings + noise/real-data extensions + data-conditioning re-bench + DP-3 capacity)
+**Last Updated**: 2026-06-22
 
 ---
 
@@ -16,6 +16,9 @@
 > `equities_seq` run — and the **DP-3 ranking** they produce (§5). **v1.2 adds §3.2** — a direct
 > data-conditioning re-bench that revises the §3.1 equities reading (the r²≈−50 failure was *mostly* a
 > readout-regularization artifact, not non-stationarity) and refines the DP-3 ranking accordingly.
+> **v1.3 adds §3.3** — the DP-3 P2 capacity result: a purpose-built `delay_product` dataset on which the
+> nonlinear RFF readout beats the linear readout by a **+0.83 r² gap**, demonstrating nonlinear-readout
+> *capacity* (the existing datasets only ever *tie* at their linear ceiling).
 > Method + bands:
 > [`JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md);
 > harness + raw results: `bench/` in pcalnon/juniper-recurrence (PRs #23, #27, #29; `bench/results/REPORT.md`).
@@ -125,6 +128,40 @@ juniper-recurrence #28). With both, the real-data row stops being a catastrophe 
 competitive at the (low) ceiling. Read this as a **model-fit / fairness diagnostic**, not a forecasting
 claim.
 
+## 3.3 DP-3 P2 — nonlinear-readout capacity (the `delay_product` instrument, 2026-06-22)
+
+§3.2 showed the existing datasets sit at the linear readout's ceiling, so the DP-3 nonlinear (RFF)
+readout merely *ties* there — it could confirm the absence of a nonlinear benefit but could not, alone,
+demonstrate nonlinear *capacity*. DP-3 P2 closes that gap with a purpose-built capacity dataset and an
+RFF readout row (design §8a; the `delay_product` generator in juniper-data #203; the bench RFF row in
+juniper-recurrence #44).
+
+**The instrument.** `delay_product` is an irregularly-sampled sinusoid superposition whose regression
+target is the **bilinear product of two delayed in-window values**, `y = x(t−τ₁)·x(t−τ₂)` (both delays
+kept inside the lookback). Because the LMU memory is a *linear* compression of the window, the target is
+a **quadratic form in the memory state**: a linear readout provably cannot represent it (its r² is
+bounded well below 1), while a random-Fourier-feature readout can approximate it. A model-free check in
+the generator's own tests confirms the premise — an unrestricted linear map of the *entire* window
+reaches r² ≈ 0.01, while the exact product feature reaches r² = 1.0.
+
+**Measured (LMU d=16, 5-fold walk-forward CV; harness juniper-recurrence #44):**
+
+| dataset | linear readout r² | RFF readout r² | gap |
+|---|---|---|---|
+| `delay_product` (capacity) | **−0.04** | **+0.79** | **+0.83** |
+| `irregular_sine` (near-linear) | +0.988 | +0.985 | −0.003 (tie) |
+
+**Reading.** Exactly the predicted signature: on the capacity dataset the linear readout cannot fit the
+bilinear target (r² ≈ 0) while the RFF readout recovers most of it (r² ≈ 0.79 — the residual is the LMU
+memory's order-`d` truncation, not a readout limitation); on the near-linear synthetics the two readouts
+tie at the ceiling, so the nonlinear readout **costs nothing** where it is not needed. This validates
+that the DP-3 Rung 2a RFF readout has **genuine nonlinear capacity** — it is the *instrument* that proves
+the readout spectrum works, complementing §3.2's finding that none of the *original* datasets needed it.
+It does **not** revise the §3.2/§5 ranking for the real data (their predictability ceiling is still
+≈0); it establishes capacity, available for any future target that is a genuine nonlinear functional of
+recent history. (The RFF readout is reachable over the service edge via the DP-3 P2c HTTP `readout` enum,
+juniper-recurrence #45.)
+
 ## 4. Acceptance bands (OQ-14)
 
 All six bands **PASS**:
@@ -151,7 +188,11 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
   efficient-market ceiling and beats linear ridge — i.e. there is **no measured return-forecasting skill
   to unlock on this data for any readout** (the ceiling is ≈0). **DP-3 (a trained / nonlinear torch
   readout) therefore remains not strictly indicated by the data** — its value is analytical / insight
-  (which is why it is being built regardless of the ranking). What the re-bench *does* rank highest is a
+  (which is why it is being built regardless of the ranking). **§3.3 (DP-3 P2) now demonstrates the numpy
+  RFF readout (Rung 2a) has genuine nonlinear capacity** — a +0.83 r² gap on the purpose-built
+  `delay_product` dataset — so the readout *spectrum* is proven to work; it simply remains unneeded for
+  the current near-linear datasets (where it ties), and the torch rung (2b) stays gated on a measured 2a
+  lift the real data does not provide. What the re-bench *does* rank highest is a
   cheaper lever: a **regularized-readout default for real low-signal data** (a one-line bench fix,
   applied; the model-default question tracked in juniper-recurrence #28) — alongside the **target
   conditioning** that shipped in juniper-data 0.8.0 (#195).
@@ -180,3 +221,5 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
 - Harness + raw results: `bench/` in pcalnon/juniper-recurrence (`bench/results/REPORT.md`)
 - §3.2 re-bench: juniper-data #195 (`regression_target`), juniper-recurrence #29 (bench), and the
   readout-regularization follow-up juniper-recurrence #28
+- DP-3 readout spectrum design: [`JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md`](JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md)
+- §3.3 DP-3 P2 capacity: juniper-data #203 (`delay_product` generator), juniper-recurrence #44 (bench RFF row), juniper-recurrence #45 (HTTP `readout` enum)
