@@ -9,6 +9,10 @@
 
 ---
 
+> **⟢ STATUS 2026-06-21.** SHIPPED — cascor #341 (merged; required status check; test-only
+> `CascorModelCoreAdapter` baseline). The WS-6 B-phase then made cascor adopt the interface natively
+> (B1–B2b merged, #345–#347); B4 will retire this adapter. See `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 > **What this is.** A build plan for wiring `juniper-cascor`'s `CascadeCorrelationNetwork` to the
 > `juniper-model-core` **conformance kit** — **OUT-13** in
 > [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md)

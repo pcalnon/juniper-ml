@@ -9,6 +9,11 @@
 
 ---
 
+> **⟢ STATUS 2026-06-21.** DR-1..DR-5 ratified; since then: WS-6 B-phase **B1/B2a/B2b MERGED** (cascor
+> #345/#346/#347); OUT-11 service-core T2 fully merged (0.2.0 publish = ml #502, pending); WS-5 A0 + 3-D
+> viz shipped (canopy #372, #374–#379). §2.2's "OUT-11 step 3 remaining" is superseded. See
+> `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 ## 0. Purpose & method
 
 The model/middleware refactor's last two unshipped workstreams — **WS-5** (generalize juniper-canopy)
