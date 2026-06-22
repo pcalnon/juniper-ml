@@ -124,16 +124,16 @@ class AgentsMdHeaderLintResult:
     def render(self) -> str:
         """Human-readable multi-line summary suitable for CLI output."""
         if not self.is_drift:
-            return f"OK: {self.agents_md_path} header conforms to the canonical " f"schema ({len(REQUIRED_FIELDS)} required fields, ISO date)."
+            return f"OK: {self.agents_md_path} header conforms to the canonical schema ({len(REQUIRED_FIELDS)} required fields, ISO date)."
         lines = [f"DRIFT: {self.agents_md_path} header does not match the canonical schema."]
         if self.missing_fields:
             lines.append(f"  Missing required field(s): {list(self.missing_fields)}")
         if self.order_violations:
-            lines.append(f"  Required fields are in the wrong relative order. " f"Observed (required-only): {list(self.order_violations)}. " f"Expected: {list(REQUIRED_FIELDS)}.")
+            lines.append(f"  Required fields are in the wrong relative order. Observed (required-only): {list(self.order_violations)}. Expected: {list(REQUIRED_FIELDS)}.")
         if self.empty_value_fields:
             lines.append(f"  Required field(s) with empty value: {list(self.empty_value_fields)}")
         if self.bad_last_updated_value is not None:
-            lines.append(f"  `**Last Updated**: {self.bad_last_updated_value!r}` is not " f"in YYYY-MM-DD format.")
+            lines.append(f"  `**Last Updated**: {self.bad_last_updated_value!r}` is not in YYYY-MM-DD format.")
         return "\n".join(lines)
 
 

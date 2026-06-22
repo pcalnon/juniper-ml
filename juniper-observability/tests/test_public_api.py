@@ -7,7 +7,6 @@ service contract.
 
 import juniper_observability
 
-
 EXPECTED_PUBLIC_SYMBOLS = {
     # Version
     "__version__",

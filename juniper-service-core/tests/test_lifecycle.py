@@ -46,9 +46,7 @@ def test_lifecycle_seq_is_authoritative_over_model_seq() -> None:
             return TrainResult(final_metrics={"mse": 0.0}, n_epochs=1)
 
     collector = EventCollector()
-    TrainingLifecycle(BadSeqModel(), on_event=collector).run(
-        np.zeros((2, 2), np.float32), np.zeros((2, 1), np.float32)
-    )
+    TrainingLifecycle(BadSeqModel(), on_event=collector).run(np.zeros((2, 2), np.float32), np.zeros((2, 1), np.float32))
     assert [e.seq for e in collector.events] == [0, 1, 2]
 
 

@@ -111,13 +111,8 @@ class AgentsMdLintResult:
         if self.agents_md_version is None:
             return f"SKIP: {self.agents_md_path} has no `**Version**:` header (opt-out)."
         if self.in_sync:
-            return f"OK: AGENTS.md `**Version**: {self.agents_md_version}` matches " f'pyproject.toml `[project].version = "{self.pyproject_version}"`.'
-        return (
-            f"DRIFT: AGENTS.md `**Version**: {self.agents_md_version}` does not match "
-            f'pyproject.toml `[project].version = "{self.pyproject_version}"`. '
-            "Bump AGENTS.md in the same PR as the pyproject version bump so the "
-            "agent-facing contract stays in sync with the package."
-        )
+            return f'OK: AGENTS.md `**Version**: {self.agents_md_version}` matches pyproject.toml `[project].version = "{self.pyproject_version}"`.'
+        return f'DRIFT: AGENTS.md `**Version**: {self.agents_md_version}` does not match pyproject.toml `[project].version = "{self.pyproject_version}"`. Bump AGENTS.md in the same PR as the pyproject version bump so the agent-facing contract stays in sync with the package.'
 
 
 def find_agents_md_repo_root(start: Path) -> Path:
@@ -166,7 +161,7 @@ def _extract_agents_md_version(agents_md_path: Path) -> Optional[str]:
     if not matches:
         return None
     if len(matches) > 1:
-        raise MultipleVersionHeadersError(f"{agents_md_path} has multiple `**Version**:` headers: {matches!r}. " "Expected exactly one canonical header at the top of the file.")
+        raise MultipleVersionHeadersError(f"{agents_md_path} has multiple `**Version**:` headers: {matches!r}. Expected exactly one canonical header at the top of the file.")
     return matches[0]
 
 

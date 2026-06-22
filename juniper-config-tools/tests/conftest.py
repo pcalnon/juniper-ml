@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import pytest
 
-
 _TEST_ENV_NAMES: tuple[str, ...] = (
     "JCT_TEST_NEW",
     "JCT_TEST_LEGACY",

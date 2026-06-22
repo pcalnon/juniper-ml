@@ -19,7 +19,6 @@ from tempfile import TemporaryDirectory
 from juniper_ci_tools.cli_lint_agents_md_header import main as cli_main
 from juniper_ci_tools.lint_agents_md_header import (
     REQUIRED_FIELDS,
-    AgentsMdHeaderLintResult,
     RepoRootNotFoundError,
     extract_header_bullets,
     find_agents_md_header_repo_root,
@@ -150,16 +149,20 @@ class LintAgentsMdHeaderTest(unittest.TestCase):
 
     def test_wrong_relative_order_detected(self) -> None:
         # Author before Repository.
-        body = "# Demo\n\n" + "\n".join(
-            [
-                "**Project**: A",
-                "**Author**: Paul",
-                "**Repository**: pcalnon/x",
-                "**License**: MIT",
-                "**Version**: 1.0",
-                "**Last Updated**: 2026-05-22",
-            ]
-        ) + "\n\n---\n"
+        body = (
+            "# Demo\n\n"
+            + "\n".join(
+                [
+                    "**Project**: A",
+                    "**Author**: Paul",
+                    "**Repository**: pcalnon/x",
+                    "**License**: MIT",
+                    "**Version**: 1.0",
+                    "**Last Updated**: 2026-05-22",
+                ]
+            )
+            + "\n\n---\n"
+        )
         with TemporaryDirectory() as td:
             root = Path(td)
             _write_repo(root, custom_body=body)
@@ -179,17 +182,21 @@ class LintAgentsMdHeaderTest(unittest.TestCase):
 
     def test_extras_interleaved_with_required_are_allowed(self) -> None:
         # Python interleaved between Author and License.
-        body = "# Demo\n\n" + "\n".join(
-            [
-                "**Project**: A",
-                "**Repository**: pcalnon/x",
-                "**Author**: Paul",
-                "**Python**: >=3.11",
-                "**License**: MIT",
-                "**Version**: 1.0",
-                "**Last Updated**: 2026-05-22",
-            ]
-        ) + "\n\n---\n"
+        body = (
+            "# Demo\n\n"
+            + "\n".join(
+                [
+                    "**Project**: A",
+                    "**Repository**: pcalnon/x",
+                    "**Author**: Paul",
+                    "**Python**: >=3.11",
+                    "**License**: MIT",
+                    "**Version**: 1.0",
+                    "**Last Updated**: 2026-05-22",
+                ]
+            )
+            + "\n\n---\n"
+        )
         with TemporaryDirectory() as td:
             root = Path(td)
             _write_repo(root, custom_body=body)

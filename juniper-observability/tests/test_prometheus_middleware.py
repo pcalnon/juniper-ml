@@ -1,6 +1,6 @@
 """Tests for ``PrometheusMiddleware`` (R1.1 cardinality contract)."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 

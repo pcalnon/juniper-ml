@@ -47,7 +47,6 @@ except ImportError:  # pragma: no cover - 3.10 fallback only
 
 import yaml
 
-
 # ── Errors ────────────────────────────────────────────────────────────────────
 
 
@@ -211,7 +210,7 @@ def _now() -> _dt.datetime:
 
 def _default_header(kind: str, date: str, python_version: str) -> str:
     fname = "requirements_ci.txt" if kind == "pip" else "conda_environment_ci.yaml"
-    return ("# {fname} - Generated {date}\n# Python: {pyv}\n\n".format(fname=fname, date=date, pyv=python_version))
+    return "# {fname} - Generated {date}\n# Python: {pyv}\n\n".format(fname=fname, date=date, pyv=python_version)
 
 
 def generate_dep_docs(

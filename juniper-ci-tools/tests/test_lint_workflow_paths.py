@@ -12,7 +12,7 @@ import io
 import json
 import textwrap
 import unittest
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -121,15 +121,7 @@ class LintWorkflowPathsTest(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             repo = _make_repo(
                 Path(tmp),
-                workflows={
-                    "ci.yml": (
-                        "jobs:\n"
-                        "  t:\n"
-                        "    steps:\n"
-                        "      - run: bash scripts/foo.sh\n"
-                        "      - run: python tests/test_bar.py\n"
-                    )
-                },
+                workflows={"ci.yml": ("jobs:\n  t:\n    steps:\n      - run: bash scripts/foo.sh\n      - run: python tests/test_bar.py\n")},
                 files=["scripts/foo.sh", "tests/test_bar.py"],
             )
             result = lint_workflow_paths(repo)
@@ -155,15 +147,7 @@ class LintWorkflowPathsTest(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             repo = _make_repo(
                 Path(tmp),
-                workflows={
-                    "ci.yml": (
-                        "jobs:\n"
-                        "  t:\n"
-                        "    steps:\n"
-                        "      - run: bash juniper-ml/util/sibling.bash\n"
-                        "      - run: python juniper-data/scripts/sib.py\n"
-                    )
-                },
+                workflows={"ci.yml": ("jobs:\n  t:\n    steps:\n      - run: bash juniper-ml/util/sibling.bash\n      - run: python juniper-data/scripts/sib.py\n")},
                 files=[],
             )
             result = lint_workflow_paths(repo)
