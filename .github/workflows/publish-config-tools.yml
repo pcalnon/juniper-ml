@@ -29,15 +29,32 @@ on:
   push:
     tags:
       - "juniper-config-tools-v*"
+  # Cutting a GitHub Release auto-fires the publish: `gh release create` does NOT emit a
+  # `push: tags` event for the new tag, so this `release` trigger is what makes "cut a Release"
+  # publish without a manual workflow_dispatch. Guarded to this package's tag prefix (build job).
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
 
+concurrency:
+  # Serialize publishes for a given tag: a tag-push and a release event for the SAME tag share this
+  # group (github.ref_name is the bare tag for both), so they cannot race the immutable upload.
+  # Different tags use different groups and never block each other.
+  group: publish-config-tools-${{ github.ref_name }}
+  cancel-in-progress: false
+
 jobs:
   build:
     name: Build and Validate
+    # Run for a tag push (filtered above) or workflow_dispatch; for a `release` event, only when the
+    # release is THIS package's tag -- a release for another package (or the meta `v*` release) also
+    # fires this workflow and must be skipped. Downstream jobs `needs: build`, so this one guard
+    # gates the whole pipeline.
+    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'juniper-config-tools-v')
     runs-on: ubuntu-latest
     defaults:
       run:
