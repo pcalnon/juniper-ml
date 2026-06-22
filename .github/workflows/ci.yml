@@ -130,6 +130,11 @@ jobs:
           python3 -m unittest -v tests/test_worktree_sweep_scripts.py
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
+          # tests/test_requirements_drift_check.py: exercises util/requirements_drift_check.py
+          # (the notes/requirements snapshot drift checker; uses the PyYAML installed above).
+          # Listed in AGENTS.md's "Run all tests" but never wired into this CI list
+          # (audit finding F14) -- added here.
+          python3 -m unittest -v tests/test_requirements_drift_check.py
           python3 -m unittest -v tests/test_validate_claude_yaml_access.py
           python3 -m unittest -v tests/test_workflow_script_paths.py
           # tests/test_doc_tools_drift.py: the cross-repo
@@ -180,6 +185,12 @@ jobs:
           # `.github/workflows/agents-md-touch-up.yml` workflow,
           # which auto-bumps on each PR push touching AGENTS.md.
           python3 -m unittest -v tests/test_agents_md_header_schema.py
+          # tests/test_juniper_plant_all.py + tests/test_juniper_chop_all.py: stdlib-only static tests of
+          # the util/juniper_{plant,chop}_all.bash service launchers (bash -n syntax + script-text
+          # assertions + a synthetic tempdir conda fixture; no real services or network). Shipped but
+          # never wired into this list (audit finding F14) -- added here; both pass on 3.12-3.14.
+          python3 -m unittest -v tests/test_juniper_plant_all.py
+          python3 -m unittest -v tests/test_juniper_chop_all.py
 
       - name: Run bash regression tests
         run: |
