@@ -9,44 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
-## [0.1.0] - 2026-06-21
+## [0.2.0] - 2026-06-21
 
-Initial public release of the shared service-tier library (WS-2 of the model/middleware
-refactor). Ships the full **T1** (service infra) and **T2** (lifecycle, routes, snapshots, replay,
-websocket, and worker subsystem) surface extracted and de-cascored from `juniper-cascor`, with zero
-cascor coupling. Additive only — cascor is untouched; its adoption of these bases is WS-6's A-phase.
-The cascade-bound parts (correlation reduction, the `Task`/`TaskResult` envelope, cascade frames,
-dataset-swap history) stay cascor-side per the OUT-11 design audit.
+The **T2 surface** of the OUT-11 service-tier extraction: the full training-lifecycle orchestrator,
+generic HTTP routes, snapshot persistence + replay, the websocket subsystem, and the remote-worker
+subsystem — all extracted and de-cascored from `juniper-cascor` with zero cascor coupling. Additive
+over 0.1.0; cascor is untouched (its adoption of these bases is WS-6's A-phase). The cascade-bound
+parts (correlation reduction, the `Task`/`TaskResult` envelope, cascade frames, dataset-swap history)
+stay cascor-side per the OUT-11 design audit (OQ-11).
 
 ### Added
 
-#### Package + service infra (T1)
+#### Training lifecycle (threaded) + generic routes (step 1)
 
-- `SettingsBase` — `pydantic-settings` base with generic `service_name` / `host` / `port` /
-  `log_level` fields; subclasses set their own `env_prefix`.
-- `create_app(...)` — model-agnostic FastAPI application factory that mounts the generic health
-  router and any service-supplied routers.
-- Generic health router (`health_router()`) exposing `GET /v1/health` (liveness) and
-  `GET /v1/health/ready` (readiness), plus a `HealthStatus` model.
-- **Dependency-free top-level import:** `import juniper_service_core` exposes only `__version__`
-  eagerly; the rest of the public surface loads lazily via PEP 562 `__getattr__`, so the TestPyPI
-  publish-verify can run a clean `--no-deps` import check.
-- Generic service-infra extraction from `juniper-cascor` (de-cascored): `security` (`APIKeyAuth`,
-  `RateLimiter`, `api_key_header`, plus the config-injected `build_api_key_auth` /
-  `build_rate_limiter` factories replacing cascor's global-settings singletons), `secrets`
-  (`get_secret` Docker file-secret reader), and `middleware` (`SecurityHeadersMiddleware`,
-  `RequestBodyLimitMiddleware`, `SecurityMiddleware`, `EXEMPT_PATHS`) — cascor's `cascor_constants`
-  imports replaced by local module constants.
-- `launcher` — generic subprocess-managed companion-service runner: `ManagedService`,
-  `wait_for_health`, `start_service`, plus `atexit` cleanup of the active-services registry. Log-dir
-  resolution is generic (`JUNIPER_SERVICE_LOG_DIR`, else `./logs`).
-
-#### Training lifecycle + generic routes (T2 step 1)
-
-- `lifecycle` — the **synchronous** `TrainingLifecycle` body drives a `juniper-model-core`
-  `TrainableModel`'s `fit()` to completion and forwards its `TrainingEvent`s to the injected sink,
-  stamping a monotonic run-scoped `seq`; plus an `EventCollector` ordered sink. One body drives both
-  fixed-topology and growable models (growth happens inside `fit()`, per the model-core contract).
 - `ServiceLifecycleManager` — the model-agnostic, **background-threaded** lifecycle body that
   model-core's `TrainingLifecycleBase` deferred to WS-2: drives an injected `TrainableModel` through
   `fit()` on a worker thread, tracks a `LifecycleStateMachine`
@@ -60,7 +35,7 @@ dataset-swap history) stay cascor-side per the OUT-11 design audit.
   (`app.state.lifecycle`), plus the shared `ResponseEnvelope` / `success_response` (with numpy-scalar
   coercion). Mount via `create_app(routers=build_routers())`.
 
-#### Snapshot persistence + replay (T2 steps 1b / 1c)
+#### Snapshot persistence + replay (steps 1b / 1c)
 
 - **Snapshot persistence** — a serializer-injected `SnapshotStore` (one bundle directory per
   snapshot: the model written by an injected `juniper-model-core` `ModelSerializer` + a JSON sidecar
@@ -73,7 +48,7 @@ dataset-swap history) stay cascor-side per the OUT-11 design audit.
   `on_frame` sink), plus `start_replay` (→ `REPLAYING`) / `replay_control` / `stop_replay` /
   `get_replay_state` and the `POST /v1/snapshots/{id}/replay[/control]` routes.
 
-#### WebSocket subsystem (T2 step 2)
+#### WebSocket subsystem (step 2)
 
 - `juniper_service_core.websocket` — the model-agnostic websocket surface: `WebSocketManager`
   (monotonic sequencing, bounded replay buffer, oversized-message chunking, thread-safe broadcast,
@@ -81,19 +56,17 @@ dataset-swap history) stay cascor-side per the OUT-11 design audit.
   control-path security (`validate_control_origin` / `LeakyBucket` / `HandshakeCooldown`) + the
   `/ws/training` (metrics stream) and `/ws/control` (command channel) handlers + `build_websocket_router`.
 - **Injectable `CommandExecutor`** (default `LifecycleCommandExecutor`) — the control-channel dispatch
-  adapter, so a service maps the wire commands onto its own orchestration without the base hard-coding
-  any verb semantics.
+  adapter, so a service maps the wire commands onto its own orchestration.
 - `attach_websocket` lifecycle→broadcast bridge — live-training **and** replay frames push to
-  `/ws/training` clients via the manager's additive `frame_sink` (wired into `ReplaySession.on_frame`).
+  `/ws/training` clients via the manager's additive `frame_sink`.
 
-#### Worker subsystem (T2 step 3)
+#### Worker subsystem (step 3)
 
 - **Worker-pool foundations** (`juniper_service_core.workers`) — `WorkerRegistry` /
-  `WorkerRegistration` / `WorkerRegistryFullError` (registration, heartbeat, health-score, idle/stale
-  queries, capacity cap) + security primitives (`TLSConfig` mTLS, `ConnectionRateLimiter` token-bucket,
-  `AnomalyDetector` over a generic bounded quality `score`) + audit (`AuditLogger` / `WorkerMetrics` /
-  `AuditEventType`) + `WorkerRegistryCollector` (a `prometheus_client` bridge; configurable
-  `metric_prefix`, pending-tasks via an injected callable).
+  `WorkerRegistration` / `WorkerRegistryFullError` + security primitives (`TLSConfig` mTLS,
+  `ConnectionRateLimiter` token-bucket, `AnomalyDetector` over a generic bounded quality `score`) +
+  audit (`AuditLogger` / `WorkerMetrics` / `AuditEventType`) + `WorkerRegistryCollector` (a
+  `prometheus_client` bridge; configurable `metric_prefix`, pending-tasks via an injected callable).
 - **`WorkerCoordinator`** — generic task dispatch / collect / timeout / retry with a worker-liveness
   early-exit and a background health monitor, over an injectable `WorkerTaskProtocol` seam
   (`build_assignment` + `parse_result` + `result_attachments`; the `CommandExecutor` analogue). Result
@@ -103,26 +76,76 @@ dataset-swap history) stay cascor-side per the OUT-11 design audit.
   server-assigned id, heartbeat + enriched-field forwarding, dispatch + binary-frame transport), plus
   `attach_worker_pool` app-wiring and `build_worker_router`.
 
-#### CI / publish workflows
+### Changed
 
-- `ci-service-core.yml` (test matrix + build, PR-to-`main` path-scoped) and `publish-service-core.yml`
-  (TestPyPI → PyPI via OIDC trusted publishing, tag `juniper-service-core-v*`, gated on a GitHub
-  Release per the release convention).
+- `lifecycle` is now a subpackage (`lifecycle/{sync,manager,monitor,state_machine,snapshots,replay}.py`);
+  the synchronous `TrainingLifecycle` / `EventCollector` moved to `lifecycle/sync.py` and are
+  re-exported, so `from juniper_service_core.lifecycle import TrainingLifecycle` is unchanged.
+- All new lifecycle / route / websocket / worker public names are exported **lazily** via the PEP 562
+  `__getattr__` (and listed in the `TYPE_CHECKING` block for CodeQL), so the dependency-free top-level
+  import (`import juniper_service_core`) still holds (`fastapi` loads only when a subsystem is accessed).
 
 ### Notes
 
-- **Cascade-bound parts stay cascor-side** per the OUT-11 design audit (OQ-11): correlation-based
-  result reduction, the `Task`/`TaskResult` envelope (`candidate_data` / `correlation` / …), the
-  `cascade_add` / `candidate_progress` frames, topology/per-sample-weight replay, and dataset-swap
-  history. cascor adopts the generic bases in WS-6 (deferred follow-ups FW-1..4 in the design doc).
-- **`juniper-model-core` dependency (publish-first).** The lifecycle body depends on the model
-  contract; model-core must be on PyPI before this package is published. The dependency loads lazily,
-  so the dependency-free top-level import is preserved.
-- Adds a `numpy>=1.24` runtime dependency (the generic routes marshal inline request arrays at the
-  model boundary). It loads lazily with `.routes`, so the dependency-free top-level import holds.
-- Every generic surface is proven by a both-stacks-green contract test that drives it with
-  model-core's **regression** reference models (the RK-6 guard against classification/cascade
-  assumptions leaking into "generic" code).
+- **Adds a `numpy>=1.24` runtime dependency** (the generic routes marshal inline request arrays at the
+  model boundary). It loads lazily with `.routes`, so the dependency-free top-level import is preserved.
+- **Cascade-bound parts stay cascor-side** per OQ-11: correlation-based result reduction, the
+  `Task`/`TaskResult` envelope, the `cascade_add` / `candidate_progress` frames, topology /
+  per-sample-weight replay, and dataset-swap history. cascor adopts the generic bases in WS-6.
+- Every generic surface is proven by a both-stacks-green contract test driven by model-core's
+  **regression** reference models (the RK-6 guard against classification/cascade assumptions).
 
-[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/juniper-service-core-v0.1.0...HEAD
+## [0.1.0] - 2026-06-14
+
+### Added
+
+- Initial package scaffold for the shared service-tier library (WS-2 of the
+  model/middleware refactor).
+- `SettingsBase` — `pydantic-settings` base with generic `service_name` / `host` /
+  `port` / `log_level` fields; subclasses set their own `env_prefix`.
+- `create_app(...)` — model-agnostic FastAPI application factory that mounts the
+  generic health router and any service-supplied routers.
+- Generic health router (`health_router()`) exposing `GET /v1/health` (liveness) and
+  `GET /v1/health/ready` (readiness), plus a `HealthStatus` model.
+- Dependency-free top-level import: `import juniper_service_core` exposes only
+  `__version__` eagerly; `create_app` / `SettingsBase` load lazily via PEP 562
+  `__getattr__`.
+- Generic service-infra extraction from `juniper-cascor` (de-cascored, zero cascor
+  coupling): `security` (`APIKeyAuth`, `RateLimiter`, `api_key_header`, plus the
+  config-injected `build_api_key_auth` / `build_rate_limiter` factories replacing
+  cascor's global-settings singletons), `secrets` (`get_secret` Docker file-secret
+  reader), and `middleware` (`SecurityHeadersMiddleware`, `RequestBodyLimitMiddleware`,
+  `SecurityMiddleware`, `EXEMPT_PATHS`) — with cascor's `cascor_constants` body-size /
+  status-code imports replaced by local module constants. All exported lazily via the
+  PEP 562 `__getattr__` so the dependency-free top-level import still holds.
+- `launcher` — generic subprocess-managed companion-service runner extracted from
+  `juniper-cascor` (de-cascored, zero cascor coupling): `ManagedService` (subprocess
+  wrapper with `is_running` / `terminate`), `wait_for_health` (poll an HTTP health
+  endpoint), `start_service` (`Popen` a service and wait for health), plus the
+  `atexit`-registered cleanup of the module-level active-services registry. Cascor's
+  `cascor_constants` timeout/interval imports are replaced by local module constants,
+  and the log-dir resolution is generic (`JUNIPER_SERVICE_LOG_DIR`, else `./logs`).
+  Exported lazily via the PEP 562 `__getattr__` (stdlib-only, so the dependency-free
+  top-level import still holds).
+- `lifecycle` — the **synchronous** `TrainingLifecycleBase` body: `TrainingLifecycle`
+  drives a `juniper-model-core` `TrainableModel`'s `fit()` to completion and forwards its
+  `TrainingEvent`s to the injected sink, stamping a monotonic run-scoped `seq` so the
+  lifecycle owns event ordering; plus an `EventCollector` ordered sink. Growable models
+  grow inside `fit()` (model-core contract), so this one body drives both fixed-topology
+  and growable models. The threaded / FSM / worker-coordinated bodies (OQ-11) are
+  deferred. Exported lazily so the dependency-free top-level import still holds.
+- Publish (`publish-service-core.yml`) and CI (`ci-service-core.yml`) workflows.
+
+### Notes
+
+- Additive only. Extracts cascor's generic service infra (security / secrets / middleware /
+  launcher); the websocket / worker / generic-route helpers are not extracted yet.
+- The `lifecycle` body adds a dependency on **`juniper-model-core`** (the model contract).
+  **Publish-first:** `juniper-model-core` must be on PyPI before `juniper-service-core` is
+  published; in the monorepo, CI installs it editable from the sibling subdir first. The
+  dependency-free top-level import is preserved (the lifecycle module is imported lazily).
+- Published to PyPI 2026-06-16 (tag `juniper-service-core-v0.1.0`).
+
+[Unreleased]: https://github.com/pcalnon/juniper-ml/compare/juniper-service-core-v0.2.0...HEAD
+[0.2.0]: https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.2.0
 [0.1.0]: https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.1.0
