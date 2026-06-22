@@ -163,6 +163,7 @@ RESUME_FLAGS="-r | ${CLAUDE_RESUME_FLAGS} | --resume-thread | --resume-session"
 FORK_SESSION_FLAGS="--fork | ${CLAUDE_FORK_SESSION_FLAGS} | --resume-fork | --resume-fork_session"
 
 
+
 ########################################################################################################################################################################
 # Initialize Parsed Param values
 ########################################################################################################################################################################
@@ -429,6 +430,15 @@ function usage() {
 
 ########################################################################################################################################################################
 # Parse input parameters
+#
+# Example:
+#   ./scripts/wake_the_claude.bash --id 0 --worktree 0 --model opus --effort max --file prompts/thread-handoff_automated-prompts/HANDOFF_2026-06-21_precommit-testing-audit-remediation.md -- --dangerously-skip-permissions --remote-control
+#
+# Notes:
+#   input parameters cannot include both --prompt and --file
+#   input parameters cannot include both --prompt and --path
+#   if input parameters include both --file and --path, the --path value and --file value are assumed to be the full path to the file
+#
 ########################################################################################################################################################################
 debug_log "Verify that input parameters have been provided"
 if [[ "${*}" != "" ]]; then
