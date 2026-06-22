@@ -114,4 +114,4 @@ def legal_event_order(events: Sequence[TrainingEvent]) -> bool:
     if any(event_type not in TRAINING_EVENT_TYPES for event_type in types):
         return False
     seqs = [event.seq for event in events]
-    return all(earlier <= later for earlier, later in zip(seqs, seqs[1:]))
+    return all(earlier <= later for earlier, later in zip(seqs, seqs[1:], strict=False))

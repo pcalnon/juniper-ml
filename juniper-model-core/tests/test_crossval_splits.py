@@ -112,9 +112,7 @@ def _signature(folds):
 
 def test_groups_none_matches_omitted():
     # groups=None must be byte-identical to not passing groups at all (backward compatibility).
-    assert _signature(walk_forward_folds(60, n_folds=3, embargo=2)) == _signature(
-        walk_forward_folds(60, n_folds=3, embargo=2, groups=None)
-    )
+    assert _signature(walk_forward_folds(60, n_folds=3, embargo=2)) == _signature(walk_forward_folds(60, n_folds=3, embargo=2, groups=None))
 
 
 def test_groups_eval_is_pooled_across_entities():
@@ -158,9 +156,7 @@ def test_groups_length_mismatch_raises():
 
 def test_groups_determinism():
     n, order, groups = _panel(12, 2)
-    assert _signature(walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups)) == _signature(
-        walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups)
-    )
+    assert _signature(walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups)) == _signature(walk_forward_folds(n, n_folds=3, embargo=1, order=order, groups=groups))
 
 
 def test_groups_embargo_skips_early_fold_but_keeps_later():

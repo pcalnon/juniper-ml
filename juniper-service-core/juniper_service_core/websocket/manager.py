@@ -48,7 +48,9 @@ logger = logging.getLogger("juniper_service_core.websocket")
 DEFAULT_WS_ENDPOINTS: tuple[str, ...] = ("training", "control", "worker")
 
 
-class ReplayOutOfRange(Exception):
+# N818 noqa: package exception surface; "Error"-suffix rename deferred to a
+# deliberate API revision (see TrainingInterrupted in lifecycle/manager.py).
+class ReplayOutOfRange(Exception):  # noqa: N818
     """Raised when the requested seq is no longer in the replay buffer."""
 
 

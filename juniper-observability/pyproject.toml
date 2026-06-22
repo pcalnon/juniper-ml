@@ -80,3 +80,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "B", "I", "N"]
+# N803/N806: ecosystem NPZ Data-Contract names (X, X_train, X_val, y) are
+# intentionally non-lowercase; pep8-naming on them fights the cross-repo
+# convention. Kept uniform across all six juniper-ml sub-packages.
+ignore = ["N803", "N806"]

@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import datetime as dt
+import shutil
+import sys
 import textwrap
 from pathlib import Path
 from typing import Callable
-
-import shutil
-import sys
 
 import pytest
 
@@ -17,6 +16,7 @@ import pytest
 # re-exports a function of the same name, which shadows the submodule on
 # attribute access. The module object itself is still in sys.modules.
 import juniper_ci_tools.generate_dep_docs as _import_to_register  # noqa: F401,E402
+
 _gdd = sys.modules["juniper_ci_tools.generate_dep_docs"]
 
 

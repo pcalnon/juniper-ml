@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import textwrap
-from pathlib import Path
 
 import pytest
 import yaml
@@ -16,7 +15,6 @@ from juniper_ci_tools.generate_dep_docs import (
     generate_dep_docs,
     render_header,
 )
-
 
 # ── Critical regression: the 2026-05-20 awk fix (cascor#276) ──────────────────
 
@@ -129,14 +127,7 @@ class TestCondaDependencyExtractionAwkFix:
 
 class TestRenderHeader:
     def test_substitutes_all_placeholders(self):
-        tpl = (
-            "Version: <X.Y.Z  Major, Minor, Point Version for Repo>\n"
-            "Date: <YYYY-MM-dd for Current date>\n"
-            "Year: <YYYY for Current Year>\n"
-            "Conda Date: <YYYY.MM.dd for current date>\n"
-            "Python: <Python Version>\n"
-            "Pip: <Pip Version>\n"
-        )
+        tpl = "Version: <X.Y.Z  Major, Minor, Point Version for Repo>\nDate: <YYYY-MM-dd for Current date>\nYear: <YYYY for Current Year>\nConda Date: <YYYY.MM.dd for current date>\nPython: <Python Version>\nPip: <Pip Version>\n"
         out = render_header(
             tpl,
             repo_version="9.9.9",

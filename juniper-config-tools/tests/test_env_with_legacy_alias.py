@@ -96,9 +96,7 @@ class TestLegacyEnvSet:
         # implementation file. (Path may be absolute or relative; check
         # the basename.)
         filename = deprecation[0].filename
-        assert filename.endswith("test_env_with_legacy_alias.py"), (
-            f"expected warning to be attributed to the test caller " f"(stacklevel=2), got filename={filename!r}"
-        )
+        assert filename.endswith("test_env_with_legacy_alias.py"), f"expected warning to be attributed to the test caller (stacklevel=2), got filename={filename!r}"
 
     def test_legacy_empty_string_is_returned(self, clean_env: pytest.MonkeyPatch) -> None:
         """An empty-string legacy value is still a real value; warn and return."""
@@ -189,7 +187,6 @@ class TestModuleFormEntryPoint:
 
     def test_version_flag_prints_version(self) -> None:
         from juniper_config_tools.__main__ import main
-        from juniper_config_tools._version import __version__
 
         # argparse exits with code 0 after printing --version; capture
         # via SystemExit so we can pin the exit code.

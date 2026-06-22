@@ -54,7 +54,9 @@ __all__ = ["ServiceLifecycleManager", "TrainingInterrupted"]
 logger = logging.getLogger("juniper_service_core.lifecycle.manager")
 
 
-class TrainingInterrupted(Exception):
+# N818 noqa: exported public-API exception; the "Error"-suffix rename is a
+# semver-surface change deferred to a deliberate API revision, not this pass.
+class TrainingInterrupted(Exception):  # noqa: N818
     """Raised inside the event sink to unwind ``model.fit`` on a stop/reset request.
 
     Internal control-flow signal -- never surfaced to an HTTP caller; the orchestrator

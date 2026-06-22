@@ -19,7 +19,6 @@ from juniper_service_core.app import create_app
 from juniper_service_core.lifecycle import ServiceLifecycleManager, SnapshotNotFoundError, SnapshotStore
 from juniper_service_core.routes import build_routers
 
-
 # --------------------------------------------------------------------------------------
 # SnapshotStore (unit) -- the on-disk bundle + injected serializer
 # --------------------------------------------------------------------------------------

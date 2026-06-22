@@ -1,5 +1,7 @@
 """Unit tests for the value types, ABC abstractness, and the lifecycle seam."""
 
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 from juniper_model_core import (
@@ -21,7 +23,7 @@ def test_version_is_nonempty_string():
 def test_train_result_is_frozen():
     result = TrainResult(final_metrics={"mse": 0.1}, n_epochs=2)
     assert result.history is None and result.stopped_reason is None
-    with pytest.raises(Exception):
+    with pytest.raises(FrozenInstanceError):
         result.n_epochs = 3  # frozen dataclass
 
 

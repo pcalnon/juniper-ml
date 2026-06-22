@@ -24,7 +24,6 @@ from juniper_observability import (
     parse_trusted_networks,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers — minimal ASGI driver
 # ---------------------------------------------------------------------------
@@ -187,10 +186,7 @@ class TestMetricsAuthMiddleware:
         with caplog.at_level("WARNING", logger="juniper_observability.middleware.metrics_auth"):
             captured = await _drive(middleware, _scope("not-an-ip"))
         assert _status_of(captured) == 403
-        assert any(
-            "unparseable client IP" in record.getMessage() and "not-an-ip" in record.getMessage()
-            for record in caplog.records
-        ), f"expected unparseable-IP warning, got: {[r.getMessage() for r in caplog.records]!r}"
+        assert any("unparseable client IP" in record.getMessage() and "not-an-ip" in record.getMessage() for record in caplog.records), f"expected unparseable-IP warning, got: {[r.getMessage() for r in caplog.records]!r}"
 
     async def test_missing_client_in_scope_rejects(self) -> None:
         middleware = MetricsAuthMiddleware(_stub_app, trusted_ips=["127.0.0.1"])
