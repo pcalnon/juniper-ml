@@ -20,7 +20,7 @@ import juniper_service_core
 
 
 def test_version_is_exposed_eagerly():
-    assert juniper_service_core.__version__ == "0.1.0"
+    assert juniper_service_core.__version__ == "0.2.0"
 
 
 def test_lazy_public_surface_is_accessible():
@@ -63,7 +63,7 @@ def test_top_level_import_does_not_require_fastapi_or_pydantic_settings():
 
         import juniper_service_core
 
-        assert juniper_service_core.__version__ == "0.1.0"
+        assert juniper_service_core.__version__ == "0.2.0"
         assert "fastapi" not in sys.modules, "top-level import unexpectedly pulled fastapi"
         assert "pydantic_settings" not in sys.modules, "top-level import unexpectedly pulled pydantic_settings"
         print("DEPENDENCY_FREE_OK")
