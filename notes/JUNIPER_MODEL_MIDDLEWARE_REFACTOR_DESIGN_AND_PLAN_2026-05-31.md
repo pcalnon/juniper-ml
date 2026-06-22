@@ -9,6 +9,11 @@
 
 ---
 
+> **⟢ 2026-06-21 reconciliation.** WS-6 B-phase **B1/B2a/B2b MERGED** (cascor #345–#347; main `f3ec5d9`),
+> B3 next (spike-done, OQ-B1=proceed); WS-5 A0 + 3-D viz SHIPPED (canopy #372/#374–#379), A1 not started;
+> OUT-11 service-core T2 merged, **0.2.0 publish pending (ml #502)**; model-core 0.3.0, recurrence-model
+> 0.1.4, juniper-data 0.8.0. Authoritative current state: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 > **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **Execution state (2026-06-18, reconciled into the Status Tracker below):** WS-1/WS-2/WS-3/WS-4 shipped & published
 > (`juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0/0.2.0 on PyPI; the WS-4b recurrence app + `POST /v1/crossval` landed on `juniper-recurrence` main). The model-core **cross-validation
 > layer** (0.2.0) is **shipped**, and the **WS-6 trigger is MET** (cascor golden #340 + conformance #341 both green). **WS-5 / WS-7 remain** (WS-8 deferred). Broader reconciled roadmap:

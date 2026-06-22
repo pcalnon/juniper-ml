@@ -9,6 +9,14 @@
 
 ---
 
+> **⟢ STATUS 2026-06-21 (post-execution).** B-phase PRs **B1 (cascor #345), B2a (#346), B2b (#347) are MERGED**
+> to cascor `origin/main`; the WS-6 gate (golden #340 + conformance #341) stays green. **B3** (the `on_event`
+> sink, §5) is **NOT STARTED but spike-validated** — OQ-B1 is decided: proceed with the full migration
+> (`on_event` for the coarse projection via CCN's native `on_epoch_callback`/`on_grow_iteration_callback`
+> hooks + a *retained* drain→broadcast side-channel for the 50 Hz `/ws/training` per-candidate stream).
+> **B4** follows. The **A-phase (6a)** stays blocked on the OUT-11 `juniper-service-core` 0.2.0 publish
+> (ml #502). Full reconciliation: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 > **What this is.** A build plan for the **B-phase** of the juniper-cascor refactor (WS-6, sub-phase
 > 6b): make the production cascor service operate against the abstract `juniper_model_core`
 > `TrainableModel` / `GrowableModel` interfaces, replacing the *test-only* `CascorModelCoreAdapter`

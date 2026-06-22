@@ -9,6 +9,11 @@
 
 ---
 
+> **⟢ VERIFIED 2026-06-21.** The §3/§4 per-item status cells below are point-in-time 2026-06-17 snapshots.
+> Current reality (reconciled): WS-6 B-phase shipped (cascor #345–#347); WS-5 A0 + 3-D viz shipped (canopy
+> #372/#374–#379); OUT-11 service-core T2 merged with 0.2.0 publish pending (ml #502); model-core 0.3.0,
+> recurrence-model 0.1.4, juniper-data 0.8.0. Authoritative: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 > **What this document is.** A single, evidence-grounded reconciliation of three ratified platform efforts — the [package-placement / relocation plan](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md), the [build-provenance design](BUILD_PROVENANCE_DESIGN_2026-06-14.md), and the [model/middleware refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) — against the **actual current source, PyPI, and GitHub state (verified live 2026-06-17)**, followed by a prioritized design/development/testing roadmap for the genuinely-outstanding work. It exists because the three anchor plans' own status headers materially **understate** what has shipped: two are effectively complete and the third is deep in execution. This document re-baselines reality and charts the remaining tail, with multiple approach options (strengths / weaknesses / risks / guardrails) for each open decision.
 >
 > **Scope (ratified with Paul, 2026-06-17): "Platform + template cluster."** The three anchors plus their tightly-coupled enablers/consumers — `juniper-model-core` (incl. the new cross-validation layer), `juniper-service-core`, the recurrence app build (WS-4/WS-4b), canopy generalization (WS-5), cascor cutover (WS-6), deploy/extras (WS-7/WS-8), and provenance completion. **Out of scope:** the recurrence *model-architecture* research track (OQ-4 P-series, LMU/SSM/ESN/NEAT, Δt theory — treated here as settled input that feeds WS-4/WS-4b), the canopy UI-regression harness, and the broader V7 ~300-item backlog.

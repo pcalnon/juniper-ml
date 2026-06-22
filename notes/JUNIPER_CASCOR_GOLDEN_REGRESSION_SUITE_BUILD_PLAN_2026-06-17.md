@@ -9,6 +9,9 @@
 
 ---
 
+> **⟢ STATUS 2026-06-21.** SHIPPED — cascor #340 (merged; required status check). This doc is now the
+> historical build record for the WS-6 golden gate. See `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 > **What this is.** A build plan for the **golden / snapshot regression suite** that must exist in `juniper-cascor` *before* the WS-6 cutover (refactoring cascor onto `juniper-service-core` / `juniper-model-core`). It is **OUT-12** in [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md) and the explicit trigger-gate for WS-6 in the [middleware refactor plan](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) §2.7 / §3.4 / Part 8. The suite is captured on `origin/main` *now* (as insurance), then re-run post-refactor; WS-6 is accepted only if it — plus the model-core conformance kit — stays green.
 >
 > **Why now (even though WS-6 is deferred):** capturing the baseline is only valid *before* the refactor touches the code. It is the independent, non-colliding insurance the roadmap (§6.4) flags as safe to do early. It is read-only against behavior — it adds tests, changes no production code.
