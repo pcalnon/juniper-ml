@@ -5,7 +5,8 @@ snapshot, plus the three load operations -- **restore** (inspect), **retrain** (
 the loaded network), **resume** (continue training). All operate over the injected lifecycle.
 Snapshot persistence is enabled only when the service constructs its ``ServiceLifecycleManager``
 with a model-core ``ModelSerializer``; otherwise these routes return ``501 Not Implemented``.
-Replay (``/replay`` + ``/replay/control``) and dataset-swap history stay deferred / cascor-bound.
+Replay (``/replay`` + ``/replay/control``) is implemented here (step 1c); only dataset-swap
+history stays cascor-bound (FW-1).
 
 Disk I/O runs in a threadpool (``run_in_threadpool``) so the event loop stays responsive
 regardless of how heavy the injected serializer is.
