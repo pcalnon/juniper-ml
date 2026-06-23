@@ -62,6 +62,7 @@ EXPECTED_EXTRAS = {
     "recurrence": {
         "juniper-recurrence-model>=0.1.0,<0.2.0",
         "juniper-recurrence>=0.1.0,<0.2.0",
+        "juniper-recurrence-client>=0.1.0,<0.2.0",
     },
     "all": {
         "juniper-ml[clients,worker,servers,tools,recurrence]",
