@@ -16,6 +16,14 @@
 > hooks + a *retained* drain→broadcast side-channel for the 50 Hz `/ws/training` per-candidate stream).
 > **B4** follows. The **A-phase (6a)** stays blocked on the OUT-11 `juniper-service-core` 0.2.0 publish
 > (ml #502). Full reconciliation: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+>
+> **⟢ UPDATE 2026-06-23.** **B3 is now fully MERGED** — B3.1 (#352) + B3.2 (#353) + B3.3 (#355, the
+> manager monitoring cutover; the fit/grow monkey-patches are gone). The §0/§5 "B3 NOT STARTED" framing
+> above is superseded; of the B-phase only **B4** (point native conformance at production `CascorModel`;
+> retire the test-only `CascorModelCoreAdapter`) remains, and it has no PR/branch yet. **`juniper-service-core`
+> 0.2.0 is LIVE on PyPI** (#502 merged), clearing the A-phase publish-blocker — the A-phase remains gated
+> on B4 + the three owner decisions (DR-1 / soak-OQ-17 / manager-appetite); see
+> `JUNIPER_WS6_APHASE_READINESS_VALIDATION_2026-06-22.md`.
 
 > **What this is.** A build plan for the **B-phase** of the juniper-cascor refactor (WS-6, sub-phase
 > 6b): make the production cascor service operate against the abstract `juniper_model_core`

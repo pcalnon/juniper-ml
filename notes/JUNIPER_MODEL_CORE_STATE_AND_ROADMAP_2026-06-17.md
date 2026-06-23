@@ -9,6 +9,15 @@
 
 ---
 
+> **⟢ UPDATE 2026-06-23.** This is the **2026-06-17 snapshot**; its body ("0.1.0, crossval design-only")
+> is now largely historical. Reality: `juniper-model-core` shipped **0.2.0 then 0.3.0** to PyPI — the
+> `crossval/` layer (metrics / splits / executor) is **BUILT** (PR #442) and 0.3.0 added multi-entity
+> `groups=` walk-forward folds (#472); the **D3 `predict(self, X, **kw)` drift is RESOLVED**
+> (`interfaces.py`); the **coverage gate is raised to 95** (`ci-model-core.yml`); and the parent Status
+> Tracker was reconciled (#439/#465/#466). Of the OW-* items, only **OW-12** (GrowableModel re-tighten),
+> **OW-19** (`workflow_dispatch` verify), and **OW-20** (conftest autoload guard) remain genuinely open
+> (all minor). Authoritative current-state: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+
 ## 0. Purpose and how to read this document
 
 This document does two things, in order:
