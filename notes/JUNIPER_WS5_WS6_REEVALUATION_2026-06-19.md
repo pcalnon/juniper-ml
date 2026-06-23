@@ -13,6 +13,16 @@
 > #345/#346/#347); OUT-11 service-core T2 fully merged (0.2.0 publish = ml #502, pending); WS-5 A0 + 3-D
 > viz shipped (canopy #372, #374–#379). §2.2's "OUT-11 step 3 remaining" is superseded. See
 > `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+>
+> **⟢ UPDATE 2026-06-23.** (a) **WS-6 B-phase B3 fully MERGED** (cascor B3.1 #352 / B3.2 #353 / B3.3 #355 —
+> the `on_event` cutover; only **B4** remains) and **service-core 0.2.0 is LIVE on PyPI** (#502), so the
+> A-phase publish-blocker is cleared. (b) **DR-1 is NOT a committed B→A** — it was ratified only as "defer
+> the A-decision"; the A-phase is now gated on B4 + DR-1 / soak (OQ-17) / manager-appetite (see
+> `JUNIPER_WS6_APHASE_READINESS_VALIDATION_2026-06-22.md`). (c) **WS-5 A1 is no longer "0% built"** — A1-i
+> (canopy #383, `RecurrenceServiceAdapter`) + A1-ii (#385, `RecurrenceBackend` + provider-keyed routing,
+> the D1-A one-shot bridge) shipped; A1-iii scope = #516. The §1/§2.3/§3.1 "A1 designed-only / 0% built"
+> and "`execution`-field-first" claims are superseded (routing shipped via `provider`/`status`, no
+> `ModelSpec.execution` field — DR-2's field-first sequencing is now a stale prerequisite).
 
 ## 0. Purpose & method
 

@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 1.0.0
-**Last Updated**: 2026-06-21
+**Last Updated**: 2026-06-23 (§1 refreshed; see the UPDATE banner)
 
 ---
 
@@ -17,11 +17,22 @@
 > 2026-06-21; the per-cluster planning docs are point-in-time and trail reality by 1–4 days due to heavy
 > concurrent-session velocity.
 
+> **⟢ UPDATE 2026-06-23 (refresh).** Reality moved since the 2026-06-21 snapshot below; §1 versions are
+> corrected. Deltas: **`juniper-service-core` 0.2.0 LIVE on PyPI** (publish #502 MERGED) → the WS-6 A-phase
+> publish-blocker is **cleared**; **`juniper-data` 0.9.0** (+ `delay_product` capacity generator);
+> **WS-6 B3 fully MERGED** (cascor B3.1 #352 / B3.2 #353 / B3.3 #355 — the `on_event` manager cutover; the
+> fit/grow monkey-patches are gone), so **only B4 remains** of the B-phase; **WS-5 A1-i/ii SHIPPED**
+> (canopy #383 `RecurrenceServiceAdapter` + #385 `RecurrenceBackend`/provider routing; A1-iii scope = #516);
+> **DP-3 P2 fully shipped** (data #203, rec #44/#45, findings ml #511; capacity gap +0.83). Accordingly the
+> §1 "WS-6 B3 NOT STARTED" / "A-phase BLOCKED on publish" / "WS-5 A1 NOT STARTED" rows and the §3 register's
+> WS-6-B3 / WS-5-A1 / OUT-11-publish items are **superseded**. The WS-6 A-phase is now gated on **B4 + three
+> owner decisions** (DR-1 / soak-OQ-17 / manager-appetite) — see `JUNIPER_WS6_APHASE_READINESS_VALIDATION_2026-06-22.md`.
+
 ## §1. Verified current reality (2026-06-21)
 
-**Published package versions (PyPI):** `juniper-model-core 0.3.0` · `juniper-service-core 0.1.0` (T1-only) ·
+**Published package versions (PyPI):** `juniper-model-core 0.3.0` · `juniper-service-core 0.2.0` (T1+T2; ↑ from 0.1.0) ·
 `juniper-recurrence 0.1.1` · `juniper-recurrence-model 0.1.4` · `juniper-recurrence-client 0.1.0` ·
-`juniper-data 0.8.0`.
+`juniper-data 0.9.0` (↑ from 0.8.0). *(Versions current as of the 2026-06-23 UPDATE banner above; the rest of §1 is the 2026-06-21 snapshot.)*
 
 | Track | Reality | Evidence |
 | --- | --- | --- |

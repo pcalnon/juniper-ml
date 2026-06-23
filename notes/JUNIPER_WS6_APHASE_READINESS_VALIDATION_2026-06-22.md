@@ -9,6 +9,15 @@
 **Last Updated**: 2026-06-22
 **Status**: Validation findings (read-only, pre-development gate-check). **Verdict: A-phase is NOT ready to start — see §1.**
 
+> **⟢ UPDATE 2026-06-23.** Overnight, cascor **B3.2 (#353) + B3.3 (#355) MERGED** — the `on_event` manager
+> cutover landed (fit/grow monkey-patches gone), so the **A4 "monitoring seam unrealized" finding (§2/§3)
+> is now CODE-RESOLVED**, and the §2 "Seq." row / §5 trigger #1 ("B3.2 open, B3.3 uncreated") are
+> superseded: the B-phase is all but complete — **only WS-6 B4** (retire the test-only
+> `CascorModelCoreAdapter`; point conformance at production `CascorModel`) remains (no PR yet). The verdict
+> is **unchanged — A-phase still NOT ready**: the three §6 owner decisions (DR-1 / soak-OQ-17 /
+> manager-appetite) remain open, and the manager's non-monitoring divergences (executor / thread /
+> HDF5-snapshot / torch boundary; zero `juniper_service_core` dependency) are untouched by B3.
+
 ---
 
 ## 0. What this is & method
