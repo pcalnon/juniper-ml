@@ -168,3 +168,14 @@ scripts/sessions/nohup.out
 
 # MCP server config (contains API tokens)
 .mcp.json
+
+# === Custom Agent Suite (D-6): version-control .claude/skills and .claude/agents ===
+# .claude/ is fully ignored above; re-include ONLY these two subtrees as the suite's
+# source-of-truth (PR-deliverable). Worktrees, sessions, and settings.local.json stay ignored.
+# Design-of-record: notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md
+!.claude/
+.claude/*
+!.claude/skills/
+!.claude/skills/**
+!.claude/agents/
+!.claude/agents/**
