@@ -1,20 +1,31 @@
 # juniper-service-core
 
-**Project**: Juniper — Cascade Correlation Neural Network Research Platform
-**Application**: juniper-service-core (subdirectory of juniper-ml)
-**Author**: Paul Calnon
-**License**: MIT License
-**Version**: 0.1.0
+[![PyPI](https://img.shields.io/pypi/v/juniper-service-core)](https://pypi.org/project/juniper-service-core/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-Shared **service-tier scaffolding** for Juniper ML model services: a model-agnostic
-FastAPI application factory, a `pydantic-settings` base, and a generic
-liveness/readiness health router. This is WS-2 of the model/middleware refactor
-(`notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` in the
-juniper-ml repo).
+**The shared FastAPI service-tier framework every Juniper model service is built on.**
 
-The `-core` suffix marks it as genuinely shared: it carries **no** model,
-classification, or training logic — those stay in the owning service (e.g.
-`juniper-cascor`) and are passed in.
+Standing up a model as a service means writing the same plumbing every time: an app factory,
+settings, health probes, API-key auth, Docker-secret loading, security middleware, a training
+lifecycle with status tracking and event streaming, the HTTP routes that drive it, live WebSocket
+streams, and — for distributed training — a worker pool. `juniper-service-core` is that plumbing,
+factored out of [`juniper-cascor`](https://github.com/pcalnon/juniper-cascor) into one
+**model-agnostic** package. **You bring the model; it brings the service.**
+
+The `-core` suffix marks it as genuinely shared: it carries no model, training, or domain logic —
+those stay in the owning service and are injected. A new Juniper model service (regression,
+classification, whatever the model does) wires its model into the lifecycle and gets a consistent
+HTTP + WebSocket surface for free.
+
+## Dependency-free top-level import
+
+`import juniper_service_core` pulls in **no** third-party runtime dependency — only `__version__`
+loads eagerly. The rest of the public surface (`create_app`, `SettingsBase`, and the security /
+secrets / middleware / lifecycle / routes / websocket / worker helpers) resolves lazily on attribute
+access (PEP 562 `__getattr__`), so `fastapi` / `pydantic-settings` / `starlette` / `numpy` load only
+when you touch a name that needs them. That's what lets a `--no-deps` publish-verify import the
+package cleanly.
 
 ## Install
 
@@ -22,23 +33,29 @@ classification, or training logic — those stay in the owning service (e.g.
 pip install juniper-service-core
 ```
 
-## What's in this scaffold
+## What's in the box
 
-| Surface | Module | Purpose |
-|---------|--------|---------|
-| `create_app(...)` | `juniper_service_core.app` | FastAPI app factory: mounts the health router, then any service-supplied routers. Model-agnostic. |
-| `SettingsBase` | `juniper_service_core.settings` | `pydantic-settings` base with generic fields (`service_name`, `host`, `port`, `log_level`). Subclasses set their own `env_prefix`. |
-| `health_router()` | `juniper_service_core.health` | Generic `APIRouter` exposing `GET /v1/health` (liveness) and `GET /v1/health/ready` (readiness). |
+| Subsystem | Import surface | What it gives you |
+|---|---|---|
+| App factory | `create_app` | Model-agnostic FastAPI app: mounts the health router, then any service-supplied routers. |
+| Settings | `SettingsBase` | `pydantic-settings` base (`service_name`, `host`, `port`, `log_level`); subclass and set your own `env_prefix`. |
+| Health | *(mounted by `create_app`)* | `GET /v1/health` (liveness) + `GET /v1/health/ready` (readiness). |
+| Security | `APIKeyAuth`, `RateLimiter`, `build_api_key_auth`, … | `X-API-Key` authentication + rate limiting. |
+| Secrets | `get_secret` | Docker `_FILE` secret-indirection reader. |
+| Middleware | `SecurityMiddleware`, `SecurityHeadersMiddleware`, `RequestBodyLimitMiddleware` | Drop-in ASGI middleware. |
+| Launcher | `ManagedService`, `start_service`, `wait_for_health` | Subprocess service launcher (stdlib-only). |
+| Lifecycle | `TrainingLifecycle`, `ServiceLifecycleManager`, … | Drives a [`juniper-model-core`](https://github.com/pcalnon/juniper-ml) `TrainableModel` through a status FSM + a `TrainingEvent` monitor; synchronous and threaded-orchestrator bodies, with snapshots + replay. |
+| Generic routes | `build_routers`, `ResponseEnvelope`, … | Training-control, metrics, dataset, network, and snapshot HTTP routes over the injected lifecycle. |
+| WebSocket | `attach_websocket`, `training_stream_handler`, `control_stream_handler`, … | Live training + control streams, plus a worker channel (`/ws/workers`). |
+| Worker pool | `WorkerCoordinator`, `WorkerRegistry`, … | Distributed-worker registration, coordination, and task dispatch (stdlib-only foundations). |
 
-### Dependency-free top-level import
+Import cost tracks the subsystem: `.security`, `.secrets`, `.middleware`, `.launcher`, and `.workers`
+are stdlib-/lightweight; `.lifecycle` needs `juniper-model-core`; `.routes` and `.websocket` need
+`fastapi`.
 
-`import juniper_service_core` pulls **no** third-party runtime dependency. Only
-`__version__` is exposed eagerly; `create_app` and `SettingsBase` are imported lazily
-on attribute access (PEP 562 `__getattr__`) from submodules that require `fastapi` /
-`pydantic-settings`. This lets the TestPyPI publish-verify run a clean `--no-deps`
-import check.
+## Quick start
 
-## Usage
+A minimal, health-only service:
 
 ```python
 from juniper_service_core import create_app, SettingsBase
@@ -49,20 +66,40 @@ class MyServiceSettings(SettingsBase):
     model_config = SettingsConfigDict(env_prefix="JUNIPER_MYSVC_")
 
 
-app = create_app(title="My Service", version="1.0.0", routers=[...])
-# GET /v1/health      -> {"status": "ok"}
+app = create_app(title="My Service", version="1.0.0")
+# GET /v1/health       -> {"status": "ok"}
 # GET /v1/health/ready -> {"status": "ready"}
 ```
 
-## What's deferred
+To **serve a model**, wrap it in a `ServiceLifecycleManager`, mount the generic routers, and expose
+the lifecycle on `app.state` — the routes read it from there:
 
-This first PR is an additive package skeleton. The following are intentionally **not**
-in this scaffold and arrive in later WS-2 follow-ups:
+```python
+from juniper_service_core import create_app, ServiceLifecycleManager, build_routers
 
-- Extraction of the **security / middleware / websocket / worker / generic-route**
-  helpers from `juniper-cascor`.
-- The `TrainingLifecycleBase` body, which depends on `juniper-model-core`
-  (this scaffold does not yet depend on `juniper-model-core`).
+manager = ServiceLifecycleManager(MyModel())   # MyModel = any juniper-model-core TrainableModel
+app = create_app(title="My Model Service", version="1.0.0", routers=build_routers())
+app.state.lifecycle = manager
+# -> POST /v1/train, GET /v1/training/status, and the metrics / dataset / network / snapshot
+#    routes, all driving your model. (Routes return 503 until app.state.lifecycle is wired.)
+```
+
+[`juniper-recurrence`](https://github.com/pcalnon/juniper-recurrence) is the canonical worked
+example — its FastAPI service is essentially this wiring around an LMU regressor.
+
+## Who uses it
+
+- **[juniper-recurrence](https://github.com/pcalnon/juniper-recurrence)** — the first real consumer;
+  its service is `create_app` + a lifecycle around the LMU regressor.
+- **[juniper-cascor](https://github.com/pcalnon/juniper-cascor)** — the framework was extracted *from*
+  cascor's service tier; cascor's own cutover onto it is in progress.
+
+Any new Juniper model service should build on this rather than re-implementing the plumbing.
+
+## Status
+
+**Live** on PyPI (Beta). The current version is shown by the badge above; see
+[`CHANGELOG.md`](./CHANGELOG.md) for history. Pin with `juniper-service-core>=0.2,<0.3`.
 
 ## Development
 
@@ -70,3 +107,13 @@ in this scaffold and arrive in later WS-2 follow-ups:
 pip install -e ".[test]"
 pytest tests/ -v
 ```
+
+## Design
+
+Part of the [Juniper](https://github.com/pcalnon) ML research platform. The architecture and the
+cascor extraction plan are the model/middleware refactor design of record
+(`notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` in `juniper-ml`).
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
