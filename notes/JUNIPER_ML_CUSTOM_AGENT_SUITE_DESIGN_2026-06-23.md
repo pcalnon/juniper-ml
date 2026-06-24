@@ -115,7 +115,7 @@ Derived decisions (made here, open to revision on review):
    task description    │   ingest → DISCOVER → expand(ask Qs) → categorize →   │
    (or @file/upstream) │   fill copy → VALIDATE(delegate) → [bounded loop] →   │
                        │   emit | emit-with-caveats | escalate-to-Paul         │
-                       └───────┬─────────────────────────────────┬──────────────┘
+                       └───────┬─────────────────────────────────┬─────────────┘
                                │ reads                           │ delegates (Agent tool)
                 ┌──────────────▼─────────────┐   ┌───────────────▼─────────────────────┐
                 │ Template library           │   │ prompt-validator (subagent)         │
