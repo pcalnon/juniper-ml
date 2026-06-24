@@ -489,7 +489,10 @@ mitigated by the static lint + the mandatory build-time delegation check + dogfo
 - **OQ-1 (resolved into round 1)** — `~/.claude` mirror is now PR 6 (D-6), not deferred.
 - **OQ-2 — prompt datastore**: YAML for round 1; a queryable store is future work if the snippet set grows.
 - **OQ-3 — additional agent types** (Infrastructure/Review/Refactor/Test/Documentation): future rounds.
-- **OQ-4 — validator model/cost**: pin `prompt-validator`'s `model` after a cost/quality pass (PR 3).
+- **OQ-4 — validator model/cost** *(resolved 2026-06-24)*: `prompt-validator` pins `model: opus` (latest
+  Opus) + `effort: max` — the suite's **standing default** for all agents and skills (owner directive);
+  the validator is the last line of defense, so it runs at maximum capability/effort. Cost is bounded by
+  the Skill's max-3-round fix loop.
 - **OQ-5 — auto-invocation**: `/template-agent` user-only initially; revisit after dogfooding.
 - **OQ-6 — scope precedence**: the two authoritative-mechanics passes disagreed on project-vs-user
   precedence. **Moot in round 1** because the `~/.claude` mirror is a *symlink to the project source*

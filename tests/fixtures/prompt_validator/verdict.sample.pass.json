@@ -17,7 +17,7 @@
       "claim": "register_or_reuse(factory, name, *args, **kwargs)",
       "class": "symbol",
       "grounded": true,
-      "evidence": "bundle.symbol_probe.register_or_reuse -> juniper-observability/src/juniper_observability/collectors.py:120 (signature matches)"
+      "evidence": "bundle.symbol_probe.register_or_reuse -> juniper-observability/juniper_observability/prometheus_helpers.py:88 (signature matches)"
     },
     {
       "claim": "juniper-observability>=0.2.0",
