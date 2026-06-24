@@ -19,6 +19,10 @@
 > **v1.3 adds §3.3** — the DP-3 P2 capacity result: a purpose-built `delay_product` dataset on which the
 > nonlinear RFF readout beats the linear readout by a **+0.83 r² gap**, demonstrating nonlinear-readout
 > *capacity* (the existing datasets only ever *tie* at their linear ceiling).
+> **v1.4 adds §3.4** — the DP-3 P3 result: the optional **torch MLP readout** (Rung 2b) reproduces and
+> slightly exceeds that capacity on `delay_product` (**+0.87 r² gap**; MLP r²≈0.83 vs RFF 0.79) and ties
+> the linear readout on every near-linear dataset — closing the readout spectrum (linear → RFF → MLP)
+> end-to-end.
 > Method + bands:
 > [`JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md);
 > harness + raw results: `bench/` in pcalnon/juniper-recurrence (PRs #23, #27, #29; `bench/results/REPORT.md`).
@@ -162,6 +166,41 @@ It does **not** revise the §3.2/§5 ranking for the real data (their predictabi
 recent history. (The RFF readout is reachable over the service edge via the DP-3 P2c HTTP `readout` enum,
 juniper-recurrence #45.)
 
+## 3.4 DP-3 P3 — the torch MLP readout confirms (and slightly exceeds) the capacity (2026-06-24)
+
+DP-3 P3 builds the spectrum's gated top rung — the optional **torch MLP readout (Rung 2b)**, `MLPReadout`
+/ `MLPReadoutSpec` behind a `[torch]` extra (juniper-recurrence-model 0.1.5). It was built under decision
+**D5** as deliberate *capability insurance* — not because the data demands it (the design's own stop-lean
+was to skip it) — so that a future complex/hybrid target cannot silently cost us the readout headroom, and
+to make the "does it add anything?" question **falsifiable**. The bench gains an MLP row alongside the RFF
+row (juniper-recurrence #56, via the opt-in `[bench-torch]` extra).
+
+Like RFF the MLP is a variable-Δt-only capacity probe. It is trained **full-budget with no early
+stopping**: walk-forward CV passes no held-out split, and reusing the eval fold as a validation set would
+leak, so `weight_decay` is its only regularizer. The untuned default `MLPReadoutSpec()` is used — a
+reproducible, non-cherry-picked row rather than a hand-tuned best case.
+
+**Measured (LMU d=16, 5-fold walk-forward CV; harness juniper-recurrence #56):**
+
+| dataset | linear readout r² | RFF readout r² | MLP readout r² | MLP gap vs linear |
+|---|---|---|---|---|
+| `delay_product` (capacity) | **−0.04** | +0.79 | **+0.83** | **+0.87** |
+| `irregular_sine` (near-linear) | +0.988 | +0.985 | +0.987 | −0.002 (tie) |
+| `multi_sine` / `mackey_glass` (regular) | ≈1.000 | ≈1.000 | ≈0.999 | < 0.002 (tie) |
+| noise-sweep variants | (at ceiling) | tie | tie | < 0.008 (tie) |
+
+**Reading.** The MLP reproduces the §3.3 signature and slightly *strengthens* it: on `delay_product` the
+MLP recovers the bilinear target (r² ≈ 0.83) that the linear readout provably cannot (r² ≈ −0.04) — a
+**+0.87 gap**, edging the RFF readout's 0.79 (the MLP's learned features fit the quadratic form a touch
+better than random Fourier features at this budget); on every near-linear dataset the MLP **ties** the
+linear readout (gaps < 0.01), so the extra capacity again **costs nothing** where it is not needed. This
+closes the DP-3 readout spectrum end-to-end — all three rungs (linear → RFF → MLP) are now measured on the
+same instrument, and both nonlinear rungs demonstrate genuine capacity. It does **not** revise the
+real-data ranking (§3.2/§5: the predictability ceiling is still ≈0). The D5 "fail in the direction of
+building" bet is settled in the affirmative *as capability insurance*: the torch rung works and is ready
+for any future target that is a genuine nonlinear functional of recent history, while remaining unneeded
+for today's near-linear catalog.
+
 ## 4. Acceptance bands (OQ-14)
 
 All six bands **PASS**:
@@ -191,8 +230,11 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
   (which is why it is being built regardless of the ranking). **§3.3 (DP-3 P2) now demonstrates the numpy
   RFF readout (Rung 2a) has genuine nonlinear capacity** — a +0.83 r² gap on the purpose-built
   `delay_product` dataset — so the readout *spectrum* is proven to work; it simply remains unneeded for
-  the current near-linear datasets (where it ties), and the torch rung (2b) stays gated on a measured 2a
-  lift the real data does not provide. What the re-bench *does* rank highest is a
+  the current near-linear datasets (where it ties). **§3.4 (DP-3 P3) closes the spectrum** — the torch MLP
+  rung (2b), built under D5 as capability insurance, reproduces and slightly exceeds that capacity (a +0.87
+  r² gap on `delay_product`, MLP 0.83 vs RFF 0.79; ties on near-linear), so all three rungs (linear → RFF →
+  MLP) are now measured; the nonlinear rungs simply remain unneeded for the current ≈0-ceiling real data.
+  What the re-bench *does* rank highest is a
   cheaper lever: a **regularized-readout default for real low-signal data** (a one-line bench fix,
   applied; the model-default question tracked in juniper-recurrence #28) — alongside the **target
   conditioning** that shipped in juniper-data 0.8.0 (#195).
@@ -223,3 +265,4 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
   readout-regularization follow-up juniper-recurrence #28
 - DP-3 readout spectrum design: [`JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md`](JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md)
 - §3.3 DP-3 P2 capacity: juniper-data #203 (`delay_product` generator), juniper-recurrence #44 (bench RFF row), juniper-recurrence #45 (HTTP `readout` enum)
+- §3.4 DP-3 P3 capacity (torch MLP, Rung 2b): juniper-recurrence-model 0.1.5 (`MLPReadout`/`MLPReadoutSpec` + LMURegressor validation plumbing, juniper-recurrence #50/#54), juniper-recurrence #56 (bench MLP row + `[bench-torch]` extra); decision D5 in [`JUNIPER_DECISIONS_RATIFIED_2026-06-23.md`](JUNIPER_DECISIONS_RATIFIED_2026-06-23.md)
