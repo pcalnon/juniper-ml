@@ -110,26 +110,26 @@ Derived decisions (made here, open to revision on review):
 ## 4. Suite architecture overview
 
 ```
-                       ┌─────────────────────────────────────────────────────┐
-   you (interactive) ──┤  /template-agent   (Skill, main conversation)        │
+                       ┌───────────────────────────────────────────────────────┐
+   you (interactive) ──┤  /template-agent   (Skill, main conversation)         │
    task description    │   ingest → DISCOVER → expand(ask Qs) → categorize →   │
    (or @file/upstream) │   fill copy → VALIDATE(delegate) → [bounded loop] →   │
                        │   emit | emit-with-caveats | escalate-to-Paul         │
-                       └───────┬───────────────────────────────┬──────────────┘
-                               │ reads                          │ delegates (Agent tool)
-                ┌──────────────▼─────────────┐   ┌──────────────▼────────────────────┐
-                │ Template library            │   │ prompt-validator (subagent)         │
-                │  prompts/templates/         │   │  applies RUBRIC R1–R5 →             │
-                │   *.md, manifest.yaml       │   │  TYPED JSON verdict + per-finding   │
-                │   (match_signals), RUBRIC,  │   │  severity + independent re-probe    │
-                │   data/*.yaml               │   │  of every claimed path/symbol/ver   │
+                       └───────┬─────────────────────────────────┬──────────────┘
+                               │ reads                           │ delegates (Agent tool)
+                ┌──────────────▼─────────────┐   ┌───────────────▼─────────────────────┐
+                │ Template library           │   │ prompt-validator (subagent)         │
+                │  prompts/templates/        │   │  applies RUBRIC R1–R5 →             │
+                │   *.md, manifest.yaml      │   │  TYPED JSON verdict + per-finding   │
+                │   (match_signals), RUBRIC, │   │  severity + independent re-probe    │
+                │   data/*.yaml              │   │  of every claimed path/symbol/ver   │
                 └──────────────┬─────────────┘   └─────────────────────────────────────┘
                                │ grounded by (closed-world fact set + provenance)
-                ┌──────────────▼──────────────────────────────────────────────────────┐
+                ┌──────────────▼────────────────────────────────────────────────────────┐
                 │ Discovery helpers  util/prompt_discovery/  (--repo-root, JSON bundle) │
                 │  repo_context • test_status • file_probe • conventions • concurrency  │
                 │  • symbol_probe(Serena) • dependency_facts • provenance{head_sha,ttl} │
-                └──────────────────────────────────────────────────────────────────────┘
+                └───────────────────────────────────────────────────────────────────────┘
 
    Availability: util/install_agents.bash  symlinks .claude/{skills,agents}/* → ~/.claude/  (PR 6)
    Round 2:  .claude/agents/{planner,auditor,task-executor}.md   (reuse all shared infra)
