@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/pcalnon/juniper-ml/tests/fixtures/prompt_validator/verdict.schema.json",
+  "title": "prompt-validator verdict",
+  "description": "Pinned typed verdict the prompt-validator subagent returns to the /template-agent Skill. Source of truth: notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md (section 5.3) and prompts/templates/RUBRIC.md. The Skill acts on this object deterministically; the contract is enforced by tests/test_prompt_validator_contract.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "validator_status",
+    "head_sha",
+    "iteration",
+    "findings",
+    "hallucination_risk",
+    "overall"
+  ],
+  "properties": {
+    "validator_status": {
+      "description": "ok = bundle fresh and all checks ran; partial = some checks could not run; error = bundle stale/malformed or inputs unusable.",
+      "type": "string",
+      "enum": ["ok", "partial", "error"]
+    },
+    "head_sha": {
+      "description": "Must equal bundle.head_sha and the current HEAD; the validator rejects a stale bundle.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "iteration": {
+      "description": "1-based fix-loop round this verdict belongs to (the Skill bounds the loop at 3).",
+      "type": "integer",
+      "minimum": 1
+    },
+    "findings": {
+      "description": "Rubric findings. Each references a stable RUBRIC.md criterion ID and carries reproducible evidence.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "severity", "location", "problem", "fix", "evidence"],
+        "properties": {
+          "id": {
+            "description": "A stable rubric criterion ID declared in prompts/templates/RUBRIC.md (R1..R5, optional dotted child, optional sub-class letter).",
+            "type": "string",
+            "pattern": "^R[1-5](\\.[0-9]+[a-e]?)?$"
+          },
+          "severity": {
+            "description": "blocker and major fail the prompt; minor is a non-blocking accepted_warning.",
+            "type": "string",
+            "enum": ["blocker", "major", "minor"]
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "problem": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fix": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "description": "Exact command + observed output backing the finding; null is permitted but auto-downgrades the finding to minor.",
+            "type": ["string", "null"]
+          }
+        }
+      }
+    },
+    "hallucination_risk": {
+      "description": "Per-claim grounding ledger for R3.4: every asserted anchor re-probed against the real repo. grounded:false fails R3.4.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "class", "grounded", "evidence"],
+        "properties": {
+          "claim": {
+            "type": "string",
+            "minLength": 1
+          },
+          "class": {
+            "description": "R3.4 claim taxonomy: path (R3.4a), symbol (R3.4b), version (R3.4c), port/env (R3.4d), flag (R3.4e).",
+            "type": "string",
+            "enum": ["path", "symbol", "version", "port", "env", "flag"]
+          },
+          "grounded": {
+            "type": "boolean"
+          },
+          "evidence": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    },
+    "overall": {
+      "description": "PASS iff zero blocker AND zero major findings AND every hallucination_risk[].grounded is true; else FAIL.",
+      "type": "string",
+      "enum": ["PASS", "FAIL"]
+    }
+  }
+}

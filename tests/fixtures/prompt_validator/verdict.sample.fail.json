@@ -1,0 +1,40 @@
+{
+  "validator_status": "ok",
+  "head_sha": "c1ef5137ff6184a7577260470a1730ba6e886b2b",
+  "iteration": 2,
+  "findings": [
+    {
+      "id": "R2.0",
+      "severity": "blocker",
+      "location": "§Key Deliverables & Requirements",
+      "problem": "An unfilled required slot {{!DELIVERABLES: ...}} remains and the 'failing_targets' required_field is empty.",
+      "fix": "Populate the deliverables slot with enumerated items carrying measurable acceptance criteria, and fill failing_targets from the discovery bundle.",
+      "evidence": "grep -nE '\\{\\{![A-Z]' prompts/generated/draft.md -> 29:{{!DELIVERABLES: enumerate deliverables ...}}"
+    },
+    {
+      "id": "R3.4a",
+      "severity": "blocker",
+      "location": "§Resources, anchor 2",
+      "problem": "Cited path util/prompt_discovery/cli.py is asserted in Resources but is absent from the grounding bundle and the repository.",
+      "fix": "Remove the invented path or re-run discovery, then cite only anchors present in the bundle.",
+      "evidence": "ls util/prompt_discovery/cli.py -> ls: cannot access 'util/prompt_discovery/cli.py': No such file or directory"
+    },
+    {
+      "id": "R2.5",
+      "severity": "major",
+      "location": "§Constraints",
+      "problem": "The injected thread-handoff threshold reads '80% / 90%', which is stale against the current 95-99% policy.",
+      "fix": "Replace with the current 95-99% handoff threshold from the data layer / parent AGENTS.md.",
+      "evidence": "grep -n 'handoff' prompts/templates/data/conventions.yaml -> handoff_threshold: '95-99%'"
+    }
+  ],
+  "hallucination_risk": [
+    {
+      "claim": "util/prompt_discovery/cli.py",
+      "class": "path",
+      "grounded": false,
+      "evidence": "ls util/prompt_discovery/cli.py -> No such file or directory; bundle.file_probe has no candidate for it"
+    }
+  ],
+  "overall": "FAIL"
+}
