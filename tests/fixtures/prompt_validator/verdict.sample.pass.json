@@ -1,0 +1,30 @@
+{
+  "validator_status": "ok",
+  "head_sha": "c1ef5137ff6184a7577260470a1730ba6e886b2b",
+  "iteration": 1,
+  "findings": [
+    {
+      "id": "R2.3",
+      "severity": "minor",
+      "location": "§Assigned Tasks / Directives, step 3",
+      "problem": "Directive 3 bundles two actions ('run the suite and update the changelog') into a single numbered step, which is acceptable but slightly less individually checkable.",
+      "fix": "Optionally split into two ordered directives so each is verified independently.",
+      "evidence": "grep -n 'run the suite and update' prompts/generated/draft.md -> 41:3. run the suite and update the changelog"
+    }
+  ],
+  "hallucination_risk": [
+    {
+      "claim": "register_or_reuse(factory, name, *args, **kwargs)",
+      "class": "symbol",
+      "grounded": true,
+      "evidence": "bundle.symbol_probe.register_or_reuse -> juniper-observability/src/juniper_observability/collectors.py:120 (signature matches)"
+    },
+    {
+      "claim": "juniper-observability>=0.2.0",
+      "class": "version",
+      "grounded": true,
+      "evidence": "grep -n 'juniper-observability' pyproject.toml -> juniper-observability>=0.2.0 in the [tools] extra"
+    }
+  ],
+  "overall": "PASS"
+}
