@@ -34,6 +34,37 @@ _REQUIRED_RE = re.compile(r"^\{\{![A-Z][A-Z0-9_]*:\s.+\}\}$")
 _OPTIONAL_RE = re.compile(r"^\{\{\?[A-Z][A-Z0-9_]*:\s.+\}\}$")
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
 
+# Every criterion ID RUBRIC.md must declare, so a validation check can't be silently
+# dropped (the rubric is the prompt-validator's contract -- design S5.5). Lands in PR 2b-i.
+_EXPECTED_RUBRIC_IDS = [
+    "R1.1",
+    "R1.2",
+    "R1.3",
+    "R1.4",
+    "R2.0",
+    "R2.1",
+    "R2.2",
+    "R2.3",
+    "R2.4",
+    "R2.5",
+    "R2.6",
+    "R3.1",
+    "R3.2",
+    "R3.3",
+    "R3.4",
+    "R3.4a",
+    "R3.4b",
+    "R3.4c",
+    "R3.4d",
+    "R3.4e",
+    "R4",
+    "R5",
+]
+
+# Library meta-files under prompts/templates/ that are NOT templates (excluded from the
+# orphan check). Every OTHER *.md must be registered in manifest.yaml.
+_NON_TEMPLATE_MD = {"README.md", "RUBRIC.md"}
+
 
 def _strip_html_comments(text: str) -> str:
     """Remove HTML comments so example placeholders/headings inside a comment block
@@ -101,7 +132,7 @@ class TemplateLibraryDriftTest(unittest.TestCase):
 
     def test_no_orphan_template_files(self):
         registered = {t["file"] for t in self.manifest["templates"]}
-        on_disk = {p.name for p in self.templates_dir.glob("*.md") if p.name != "README.md"}
+        on_disk = {p.name for p in self.templates_dir.glob("*.md") if p.name not in _NON_TEMPLATE_MD}
         orphans = sorted(on_disk - registered)
         self.assertEqual(orphans, [], f"template file(s) on disk but not registered in manifest.yaml: {orphans}")
 
@@ -148,6 +179,14 @@ class TemplateLibraryDriftTest(unittest.TestCase):
         rubric = self.templates_dir / "RUBRIC.md"
         if rubric.exists():
             self.assertGreater(len(rubric.read_text(encoding="utf-8").strip()), 200, "RUBRIC.md looks empty/stub")
+
+    def test_rubric_declares_all_criteria_when_present(self):
+        rubric = self.templates_dir / "RUBRIC.md"
+        if not rubric.exists():
+            self.skipTest("RUBRIC.md not present yet (lands in PR 2b-i)")
+        text = rubric.read_text(encoding="utf-8")
+        missing = [rid for rid in _EXPECTED_RUBRIC_IDS if rid not in text]
+        self.assertEqual(missing, [], f"RUBRIC.md is missing criterion ID(s): {missing}")
 
 
 class PlaceholderClassifierTest(unittest.TestCase):
