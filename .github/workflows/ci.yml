@@ -169,6 +169,11 @@ jobs:
           # loudly. Added pre-0.5.0 after juniper-ml#295 introduced
           # [servers] + [tools] without regression coverage.
           python3 -m unittest -v tests/test_pyproject_extras.py
+          # tests/test_template_library_drift.py: enforces manifest <-> template
+          # consistency for the custom-agent template library (prompts/templates/).
+          # The SOLE gate for that library because prompts/** is excluded from all
+          # pre-commit hooks; uses the PyYAML installed above.
+          python3 -m unittest -v tests/test_template_library_drift.py
           # tests/test_agents_md_version_drift.py: pins AGENTS.md's
           # `**Version**:` header to pyproject.toml's [project].version
           # so version bumps stay in sync with the agent-facing

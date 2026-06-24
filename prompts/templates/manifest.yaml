@@ -1,0 +1,43 @@
+# Template library registry -- Juniper custom-agent suite.
+#
+# Design-of-record: notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md (section 5.4).
+# Enforced by tests/test_template_library_drift.py -- the SOLE gate, because
+# prompts/** is excluded from all pre-commit hooks. PR 2a ships this scaffold +
+# the generic fallback; PR 2b adds the six category templates + RUBRIC.md.
+version: 1
+
+skeleton:
+  # Required sections, in canonical order, that every template must contain.
+  required:
+    - "## Role"
+    - "## Resources"
+    - "## Primary Objective"
+    - "## Assigned Tasks / Directives"
+    - "## Key Deliverables & Requirements"
+  # Optional sections; if present they keep this (trailing) relative order.
+  optional:
+    - "## Constraints"
+    - "## Finalize / Validation"
+
+placeholders:
+  # Systematic convention enforced by the drift test (NAME is UPPER_SNAKE):
+  #   NAME            -> fill slot
+  #   !NAME: hint     -> REQUIRED slot (must be filled before the prompt is valid)
+  #   ?NAME: hint     -> OPTIONAL slot (may be dropped)
+  # Each slot is wrapped in double braces in the template files.
+  fill: "NAME"
+  required: "!NAME: hint"
+  optional: "?NAME: hint"
+
+# Every *.md here (except README.md) must be registered; every `file` must exist.
+templates:
+  - id: generic
+    title: "Generic Task"
+    when_to_use: "Fallback when no category template matches the task; the output is a candidate for promotion into a new named template if the shape recurs."
+    match_signals:
+      always: true
+    file: generic.md
+    required_fields:
+      - task_subject
+      - deliverables
+    class: generic
