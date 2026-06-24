@@ -1,4 +1,4 @@
-#!/usr/bin/1env bash
+#!/usr/bin/env bash
 
 # Custom Agent Development Script
 
