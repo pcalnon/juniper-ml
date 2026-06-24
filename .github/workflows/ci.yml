@@ -130,6 +130,12 @@ jobs:
           python3 -m unittest -v tests/test_worktree_sweep_scripts.py
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
+          # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
+          # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
+          # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
+          # not lint-gated by pre-commit (flake8/black scope to scripts+tests), so this
+          # unittest is the gate. Stdlib only (subprocess/tempfile/json).
+          python3 -m unittest -v tests/test_prompt_discovery.py
           # tests/test_requirements_drift_check.py: exercises util/requirements_drift_check.py
           # (the notes/requirements snapshot drift checker; uses the PyYAML installed above).
           # Listed in AGENTS.md's "Run all tests" but never wired into this CI list
