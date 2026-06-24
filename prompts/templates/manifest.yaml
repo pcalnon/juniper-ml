@@ -1,9 +1,10 @@
 # Template library registry -- Juniper custom-agent suite.
 #
 # Design-of-record: notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md (section 5.4).
-# Enforced by tests/test_template_library_drift.py -- the SOLE gate, because
-# prompts/** is excluded from all pre-commit hooks. PR 2a ships this scaffold +
-# the generic fallback; PR 2b adds the six category templates + RUBRIC.md.
+# Enforced by tests/test_template_library_drift.py + tests/test_template_selection.py --
+# the SOLE gates, because prompts/** is excluded from all pre-commit hooks.
+# PR 2a: scaffold + generic. PR 2b-i: RUBRIC.md. PR 2b-ii: the six category templates below.
+# The three round-2 skeletons (plan/audit/task) land with their agents in round 2.
 version: 1
 
 skeleton:
@@ -29,15 +30,73 @@ placeholders:
   required: "!NAME: hint"
   optional: "?NAME: hint"
 
-# Every *.md here (except README.md) must be registered; every `file` must exist.
+# Template `class` gates rubric checks (e.g. R2.6 verification-&-recoverability applies to
+# execution-class only). Allowed: generic, execution, analysis, planning, review.
+# Every *.md here (except README.md and RUBRIC.md) must be registered; every `file` must exist.
 templates:
+  - id: code-review
+    title: "Code Review"
+    when_to_use: "Rigorous, comprehensive review of existing code; produces a classified findings document and changes nothing."
+    match_signals:
+      keywords: ["code review", "review the code", "audit the code", "comprehensive review"]
+    file: code-review.md
+    required_fields: [target, resources]
+    class: review
+
+  - id: failing-tests
+    title: "Repair Failing Tests"
+    when_to_use: "Drive a red test suite to green by fixing real defects, never by weakening tests. Covers single-app and multi-app (new-plan) scenarios."
+    match_signals:
+      keywords: ["failing test", "failing tests", "test suite", "red tests", "tests fail"]
+      discovery: ["test_status.failing_count > 0"]
+      variants:
+        multi_app:
+          keywords: ["across apps", "multiple apps", "ecosystem-wide"]
+    file: failing-tests.md
+    required_fields: [target, resources]
+    class: execution
+
+  - id: implement-plan
+    title: "Implement Plan"
+    when_to_use: "Execute a pre-existing, ratified development plan / phase / track, faithfully realizing its design."
+    match_signals:
+      keywords: ["implement the plan", "execute the plan", "implement phase", "implement track", "per the plan"]
+    file: implement-plan.md
+    required_fields: [plan, resources]
+    class: execution
+
+  - id: proposal-analysis
+    title: "Proposal Analysis"
+    when_to_use: "Synthesize and cross-validate prior proposals/inputs into one unified analysis document."
+    match_signals:
+      keywords: ["proposal analysis", "synthesize proposals", "analyze proposals", "compare proposals"]
+    file: proposal-analysis.md
+    required_fields: [subject, resources]
+    class: analysis
+
+  - id: regressions
+    title: "Diagnose & Fix Regression"
+    when_to_use: "Diagnose something that used to work and now fails, fix the root cause, and add a guarding regression test."
+    match_signals:
+      keywords: ["regression", "regressed", "broke after", "used to work", "worked before"]
+    file: regressions.md
+    required_fields: [symptom, resources]
+    class: execution
+
+  - id: release-and-deployment
+    title: "Release & Deployment Plan"
+    when_to_use: "Plan (not perform) a release/deployment: version semantics, changelog, gates, and publish steps. Planning only."
+    match_signals:
+      keywords: ["release", "deployment", "changelog", "version bump", "publish", "cut a release"]
+    file: release-and-deployment.md
+    required_fields: [package, resources]
+    class: planning
+
   - id: generic
     title: "Generic Task"
     when_to_use: "Fallback when no category template matches the task; the output is a candidate for promotion into a new named template if the shape recurs."
     match_signals:
       always: true
     file: generic.md
-    required_fields:
-      - task_subject
-      - deliverables
+    required_fields: [task_subject, deliverables]
     class: generic
