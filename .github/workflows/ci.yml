@@ -148,6 +148,10 @@ jobs:
           # -- a dogfood that consumes every layer (agents/skill/templates/RUBRIC/data-layer/discovery/
           # mirror). Real-repo-healthy + synthetic-missing-component FAIL + --json/--strict/--no-discovery.
           python3 -m unittest -v tests/test_agent_suite_doctor.py
+          # tests/test_agent_suite_summary.py: util/agent_suite_summary.py (P3) -- the suite
+          # quick-reference; asserts every agent + template appears, --json round-trips, and
+          # --markdown rows respect the 512 line-length. Stdlib + PyYAML.
+          python3 -m unittest -v tests/test_agent_suite_summary.py
           # tests/test_requirements_drift_check.py: exercises util/requirements_drift_check.py
           # (the notes/requirements snapshot drift checker; uses the PyYAML installed above).
           # Listed in AGENTS.md's "Run all tests" but never wired into this CI list

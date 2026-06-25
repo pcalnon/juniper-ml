@@ -47,6 +47,7 @@ python3 -m unittest -v tests/test_prompt_discovery.py
 python3 -m unittest -v tests/test_symbol_overlay.py
 python3 -m unittest -v tests/test_install_agents.py
 python3 -m unittest -v tests/test_agent_suite_doctor.py
+python3 -m unittest -v tests/test_agent_suite_summary.py
 python3 -m unittest -v tests/test_workflow_script_paths.py
 python3 -m unittest -v tests/test_doc_tools_drift.py
 python3 -m unittest -v tests/test_pyproject_extras.py
@@ -209,6 +210,7 @@ juniper-ml/
 │   ├── test_symbol_overlay.py            # Serena symbol overlay (OQ-8) deterministic merge (Serena wins, grep fallback)
 │   ├── test_install_agents.py            # Behavioural: util/install_agents.bash ~/.claude mirror (idempotent/reversible/dry-run/no-clobber)
 │   ├── test_agent_suite_doctor.py        # Behavioural: util/agent_suite_doctor.py suite health check (dogfood; consumes every layer)
+│   ├── test_agent_suite_summary.py       # Behavioural: util/agent_suite_summary.py suite quick-reference (P3)
 │   ├── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
 │   ├── test_doc_tools_drift.py           # Lint: consumer-repo juniper-doc-tools pins still admit current version (plan §5.1)
 │   ├── test_pyproject_extras.py          # Lint: pyproject [project.optional-dependencies] surface matches the contract
@@ -236,6 +238,7 @@ juniper-ml/
     ├── template_select_preview.py        # Custom-agent suite (P2): offline preview of the Template Agent's match_signals selection
     ├── install_agents.bash               # Custom-agent suite (PR 6a): mirror .claude/{agents,skills} -> ~/.claude (idempotent, reversible)
     ├── agent_suite_doctor.py             # Custom-agent suite: read-only health check (dogfood; OK/WARN/FAIL over every layer)
+    ├── agent_suite_summary.py            # Custom-agent suite (P3): quick-reference listing of agents + templates
     ├── worktree_cleanup.bash             # V2 cleanup orchestrator (CWD-safe)
     ├── worktree_new.bash                 # Creates new git worktree
     ├── worktree_activate.bash            # Bash helper for worktree activation
@@ -295,6 +298,7 @@ juniper-ml/
 - `util/prompt_discovery/` -- Discovery helpers for the custom-agent suite (PR 4); path-invoked (`python util/prompt_discovery/cli.py --repo-root <path>`), emits a JSON grounding bundle (closed-world facts + provenance: `head_sha`/`dirty`/`ttl_seconds`/`per_probe_status`) from seven probes (`repo_context`, `test_status`, `file_probe`, `symbol_probe`, `dependency_facts`, `conventions`, `concurrency`). A discovery failure is a hard stop (exit 2).
 - `util/install_agents.bash` -- Mirrors this repo's `.claude/{agents,skills}/*` into `~/.claude` by symlink (design D-6) so the suite is available cross-repo; the project stays source of truth (OQ-6). Idempotent, reversible (`--reverse`), `--dry-run`; `JUNIPER_ML_REPO_ROOT`/`JUNIPER_CLAUDE_HOME` overrides for tests. Never clobbers a non-symlink; `--reverse` removes only owned links. Tests: `tests/test_install_agents.py`.
 - `util/agent_suite_doctor.py` -- Read-only health check for the custom-agent suite (a `planner`-designed dogfood): reports existence + structural validity of every component (agents incl. `opus`/`max`, the Skill, the template library, `RUBRIC.md`, the data layer, the discovery CLI, the `~/.claude` mirror) as `OK`/`WARN`/`FAIL`. `python util/agent_suite_doctor.py [--repo-root P] [--json] [--strict] [--no-discovery]`; exit 0/1/2. Tests: `tests/test_agent_suite_doctor.py`.
+- `util/agent_suite_summary.py` -- Quick-reference for the custom-agent suite (P3; the human counterpart to the doctor): lists the agents (name, model/effort, one-line description) and the templates (id, class, when-to-use). `python util/agent_suite_summary.py [--repo-root P] [--agents|--templates] [--json|--markdown]`; read-only, exit 0. Tests: `tests/test_agent_suite_summary.py`.
 - `util/ad-hoc/` -- Home for single-use / temporary / unfinished scripts. See `util/ad-hoc/README.md` for file-header conventions and graduation lifecycle. `/tmp/` is prohibited for script source files per the [Script placement](#script-placement-mandatory) rule.
 - Dependency-documentation generator now lives in [`juniper-ci-tools/`](juniper-ci-tools/) and is published to PyPI as `juniper-ci-tools` (Wave 4 of the dep-docs migration plan; install with `pip install juniper-ci-tools` and invoke via `juniper-generate-dep-docs`). The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298.
 - `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` and `JUNIPER_CASCOR_PORT` defaults to `8201`; both can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com JUNIPER_CASCOR_PORT=8201 util/juniper_plant_all.bash`).
@@ -324,6 +328,7 @@ juniper-ml/
 - `tests/test_symbol_overlay.py` -- Tests for `util/prompt_discovery/symbol_overlay.py` (the Serena symbol overlay, design OQ-8): the deterministic merge of Skill-resolved Serena facts into a bundle's `symbol_probe` slice -- Serena-resolved wins, grep is the fallback, an unresolvable symbol stays `UNRESOLVED`, the input bundle is not mutated, and `cli.py`'s contract is untouched. Stdlib only; importlib-loaded.
 - `tests/test_install_agents.py` -- Tests for `util/install_agents.bash` (custom-agent suite PR 6a): drives the `~/.claude` mirror against a synthetic source repo + throwaway target (`JUNIPER_ML_REPO_ROOT`/`JUNIPER_CLAUDE_HOME` overrides) and asserts it is idempotent, reversible (`--reverse`), `--dry-run`-safe, and never clobbers or removes a file it does not own.
 - `tests/test_agent_suite_doctor.py` -- Tests for `util/agent_suite_doctor.py` (the suite health-check dogfood utility): the real suite has zero FAIL; synthetic trees missing a component FAIL the matching check (exit 1); `--json` shape; `--no-discovery` skips the subprocess; `--strict` promotes WARN to exit 1; a non-repo `--repo-root` exits 2. Stdlib-only; importlib-loaded.
+- `tests/test_agent_suite_summary.py` -- Tests for `util/agent_suite_summary.py` (P3 quick-reference): drives the real suite so every agent and template appears, `--json` round-trips, and `--markdown` rows respect the 512-char line-length convention. Stdlib + PyYAML; importlib-loaded.
 - `tests/test_template_agent_skill_lint.py` -- Static lint for the `template-agent` Skill (`.claude/skills/template-agent/SKILL.md`, PR 5): frontmatter (`allowed-tools` includes `Agent`, `model: opus` + `effort: max`, user-only) and that the bounded state machine wires to real artifacts (template library, `RUBRIC.md`, `util/prompt_discovery/cli.py`, the emission dir, the `prompt-validator` subagent). The Skill-surface gate (pre-commit-excluded except markdownlint).
 - `tests/test_agents_frontmatter.py` -- Suite-wide frontmatter gate over every `.claude/agents/*.md` (the `prompt-validator` plus the round-2 `planner` / `auditor` / `task-executor`): `name` equals the filename, the `description` is substantive, `tools` are declared, the body is non-trivial, and the owner-directed defaults `model: opus` + `effort: max` hold -- so a new agent cannot drift from the standing defaults. The shared invariant complementing `test_prompt_validator_contract.py`.
 - `tests/test_ci_tools_drift.py` -- Lint test (dep-docs plan §5.1) for `juniper-ci-tools` pins. Mirrors `test_doc_tools_drift.py`: walks juniper-ml's own workflows (`ci.yml`, `lockfile-update.yml`, `docs-full-check.yml`) plus each cloned consumer repo's `ci.yml`, extracts the `juniper-ci-tools>=X,<Y` pin, and asserts the range still admits the current version (read from `juniper-ci-tools/pyproject.toml`). Same skip semantics and `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` override as the doc-tools sibling.
