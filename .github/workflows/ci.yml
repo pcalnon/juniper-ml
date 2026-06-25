@@ -198,6 +198,11 @@ jobs:
           # real artifacts (template library, RUBRIC, discovery CLI, validator subagent).
           # The gate for the Skill surface (excluded from pre-commit except markdownlint).
           python3 -m unittest -v tests/test_template_agent_skill_lint.py
+          # tests/test_agents_frontmatter.py: suite-wide gate over every .claude/agents/*.md
+          # (validator + round-2 planner/auditor/task-executor) -- name==filename, substantive
+          # description, tools declared, body non-trivial, and the owner defaults model=opus +
+          # effort=max. .claude/** is pre-commit-excluded except markdownlint, so this is the gate.
+          python3 -m unittest -v tests/test_agents_frontmatter.py
           # tests/test_agents_md_version_drift.py: pins AGENTS.md's
           # `**Version**:` header to pyproject.toml's [project].version
           # so version bumps stay in sync with the agent-facing
