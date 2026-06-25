@@ -2,10 +2,12 @@
 
 **Date**: 2026-05-19 (last updated 2026-05-21 for `juniper-ml` 0.5.0 extras-surface expansion)
 **Author**: Paul Calnon
-**Status**: Planning (no edits to README files in scope)
+**Status**: SUPERSEDED (partial) 2026-06-24 by [`JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md`](JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md) — see banner below
 **Applies to**: All ten application/library repositories in the Juniper ecosystem
 
 ---
+
+> **⚠️ Superseded (partial), 2026-06-24.** The per-package *structure* mandated by this plan — the logo + platform-intro preamble (§3, §5), the canonical Style-A section order (§4), the ecosystem-wide Research Philosophy on every package (§7.7, §9), and the Active Research Components / Design Notes substitution (§10.9, §10.10) — is superseded by [`JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md`](JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md), which adopts the lean *badges + problem-first* style as canonical for individual package READMEs (the full platform narrative now lives only in the `juniper-ml` root README). This document is retained for historical context and for the parts **not** superseded — the writing-register guidance (§1) and the §11 documentation-audit procedure.
 
 ## 1. Motivation and Scope
 

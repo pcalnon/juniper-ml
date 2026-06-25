@@ -136,6 +136,10 @@ jobs:
           # not lint-gated by pre-commit (flake8/black scope to scripts+tests), so this
           # unittest is the gate. Stdlib only (subprocess/tempfile/json).
           python3 -m unittest -v tests/test_prompt_discovery.py
+          # tests/test_install_agents.py: drives util/install_agents.bash (the ~/.claude
+          # mirror, PR 6a) against a synthetic source + throwaway target -- idempotent,
+          # reversible, dry-run-safe, no-clobber. Stdlib only (subprocess/tempfile).
+          python3 -m unittest -v tests/test_install_agents.py
           # tests/test_requirements_drift_check.py: exercises util/requirements_drift_check.py
           # (the notes/requirements snapshot drift checker; uses the PyYAML installed above).
           # Listed in AGENTS.md's "Run all tests" but never wired into this CI list
@@ -197,6 +201,12 @@ jobs:
           # surface: .claude/** is git-tracked via the PR-1 .gitignore negation but is
           # excluded from every pre-commit hook except markdownlint. Uses PyYAML above.
           python3 -m unittest -v tests/test_prompt_validator_contract.py
+          # tests/test_template_agent_skill_lint.py: static lint for the template-agent
+          # Skill (.claude/skills/template-agent/SKILL.md) -- frontmatter (opus + effort max,
+          # Agent in allowed-tools, user-only) and that its bounded state machine wires to
+          # real artifacts (template library, RUBRIC, discovery CLI, validator subagent).
+          # The gate for the Skill surface (excluded from pre-commit except markdownlint).
+          python3 -m unittest -v tests/test_template_agent_skill_lint.py
           # tests/test_agents_md_version_drift.py: pins AGENTS.md's
           # `**Version**:` header to pyproject.toml's [project].version
           # so version bumps stay in sync with the agent-facing
