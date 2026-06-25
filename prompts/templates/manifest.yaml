@@ -4,7 +4,8 @@
 # Enforced by tests/test_template_library_drift.py + tests/test_template_selection.py --
 # the SOLE gates, because prompts/** is excluded from all pre-commit hooks.
 # PR 2a: scaffold + generic. PR 2b-i: RUBRIC.md. PR 2b-ii: the six category templates below.
-# The three round-2 skeletons (plan/audit/task) land with their agents in round 2.
+# Round-2 follow-up: the three skeletons (plan/audit/task) -- doc/audit/exec siblings of the
+# planner/auditor/task-executor subagents -- are registered below (before the generic fallback).
 version: 1
 
 skeleton:
@@ -91,6 +92,33 @@ templates:
     file: release-and-deployment.md
     required_fields: [package, resources]
     class: planning
+
+  - id: plan
+    title: "Plan / Design"
+    when_to_use: "Author a design / plan / analysis DOCUMENT (planning-class; produces a notes/ document, changes no code). The document-authoring sibling of the planner subagent."
+    match_signals:
+      keywords: ["plan", "design a", "roadmap", "design-of-record", "design doc"]
+    file: plan.md
+    required_fields: [subject, resources]
+    class: planning
+
+  - id: audit
+    title: "Audit"
+    when_to_use: "Systematic checklist review producing a classified findings report (analysis-class; changes nothing). Broader than code-review -- covers code, config, docs, CI, and cross-repo / process / compliance concerns."
+    match_signals:
+      keywords: ["audit", "audit the", "ecosystem audit", "compliance check", "inventory"]
+    file: audit.md
+    required_fields: [scope, resources]
+    class: analysis
+
+  - id: task
+    title: "Execute Task"
+    when_to_use: "Execute a concrete, well-specified task that changes code / config and lands it as a PR (execution-class). An execution-shaped fallback distinct from the generic promotion-candidate fallback."
+    match_signals:
+      keywords: ["task", "do this", "general task", "implement a change"]
+    file: task.md
+    required_fields: [task, resources, acceptance]
+    class: execution
 
   - id: generic
     title: "Generic Task"
