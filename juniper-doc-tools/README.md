@@ -84,8 +84,6 @@ External URLs (`http://`, `https://`, `mailto:`) and embedded images (`data:`, `
 
 ## Design Notes
 
-> **Note** — per §10.10 of [`../notes/README_NORMALIZATION_PLAN_2026-05-19.md`](../notes/README_NORMALIZATION_PLAN_2026-05-19.md), the **Active Research Components** section is replaced by **Design Notes** for this repository, because `juniper-doc-tools` is an infrastructure library rather than a research component. This is the same substitution applied to the sibling [`juniper-observability`](../juniper-observability/README.md) README per §10.9. The substituted heading sits at the §4 slot #10 position (between Related Services and Quick Start Guide), per the plan's "same position in the order" stipulation.
-
 | Document | Purpose |
 |----------|---------|
 | [`../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md) | Full migration plan: four-wave structure, per-repo PR references, deprecation of the per-repo `scripts/check_doc_links.py` validator |

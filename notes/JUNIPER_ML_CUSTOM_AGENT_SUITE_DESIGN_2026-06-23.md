@@ -351,7 +351,7 @@ Emits a JSON **grounding bundle** = a **closed-world fact set** + provenance:
 | `repo_context.py` | repo name, branch, clean/dirty, HEAD sha (of `--repo-root`) | cites the *actual* target-repo state |
 | `test_status.py` | last pytest result / failing names; **distinguishes `cold_cache`/`unavailable` from `empty`** | "no failures" can never masquerade as fact |
 | `file_probe.py` | glob/grep for the task subject → candidate `file:line` anchors | Resources cite real anchors |
-| `symbol_probe.py` | **resolve named symbols → signature + def `file:line` (Serena `find_symbol`/`find_declaration`), else `UNRESOLVED`** | kills invented APIs/signatures |
+| `symbol_probe.py` | **resolve named symbols → signature + def `file:line`; grep-based in the path-invoked helper (it cannot call Serena), with a Serena `find_symbol`/`find_declaration` overlay planned at the Skill layer (OQ-8); else `UNRESOLVED`** | kills invented APIs/signatures |
 | `dependency_facts.py` | `pyproject` extras + lockfile pins + sibling `dist-info`; ports/env from parent AGENTS.md | kills invented versions/ports/env names |
 | `conventions.py` | AGENTS.md header, line-length, deliverable locations | conventions injected, not misremembered |
 | `concurrency.py` | `gh pr list` + worktree scan (work dup-guard — **not** file-name collision) | flags duplicate *work* |
@@ -499,6 +499,16 @@ mitigated by the static lint + the mandatory build-time delegation check + dogfo
   (identical content whichever wins); confirm at build.
 - **OQ-7 — `.gitignore` negation review**: confirm the negations don't accidentally un-ignore session
   cruft (test with `git status` after PR 1).
+- **OQ-8 — Serena symbol overlay** *(future enhancement; `symbol_probe` shipped grep-based in PR 4)*: the
+  path-invoked `symbol_probe` resolves definitions with grep because a standalone script cannot reach the
+  Serena MCP tools. A **Skill-layer overlay** can enrich (or supersede) those facts: the Template Agent
+  Skill runs in the main conversation, which *does* have MCP access, so around the discovery step it may
+  call Serena `find_symbol` / `find_declaration` for the task's named symbols and merge the results into
+  the grounding bundle's `symbol_probe` slice (Serena-resolved wins; grep is the fallback; an unresolvable
+  symbol stays `UNRESOLVED`). Deferred, separable follow-up (small PR): it touches only the Skill body and
+  the bundle's `symbol_probe` consumer, **not** the path-invoked helper's contract — so it does not
+  regress PR 4. Gated on Serena MCP availability (absent in headless/cron runs, where the grep fallback
+  keeps the bundle valid). Related: §5.6 (`symbol_probe`), §5.2 (the Skill has MCP access in the main loop).
 
 ---
 

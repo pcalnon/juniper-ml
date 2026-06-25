@@ -196,6 +196,12 @@ jobs:
           # surface: .claude/** is git-tracked via the PR-1 .gitignore negation but is
           # excluded from every pre-commit hook except markdownlint. Uses PyYAML above.
           python3 -m unittest -v tests/test_prompt_validator_contract.py
+          # tests/test_template_agent_skill_lint.py: static lint for the template-agent
+          # Skill (.claude/skills/template-agent/SKILL.md) -- frontmatter (opus + effort max,
+          # Agent in allowed-tools, user-only) and that its bounded state machine wires to
+          # real artifacts (template library, RUBRIC, discovery CLI, validator subagent).
+          # The gate for the Skill surface (excluded from pre-commit except markdownlint).
+          python3 -m unittest -v tests/test_template_agent_skill_lint.py
           # tests/test_agents_md_version_drift.py: pins AGENTS.md's
           # `**Version**:` header to pyproject.toml's [project].version
           # so version bumps stay in sync with the agent-facing
