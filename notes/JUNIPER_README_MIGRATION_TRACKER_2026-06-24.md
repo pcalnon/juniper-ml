@@ -3,13 +3,14 @@
 **Project**: Juniper ML Research Platform
 **Author**: Paul Calnon
 **Started**: 2026-06-24
-**Status**: ACTIVE — living checklist
+**Status**: COMPLETE 2026-06-25 — all 9 migrated (only the `juniper-ml` root README intentionally stays Style A)
 **Design of record**: [`JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md`](JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md)
 **Template**: [`templates/TEMPLATE_README_PACKAGE.md`](templates/TEMPLATE_README_PACKAGE.md) ·
 **Callout snippet**: [`templates/SNIPPET_JUNIPER_PLATFORM_CALLOUT.md`](templates/SNIPPET_JUNIPER_PLATFORM_CALLOUT.md)
 
-This is Phase 1 of the §5 migration: the lean template + callout snippet (above) and the verified A/B
-inventory (below). Phase 2 migrates the Style-A package READMEs to the lean style, one repo per PR.
+Phase 1 (the lean template + callout snippet above and the verified A/B inventory below) and Phase 2
+(migrating all nine Style-A package READMEs to the lean style, one repo per PR) are **both complete** as
+of 2026-06-25. The §5 migration is done; only the `juniper-ml` root README intentionally stays Style A.
 
 ---
 
@@ -21,15 +22,15 @@ shared `## Research Philosophy` essay; otherwise **Style B** (lean). 20 user-fac
 | README | Style | Action |
 |--------|-------|--------|
 | `juniper-ml/README.md` (root) | A | **Stays A** — sole home of the platform narrative |
-| `juniper-ml/juniper-observability/README.md` | A | → migrate |
-| `juniper-ml/juniper-doc-tools/README.md` | A | → migrate |
-| `juniper-canopy/README.md` | A | → migrate |
-| `juniper-cascor/README.md` | A | → migrate |
-| `juniper-cascor-client/README.md` | A | → migrate |
-| `juniper-cascor-worker/README.md` | A | → migrate |
-| `juniper-data/README.md` | A | → migrate |
-| `juniper-data-client/README.md` | A | → migrate |
-| `juniper-deploy/README.md` | A | → migrate (see notes) |
+| `juniper-ml/juniper-observability/README.md` | A | ✅ migrated |
+| `juniper-ml/juniper-doc-tools/README.md` | A | ✅ migrated |
+| `juniper-canopy/README.md` | A | ✅ migrated |
+| `juniper-cascor/README.md` | A | ✅ migrated |
+| `juniper-cascor-client/README.md` | A | ✅ migrated |
+| `juniper-cascor-worker/README.md` | A | ✅ migrated |
+| `juniper-data/README.md` | A | ✅ migrated |
+| `juniper-data-client/README.md` | A | ✅ migrated |
+| `juniper-deploy/README.md` | A | ✅ migrated (see notes) |
 | `juniper-ml/juniper-model-core/README.md` | B | already lean |
 | `juniper-ml/juniper-service-core/README.md` | B | already lean (sweep ml#531) |
 | `juniper-ml/juniper-ci-tools/README.md` | B | already lean |
@@ -51,15 +52,15 @@ operator runbook, so the lean callout applies but the body stays runbook-shaped)
 
 | # | README | Repo | PyPI? | Status |
 |---|--------|------|-------|--------|
-| 1 | `juniper-observability/README.md` | juniper-ml | yes | ☐ pending |
-| 2 | `juniper-doc-tools/README.md` | juniper-ml | yes | ☐ pending |
-| 3 | `juniper-data/README.md` | juniper-data | yes | ☐ pending |
-| 4 | `juniper-cascor/README.md` | juniper-cascor | yes | ☐ pending |
-| 5 | `juniper-canopy/README.md` | juniper-canopy | yes | ☐ pending |
-| 6 | `juniper-data-client/README.md` | juniper-data-client | yes | ☐ pending |
-| 7 | `juniper-cascor-client/README.md` | juniper-cascor-client | yes | ☐ pending |
-| 8 | `juniper-cascor-worker/README.md` | juniper-cascor-worker | yes | ☐ pending |
-| 9 | `juniper-deploy/README.md` | juniper-deploy | no | ☐ pending |
+| 1 | `juniper-observability/README.md` | juniper-ml | yes | ✅ ml#549 |
+| 2 | `juniper-doc-tools/README.md` | juniper-ml | yes | ✅ ml#549 |
+| 3 | `juniper-data/README.md` | juniper-data | yes | ✅ data#206 |
+| 4 | `juniper-cascor/README.md` | juniper-cascor | yes | ✅ cascor#359 |
+| 5 | `juniper-canopy/README.md` | juniper-canopy | yes | ✅ canopy#396 |
+| 6 | `juniper-data-client/README.md` | juniper-data-client | yes | ✅ data-client#102 |
+| 7 | `juniper-cascor-client/README.md` | juniper-cascor-client | yes | ✅ cascor-client#81 |
+| 8 | `juniper-cascor-worker/README.md` | juniper-cascor-worker | yes | ✅ cascor-worker#111 |
+| 9 | `juniper-deploy/README.md` | juniper-deploy | no | ✅ deploy#134 |
 
 ## 3. Per-migration definition of done
 
