@@ -35,6 +35,13 @@ Run these steps in order. The validation loop is bounded.
 
    If it exits non-zero (a `discovery_failed` envelope) **stop and report** — never proceed on an empty
    bundle. Keep the bundle's `provenance.head_sha`; you re-discover if HEAD later moves.
+
+   **Serena symbol overlay (optional enrichment, OQ-8).** The bundle's `symbol_probe` is grep-based — the
+   path-invoked helper cannot reach Serena. Because you run in the main conversation you DO have MCP
+   access: for the task's named symbols, call Serena `find_symbol` / `find_declaration`, write the results
+   to a JSON file, and merge them with `python util/prompt_discovery/symbol_overlay.py --bundle <bundle>
+   --serena <serena>` (Serena-resolved wins; grep is the fallback; an unresolvable symbol stays
+   `UNRESOLVED`). Skip silently if Serena is unavailable — the grep bundle stays valid.
 3. **Interpret and expand.** Analyze the task; surface implicit and explicit requirements; **ask the
    owner clarifying questions** for genuine ambiguities before drafting.
 4. **Categorize and select.** Evaluate each template's `match_signals` in

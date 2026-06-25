@@ -499,7 +499,7 @@ mitigated by the static lint + the mandatory build-time delegation check + dogfo
   (identical content whichever wins); confirm at build.
 - **OQ-7 — `.gitignore` negation review**: confirm the negations don't accidentally un-ignore session
   cruft (test with `git status` after PR 1).
-- **OQ-8 — Serena symbol overlay** *(future enhancement; `symbol_probe` shipped grep-based in PR 4)*: the
+- **OQ-8 — Serena symbol overlay** *(IMPLEMENTED 2026-06-25 — Skill-layer overlay + `util/prompt_discovery/symbol_overlay.py`; `symbol_probe` shipped grep-based in PR 4)*: the
   path-invoked `symbol_probe` resolves definitions with grep because a standalone script cannot reach the
   Serena MCP tools. A **Skill-layer overlay** can enrich (or supersede) those facts: the Template Agent
   Skill runs in the main conversation, which *does* have MCP access, so around the discovery step it may

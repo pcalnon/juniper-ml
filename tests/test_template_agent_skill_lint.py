@@ -34,6 +34,7 @@ _REFERENCED_PATHS = [
     "prompts/templates/RUBRIC.md",
     "prompts/templates/generic.md",
     "util/prompt_discovery/cli.py",
+    "util/prompt_discovery/symbol_overlay.py",
     "prompts/generated",
 ]
 _VALIDATOR_AGENT = ".claude/agents/prompt-validator.md"
