@@ -31,15 +31,14 @@
 name: Publish juniper-service-core to PyPI
 
 on:
-  push:
-    tags:
-      - "juniper-service-core-v*"
-  # Cutting a GitHub Release auto-fires the publish: `gh release create` does NOT emit a
-  # `push: tags` event for the new tag, so this `release` trigger is what makes "cut a Release"
-  # publish without a manual workflow_dispatch. Guarded to this package's tag prefix (build job).
+  # Publish ONLY on a cut GitHub Release (the ratified convention — never a bare `git push <tag>`).
+  # We deliberately do NOT subscribe to `push: tags`: cutting a Release also creates the tag, which
+  # emits a `push: tags` event — subscribing to both fired TWO concurrent publish runs that raced the
+  # immutable TestPyPI upload (one uploaded, the other 400'd "file already exists"; v0.3.0, 2026-06-25).
+  # `release: published` is the single publish path; the build job is tag-prefix-guarded below.
   release:
     types: [published]
-  # Manual dispatch so operators can re-fire a publish against any tag.
+  # Manual dispatch so operators can re-fire a publish (e.g. after a transient failure).
   workflow_dispatch:
 
 permissions:
@@ -47,9 +46,9 @@ permissions:
   contents: read
 
 concurrency:
-  # Serialize publishes for a given tag: a tag-push and a release event for the SAME tag share this
-  # group (github.ref_name is the bare tag for both), so they cannot race the immutable upload.
-  # Different tags use different groups and never block each other.
+  # Belt-and-suspenders serialization keyed on the ref. The primary dedupe is the single
+  # `release: published` trigger above; `skip-existing` on the publish steps makes any residual
+  # overlap (e.g. a manual dispatch during a release) a no-op rather than an immutable-upload race.
   group: publish-service-core-${{ github.ref_name }}
   cancel-in-progress: false
 
@@ -135,6 +134,9 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           packages-dir: dist/
           verbose: true
+          # Tolerate an already-uploaded version on the immutable index (a re-run, or a duplicate
+          # trigger): skip the existing file instead of failing the publish.
+          skip-existing: true
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
         with:
@@ -179,3 +181,5 @@ jobs:
         with:
           packages-dir: dist/
           verbose: true
+          # Defense-in-depth: a re-run after a partial promote is a no-op rather than a 400.
+          skip-existing: true
