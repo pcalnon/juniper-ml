@@ -10,10 +10,11 @@ Two notes specific to ``juniper-service-core``:
    from ``_version.py``), ``juniper-service-core`` declares a *static*
    ``[project].version`` in its own ``pyproject.toml`` -- so "current version" is
    read from there.
-2. **Consumers.** No repo consumes ``juniper-service-core`` yet -- the recurrence
-   app (WS-4b) adopts it next, pinning it in *its* ``pyproject.toml`` ``dependencies``.
-   The cross-repo machinery below is therefore dormant (``_CONSUMER_REPOS`` is empty)
-   and activates when that consumer lands.
+2. **Consumers.** The recurrence app consumes ``juniper-service-core`` (pins it in its app
+   ``pyproject.toml`` ``dependencies``, ``>=0.3.0`` for the ``create_app(lifespan=)`` hook), so
+   ``_CONSUMER_REPOS`` lists it and the cross-repo assertion below verifies that pin still admits
+   the current version. recurrence is a *monorepo*, so the consumer path is the app subdir
+   ``juniper-recurrence/juniper-recurrence`` (where the dependency lives), not the repo root.
 
 The check covers the common drift case: a pin ceiling that no longer permits the
 current version. Yank detection is out of scope (would need a PyPI network call).
@@ -34,10 +35,11 @@ _PIN_PATTERN = re.compile(r"juniper-service-core\s*>=\s*([0-9]+(?:\.[0-9]+)+)\s*
 # How many minor versions back is still "supported" before a soft warning.
 _SUPPORTED_MINORS_BACK = 2
 
-# Consumer repos that pin juniper-service-core in their own pyproject.toml. EMPTY
-# today: the recurrence app (WS-4b) adopts service-core next. Populate this tuple
-# when it does, and the cross-repo assertion below starts checking its pins.
-_CONSUMER_REPOS: tuple[str, ...] = ()
+# Consumer paths (relative to the ecosystem root) that pin juniper-service-core in their own
+# pyproject.toml. juniper-recurrence is a monorepo, so its consumer is the app subdir
+# `juniper-recurrence/juniper-recurrence` (where the service-core dependency lives), not the repo
+# root — `ecosystem_root / repo / "pyproject.toml"` resolves the slashed path correctly.
+_CONSUMER_REPOS: tuple[str, ...] = ("juniper-recurrence/juniper-recurrence",)
 
 
 def _parse_version(v: str) -> tuple[int, ...]:
@@ -136,9 +138,10 @@ class JuniperServiceCoreDriftTest(unittest.TestCase):
         )
 
     def test_consumer_repos_pin_current_version(self):
-        """Dormant until service-core has consumers (recurrence app WS-4b). When
-        ``_CONSUMER_REPOS`` is populated, reads each consumer's pyproject.toml and
-        asserts its juniper-service-core pin admits the current version."""
+        """For each consumer in ``_CONSUMER_REPOS``, read its pyproject.toml and assert its
+        juniper-service-core pin still admits the current version. Skips when the ecosystem
+        siblings are not on disk (juniper-ml's own CI does not clone them) or, locally, without
+        ``JUNIPER_DRIFT_TEST_FORCE_LOCAL=1``."""
         if not _CONSUMER_REPOS:
             self.skipTest("no juniper-service-core consumers yet (recurrence app WS-4b)")
         if self.ecosystem_root is None:
