@@ -140,6 +140,10 @@ jobs:
           # mirror, PR 6a) against a synthetic source + throwaway target -- idempotent,
           # reversible, dry-run-safe, no-clobber. Stdlib only (subprocess/tempfile).
           python3 -m unittest -v tests/test_install_agents.py
+          # tests/test_agent_suite_doctor.py: the suite health-check utility (util/agent_suite_doctor.py)
+          # -- a dogfood that consumes every layer (agents/skill/templates/RUBRIC/data-layer/discovery/
+          # mirror). Real-repo-healthy + synthetic-missing-component FAIL + --json/--strict/--no-discovery.
+          python3 -m unittest -v tests/test_agent_suite_doctor.py
           # tests/test_requirements_drift_check.py: exercises util/requirements_drift_check.py
           # (the notes/requirements snapshot drift checker; uses the PyYAML installed above).
           # Listed in AGENTS.md's "Run all tests" but never wired into this CI list
