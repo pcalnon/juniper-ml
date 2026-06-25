@@ -62,7 +62,7 @@ class DoctorUnitTest(unittest.TestCase):
     def test_real_suite_has_no_fail(self):
         results = self.mod.run_checks(_REPO_ROOT, no_discovery=True)
         names = {n for n, _, _ in results}
-        self.assertTrue({"agents", "skill", "templates", "rubric", "data_layer", "mirror"} <= names)
+        self.assertLessEqual({"agents", "skill", "templates", "rubric", "data_layer", "mirror"}, names)
         fails = [(n, r) for n, s, r in results if s == self.mod.FAIL]
         self.assertEqual(fails, [], f"the real suite should have zero FAIL checks: {fails}")
 
