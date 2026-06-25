@@ -99,3 +99,21 @@ Ratified as written by Paul Calnon on 2026-06-24. The §3 recommendation is adop
 3. **Badges are the version surface;** per-package logos are not required (branding consolidates to
    the root README + badges). Whether to physically strip existing per-package logos is a Phase-3
    cleanup detail, not a blocker.
+
+## 8. Known follow-ups (deferred)
+
+Surfaced by the 2026-06-24 sweep; neither is a blocker. Pick them up during the §5 migration (when the
+relevant README is next touched) or opportunistically:
+
+1. **`juniper-ml` root README — newer packages absent from the headline tables/diagram.** The
+   Ecosystem-Compatibility table, the Related-Services table, and the Architecture dependency diagram
+   list the original ten components and predate `juniper-model-core`, `juniper-service-core`, and the
+   `recurrence` stack (`juniper-recurrence{,-model,-client}`). They are *accurate* for what they list
+   (the `[tools]` and `recurrence` extras already document the newer packages) but *incomplete*.
+   Expand them when the root README is next revised. The `Extras` table is already complete.
+2. **`juniper-deploy` README — Architecture diagram is prose-completed, not redrawn.** Sweep PR
+   `juniper-deploy#133` corrected the profile count and added a sentence naming the two `full`-profile
+   services the ASCII diagram omits (`juniper-cascor-worker`, `juniper-recurrence`), but left the
+   diagram as the 4-node spine rather than risk a fragile hand-redraw. The durable fix is a redraw
+   that draws the worker → cascor and canopy → recurrence → data edges. Tracked here for visibility;
+   the change itself lands in `juniper-deploy`.
