@@ -2,7 +2,8 @@
 name: prompt-validator
 description: Headless validator for the Juniper Template Agent (the /template-agent Skill delegates to it). Applies the prompts/templates/RUBRIC.md checks (R1-R5) to a drafted prompt plus its discovery grounding bundle, independently re-probes every asserted path/symbol/version/port/env/flag against the real repo, and returns ONLY the pinned typed JSON verdict. Never edits files; never asks questions.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
+effort: max
 ---
 
 # prompt-validator — drafted-prompt validation subagent
@@ -141,9 +142,9 @@ findings are recorded but never block on their own. Emit exactly the keys above 
 
 ## Notes
 
-- **Model pin (resolves OQ-4):** `sonnet` is pinned because validation here is grounded, procedural
-  checklist application with mandatory evidence (not open-ended reasoning), so a capable-but-economical
-  model keeps the bounded fix loop (up to 3 rounds per prompt) cheap and the verdict deterministic across
-  sessions. Revisit if dogfooding shows missed `R2.5`/`R4` calls — flip this one field to `opus`.
+- **Model + effort (resolves OQ-4):** `model: opus` (latest Opus) and `effort: max` are pinned. The
+  validator is the suite's last line of defense against shipping a hallucinated or unfaithful prompt, so
+  it runs at maximum capability and reasoning effort (owner directive, 2026-06-24) — this is the suite's
+  standing default for its agents and skills. Cost stays bounded by the Skill's max-3-round fix loop.
 - **Tools:** read-only + `Bash` only. You have no `Write`/`Edit` by design — you must never mutate the
   repository, only report on it.
