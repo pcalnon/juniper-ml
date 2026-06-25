@@ -140,6 +140,10 @@ jobs:
           # (util/prompt_discovery/symbol_overlay.py, OQ-8) -- Serena-resolved wins, grep is the
           # fallback, unresolved stays UNRESOLVED, input bundle not mutated. Stdlib only.
           python3 -m unittest -v tests/test_symbol_overlay.py
+          # tests/test_generated_prompt_index.py: util/generated_prompt_index.py (P4) -- indexes
+          # prompts/generated/ by the emit-name convention + a SAFETY-gated prune (no delete
+          # without --yes; .gitkeep/non-convention files never touched; dir read from conventions.yaml).
+          python3 -m unittest -v tests/test_generated_prompt_index.py
           # tests/test_install_agents.py: drives util/install_agents.bash (the ~/.claude
           # mirror, PR 6a) against a synthetic source + throwaway target -- idempotent,
           # reversible, dry-run-safe, no-clobber. Stdlib only (subprocess/tempfile).
