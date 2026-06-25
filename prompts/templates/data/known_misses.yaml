@@ -1,0 +1,14 @@
+# Post-hoc hallucination ledger (design 5.8, anti-hallucination layer 4). When a generated
+# prompt or its deliverable later proves to have asserted something false, record it here
+# and add a regression check, so the same miss cannot ship twice. Seeded with the first
+# real catch from dogfooding the suite.
+version: 1
+
+misses:
+  - date: "2026-06-24"
+    claim: "register_or_reuse defined at src/juniper_observability/collectors.py:120"
+    reality: "juniper-observability/juniper_observability/prometheus_helpers.py:88 (no src/, no collectors.py)"
+    rubric_class: R3.4b
+    caught_by: "PR 3 live prompt-validator dry-run (independent re-probe)"
+    fixed_in: "juniper-ml#535"
+    lesson: "Evidence-string inaccuracy slipped past the structural contract test (which checks keys/enums/PASS-bar, not evidence accuracy). Keep the live dry-run gate for validator/skill changes."

@@ -1,0 +1,23 @@
+# Current canonical convention values (design 5.7). RUBRIC R2.5 checks every injected
+# standing convention against THESE -- a present-but-stale value (e.g. an old handoff
+# threshold) fails the rubric. Keep current; the resolver test guards a few against reality.
+version: 1
+
+line_length: 512
+handoff_threshold: "95-99%"   # thread handoff fires within 1-5% of the compaction threshold
+python_min: ">=3.12"
+formatting: "black + isort (profile black) at line-length 512; juniper-data uses ruff"
+
+pr:
+  requires_jr_id: true        # PR descriptions SHOULD list JR-<REPO>-<AREA>-<NNN> ids
+  verbs: ["Closes", "Partially closes", "References", "Supersedes"]
+
+deliverable_locations:
+  notes: "notes/"
+  generated_prompts: "prompts/generated/"
+  design_docs: "notes/"
+  audit_reports: "notes/"
+
+file_header_fields: ["Project", "Repository", "Author", "License", "Version", "Last Updated"]
+
+generated_prompt_name: "PROJECT_APPLICATION_SUBJECT_TASK-TYPE_YYYY-MM-DD_HHMM.md"

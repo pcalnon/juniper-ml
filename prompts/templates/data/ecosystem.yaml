@@ -1,0 +1,33 @@
+# Juniper ecosystem facts (design 5.7), mirroring the parent AGENTS.md tables. The
+# Template Agent injects ports / env-var names / repo names so a prompt cites real values.
+version: 1
+
+repos:
+  - juniper-cascor
+  - juniper-data
+  - juniper-data-client
+  - juniper-cascor-client
+  - juniper-cascor-worker
+  - juniper-ml
+  - juniper-canopy
+  - juniper-deploy
+
+service_ports:
+  juniper-data: {host: 8100, container: 8100, health: "/v1/health"}
+  juniper-cascor: {host: 8201, container: 8200, health: "/v1/health"}
+  juniper-canopy: {host: 8050, container: 8050, health: "/v1/health"}
+
+conda_envs:
+  JuniperCanopy: {python: "3.14", used_by: juniper-canopy}
+  JuniperCascor: {python: "3.14", used_by: juniper-cascor}
+  JuniperData: {python: "3.14", used_by: juniper-data}
+
+env_vars:
+  - JUNIPER_DATA_URL
+  - JUNIPER_DATA_API_KEY
+  - CASCOR_SERVICE_URL
+  - CASCOR_LOG_LEVEL
+
+npz_contract:
+  keys: ["X_train", "y_train", "X_test", "y_test", "X_full", "y_full"]
+  dtype: float32
