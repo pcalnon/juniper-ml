@@ -44,6 +44,7 @@ python3 -m unittest -v tests/test_reap_pytest_orphans.py
 python3 -m unittest -v tests/test_requirements_drift_check.py
 python3 -m unittest -v tests/test_editable_install_drift_check.py
 python3 -m unittest -v tests/test_prompt_discovery.py
+python3 -m unittest -v tests/test_install_agents.py
 python3 -m unittest -v tests/test_workflow_script_paths.py
 python3 -m unittest -v tests/test_doc_tools_drift.py
 python3 -m unittest -v tests/test_pyproject_extras.py
@@ -196,6 +197,7 @@ juniper-ml/
 │   ├── test_requirements_drift_check.py  # Requirements snapshot drift checker tests
 │   ├── test_editable_install_drift_check.py # Editable-install drift checker tests (orphaned / worktree-pinned)
 │   ├── test_prompt_discovery.py          # Behavioural: util/prompt_discovery/ grounding-bundle (schema + provenance + cold/empty)
+│   ├── test_install_agents.py            # Behavioural: util/install_agents.bash ~/.claude mirror (idempotent/reversible/dry-run/no-clobber)
 │   ├── test_workflow_script_paths.py     # Lint: every .github/workflows/*.yml script path exists
 │   ├── test_doc_tools_drift.py           # Lint: consumer-repo juniper-doc-tools pins still admit current version (plan §5.1)
 │   ├── test_pyproject_extras.py          # Lint: pyproject [project.optional-dependencies] surface matches the contract
@@ -216,6 +218,7 @@ juniper-ml/
     ├── requirements_drift_check.py       # Drift checker for the requirements snapshot (--mode quick)
     ├── editable_install_drift_check.py   # Drift checker for juniper editable installs across conda envs
     ├── prompt_discovery/                  # Custom-agent suite (PR 4): env-discovery probes -> JSON grounding bundle (path-invoked, --repo-root)
+    ├── install_agents.bash               # Custom-agent suite (PR 6a): mirror .claude/{agents,skills} -> ~/.claude (idempotent, reversible)
     ├── worktree_cleanup.bash             # V2 cleanup orchestrator (CWD-safe)
     ├── worktree_new.bash                 # Creates new git worktree
     ├── worktree_activate.bash            # Bash helper for worktree activation
@@ -271,6 +274,7 @@ juniper-ml/
 - `util/requirements_drift_check.py` -- Drift checker for the requirements snapshot at `notes/requirements/id_assignments.yaml`. Default `--mode quick` validates path resolution + structural line-range integrity for every citation; emits a human report or `--json`. Exit code 1 on any drift. Implements the spec in [`notes/REQUIREMENTS_NEXT_STEPS.md` §7](notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection); `--mode full` / `--mode rewrite` are reserved for future work.
 - `util/editable_install_drift_check.py` -- Drift checker for juniper editable installs in the conda environments. Reads each env's `*.dist-info/direct_url.json` directly (robust to broken envs); classifies every `juniper-*` editable as `FRESH` / `WORKTREE_PINNED` (under a `worktrees` path) / `ORPHANED` (missing). `*-DEPRECATED` skipped by default; exit 1 on ORPHANED; `--json`; `--fix` re-points orphans to their canonical repo (`--dry-run` previews).
 - `util/prompt_discovery/` -- Discovery helpers for the custom-agent suite (PR 4); path-invoked (`python util/prompt_discovery/cli.py --repo-root <path>`), emits a JSON grounding bundle (closed-world facts + provenance: `head_sha`/`dirty`/`ttl_seconds`/`per_probe_status`) from seven probes (`repo_context`, `test_status`, `file_probe`, `symbol_probe`, `dependency_facts`, `conventions`, `concurrency`). A discovery failure is a hard stop (exit 2).
+- `util/install_agents.bash` -- Mirrors this repo's `.claude/{agents,skills}/*` into `~/.claude` by symlink (design D-6) so the suite is available cross-repo; the project stays source of truth (OQ-6). Idempotent, reversible (`--reverse`), `--dry-run`; `JUNIPER_ML_REPO_ROOT`/`JUNIPER_CLAUDE_HOME` overrides for tests. Never clobbers a non-symlink; `--reverse` removes only owned links. Tests: `tests/test_install_agents.py`.
 - `util/ad-hoc/` -- Home for single-use / temporary / unfinished scripts. See `util/ad-hoc/README.md` for file-header conventions and graduation lifecycle. `/tmp/` is prohibited for script source files per the [Script placement](#script-placement-mandatory) rule.
 - Dependency-documentation generator now lives in [`juniper-ci-tools/`](juniper-ci-tools/) and is published to PyPI as `juniper-ci-tools` (Wave 4 of the dep-docs migration plan; install with `pip install juniper-ci-tools` and invoke via `juniper-generate-dep-docs`). The legacy `util/generate_dep_docs.sh` was deleted in juniper-ml#298.
 - `util/juniper_plant_all.bash` -- Starts all Juniper ecosystem services. `JUNIPER_CASCOR_HOST` defaults to `localhost` and `JUNIPER_CASCOR_PORT` defaults to `8201`; both can be overridden via the environment (e.g. `JUNIPER_CASCOR_HOST=remote.example.com JUNIPER_CASCOR_PORT=8201 util/juniper_plant_all.bash`).
@@ -295,6 +299,7 @@ juniper-ml/
 - `tests/test_template_selection.py` -- Lint validating `manifest.yaml`'s `match_signals` support deterministic category selection: exactly one always-match fallback (`generic`), every other template has non-empty keyword signals, no two share an identical keyword set, and every `class` is allowed. Companion gate to the library drift test.
 - `tests/test_prompt_validator_contract.py` -- Static contract test for the `prompt-validator` subagent (`.claude/agents/prompt-validator.md`, PR 3): frontmatter shape (`tools` = exactly `Read, Grep, Glob, Bash`, `model` concretely pinned per OQ-4), every rubric ID it cites exists in `RUBRIC.md` (incl. the `R2.0`/`R3.4` hard gates), and the pinned verdict schema + PASS/FAIL samples in `tests/fixtures/prompt_validator/` match the §5.3 contract.
 - `tests/test_prompt_discovery.py` -- Behavioural tests for `util/prompt_discovery/` (custom-agent suite PR 4): the grounding-bundle schema + provenance envelope emitted by `cli.py`, per-probe graceful degradation, the hard-stop on a non-git root (exit 2), and the `test_status` `cold_cache`/empty distinction. `util/` is not pre-commit-lint-gated (flake8/black scope to `scripts`+`tests`), so this unittest is the gate; imported via the `sys.path.insert` idiom.
+- `tests/test_install_agents.py` -- Tests for `util/install_agents.bash` (custom-agent suite PR 6a): drives the `~/.claude` mirror against a synthetic source repo + throwaway target (`JUNIPER_ML_REPO_ROOT`/`JUNIPER_CLAUDE_HOME` overrides) and asserts it is idempotent, reversible (`--reverse`), `--dry-run`-safe, and never clobbers or removes a file it does not own.
 - `tests/test_template_agent_skill_lint.py` -- Static lint for the `template-agent` Skill (`.claude/skills/template-agent/SKILL.md`, PR 5): frontmatter (`allowed-tools` includes `Agent`, `model: opus` + `effort: max`, user-only) and that the bounded state machine wires to real artifacts (template library, `RUBRIC.md`, `util/prompt_discovery/cli.py`, the emission dir, the `prompt-validator` subagent). The Skill-surface gate (pre-commit-excluded except markdownlint).
 - `tests/test_ci_tools_drift.py` -- Lint test (dep-docs plan §5.1) for `juniper-ci-tools` pins. Mirrors `test_doc_tools_drift.py`: walks juniper-ml's own workflows (`ci.yml`, `lockfile-update.yml`, `docs-full-check.yml`) plus each cloned consumer repo's `ci.yml`, extracts the `juniper-ci-tools>=X,<Y` pin, and asserts the range still admits the current version (read from `juniper-ci-tools/pyproject.toml`). Same skip semantics and `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` override as the doc-tools sibling.
 - `tests/test_agents_md_version_drift.py` -- Lint test pinning `AGENTS.md`'s `**Version**:` header to `pyproject.toml`'s `[project].version`. Added after juniper-ml#295 bumped pyproject 0.4.1→0.5.0 but left AGENTS.md at 0.4.0 for ~6 days (fixed in juniper-ml#304); this lint makes the drift impossible to ship. Intentionally portable: auto-locates the repo root, so the module can be dropped into any Juniper repo's `tests/` (skips loudly if AGENTS.md has no canonical header).
