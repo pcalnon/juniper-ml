@@ -1,0 +1,12 @@
+# Reusable anti-hallucination doctrine blocks (design 5.8), harvested verbatim from the
+# prompt corpus. The Template Agent embeds the relevant blocks into a generated prompt's
+# Constraints / Finalize sections so the downstream agent grounds its own work.
+version: 1
+
+blocks:
+  verify_before_claim: "Re-confirm each cited file:line / symbol in-task; STOP-and-report rather than invent if a path, symbol, flag, or version is not found."
+  cite_file_line: "Cite concrete file:line anchors for every factual claim about the code; do not paraphrase from memory."
+  do_not_invent: "Never invent APIs, paths, flags, versions, ports, or env-var names. If it is not in the grounding bundle, do not assert it."
+  no_test_deletion: "Do NOT delete, remove, disable, comment-out, or render inoperative ANY test to make a suite pass. This is a CRITICAL and ABSOLUTE requirement."
+  sub_agent_cross_validation: "For high-blast-radius or irreversible work, cross-validate the result with an independent sub-agent before reporting done."
+  deliverable_acceptance_block: "End the prompt with an acceptance block whose commands (repo drift-lints + unittest + pre-commit) PRODUCE the evidence, so success is proven not promised."

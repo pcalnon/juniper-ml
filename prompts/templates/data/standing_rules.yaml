@@ -1,0 +1,18 @@
+# Standing rules the Template Agent injects into generated prompts (design 5.7).
+# Owner-curated; the resolver (util/template_data_resolver.py) maps these into slots.
+version: 1
+
+owner_approves:
+  - "PR merges (Paul merges; admin bypass; mergeStateStatus BLOCKED with green checks is the normal state)"
+  - "PyPI publish + deploy environment gates (never auto-approve, even when gh is authed as the owner)"
+
+worktree_root: "/home/pcalnon/Development/python/Juniper/worktrees"
+
+dup_guard: "Run `gh pr list` before assuming a red PR is yours; it flags duplicate WORK, not file-name collisions."
+
+rules:
+  one_pr_per_work_unit: true
+  no_merge_without_pr: true
+  worktree_cleanup_only_on_merge: true
+  do_not_force_push_pr_branches: true
+  scripts_live_under_util: "Utility/single-use/temporary scripts go in util/ (ad-hoc -> util/ad-hoc/); /tmp/ is prohibited for script source files."

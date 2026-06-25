@@ -187,6 +187,11 @@ jobs:
           # tests/test_template_selection.py: validates manifest match_signals coherence
           # (companion gate to the library drift test; uses the PyYAML installed above).
           python3 -m unittest -v tests/test_template_selection.py
+          # tests/test_template_data_resolver.py: tests the custom-agent suite data layer
+          # (prompts/templates/data/*.yaml) + util/template_data_resolver.py loader/resolve;
+          # also a drift gate (line-length + handoff threshold must match repo reality).
+          # prompts/** is excluded from all pre-commit hooks, so this is the data layer's gate.
+          python3 -m unittest -v tests/test_template_data_resolver.py
           # tests/test_prompt_validator_contract.py: static contract test for the
           # prompt-validator subagent (.claude/agents/prompt-validator.md) + its pinned
           # verdict JSON schema/fixtures (tests/fixtures/prompt_validator/). Asserts the
