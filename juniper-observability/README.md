@@ -74,13 +74,10 @@ The `register_or_reuse` family is the default surface through which every Junipe
 
 ## Design Notes
 
-> **Note** — per §10.9 of [`../notes/README_NORMALIZATION_PLAN_2026-05-19.md`](../notes/README_NORMALIZATION_PLAN_2026-05-19.md), the **Active Research Components** section is replaced by **Design Notes** for this repository, because `juniper-observability` is an infrastructure library rather than a research component. The substituted heading sits at the §4 slot #10 position (between Related Services and Quick Start Guide), per the plan's "same position in the order" stipulation.
-
 | Document | Purpose |
 |----------|---------|
 | [`../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) | Design rationale for the `register_or_reuse` / `register_fresh` / `register_info_or_update` / `lazy_register_or_reuse` family + migration history |
 | [`../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) | Original METRICS-MON R2.1 cross-service design (archived 2026-05-05) |
-| [`../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) | Release runbook + trusted-publisher troubleshooting notes |
 
 ## Quick Start Guide
 
@@ -133,7 +130,6 @@ The current platform comprises a Cascade-Correlation training service exposing a
 |----------|---------|
 | [`../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) | Design rationale and migration history for the `register_or_reuse` family of collector helpers |
 | [`../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md`](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) | Original METRICS-MON R2.1 cross-service design (archived 2026-05-05) |
-| [`../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md`](../notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.4.1_juniper-observability-v0.1.1a_2026-04-28.md) | Release runbook + trusted-publisher troubleshooting notes |
 | [`../README.md`](../README.md) | Parent `juniper-ml` meta-package README |
 | [`../docs/REFERENCE.md`](../docs/REFERENCE.md) | Parent `juniper-ml` reference (extras, compatibility matrix, environment variables) |
 
