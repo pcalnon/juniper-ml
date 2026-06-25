@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.3.0] - 2026-06-25
+
+### Added
+
+- **`create_app(lifespan=...)`** — the app factory now accepts an optional FastAPI
+  `lifespan` context manager and forwards it to `FastAPI(lifespan=...)`. A consuming
+  service can run startup/shutdown hooks (logging configuration, build-info, resource
+  setup/teardown) in a lifespan instead of at import time or in its CLI entrypoint.
+  Backward-compatible: omitting `lifespan` is unchanged.
+
 ## [0.2.0] - 2026-06-21
 
 The **T2 surface** of the OUT-11 service-tier extraction: the full training-lifecycle orchestrator,

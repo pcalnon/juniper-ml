@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import APIRouter
 from fastapi.testclient import TestClient
 
@@ -40,3 +42,26 @@ def test_extra_routers_are_mounted():
     assert client.get("/v1/custom").json() == {"hello": "world"}
     # ...and the generic health router is still present.
     assert client.get("/v1/health").json() == {"status": "ok"}
+
+
+def test_lifespan_is_forwarded():
+    events: list[str] = []
+
+    @asynccontextmanager
+    async def lifespan(app):
+        events.append("startup")
+        yield
+        events.append("shutdown")
+
+    app = create_app(lifespan=lifespan)
+    # Entering/exiting the TestClient context drives the app's lifespan.
+    with TestClient(app) as client:
+        assert events == ["startup"]
+        assert client.get("/v1/health").json() == {"status": "ok"}
+    assert events == ["startup", "shutdown"]
+
+
+def test_no_lifespan_by_default():
+    # The factory works with no lifespan (previous behaviour); startup/shutdown is a no-op.
+    with TestClient(create_app()) as client:
+        assert client.get("/v1/health").status_code == 200
