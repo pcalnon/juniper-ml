@@ -200,6 +200,10 @@ jobs:
           # also a drift gate (line-length + handoff threshold must match repo reality).
           # prompts/** is excluded from all pre-commit hooks, so this is the data layer's gate.
           python3 -m unittest -v tests/test_template_data_resolver.py
+          # tests/test_scaffold_template.py: util/scaffold_template.py (P5) -- the generated
+          # template passes the real library-drift helpers (skeleton+placeholders); --dry-run,
+          # refuse-on-collision, and the tool NEVER edits manifest.yaml (prints the stanza).
+          python3 -m unittest -v tests/test_scaffold_template.py
           # tests/test_prompt_validator_contract.py: static contract test for the
           # prompt-validator subagent (.claude/agents/prompt-validator.md) + its pinned
           # verdict JSON schema/fixtures (tests/fixtures/prompt_validator/). Asserts the
