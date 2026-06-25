@@ -41,10 +41,6 @@ _CLAIM_CLASS = {"path", "symbol", "version", "port", "env", "flag"}
 _FINDING_KEYS = {"id", "severity", "location", "problem", "fix", "evidence"}
 _RISK_KEYS = {"claim", "class", "grounded", "evidence"}
 
-# Concrete model pins OQ-4 may choose from. "inherit" is intentionally excluded: PR 3's
-# job is to *pin* the validator model, so an unpinned value must fail this lint.
-_ALLOWED_MODEL_PINS = {"sonnet", "opus", "haiku", "fable"}
-
 # read-only + Bash (design S5.3). The validator must never mutate the repository.
 _EXPECTED_TOOLS = {"Read", "Grep", "Glob", "Bash"}
 _MUTATING_TOOLS = {"Write", "Edit", "NotebookEdit"}
@@ -127,13 +123,16 @@ class PromptValidatorAgentTest(unittest.TestCase):
         self.assertEqual(tools, _EXPECTED_TOOLS, f"tools must be exactly {sorted(_EXPECTED_TOOLS)}, got {sorted(tools)}")
         self.assertEqual(tools & _MUTATING_TOOLS, set(), "validator must carry no file-mutating tool")
 
-    def test_model_is_concretely_pinned(self):
+    def test_model_pinned_to_opus(self):
         model = self.front.get("model")
         self.assertIsNotNone(model, "validator model must be pinned (resolves OQ-4)")
-        base = str(model).split(":")[0].strip()
-        ok = base in _ALLOWED_MODEL_PINS or base.startswith("claude-")
-        self.assertTrue(ok, f"model must be a concrete pin (alias or claude-* id), not {model!r}")
-        self.assertNotEqual(base, "inherit", "PR 3 must pin a concrete model, not 'inherit'")
+        base = str(model).split(":")[0].strip().lower()
+        is_opus = base == "opus" or base.startswith("claude-opus")
+        self.assertTrue(is_opus, f"suite default model is latest Opus (owner directive 2026-06-24); got {model!r}")
+
+    def test_effort_is_max(self):
+        effort = self.front.get("effort")
+        self.assertEqual(str(effort).strip().lower(), "max", f"suite default effort is 'max' (owner directive 2026-06-24); got {effort!r}")
 
     def test_body_cites_only_real_rubric_ids(self):
         self.assertTrue(self.rubric_path.exists(), "RUBRIC.md must be present (ships in PR 2b-i)")
