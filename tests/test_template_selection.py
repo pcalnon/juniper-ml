@@ -7,7 +7,7 @@ share an identical keyword set (which would make selection ambiguous), and every
 is from the allowed set.
 
 Companion to ``tests/test_template_library_drift.py``; both are the sole gate for
-``prompts/templates/`` because ``prompts/**`` is excluded from all pre-commit hooks, so this
+``prompts/agent_templates/`` because ``prompts/**`` is excluded from all pre-commit hooks, so this
 test MUST stay wired into ``.github/workflows/ci.yml``.
 
 Design-of-record: ``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.4).

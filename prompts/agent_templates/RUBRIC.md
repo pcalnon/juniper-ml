@@ -88,7 +88,7 @@ is auto-downgraded to `minor` (prevents validator false-positives). The Skill's 
   numeric thresholds do not conflict across sections. *Decide:* contradiction or `name.md` vs
   `name.bash` mismatch fails (corpus had a `wake_the_claude.md` vs `.bash` bug).
 - **R2.5 — Convention fidelity** (`major`). Each injected standing convention matches the **current**
-  canonical value in `prompts/templates/data/*.yaml` / the parent `AGENTS.md` (handoff threshold,
+  canonical value in `prompts/agent_templates/data/*.yaml` / the parent `AGENTS.md` (handoff threshold,
   deliverable locations, service ports, line-length, worktree root). *Decide:* a *present-but-stale*
   convention (e.g. an "80%" handoff threshold vs the current 95–99%) fails — being present is not enough.
 - **R2.6 — Verification & recoverability** (`major`; **execution-class templates only**, per the

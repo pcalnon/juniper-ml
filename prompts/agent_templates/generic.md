@@ -5,7 +5,7 @@ Generic fallback prompt template for the Juniper custom-agent suite.
 The Template Agent instantiates a COPY of this file and fills it (it never edits this
 source -- D-5). Fill every required slot; fill or drop optional slots as the task
 warrants. If a task of this shape recurs, propose promoting the filled copy into a new
-named template (a new prompts/templates/<id>.md + a manifest.yaml entry).
+named template (a new prompts/agent_templates/<id>.md + a manifest.yaml entry).
 Placeholder convention: NAME = fill, !NAME: hint = required, ?NAME: hint = optional
 (each wrapped in double braces; enforced by tests/test_template_library_drift.py).
 -->
