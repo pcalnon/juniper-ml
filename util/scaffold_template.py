@@ -1,6 +1,6 @@
-"""scaffold_template.py -- generate a new prompts/templates/ template + its manifest stanza.
+"""scaffold_template.py -- generate a new prompts/agent_templates/ template + its manifest stanza.
 
-Writes a new ``prompts/templates/<id>.md`` pre-populated with the canonical section skeleton
+Writes a new ``prompts/agent_templates/<id>.md`` pre-populated with the canonical section skeleton
 (in order) and well-formed ``{{placeholder}}`` slots, so a new template cannot drift from the
 skeleton/placeholder contract enforced by ``tests/test_template_library_drift.py``. It then
 **prints** the ``manifest.yaml`` stanza for the owner to paste -- it deliberately does **not**
@@ -96,7 +96,7 @@ def render_manifest_stanza(template_id: str, title: str, keywords: list, require
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description="Scaffold a new prompts/templates/ template + its manifest stanza (does NOT edit the manifest).")
+    parser = argparse.ArgumentParser(description="Scaffold a new prompts/agent_templates/ template + its manifest stanza (does NOT edit the manifest).")
     parser.add_argument("--id", required=True, help="template id (lowercase kebab-case)")
     parser.add_argument("--title", required=True, help="template title for the H1 + manifest")
     parser.add_argument("--class", dest="class_", required=True, help=f"one of {sorted(_ALLOWED_CLASSES)}")
@@ -122,14 +122,14 @@ def main(argv=None) -> int:
     if root is None:
         print("scaffold_template: could not locate repo root (no .github/workflows/)", file=sys.stderr)
         return 2
-    dest = root / "prompts" / "templates" / f"{args.id}.md"
+    dest = root / "prompts" / "agent_templates" / f"{args.id}.md"
     if dest.exists():
         print(f"scaffold_template: refusing to overwrite existing {dest}", file=sys.stderr)
         return 1
 
     template = render_template(args.title, required_fields[0])
     stanza = render_manifest_stanza(args.id, args.title, keywords, required_fields, args.class_)
-    paste_note = "Add this stanza to prompts/templates/manifest.yaml (before the 'generic' entry) -- this tool does NOT edit the manifest:"
+    paste_note = "Add this stanza to prompts/agent_templates/manifest.yaml (before the 'generic' entry) -- this tool does NOT edit the manifest:"
 
     if args.dry_run:
         print(f"# DRY-RUN: would write {dest}\n")

@@ -135,7 +135,7 @@ def check_templates(root: Path):
 
 
 def check_rubric(root: Path):
-    rubric = root / "prompts" / "templates" / "RUBRIC.md"
+    rubric = root / "prompts" / "agent_templates" / "RUBRIC.md"
     if not rubric.exists():
         return ("rubric", FAIL, f"missing {rubric}")
     text = rubric.read_text(encoding="utf-8")
@@ -146,7 +146,7 @@ def check_rubric(root: Path):
 
 
 def check_data_layer(root: Path):
-    data_dir = root / "prompts" / "templates" / "data"
+    data_dir = root / "prompts" / "agent_templates" / "data"
     if not data_dir.is_dir():
         return ("data_layer", WARN, f"no data layer at {data_dir} (optional until PR 6b)")
     if yaml is None:

@@ -6,7 +6,7 @@ lists those generated prompts (parsed by that naming contract) and -- with expli
 prunes or archives stale ones, keeping the working surface tidy.
 
 The generated-prompt directory is read from the data layer
-(``prompts/templates/data/conventions.yaml`` ``deliverable_locations.generated_prompts``), so
+(``prompts/agent_templates/data/conventions.yaml`` ``deliverable_locations.generated_prompts``), so
 the location is authoritative, not hard-coded.
 
 Path-invoked (``util/`` is not a package):
@@ -49,7 +49,7 @@ def _find_repo_root(start: Path):
 
 def _generated_dir(root: Path) -> Path:
     """Resolve the generated-prompt dir from the data layer (authoritative), else the default."""
-    conventions = root / "prompts" / "templates" / "data" / "conventions.yaml"
+    conventions = root / "prompts" / "agent_templates" / "data" / "conventions.yaml"
     location = _DEFAULT_GENERATED
     if conventions.exists() and yaml is not None:
         data = yaml.safe_load(conventions.read_text(encoding="utf-8")) or {}

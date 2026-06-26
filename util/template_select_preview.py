@@ -1,10 +1,10 @@
 """template_select_preview.py -- offline preview of the Template Agent's category selection.
 
-Given a task description, prints which ``prompts/templates/`` template the Template Agent
+Given a task description, prints which ``prompts/agent_templates/`` template the Template Agent
 Skill's ``match_signals`` step would pick, with the matched keyword(s) and the ranked
 runner-ups. This is an **offline preview heuristic** of the selection the Skill performs
 interactively -- NOT a byte-for-byte reproduction of the Skill's LLM judgement (the Skill may
-additionally ask the owner on a thin margin). It consumes ``prompts/templates/manifest.yaml``
+additionally ask the owner on a thin margin). It consumes ``prompts/agent_templates/manifest.yaml``
 ``match_signals`` and *executes* the selection design the selection lint
 (``tests/test_template_selection.py``) only checks statically.
 
@@ -40,7 +40,7 @@ def _find_repo_root(start: Path):
 
 
 def _load_manifest(root: Path):
-    path = root / "prompts" / "templates" / "manifest.yaml"
+    path = root / "prompts" / "agent_templates" / "manifest.yaml"
     if not path.exists() or yaml is None:
         return None
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
