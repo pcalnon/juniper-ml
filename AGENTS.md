@@ -5,7 +5,6 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-06-26
 
 ---
 
@@ -410,15 +409,15 @@ pre-commit run --all-files
 
 Configured hooks (`.pre-commit-config.yaml`):
 
-| Hook Group | Version | Scope | Purpose |
-|------------|---------|-------|---------|
-| pre-commit-hooks | v4.6.0 | All files | YAML/TOML/JSON check, EOF fixer, trailing whitespace, merge conflicts, large files, AST check, debug statements, private keys |
-| flake8 | 7.1.1 | `scripts/`, `tests/` `.py` | Python linting (max-line-length: 512) with bugbear, comprehensions, simplify |
-| bandit | 1.9.4 | `scripts/`, `tests/` `.py` | Python security scanning |
-| shellcheck | v0.10.0.1 | `.sh`, `.bash` | Shell script linting (severity: warning) |
-| markdownlint | v0.42.0 | `.md` (excl. CHANGELOG, notes/, docs/, prompts/) | Markdown linting with auto-fix |
-| yamllint | v1.35.1 | YAML files | YAML linting (relaxed mode) |
-| no-unencrypted-env | local | `.env`, `.env.secrets` | Blocks unencrypted env files from commit |
+| Hook Group         | Version   | Scope                                            | Purpose                                                                                                                       |
+|--------------------|-----------|--------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| pre-commit-hooks   | v4.6.0    | All files                                        | YAML/TOML/JSON check, EOF fixer, trailing whitespace, merge conflicts, large files, AST check, debug statements, private keys |
+| flake8             | 7.1.1     | `scripts/`, `tests/` `.py`                       | Python linting (max-line-length: 512) with bugbear, comprehensions, simplify                                                  |
+| bandit             | 1.9.4     | `scripts/`, `tests/` `.py`                       | Python security scanning                                                                                                      |
+| shellcheck         | v0.10.0.1 | `.sh`, `.bash`                                   | Shell script linting (severity: warning)                                                                                      |
+| markdownlint       | v0.42.0   | `.md` (excl. CHANGELOG, notes/, docs/, prompts/) | Markdown linting with auto-fix                                                                                                |
+| yamllint           | v1.35.1   | YAML files                                       | YAML linting (relaxed mode)                                                                                                   |
+| no-unencrypted-env | local     | `.env`, `.env.secrets`                           | Blocks unencrypted env files from commit                                                                                      |
 
 ## Secrets Management (SOPS)
 
@@ -436,15 +435,15 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 ### Dependency extras reference
 
-| Extra | Packages |
-|-------|----------|
-| `clients` | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.5.0` |
-| `worker` | `juniper-cascor-worker>=0.4.0` |
-| `servers` | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0` |
-| `tools` | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.2.0`, `juniper-service-core>=0.2.0,<0.4.0` |
-| `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`) |
-| `recurrence` | `juniper-recurrence-model>=0.1.5,<0.2.0`, `juniper-recurrence>=0.2.0,<0.3.0`, `juniper-recurrence-client>=0.2.0,<0.3.0` |
-| `all` | All of the above |
+| Extra        | Packages                                                                                                                                                                                                     |
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `clients`    | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.5.0`                                                                                                                                                 |
+| `worker`     | `juniper-cascor-worker>=0.4.0`                                                                                                                                                                               |
+| `servers`    | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0`                                                                                                                                      |
+| `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.2.0`, `juniper-service-core>=0.2.0,<0.4.0` |
+| `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
+| `recurrence` | `juniper-recurrence-model>=0.1.5,<0.2.0`, `juniper-recurrence>=0.2.0,<0.3.0`, `juniper-recurrence-client>=0.2.0,<0.3.0`                                                                                      |
+| `all`        | All of the above                                                                                                                                                                                             |
 
 ## Conventions
 
@@ -460,9 +459,9 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 Utility, single-use, temporary, and unfinished scripts MUST be created under `util/`:
 
-| Script type                                    | Destination               |
-| ---------------------------------------------- | ------------------------- |
-| Permanent utility, regularly used              | `util/<name>.{py,bash}`   |
+| Script type                                    | Destination                    |
+| ---------------------------------------------- | ------------------------------ |
+| Permanent utility, regularly used              | `util/<name>.{py,bash}`        |
 | Single-use, temporary, ad-hoc, or unfinished   | `util/ad-hoc/<name>.{py,bash}` |
 
 **`/tmp/` is prohibited** as the home for any script that produces, modifies, or analyzes repository content. `/tmp/` is reaped when sessions / sandboxes / containers end, and scripts placed there are lost. `/tmp/` remains acceptable as a scratch *workspace* for intermediate artifacts that the script itself creates and reads (e.g., `uv pip compile -o /tmp/lock && mv /tmp/lock requirements.lock`) — the prohibition is on script *source files*, not on transient data.
@@ -484,7 +483,7 @@ PR descriptions on juniper-ml SHOULD include a `## Requirements` section that li
 | Verb                    | Meaning                                                                            | Refresh-time effect       |
 | ----------------------- | ---------------------------------------------------------------------------------- | ------------------------- |
 | `Closes JR-*`           | This PR fully satisfies the requirement.                                           | Status → `shipped`.       |
-| `Partially closes JR-*` | This PR satisfies some of the requirement; describe which parts in the same line. | Status unchanged.         |
+| `Partially closes JR-*` | This PR satisfies some of the requirement; describe which parts in the same line.  | Status unchanged.         |
 | `References JR-*`       | This PR is informed by but does not change the requirement.                        | Status unchanged.         |
 | `Supersedes JR-*`       | This PR's design replaces an earlier requirement.                                  | Old entry → `superseded`. |
 
@@ -528,13 +527,13 @@ Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 
 ### When to Use Worktrees
 
-| Scenario | Use Worktree? |
-| -------- | ------------- |
-| Feature development (new feature branch) | **Yes** |
-| Bug fix requiring a dedicated branch | **Yes** |
-| Quick single-file documentation fix on main | No |
-| Exploratory work that may be discarded | **Yes** |
-| Hotfix requiring immediate merge | **Yes** |
+| Scenario                                    | Use Worktree? |
+| ------------------------------------------- | ------------- |
+| Feature development (new feature branch)    | **Yes**       |
+| Bug fix requiring a dedicated branch        | **Yes**       |
+| Quick single-file documentation fix on main | No            |
+| Exploratory work that may be discarded      | **Yes**       |
+| Hotfix requiring immediate merge            | **Yes**       |
 
 ### Quick Reference
 
@@ -649,11 +648,13 @@ Concretely:
    and what files are in play
 2. **Compose the handoff goal**: Write a concise, actionable summary
    (see templates in `notes/THREAD_HANDOFF_PROCEDURE.md`)
-3. **Present to user**: Output the handoff goal and recommend starting a new
-   thread with that goal as the initial prompt
-4. **Include verification commands**: Specify how the new thread should verify
-   its starting state
-5. **State git status**: Mention branch, staged files, and uncommitted work
+3. Combine checkpoint and handoff goal to create a detailed thread handoff prompt
+4. **Present to user**: Output the handoff prompt and recommend starting a new
+   thread with that handoff as the initial prompt
+5. Archive the thread handoff prompt to prompts/thread-handoff_automated-prompts/ dir with filename convention: HANDOFF_YYYY-MM-DD_[Session Description].md
+6. **Include verification commands**: Specify how the new thread should verify
+   its starting state in the handoff prompt
+7. **State git status**: Mention branch, staged files, and uncommitted work in handoff prompt
 
 ### Rules
 
