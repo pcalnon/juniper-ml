@@ -1,6 +1,6 @@
 ---
 name: template-agent
-description: Turn an interactive task description into a validated, template-shaped, anti-hallucination-hardened Juniper prompt. Runs in the main conversation so it can ask the owner clarifying questions; grounds the draft with util/prompt_discovery, fills a copy of a prompts/templates/ template, delegates deep validation to the prompt-validator subagent against RUBRIC.md, loops (bounded) on its verdict, then emits to prompts/generated/. User-invoked via /template-agent.
+description: Turn an interactive task description into a validated, template-shaped, anti-hallucination-hardened Juniper prompt. Runs in the main conversation so it can ask the owner clarifying questions; grounds the draft with util/prompt_discovery, fills a copy of a prompts/agent_templates/ template, delegates deep validation to the prompt-validator subagent against RUBRIC.md, loops (bounded) on its verdict, then emits to prompts/generated/. User-invoked via /template-agent.
 argument-hint: "[task description | @file] [--repo-root <path>]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent
 model: opus
@@ -45,14 +45,14 @@ Run these steps in order. The validation loop is bounded.
 3. **Interpret and expand.** Analyze the task; surface implicit and explicit requirements; **ask the
    owner clarifying questions** for genuine ambiguities before drafting.
 4. **Categorize and select.** Evaluate each template's `match_signals` in
-   `prompts/templates/manifest.yaml` in priority order; pick the top match. On a thin margin between
-   candidates, **ask the owner**. On no match, select `prompts/templates/generic.md` and flag the result
+   `prompts/agent_templates/manifest.yaml` in priority order; pick the top match. On a thin margin between
+   candidates, **ask the owner**. On no match, select `prompts/agent_templates/generic.md` and flag the result
    as a promotion candidate.
-5. **Fill a copy.** Instantiate a COPY of the selected `prompts/templates/<id>.md` (never edit the
+5. **Fill a copy.** Instantiate a COPY of the selected `prompts/agent_templates/<id>.md` (never edit the
    source). Populate every placeholder from the expanded task plus the grounding bundle; fill every
    `required_fields` entry; inject only real `file:line` anchors / symbols / versions from the bundle.
 6. **Validate (delegate).** If `head_sha` moved since step 2, re-discover first. Hand the drafted prompt,
-   `prompts/templates/RUBRIC.md`, and the grounding bundle to the **`prompt-validator`** subagent (via
+   `prompts/agent_templates/RUBRIC.md`, and the grounding bundle to the **`prompt-validator`** subagent (via
    the `Agent` tool) and receive its typed JSON verdict.
 7. **Loop control (bounded, max 3 rounds).** On `overall` PASS go to step 8. On FAIL, apply only the
    fixes you agree with; a fix that conflicts with the task intent → **ask the owner**. Abort on no
@@ -77,7 +77,7 @@ The `prompt-validator` subagent is headless and returns ONLY a typed JSON verdic
 malformed or `validator_status` is `error`, retry the validator once, then escalate.
 
 If subagent delegation is unavailable in the running Claude Code version, fall back to an inline
-single-pass validation against `prompts/templates/RUBRIC.md` and note the degradation in the report.
+single-pass validation against `prompts/agent_templates/RUBRIC.md` and note the degradation in the report.
 
 ## Guardrails
 

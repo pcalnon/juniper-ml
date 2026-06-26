@@ -46,7 +46,7 @@ def _mk_repo(root: Path, conventions_location=None):
     (gen / _OLD).write_text("# old prompt\n", encoding="utf-8")
     (gen / "hand-placed-notes.md").write_text("not convention\n", encoding="utf-8")
     if conventions_location is not None:
-        data = root / "prompts" / "templates" / "data"
+        data = root / "prompts" / "agent_templates" / "data"
         data.mkdir(parents=True)
         (data / "conventions.yaml").write_text(f'version: 1\ndeliverable_locations:\n  generated_prompts: "{conventions_location}"\n', encoding="utf-8")
     return gen
@@ -122,8 +122,8 @@ class CliTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             (root / ".github" / "workflows").mkdir(parents=True)
-            (root / "prompts" / "templates" / "data").mkdir(parents=True)
-            (root / "prompts" / "templates" / "data" / "conventions.yaml").write_text('version: 1\ndeliverable_locations:\n  generated_prompts: "custom_out/"\n', encoding="utf-8")
+            (root / "prompts" / "agent_templates" / "data").mkdir(parents=True)
+            (root / "prompts" / "agent_templates" / "data" / "conventions.yaml").write_text('version: 1\ndeliverable_locations:\n  generated_prompts: "custom_out/"\n', encoding="utf-8")
             custom = root / "custom_out"
             custom.mkdir()
             (custom / _OLD).write_text("# x\n", encoding="utf-8")

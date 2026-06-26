@@ -39,7 +39,7 @@ class TemplateSelectionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.repo_root = _find_repo_root(Path(__file__).resolve().parent)
-        cls.manifest_path = cls.repo_root / "prompts" / "templates" / "manifest.yaml"
+        cls.manifest_path = cls.repo_root / "prompts" / "agent_templates" / "manifest.yaml"
         cls.manifest = yaml.safe_load(cls.manifest_path.read_text(encoding="utf-8")) if cls.manifest_path.exists() else None
 
     def setUp(self):

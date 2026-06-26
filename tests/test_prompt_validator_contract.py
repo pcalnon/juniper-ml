@@ -7,7 +7,7 @@ Validates the headless validator deliverable without a live model:
   set (no file-mutating tool), and ``model`` is a concrete pin (resolving design OQ-4,
   not left as ``inherit``);
 * every rubric criterion ID the agent body cites actually exists in
-  ``prompts/templates/RUBRIC.md`` (so the validator can never reference a check that was
+  ``prompts/agent_templates/RUBRIC.md`` (so the validator can never reference a check that was
   renamed or dropped), and the two hard gates (``R2.0``, ``R3.4``) are present;
 * the pinned verdict JSON schema (``tests/fixtures/prompt_validator/verdict.schema.json``)
   declares the section-5.3 contract, and the bundled PASS/FAIL sample verdicts conform to
@@ -90,7 +90,7 @@ class PromptValidatorAgentTest(unittest.TestCase):
     def setUpClass(cls):
         cls.repo_root = _find_repo_root(Path(__file__).resolve().parent)
         cls.agent_path = cls.repo_root / ".claude" / "agents" / "prompt-validator.md"
-        cls.rubric_path = cls.repo_root / "prompts" / "templates" / "RUBRIC.md"
+        cls.rubric_path = cls.repo_root / "prompts" / "agent_templates" / "RUBRIC.md"
         cls.agent_text = cls.agent_path.read_text(encoding="utf-8") if cls.agent_path.exists() else None
         cls.front, cls.body = _split_frontmatter(cls.agent_text) if cls.agent_text else (None, "")
         cls.rubric_ids = set(_RUBRIC_ID.findall(cls.rubric_path.read_text(encoding="utf-8"))) if cls.rubric_path.exists() else set()
@@ -134,6 +134,7 @@ class PromptValidatorAgentTest(unittest.TestCase):
         effort = self.front.get("effort")
         self.assertEqual(str(effort).strip().lower(), "max", f"suite default effort is 'max' (owner directive 2026-06-24); got {effort!r}")
 
+    # this test is failing
     def test_body_cites_only_real_rubric_ids(self):
         self.assertTrue(self.rubric_path.exists(), "RUBRIC.md must be present (ships in PR 2b-i)")
         body_ids = set(_RUBRIC_ID.findall(self.body))
@@ -169,7 +170,7 @@ class VerdictSchemaTest(unittest.TestCase):
         cls.fixtures_dir = cls.repo_root / "tests" / "fixtures" / "prompt_validator"
         cls.schema_path = cls.fixtures_dir / "verdict.schema.json"
         cls.sample_paths = sorted(cls.fixtures_dir.glob("verdict.sample.*.json"))
-        cls.rubric_path = cls.repo_root / "prompts" / "templates" / "RUBRIC.md"
+        cls.rubric_path = cls.repo_root / "prompts" / "agent_templates" / "RUBRIC.md"
         cls.rubric_ids = set(_RUBRIC_ID.findall(cls.rubric_path.read_text(encoding="utf-8"))) if cls.rubric_path.exists() else set()
 
     def setUp(self):

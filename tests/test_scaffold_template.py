@@ -42,9 +42,9 @@ def _load(name, path):
 
 def _mk_repo(root: Path, with_manifest=False):
     (root / ".github" / "workflows").mkdir(parents=True)
-    (root / "prompts" / "templates").mkdir(parents=True)
+    (root / "prompts" / "agent_templates").mkdir(parents=True)
     if with_manifest:
-        (root / "prompts" / "templates" / "manifest.yaml").write_text("version: 1\ntemplates: []\n", encoding="utf-8")
+        (root / "prompts" / "agent_templates" / "manifest.yaml").write_text("version: 1\ntemplates: []\n", encoding="utf-8")
 
 
 class ScaffoldTest(unittest.TestCase):
@@ -83,7 +83,7 @@ class ScaffoldTest(unittest.TestCase):
             _mk_repo(root)
             proc = self._run(root, "--id", "my-cat", "--title", "My Cat", "--class", "execution", "--keywords", "do a thing", "--dry-run")
             self.assertEqual(proc.returncode, 0, proc.stderr)
-            self.assertFalse((root / "prompts" / "templates" / "my-cat.md").exists())
+            self.assertFalse((root / "prompts" / "agent_templates" / "my-cat.md").exists())
             self.assertIn("## Role", proc.stdout)
             self.assertIn("id: my-cat", proc.stdout)
 
@@ -93,17 +93,17 @@ class ScaffoldTest(unittest.TestCase):
             _mk_repo(root)
             proc = self._run(root, "--id", "my-cat", "--title", "My Cat", "--class", "review", "--keywords", "k1,k2")
             self.assertEqual(proc.returncode, 0, proc.stderr)
-            self.assertTrue((root / "prompts" / "templates" / "my-cat.md").exists())
+            self.assertTrue((root / "prompts" / "agent_templates" / "my-cat.md").exists())
             self.assertIn("class: review", proc.stdout)
 
     def test_refuse_on_collision(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             _mk_repo(root)
-            (root / "prompts" / "templates" / "dup.md").write_text("existing\n", encoding="utf-8")
+            (root / "prompts" / "agent_templates" / "dup.md").write_text("existing\n", encoding="utf-8")
             proc = self._run(root, "--id", "dup", "--title", "Dup", "--class", "execution", "--keywords", "x")
             self.assertEqual(proc.returncode, 1)
-            self.assertEqual((root / "prompts" / "templates" / "dup.md").read_text(encoding="utf-8"), "existing\n")
+            self.assertEqual((root / "prompts" / "agent_templates" / "dup.md").read_text(encoding="utf-8"), "existing\n")
 
     def test_bad_class_exit_2(self):
         with tempfile.TemporaryDirectory() as d:
@@ -123,7 +123,7 @@ class ScaffoldTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             _mk_repo(root, with_manifest=True)
-            manifest = root / "prompts" / "templates" / "manifest.yaml"
+            manifest = root / "prompts" / "agent_templates" / "manifest.yaml"
             before = manifest.read_text(encoding="utf-8")
             proc = self._run(root, "--id", "my-cat", "--title", "My Cat", "--class", "execution", "--keywords", "k1")
             self.assertEqual(proc.returncode, 0, proc.stderr)
