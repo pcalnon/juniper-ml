@@ -251,5 +251,41 @@ class TestPhaseOrdering(unittest.TestCase):
             self.assertLess(add_pos, remove_pos, "worktree add MUST happen before worktree remove (CWD safety)")
 
 
+class TestSyncToMain(unittest.TestCase):
+    """Verify cleanup syncs to the latest origin/main after the old worktree is removed (Phase 6)."""
+
+    def test_dry_run_syncs_to_main(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_script(
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--skip-pr",
+                "--dry-run",
+            )
+            self.assertIn("Phase 6", result.stderr)
+            self.assertIn("pull --ff-only origin main", result.stderr)
+
+    def test_sync_runs_after_old_worktree_removed(self):
+        """Sync to main is the final step: it runs after Phase 4 removes the old worktree."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_script(
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--skip-pr",
+                "--dry-run",
+            )
+            stderr = result.stderr
+            remove_pos = stderr.find("worktree remove")
+            sync_pos = stderr.find("pull --ff-only origin main")
+
+            self.assertGreater(remove_pos, -1, "worktree remove not found in dry-run output")
+            self.assertGreater(sync_pos, -1, "sync (pull --ff-only origin main) not found")
+            self.assertLess(remove_pos, sync_pos, "sync to main must run after the old worktree is removed")
+
+
 if __name__ == "__main__":
     unittest.main()

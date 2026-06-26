@@ -2,7 +2,7 @@
 
 **Purpose**: Standardized procedure for completing work in a worktree, merging, creating PRs, and transitioning to a new worktree — without trapping the Claude Code session in an invalid CWD
 **Project**: juniper-ml
-**Last Updated**: 2026-06-04
+**Last Updated**: 2026-06-25
 
 ---
 
@@ -238,6 +238,44 @@ git status
 
 ---
 
+## Phase 6: Sync to Latest `main`
+
+Once the old worktree directory and branch are removed, bring your checkout up
+to date with the latest remote `main`. Which form applies depends on whether a
+worktree or branch tied to this session is still live.
+
+> **Why two forms**: a branch can be checked out in only one worktree at a time,
+> and `main` is checked out in `MAIN_REPO`. While you are still inside a session
+> worktree, `git checkout main` would fail — so you fast-forward your current
+> branch toward `main` in place. Only once every session worktree is gone do you
+> check `main` out and fast-forward it directly.
+
+### Step 14: Sync (Case A — a session worktree/branch is still in use)
+
+Standard flow: the continuity worktree created in Phase 2 is still your working
+checkout (or some other session worktree/branch is not yet ready to be removed).
+Stay in it and fast-forward to the latest `main` without switching branches:
+
+```bash
+git fetch --all && git pull --ff-only origin main
+```
+
+`--ff-only` is intentional: if the current branch carries commits that are not on
+`origin/main`, the pull refuses rather than creating a merge commit — the signal
+to finish or hand off that branch before syncing.
+
+### Step 15: Sync (Case B — all session worktrees, dirs, and branches are gone)
+
+Terminal cleanup: every worktree, directory, and branch associated with this
+session has been removed and you are back in `MAIN_REPO`. Check `main` out and
+fast-forward it:
+
+```bash
+git fetch --all && git checkout main && git pull --ff-only origin main
+```
+
+---
+
 ## Quick Reference (Copy-Paste)
 
 ```bash
@@ -264,6 +302,12 @@ git worktree prune
 
 # --- Phase 5: Verify ---
 pwd && git worktree list && git branch && git status
+
+# --- Phase 6: Sync to latest main ---
+# Case A (standard flow — still in the continuity worktree): sync in place.
+git fetch --all && git pull --ff-only origin main
+# Case B (terminal — no session worktrees left): check out main first.
+# git fetch --all && git checkout main && git pull --ff-only origin main
 ```
 
 ---

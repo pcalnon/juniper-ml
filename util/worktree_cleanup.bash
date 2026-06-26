@@ -4,7 +4,7 @@
 # Sub-Project:  juniper-ml
 # Application:  Worktree Cleanup Script
 # Author:       Paul Calnon
-# Version:      1.0.0
+# Version:      1.1.0
 # License:      MIT
 ############################################################################################################################################################
 #
@@ -13,6 +13,7 @@
 #   2. Creates a new worktree for session continuity
 #   3. Creates a PR (or merges into parent branch + PR)
 #   4. Removes the old worktree and cleans up branches
+#   5. Syncs the continuity worktree to the latest origin/main
 #
 # The key safety property: a new worktree is created BEFORE the old one is removed,
 # preventing the CWD-trap bug where the shell ends up in a non-existent directory.
@@ -449,6 +450,25 @@ phase_5_verify() {
 }
 
 ############################################################################################################################################################
+# Phase 6: Sync to Latest main
+############################################################################################################################################################
+
+phase_6_sync_main() {
+    log_step "Phase 6: Sync to Latest main"
+
+    # The script always leaves a fresh continuity worktree in place (Case A of
+    # the procedure), so fast-forward that worktree to the latest origin/main.
+    # It cannot check out main (that branch is checked out in MAIN_REPO, and a
+    # branch can live in only one worktree), so it syncs the new worktree's
+    # branch in place. Best-effort: a branch that cannot fast-forward is
+    # warned-and-skipped, never fatal to the cleanup.
+    run_cmd git -C "${NEW_WORKTREE}" fetch --all
+    run_cmd git -C "${NEW_WORKTREE}" pull --ff-only origin main || {
+        log_warn "Could not fast-forward '${NEW_BRANCH}' to origin/main — skipping"
+    }
+}
+
+############################################################################################################################################################
 # Main
 ############################################################################################################################################################
 
@@ -466,6 +486,7 @@ main() {
     phase_3_merge_and_pr
     phase_4_cleanup
     phase_5_verify
+    phase_6_sync_main
 
     # Output the new worktree path to stdout (for the caller to cd into)
     echo "${NEW_WORKTREE}"
