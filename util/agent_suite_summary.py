@@ -70,7 +70,7 @@ def collect_agents(root: Path) -> list:
 
 
 def collect_templates(root: Path) -> list:
-    manifest = root / "prompts" / "templates" / "manifest.yaml"
+    manifest = root / "prompts" / "agent_templates" / "manifest.yaml"
     if not manifest.exists() or yaml is None:
         return []
     data = yaml.safe_load(manifest.read_text(encoding="utf-8")) or {}

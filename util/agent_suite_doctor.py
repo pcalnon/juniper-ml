@@ -116,7 +116,7 @@ def check_skill(root: Path):
 
 
 def check_templates(root: Path):
-    manifest = root / "prompts" / "templates" / "manifest.yaml"
+    manifest = root / "prompts" / "agent_templates" / "manifest.yaml"
     if not manifest.exists():
         return ("templates", FAIL, f"missing {manifest}")
     if yaml is None:

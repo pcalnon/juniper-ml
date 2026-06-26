@@ -1,4 +1,4 @@
-"""Resolver for the custom-agent suite data layer (``prompts/templates/data/*.yaml``).
+"""Resolver for the custom-agent suite data layer (``prompts/agent_templates/data/*.yaml``).
 
 Loads the curated, versioned YAML the Template Agent maps into template slots and that
 RUBRIC R2.5 checks injected conventions against (design §5.7). ``util/`` is not a package,
@@ -29,11 +29,11 @@ def _repo_root_default() -> Path:
 
 def data_dir(repo_root=None) -> Path:
     root = Path(repo_root) if repo_root else _repo_root_default()
-    return root / "prompts" / "templates" / "data"
+    return root / "prompts" / "agent_templates" / "data"
 
 
 def load(repo_root=None) -> dict:
-    """Load every ``prompts/templates/data/<name>.yaml`` into a dict keyed by ``<name>``."""
+    """Load every ``prompts/agent_templates/data/<name>.yaml`` into a dict keyed by ``<name>``."""
     base = data_dir(repo_root)
     out: dict = {}
     for name in DATA_FILES:
