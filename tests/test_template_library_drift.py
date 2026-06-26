@@ -1,4 +1,4 @@
-"""Drift-lint for the Juniper custom-agent template library (``prompts/templates/``).
+"""Drift-lint for the Juniper custom-agent template library (``prompts/agent_templates/``).
 
 Enforces manifest <-> template consistency so the library cannot silently drift:
 every registered template exists and every template is registered; every template
@@ -61,7 +61,7 @@ _EXPECTED_RUBRIC_IDS = [
     "R5",
 ]
 
-# Library meta-files under prompts/templates/ that are NOT templates (excluded from the
+# Library meta-files under prompts/agent_templates/ that are NOT templates (excluded from the
 # orphan check). Every OTHER *.md must be registered in manifest.yaml.
 _NON_TEMPLATE_MD = {"README.md", "RUBRIC.md"}
 
@@ -100,12 +100,12 @@ def _find_repo_root(start: Path) -> Path:
 
 
 class TemplateLibraryDriftTest(unittest.TestCase):
-    """manifest.yaml <-> prompts/templates/*.md must stay consistent."""
+    """manifest.yaml <-> prompts/agent_templates/*.md must stay consistent."""
 
     @classmethod
     def setUpClass(cls):
         cls.repo_root = _find_repo_root(Path(__file__).resolve().parent)
-        cls.templates_dir = cls.repo_root / "prompts" / "templates"
+        cls.templates_dir = cls.repo_root / "prompts" / "agent_templates"
         cls.manifest_path = cls.templates_dir / "manifest.yaml"
         cls.manifest = yaml.safe_load(cls.manifest_path.read_text(encoding="utf-8")) if cls.manifest_path.exists() else None
 

@@ -1,6 +1,6 @@
 """Tests + drift gate for the custom-agent suite data layer (PR 6b).
 
-Validates that ``prompts/templates/data/*.yaml`` load, that ``util/template_data_resolver.py``'s
+Validates that ``prompts/agent_templates/data/*.yaml`` load, that ``util/template_data_resolver.py``'s
 loader + dotted ``resolve()`` work, and -- as a drift gate -- that a couple of canonical
 convention values (line-length, the handoff threshold) still match repo reality, since
 RUBRIC R2.5 treats this layer as the source of truth for injected conventions.
@@ -29,7 +29,7 @@ def _find_repo_root(start: Path) -> Path:
 
 _REPO_ROOT = _find_repo_root(Path(__file__).resolve().parent)
 _RESOLVER = _REPO_ROOT / "util" / "template_data_resolver.py"
-_DATA_DIR = _REPO_ROOT / "prompts" / "templates" / "data"
+_DATA_DIR = _REPO_ROOT / "prompts" / "agent_templates" / "data"
 _EXPECTED_FILES = ("standing_rules", "anti_hallucination", "conventions", "ecosystem", "known_misses")
 
 

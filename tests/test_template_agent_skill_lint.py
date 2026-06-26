@@ -30,9 +30,9 @@ _REQUIRED_TOOLS = {"Read", "Grep", "Glob", "Bash", "Write", "Agent"}
 # Repo artifacts the state machine wires to by literal path -- each must appear in the body
 # AND exist on disk (no dangling wiring).
 _REFERENCED_PATHS = [
-    "prompts/templates/manifest.yaml",
-    "prompts/templates/RUBRIC.md",
-    "prompts/templates/generic.md",
+    "prompts/agent_templates/manifest.yaml",
+    "prompts/agent_templates/RUBRIC.md",
+    "prompts/agent_templates/generic.md",
     "util/prompt_discovery/cli.py",
     "util/prompt_discovery/symbol_overlay.py",
     "prompts/generated",
@@ -108,6 +108,7 @@ class TemplateAgentSkillLintTest(unittest.TestCase):
     def test_user_only_invocation(self):
         self.assertIs(self.front.get("disable-model-invocation"), True, "Skill is user-only initially (OQ-5)")
 
+    # This test is failing
     def test_referenced_paths_exist(self):
         for rel in _REFERENCED_PATHS:
             self.assertIn(rel, self.body, f"SKILL.md should reference {rel}")
