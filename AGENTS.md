@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-06-25
+**Last Updated**: 2026-06-26
 
 ---
 
@@ -567,6 +567,9 @@ gh pr create --base main --head "$OLD_BRANCH" --title "<title>" --body "<body>"
 git worktree remove "$OLD_WORKTREE_DIR"
 git branch -d "$OLD_BRANCH"
 git worktree prune
+# Phase 6: Sync to latest main (Case A — still in the continuity worktree): sync in place
+git fetch --all && git pull --ff-only origin main
+# Case B (terminal — no session worktrees left): git fetch --all && git checkout main && git pull --ff-only origin main
 ```
 
 **Automated cleanup** (via script):
