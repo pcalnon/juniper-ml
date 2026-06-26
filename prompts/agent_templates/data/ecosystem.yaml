@@ -18,8 +18,8 @@ service_ports:
   juniper-canopy: {host: 8050, container: 8050, health: "/v1/health"}
 
 conda_envs:
-  JuniperCanopy: {python: "3.14", used_by: juniper-canopy}
-  JuniperCascor: {python: "3.14", used_by: juniper-cascor}
+  JuniperCanopy1: {python: "3.13", used_by: juniper-canopy}
+  JuniperCascor1: {python: "3.13", used_by: juniper-cascor}
   JuniperData: {python: "3.14", used_by: juniper-data}
 
 env_vars:

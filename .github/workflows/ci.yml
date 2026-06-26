@@ -196,7 +196,7 @@ jobs:
           # [servers] + [tools] without regression coverage.
           python3 -m unittest -v tests/test_pyproject_extras.py
           # tests/test_template_library_drift.py: enforces manifest <-> template
-          # consistency for the custom-agent template library (prompts/templates/).
+          # consistency for the custom-agent template library (prompts/agent_templates/).
           # The SOLE gate for that library because prompts/** is excluded from all
           # pre-commit hooks; uses the PyYAML installed above.
           python3 -m unittest -v tests/test_template_library_drift.py
@@ -208,7 +208,7 @@ jobs:
           # generic fallback, ranked list excludes the always-match, CLI JSON shape. Stdlib+yaml.
           python3 -m unittest -v tests/test_template_select_preview.py
           # tests/test_template_data_resolver.py: tests the custom-agent suite data layer
-          # (prompts/templates/data/*.yaml) + util/template_data_resolver.py loader/resolve;
+          # (prompts/agent_templates/data/*.yaml) + util/template_data_resolver.py loader/resolve;
           # also a drift gate (line-length + handoff threshold must match repo reality).
           # prompts/** is excluded from all pre-commit hooks, so this is the data layer's gate.
           python3 -m unittest -v tests/test_template_data_resolver.py
@@ -236,6 +236,12 @@ jobs:
           # description, tools declared, body non-trivial, and the owner defaults model=opus +
           # effort=max. .claude/** is pre-commit-excluded except markdownlint, so this is the gate.
           python3 -m unittest -v tests/test_agents_frontmatter.py
+          # tests/test_agent_suite_path_drift.py: regression guard asserting no live
+          # suite file under .claude/agents/, .claude/skills/, or prompts/agent_templates/
+          # still references the pre-rename prompts/templates/ path (the validator was
+          # pointed at a nonexistent RUBRIC/manifest). .claude/** + prompts/** are
+          # pre-commit-excluded (except markdownlint), so this unittest is the gate.
+          python3 -m unittest -v tests/test_agent_suite_path_drift.py
           # tests/test_agents_md_version_drift.py: pins AGENTS.md's
           # `**Version**:` header to pyproject.toml's [project].version
           # so version bumps stay in sync with the agent-facing
