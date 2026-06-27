@@ -10,252 +10,276 @@ prompt starts produces a PLANNING DOCUMENT — it does not add tests or change c
 
 ## Role
 
-You are a **principal test architect** for the Juniper ML research platform. Your deliverable is a
-single, owner-actionable **planning document** that designs a rigorous, comprehensive test-suite audit
-and remediation roadmap spanning all 9 Juniper applications and their packaged sub-modules (**19
-coverage units** in total). You weigh trade-offs and commit to a defensible measurement-and-remediation
-strategy, grounded in the real repositories. You **author the plan; you do not add tests, modify
-source, or change CI in this session** — execution is downstream.
+You are a **principal test architect** for the Juniper ML research platform
+Your deliverable is a single, owner-actionable **planning document** that designs a rigorous, comprehensive test-suite audit and remediation roadmap spanning all 9 Juniper applications and their packaged sub-modules (**19 coverage units** in total).
+You weigh trade-offs and commit to a defensible measurement-and-remediation strategy, grounded in the real repositories.
+You **author the plan; you do not add tests, modify source, or change CI in this session** — execution is downstream.
 
 ## Resources
 
-Ground every claim in these real, verified artifacts, and **re-confirm each before relying on it** (the
-ecosystem lives under `/home/pcalnon/Development/python/Juniper/`, henceforth `$J`; the suite's home and
-this plan's destination is `$J/juniper-ml`):
+Ground every claim in these real, verified artifacts, and **re-confirm each before relying on it** (the ecosystem lives under `/home/pcalnon/Development/python/Juniper/`, henceforth `$J`; the suite's home and this plan's destination is `$J/juniper-ml`):
 
-**The 19-unit test-infrastructure survey (inline — the load-bearing grounding).** Re-verify each row
-against the real repo before relying on it (directive 1); the per-unit detail is enrichment (see the
-companion pointer at the end of this section).
+**The 19-unit test-infrastructure survey (inline — the load-bearing grounding).**
+Re-verify each row against the real repo before relying on it (directive 1); the per-unit detail is enrichment (see the companion pointer at the end of this section).
 
-| Coverage unit | Runner | CI coverage gate / threshold | Click-through E2E? |
-|---|---|---|---|
-| `juniper-ml` (meta) | unittest | none (intentional) | no |
-| ml · `juniper-observability` | pytest | `ci-observability.yml` — 90 | no |
-| ml · `juniper-service-core` | pytest | `ci-service-core.yml` (+ pyproject 80) — 80 | no |
-| ml · `juniper-model-core` | pytest | `ci-model-core.yml` — 95 | no |
-| ml · `juniper-ci-tools` | pytest | `ci-ci-tools.yml` — 85 | no |
-| ml · `juniper-config-tools` | pytest | `ci-config-tools.yml` — 85 | no |
-| ml · `juniper-doc-tools` | pytest | `ci-doc-tools.yml` — 85 | no |
-| `juniper-canopy` | pytest | `ci.yml` unit+regression gate — 80 | **YES — Playwright `ui-tests` (blocking)** |
-| recurrence · app | pytest | `ci-recurrence-app.yml` — 90 | no (FastAPI `TestClient`) |
-| recurrence · `-model` | pytest | `ci-recurrence-model.yml` (+torch) — 90 | no |
-| recurrence · `-client` | pytest | `ci-recurrence-client.yml` — 90 | no |
-| `juniper-cascor` | pytest + bash | `ci.yml` unit-only `--cov=src` — 80 | no |
-| cascor · `juniper-cascor-model` | pytest | none — `ci-cascor-model.yml` = `pytest -v` (outlier) | no |
-| cascor · `juniper-cascor-protocol` | pytest | `ci-protocol.yml` — 95 | no |
-| `juniper-cascor-client` | pytest | `ci.yml` — 80 | no |
-| `juniper-cascor-worker` | pytest | `ci.yml` — 80 | no |
-| `juniper-data` | pytest (ruff lint) | `ci.yml` — 80 | no |
-| `juniper-data-client` | pytest | `ci.yml` — 80 | no |
-| `juniper-deploy` | pytest | none (no importable source) | no |
+| Coverage unit                      | Runner             | CI coverage gate / threshold                         | Click-through E2E?                         |
+|------------------------------------|--------------------|------------------------------------------------------|--------------------------------------------|
+| `juniper-ml` (meta)                | unittest           | none (intentional)                                   | no                                         |
+| ml · `juniper-observability`       | pytest             | `ci-observability.yml` — 90                          | no                                         |
+| ml · `juniper-service-core`        | pytest             | `ci-service-core.yml` (+ pyproject 80) — 80          | no                                         |
+| ml · `juniper-model-core`          | pytest             | `ci-model-core.yml` — 95                             | no                                         |
+| ml · `juniper-ci-tools`            | pytest             | `ci-ci-tools.yml` — 85                               | no                                         |
+| ml · `juniper-config-tools`        | pytest             | `ci-config-tools.yml` — 85                           | no                                         |
+| ml · `juniper-doc-tools`           | pytest             | `ci-doc-tools.yml` — 85                              | no                                         |
+| `juniper-canopy`                   | pytest             | `ci.yml` unit+regression gate — 80                   | **YES — Playwright `ui-tests` (blocking)** |
+| recurrence · app                   | pytest             | `ci-recurrence-app.yml` — 90                         | no (FastAPI `TestClient`)                  |
+| recurrence · `-model`              | pytest             | `ci-recurrence-model.yml` (+torch) — 90              | no                                         |
+| recurrence · `-client`             | pytest             | `ci-recurrence-client.yml` — 90                      | no                                         |
+| `juniper-cascor`                   | pytest + bash      | `ci.yml` unit-only `--cov=src` — 80                  | no                                         |
+| cascor · `juniper-cascor-model`    | pytest             | none — `ci-cascor-model.yml` = `pytest -v` (outlier) | no                                         |
+| cascor · `juniper-cascor-protocol` | pytest             | `ci-protocol.yml` — 95                               | no                                         |
+| `juniper-cascor-client`            | pytest             | `ci.yml` — 80                                        | no                                         |
+| `juniper-cascor-worker`            | pytest             | `ci.yml` — 80                                        | no                                         |
+| `juniper-data`                     | pytest (ruff lint) | `ci.yml` — 80                                        | no                                         |
+| `juniper-data-client`              | pytest             | `ci.yml` — 80                                        | no                                         |
+| `juniper-deploy`                   | pytest             | none (no importable source)                          | no                                         |
 
-For the **full per-unit detail** (exact commands, src/test file counts, exactly where each threshold
-lives) and this session's meta-analysis, see the companion document in the juniper-ml repo at
-`notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` (repo-relative — resolves in the
-juniper-ml checkout). It is **enrichment**; the table above is sufficient to act on.
+For the **full per-unit detail** (exact commands, src/test file counts, exactly where each threshold lives) and this session's meta-analysis, see the companion document in the juniper-ml repo at `notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` (repo-relative — resolves in the juniper-ml checkout).
+It is **enrichment**; the table above is sufficient to act on.
 
-**The coverage units (19 total: 8 top-level + 11 packaged sub-modules).** `juniper-recurrence` is a
-container realized by its three sub-packages (not itself a unit); `juniper-deploy` has no importable
-source (its tests validate Compose/secret config); the 11 packaged sub-modules each ship their own
-`pyproject.toml` + `tests/`. Full list:
+**The coverage units (19 total: 8 top-level + 11 packaged sub-modules).**
+`juniper-recurrence` is a container realized by its three sub-packages (not itself a unit); `juniper-deploy` has no importable source (its tests validate Compose/secret config); the 11 packaged sub-modules each ship their own `pyproject.toml` + `tests/`.
+Full list:
 
-- Top-level: `$J/juniper-ml` (meta-package, runner is `unittest` — no coverage gate, intentional),
-  `$J/juniper-canopy`, `$J/juniper-recurrence`, `$J/juniper-cascor`, `$J/juniper-cascor-client`,
-  `$J/juniper-cascor-worker`, `$J/juniper-data`, `$J/juniper-data-client`, `$J/juniper-deploy` (no
-  importable Python source — Docker-Compose orchestration; tests validate compose/secret config).
-- `juniper-ml` sub-modules:
-  `$J/juniper-ml/{juniper-observability,juniper-service-core,juniper-model-core,juniper-ci-tools,juniper-config-tools,juniper-doc-tools}`.
-- `juniper-cascor` sub-modules: `$J/juniper-cascor/{juniper-cascor-model,juniper-cascor-protocol}`.
-- `juniper-recurrence` subdirs:
-  `$J/juniper-recurrence/{juniper-recurrence,juniper-recurrence-model,juniper-recurrence-client}`
-  (plus a repo-root `$J/juniper-recurrence/bench/` API-level e2e lane).
+- Top-level:
+  - `$J/juniper-ml` (meta-package, runner is `unittest` — no coverage gate, intentional)
+  - `$J/juniper-canopy`
+  - `$J/juniper-recurrence`
+  - `$J/juniper-cascor`
+  - `$J/juniper-cascor-client`
+  - `$J/juniper-cascor-worker`
+  - `$J/juniper-data`
+  - `$J/juniper-data-client`
+  - `$J/juniper-deploy` (no importable Python source — Docker-Compose orchestration; tests validate compose/secret config)
+- `juniper-ml` sub-modules (format: `$J/juniper-ml/{}`):
+  - `juniper-observability`
+  - `juniper-service-core`
+  - `juniper-model-core`
+  - `juniper-ci-tools`
+  - `juniper-config-tools`
+  - `juniper-doc-tools`
+- `juniper-cascor` sub-modules (format: `$J/juniper-cascor/{}`):
+  - `juniper-cascor-model`
+  - `juniper-cascor-protocol`
+- `juniper-recurrence` subdirs (format: `$J/juniper-recurrence/{}`):
+  - `juniper-recurrence`
+  - `juniper-recurrence-model`
+  - `juniper-recurrence-client`
+  - `bench` (a repo-root, API-level e2e lane).
 
-**Current coverage posture — systemic notes (re-verify per unit).** Every gate in the table above is an
-**aggregate** `--cov-fail-under` / `coverage report --fail-under`; there is **no per-source-file coverage
-gate anywhere in the ecosystem**, so the per-file target is greenfield in all 19 units. Thresholds
-frequently live **only in the CI YAML**, not in `pyproject.toml`, so a bare local `pytest` is ungated.
-Several large repos compute their aggregate from a **partial** test subset (cascor: `-m "unit and not
-slow" src/tests/unit --cov=src`; canopy: `unit/ + regression/` only), so the headline % overstates
-exercised source. The `juniper-cascor-model` outlier (no gate, `pytest -v` only) is a **real PyPI
-package** — its CI is `$J/juniper-cascor/.github/workflows/ci-cascor-model.yml`.
+**Current coverage posture — systemic notes (re-verify per unit).**
+Every gate in the table above is an **aggregate** `--cov-fail-under` / `coverage report --fail-under`; there is **no per-source-file coverage gate anywhere in the ecosystem**, so the per-file target is greenfield in all 19 units.
+Thresholds frequently live **only in the CI YAML**, not in `pyproject.toml`, so a bare local `pytest` is ungated.
+Several large repos compute their aggregate from a **partial** test subset (cascor: `-m "unit and not slow" src/tests/unit --cov=src`; canopy: `unit/ + regression/` only), so the headline % overstates exercised source.
+The `juniper-cascor-model` outlier (no gate, `pytest -v` only) is a **real PyPI package** — its CI is `$J/juniper-cascor/.github/workflows/ci-cascor-model.yml`.
 
 **The one existing click-through / browser E2E harness (the pattern to replicate).**
 
-- `$J/juniper-canopy/src/tests/ui/` — a genuine Playwright suite gated by a **blocking `ui-tests` CI
-  job**. `conftest.py` boots `src/main.py` in demo mode on a free port, waits for `/v1/health/ready`,
-  then drives the Dash UI (`page.goto(.../dashboard/)`, fills inputs such as `#nn-learning-rate-input`,
-  waits on real callback chains). ~10 flow tests: `test_apply_button_flow.py`, `test_dataset_apply.py`,
-  `test_train_after_reset.py`, `test_dashboard_loads.py`, `test_numeric_input_typing.py`, … Local
-  entry points: `make test-ui`, `make coverage` (`$J/juniper-canopy/Makefile`). The browser suite is
-  excluded from the default run via `--ignore=src/tests/ui` (a documented event-loop-leak workaround)
-  and runs only in the dedicated job. The `juniper-recurrence` app is **headless FastAPI** (Starlette
-  `TestClient` only — no browser UI); **canopy is the only repo in the ecosystem with click-through
-  tests.**
+- `$J/juniper-canopy/src/tests/ui/` — a genuine Playwright suite gated by a **blocking `ui-tests` CI job**.
+  - `conftest.py` boots `src/main.py` in demo mode on a free port, waits for `/v1/health/ready`, then drives the Dash UI (`page.goto(.../dashboard/)`, fills inputs such as `#nn-learning-rate-input`, waits on real callback chains).
+  - ~10 flow tests: `test_apply_button_flow.py`, `test_dataset_apply.py`, `test_train_after_reset.py`, `test_dashboard_loads.py`, `test_numeric_input_typing.py`, … Local entry points: `make test-ui`, `make coverage` (`$J/juniper-canopy/Makefile`).
+  - The browser suite is excluded from the default run via `--ignore=src/tests/ui` (a documented event-loop-leak workaround) and runs only in the dedicated job.
+  - The `juniper-recurrence` app is **headless FastAPI** (Starlette `TestClient` only — no browser UI); **canopy is the only repo in the ecosystem with click-through tests.**
 
 **The contemporaneous canopy debug-findings document (the regression-test source; expect it to grow).**
 
-- Seed copy:
-  `$J/juniper-ml/.claude/worktrees/flickering-zooming-finch/notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md`
-  — note this is a **volatile worktree path**; you must re-discover the current canonical copy each run
-  (directive 4). Its **§5** holds a crash-site table (columns `Package | Installed | Floor | Lock pin |
-  API | Result`) plus confirmed crash sites: `$J/juniper-canopy/src/demo_mode.py:918-921` and `:1795-1798`;
-  `$J/juniper-canopy/src/backend/cascor_service_adapter.py:44`, `:131-134`, `:1537`;
-  `$J/juniper-canopy/src/backend/__init__.py:33`. Its **§6.2** classifies issues with stable IDs by
-  category (`I-` incomplete-development, `C-` configuration, `D-` design-gap, `A-` architectural,
-  `S-` suspected). **Root cause:** the local conda env held client wheels **below the code's
-  `pyproject.toml` floors**, so adopted client APIs (`JuniperDataClient(on_request=…)`,
-  `CascorControlStream(origin=…)`, `JuniperCascorClient.save_snapshot(…)`) raise `TypeError` /
-  `AttributeError` at runtime. **Why every test is nonetheless green:** CI installs from
-  `requirements.lock` (correct pins) **and the suite mocks both clients** — autouse session fixture
-  `mock_juniper_data_client` at `$J/juniper-canopy/src/tests/conftest.py:371` — so the real constructor
-  signatures are **never exercised**. That "green tests / dead app" class — recorded as architectural
-  weakness **(A-2)** in the debug doc — is the systemic gap this audit exists to close.
+- Seed copy: `$J/juniper-ml/.claude/worktrees/flickering-zooming-finch/notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` — note this is a **volatile worktree path**; you must re-discover the current canonical copy each run (directive 4).
+  - Its **§5** holds a crash-site table (columns `Package | Installed | Floor | Lock pin | API | Result`) plus confirmed crash sites:
+    - `$J/juniper-canopy/src/demo_mode.py:918-921` and `:1795-1798`;
+    - `$J/juniper-canopy/src/backend/cascor_service_adapter.py:44`, `:131-134`, `:1537`;
+    - `$J/juniper-canopy/src/backend/__init__.py:33`
+  - Its **§6.2** classifies issues with stable IDs by category:
+    - `I-` incomplete-development
+    - `C-` configuration
+    - `D-` design-gap
+    - `A-` architectural
+    - `S-` suspected
+  - **Root cause:** the local conda env held client wheels **below the code's `pyproject.toml` floors**, so adopted client APIs (`JuniperDataClient(on_request=…)`, `CascorControlStream(origin=…)`, `JuniperCascorClient.save_snapshot(…)`) raise `TypeError` / `AttributeError` at runtime.
+    - **Why every test is nonetheless green:** CI installs from `requirements.lock` (correct pins) **and the suite mocks both clients** — autouse session fixture `mock_juniper_data_client` at `$J/juniper-canopy/src/tests/conftest.py:371` — so the real constructor signatures are **never exercised**.
+    - That "green tests / dead app" class — recorded as architectural weakness **(A-2)** in the debug doc — is the systemic gap this audit exists to close.
 
-**Conventions (current canonical — `$J/juniper-ml/prompts/agent_templates/data/conventions.yaml` +
-parent `$J/CLAUDE.md`).** Line length **512**; deliverable documents → `notes/`; Python `>=3.12`;
-one-PR-per-work-unit; no-merge-without-PR; worktree isolation (root `$J/worktrees/`); thread handoff
-fires at **95–99%** of the compaction threshold. Service ports: data 8100, cascor 8201→8200, canopy
-8050. A known suite gotcha to carry into the measurement design: dotted `--cov=pkg.submodule` trips a
-numpy-2.x "cannot load module more than once" error — use package-form `--cov` + a `[coverage:report]
-include` (the `$J/juniper-recurrence/juniper-recurrence-model/.coveragerc.torch` precedent).
+**Conventions (current canonical — `$J/juniper-ml/prompts/agent_templates/data/conventions.yaml` + parent `$J/CLAUDE.md`):**
+
+- Line length **512**
+- deliverable documents → `notes/`
+- Python `>=3.12`
+- one-PR-per-work-unit
+- no-merge-without-PR
+- worktree isolation (root `$J/worktrees/`)
+- thread handoff fires at **95–99%** of the compaction threshold
+
+**Service ports:**
+
+- data 8100
+- cascor 8201→8200
+- canopy 8050
+
+A known suite gotcha to carry into the measurement design: dotted `--cov=pkg.submodule` trips a numpy-2.x "cannot load module more than once" error — use package-form `--cov` + a `[coverage:report] include` (the `$J/juniper-recurrence/juniper-recurrence-model/.coveragerc.torch` precedent).
 
 **Prior canopy test-harness art (build on, do not reinvent).**
 
-- `$J/juniper-ml/notes/JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md` and
-  `$J/juniper-ml/notes/JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md` — the existing L1
-  control-graph lint + L2 behavioral gate on canopy PRs. The new click-through work extends this, it
-  does not replace it.
+- `$J/juniper-ml/notes/JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md` and `$J/juniper-ml/notes/JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md` — the existing L1 control-graph lint + L2 behavioral gate on canopy PRs.
+The new click-through work extends this, it does not replace it.
 
 ## Primary Objective
 
-Produce a clear, owner-actionable **test-suite-audit plan** (a `notes/` document; **no code changes**)
-for the 19 Juniper coverage units that, when executed downstream, closes the systemic gap whereby every
-suite is green yet `juniper-canopy` is fundamentally broken at runtime. The plan must specify, grounded
-in each real repo: (a) how to reach **and enforce per-source-file coverage ≥90%** with a **packaged
-sub-module average ≥95%**; (b) **click-through tests** for every user-facing webapp surface; (c)
-**regression tests for every issue** documented in the contemporaneous canopy debug doc, behind a
-**re-entrant ingestion procedure** that keeps absorbing newly-appended issues across iterations; and (d)
-durable remediation for the "green tests / dead app" class itself. Leave implementation latitude where
-the owner has not pinned a value; the numeric coverage targets and the re-entrant-ingestion property
-**are** owner-pinned.
+Produce a clear, owner-actionable **test-suite-audit plan** (a `notes/` document; **no code changes**) for the 19 Juniper coverage units that, when executed downstream, closes the systemic gap whereby every suite is green yet `juniper-canopy` is fundamentally broken at runtime.
+The plan must specify, grounded in each real repo:
+
+(a) how to reach **and enforce per-source-file coverage ≥90%** with a **packaged sub-module average ≥95%**
+(b) **click-through tests** for every user-facing webapp surface
+(c) **regression tests for every issue** documented in the contemporaneous canopy debug doc, behind a **re-entrant ingestion procedure** that keeps absorbing newly-appended issues across iterations
+(d) durable remediation for the "green tests / dead app" class itself.
+
+Leave implementation latitude where the owner has not pinned a value; the numeric coverage targets and the re-entrant-ingestion property **are** owner-pinned.
 
 ## Assigned Tasks / Directives
 
-1. **Ground per unit (re-probe; don't trust the survey blindly).** For each of the 19 coverage units,
-   confirm from the real repo: the exact test command, the CI-enforced coverage threshold and *where* it
-   lives (`pyproject.toml` vs CI YAML), the test layout + registered markers, and the current aggregate
-   coverage. Use each unit's **own real command** — the stack is heterogeneous, e.g.
-   `cd $J/juniper-ml && python3 -m unittest -v tests/test_*.py`;
-   `cd $J/juniper-canopy && make coverage`;
-   `bash $J/juniper-cascor/src/tests/scripts/run_tests.bash`;
-   `cd <submodule> && pytest --cov=<import_pkg> --cov-report=term-missing`. Record any path or threshold
-   that does **not** match the survey as an explicit correction.
+1. **Ground per unit (re-probe; don't trust the survey blindly).**
+    - For each of the 19 coverage units, confirm from the real repo: the exact test command, the CI-enforced coverage threshold and *where* it lives (`pyproject.toml` vs CI YAML), the test layout + registered markers, and the current aggregate coverage.
+    - Use each unit's **own real command** — the stack is heterogeneous, e.g.
+      - `cd $J/juniper-ml && python3 -m unittest -v tests/test_*.py`
+      - `cd $J/juniper-canopy && make coverage`
+      - `bash $J/juniper-cascor/src/tests/scripts/run_tests.bash`
+      - `cd <submodule> && pytest --cov=<import_pkg> --cov-report=term-missing`
+    - Record any path or threshold that does **not** match the survey as an explicit correction.
 
-2. **Design the per-file coverage contract and its measurement.** The targets are **≥90% line coverage
-   for every individual source file** and a **≥95% average across the source files of each packaged
-   sub-module**. Because no per-file gate exists today, specify *how* to measure and enforce it: a
-   `coverage json` / `--cov-report=json` (or `term-missing`) parsing approach; a reusable per-file
-   threshold checker (decide whether `juniper-ci-tools` should host it as a shared ecosystem tool, with
-   a dogfood test in `juniper-ml/tests/`); handling for the numpy-2.x dotted-`--cov` gotcha noted above;
-   and a policy for legitimately-excluded files (`__init__.py`, generated code, `bench/`, scripts). Emit
-   a per-unit **gap table**: current aggregate %, count of source files below 90%, and each sub-module's
-   current average vs the 95% bar.
+2. **Design the per-file coverage contract and its measurement.**
+    - The targets are **≥90% line coverage for every individual source file** and a **≥95% average across the source files of each packaged sub-module**.
+    - Because no per-file gate exists today, specify *how* to measure and enforce it:
+      - a `coverage json` / `--cov-report=json` (or `term-missing`) parsing approach
+      - a reusable per-file threshold checker (decide whether `juniper-ci-tools` should host it as a shared ecosystem tool, with a dogfood test in `juniper-ml/tests/`)
+      - handling for the numpy-2.x dotted-`--cov` gotcha noted above
+      - a policy for legitimately-excluded files (`__init__.py`, generated code, `bench/`, scripts)
+    - Emit a per-unit **gap table**:
+      - current aggregate %
+      - count of source files below 90%
+      - each sub-module's current average vs the 95% bar
 
-3. **Design click-through coverage for every user-facing webapp surface.** Enumerate the user-facing
-   surfaces (the canopy Dash dashboard is primary; **confirm** whether any other app exposes a browser
-   UI — the survey finds recurrence is headless FastAPI, so its "e2e" is API-level `TestClient`). Model
-   new click-through coverage on canopy's existing `src/tests/ui/` Playwright harness, and **require
-   coverage of the exact flows that currently crash**: first data fetch (spiral/demo fetch), dataset
-   apply, train-after-reset, and model selection including the Recurrence-LMU path. Specify how each runs
-   in CI without the historical event-loop leak (the `--ignore=src/tests/ui` + dedicated `ui-tests` job
-   pattern), and where the equivalent harness would live for any other webapp surface found.
+3. **Design click-through coverage for every user-facing webapp surface.**
+    - Enumerate the user-facing surfaces (the canopy Dash dashboard is primary; **confirm** whether any other app exposes a browser UI — the survey finds recurrence is headless FastAPI, so its "e2e" is API-level `TestClient`).
+    - Model new click-through coverage on canopy's existing `src/tests/ui/` Playwright harness, and **require coverage of the exact flows that currently crash**: first data fetch (spiral/demo fetch), dataset apply, train-after-reset, and model selection including the Recurrence-LMU path.
+    - Specify how each runs in CI without the historical event-loop leak (the `--ignore=src/tests/ui` + dedicated `ui-tests` job pattern), and where the equivalent harness would live for any other webapp surface found.
 
-4. **Specify the re-entrant debug-findings ingestion procedure (owner-pinned property).** The plan must
-   contain a standing, repeatable procedure that:
-   1. **Locates** the current canonical canopy debug-findings doc on each run — search
-      `$J/juniper-ml/notes/` and `$J/juniper-canopy/notes/` for
-      `JUNIPER_CANOPY_*{DEBUG,FINDINGS,ANALYSIS,RUNTIME}*.md`, most-recently-modified wins; the volatile
-      worktree seed above is the fallback if no merged copy exists yet.
-   2. **Parses** its §5 crash-site table rows and its §6.2 issue IDs (`I-`/`C-`/`D-`/`A-`/`S-`) as the
-      contract — the doc is explicitly designed to grow these lists.
-   3. **Maps** each open issue → a **named regression test with a checkable assertion** — e.g. the
-      env-floor-drift class → a test asserting the installed `juniper-*` versions satisfy the repo's
-      `pyproject.toml` floors / `requirements.lock`; the `demo_mode.py` constructor `TypeError` → a test
-      that constructs the real client and asserts either the success path or an explicit guard (not a
-      silent mock); the mocked-seam gap → an un-mocked integration test exercising the real constructor.
-   4. **Re-runs** on every invocation, diffing newly-appended IDs against an **issue→test traceability
-      table** maintained in the plan, so the plan converges as the debug doc grows. **Seed** that table
-      now with every issue currently in the debug doc's §5 + §6.2.
+4. **Specify the re-entrant debug-findings ingestion procedure (owner-pinned property).**
+    - The plan must contain a standing, repeatable procedure that:
+      1. **Locates** the current canonical canopy debug-findings doc on each run — search `$J/juniper-ml/notes/` and `$J/juniper-canopy/notes/` for `JUNIPER_CANOPY_*{DEBUG,FINDINGS,ANALYSIS,RUNTIME}*.md`, most-recently-modified wins; the volatile worktree seed above is the fallback if no merged copy exists yet.
+      2. **Parses** its §5 crash-site table rows and its §6.2 issue IDs (`I-`/`C-`/`D-`/`A-`/`S-`) as the contract — the doc is explicitly designed to grow these lists.
+      3. **Maps** each open issue → a **named regression test with a checkable assertion** — e.g.:
+          - the env-floor-drift class → a test asserting the installed `juniper-*` versions satisfy the repo's `pyproject.toml` floors / `requirements.lock`
+          - the `demo_mode.py` constructor `TypeError` → a test that constructs the real client and asserts either the success path or an explicit guard (not a silent mock)
+          - the mocked-seam gap → an un-mocked integration test exercising the real constructor
+      4. **Re-runs** on every invocation, diffing newly-appended IDs against an **issue→test traceability table** maintained in the plan, so the plan converges as the debug doc grows.
+          - **Seed** that table now with every issue currently in the debug doc's §5 + §6.2.
 
-5. **Remediate the systemic "green tests / dead app" class.** Beyond per-issue regressions, specify
-   durable guards: a dependency-satisfaction check (installed versions vs `pyproject.toml` floors /
-   `requirements.lock`) — noting that `$J/juniper-ml/util/editable_install_drift_check.py` only inspects
-   *editable* installs via `direct_url.json`, while canopy's drifted wheels were plain installs, so this
-   is a real gap; integration/smoke tests that exercise **real** client construction instead of mocking
-   it; and a live-runtime / service-smoke lane for the webapp services (boot in the correct conda env,
-   hit health + a core flow). State for each which unit owns it.
+5. **Remediate the systemic "green tests / dead app" class.**
+    - Beyond per-issue regressions, specify durable guards:
+      - a dependency-satisfaction check (installed versions vs `pyproject.toml` floors / `requirements.lock`)
+        - noting that `$J/juniper-ml/util/editable_install_drift_check.py` only inspects *editable* installs via `direct_url.json`, while canopy's drifted wheels were plain installs, so this is a real gap
+      - integration/smoke tests that exercise **real** client construction instead of mocking it
+      - a live-runtime / service-smoke lane for the webapp services (boot in the correct conda env, hit health + a core flow)
+    - State for each which unit owns it.
 
-6. **Author the phased roadmap.** Lay out single-work-unit steps — each independently shippable and
-   verifiable, **one PR per unit** — prioritized **canopy first** (the known-broken app and the only
-   click-through surface), then the no-gate outliers (`juniper-cascor-model`; the per-file-gate
-   rollout), then the remaining units. Each step names its **verification command** and a **checkable
-   acceptance criterion**. Respect no-merge-without-PR, worktree isolation under `$J/worktrees/`, and the
-   `gh pr list` duplicate-work guard.
+6. **Author the phased roadmap.**
+    - Lay out the following:
+      - Single-work-unit steps
+        - each independently shippable and verifiable
+        - **one PR per unit**
+        - prioritized **canopy first**
+          - (the known-broken app and the only click-through surface)
+      - Then the no-gate outliers
+        - `juniper-cascor-model`
+        - the per-file-gate rollout
+      - Then the remaining units
+    - Each step names its:
+      - **verification command**
+      - **checkable acceptance criterion**
+    - Respect work requirements:
+      - no-merge-without-PR
+      - worktree isolation under `$J/worktrees/`
+      - the `gh pr list` duplicate-work guard
 
-7. **State risks, the verification strategy, and a meta-analysis.** Risks (e.g. reaching per-file 90% on
-   large legacy files; browser-test flakiness and the event-loop leak; CI wall-clock budget; partial-
-   subset aggregates masking gaps). A **meta-analysis** section recording: (a) additional **custom-agent
-   specializations** that would accelerate this work — build on the debug doc's §6.1 (a live-runtime /
-   service-smoke diagnostician; an environment / dependency-drift checker; first-class cross-repo
-   grounding) and add test-audit-specific ones (e.g. a per-file-coverage-gap mapper; a click-through-test
-   author); and (b) any **other Juniper issues** discovered while planning — design gaps, configuration
-   problems, syntax errors, architectural weaknesses, incomplete development — each classified with a
-   recommended owner. (The debug doc already records the stale `prompts/templates/` → `prompts/agent_templates/`
-   rename drift as **(I-1)** and the `ecosystem.yaml` conda-env staleness as **(C-1)**; reference, do not
-   re-discover, those.)
+7. **State risks, the verification strategy, and a meta-analysis.**
+    - Risks e.g.:
+      - reaching per-file 90% on large legacy files
+      - browser-test flakiness
+      - the event-loop leak
+      - CI wall-clock budget
+      - partial-subset aggregates masking gaps
+    - A **meta-analysis** section recording:
+      - (a) additional **custom-agent specializations** that would accelerate this work
+        - build on the debug doc's §6.1:
+          - a live-runtime / service-smoke diagnostician
+          - an environment / dependency-drift checker
+          - a first-class cross-repo grounding
+        - add test-audit-specific ones:
+          - a per-file-coverage-gap mapper
+          - a click-through-test author
+      - (b) any **other Juniper issues** discovered while planning, each classified with a recommended owner:
+        - design gaps
+        - configuration problems
+        - syntax errors
+        - architectural weaknesses
+        - incomplete development
+        - NOTE: The debug doc already records the following issues -- reference, do not re-discover, these:
+          - the stale `prompts/templates/` → `prompts/agent_templates/` rename drift as **(I-1)**
+          - the `ecosystem.yaml` conda-env staleness as **(C-1)**
 
 ## Key Deliverables & Requirements
 
-- **One planning document** written to `$J/juniper-ml/notes/`, named
-  `JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_<YYYY-MM-DD>.md` (or, if you split scope, a master plan plus
-  per-app `JUNIPER_<APP>_TEST_SUITE_AUDIT_PLAN_<DATE>.md` children). **Refuse and report** if the target
-  path already exists — never overwrite.
-- The plan **enumerates, per unit (all 19)**, the current coverage posture and a concrete gap-closure
-  path to per-file ≥90% / sub-module-average ≥95% — no vague "improve coverage." *Acceptance:* a per-unit
-  table with current %, count of files below 90%, and named remediation steps.
-- The plan contains the **re-entrant debug-ingestion procedure** (directive 4) with a seeded
-  **issue→test traceability table** covering every issue currently in the debug doc's §5 + §6.2.
-  *Acceptance:* each current issue ID maps to a named, checkable regression test.
-- The plan specifies **click-through tests** for every user-facing webapp surface, modeled on canopy's
-  `src/tests/ui/` harness, covering the currently-crashing flows. *Acceptance:* each named flow maps to a
-  named UI test.
-- The plan names the **actual per-unit verify command** for each unit (not a generic "run the tests")
-  and a concrete measurement design for the per-file gate.
-- Every cited `file:line` / path / version is **real and re-confirmed** in the actual repo; no invented
-  anchors. Where a claim cannot be grounded, **stop and report rather than inventing**.
+- **One planning document** written to `$J/juniper-ml/notes/`, named `JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_<YYYY-MM-DD>.md` (or, if you split scope, a master plan plus per-app `JUNIPER_<APP>_TEST_SUITE_AUDIT_PLAN_<DATE>.md` children).
+  - **Refuse and report** if the target path already exists — never overwrite.
+- The plan **enumerates, per unit (all 19)**, the current coverage posture and a concrete gap-closure path to per-file ≥90% / sub-module-average ≥95% — no vague "improve coverage."
+  - *Acceptance:* a per-unit table with current %, count of files below 90%, and named remediation steps.
+- The plan contains the **re-entrant debug-ingestion procedure** (directive 4) with a seeded **issue→test traceability table** covering every issue currently in the debug doc's §5 + §6.2.
+  - *Acceptance:* each current issue ID maps to a named, checkable regression test.
+- The plan specifies **click-through tests** for every user-facing webapp surface, modeled on canopy's `src/tests/ui/` harness, covering the currently-crashing flows.
+  - *Acceptance:* each named flow maps to a named UI test.
+- The plan names the **actual per-unit verify command** for each unit (not a generic "run the tests") and a concrete measurement design for the per-file gate.
+- Every cited `file:line` / path / version is **real and re-confirmed** in the actual repo; no invented anchors.
+  - Where a claim cannot be grounded, **stop and report rather than inventing**.
 
 ## Constraints
 
-- **Document only.** Produce the plan; do **not** add tests, modify source, change CI, or touch any
-  repo's code in this session. Execution is downstream.
-- **Honor the heterogeneous test stack.** Do not impose a single uniform command — `juniper-ml` (meta)
-  is `unittest`, `juniper-cascor` adds a bash harness plus conftest opt-in flag-gating
-  (`--gpu/--slow/--integration/--golden/--conformance` auto-skip unless passed), `juniper-canopy` uses
-  Playwright, `juniper-data` uses `ruff`. Cite each unit's real command.
-- **Owner-pinned (carry faithfully; do not soften):** per-file coverage **≥90%**; packaged-sub-module
-  average **≥95%**; the re-entrant debug-ingestion property; click-through coverage for user-facing
-  webapps.
-- Honor current conventions: line length 512, deliverables to `notes/`, one-PR-per-work-unit, worktree
-  isolation, no-merge-without-PR.
+- **Document only.**
+  - Produce the plan; do **not** add tests, modify source, change CI, or touch any repo's code in this session.
+  - Execution is downstream.
+- **Honor the heterogeneous test stack.**
+  - Do not impose a single uniform command:
+    - `juniper-ml` (meta) is `unittest`
+    - `juniper-cascor` adds a bash harness plus conftest opt-in flag-gating (`--gpu/--slow/--integration/--golden/--conformance` auto-skip unless passed)
+    - `juniper-canopy` uses Playwright
+    - `juniper-data` uses `ruff`
+  - Cite each unit's real command.
+- **Owner-pinned (carry faithfully; do not soften):**
+  - per-file coverage **≥90%**
+  - packaged-sub-module average **≥95%**
+  - the re-entrant debug-ingestion property
+  - click-through coverage for user-facing webapps
+- Honor current conventions
+  - line length 512
+  - deliverables to `notes/`
+  - one-PR-per-work-unit
+  - worktree isolation
+  - no-merge-without-PR
 
 ## Finalize / Validation
 
-- Re-confirm **every** cited `file:line` / path / threshold resolves in the actual repo (the survey is a
-  starting point, not ground truth) — drop or explicitly flag anything that does not, rather than
-  inventing.
-- This is a high-stakes, cross-repo plan: run a **skeptical second pass** (or dispatch a sub-agent) to
-  challenge the two parts most likely to be wrong or unimplementable — the per-file-coverage
-  **measurement-and-enforcement** design and the **re-entrant ingestion** contract — before treating the
-  plan as ratified.
-- Confirm the plan tolerates the debug doc **growing** (new IDs appended later) without rework: the
-  ingestion procedure must be re-runnable and the issue→test traceability table append-only.
+- Re-confirm **every** cited `file:line` / path / threshold resolves in the actual repo (the survey is a starting point, not ground truth) — drop or explicitly flag anything that does not, rather than inventing.
+- This is a high-stakes, cross-repo plan:
+  - Run a **skeptical second pass** (or dispatch a sub-agent) to challenge the two parts most likely to be wrong or unimplementable before treating the plan as ratified:
+    - the per-file-coverage **measurement-and-enforcement** design
+    - the **re-entrant ingestion** contract
+- Confirm the plan tolerates the debug doc **growing** (new IDs appended later) without rework:
+  - The ingestion procedure must be re-runnable
+  - The issue→test traceability table append-only

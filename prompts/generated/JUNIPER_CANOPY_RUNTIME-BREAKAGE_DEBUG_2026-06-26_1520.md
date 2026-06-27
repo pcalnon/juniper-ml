@@ -25,12 +25,12 @@ Your job is to find **every** serious runtime issue, determine the **root cause*
 **Confirmed root cause (leading hypothesis — verify it, do not assume it is the whole story).**
 The `JuniperCanopy1` env holds client wheels **below the code's `pyproject.toml` floors**. The recent refactor bumped canopy to call client APIs the installed wheels do not have, but the env was never reinstalled from `requirements.lock`. First-party evidence (re-run to confirm):
 
-| Package | Installed in JuniperCanopy1 | `pyproject.toml` floor | `requirements.lock` pin | Code calls API | Present in installed? |
-|---|---|---|---|---|---|
-| `juniper-data-client` | **0.4.0** | `>=0.4.1` (`pyproject.toml:138`) | `==0.4.1` (`requirements.lock:69`) | `JuniperDataClient(on_request=…)` | **No → TypeError** |
-| `juniper-cascor-client` | **0.3.0** | `>=0.5.0` (`pyproject.toml:149`) | `==0.5.0` (`requirements.lock:63`) | `CascorControlStream(origin=…)` | **No → TypeError** |
-| `juniper-cascor-client` | 0.3.0 | `>=0.5.0` | `==0.5.0` | `JuniperCascorClient.save_snapshot(...)` | **No → AttributeError** |
-| `juniper-observability` | 0.4.0 | `>=0.4.0` | — | (build-info, metrics-auth) | ✓ ok |
+| Package                 | Installed in JuniperCanopy1 | `pyproject.toml` floor           | `requirements.lock` pin            | Code calls API                           | Present in installed?   |
+|-------------------------|-----------------------------|----------------------------------|------------------------------------|------------------------------------------|-------------------------|
+| `juniper-data-client`   | **0.4.0**                   | `>=0.4.1` (`pyproject.toml:138`) | `==0.4.1` (`requirements.lock:69`) | `JuniperDataClient(on_request=…)`        | **No → TypeError**      |
+| `juniper-cascor-client` | **0.3.0**                   | `>=0.5.0` (`pyproject.toml:149`) | `==0.5.0` (`requirements.lock:63`) | `CascorControlStream(origin=…)`          | **No → TypeError**      |
+| `juniper-cascor-client` | 0.3.0                       | `>=0.5.0`                        | `==0.5.0`                          | `JuniperCascorClient.save_snapshot(...)` | **No → AttributeError** |
+| `juniper-observability` | 0.4.0                       | `>=0.4.0`                        | —                                  | (build-info, metrics-auth)               | ✓ ok                    |
 
 Re-confirm the gap in one command:
 
