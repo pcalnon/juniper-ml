@@ -22,7 +22,7 @@
 | Version | Date | Change |
 |---------|------|--------|
 | v1 | 2026-06-23 | Initial design after corpus survey + primitive research |
-| **v2** | **2026-06-24** | Hardened after 5-agent validation: concrete validator contract + bounded loop; expanded rubric (R1–R5); grounding bundle gains symbol/dependency/provenance facts; `.gitignore` reality + `~/.claude` mirror + `--repo-root`; roadmap re-sliced & made CI-objective; factual corrections |
+| **v2** | **2026-06-24** | Validated & Hardened, 5-agents: concrete validator contract, bound loop; expand rubric (R1–R5); ground bundle gains symbol/dep/prov facts; `.gitignore` reality + `~/.claude` mirror + `--repo-root`; roadmap re-sliced & made CI-objective; factual corrections |
 | **v2 — ratified** | **2026-06-24** | Owner ratified; round-1 build (PR 1) authorized |
 
 ---
@@ -33,12 +33,12 @@ Build a small suite of reusable **Claude Code automation units** ("agents") that
 phases of the Juniper development workflow. Round 1 delivers **4 agent types**, with the **Template
 Agent** built first and deepest:
 
-| # | Agent | Job | Round |
-|---|-------|-----|-------|
+| # | Agent              | Job                                                                                                        | Round       |
+|---|--------------------|------------------------------------------------------------------------------------------------------------|-------------|
 | 1 | **Template Agent** | Turn an interactive task description into a validated, template-shaped, anti-hallucination-hardened prompt | **1 (now)** |
-| 2 | **Planning Agent** | Produce a design / plan / analysis document in `notes/` | 2 |
-| 3 | **Audit Agent** | Systematic checklist review producing a findings report in `notes/` | 2 |
-| 4 | **Task Agent** | Execute a concrete (often pre-generated) task, 1–3 repos, may fan out | 2 |
+| 2 | **Planning Agent** | Produce a design / plan / analysis document in `notes/`                                                    | 2           |
+| 3 | **Audit Agent**    | Systematic checklist review producing a findings report in `notes/`                                        | 2           |
+| 4 | **Task Agent**     | Execute a concrete (often pre-generated) task, 1–3 repos, may fan out                                      | 2           |
 
 Round-1 scope is the **Template Agent end-to-end plus its shared infrastructure** (template library,
 validation rubric, environment-discovery helpers, data/field-population layer, validator subagent,
