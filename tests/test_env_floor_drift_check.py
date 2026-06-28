@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+"""Regression tests for util/env_floor_drift_check.py (gap I-2 / Phase-1 PR-2).
+
+Builds a SYNTHETIC site-packages directory (``*.dist-info/METADATA`` files) plus a
+synthetic target repo (``pyproject.toml`` with juniper-* floors), then asserts the
+OK / BELOW_FLOOR / MISSING classification, floor parsing, version comparison, exit
+codes, and JSON shape. No real pip / no real conda is invoked -- which is also why
+the CI gate is STRUCTURAL: ubuntu CI has no conda environment, so a live env scan
+(``--env JuniperCanopy1``) is a documented manual-verify step, not a CI criterion.
+
+``util/`` is not a package, so the module is imported via the house
+``sys.path.insert`` idiom (matching tests/test_editable_install_drift_check.py).
+
+Run: python3 -m unittest -v tests/test_env_floor_drift_check.py
+
+Project: juniper-ml
+Author: Paul Calnon
+Created: 2026-06-27
+"""
+
+from __future__ import annotations
+
+import io
+import json
+import sys
+import tempfile
+import unittest
+from contextlib import redirect_stdout
+from pathlib import Path
+
+UTIL_DIR = Path(__file__).resolve().parents[1] / "util"
+sys.path.insert(0, str(UTIL_DIR))
+
+import env_floor_drift_check as mod  # noqa: E402
+
+
+def write_dist(site_pkgs: Path, dist_name: str, version: str) -> None:
+    """Create a <dist>-<ver>.dist-info/METADATA (a plain installed distribution)."""
+    dist_info = site_pkgs / f"{dist_name.replace('-', '_')}-{version}.dist-info"
+    dist_info.mkdir(parents=True, exist_ok=True)
+    (dist_info / "METADATA").write_text(f"Metadata-Version: 2.1\nName: {dist_name}\nVersion: {version}\n\nbody\n")
+
+
+_PYPROJECT = """\
+[project]
+name = "juniper-thing"
+dependencies = [
+  "juniper-data-client>=0.4.1",
+  "juniper-cascor-client>=0.5.0,<0.6.0",
+  "requests>=2.0",
+]
+[project.optional-dependencies]
+extra = ["juniper-observability>=0.2.0"]
+"""
+
+
+class FloorParsingTest(unittest.TestCase):
+    def test_parse_floor_juniper_with_lower_bound(self) -> None:
+        self.assertEqual(mod.parse_floor("juniper-data-client>=0.4.1"), ("juniper-data-client", "0.4.1"))
+        # An upper bound does not change the floor.
+        self.assertEqual(mod.parse_floor("juniper-doc-tools>=0.1.0,<0.2.0"), ("juniper-doc-tools", "0.1.0"))
+
+    def test_parse_floor_skips_non_juniper_floorless_and_extra_ref(self) -> None:
+        self.assertIsNone(mod.parse_floor("requests>=2.0"))  # not juniper
+        self.assertIsNone(mod.parse_floor("juniper-cascor"))  # no floor
+        self.assertIsNone(mod.parse_floor("juniper-ml[clients,worker]"))  # self extra-ref, no floor
+
+    def test_declared_floors_dedup_keeps_highest(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            py = Path(d) / "pyproject.toml"
+            py.write_text('[project]\nname = "juniper-x"\n' "[project.optional-dependencies]\n" 'a = ["juniper-data>=0.5.0"]\n' 'b = ["juniper-data>=0.6.0"]\n')
+            floors = mod.declared_floors(py)
+            self.assertEqual(floors["juniper-data"], "0.6.0")  # most restrictive wins
+
+    def test_declared_floors_skips_self_package(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            py = Path(d) / "pyproject.toml"
+            py.write_text('[project]\nname = "juniper-ml"\n' "[project.optional-dependencies]\n" 'all = ["juniper-ml[clients]"]\n' 'clients = ["juniper-data-client>=0.4.1"]\n')
+            floors = mod.declared_floors(py)
+            self.assertIn("juniper-data-client", floors)
+            self.assertNotIn("juniper-ml", floors)
+
+
+class VersionCompareTest(unittest.TestCase):
+    def test_version_lt_basic_and_multidigit(self) -> None:
+        self.assertTrue(mod.version_lt("0.3.0", "0.4.1"))
+        self.assertFalse(mod.version_lt("0.4.1", "0.4.1"))
+        self.assertFalse(mod.version_lt("0.5.0", "0.4.1"))
+        # Numeric, not lexical: 0.10.0 must be greater than 0.9.0.
+        self.assertFalse(mod.version_lt("0.10.0", "0.9.0"))
+        self.assertTrue(mod.version_lt("0.9.0", "0.10.0"))
+
+    def test_vtuple_fallback_handles_suffixes(self) -> None:
+        self.assertEqual(mod._vtuple("0.4.1"), (0, 4, 1))
+        self.assertEqual(mod._vtuple("1.2.3.post1"), (1, 2, 3))
+        self.assertEqual(mod._vtuple("2.0.0+local"), (2, 0, 0))
+
+
+class ClassificationCliTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.repo = self.root / "repo"
+        self.repo.mkdir()
+        (self.repo / "pyproject.toml").write_text(_PYPROJECT)
+        self.sp = self.root / "sp"
+        self.sp.mkdir()
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def run_main(self, *argv: str) -> "tuple[int, str]":
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = mod.main(["--repo-root", str(self.repo), "--site-packages", str(self.sp), *argv])
+        return code, buf.getvalue()
+
+    def test_below_floor_exits_one(self) -> None:
+        write_dist(self.sp, "juniper-data-client", "0.3.0")  # < 0.4.1
+        write_dist(self.sp, "juniper-cascor-client", "0.5.0")  # == floor -> OK
+        write_dist(self.sp, "juniper-observability", "0.3.1")  # > floor -> OK
+        code, out = self.run_main("--json")
+        payload = json.loads(out)
+        by_pkg = {f["package"]: f["status"] for f in payload["findings"]}
+        self.assertEqual(by_pkg["juniper-data-client"], mod.STATUS_BELOW)
+        self.assertEqual(by_pkg["juniper-cascor-client"], mod.STATUS_OK)
+        self.assertEqual(by_pkg["juniper-observability"], mod.STATUS_OK)
+        self.assertEqual(code, 1)  # any BELOW_FLOOR -> exit 1
+
+    def test_all_ok_exits_zero(self) -> None:
+        write_dist(self.sp, "juniper-data-client", "0.4.1")
+        write_dist(self.sp, "juniper-cascor-client", "0.5.2")
+        write_dist(self.sp, "juniper-observability", "0.2.0")
+        code, _ = self.run_main()
+        self.assertEqual(code, 0)
+
+    def test_missing_is_soft_unless_strict(self) -> None:
+        # Only one of three floors installed -> two MISSING, none below.
+        write_dist(self.sp, "juniper-data-client", "0.4.1")
+        code_default, out = self.run_main("--json")
+        self.assertEqual(code_default, 0, "MISSING alone is a soft note by default")
+        self.assertEqual(json.loads(out)["summary"][mod.STATUS_MISSING], 2)
+        code_strict, _ = self.run_main("--strict")
+        self.assertEqual(code_strict, 1, "--strict fails on MISSING")
+
+    def test_non_juniper_install_ignored(self) -> None:
+        write_dist(self.sp, "requests", "2.31.0")  # not tracked
+        write_dist(self.sp, "juniper-data-client", "0.4.1")
+        write_dist(self.sp, "juniper-cascor-client", "0.5.0")
+        write_dist(self.sp, "juniper-observability", "0.2.0")
+        code, out = self.run_main("--json")
+        names = {f["package"] for f in json.loads(out)["findings"]}
+        self.assertNotIn("requests", names)
+        self.assertEqual(code, 0)
+
+    def test_json_shape(self) -> None:
+        write_dist(self.sp, "juniper-data-client", "0.4.1")
+        _, out = self.run_main("--json")
+        payload = json.loads(out)
+        self.assertIn("repo_root", payload)
+        self.assertIn("scanned", payload)
+        self.assertEqual(payload["summary"]["total"], 3)
+        self.assertEqual(set(payload["findings"][0]), {"package", "floor", "installed", "status"})
+
+
+class InvocationErrorTest(unittest.TestCase):
+    def run_main(self, *argv: str) -> int:
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            return mod.main(list(argv))
+
+    def test_exit_two_when_no_pyproject(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(self.run_main("--repo-root", d, "--site-packages", d), 2)
+
+    def test_exit_two_when_no_floors(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "pyproject.toml").write_text('[project]\nname = "x"\ndependencies = ["requests>=2"]\n')
+            self.assertEqual(self.run_main("--repo-root", d, "--site-packages", d), 2)
+
+    def test_exit_two_when_site_packages_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "pyproject.toml").write_text('[project]\nname = "x"\ndependencies = ["juniper-data>=0.6.0"]\n')
+            self.assertEqual(self.run_main("--repo-root", d, "--site-packages", str(Path(d) / "nope")), 2)
+
+
+class NoHardcodedEnvNameTest(unittest.TestCase):
+    """The I-2 review requirement: the tool must never hardcode an environment name."""
+
+    def test_source_has_no_literal_env_name(self) -> None:
+        source = (UTIL_DIR / "env_floor_drift_check.py").read_text(encoding="utf-8")
+        for literal in ("JuniperCanopy1", "JuniperCascor1", "JuniperData"):
+            self.assertNotIn(literal, source, f"env name '{literal}' must not be hardcoded")
+
+
+if __name__ == "__main__":
+    unittest.main()
