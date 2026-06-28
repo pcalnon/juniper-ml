@@ -29,9 +29,12 @@ def _find_repo_root(start: Path) -> Path:
     raise RuntimeError(f"Could not locate repo root (no .github/workflows/) above {start}")
 
 
-def _git_init_repo(path: str) -> None:
+def _git_init_repo(path: str, commit_epoch: "int | None" = None) -> None:
     """Init a throwaway git repo at ``path`` with one empty commit (identity via env, never the
-    user's global config) so ``--target-repo`` can be exercised against a real sibling HEAD."""
+    user's global config). When ``commit_epoch`` is given the commit is dated to it -- deterministic
+    for the D-1 freshness cases; otherwise the current time is used (the E-3 ``--target-repo`` cases
+    just need a real sibling HEAD). Unifies the two helpers that PR-1 (D-1) and PR-4 (E-3) each added
+    to this file independently -- both signatures are served by the optional ``commit_epoch``."""
     env = {
         **os.environ,
         "GIT_AUTHOR_NAME": "t",
@@ -39,6 +42,9 @@ def _git_init_repo(path: str) -> None:
         "GIT_COMMITTER_NAME": "t",
         "GIT_COMMITTER_EMAIL": "t@example.invalid",
     }
+    if commit_epoch is not None:
+        env["GIT_AUTHOR_DATE"] = f"{commit_epoch} +0000"
+        env["GIT_COMMITTER_DATE"] = f"{commit_epoch} +0000"
     subprocess.run(["git", "-C", path, "init", "-q"], check=True, env=env, timeout=30)
     subprocess.run(["git", "-C", path, "commit", "-q", "--allow-empty", "-m", "init"], check=True, env=env, timeout=30)
 
