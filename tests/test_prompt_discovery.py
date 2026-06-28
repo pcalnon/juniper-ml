@@ -13,6 +13,7 @@ root is discovered by walking up for ``.github/workflows/``.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -25,6 +26,24 @@ def _find_repo_root(start: Path) -> Path:
         if (parent / ".github" / "workflows").is_dir():
             return parent
     raise RuntimeError(f"Could not locate repo root (no .github/workflows/) above {start}")
+
+
+def _git_init_repo(path: str) -> None:
+    """Init a throwaway git repo at ``path`` with one empty commit (identity via env, never the
+    user's global config) so ``--target-repo`` can be exercised against a real sibling HEAD."""
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "t",
+        "GIT_AUTHOR_EMAIL": "t@example.invalid",
+        "GIT_COMMITTER_NAME": "t",
+        "GIT_COMMITTER_EMAIL": "t@example.invalid",
+    }
+    subprocess.run(["git", "-C", path, "init", "-q"], check=True, env=env, timeout=30)
+    subprocess.run(["git", "-C", path, "commit", "-q", "--allow-empty", "-m", "init"], check=True, env=env, timeout=30)
+
+
+def _git_head(path: str) -> str:
+    return subprocess.run(["git", "-C", path, "rev-parse", "HEAD"], capture_output=True, text=True, check=True, timeout=30).stdout.strip()
 
 
 _REPO_ROOT = _find_repo_root(Path(__file__).resolve().parent)
@@ -155,6 +174,33 @@ class CliBundleTest(unittest.TestCase):
             timeout=30,
         )
         self.assertEqual(bundle["provenance"]["head_sha"], git.stdout.strip())
+
+    def test_target_repo_grounds_a_sibling_as_repo_root_alias(self):
+        # E-3: --target-repo (and --repo-root) ground an explicitly-named sibling repo, distinct
+        # from CWD; the bundle's head_sha binds to THAT repo's HEAD, not the caller's.
+        with tempfile.TemporaryDirectory() as d:
+            _git_init_repo(d)
+            head = _git_head(d)
+            for flag in ("--target-repo", "--repo-root"):
+                proc = self._run_cli(flag, d, "--json")
+                self.assertEqual(proc.returncode, 0, f"{flag}: {proc.stderr}")
+                bundle = json.loads(proc.stdout)
+                self.assertEqual(bundle["provenance"]["head_sha"], head, f"{flag} must ground {d}'s HEAD")
+                self.assertEqual(bundle["repo_context"]["repo"], Path(d).name)
+
+    def test_default_repo_root_grounds_cwd_unchanged(self):
+        # E-3 regression: with NO flag the bundle grounds CWD -- byte-for-byte the pre-E-3 default.
+        proc = subprocess.run(
+            [sys.executable, str(_PD_DIR / "cli.py"), "--json"],
+            capture_output=True,
+            text=True,
+            check=False,
+            cwd=str(_REPO_ROOT),
+            timeout=120,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        bundle = json.loads(proc.stdout)
+        self.assertEqual(bundle["provenance"]["head_sha"], _git_head(str(_REPO_ROOT)))
 
     def test_hard_stop_on_non_git_root(self):
         with tempfile.TemporaryDirectory() as d:

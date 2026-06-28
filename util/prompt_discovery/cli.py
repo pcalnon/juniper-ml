@@ -77,13 +77,22 @@ def build_bundle(repo_root: str, subject, symbols):
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description="Emit a prompt-discovery grounding bundle (JSON).")
-    parser.add_argument("--repo-root", default=os.getcwd(), help="target repo to ground against (default: CWD)")
+    parser.add_argument("--repo-root", default=None, help="target repo to ground against (default: CWD)")
+    parser.add_argument(
+        "--target-repo",
+        default=None,
+        help="explicit cross-repo alias for --repo-root: the sibling repo whose anchors to ground "
+        "(wins if both are given). The default-CWD behaviour is unchanged when neither is passed.",
+    )
     parser.add_argument("--subject", default=None, help="task subject -> file_probe anchors")
     parser.add_argument("--symbols", default=None, help="comma-separated symbol names -> symbol_probe")
     parser.add_argument("--json", action="store_true", help="emit JSON (the default and only format)")
     args = parser.parse_args(argv)
 
-    repo_root = os.path.abspath(args.repo_root)
+    # --target-repo is an explicit alias of --repo-root (it wins if both are given); when
+    # neither is passed the default is CWD -- byte-for-byte the pre-E-3 behaviour. repo_context
+    # already probes with `git -C <repo_root>`, so the whole bundle is cross-repo-correct.
+    repo_root = os.path.abspath(args.target_repo or args.repo_root or os.getcwd())
     symbols = [s.strip() for s in args.symbols.split(",") if s.strip()] if args.symbols else []
     bundle, repo_ctx = build_bundle(repo_root, args.subject, symbols)
     if bundle is None:

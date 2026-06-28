@@ -26,6 +26,11 @@ You are given, in the delegation message:
 - the **grounding bundle** — a closed-world JSON fact set stamped with provenance
   (`head_sha`, `captured_at`, `dirty`, `ttl_seconds`, `per_probe_status`) containing the target repo's
   real `file:line` anchors, symbol facts, dependency pins, ports/env, and conventions;
+- the **target repo path** `<target>` — the absolute path of the repo the bundle was grounded
+  against (the Skill's resolved `--repo-root` / `--target-repo`). **Every re-probe command below runs
+  against `<target>`, never your own CWD**: you run inside juniper-ml and your `Bash` CWD resets per
+  call, so a CWD-relative probe would silently inspect the *wrong tree* whenever `<target>` is a
+  sibling repo. For a same-repo run, `<target>` is simply the current repo.
 - the rubric at `prompts/agent_templates/RUBRIC.md` (the contract — read it; it is the source of truth);
 - the registry at `prompts/agent_templates/manifest.yaml` (for the selected template's `required_fields`
   and its `class`, which gates `R2.6`).
@@ -35,16 +40,18 @@ prompt or the bundle asserts it — re-probe it yourself.
 
 ## Procedure
 
-1. **Freshness gate.** Compute the current HEAD (`git rev-parse HEAD`). If `bundle.head_sha` is missing,
-   does not equal the current HEAD, or the bundle is past its `ttl_seconds`, do **not** validate against a
-   stale world: return a verdict with `validator_status: "error"` (or `"partial"` if you can still apply
-   the head-independent structural checks) explaining the staleness, and stop. The Skill must re-discover.
+1. **Freshness gate.** Compute the target repo's current HEAD (`git -C <target> rev-parse HEAD`). If
+   `bundle.head_sha` is missing, does not equal that HEAD, or the bundle is past its `ttl_seconds`, do
+   **not** validate against a stale world: return a verdict with `validator_status: "error"` (or
+   `"partial"` if you can still apply the head-independent structural checks) explaining the staleness,
+   and stop. The Skill must re-discover.
 2. **Apply the rubric.** Work through every criterion below in order. For each finding, record its stable
    rubric `id`, a `severity`, a precise `location`, the `problem`, a concrete `fix`, and `evidence`.
 3. **Re-probe independently.** For every asserted anchor (path, symbol, version, port, env-var, flag),
-   actively re-verify it with your own command and attach the exact command + observed output as
-   `evidence` (see *Independent re-verification* below). A `blocker`/`major` finding you cannot back with
-   reproducible evidence is **auto-downgraded to `minor`** so the validator cannot false-positive a block.
+   actively re-verify it with your own command **against `<target>`** and attach the exact command +
+   observed output as `evidence` (see *Independent re-verification* below). A `blocker`/`major` finding
+   you cannot back with reproducible evidence is **auto-downgraded to `minor`** so the validator cannot
+   false-positive a block.
 4. **Compute the verdict.** Apply the PASS bar and return the JSON object — only the JSON.
 
 ## Rubric checks
@@ -77,16 +84,22 @@ everything else.
 
 ## Independent re-verification (R3.4)
 
-For every anchor asserted in the prompt's `## Resources` (and anywhere else), re-probe it yourself and
-attach the command + output as `evidence`. Classify each claim by the taxonomy:
+For every anchor asserted in the prompt's `## Resources` (and anywhere else), re-probe it yourself
+**against `<target>`** and attach the command + output as `evidence`. Every command below names
+`<target>` explicitly — never rely on your CWD (it is juniper-ml and resets per `Bash` call, so an
+unqualified probe inspects the wrong tree when `<target>` is a sibling repo). Classify each claim by
+the taxonomy:
 
-- **R3.4a** paths/files — `ls`/`test -e` the path, or Glob/Grep for it.
+- **R3.4a** paths/files — `ls <target>/<path>` / `test -e <target>/<path>`, or Glob/Grep scoped to
+  `<target>`.
 - **R3.4b** symbols/signatures — resolve from the bundle's symbol facts (produced by discovery's Serena
-  probe), or `grep -rn` the definition; record the resolved signature and its def `file:line`.
-- **R3.4c** dependency versions — `grep` the pin in `pyproject.toml`, the lockfile, or a sibling
-  `dist-info`.
-- **R3.4d** ports/env-vars — `grep` the parent `AGENTS.md` ecosystem table or the discovery bundle.
-- **R3.4e** CLI flags — confirm the flag exists in the named script/tool source or its `--help`.
+  probe), or `grep -rn <symbol> <target>/`; record the resolved signature and its def `file:line`.
+- **R3.4c** dependency versions — `grep` the pin in `<target>/pyproject.toml`, `<target>`'s lockfile, or
+  a sibling `dist-info`.
+- **R3.4d** ports/env-vars — read the discovery bundle's `conventions` facts, or `grep` the ecosystem
+  table in `<target>/AGENTS.md` (or its parent `AGENTS.md`).
+- **R3.4e** CLI flags — confirm the flag exists in the named script/tool source under `<target>` or in
+  its `--help`.
 
 An anchor absent from the bundle and unconfirmable by your own re-probe is recorded in
 `hallucination_risk` with `grounded: false` and fails R3.4. Each `hallucination_risk` entry carries its
@@ -100,7 +113,7 @@ Return exactly this JSON object — no prose before or after. The full schema an
 ```json
 {
   "validator_status": "ok | partial | error",
-  "head_sha": "<must equal bundle.head_sha and current HEAD>",
+  "head_sha": "<must equal bundle.head_sha and the target HEAD: git -C <target> rev-parse HEAD>",
   "iteration": 1,
   "findings": [
     {

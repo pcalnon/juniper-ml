@@ -134,7 +134,6 @@ class PromptValidatorAgentTest(unittest.TestCase):
         effort = self.front.get("effort")
         self.assertEqual(str(effort).strip().lower(), "max", f"suite default effort is 'max' (owner directive 2026-06-24); got {effort!r}")
 
-    # this test is failing
     def test_body_cites_only_real_rubric_ids(self):
         self.assertTrue(self.rubric_path.exists(), "RUBRIC.md must be present (ships in PR 2b-i)")
         body_ids = set(_RUBRIC_ID.findall(self.body))
@@ -159,6 +158,26 @@ class PromptValidatorAgentTest(unittest.TestCase):
     def test_body_is_read_only_contract(self):
         low = self.body.lower()
         self.assertTrue("never" in low and ("edit" in low or "mutate" in low), "agent body must state it never edits/mutates files")
+
+    def test_reprobe_block_is_target_qualified_not_cwd(self):
+        """E-3: the validator re-probes the TARGET repo, never its own CWD -- so cross-repo
+        validation binds to the right tree instead of silently probing juniper-ml."""
+        body = self.body
+        self.assertRegex(
+            body,
+            r"git\s+-C\s+<target>\s+rev-parse\s+HEAD",
+            "freshness gate must use `git -C <target> rev-parse HEAD` so the verdict head_sha binds to the target",
+        )
+        self.assertNotRegex(
+            body,
+            r"\bgit rev-parse HEAD\b",
+            "no bare `git rev-parse HEAD` (CWD-relative) may remain -- it would probe the wrong tree cross-repo",
+        )
+        self.assertGreaterEqual(
+            body.count("<target>"),
+            5,
+            "the whole re-probe taxonomy (freshness + R3.4a-e), not just the freshness gate, must be retargeted to <target>",
+        )
 
 
 class VerdictSchemaTest(unittest.TestCase):

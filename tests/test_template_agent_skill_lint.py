@@ -108,7 +108,6 @@ class TemplateAgentSkillLintTest(unittest.TestCase):
     def test_user_only_invocation(self):
         self.assertIs(self.front.get("disable-model-invocation"), True, "Skill is user-only initially (OQ-5)")
 
-    # This test is failing
     def test_referenced_paths_exist(self):
         for rel in _REFERENCED_PATHS:
             self.assertIn(rel, self.body, f"SKILL.md should reference {rel}")
@@ -118,6 +117,17 @@ class TemplateAgentSkillLintTest(unittest.TestCase):
         self.assertIn("prompt-validator", self.body, "Skill must delegate to the prompt-validator subagent")
         self.assertIn("Agent", self.body, "Skill must use the Agent tool to delegate")
         self.assertTrue((self.repo_root / _VALIDATOR_AGENT).exists(), f"delegation target {_VALIDATOR_AGENT} must exist")
+
+    def test_passes_target_repo_to_validator(self):
+        """E-3: the Skill accepts the cross-repo target and threads the resolved <target> path
+        through discovery AND the validator delegation (so the validator re-probes the right tree)."""
+        self.assertIn("--target-repo", self.body, "Skill must accept the cross-repo --target-repo alias")
+        self.assertGreaterEqual(self.body.count("<target>"), 3, "Skill must resolve <target> and thread it through discovery + delegation")
+        self.assertRegex(
+            self.body,
+            r"(?s)<target>.{0,400}prompt-validator|prompt-validator.{0,400}<target>",
+            "the validator delegation must hand the target repo path <target> to prompt-validator",
+        )
 
     def test_bounded_loop_and_terminal_states(self):
         self.assertRegex(self.body, r"max 3|3 rounds|bounded", "Skill must document the bounded (max 3) validation loop")
