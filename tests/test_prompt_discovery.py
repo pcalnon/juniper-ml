@@ -13,9 +13,11 @@ root is discovered by walking up for ``.github/workflows/``.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -25,6 +27,35 @@ def _find_repo_root(start: Path) -> Path:
         if (parent / ".github" / "workflows").is_dir():
             return parent
     raise RuntimeError(f"Could not locate repo root (no .github/workflows/) above {start}")
+
+
+def _git_init_repo(path: str, commit_epoch: int) -> int:
+    """Init a throwaway git repo at ``path`` with one empty commit dated ``commit_epoch``.
+
+    Both author and committer dates are pinned (and identity is supplied via env, never the
+    user's global git config) so the HEAD commit time is fully deterministic -- the
+    D-1 freshness guard compares the pytest-cache mtime against exactly this value.
+    Returns the resulting HEAD committer epoch-seconds (``git show -s --format=%ct``).
+    """
+    env = {
+        **os.environ,
+        "GIT_AUTHOR_NAME": "t",
+        "GIT_AUTHOR_EMAIL": "t@example.invalid",
+        "GIT_COMMITTER_NAME": "t",
+        "GIT_COMMITTER_EMAIL": "t@example.invalid",
+        "GIT_AUTHOR_DATE": f"{commit_epoch} +0000",
+        "GIT_COMMITTER_DATE": f"{commit_epoch} +0000",
+    }
+    subprocess.run(["git", "-C", path, "init", "-q"], check=True, env=env, timeout=30)
+    subprocess.run(["git", "-C", path, "commit", "-q", "--allow-empty", "-m", "init"], check=True, env=env, timeout=30)
+    out = subprocess.run(
+        ["git", "-C", path, "show", "-s", "--format=%ct", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
+        timeout=30,
+    )
+    return int(out.stdout.strip())
 
 
 _REPO_ROOT = _find_repo_root(Path(__file__).resolve().parent)
@@ -57,13 +88,28 @@ class RepoContextProbeTest(unittest.TestCase):
 
 
 class TestStatusProbeTest(unittest.TestCase):
-    """The cold_cache/empty distinction is the headline grounding-hazard guard."""
+    """The cold_cache/empty distinction is the headline grounding-hazard guard.
+
+    The D-1 freshness cases extend it: a cache that predates the current HEAD commit (or is
+    older than the TTL) is reported ``stale`` with ``failing_count`` blanked, so a measured
+    "no failures" cannot masquerade as current when it measured a different tree.
+    """
+
+    @staticmethod
+    def _write_lastfailed(d, content='{"tests/test_x.py::test_a": true}'):
+        cache = Path(d) / ".pytest_cache" / "v" / "cache"
+        cache.mkdir(parents=True)
+        lf = cache / "lastfailed"
+        lf.write_text(content, encoding="utf-8")
+        return lf
 
     def test_cold_cache_when_never_run(self):
         with tempfile.TemporaryDirectory() as d:
             res = test_status.probe(d)
             self.assertEqual(res["status"], "cold_cache")
             self.assertIsNone(res["failing_count"])
+            # cold_cache is byte-for-byte preserved -- no freshness provenance is stamped.
+            self.assertNotIn("cache_mtime", res)
 
     def test_empty_cache_means_zero_failures(self):
         with tempfile.TemporaryDirectory() as d:
@@ -81,6 +127,50 @@ class TestStatusProbeTest(unittest.TestCase):
             self.assertEqual(res["status"], "ok")
             self.assertEqual(res["failing_count"], 1)
             self.assertIn("tests/test_x.py::test_a", res["failing"])
+
+    def test_fresh_cache_after_commit_is_ok(self):
+        # (a) cache mtime >= HEAD commit time and age < TTL -> ok, freshness provenance stamped.
+        with tempfile.TemporaryDirectory() as d:
+            _git_init_repo(d, commit_epoch=int(time.time()) - 3600)  # HEAD committed an hour ago
+            self._write_lastfailed(d)  # written now -> mtime >> commit time, age ~0
+            res = test_status.probe(d)
+            self.assertEqual(res["status"], "ok")
+            self.assertEqual(res["failing_count"], 1)
+            self.assertIn("cache_mtime", res)
+            self.assertIn("age_seconds", res)
+
+    def test_stale_when_cache_predates_head_commit(self):
+        # (b) cache mtime < HEAD commit time -> stale (primary signal), isolated from the TTL.
+        with tempfile.TemporaryDirectory() as d:
+            commit_epoch = int(time.time())
+            _git_init_repo(d, commit_epoch=commit_epoch)
+            lf = self._write_lastfailed(d)
+            os.utime(lf, (commit_epoch - 3600, commit_epoch - 3600))  # cache predates the commit
+            res = test_status.probe(d, ttl_seconds=10**9)  # huge TTL -> only the commit signal can fire
+            self.assertEqual(res["status"], "stale")
+            self.assertIsNone(res["failing_count"])
+            self.assertIn("commit", res["reason"])
+            self.assertIn("cache_mtime", res)
+            self.assertIn("age_seconds", res)
+
+    def test_stale_when_older_than_ttl(self):
+        # (c) no git (commit signal is a no-op) + age > TTL -> stale (secondary signal).
+        with tempfile.TemporaryDirectory() as d:
+            lf = self._write_lastfailed(d)
+            os.utime(lf, (time.time() - 10_000, time.time() - 10_000))
+            res = test_status.probe(d, ttl_seconds=900)
+            self.assertEqual(res["status"], "stale")
+            self.assertIsNone(res["failing_count"])
+            self.assertIn("TTL", res["reason"])
+
+    def test_unavailable_when_lastfailed_unreadable(self):
+        # (e) malformed lastfailed -> unavailable, byte-for-byte preserved (no freshness stamp).
+        with tempfile.TemporaryDirectory() as d:
+            self._write_lastfailed(d, content="{not valid json")
+            res = test_status.probe(d)
+            self.assertEqual(res["status"], "unavailable")
+            self.assertIsNone(res["failing_count"])
+            self.assertNotIn("cache_mtime", res)
 
 
 class DependencyFactsProbeTest(unittest.TestCase):
