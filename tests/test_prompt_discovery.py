@@ -17,6 +17,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -76,13 +77,28 @@ class RepoContextProbeTest(unittest.TestCase):
 
 
 class TestStatusProbeTest(unittest.TestCase):
-    """The cold_cache/empty distinction is the headline grounding-hazard guard."""
+    """The cold_cache/empty distinction is the headline grounding-hazard guard.
+
+    The D-1 freshness cases extend it: a cache that predates the current HEAD commit (or is
+    older than the TTL) is reported ``stale`` with ``failing_count`` blanked, so a measured
+    "no failures" cannot masquerade as current when it measured a different tree.
+    """
+
+    @staticmethod
+    def _write_lastfailed(d, content='{"tests/test_x.py::test_a": true}'):
+        cache = Path(d) / ".pytest_cache" / "v" / "cache"
+        cache.mkdir(parents=True)
+        lf = cache / "lastfailed"
+        lf.write_text(content, encoding="utf-8")
+        return lf
 
     def test_cold_cache_when_never_run(self):
         with tempfile.TemporaryDirectory() as d:
             res = test_status.probe(d)
             self.assertEqual(res["status"], "cold_cache")
             self.assertIsNone(res["failing_count"])
+            # cold_cache is byte-for-byte preserved -- no freshness provenance is stamped.
+            self.assertNotIn("cache_mtime", res)
 
     def test_empty_cache_means_zero_failures(self):
         with tempfile.TemporaryDirectory() as d:
@@ -100,6 +116,50 @@ class TestStatusProbeTest(unittest.TestCase):
             self.assertEqual(res["status"], "ok")
             self.assertEqual(res["failing_count"], 1)
             self.assertIn("tests/test_x.py::test_a", res["failing"])
+
+    def test_fresh_cache_after_commit_is_ok(self):
+        # (a) cache mtime >= HEAD commit time and age < TTL -> ok, freshness provenance stamped.
+        with tempfile.TemporaryDirectory() as d:
+            _git_init_repo(d, commit_epoch=int(time.time()) - 3600)  # HEAD committed an hour ago
+            self._write_lastfailed(d)  # written now -> mtime >> commit time, age ~0
+            res = test_status.probe(d)
+            self.assertEqual(res["status"], "ok")
+            self.assertEqual(res["failing_count"], 1)
+            self.assertIn("cache_mtime", res)
+            self.assertIn("age_seconds", res)
+
+    def test_stale_when_cache_predates_head_commit(self):
+        # (b) cache mtime < HEAD commit time -> stale (primary signal), isolated from the TTL.
+        with tempfile.TemporaryDirectory() as d:
+            commit_epoch = int(time.time())
+            _git_init_repo(d, commit_epoch=commit_epoch)
+            lf = self._write_lastfailed(d)
+            os.utime(lf, (commit_epoch - 3600, commit_epoch - 3600))  # cache predates the commit
+            res = test_status.probe(d, ttl_seconds=10**9)  # huge TTL -> only the commit signal can fire
+            self.assertEqual(res["status"], "stale")
+            self.assertIsNone(res["failing_count"])
+            self.assertIn("commit", res["reason"])
+            self.assertIn("cache_mtime", res)
+            self.assertIn("age_seconds", res)
+
+    def test_stale_when_older_than_ttl(self):
+        # (c) no git (commit signal is a no-op) + age > TTL -> stale (secondary signal).
+        with tempfile.TemporaryDirectory() as d:
+            lf = self._write_lastfailed(d)
+            os.utime(lf, (time.time() - 10_000, time.time() - 10_000))
+            res = test_status.probe(d, ttl_seconds=900)
+            self.assertEqual(res["status"], "stale")
+            self.assertIsNone(res["failing_count"])
+            self.assertIn("TTL", res["reason"])
+
+    def test_unavailable_when_lastfailed_unreadable(self):
+        # (e) malformed lastfailed -> unavailable, byte-for-byte preserved (no freshness stamp).
+        with tempfile.TemporaryDirectory() as d:
+            self._write_lastfailed(d, content="{not valid json")
+            res = test_status.probe(d)
+            self.assertEqual(res["status"], "unavailable")
+            self.assertIsNone(res["failing_count"])
+            self.assertNotIn("cache_mtime", res)
 
 
 class DependencyFactsProbeTest(unittest.TestCase):

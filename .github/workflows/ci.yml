@@ -130,6 +130,11 @@ jobs:
           python3 -m unittest -v tests/test_worktree_sweep_scripts.py
           python3 -m unittest -v tests/test_reap_pytest_orphans.py
           python3 -m unittest -v tests/test_editable_install_drift_check.py
+          # tests/test_env_floor_drift_check.py: gap-I-2 floor-drift checker --
+          # installed juniper-* (dist-info METADATA) vs the target repo's pyproject
+          # floors. Structural gate only (ubuntu CI has no conda env); a real-env
+          # scan is a documented manual-verify step. util/ is not pre-commit-gated.
+          python3 -m unittest -v tests/test_env_floor_drift_check.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
@@ -258,6 +263,10 @@ jobs:
           # `.github/workflows/agents-md-touch-up.yml` workflow,
           # which auto-bumps on each PR push touching AGENTS.md.
           python3 -m unittest -v tests/test_agents_md_header_schema.py
+          # tests/test_agents_md_tree_drift.py: gap-G-3 guard -- every tracked
+          # non-hidden top-level dir must appear in AGENTS.md's Repository-Structure
+          # tree (catches the indented-tree omission the grep path-drift guard cannot).
+          python3 -m unittest -v tests/test_agents_md_tree_drift.py
           # tests/test_juniper_plant_all.py + tests/test_juniper_chop_all.py: stdlib-only static tests of
           # the util/juniper_{plant,chop}_all.bash service launchers (bash -n syntax + script-text
           # assertions + a synthetic tempdir conda fixture; no real services or network). Shipped but
