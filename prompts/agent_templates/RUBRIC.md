@@ -50,9 +50,15 @@ is auto-downgraded to `minor` (prevents validator false-positives). The Skill's 
 
 *The prompt expresses the intent of the task description.*
 
-- **R1.1 — Requirement coverage** (`major`). Every explicit requirement in the task description maps to
-  ≥1 directive or deliverable in the prompt. *Decide:* enumerate task requirements; for each, point to
-  the prompt line that carries it. A requirement with no carrier fails.
+- **R1.1 — Requirement & source-finding coverage** (`major`). Every explicit requirement in the task
+  description **and every material finding in a source document the task cites** maps to ≥1 directive or
+  deliverable in the prompt; and where two cited sources **disagree**, the prompt **surfaces** the
+  disagreement rather than silently flattening it to one side. *Decide:* enumerate (a) the task's
+  requirements and (b) each cited source's findings; for each, point to the prompt line that carries it.
+  A requirement or source-finding with no carrier fails; a source disagreement collapsed without note
+  also fails. (This is the **intent-fidelity** dimension: a fully grounded, in-scope prompt can still
+  *drop a source finding* or *flatten a source disagreement* — the two faithfulness defects this suite's
+  own dogfooding exposed. Keep it `major`, not a blocker, so it informs rather than hard-fails.)
 - **R1.2 — No scope-creep** (`major`). The prompt introduces no requirement absent from the task
   description (and not an owner-approved expansion). *Decide:* every prompt directive traces back to the
   task or an approved expansion; an untraceable directive fails.

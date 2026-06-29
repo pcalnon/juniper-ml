@@ -61,7 +61,7 @@ severity escalates from `a` to `b` as harm increases.
 
 | ID | Severity | Decide |
 |----|----------|--------|
-| R1.1 | major | every explicit task requirement maps to >=1 directive or deliverable in the prompt |
+| R1.1 | major | every task requirement AND every finding of a cited source document maps to a directive/deliverable; a disagreement between cited sources is surfaced, not silently flattened to one side |
 | R1.2 | major | no prompt directive lacks a trace back to the task or an owner-approved expansion (no scope-creep) |
 | R1.3 | major | the `## Primary Objective` restates the task intent without distortion |
 | R1.4 | blocker->major | named repo(s)/app(s) match `bundle.repo_context`; the authorized blast radius is proportionate |
