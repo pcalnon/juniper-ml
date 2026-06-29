@@ -19,13 +19,20 @@ The public API is:
   ``**Version**:`` drift lint added in 0.3.0.
 - :func:`lint_agents_md_version` -- ergonomic library entry point for the
   AGENTS.md drift lint.
+- :class:`CoverageReport` (with :class:`FileCoverage` / :class:`SubmoduleCoverage`)
+  -- the advisory per-file coverage-gap mapper added in 0.5.0.
+- :func:`parse_coverage_json` / :func:`load_coverage_json` -- parse a
+  ``coverage json`` into the structured report (the primary, fixture-testable
+  path); :func:`run_coverage` runs a repo's real test command under the
+  numpy-2.x-safe package-form ``--cov`` shim first.
 
 For CLI usage, install the package and run :program:`juniper-generate-dep-docs`
 (dep-docs generator), :program:`juniper-lint-workflow-paths` (workflow-script-
 path lint), :program:`juniper-lint-agents-md-version` (AGENTS.md version
-drift lint), or ``python -m juniper_ci_tools`` (dep-docs generator). The CLI
-surfaces are in :mod:`cli`, :mod:`cli_lint_workflow_paths`, and
-:mod:`cli_lint_agents_md_version`.
+drift lint), :program:`juniper-coverage-gap-map` (advisory per-file
+coverage-gap mapper), or ``python -m juniper_ci_tools`` (dep-docs generator).
+The CLI surfaces are in :mod:`cli`, :mod:`cli_lint_workflow_paths`,
+:mod:`cli_lint_agents_md_version`, and :mod:`cli_coverage_gap_mapper`.
 
 See ``notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`` in the
 juniper-ml repo for the design rationale, the incident-class motivation
@@ -33,6 +40,16 @@ juniper-ml repo for the design rationale, the incident-class motivation
 """
 
 from juniper_ci_tools._version import __version__
+from juniper_ci_tools.coverage_gap_mapper import (
+    CoverageReport,
+    FileCoverage,
+    SubmoduleCoverage,
+    load_coverage_json,
+    package_cov_pytest_args,
+    parse_coverage_json,
+    run_coverage,
+    write_include_coverage_config,
+)
 from juniper_ci_tools.generate_dep_docs import (
     GenerateResult,
     generate_dep_docs,
@@ -72,4 +89,12 @@ __all__ = [
     "RepoRootNotFoundError",
     "find_agents_md_repo_root",
     "lint_agents_md_version",
+    "CoverageReport",
+    "FileCoverage",
+    "SubmoduleCoverage",
+    "parse_coverage_json",
+    "load_coverage_json",
+    "run_coverage",
+    "package_cov_pytest_args",
+    "write_include_coverage_config",
 ]

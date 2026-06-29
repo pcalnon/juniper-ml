@@ -185,6 +185,17 @@ jobs:
           # docs-full-check.yml. The full cross-repo assertion runs
           # weekly via docs-full-check.yml.
           python3 -m unittest -v tests/test_ci_tools_drift.py
+          # tests/test_coverage_gap_mapper_drift.py: STRUCTURAL dogfood gate for the
+          # juniper-coverage-gap-map console script (enhancement E-4; the advisory
+          # per-file coverage-gap mapper hosted in juniper-ci-tools). Asserts the
+          # console script is registered, both module halves ship, _version.py
+          # matches pyproject [project].version, and juniper-ml's own ci-tools pins
+          # admit the current version (the bump-without-widening coupling). The real
+          # cross-repo coverage run cannot execute in juniper-ml CI (meta-package; no
+          # target repo checked out) -- it is a documented manual-verify step; the
+          # behavioural gate is juniper-ci-tools' own pytest suite (synthetic
+          # coverage.json fixtures, exercised by ci-ci-tools.yml).
+          python3 -m unittest -v tests/test_coverage_gap_mapper_drift.py
           # tests/test_model_core_drift.py + tests/test_service_core_drift.py:
           # same idea as the doc-tools/ci-tools drift lints, but the pin lives in
           # pyproject.toml's [tools] extra (library deps, not CI-workflow installs).
@@ -465,7 +476,7 @@ jobs:
       - name: Install juniper-ci-tools
         run: |
           python -m pip install --upgrade "pip>=26.1.1"
-          pip install "juniper-ci-tools>=0.1.0,<0.5.0"
+          pip install "juniper-ci-tools>=0.1.0,<0.6.0"
 
       - name: Generate Dependency Documentation
         run: |

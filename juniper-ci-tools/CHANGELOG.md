@@ -9,6 +9,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] -- 2026-06-28
+
+Adds the advisory per-file coverage-gap mapper as a fifth console script
+(non-breaking; existing `juniper-generate-dep-docs`,
+`juniper-lint-workflow-paths`, `juniper-lint-agents-md-version`, and
+`juniper-lint-agents-md-header` callers are unaffected).
+
+### Added
+
+- `juniper_ci_tools.coverage_gap_mapper` — Python library that parses a
+  `coverage json` (coverage.py / pytest-cov `--cov-report=json`) and emits
+  three views: (a) the per-file coverage distribution (a histogram of file
+  percentages), (b) the list of files below a threshold (default 90 %), and
+  (c) each sub-module's average coverage vs a bar (default 95 %). A
+  *sub-module* is the directory a file lives in. Public API:
+  `FileCoverage`, `SubmoduleCoverage`, `CoverageReport`,
+  `parse_coverage_json`, `load_coverage_json`, `run_coverage`,
+  `package_cov_pytest_args`, `write_include_coverage_config`.
+- `juniper-coverage-gap-map` console script (plus the
+  `python -m juniper_ci_tools.cli_coverage_gap_mapper` module form). Supports
+  **both** inputs: `--coverage-json PATH` parses a pre-generated report (the
+  primary, deterministic path), and `--repo-root . --package PKG
+  --test-command "..."` runs the repo's real test command under coverage
+  first. Flags: `--include` (report-scoping glob, repeatable),
+  `--file-threshold`, `--submodule-bar`, `--json`, `--version`.
+- **Advisory-first posture (exit-code contract):** the CLI exits `0` whenever
+  it produces a report — **always**, regardless of how many files are below
+  the threshold or sub-modules are under the bar. It reports; it never fails a
+  build on coverage findings. Exit `2` is reserved for structural / usage
+  errors (no input, an unreadable or malformed `coverage.json`, a dotted
+  `--package`). Promotion to a blocking per-file gate is a separate, per-repo,
+  owner-signed decision.
+- **numpy-2.x dotted-`--cov` shim (documented):** `package_cov_pytest_args`
+  builds coverage invocations with the **package-form** `--cov=<package>` and
+  scopes any narrowing through a `[report] include=` config written by
+  `write_include_coverage_config` — never the dotted `--cov=pkg.submodule`
+  form, which trips numpy 2.x's "cannot load module more than once per
+  process" guard at pytest-cov startup (hit 2026-06-25, juniper-recurrence
+  #70). The helper refuses a dotted package argument outright.
+- 28 new tests under `tests/test_coverage_gap_mapper.py` driving synthetic
+  `coverage.json` fixtures (no real coverage run): the per-file distribution,
+  the strict `<90` list, the sub-module mean-vs-bar classification,
+  exit-0-always, the full CLI exit-code matrix, JSON output shape, the
+  package-form shim (including dotted-rejection), and the run-coverage path
+  via a monkeypatched subprocess.
+
+### Migration context
+
+Hosts enhancement **E-4** of the juniper-ml custom-agent-suite enhancement
+plan (`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md`
+§6.7, Phase-2 PR-6). Addresses the systemic gap surfaced by the 2026-06-26
+ecosystem test-suite audit: no per-file coverage gate exists anywhere across
+the Juniper repos. juniper-ml's own workflow pins (`ci.yml`,
+`lockfile-update.yml`, `docs-full-check.yml`) are widened to admit 0.5.0 in
+the same PR; the dogfood gate is `juniper-ml tests/test_coverage_gap_mapper_drift.py`.
+
 ## [0.4.0] -- 2026-05-22
 
 Adds the AGENTS.md header-schema lint as a fourth console script
