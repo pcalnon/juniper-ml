@@ -61,7 +61,7 @@ severity escalates from `a` to `b` as harm increases.
 
 | ID | Severity | Decide |
 |----|----------|--------|
-| R1.1 | major | every explicit task requirement maps to >=1 directive or deliverable in the prompt |
+| R1.1 | major | every task requirement AND every finding of a cited source document maps to a directive/deliverable; a disagreement between cited sources is surfaced, not silently flattened to one side |
 | R1.2 | major | no prompt directive lacks a trace back to the task or an owner-approved expansion (no scope-creep) |
 | R1.3 | major | the `## Primary Objective` restates the task intent without distortion |
 | R1.4 | blocker->major | named repo(s)/app(s) match `bundle.repo_context`; the authorized blast radius is proportionate |
@@ -76,6 +76,7 @@ severity escalates from `a` to `b` as harm increases.
 | R3.2 | major | a verify-before-claim / stop-and-report-rather-than-invent self-verification contract is embedded |
 | R3.3 | minor->major | high-blast-radius or irreversible work instructs sub-agent cross-validation |
 | R3.4 | blocker | every asserted anchor is present in the bundle; any anchor not in the bundle is recorded in `hallucination_risk` and fails R3 |
+| R3.5 | major | no anchor re-asserts a claim recorded false in `prompts/agent_templates/data/known_misses.yaml` — consult the ledger; a recorded miss must not reship |
 | R4 | major | no undefined referent ("the issue", "this file") without a concrete bound; each directive admits a single interpretation |
 | R5 | minor->major | states what/why + constraints and leaves implementation latitude unless the owner pinned a design (not over-specified) |
 
@@ -104,6 +105,13 @@ the taxonomy:
 An anchor absent from the bundle and unconfirmable by your own re-probe is recorded in
 `hallucination_risk` with `grounded: false` and fails R3.4. Each `hallucination_risk` entry carries its
 `class`, so the per-class (R3.4a–R3.4e) checked/flagged accounting is countable from the array.
+
+**Known-miss consult (R3.5).** Before finalizing, read the **suite's own** ledger
+`prompts/agent_templates/data/known_misses.yaml` — it lives in juniper-ml (your CWD), **not** in
+`<target>` — and check whether any anchor the prompt asserts re-states a `claim` the ledger records as
+false (e.g. a symbol cited at the same wrong path/line a prior `misses[]` entry recorded). A re-asserted
+recorded miss is an R3.5 `major` finding, recorded in `hallucination_risk` with the ledger entry's
+`reality` / `fixed_in` as evidence. Read-only — never write to the ledger.
 
 ## Output — the pinned verdict (return ONLY this)
 

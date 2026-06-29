@@ -26,6 +26,12 @@ classifiers = [
 dependencies = [
     "PyYAML>=6.0",
     "tomli>=2.0; python_version < '3.11'",
+    # packaging powers the env floor-drift checker (Requirement / SpecifierSet /
+    # canonicalize_name / Version). It is near-universal (pip / setuptools depend
+    # on it). Floored at 22.0 where SpecifierSet.contains returns False (rather
+    # than raising) on a non-PEP440 operand -- the checker also catches
+    # InvalidVersion defensively, so this is belt-and-suspenders.
+    "packaging>=22.0",
 ]
 
 [project.optional-dependencies]

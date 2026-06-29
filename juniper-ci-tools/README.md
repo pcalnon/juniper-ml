@@ -47,7 +47,7 @@ This installs the following console scripts (see the package's
   reports, it never fails a build. Carries a documented numpy-2.x
   package-form `--cov` shim.
 
-The package requires Python 3.11 or newer and depends on PyYAML.
+The package requires Python 3.11 or newer and depends on PyYAML and packaging.
 
 ## Usage
 
@@ -94,6 +94,32 @@ exits non-zero.
 | `--conda-filename` | `conda_environment_ci.yaml` | Conda output filename |
 | `--no-conda` | off | Skip conda generation even if conda is installed |
 | `--no-yaml-validation` | off | Skip `yaml.safe_load` on generated conda file |
+
+## Environment floor-drift check (`juniper-env-drift-check`)
+
+Run from (or against) any Juniper repo to assert the active environment is not
+*below* the client floors the repo's `pyproject.toml` declares — the durable,
+reusable form of the dependency-satisfaction guard (added in 0.5.0). Unlike
+`util/editable_install_drift_check.py`, it reads versions via
+`importlib.metadata`, so **plain wheels are checked identically to editable
+installs** (the 2026-06-26 canopy "green tests / dead app" incident class).
+
+```bash
+# Scan the active interpreter against ./pyproject.toml
+juniper-env-drift-check
+
+# Check a specific repo, and also assert its lockfile pins satisfy the floors
+juniper-env-drift-check --repo-root /path/to/repo --check-lock
+
+# Scan a specific environment's site-packages (e.g. a conda env), as JSON
+juniper-env-drift-check --site-packages /opt/miniforge3/envs/MyEnv/lib/python3.13/site-packages --json
+```
+
+Exit codes: `0` (no floor below its requirement), `1` (drift — an installed
+wheel, or a `--check-lock` lock pin, below a floor), `2` (usage error — no
+`pyproject.toml`, no `juniper-*` floors, or `--check-lock` with no lockfile). A
+not-installed floor is a soft note unless `--strict` is given. Every floor (OK
+and drifted alike) is listed — no silent truncation.
 
 ## Library API
 

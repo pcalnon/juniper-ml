@@ -50,9 +50,15 @@ is auto-downgraded to `minor` (prevents validator false-positives). The Skill's 
 
 *The prompt expresses the intent of the task description.*
 
-- **R1.1 — Requirement coverage** (`major`). Every explicit requirement in the task description maps to
-  ≥1 directive or deliverable in the prompt. *Decide:* enumerate task requirements; for each, point to
-  the prompt line that carries it. A requirement with no carrier fails.
+- **R1.1 — Requirement & source-finding coverage** (`major`). Every explicit requirement in the task
+  description **and every material finding in a source document the task cites** maps to ≥1 directive or
+  deliverable in the prompt; and where two cited sources **disagree**, the prompt **surfaces** the
+  disagreement rather than silently flattening it to one side. *Decide:* enumerate (a) the task's
+  requirements and (b) each cited source's findings; for each, point to the prompt line that carries it.
+  A requirement or source-finding with no carrier fails; a source disagreement collapsed without note
+  also fails. (This is the **intent-fidelity** dimension: a fully grounded, in-scope prompt can still
+  *drop a source finding* or *flatten a source disagreement* — the two faithfulness defects this suite's
+  own dogfooding exposed. Keep it `major`, not a blocker, so it informs rather than hard-fails.)
 - **R1.2 — No scope-creep** (`major`). The prompt introduces no requirement absent from the task
   description (and not an owner-approved expansion). *Decide:* every prompt directive traces back to the
   task or an approved expansion; an untraceable directive fails.
@@ -119,6 +125,14 @@ is auto-downgraded to `minor` (prevents validator false-positives). The Skill's 
   - **R3.4a** paths/files · **R3.4b** symbols/signatures · **R3.4c** dependency versions ·
     **R3.4d** ports/env-vars · **R3.4e** CLI flags.
   The validator emits a per-class checked/flagged count so the drift test can assert each class is exercised.
+- **R3.5 — Known-miss consult** (`major`). Cross-check every anchor the prompt asserts against the
+  recorded-miss ledger `prompts/agent_templates/data/known_misses.yaml`: if the prompt re-asserts a
+  `claim` the ledger records as false (or a close variant — the same symbol at the same wrong
+  path/line), flag it so a recorded miss cannot reship. *Decide:* for each ledger `misses[]` entry,
+  check whether the drafted prompt re-states the false `claim`; a match fails and is recorded in
+  `hallucination_risk` with the ledger entry (`reality` + `fixed_in`) as evidence. The ledger is
+  **human-curated** — the validator only **reads** it; there is **no auto-append** (the write-path is
+  deliberately out of scope at N=1).
 
 ## R4 — Clarity / unambiguity
 

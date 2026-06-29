@@ -57,6 +57,7 @@ _EXPECTED_RUBRIC_IDS = [
     "R3.4c",
     "R3.4d",
     "R3.4e",
+    "R3.5",
     "R4",
     "R5",
 ]
