@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-06-28
+**Last Updated**: 2026-06-29
 
 ---
 
@@ -64,6 +64,7 @@ python3 -m unittest -v tests/test_agents_frontmatter.py
 python3 -m unittest -v tests/test_agents_md_version_drift.py
 python3 -m unittest -v tests/test_agents_md_header_schema.py
 python3 -m unittest -v tests/test_agents_md_tree_drift.py
+python3 -m unittest -v tests/test_coverage_gap_mapper_drift.py
 bash scripts/test_resume_file_safety.bash
 # doc-link validator regression tests live in juniper-doc-tools/tests/
 # and run under the dedicated `CI -- juniper-doc-tools` workflow.
@@ -241,6 +242,7 @@ juniper-ml/
 │   ├── test_agents_md_version_drift.py   # Lint: AGENTS.md **Version** header matches pyproject.toml [project].version
 │   ├── test_agents_md_header_schema.py   # Lint: AGENTS.md canonical header schema (6 required fields, ISO date format)
 │   ├── test_agents_md_tree_drift.py       # Lint: every tracked top-level dir appears in the Repository-Structure tree (G-3)
+│   ├── test_coverage_gap_mapper_drift.py  # Dogfood/drift (E-4): juniper-coverage-gap-map console script registered + version/pin coherent (ci-tools)
 │   └── fixtures/
 │       └── prompt_validator/             # PR 3: verdict.schema.json + verdict.sample.{pass,fail}.json (validator contract)
 │   # Doc-link validator regression tests moved to juniper-doc-tools/tests/
@@ -359,6 +361,7 @@ juniper-ml/
 - `tests/test_template_agent_skill_lint.py` -- Static lint for the `template-agent` Skill (`.claude/skills/template-agent/SKILL.md`, PR 5): frontmatter (`allowed-tools` includes `Agent`, `model: opus` + `effort: max`, user-only) and that the bounded state machine wires to real artifacts (template library, `RUBRIC.md`, `util/prompt_discovery/cli.py`, the emission dir, the `prompt-validator` subagent). E-3: threads `<target>` to the validator. The Skill-surface gate (pre-commit-excluded except markdownlint).
 - `tests/test_agents_frontmatter.py` -- Suite-wide frontmatter gate over every `.claude/agents/*.md` (the `prompt-validator` plus the round-2 `planner` / `auditor` / `task-executor`): `name` equals the filename, the `description` is substantive, `tools` are declared, the body is non-trivial, and the owner-directed defaults `model: opus` + `effort: max` hold -- so a new agent cannot drift from the standing defaults. The shared invariant complementing `test_prompt_validator_contract.py`.
 - `tests/test_ci_tools_drift.py` -- Lint test (dep-docs plan §5.1) for `juniper-ci-tools` pins. Mirrors `test_doc_tools_drift.py`: walks juniper-ml's own workflows (`ci.yml`, `lockfile-update.yml`, `docs-full-check.yml`) plus each cloned consumer repo's `ci.yml`, extracts the `juniper-ci-tools>=X,<Y` pin, and asserts the range still admits the current version (read from `juniper-ci-tools/pyproject.toml`). Same skip semantics and `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` override as the doc-tools sibling.
+- `tests/test_coverage_gap_mapper_drift.py` -- Structural dogfood/drift gate (E-4) for the `juniper-coverage-gap-map` console script (advisory per-file coverage-gap mapper in `juniper-ci-tools`). Modeled on `test_ci_tools_drift.py`: asserts the script is registered, both module halves ship, `_version.py` matches `[project].version`, and juniper-ml's pins admit it. The cross-repo coverage run is a documented manual-verify step; behaviour is gated by `juniper-ci-tools/tests/test_coverage_gap_mapper.py`.
 - `tests/test_agents_md_version_drift.py` -- Lint test pinning `AGENTS.md`'s `**Version**:` header to `pyproject.toml`'s `[project].version`. Added after juniper-ml#295 bumped pyproject 0.4.1→0.5.0 but left AGENTS.md at 0.4.0 for ~6 days (fixed in juniper-ml#304); this lint makes the drift impossible to ship. Intentionally portable: auto-locates the repo root, so the module can be dropped into any Juniper repo's `tests/` (skips loudly if AGENTS.md has no canonical header).
 - `tests/test_agents_md_header_schema.py` -- Lint pinning `AGENTS.md`'s canonical header schema. Six required fields in this relative order: `**Project**`, `**Repository**`, `**Author**`, `**License**`, `**Version**`, `**Last Updated**`. Extras (e.g. `**Python**:`) may be interleaved freely. Validates each value non-empty and `**Last Updated**` is `YYYY-MM-DD`. Currency of the date is enforced by `.github/workflows/agents-md-touch-up.yml`. Portable (self-locating).
 - `tests/test_agents_md_tree_drift.py` -- Lint (gap G-3) asserting every tracked non-hidden top-level dir (`git ls-tree`; the `ls -d */` surface) appears as a node in `AGENTS.md`'s fenced Repository-Structure tree, catching the indented-tree omission the grep-based `test_agent_suite_path_drift.py` cannot (stale `templates/`, missing `conf/`/`papers/` + 6 sub-package dirs). Portable; a synthetic negative case proves it bites.

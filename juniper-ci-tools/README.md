@@ -24,7 +24,8 @@ that addressed the analogous 2026-05-18 doc-link validator incident.
 pip install juniper-ci-tools
 ```
 
-This installs the following console scripts:
+This installs the following console scripts (see the package's
+`[project.scripts]` for the authoritative set):
 
 - `juniper-generate-dep-docs` — dependency-documentation generator (the
   consolidated `scripts/generate_dep_docs.sh` port; see "Usage" below).
@@ -34,13 +35,17 @@ This installs the following console scripts:
   consolidates the 6 byte-identical copies of
   `util/test_workflow_script_paths.py` that existed across consumer
   repos.
-- `juniper-env-drift-check` — asserts the `juniper-*` distributions
-  installed in the active environment (**plain wheels included**)
-  satisfy the floors a target repo's `pyproject.toml` declares, and —
-  with `--check-lock` — that its `requirements.lock` pins do too.
-  Added in 0.5.0; the shared, reusable form of the dependency-
-  satisfaction guard (test-suite audit plan §10.1) that closes the
-  2026-06-26 "green tests / dead app" client-floor-drift class.
+- `juniper-lint-agents-md-version` — lints that the `AGENTS.md`
+  `**Version**:` header matches `pyproject.toml` `[project].version`
+  (added in 0.3.0).
+- `juniper-lint-agents-md-header` — lints the `AGENTS.md` canonical
+  six-field header schema (added in 0.4.0).
+- `juniper-coverage-gap-map` — **advisory** per-file coverage-gap mapper
+  (added in 0.5.0): parses a `coverage json` and reports the per-file
+  distribution, the files below a threshold (default 90 %), and each
+  sub-module's average vs a bar (default 95 %). Exit 0 always — it
+  reports, it never fails a build. Carries a documented numpy-2.x
+  package-form `--cov` shim.
 
 The package requires Python 3.11 or newer and depends on PyYAML and packaging.
 
