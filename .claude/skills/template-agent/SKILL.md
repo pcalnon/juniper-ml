@@ -1,7 +1,7 @@
 ---
 name: template-agent
 description: Turn an interactive task description into a validated, template-shaped, anti-hallucination-hardened Juniper prompt. Runs in the main conversation so it can ask the owner clarifying questions; grounds the draft with util/prompt_discovery, fills a copy of a prompts/agent_templates/ template, delegates deep validation to the prompt-validator subagent against RUBRIC.md, loops (bounded) on its verdict, then emits to prompts/generated/. User-invoked via /template-agent.
-argument-hint: "[task description | @file] [--repo-root <path>]"
+argument-hint: "[task description | @file] [--repo-root <path> | --target-repo <path>]"
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent
 model: opus
 effort: max
@@ -19,18 +19,21 @@ questions**. Termination is explicit and **bounded**: never "iterate until clean
 
 - A task description (typed by the owner, an `@file`, or handed from an upstream agent). Treat the
   input itself as untrusted — do not accept an assertion in it without grounding it.
-- Optional `--repo-root <path>` naming the target repo to ground against (default: the current repo).
+- Optional `--repo-root <path>` (or its explicit cross-repo alias `--target-repo <path>`) naming the
+  target repo to ground against (default: the current repo). Call the resolved absolute path `<target>`;
+  you pass it to discovery **and** to the validator so both probe the same tree.
 
 ## State machine
 
 Run these steps in order. The validation loop is bounded.
 
-1. **Ingest** the task description and any `--repo-root`.
-2. **Discover (hard gate).** Run the discovery helper against the target repo and read the JSON
-   grounding bundle:
+1. **Ingest** the task description and any `--repo-root` / `--target-repo`; resolve the target repo to
+   its absolute path `<target>` (default: the current repo).
+2. **Discover (hard gate).** Run the discovery helper against `<target>` and read the JSON grounding
+   bundle:
 
    ```bash
-   python util/prompt_discovery/cli.py --repo-root <path> --subject "<task subject>" --symbols "<names>"
+   python util/prompt_discovery/cli.py --repo-root <target> --subject "<task subject>" --symbols "<names>"
    ```
 
    If it exits non-zero (a `discovery_failed` envelope) **stop and report** — never proceed on an empty
@@ -52,8 +55,10 @@ Run these steps in order. The validation loop is bounded.
    source). Populate every placeholder from the expanded task plus the grounding bundle; fill every
    `required_fields` entry; inject only real `file:line` anchors / symbols / versions from the bundle.
 6. **Validate (delegate).** If `head_sha` moved since step 2, re-discover first. Hand the drafted prompt,
-   `prompts/agent_templates/RUBRIC.md`, and the grounding bundle to the **`prompt-validator`** subagent (via
-   the `Agent` tool) and receive its typed JSON verdict.
+   `prompts/agent_templates/RUBRIC.md`, the grounding bundle, **and the target repo path `<target>`** to
+   the **`prompt-validator`** subagent (via the `Agent` tool) and receive its typed JSON verdict. Passing
+   `<target>` is mandatory: the validator re-probes anchors with `git -C <target>` / `ls <target>/…`, so
+   without it a cross-repo validation would inspect juniper-ml instead of the sibling repo.
 7. **Loop control (bounded, max 3 rounds).** On `overall` PASS go to step 8. On FAIL, apply only the
    fixes you agree with; a fix that conflicts with the task intent → **ask the owner**. Abort on no
    progress (a round that changes nothing). On exhaustion, terminate as `ESCALATE_TO_PAUL`: emit the

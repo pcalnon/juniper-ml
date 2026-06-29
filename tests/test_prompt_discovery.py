@@ -29,33 +29,28 @@ def _find_repo_root(start: Path) -> Path:
     raise RuntimeError(f"Could not locate repo root (no .github/workflows/) above {start}")
 
 
-def _git_init_repo(path: str, commit_epoch: int) -> int:
-    """Init a throwaway git repo at ``path`` with one empty commit dated ``commit_epoch``.
-
-    Both author and committer dates are pinned (and identity is supplied via env, never the
-    user's global git config) so the HEAD commit time is fully deterministic -- the
-    D-1 freshness guard compares the pytest-cache mtime against exactly this value.
-    Returns the resulting HEAD committer epoch-seconds (``git show -s --format=%ct``).
-    """
+def _git_init_repo(path: str, commit_epoch: "int | None" = None) -> None:
+    """Init a throwaway git repo at ``path`` with one empty commit (identity via env, never the
+    user's global config). When ``commit_epoch`` is given the commit is dated to it -- deterministic
+    for the D-1 freshness cases; otherwise the current time is used (the E-3 ``--target-repo`` cases
+    just need a real sibling HEAD). Unifies the two helpers that PR-1 (D-1) and PR-4 (E-3) each added
+    to this file independently -- both signatures are served by the optional ``commit_epoch``."""
     env = {
         **os.environ,
         "GIT_AUTHOR_NAME": "t",
         "GIT_AUTHOR_EMAIL": "t@example.invalid",
         "GIT_COMMITTER_NAME": "t",
         "GIT_COMMITTER_EMAIL": "t@example.invalid",
-        "GIT_AUTHOR_DATE": f"{commit_epoch} +0000",
-        "GIT_COMMITTER_DATE": f"{commit_epoch} +0000",
     }
+    if commit_epoch is not None:
+        env["GIT_AUTHOR_DATE"] = f"{commit_epoch} +0000"
+        env["GIT_COMMITTER_DATE"] = f"{commit_epoch} +0000"
     subprocess.run(["git", "-C", path, "init", "-q"], check=True, env=env, timeout=30)
     subprocess.run(["git", "-C", path, "commit", "-q", "--allow-empty", "-m", "init"], check=True, env=env, timeout=30)
-    out = subprocess.run(
-        ["git", "-C", path, "show", "-s", "--format=%ct", "HEAD"],
-        capture_output=True,
-        text=True,
-        check=True,
-        timeout=30,
-    )
-    return int(out.stdout.strip())
+
+
+def _git_head(path: str) -> str:
+    return subprocess.run(["git", "-C", path, "rev-parse", "HEAD"], capture_output=True, text=True, check=True, timeout=30).stdout.strip()
 
 
 _REPO_ROOT = _find_repo_root(Path(__file__).resolve().parent)
@@ -245,6 +240,33 @@ class CliBundleTest(unittest.TestCase):
             timeout=30,
         )
         self.assertEqual(bundle["provenance"]["head_sha"], git.stdout.strip())
+
+    def test_target_repo_grounds_a_sibling_as_repo_root_alias(self):
+        # E-3: --target-repo (and --repo-root) ground an explicitly-named sibling repo, distinct
+        # from CWD; the bundle's head_sha binds to THAT repo's HEAD, not the caller's.
+        with tempfile.TemporaryDirectory() as d:
+            _git_init_repo(d)
+            head = _git_head(d)
+            for flag in ("--target-repo", "--repo-root"):
+                proc = self._run_cli(flag, d, "--json")
+                self.assertEqual(proc.returncode, 0, f"{flag}: {proc.stderr}")
+                bundle = json.loads(proc.stdout)
+                self.assertEqual(bundle["provenance"]["head_sha"], head, f"{flag} must ground {d}'s HEAD")
+                self.assertEqual(bundle["repo_context"]["repo"], Path(d).name)
+
+    def test_default_repo_root_grounds_cwd_unchanged(self):
+        # E-3 regression: with NO flag the bundle grounds CWD -- byte-for-byte the pre-E-3 default.
+        proc = subprocess.run(
+            [sys.executable, str(_PD_DIR / "cli.py"), "--json"],
+            capture_output=True,
+            text=True,
+            check=False,
+            cwd=str(_REPO_ROOT),
+            timeout=120,
+        )
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        bundle = json.loads(proc.stdout)
+        self.assertEqual(bundle["provenance"]["head_sha"], _git_head(str(_REPO_ROOT)))
 
     def test_hard_stop_on_non_git_root(self):
         with tempfile.TemporaryDirectory() as d:
