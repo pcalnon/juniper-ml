@@ -103,4 +103,5 @@ jobs:
           /tmp/ct-smoke/bin/pip install --quiet --upgrade pip
           /tmp/ct-smoke/bin/pip install --quiet dist/juniper_ci_tools-*.whl
           /tmp/ct-smoke/bin/juniper-generate-dep-docs --version
+          /tmp/ct-smoke/bin/juniper-env-drift-check --version
           /tmp/ct-smoke/bin/python -m juniper_ci_tools --version

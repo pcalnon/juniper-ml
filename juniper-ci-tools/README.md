@@ -24,7 +24,7 @@ that addressed the analogous 2026-05-18 doc-link validator incident.
 pip install juniper-ci-tools
 ```
 
-This installs two console scripts:
+This installs the following console scripts:
 
 - `juniper-generate-dep-docs` — dependency-documentation generator (the
   consolidated `scripts/generate_dep_docs.sh` port; see "Usage" below).
@@ -34,8 +34,15 @@ This installs two console scripts:
   consolidates the 6 byte-identical copies of
   `util/test_workflow_script_paths.py` that existed across consumer
   repos.
+- `juniper-env-drift-check` — asserts the `juniper-*` distributions
+  installed in the active environment (**plain wheels included**)
+  satisfy the floors a target repo's `pyproject.toml` declares, and —
+  with `--check-lock` — that its `requirements.lock` pins do too.
+  Added in 0.5.0; the shared, reusable form of the dependency-
+  satisfaction guard (test-suite audit plan §10.1) that closes the
+  2026-06-26 "green tests / dead app" client-floor-drift class.
 
-The package requires Python 3.11 or newer and depends on PyYAML.
+The package requires Python 3.11 or newer and depends on PyYAML and packaging.
 
 ## Usage
 
@@ -82,6 +89,32 @@ exits non-zero.
 | `--conda-filename` | `conda_environment_ci.yaml` | Conda output filename |
 | `--no-conda` | off | Skip conda generation even if conda is installed |
 | `--no-yaml-validation` | off | Skip `yaml.safe_load` on generated conda file |
+
+## Environment floor-drift check (`juniper-env-drift-check`)
+
+Run from (or against) any Juniper repo to assert the active environment is not
+*below* the client floors the repo's `pyproject.toml` declares — the durable,
+reusable form of the dependency-satisfaction guard (added in 0.5.0). Unlike
+`util/editable_install_drift_check.py`, it reads versions via
+`importlib.metadata`, so **plain wheels are checked identically to editable
+installs** (the 2026-06-26 canopy "green tests / dead app" incident class).
+
+```bash
+# Scan the active interpreter against ./pyproject.toml
+juniper-env-drift-check
+
+# Check a specific repo, and also assert its lockfile pins satisfy the floors
+juniper-env-drift-check --repo-root /path/to/repo --check-lock
+
+# Scan a specific environment's site-packages (e.g. a conda env), as JSON
+juniper-env-drift-check --site-packages /opt/miniforge3/envs/MyEnv/lib/python3.13/site-packages --json
+```
+
+Exit codes: `0` (no floor below its requirement), `1` (drift — an installed
+wheel, or a `--check-lock` lock pin, below a floor), `2` (usage error — no
+`pyproject.toml`, no `juniper-*` floors, or `--check-lock` with no lockfile). A
+not-installed floor is a soft note unless `--strict` is given. Every floor (OK
+and drifted alike) is listed — no silent truncation.
 
 ## Library API
 
