@@ -146,6 +146,12 @@ jobs:
           # editable equivalence, and --check-lock. juniper-ci-tools/ is outside this
           # repo's flake8/pre-commit scope, so this unittest is the integration gate.
           python3 -m unittest -v tests/test_env_drift_check.py
+          # tests/test_env_drift_check_drift.py: STRUCTURAL gate for the
+          # juniper-env-drift-check console-script ENTRY POINT (the 0.5.0 #580
+          # clobber regression) + a class guard that every juniper_ci_tools/cli*.py
+          # has a [project.scripts] entry. Runs in this always-on pytest job because
+          # the build-smoke alone missed the 0.5.0 drop. Stdlib only.
+          python3 -m unittest -v tests/test_env_drift_check_drift.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
