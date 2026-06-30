@@ -60,6 +60,7 @@ python3 -m unittest -v tests/test_template_data_resolver.py
 python3 -m unittest -v tests/test_scaffold_template.py
 python3 -m unittest -v tests/test_prompt_validator_contract.py
 python3 -m unittest -v tests/test_template_agent_skill_lint.py
+python3 -m unittest -v tests/test_service_smoke_skill_lint.py
 python3 -m unittest -v tests/test_agents_frontmatter.py
 python3 -m unittest -v tests/test_agents_md_version_drift.py
 python3 -m unittest -v tests/test_agents_md_header_schema.py
@@ -238,6 +239,7 @@ juniper-ml/
 │   ├── test_scaffold_template.py         # Behavioural: util/scaffold_template.py new-template generator (P5; drift-compliant output)
 │   ├── test_prompt_validator_contract.py # Lint: prompt-validator subagent frontmatter + pinned verdict schema/fixtures
 │   ├── test_template_agent_skill_lint.py # Lint: template-agent Skill frontmatter + wiring to real artifacts (PR 5)
+│   ├── test_service_smoke_skill_lint.py  # Lint: service-smoke Skill frontmatter (HTTP-only, NO browser MCP) + teardown wiring (E-1 Stage 1)
 │   ├── test_agents_frontmatter.py        # Lint: every .claude/agents/*.md honours the suite frontmatter contract (opus+max)
 │   ├── test_agents_md_version_drift.py   # Lint: AGENTS.md **Version** header matches pyproject.toml [project].version
 │   ├── test_agents_md_header_schema.py   # Lint: AGENTS.md canonical header schema (6 required fields, ISO date format)
@@ -359,6 +361,7 @@ juniper-ml/
 - `tests/test_agent_suite_doctor.py` -- Tests for `util/agent_suite_doctor.py` (the suite health-check dogfood utility): the real suite has zero FAIL; synthetic trees missing a component FAIL the matching check (exit 1); `--json` shape; `--no-discovery` skips the subprocess; `--strict` promotes WARN to exit 1; a non-repo `--repo-root` exits 2. Stdlib-only; importlib-loaded.
 - `tests/test_agent_suite_summary.py` -- Tests for `util/agent_suite_summary.py` (P3 quick-reference): drives the real suite so every agent and template appears, `--json` round-trips, and `--markdown` rows respect the 512-char line-length convention. Stdlib + PyYAML; importlib-loaded.
 - `tests/test_template_agent_skill_lint.py` -- Static lint for the `template-agent` Skill (`.claude/skills/template-agent/SKILL.md`, PR 5): frontmatter (`allowed-tools` includes `Agent`, `model: opus` + `effort: max`, user-only) and that the bounded state machine wires to real artifacts (template library, `RUBRIC.md`, `util/prompt_discovery/cli.py`, the emission dir, the `prompt-validator` subagent). E-3: threads `<target>` to the validator. The Skill-surface gate (pre-commit-excluded except markdownlint).
+- `tests/test_service_smoke_skill_lint.py` -- Static lint for the `service-smoke` Skill (`.claude/skills/service-smoke/SKILL.md`, E-1 Stage 1): frontmatter (suite `opus`+`max`, user-only, HTTP-only tool set) + the **Stage-1 boundary** -- NO browser MCP or `Agent` delegation (those are Stage 2). Asserts teardown-utility wiring, explicit teardown (SIGTERM->SIGKILL poll-to-down, finally reap), terminal states, and bounded waits. Structural-only gate; live boot can't run in CI (manual smoke-verify covers it).
 - `tests/test_agents_frontmatter.py` -- Suite-wide frontmatter gate over every `.claude/agents/*.md` (the `prompt-validator` plus the round-2 `planner` / `auditor` / `task-executor`): `name` equals the filename, the `description` is substantive, `tools` are declared, the body is non-trivial, and the owner-directed defaults `model: opus` + `effort: max` hold -- so a new agent cannot drift from the standing defaults. The shared invariant complementing `test_prompt_validator_contract.py`.
 - `tests/test_ci_tools_drift.py` -- Lint test (dep-docs plan §5.1) for `juniper-ci-tools` pins. Mirrors `test_doc_tools_drift.py`: walks juniper-ml's own workflows (`ci.yml`, `lockfile-update.yml`, `docs-full-check.yml`) plus each cloned consumer repo's `ci.yml`, extracts the `juniper-ci-tools>=X,<Y` pin, and asserts the range still admits the current version (read from `juniper-ci-tools/pyproject.toml`). Same skip semantics and `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` override as the doc-tools sibling.
 - `tests/test_coverage_gap_mapper_drift.py` -- Structural dogfood/drift gate (E-4) for the `juniper-coverage-gap-map` console script (advisory per-file coverage-gap mapper in `juniper-ci-tools`). Modeled on `test_ci_tools_drift.py`: asserts the script is registered, both module halves ship, `_version.py` matches `[project].version`, and juniper-ml's pins admit it. The cross-repo coverage run is a documented manual-verify step; behaviour is gated by `juniper-ci-tools/tests/test_coverage_gap_mapper.py`.
