@@ -264,11 +264,12 @@ jobs:
           # real artifacts (template library, RUBRIC, discovery CLI, validator subagent).
           # The gate for the Skill surface (excluded from pre-commit except markdownlint).
           python3 -m unittest -v tests/test_template_agent_skill_lint.py
-          # tests/test_service_smoke_skill_lint.py: structural gate for the E-1 Stage-1
+          # tests/test_service_smoke_skill_lint.py: structural gate for the E-1 Stage-1/2
           # service-smoke Skill (.claude/skills/service-smoke/SKILL.md) -- frontmatter (opus +
-          # effort max, user-only, HTTP-only tool set, NO browser MCP), wiring to the real
-          # teardown utilities, and an explicit teardown step. Live boot cannot run in ubuntu CI
-          # (no conda/services); gate is structural-only + a documented manual smoke-verify.
+          # effort max, user-only, base tool set + a DECLARED browser MCP for the opt-in --ui
+          # smoke, NO Agent), wiring to the real teardown utilities, an explicit teardown step
+          # (browser close + reap), and the documented UI smoke. Live boot cannot run in ubuntu
+          # CI (no conda/services/browser); gate is structural-only + a manual smoke-verify.
           python3 -m unittest -v tests/test_service_smoke_skill_lint.py
           # tests/test_agents_frontmatter.py: suite-wide gate over every .claude/agents/*.md
           # (validator + round-2 planner/auditor/task-executor) -- name==filename, substantive
