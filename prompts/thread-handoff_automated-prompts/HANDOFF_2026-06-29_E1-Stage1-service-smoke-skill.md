@@ -206,6 +206,7 @@ spike (§5).
 The spike booted a **minimal stand-in**, not the real canopy. Its scope note is explicit (spike §6, lines
 132–145): "**booting the real canopy cleanly is Stage 1's first acceptance test**, not yet proven here."
 The real canopy:
+
 - has a **~10–15 s** boot (it imports its full stack before binding);
 - couples to downstream services at startup — it probes **JuniperData** (`src/main.py:254`) and
   **JuniperCascor** (`src/main.py:265`), and `/v1/health/ready` re-probes both (`src/main.py:948–953`);
