@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.4.0] - 2026-07-01
+
+### Added
+
+- **`enforce_dependency_floors(...)`** (new `dependency_floors` module) — a boot-time
+  dependency-floor self-check (**E-8**). A service calls it at startup, before binding, and
+  it **fails loud** (raises `DependencyFloorError` naming dep + floor + installed) if any
+  installed `juniper-*` wheel is below the service's declared floor — the automatic
+  *prevention* companion to the E-2 env-floor-drift *detector*, which would have caught the
+  canopy "green tests / dead app" incident at first start with zero human action. Floors
+  resolve from an explicit `{dist: min_version}` mapping, the caller's installed Requires-Dist
+  metadata (`distribution=`), or a source `pyproject.toml` (`pyproject_path=`). Stdlib-only
+  (`importlib.metadata` / `tomllib`; `packaging` optional), so the dependency-free top-level
+  import is preserved. An escape hatch (`JUNIPER_SKIP_DEP_FLOOR_CHECK`) bypasses the check —
+  logged loudly — so a false positive can never permanently block a legitimate start.
+
 ## [0.3.0] - 2026-06-25
 
 ### Added
