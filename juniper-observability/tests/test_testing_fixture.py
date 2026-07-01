@@ -99,6 +99,52 @@ def test_fixture_preserves_collectors_registered_before_yield(pytester):
     result.assert_outcomes(passed=2)
 
 
+def test_fixture_swallows_unregister_errors_during_teardown(pytester):
+    """A collector whose ``unregister`` raises must not fail the test.
+
+    Exercises the best-effort ``except Exception: pass`` guard in the
+    fixture teardown: if a collector added during the test can no longer
+    be cleanly unregistered, the scrub swallows the error rather than
+    letting it propagate out of teardown (which pytest would surface as
+    an error). Without the guard the inner test would report an error,
+    so ``assert_outcomes(passed=1)`` verifies the swallow.
+
+    Deliberately defined *before*
+    ``test_fixture_is_no_op_when_prometheus_client_missing``: that test
+    leaves ``builtins.__import__`` patched inside the shared (in-process)
+    interpreter and never restores it, so any test defined after it can
+    no longer import ``prometheus_client``.
+    """
+    pytester.makepyfile(
+        """
+        from prometheus_client import REGISTRY, Counter
+
+        from juniper_observability.testing import reset_prometheus_registry  # noqa: F401
+
+
+        def test_unregister_error_is_swallowed(monkeypatch, reset_prometheus_registry):
+            # ``monkeypatch`` is requested BEFORE ``reset_prometheus_registry``
+            # so that -- finalizers run LIFO -- the fixture's teardown fires
+            # while the sabotaged ``unregister`` is still installed, and only
+            # afterwards does monkeypatch undo it.
+            Counter("test_fixture_unregister_error_target", "doc")
+            real_unregister = REGISTRY.unregister
+
+            def _remove_then_raise(collector):
+                # Actually remove the collector first (so nothing leaks into
+                # the process-global default REGISTRY once monkeypatch undoes
+                # the patch), then raise to drive the fixture's best-effort
+                # teardown guard.
+                real_unregister(collector)
+                raise RuntimeError("simulated unregister failure")
+
+            monkeypatch.setattr(REGISTRY, "unregister", _remove_then_raise)
+        """
+    )
+    result = pytester.runpytest("-q", "-p", "no:playwright", "-p", "no:dash")
+    result.assert_outcomes(passed=1)
+
+
 def test_fixture_is_no_op_when_prometheus_client_missing(pytester, monkeypatch):
     """The fixture yields silently when ``prometheus_client`` cannot be imported."""
     # Monkeypatch the import inside the inner pytester to fail.
