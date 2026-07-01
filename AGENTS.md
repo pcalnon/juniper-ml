@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-06-30
+**Last Updated**: 2026-07-01
 
 ---
 
@@ -61,6 +61,7 @@ python3 -m unittest -v tests/test_scaffold_template.py
 python3 -m unittest -v tests/test_prompt_validator_contract.py
 python3 -m unittest -v tests/test_template_agent_skill_lint.py
 python3 -m unittest -v tests/test_service_smoke_skill_lint.py
+python3 -m unittest -v tests/test_ui_test_author_skill_lint.py
 python3 -m unittest -v tests/test_agents_frontmatter.py
 python3 -m unittest -v tests/test_agents_md_version_drift.py
 python3 -m unittest -v tests/test_agents_md_header_schema.py
@@ -241,6 +242,7 @@ juniper-ml/
 │   ├── test_prompt_validator_contract.py # Lint: prompt-validator subagent frontmatter + pinned verdict schema/fixtures
 │   ├── test_template_agent_skill_lint.py # Lint: template-agent Skill frontmatter + wiring to real artifacts (PR 5)
 │   ├── test_service_smoke_skill_lint.py  # Lint: service-smoke Skill frontmatter (declared browser MCP for opt-in --ui, NO Agent) + teardown wiring (E-1 Stage 1/2)
+│   ├── test_ui_test_author_skill_lint.py # Lint: ui-test-author Skill frontmatter (Write + declared browser MCP, NO Agent) + models canopy src/tests/ui/ + teardown (E-6)
 │   ├── test_agents_frontmatter.py        # Lint: every .claude/agents/*.md honours the suite frontmatter contract (opus+max)
 │   ├── test_agents_md_version_drift.py   # Lint: AGENTS.md **Version** header matches pyproject.toml [project].version
 │   ├── test_agents_md_header_schema.py   # Lint: AGENTS.md canonical header schema (6 required fields, ISO date format)
@@ -364,6 +366,7 @@ juniper-ml/
 - `tests/test_agent_suite_summary.py` -- Tests for `util/agent_suite_summary.py` (P3 quick-reference): drives the real suite so every agent and template appears, `--json` round-trips, and `--markdown` rows respect the 512-char line-length convention. Stdlib + PyYAML; importlib-loaded.
 - `tests/test_template_agent_skill_lint.py` -- Static lint for the `template-agent` Skill (`.claude/skills/template-agent/SKILL.md`, PR 5): frontmatter (`allowed-tools` includes `Agent`, `model: opus` + `effort: max`, user-only) and that the bounded state machine wires to real artifacts (template library, `RUBRIC.md`, `util/prompt_discovery/cli.py`, the emission dir, the `prompt-validator` subagent). E-3: threads `<target>` to the validator. The Skill-surface gate (pre-commit-excluded except markdownlint).
 - `tests/test_service_smoke_skill_lint.py` -- Static lint for the `service-smoke` Skill (`.claude/skills/service-smoke/SKILL.md`, E-1 Stage 1/2): the **Stage-2 boundary** -- a browser MCP (`mcp__playwright`) MUST be declared for the opt-in `--ui` smoke (inverts Stage 1's no-browser rule), `Agent` still forbidden -- plus `opus`+`max`/user-only frontmatter, browser-close teardown, the `--ui`/`/dashboard`/console smoke, `UI_UNHEALTHY_REPORTED`, and bounded waits. Structural-only gate.
+- `tests/test_ui_test_author_skill_lint.py` -- Static lint for the `ui-test-author` Skill (E-6): frontmatter (suite `opus`+`max`, user-only, `Write` + a declared browser MCP, NO `Agent`) + that it models canopy's `src/tests/ui/` harness (`dashboard_page` / `@pytest.mark.ui` / the `dbc.Input` wall via `/api/state`), the browser-close teardown, the reviewed-never-auto-merged contract, terminal states, and bounded waits. Structural-only gate; live authoring = manual smoke-verify.
 - `tests/test_agents_frontmatter.py` -- Suite-wide frontmatter gate over every `.claude/agents/*.md` (the `prompt-validator` plus the round-2 `planner` / `auditor` / `task-executor`): `name` equals the filename, the `description` is substantive, `tools` are declared, the body is non-trivial, and the owner-directed defaults `model: opus` + `effort: max` hold -- so a new agent cannot drift from the standing defaults. The shared invariant complementing `test_prompt_validator_contract.py`.
 - `tests/test_ci_tools_drift.py` -- Lint test (dep-docs plan §5.1) for `juniper-ci-tools` pins. Mirrors `test_doc_tools_drift.py`: walks juniper-ml's own workflows (`ci.yml`, `lockfile-update.yml`, `docs-full-check.yml`) plus each cloned consumer repo's `ci.yml`, extracts the `juniper-ci-tools>=X,<Y` pin, and asserts the range still admits the current version (read from `juniper-ci-tools/pyproject.toml`). Same skip semantics and `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` override as the doc-tools sibling.
 - `tests/test_coverage_gap_mapper_drift.py` -- Structural dogfood/drift gate (E-4) for the `juniper-coverage-gap-map` console script (advisory per-file coverage-gap mapper in `juniper-ci-tools`). Modeled on `test_ci_tools_drift.py`: asserts the script is registered, both module halves ship, `_version.py` matches `[project].version`, and juniper-ml's pins admit it. The cross-repo coverage run is a documented manual-verify step; behaviour is gated by `juniper-ci-tools/tests/test_coverage_gap_mapper.py`.
