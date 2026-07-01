@@ -1,22 +1,27 @@
-"""Static lint for the service-smoke Skill (custom-agent suite E-1 Stage 1).
+"""Static lint for the service-smoke Skill (custom-agent suite E-1 Stage 1/2).
 
-The Skill (``.claude/skills/service-smoke/SKILL.md``) is an HTTP-only runtime
-diagnostician: it boots a Juniper service in its conda env, probes ``/v1/health``,
-tails the boot log, and reports a live traceback as ``file:line`` (the "green
-tests / dead app" catch). Its live behaviour needs conda + the real service and so
-cannot run in ubuntu CI -- correctness of the live path is covered by a documented
-manual smoke-verify, not by CI.
+The Skill (``.claude/skills/service-smoke/SKILL.md``) is a runtime diagnostician
+(HTTP + opt-in UI smoke): it boots a Juniper service in its conda env, probes
+``/v1/health``, tails the boot log, reports a live traceback as ``file:line`` (the
+"green tests / dead app" catch), and -- when invoked with ``--ui`` (Stage 2) --
+drives the live dashboard via the ``playwright`` MCP and reports client-side
+failures. Its live behaviour needs conda + the real service (and the UI smoke a real
+browser MCP), so it cannot run in ubuntu CI -- correctness of the live path is
+covered by a documented manual smoke-verify, not by CI.
 
 This unittest is the *structural* gate for the Skill surface:
   * frontmatter shape -- the suite's ``opus`` + ``max`` defaults, user-only
-    invocation, and the Stage-1 HTTP-only tool set ``{Read, Grep, Glob, Bash}``;
-  * the **Stage-1 boundary** -- the frontmatter must NOT grant a browser MCP
-    (``playwright`` / ``chrome-devtools``) or ``Agent`` delegation (those belong to
-    Stage 2 / other suite units) -- the assertion that makes this lint Stage-1-shaped;
+    invocation, and the base tool set ``{Read, Grep, Glob, Bash}``;
+  * the **Stage-2 boundary** -- the frontmatter MUST now declare a browser MCP
+    (``mcp__playwright`` / ``chrome-devtools``) for the opt-in ``--ui`` smoke (the
+    inverse of Stage 1's "no browser MCP"); ``Agent`` is still forbidden (the Skill
+    never delegates live-process management to a subagent);
   * wiring to the real teardown utilities (each referenced path exists on disk);
-  * an explicit teardown step encoding the spike's two gotchas (SIGTERM->SIGKILL
-    escalation, poll-to-down, finally-style reap);
-  * named terminal states and bounded behaviour (no unbounded wait-until-ready).
+  * an explicit teardown step -- close the browser, then the spike's two gotchas
+    (SIGTERM->SIGKILL escalation, poll-to-down, finally-style reap);
+  * the opt-in UI smoke documented (``--ui``, the ``/dashboard`` target, console-error
+    collection, the no-commit guard for the tracked ``.playwright-mcp/`` dir);
+  * named terminal states (incl. ``UI_UNHEALTHY_REPORTED``) and bounded behaviour.
 
 ``.claude/**`` is git-tracked via the PR-1 ``.gitignore`` negation but excluded from
 every pre-commit hook except markdownlint, so this unittest -- wired into ``ci.yml``
@@ -35,13 +40,12 @@ from pathlib import Path
 
 import yaml
 
-# The Stage-1 HTTP-only tool grant the Skill must pre-approve.
+# The base tool grant the Skill must pre-approve.
 _REQUIRED_TOOLS = {"Read", "Grep", "Glob", "Bash"}
-# Tools whose presence in allowed-tools would break the Stage-1 boundary: a browser
-# MCP (playwright / chrome-devtools) is Stage 2; Agent delegation is not Stage 1's job.
-_FORBIDDEN_TOOLS = {"Agent", "playwright", "chrome-devtools"}
-# Browser-MCP tokens that must not appear anywhere in the frontmatter block.
-_FORBIDDEN_FRONTMATTER_TOKENS = ("playwright", "chrome-devtools")
+# `Agent` is still forbidden: the Skill manages its own live processes and never
+# delegates to a subagent -- that boundary survives Stage 2. (A browser MCP, by
+# contrast, is now REQUIRED for the opt-in --ui smoke; see _is_browser_mcp.)
+_FORBIDDEN_TOOLS = {"Agent"}
 
 # Teardown utilities the Skill must wire to by literal path -- each must appear in
 # the body AND exist on disk (no dangling wiring). Reused, never reinvented.
@@ -49,7 +53,13 @@ _REFERENCED_PATHS = [
     "util/reap_pytest_orphans.bash",
     "util/kill_all_pythons.bash",
 ]
-_TERMINAL_STATES = ("HEALTHY", "UNHEALTHY_REPORTED", "BOOT_FAILED", "TEARDOWN_ESCALATED")
+_TERMINAL_STATES = (
+    "HEALTHY",
+    "UNHEALTHY_REPORTED",
+    "UI_UNHEALTHY_REPORTED",
+    "BOOT_FAILED",
+    "TEARDOWN_ESCALATED",
+)
 
 
 def _find_repo_root(start: Path) -> Path:
@@ -80,6 +90,16 @@ def _as_tool_set(value):
     return {tok.strip() for tok in re.split(r"[,\s]+", str(value)) if tok.strip()}
 
 
+def _is_browser_mcp(tool):
+    """True if ``tool`` names a browser MCP server (the Stage-2 UI-smoke driver).
+
+    Accepts a server-wildcard grant (``mcp__playwright`` / ``mcp__chrome-devtools``)
+    or a specific tool (``mcp__playwright__browser_navigate``), plus the bare server
+    names for tolerance."""
+    t = str(tool).strip().lower()
+    return t.startswith("mcp__playwright") or t.startswith("mcp__chrome-devtools") or t in {"playwright", "chrome-devtools"}
+
+
 class ServiceSmokeSkillLintTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -104,7 +124,7 @@ class ServiceSmokeSkillLintTest(unittest.TestCase):
     def test_description_substantive(self):
         desc = self.front.get("description", "")
         self.assertIsInstance(desc, str)
-        self.assertGreaterEqual(len(desc), 60, "description should describe what it boots/probes and that it is HTTP-only")
+        self.assertGreaterEqual(len(desc), 60, "description should describe what it boots/probes and the opt-in UI smoke")
 
     def test_argument_hint_present(self):
         self.assertTrue(str(self.front.get("argument-hint", "")).strip(), "argument-hint should be set")
@@ -112,18 +132,20 @@ class ServiceSmokeSkillLintTest(unittest.TestCase):
     def test_allowed_tools_include_required(self):
         tools = _as_tool_set(self.front.get("allowed-tools"))
         missing = sorted(_REQUIRED_TOOLS - tools)
-        self.assertEqual(missing, [], f"allowed-tools missing the Stage-1 HTTP set {missing}")
+        self.assertEqual(missing, [], f"allowed-tools missing the base tool set {missing}")
 
-    def test_stage1_boundary_no_browser_or_agent(self):
-        """Stage 1 is HTTP-only: the frontmatter must NOT grant a browser MCP
-        (playwright / chrome-devtools -- Stage 2) or Agent delegation. The body may
-        legitimately name those as Stage-2 work, so this checks the frontmatter only."""
+    def test_stage2_boundary_browser_declared_no_agent(self):
+        """Stage 2 adds the opt-in browser UI smoke, so the frontmatter MUST declare a
+        browser MCP (playwright / chrome-devtools) -- the inverse of Stage 1's "no
+        browser MCP" boundary. `Agent` stays forbidden: the Skill never delegates its
+        live-process management to a subagent."""
         tools = _as_tool_set(self.front.get("allowed-tools"))
-        granted_forbidden = sorted(t for t in tools if t in _FORBIDDEN_TOOLS or t.startswith("mcp__playwright") or t.startswith("mcp__chrome-devtools"))
-        self.assertEqual(granted_forbidden, [], f"Stage-1 Skill must not grant {granted_forbidden} (browser MCP / Agent are Stage 2)")
-        low = self.front_raw.lower()
-        for token in _FORBIDDEN_FRONTMATTER_TOKENS:
-            self.assertNotIn(token, low, f"frontmatter must not reference the browser MCP '{token}' (Stage 2)")
+        self.assertTrue(
+            any(_is_browser_mcp(t) for t in tools),
+            f"Stage-2 Skill must declare a browser MCP (e.g. mcp__playwright) in allowed-tools; got {sorted(tools)}",
+        )
+        granted_forbidden = sorted(t for t in tools if t in _FORBIDDEN_TOOLS)
+        self.assertEqual(granted_forbidden, [], f"Skill must not grant {granted_forbidden} (no subagent delegation, even in Stage 2)")
 
     def test_model_pinned_to_opus(self):
         base = str(self.front.get("model", "")).split(":")[0].strip().lower()
@@ -144,12 +166,14 @@ class ServiceSmokeSkillLintTest(unittest.TestCase):
         self.assertIn("/v1/health", self.body, "Skill must probe the /v1/health endpoint")
 
     def test_explicit_teardown_step(self):
-        """The spike's carry-forward makes teardown mandatory: a SIGTERM->SIGKILL
-        escalation, poll-to-down (not assert-down-immediately), and a finally-style reap."""
+        """Teardown is mandatory and now also closes the UI-smoke browser: close the
+        browser, then a SIGTERM->SIGKILL escalation, poll-to-down (not
+        assert-down-immediately), and a finally-style reap."""
         self.assertIn("SIGTERM", self.body, "teardown must escalate from SIGTERM")
         self.assertIn("SIGKILL", self.body, "teardown must escalate to SIGKILL after the timeout")
         self.assertRegex(self.body, r"finally", "teardown must run in a finally-style path")
         self.assertRegex(self.body, r"poll-to-down|poll for connection", "teardown must poll-to-down, not assert down immediately")
+        self.assertRegex(self.body, r"browser_close|close the browser", "teardown must close the UI-smoke browser, not orphan it")
 
     def test_bounded_behaviour_documented(self):
         low = self.body.lower()
@@ -160,9 +184,14 @@ class ServiceSmokeSkillLintTest(unittest.TestCase):
         for state in _TERMINAL_STATES:
             self.assertIn(state, self.body, f"Skill must document terminal state {state}")
 
-    def test_stage_boundary_documented(self):
-        self.assertIn("Stage 2", self.body, "Skill must mark the browser/UI smoke as Stage 2")
-        self.assertIn("HTTP-only", self.body, "Skill must state it is HTTP-only (Stage 1)")
+    def test_ui_smoke_documented(self):
+        """The Stage-2 surface must document the opt-in UI smoke: the --ui flag, the
+        dashboard navigation target, console-error collection, and the no-commit guard
+        for the tracked .playwright-mcp/ artifact dir."""
+        self.assertIn("--ui", self.body, "Skill must document the opt-in --ui flag")
+        self.assertIn("/dashboard", self.body, "Skill must navigate the dashboard mount (/dashboard), not assume /")
+        self.assertIn("console", self.body.lower(), "UI smoke must collect console errors")
+        self.assertIn(".playwright-mcp", self.body, "Skill must guard against committing .playwright-mcp/ artifacts")
 
 
 if __name__ == "__main__":
