@@ -9,6 +9,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] -- 2026-06-30
+
+Adds an **opt-in enforcing mode** to `juniper-coverage-gap-map` (non-breaking:
+the advisory exit-0-always behavior remains the default; no other console
+script is affected). This is work-unit **C-0** of the per-file coverage rollout
+(`notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md`).
+
+### Added
+
+- `juniper-coverage-gap-map --enforce` — opt-in blocking gate. When set, the
+  CLI exits `1` if, after `--omit` exclusions, **any** source file's
+  **statement** coverage is below `--fail-under-file` (default `90`) **or**
+  **any** sub-module's **pooled** (statement-weighted) coverage is below
+  `--fail-under-submodule` (default `95`); it exits `0` when clean and lists
+  every offending file and sub-module (no silent truncation). Without
+  `--enforce` the output and exit code are unchanged (advisory, exit 0 always).
+- `--fail-under-file` / `--fail-under-submodule` — enforcing thresholds,
+  independent of the advisory `--file-threshold` / `--submodule-bar` display
+  cuts.
+- `--omit GLOB` (repeatable) — `fnmatch` exclusion applied to the parsed
+  `coverage.json` **before** aggregation and gating (the report and the gate
+  both honor it), so the tool is the single source of truth for what counts
+  (it does not rely on coverage's own `[report] omit`). For thin `__main__.py`
+  / CLI shims etc. per the rollout's excluded-files policy.
+- `FileCoverage.statement_percent` (property) — statement-only coverage
+  (`covered_statements / num_statements`); the enforcing per-file basis,
+  distinct from the branch-inclusive advisory `percent_covered` display. Also
+  surfaced in the `--json` per-file objects.
+- `SubmoduleCoverage.below_pooled_bar(bar)` and
+  `CoverageReport.files_below_statement_threshold(threshold)` /
+  `CoverageReport.submodules_below_pooled_bar(bar)` — the enforcing query
+  methods (statement / pooled bases), alongside the unchanged advisory
+  `below_bar` / `files_below_threshold` / `submodules_below_bar`.
+- `parse_coverage_json` / `load_coverage_json` / `run_coverage` gained an
+  `omit=` parameter (forwarded from the CLI's `--omit`).
+- New enforcing-mode tests in `tests/test_coverage_gap_mapper.py` (clean→0,
+  per-file statement gap→1, sub-module pooled gap→1, `--omit` exclusion,
+  advisory-default→0, and the two basis distinctions: branch<90/statement≥90
+  PASSES, mean≥95/pooled<95 FAILS). Both changed modules stay at 100 % line
+  coverage; the suite's `--cov-fail-under=85` gate stays green.
+
+### Rationale (the two enforcing bases)
+
+The enforcing gate uses different bases than the advisory display so the gate
+is apples-to-apples across units regardless of each unit's branch setting:
+per-file gates on **statement** coverage (not the branch-inclusive
+`percent_covered` a `branch = true` repo reports), and per-sub-module gates on
+the **pooled** statement-weighted figure (not the mean-of-files average) — the
+two diverge for small files and can flip outcomes.
+
+### Migration context
+
+Additive minor bump. juniper-ml's own workflow pins (`ci.yml`,
+`lockfile-update.yml`, `docs-full-check.yml`) are widened from `<0.6.0` to
+`<0.7.0` in the same PR to admit 0.6.0; the dogfood gate
+`juniper-ml tests/test_coverage_gap_mapper_drift.py` gains a structural check
+(the `--enforce` flag is wired) and an end-to-end synthetic-`coverage.json`
+invocation of the shipped entry point. **No `--enforce` invocation is turned on
+as a blocking gate on any unit's CI yet** — that is work-unit C-1+.
+
+## [0.5.1] -- 2026-06-29
+
+### Fixed
+
+- Restored the `juniper-env-drift-check` console-script entry point in
+  `[project.scripts]` (and the package description suffix), inadvertently
+  dropped in 0.5.0 by a semantic merge conflict between #579 and #580 — the
+  0.5.0 wheel shipped the `env_drift_check` module but not the
+  `juniper-env-drift-check` script (exit 127; reachable only via
+  `python -m juniper_ci_tools.cli_env_drift_check`).
+
+### Added
+
+- `tests/test_env_drift_check_drift.py` (wired into the always-on pytest job) —
+  a structural drift gate with a **class guard** that **every**
+  `juniper_ci_tools/cli*.py` module has a corresponding `[project.scripts]`
+  entry, so a future concurrent-merge clobber that drops any tool's console
+  script fails loudly in CI rather than silently at publish.
+
 ## [0.5.0] -- 2026-06-28
 
 Adds the advisory per-file coverage-gap mapper as a fifth console script

@@ -22,23 +22,35 @@ test is the **structural** dogfood gate, modelled on
    ``juniper-ci-tools>=X,<Y`` range that still admits the current version --
    so bumping ci-tools to ship E-4 without widening the pin ceiling fails
    loudly here (the same coupling ``test_ci_tools_drift.py`` enforces).
+5. The **C-0 enforcing mode** is wired and behaves: the opt-in ``--enforce``
+   flag (plus ``--fail-under-file`` / ``--fail-under-submodule`` / ``--omit``)
+   is declared in the CLI, AND an end-to-end invocation of the shipped entry
+   point over a synthetic ``coverage.json`` exits ``1`` on a gap, ``0`` when
+   clean, ``0`` on ``--help``, and ``0`` for the advisory default (no
+   ``--enforce``). Work-unit C-0 of
+   ``notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md``.
 
-Why this is a STRUCTURAL gate (the manual-verify note)
-------------------------------------------------------
+Why this is (mostly) a STRUCTURAL gate (the manual-verify note)
+--------------------------------------------------------------
 The mapper's *point* is to run coverage over a target repo and map the
-per-file gaps. That cross-repo coverage run **cannot execute in juniper-ml
+per-file gaps. That cross-repo coverage RUN **cannot execute in juniper-ml
 CI**: juniper-ml is a meta-package with no application package to measure,
 and the target repos (cascor-model, canopy, ...) are not checked out in the
-per-PR ubuntu runner. So this gate is structural only -- it proves the tool
-is *shipped and wired*, not that a live coverage run behaves. The behaviour
-is proven two ways: the ``juniper-ci-tools/tests/test_coverage_gap_mapper.py``
-fixtures (synthetic ``coverage.json``; no real run) and a documented
-**manual-verify** invocation an operator runs against a real repo::
+per-PR ubuntu runner. So the run-coverage half is structural only -- it proves
+the tool is *shipped and wired*, not that a live coverage run behaves. What
+this gate DOES exercise end-to-end is the **primary JSON-parsing path**: the
+C-0 checks (item 5) write a synthetic ``coverage.json`` and invoke the shipped
+console entry (``python -m juniper_ci_tools.cli_coverage_gap_mapper``) with the
+ci-tools subdir on ``PYTHONPATH`` -- no real coverage run, no target repo, so
+it is deterministic in the ubuntu runner. The full behavioural matrix lives in
+``juniper-ci-tools/tests/test_coverage_gap_mapper.py`` (synthetic
+``coverage.json`` fixtures); the CROSS-REPO real coverage run remains a
+documented **manual-verify** invocation an operator runs against a real repo::
 
     # From a target repo with a real test command (e.g. juniper-cascor's
     # cascor-model package, whose CI has no per-file coverage gate):
     cd <target-repo>
-    pip install "juniper-ci-tools>=0.5.0,<0.6.0"
+    pip install "juniper-ci-tools>=0.6.0,<0.7.0"
     juniper-coverage-gap-map --repo-root . --package <pkg> \\
         --test-command "python -m pytest"
     # -> prints the per-file distribution, the files below 90%, and each
@@ -46,6 +58,11 @@ fixtures (synthetic ``coverage.json``; no real run) and a documented
 
     # Or against a pre-generated coverage.json (the primary path):
     juniper-coverage-gap-map --coverage-json coverage.json --json
+
+    # C-0 enforcing gate (opt-in): exit 1 on a per-file statement gap or a
+    # sub-module pooled gap; --omit drops thin shims before gating.
+    juniper-coverage-gap-map --coverage-json coverage.json --enforce \\
+        --fail-under-file 90 --fail-under-submodule 95 --omit '*/__main__.py'
 
 Skip semantics mirror ``test_ci_tools_drift.py``: there is no consumer-repo
 pin for this brand-new script yet, so there is no cross-repo sibling
@@ -56,8 +73,12 @@ the informational environment probe, for parity with the sibling drift tests.
 
 from __future__ import annotations
 
+import json
 import os
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -195,6 +216,89 @@ class CoverageGapMapperDriftTest(unittest.TestCase):
                 for lower, upper in pins:
                     self.assertLessEqual(_parse_version(lower), current, f"{rel} pin lower bound {lower} is ahead of current {self.current_version}")
                     self.assertLess(current, _parse_version(upper), f"{rel} pin upper bound {upper} excludes current {self.current_version} -- widen the ceiling in the same PR as the ci-tools bump.")
+
+    def test_enforce_flags_are_wired(self) -> None:
+        """C-0 STRUCTURAL: the CLI declares the opt-in enforcing flags. Guards
+        against the enforcing mode silently regressing to advisory-only (e.g. a
+        concurrent-merge clobber of the argparse block)."""
+        cli = self.ci_tools_root / "juniper_ci_tools" / "cli_coverage_gap_mapper.py"
+        self.assertTrue(cli.is_file(), f"{cli} is missing")
+        text = cli.read_text(encoding="utf-8")
+        for flag in ('"--enforce"', '"--fail-under-file"', '"--fail-under-submodule"', '"--omit"'):
+            with self.subTest(flag=flag):
+                self.assertIn(flag, text, f"cli_coverage_gap_mapper.py does not declare {flag} -- the C-0 enforcing mode is unwired.")
+
+
+class CoverageGapMapperEnforceEndToEndTest(unittest.TestCase):
+    """C-0 END-TO-END: invoke the shipped console entry over a synthetic
+    ``coverage.json`` and assert the ``--enforce`` exit-code contract.
+
+    Deterministic in the ubuntu runner -- this exercises only the primary
+    JSON-parsing path (no real coverage run, no target repo checked out). Since
+    ``juniper_ci_tools`` is not pip-installed in juniper-ml CI, the ci-tools
+    subdir is put on ``PYTHONPATH`` for the child process (juniper-ml CI installs
+    the package's import-time deps, PyYAML + packaging, in the tests job).
+    """
+
+    juniper_ml_root: Path
+    ci_tools_root: Path
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.juniper_ml_root = Path(__file__).resolve().parent.parent
+        cls.ci_tools_root = cls.juniper_ml_root / "juniper-ci-tools"
+
+    def _run(self, *args: str) -> subprocess.CompletedProcess:
+        """Invoke the shipped module-form entry with the ci-tools subdir on PYTHONPATH."""
+        env = dict(os.environ)
+        existing = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = str(self.ci_tools_root) + (os.pathsep + existing if existing else "")
+        cmd = [sys.executable, "-m", "juniper_ci_tools.cli_coverage_gap_mapper", *args]
+        return subprocess.run(cmd, capture_output=True, text=True, env=env)
+
+    @staticmethod
+    def _write_cov(tmp: Path, files: dict, name: str = "coverage.json") -> Path:
+        """Write a synthetic coverage.json from ``path -> (num_statements, covered)``."""
+        out: dict = {"files": {}}
+        for path, (num, covered) in files.items():
+            pct = 100.0 if num == 0 else 100.0 * covered / num
+            out["files"][path] = {"summary": {"num_statements": num, "covered_lines": covered, "missing_lines": max(num - covered, 0), "percent_covered": pct}}
+        dest = tmp / name
+        dest.write_text(json.dumps(out), encoding="utf-8")
+        return dest
+
+    def test_help_exits_zero_and_lists_enforce(self) -> None:
+        proc = self._run("--help")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertIn("--enforce", proc.stdout)
+
+    def test_enforce_exits_one_on_gap_naming_the_file(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            gap = self._write_cov(Path(td), {"pkg/low.py": (10, 1), "pkg/ok.py": (10, 10)})
+            proc = self._run("--coverage-json", str(gap), "--enforce")
+            self.assertEqual(proc.returncode, 1, f"expected exit 1 on a gap; stdout={proc.stdout!r} stderr={proc.stderr!r}")
+            self.assertIn("pkg/low.py", proc.stdout)
+            self.assertIn("FAIL", proc.stdout)
+
+    def test_enforce_exits_zero_when_clean(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            clean = self._write_cov(Path(td), {"pkg/ok.py": (10, 10), "pkg/also.py": (20, 20)})
+            proc = self._run("--coverage-json", str(clean), "--enforce")
+            self.assertEqual(proc.returncode, 0, f"expected exit 0 when clean; stdout={proc.stdout!r} stderr={proc.stderr!r}")
+
+    def test_advisory_default_exits_zero_on_gap(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            gap = self._write_cov(Path(td), {"pkg/dead.py": (20, 0)})
+            proc = self._run("--coverage-json", str(gap))
+            self.assertEqual(proc.returncode, 0, f"advisory default must exit 0; stdout={proc.stdout!r} stderr={proc.stderr!r}")
+            self.assertNotIn("Enforcing gate", proc.stdout)
+
+    def test_omit_excludes_offender_end_to_end(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            gap = self._write_cov(Path(td), {"pkg/main.py": (10, 10), "pkg/__main__.py": (4, 0)})
+            self.assertEqual(self._run("--coverage-json", str(gap), "--enforce").returncode, 1)
+            proc = self._run("--coverage-json", str(gap), "--enforce", "--omit", "*/__main__.py")
+            self.assertEqual(proc.returncode, 0, f"--omit should exclude the shim -> clean -> exit 0; stdout={proc.stdout!r} stderr={proc.stderr!r}")
 
 
 class PinHelperTest(unittest.TestCase):

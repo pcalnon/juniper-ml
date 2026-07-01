@@ -358,3 +358,193 @@ def test_render_reports_no_gaps_when_all_above() -> None:
     report = parse_coverage_json(_cov_json({"pkg/a.py": (10, 10), "pkg/b.py": (10, 10)}))
     text = report.render()
     assert "Files below 90.0%: none" in text
+
+
+# --------------------------------------------------------------------------- #
+# ENFORCING MODE (work-unit C-0): opt-in --enforce blocking gate.
+#   * per-file basis = STATEMENT   (covered_statements / num_statements)
+#   * sub-module basis = POOLED    (statement-weighted; NOT mean-of-files)
+#   * --omit excludes files from the parsed report BEFORE gating
+#   * advisory (no --enforce) stays exit 0 always -- default unchanged
+# --------------------------------------------------------------------------- #
+def _branch_file(num: int, covered: int, percent_covered: float) -> dict:
+    """A coverage-json file entry whose branch-inclusive ``percent_covered`` is
+    set INDEPENDENTLY of ``covered_lines / num_statements`` -- the shape a repo
+    with ``branch = true`` produces, used to prove the statement-vs-branch basis.
+    """
+    return {"summary": {"num_statements": num, "covered_lines": covered, "missing_lines": max(num - covered, 0), "percent_covered": percent_covered}}
+
+
+# ---- library-level: the new statement / pooled bases + omit ---- #
+def test_statement_percent_is_branch_independent() -> None:
+    # A file coverage.py reports at 80% branch-inclusive but 100% on statements.
+    data = {"files": {"pkg/a.py": _branch_file(10, 10, 80.0)}}
+    report = parse_coverage_json(data)
+    file_cov = report.files[0]
+    assert file_cov.percent_covered == 80.0  # advisory display (branch-inclusive) unchanged
+    assert file_cov.statement_percent == 100.0  # enforcing basis: 10/10
+
+
+def test_files_below_statement_threshold_uses_statements() -> None:
+    data = {"files": {"pkg/branchy.py": _branch_file(10, 10, 70.0), "pkg/real.py": _cov_json({"x": (10, 8)})["files"]["x"]}}
+    report = parse_coverage_json(data)
+    # Advisory (branch-inclusive) flags branchy.py (70 < 90).
+    assert "pkg/branchy.py" in [f.path for f in report.files_below_threshold()]
+    # Enforcing (statement) does NOT flag branchy.py (100 statement); it flags
+    # real.py (80 statement < 90).
+    below = [f.path for f in report.files_below_statement_threshold(90.0)]
+    assert below == ["pkg/real.py"]
+
+
+def test_submodules_below_pooled_bar_uses_pooled_not_mean() -> None:
+    # pkg: mean-of-files 97.67 (>=95) but pooled 93.14 (<95) -- the divergence.
+    report = parse_coverage_json(_cov_json({"pkg/big.py": (200, 186), "pkg/a.py": (2, 2), "pkg/b.py": (2, 2)}))
+    pkg = next(s for s in report.submodules if s.name == "pkg")
+    assert pkg.average_percent == 97.67
+    assert pkg.pooled_percent == 93.14
+    # Advisory mean basis: NOT below the bar.
+    assert pkg.below_bar(95.0) is False
+    assert [s.name for s in report.submodules_below_bar()] == []
+    # Enforcing pooled basis: below the bar.
+    assert pkg.below_pooled_bar(95.0) is True
+    assert [s.name for s in report.submodules_below_pooled_bar(95.0)] == ["pkg"]
+
+
+def test_matches_any_glob() -> None:
+    assert cgm._matches_any("pkg/__main__.py", ["*/__main__.py"]) is True
+    assert cgm._matches_any("pkg/sub/__main__.py", ["*/__main__.py"]) is True
+    assert cgm._matches_any("pkg/main.py", ["*/__main__.py"]) is False
+    assert cgm._matches_any("pkg/cli.py", ["*/__main__.py", "*/cli.py"]) is True
+
+
+def test_omit_filters_files_and_recomputes_overall() -> None:
+    data = _cov_json({"pkg/main.py": (10, 10), "pkg/__main__.py": (4, 0)}, totals_percent=71.43)
+    # Without omit: both files present; overall trusts the (stale) totals.
+    full = parse_coverage_json(data)
+    assert {f.path for f in full.files} == {"pkg/main.py", "pkg/__main__.py"}
+    assert full.overall_percent == 71.43
+    # With omit: __main__.py dropped BEFORE aggregation; overall recomputed from
+    # the retained file (10/10 = 100), not the stale totals.
+    omitted = parse_coverage_json(data, omit=["*/__main__.py"])
+    assert {f.path for f in omitted.files} == {"pkg/main.py"}
+    assert omitted.overall_percent == 100.0
+
+
+# ---- CLI: the --enforce exit-code contract ---- #
+def test_cli_enforce_clean_exits_zero(tmp_path) -> None:
+    data = _cov_json({"pkg/a.py": (10, 10), "pkg/b.py": (10, 10)})
+    rc = cli_main(["--coverage-json", _write(tmp_path, data), "--enforce"])
+    assert rc == 0
+
+
+def test_cli_enforce_file_below_statement_exits_one_and_names_it(tmp_path, capsys) -> None:
+    # pkg pooled 99.50 (>=95, sub-module PASS) but tiny.py statement 50 (<90).
+    data = _cov_json({"pkg/big.py": (1000, 1000), "pkg/tiny.py": (10, 5)})
+    rc = cli_main(["--coverage-json", _write(tmp_path, data), "--enforce"])
+    out = capsys.readouterr().out
+    assert rc == 1
+    assert "Enforcing gate: FAIL" in out
+    assert "pkg/tiny.py" in out
+
+
+def test_cli_enforce_file_below_statement_json_isolates_basis(tmp_path, capsys) -> None:
+    data = _cov_json({"pkg/big.py": (1000, 1000), "pkg/tiny.py": (10, 5)})
+    rc = cli_main(["--coverage-json", _write(tmp_path, data), "--enforce", "--json"])
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 1
+    enforcement = payload["enforcement"]
+    assert enforcement["passed"] is False
+    assert [f["path"] for f in enforcement["files_below"]] == ["pkg/tiny.py"]
+    # Sub-module pooled PASSES (99.50) even though mean-of-files (75) does not:
+    assert enforcement["submodules_below"] == []
+    # ... and the advisory (mean-of-files) view WOULD have flagged pkg -- proving
+    # the enforcing gate is on pooled, not mean.
+    assert payload["submodules_below_bar"] == ["pkg"]
+
+
+def test_cli_enforce_submodule_pooled_below_exits_one(tmp_path, capsys) -> None:
+    # All files >=90 statement (no per-file failure) but pkg pooled 93.14 (<95).
+    data = _cov_json({"pkg/big.py": (200, 186), "pkg/a.py": (2, 2), "pkg/b.py": (2, 2)})
+    rc = cli_main(["--coverage-json", _write(tmp_path, data), "--enforce", "--json"])
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 1
+    enforcement = payload["enforcement"]
+    assert enforcement["files_below"] == []  # per-file statement gate is clean
+    assert [s["name"] for s in enforcement["submodules_below"]] == ["pkg"]
+    # Advisory mean basis would NOT have flagged pkg (mean 97.67 >= 95).
+    assert payload["submodules_below_bar"] == []
+
+
+def test_cli_enforce_statement_basis_passes_when_branch_below(tmp_path, capsys) -> None:
+    # Statement 100 (>=90) but branch-inclusive percent_covered 80 (<90).
+    data = {"files": {"pkg/a.py": _branch_file(10, 10, 80.0)}}
+    rc = cli_main(["--coverage-json", _write(tmp_path, data), "--enforce", "--json"])
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 0  # statement basis: PASS
+    assert payload["enforcement"]["passed"] is True
+    assert payload["enforcement"]["files_below"] == []
+    # The advisory (branch-inclusive) view WOULD flag it -- proving the gate is
+    # on statements, not the branch-inclusive display percent.
+    assert [f["path"] for f in payload["files_below_threshold"]] == ["pkg/a.py"]
+
+
+def test_cli_enforce_omit_excludes_offender(tmp_path, capsys) -> None:
+    data = _cov_json({"pkg/main.py": (10, 10), "pkg/__main__.py": (4, 0)})
+    path = _write(tmp_path, data)
+    # Without omit: __main__.py (statement 0) fails the gate.
+    assert cli_main(["--coverage-json", path, "--enforce"]) == 1
+    capsys.readouterr()
+    # With --omit: the shim is dropped before gating -> clean -> exit 0.
+    rc = cli_main(["--coverage-json", path, "--enforce", "--omit", "*/__main__.py", "--json"])
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert [f["path"] for f in payload["files"]] == ["pkg/main.py"]
+    assert payload["enforcement"]["passed"] is True
+
+
+def test_cli_enforce_custom_file_threshold(tmp_path) -> None:
+    # a.py statement 92, plus a big 100% file so pkg pooled is 99.27 (>=95) --
+    # this isolates the per-file threshold from the sub-module pooled gate.
+    data = _cov_json({"pkg/a.py": (100, 92), "pkg/big.py": (1000, 1000)})
+    path = _write(tmp_path, data)
+    # Default --fail-under-file 90: a.py (92) clears it -> exit 0.
+    assert cli_main(["--coverage-json", path, "--enforce"]) == 0
+    # Raised --fail-under-file 95: a.py (92) now fails; pooled still passes.
+    assert cli_main(["--coverage-json", path, "--enforce", "--fail-under-file", "95"]) == 1
+
+
+def test_cli_enforce_custom_submodule_threshold(tmp_path) -> None:
+    # pkg pooled 96, every file >=90 statement -> the per-file gate never fires,
+    # so this isolates the --fail-under-submodule bar.
+    data = _cov_json({"pkg/a.py": (100, 96)})
+    path = _write(tmp_path, data)
+    # Default --fail-under-submodule 95: pooled 96 clears it -> exit 0.
+    assert cli_main(["--coverage-json", path, "--enforce"]) == 0
+    # Raised --fail-under-submodule 97: pooled 96 now fails.
+    assert cli_main(["--coverage-json", path, "--enforce", "--fail-under-submodule", "97"]) == 1
+
+
+def test_cli_advisory_default_exits_zero_and_omits_enforcement_block(tmp_path, capsys) -> None:
+    # A 0%-covered file with NO --enforce: exit 0 (advisory contract) and the
+    # enforcement verdict block is not printed.
+    data = _cov_json({"pkg/dead.py": (20, 0)})
+    rc = cli_main(["--coverage-json", _write(tmp_path, data)])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "Enforcing gate" not in out
+
+
+def test_cli_advisory_default_json_has_no_enforcement_key(tmp_path, capsys) -> None:
+    rc = cli_main(["--coverage-json", _write(tmp_path, _cov_json({"pkg/dead.py": (20, 0)})), "--json"])
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert "enforcement" not in payload
+
+
+def test_cli_omit_filters_advisory_report(tmp_path, capsys) -> None:
+    # --omit without --enforce still filters the report (single source of truth).
+    data = _cov_json({"pkg/main.py": (10, 9), "pkg/__main__.py": (4, 0)})
+    rc = cli_main(["--coverage-json", _write(tmp_path, data), "--omit", "*/__main__.py", "--json"])
+    payload = json.loads(capsys.readouterr().out)
+    assert rc == 0  # advisory: exit 0 always
+    assert [f["path"] for f in payload["files"]] == ["pkg/main.py"]
