@@ -40,12 +40,14 @@ This installs the following console scripts (see the package's
   (added in 0.3.0).
 - `juniper-lint-agents-md-header` — lints the `AGENTS.md` canonical
   six-field header schema (added in 0.4.0).
-- `juniper-coverage-gap-map` — **advisory** per-file coverage-gap mapper
-  (added in 0.5.0): parses a `coverage json` and reports the per-file
-  distribution, the files below a threshold (default 90 %), and each
-  sub-module's average vs a bar (default 95 %). Exit 0 always — it
-  reports, it never fails a build. Carries a documented numpy-2.x
-  package-form `--cov` shim.
+- `juniper-coverage-gap-map` — per-file coverage-gap mapper (added in 0.5.0;
+  **enforcing mode added in 0.6.0**): parses a `coverage json` and reports the
+  per-file distribution, the files below a threshold (default 90 %), and each
+  sub-module's average vs a bar (default 95 %). **Advisory by default** (exit 0
+  always — it reports, it never fails a build); the opt-in `--enforce` flag
+  turns it into a blocking gate (exit 1 on a per-file statement gap or a
+  sub-module pooled gap). Carries a documented numpy-2.x package-form `--cov`
+  shim. See "Per-file coverage gate" below.
 
 The package requires Python 3.11 or newer and depends on PyYAML and packaging.
 
@@ -120,6 +122,46 @@ wheel, or a `--check-lock` lock pin, below a floor), `2` (usage error — no
 `pyproject.toml`, no `juniper-*` floors, or `--check-lock` with no lockfile). A
 not-installed floor is a soft note unless `--strict` is given. Every floor (OK
 and drifted alike) is listed — no silent truncation.
+
+## Per-file coverage gate (`juniper-coverage-gap-map`)
+
+Parse a `coverage json` (coverage.py / pytest-cov `--cov-report=json`) and map
+the per-file coverage gaps. **Advisory by default; enforcing is opt-in.**
+
+```bash
+# Advisory (default): report only, exit 0 always.
+juniper-coverage-gap-map --coverage-json coverage.json
+juniper-coverage-gap-map --coverage-json coverage.json --json   # machine output
+
+# Run the repo's real test command under coverage first (secondary path):
+juniper-coverage-gap-map --repo-root . --package my_pkg \
+    --test-command "python -m pytest"
+
+# Enforcing gate (opt-in, added 0.6.0): exit 1 if any source file's STATEMENT
+# coverage < 90 OR any sub-module's POOLED coverage < 95; exit 0 when clean.
+juniper-coverage-gap-map --coverage-json coverage.json --enforce \
+    --fail-under-file 90 --fail-under-submodule 95 --omit '*/__main__.py'
+```
+
+The enforcing gate deliberately uses different bases than the advisory display,
+so it stays apples-to-apples across units (work-unit C-0 of the per-file
+coverage rollout):
+
+- **Per-file basis = statement** coverage (`covered_statements /
+  num_statements`), **not** the branch-inclusive `percent_covered` the report
+  shows (a repo running `branch = true` reports a branch-inclusive percent).
+- **Sub-module basis = pooled** (statement-weighted `Σcovered / Σstatements`),
+  **not** the mean-of-files average the report shows (the two diverge for small
+  files and can flip a sub-module's outcome).
+- `--omit <glob>` (repeatable) excludes files from the report **and** the gate,
+  applied to the parsed JSON before gating — the tool is the single source of
+  truth for what counts. Zero-statement files (re-export `__init__.py`) already
+  score 100 %, so `--omit` is for thin `__main__.py` / CLI shims and the like.
+
+Exit codes: `0` (advisory always, or an enforcing run that is clean), `1`
+(enforcing only — a file or sub-module is under its floor; every offender is
+listed, no silent truncation), `2` (usage / structural error — no input, an
+unreadable or malformed `coverage.json`, or a dotted `--package`).
 
 ## Library API
 

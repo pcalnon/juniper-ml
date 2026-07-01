@@ -8,12 +8,40 @@ coverage gate exists anywhere* across the Juniper repos -- several CIs run a
 bare ``python -m pytest`` (e.g. ``cascor-model``) with no ``--cov`` floor at
 all, so a module can rot to single-digit coverage without any signal.
 
-Posture: **advisory-first**. The mapper is a read-only *reporter*; it never
-fails a build. The CLI exits ``0`` whenever it produces a report, regardless
-of how bad the coverage is (see
+Posture: **advisory-first, enforcing opt-in**. The mapper is a read-only
+*reporter* and the CLI stays advisory **by default** -- it exits ``0`` whenever
+it produces a report, regardless of how bad the coverage is (see
 :mod:`juniper_ci_tools.cli_coverage_gap_mapper` for the exit-code contract).
-Promotion to a blocking per-file gate is a separate, per-repo, owner-signed
-decision -- not something this tool does on its own.
+An opt-in ``--enforce`` mode (work-unit C-0 of the per-file coverage rollout,
+``notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md``)
+turns findings into a blocking gate -- exit ``1`` when any source file or
+sub-module is under its floor -- but promoting a *specific repo's CI* to the
+blocking gate stays a separate, per-repo, owner-signed decision.
+
+The two enforcing bases (deliberately different from the advisory display)
+------------------------------------------------------------------------
+The advisory report and the enforcing gate measure the same coverage two
+different ways, because the ratified gate basis is cross-unit-consistent while
+the advisory display mirrors coverage.py:
+
+* **Per-file gate = statement coverage** (:attr:`FileCoverage.statement_percent`
+  = ``covered_statements / num_statements``), **not** the branch-inclusive
+  :attr:`FileCoverage.percent_covered` the advisory report shows. A repo that
+  sets ``branch = true`` reports a branch-inclusive ``summary.percent_covered``;
+  gating on statements keeps the floor apples-to-apples across units.
+* **Sub-module gate = pooled coverage** (:attr:`SubmoduleCoverage.pooled_percent`
+  = ``Sigma covered / Sigma statements``), **not** the mean-of-files
+  :attr:`SubmoduleCoverage.average_percent` the advisory report shows. The two
+  diverge for small files and can flip outcomes, so the gate uses the
+  statement-weighted aggregate.
+
+Exclusions (``--omit``) are applied to the parsed report **before** either the
+report or the gate is computed (:func:`parse_coverage_json`'s ``omit=`` /
+the CLI's repeatable ``--omit`` glob) -- the tool is the single source of
+truth for what counts, rather than trusting coverage's own ``[report] omit``.
+Zero-statement files already score 100% (a re-export ``__init__.py`` never
+false-positives), so ``--omit`` is for thin ``__main__.py`` / CLI shims,
+generated code, and similar per the scoping doc's excluded-files policy.
 
 What it emits
 -------------
@@ -50,6 +78,7 @@ than once per process" guard at pytest-cov startup.
 
 from __future__ import annotations
 
+import fnmatch
 import json
 import subprocess
 from dataclasses import dataclass
@@ -102,6 +131,17 @@ def _submodule_of(path: str) -> str:
     return head if sep else "."
 
 
+def _matches_any(path: str, patterns: Sequence[str]) -> bool:
+    """``True`` when ``path`` matches any ``fnmatch`` glob in ``patterns``.
+
+    Used by :func:`parse_coverage_json`'s ``omit=`` filter (the CLI's repeatable
+    ``--omit``). ``fnmatch`` treats ``*`` as spanning ``/`` too, so a pattern
+    like ``*/__main__.py`` or ``*__main__.py`` excludes a thin CLI shim wherever
+    it sits in the tree. Paths are already normalised to forward slashes.
+    """
+    return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
+
+
 def _bucket_label(percent: float) -> str:
     """Map a percentage to its :data:`_DISTRIBUTION_BUCKETS` label."""
     for label, lower, upper in _DISTRIBUTION_BUCKETS[:-1]:
@@ -121,8 +161,12 @@ class FileCoverage:
         num_statements: Measurable statements in the file.
         covered_statements: Statements that were executed.
         missing_statements: Statements that were not executed.
-        percent_covered: ``covered / num_statements`` as a 0-100 percentage
-            (a zero-statement file is reported as ``100.0``).
+        percent_covered: The **advisory display** percentage -- it mirrors
+            coverage.py's ``summary.percent_covered`` when present, which is
+            **branch-inclusive** when the measured repo sets ``branch = true``
+            (it otherwise equals ``covered / num_statements``). A zero-statement
+            file is reported as ``100.0``. The enforcing gate does NOT use this;
+            it uses :attr:`statement_percent`.
     """
 
     path: str
@@ -136,6 +180,19 @@ class FileCoverage:
         """The sub-module (directory) this file belongs to."""
         return _submodule_of(self.path)
 
+    @property
+    def statement_percent(self) -> float:
+        """Statement-only coverage (``covered_statements / num_statements``), 0-100.
+
+        This is the **enforcing** per-file basis (work-unit C-0). It is distinct
+        from :attr:`percent_covered`, which mirrors coverage.py's branch-inclusive
+        ``summary.percent_covered`` when the measured repo runs ``branch = true``
+        -- gating on statements keeps the floor apples-to-apples across units
+        regardless of each unit's branch setting. A zero-statement file is
+        ``100.0`` (same auto-full-coverage rule the advisory display uses).
+        """
+        return _round2(_safe_percent(self.covered_statements, self.num_statements))
+
     def to_dict(self) -> dict:
         """JSON-friendly mapping for the ``--json`` reporter."""
         return {
@@ -145,6 +202,7 @@ class FileCoverage:
             "covered_statements": self.covered_statements,
             "missing_statements": self.missing_statements,
             "percent_covered": self.percent_covered,
+            "statement_percent": self.statement_percent,
         }
 
 
@@ -172,8 +230,19 @@ class SubmoduleCoverage:
     pooled_percent: float
 
     def below_bar(self, bar: float = DEFAULT_SUBMODULE_BAR) -> bool:
-        """``True`` when the sub-module average is strictly under ``bar``."""
+        """``True`` when the mean-of-files average is strictly under ``bar`` (advisory basis)."""
         return self.average_percent < bar
+
+    def below_pooled_bar(self, bar: float = DEFAULT_SUBMODULE_BAR) -> bool:
+        """``True`` when the pooled (statement-weighted) coverage is strictly under ``bar``.
+
+        This is the **enforcing** sub-module basis (work-unit C-0). It gates on
+        :attr:`pooled_percent` (``Sigma covered / Sigma statements``), not the
+        mean-of-files :attr:`average_percent` that :meth:`below_bar` (the
+        advisory basis) uses; the two diverge for small files and can flip a
+        sub-module's outcome.
+        """
+        return self.pooled_percent < bar
 
     def to_dict(self, bar: float = DEFAULT_SUBMODULE_BAR) -> dict:
         """JSON-friendly mapping; ``below_bar`` is resolved against ``bar``."""
@@ -204,12 +273,44 @@ class CoverageReport:
     submodule_bar: float
 
     def files_below_threshold(self) -> list[FileCoverage]:
-        """Files whose coverage is strictly below :attr:`file_threshold`."""
+        """Files whose ADVISORY coverage is strictly below :attr:`file_threshold`.
+
+        Uses the branch-inclusive :attr:`FileCoverage.percent_covered` (the
+        advisory display basis). The enforcing gate uses
+        :meth:`files_below_statement_threshold` instead.
+        """
         return [f for f in self.files if f.percent_covered < self.file_threshold]
 
     def submodules_below_bar(self) -> list[SubmoduleCoverage]:
-        """Sub-modules whose average is strictly below :attr:`submodule_bar`."""
+        """Sub-modules whose mean-of-files average is strictly below :attr:`submodule_bar`.
+
+        Uses the advisory mean-of-files :attr:`SubmoduleCoverage.average_percent`.
+        The enforcing gate uses :meth:`submodules_below_pooled_bar` instead.
+        """
         return [s for s in self.submodules if s.below_bar(self.submodule_bar)]
+
+    def files_below_statement_threshold(self, threshold: float = DEFAULT_FILE_THRESHOLD) -> list[FileCoverage]:
+        """Files whose STATEMENT coverage is strictly below ``threshold`` (enforcing basis).
+
+        The enforcing per-file check (work-unit C-0): gates on
+        :attr:`FileCoverage.statement_percent` (``covered_statements /
+        num_statements``), not the branch-inclusive advisory
+        :meth:`files_below_threshold`. ``threshold`` is the enforcing floor
+        (the CLI's ``--fail-under-file``), kept independent of the advisory
+        :attr:`file_threshold` display cut.
+        """
+        return [f for f in self.files if f.statement_percent < threshold]
+
+    def submodules_below_pooled_bar(self, bar: float = DEFAULT_SUBMODULE_BAR) -> list[SubmoduleCoverage]:
+        """Sub-modules whose POOLED coverage is strictly below ``bar`` (enforcing basis).
+
+        The enforcing per-sub-module check (work-unit C-0): gates on the
+        statement-weighted :attr:`SubmoduleCoverage.pooled_percent`, not the
+        mean-of-files advisory :meth:`submodules_below_bar`. ``bar`` is the
+        enforcing bar (the CLI's ``--fail-under-submodule``), kept independent
+        of the advisory :attr:`submodule_bar` display bar.
+        """
+        return [s for s in self.submodules if s.below_pooled_bar(bar)]
 
     def distribution(self) -> dict[str, int]:
         """Histogram of per-file coverage percentages (ordered, all buckets)."""
@@ -257,7 +358,7 @@ class CoverageReport:
         return "\n".join(lines)
 
 
-def parse_coverage_json(data: dict, *, file_threshold: float = DEFAULT_FILE_THRESHOLD, submodule_bar: float = DEFAULT_SUBMODULE_BAR) -> CoverageReport:
+def parse_coverage_json(data: dict, *, file_threshold: float = DEFAULT_FILE_THRESHOLD, submodule_bar: float = DEFAULT_SUBMODULE_BAR, omit: Optional[Sequence[str]] = None) -> CoverageReport:
     """Parse a loaded ``coverage json`` mapping into a :class:`CoverageReport`.
 
     This is the **primary, fixture-testable** entry point. ``data`` is the
@@ -270,6 +371,12 @@ def parse_coverage_json(data: dict, *, file_threshold: float = DEFAULT_FILE_THRE
         data: The loaded coverage-json mapping.
         file_threshold: Percentage below which a file is reported as a gap.
         submodule_bar: Percentage a sub-module average must reach.
+        omit: Optional ``fnmatch`` globs; any file whose path matches one is
+            dropped from the parsed report **before** aggregation, distribution,
+            and gating. The tool is the single source of truth for what counts
+            (it does not trust coverage's own ``[report] omit``). When any
+            ``omit`` is given the overall figure is recomputed from the retained
+            files rather than trusting the (unfiltered) ``totals``.
 
     Returns:
         A :class:`CoverageReport`. Files are sorted by path for stable output.
@@ -295,10 +402,17 @@ def parse_coverage_json(data: dict, *, file_threshold: float = DEFAULT_FILE_THRE
             )
         )
 
+    # Apply --omit exclusions to the PARSED report, before aggregation/gating.
+    if omit:
+        files = [f for f in files if not _matches_any(f.path, omit)]
+
     submodules = _aggregate_submodules(files)
 
     totals = data.get("totals", {})
-    if isinstance(totals, dict) and "percent_covered" in totals:
+    # Trust coverage's own totals only when nothing was omitted; an omit makes
+    # the file-level totals stale, so recompute the pooled overall from the
+    # retained files.
+    if not omit and isinstance(totals, dict) and "percent_covered" in totals:
         overall = float(totals["percent_covered"])
     else:
         total_statements = sum(f.num_statements for f in files)
@@ -340,8 +454,15 @@ def _aggregate_submodules(files: Sequence[FileCoverage]) -> list[SubmoduleCovera
     return submodules
 
 
-def load_coverage_json(path: Path, *, file_threshold: float = DEFAULT_FILE_THRESHOLD, submodule_bar: float = DEFAULT_SUBMODULE_BAR) -> CoverageReport:
+def load_coverage_json(path: Path, *, file_threshold: float = DEFAULT_FILE_THRESHOLD, submodule_bar: float = DEFAULT_SUBMODULE_BAR, omit: Optional[Sequence[str]] = None) -> CoverageReport:
     """Read a ``coverage.json`` file from disk and parse it.
+
+    Args:
+        path: The ``coverage.json`` to read.
+        file_threshold: Forwarded to :func:`parse_coverage_json`.
+        submodule_bar: Forwarded to :func:`parse_coverage_json`.
+        omit: Forwarded to :func:`parse_coverage_json` (``fnmatch`` exclusion
+            globs applied to the parsed report before aggregation/gating).
 
     Raises:
         FileNotFoundError: When ``path`` does not exist.
@@ -350,7 +471,7 @@ def load_coverage_json(path: Path, *, file_threshold: float = DEFAULT_FILE_THRES
     path = Path(path)
     raw = path.read_text(encoding="utf-8")
     data = json.loads(raw)
-    return parse_coverage_json(data, file_threshold=file_threshold, submodule_bar=submodule_bar)
+    return parse_coverage_json(data, file_threshold=file_threshold, submodule_bar=submodule_bar, omit=omit)
 
 
 def package_cov_pytest_args(package: str, *, json_path: str = "coverage.json", cov_config: Optional[str] = None, fail_under: Optional[float] = None, term_missing: bool = True) -> list[str]:
@@ -432,7 +553,7 @@ def write_include_coverage_config(path: Path, include: Sequence[str], *, branch:
     return path
 
 
-def run_coverage(test_command: Sequence[str], *, repo_root: Path, package: str, json_path: Optional[Path] = None, include: Optional[Sequence[str]] = None, cov_config: Optional[Path] = None, file_threshold: float = DEFAULT_FILE_THRESHOLD, submodule_bar: float = DEFAULT_SUBMODULE_BAR, env: Optional[dict] = None) -> CoverageReport:
+def run_coverage(test_command: Sequence[str], *, repo_root: Path, package: str, json_path: Optional[Path] = None, include: Optional[Sequence[str]] = None, cov_config: Optional[Path] = None, file_threshold: float = DEFAULT_FILE_THRESHOLD, submodule_bar: float = DEFAULT_SUBMODULE_BAR, omit: Optional[Sequence[str]] = None, env: Optional[dict] = None) -> CoverageReport:
     """Run a repo's real pytest command under coverage, then parse the JSON.
 
     Secondary path (the JSON-parsing path is primary). ``test_command`` must be
@@ -456,6 +577,11 @@ def run_coverage(test_command: Sequence[str], *, repo_root: Path, package: str, 
         cov_config: Explicit coverage config path (overrides ``include``).
         file_threshold: Forwarded to :func:`parse_coverage_json`.
         submodule_bar: Forwarded to :func:`parse_coverage_json`.
+        omit: Post-parse ``fnmatch`` exclusion globs forwarded to
+            :func:`load_coverage_json` / :func:`parse_coverage_json`. Distinct
+            from ``include``: ``include`` is a measurement-time ``[report]
+            include=`` scoping glob, whereas ``omit`` drops files from the
+            already-parsed report before aggregation/gating.
         env: Optional environment mapping for the subprocess.
 
     Returns:
@@ -473,7 +599,7 @@ def run_coverage(test_command: Sequence[str], *, repo_root: Path, package: str, 
     command = list(test_command) + cov_args
     subprocess.run(command, cwd=str(repo_root), env=env, check=False)
 
-    return load_coverage_json(json_path, file_threshold=file_threshold, submodule_bar=submodule_bar)
+    return load_coverage_json(json_path, file_threshold=file_threshold, submodule_bar=submodule_bar, omit=omit)
 
 
 __all__ = [

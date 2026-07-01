@@ -20,7 +20,9 @@ The public API is:
 - :func:`lint_agents_md_version` -- ergonomic library entry point for the
   AGENTS.md drift lint.
 - :class:`CoverageReport` (with :class:`FileCoverage` / :class:`SubmoduleCoverage`)
-  -- the advisory per-file coverage-gap mapper added in 0.5.0.
+  -- the per-file coverage-gap mapper added in 0.5.0 (advisory reporter by
+  default; the CLI's opt-in ``--enforce`` mode, added in 0.6.0, turns it into a
+  blocking gate on the statement / pooled bases).
 - :func:`parse_coverage_json` / :func:`load_coverage_json` -- parse a
   ``coverage json`` into the structured report (the primary, fixture-testable
   path); :func:`run_coverage` runs a repo's real test command under the
