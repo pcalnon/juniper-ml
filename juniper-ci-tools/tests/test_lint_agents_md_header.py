@@ -306,6 +306,47 @@ class CliExitCodeMatrixTest(unittest.TestCase):
             self.assertTrue(payload["is_drift"])
             self.assertEqual(payload["bad_last_updated_value"], "not-a-date")
 
+    def test_autodiscovery_failure_text_exits_two(self) -> None:
+        # No --repo-root and a cwd with no AGENTS.md/.github ancestor makes
+        # auto-discovery raise RepoRootNotFoundError; the text reporter writes
+        # the message to stderr and returns exit code 2.
+        with TemporaryDirectory() as td:
+            import os
+
+            here = Path.cwd()
+            try:
+                os.chdir(td)
+                code, _, err = self._run([])
+            finally:
+                os.chdir(here)
+            self.assertEqual(code, 2)
+            self.assertIn("Could not locate repo root", err)
+
+    def test_autodiscovery_failure_json_exits_two(self) -> None:
+        # Same RepoRootNotFoundError path with --json emits the structured
+        # error payload (to stderr) instead of the text message.
+        with TemporaryDirectory() as td:
+            import os
+
+            here = Path.cwd()
+            try:
+                os.chdir(td)
+                code, _, err = self._run(["--json"])
+            finally:
+                os.chdir(here)
+            self.assertEqual(code, 2)
+            payload = json.loads(err)
+            self.assertEqual(payload["error"], "repo_root_not_found")
+
+    def test_file_not_found_json_exits_two(self) -> None:
+        # Explicit --repo-root that exists but has no AGENTS.md raises
+        # FileNotFoundError; --json emits the structured error payload.
+        with TemporaryDirectory() as td:
+            code, _, err = self._run(["--repo-root", td, "--json"])
+            self.assertEqual(code, 2)
+            payload = json.loads(err)
+            self.assertEqual(payload["error"], "file_not_found")
+
 
 if __name__ == "__main__":
     unittest.main()

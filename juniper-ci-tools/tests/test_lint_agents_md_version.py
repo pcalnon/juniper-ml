@@ -260,6 +260,67 @@ class CliTest(unittest.TestCase):
             self.assertIsNone(payload["in_sync"])
             self.assertFalse(payload["is_drift"])
 
+    def test_autodiscovery_failure_json_exits_two(self) -> None:
+        # RepoRootNotFoundError with --json emits the structured error payload.
+        with TemporaryDirectory() as td:
+            import os
+
+            here = Path.cwd()
+            try:
+                os.chdir(td)
+                rc, _, err = self._run(["--json"])
+            finally:
+                os.chdir(here)
+            self.assertEqual(rc, 2)
+            payload = json.loads(err)
+            self.assertEqual(payload["error"], "repo_root_not_found")
+
+    def test_file_not_found_json_exits_two(self) -> None:
+        # Explicit --repo-root missing pyproject.toml raises FileNotFoundError;
+        # --json emits the structured error payload.
+        with TemporaryDirectory() as td:
+            rc, _, err = self._run(["--repo-root", td, "--json"])
+            self.assertEqual(rc, 2)
+            payload = json.loads(err)
+            self.assertEqual(payload["error"], "file_not_found")
+
+    def test_multiple_headers_json_exits_two(self) -> None:
+        # MultipleVersionHeadersError with --json emits the structured payload.
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            _write_repo(
+                root,
+                pyproject_version="1.0.0",
+                agents_md_version="1.0.0",
+                agents_md_extra="\n\n**Version**: 0.9.0\n",
+            )
+            rc, _, err = self._run(["--repo-root", str(root), "--json"])
+            self.assertEqual(rc, 2)
+            payload = json.loads(err)
+            self.assertEqual(payload["error"], "multiple_version_headers")
+
+    def test_missing_pyproject_version_text_exits_two(self) -> None:
+        # pyproject.toml present but without [project].version -> KeyError,
+        # surfaced as exit code 2 with the message on stderr (text mode).
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "pyproject.toml").write_text('[project]\nname = "x"\n', encoding="utf-8")
+            (root / "AGENTS.md").write_text("**Version**: 1.0.0\n", encoding="utf-8")
+            rc, _, err = self._run(["--repo-root", str(root)])
+            self.assertEqual(rc, 2)
+            self.assertIn("[project].version", err)
+
+    def test_missing_pyproject_version_json_exits_two(self) -> None:
+        # Same KeyError path with --json emits the structured error payload.
+        with TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "pyproject.toml").write_text('[project]\nname = "x"\n', encoding="utf-8")
+            (root / "AGENTS.md").write_text("**Version**: 1.0.0\n", encoding="utf-8")
+            rc, _, err = self._run(["--repo-root", str(root), "--json"])
+            self.assertEqual(rc, 2)
+            payload = json.loads(err)
+            self.assertEqual(payload["error"], "missing_pyproject_version")
+
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
