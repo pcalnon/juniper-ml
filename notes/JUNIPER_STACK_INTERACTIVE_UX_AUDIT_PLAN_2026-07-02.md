@@ -33,11 +33,12 @@ report; §11 seeds the report with pilot observations already captured while val
 
 ### 2.2 Out of scope (deferred)
 
-- **Security / vulnerability assessment** (architecture and implementation) is **explicitly deferred to a separate review**
-  owned by Paul (to be run with Opus). This plan does **not** hunt for CVEs, secret-handling flaws, authz bypasses, or
-  injection/SSRF/etc. Where a *reliability/functional* defect happens to touch an auth or rate-limit code path (e.g. the
-  WebSocket per-IP cap in §11 F-A, the CSRF gate in F-B), it is recorded **only** for its UX/correctness impact — not assessed
-  as a vulnerability. Treat those notes as inputs the later security pass may pick up, not as security findings.
+- **Security / vulnerability assessment** (architecture and implementation) is covered in the **companion plan**
+  [`JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md`](JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md) as dimension **D5**. The
+  planning + read-only enumeration were done here (with Fable); genuinely dual-use *execution* steps (active exploitation,
+  PoCs) are handed off to Opus in that doc's §8 register. This UX plan itself does **not** hunt for vulnerabilities; where a
+  *reliability/functional* defect happens to touch an auth or rate-limit code path (e.g. the WebSocket per-IP cap in §11 F-A —
+  which the companion picks up as SEC-F19 — or the CSRF gate in F-B), it is recorded here **only** for its UX/correctness impact.
 - On-host (non-containerized) execution. This audit targets the **containerized** stack only (per directive). The on-host
   conda stack is a follow-up.
 - Load/soak/perf benchmarking beyond the coarse responsiveness observations the walk-through naturally produces.
