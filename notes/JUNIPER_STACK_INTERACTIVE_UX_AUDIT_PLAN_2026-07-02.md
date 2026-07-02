@@ -196,12 +196,14 @@ confirm the documented backend endpoint (`/api/v1/snapshots*`, `/api/v1/metrics/
 
 The audit builds on the existing `notes/` corpus (full ledger compiled during recon). **The plan explicitly re-verifies these
 against the running container rather than trusting their status cells**, because several are 1–4 days stale and one headline
-finding is already contradicted by the pilot (F-B):
+finding (the 401) was already fixed after those notes were written — the pilot (F-B) confirms the fix live:
 
 1. `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md` — the current-state snapshot; treats per-cluster docs as trailing reality.
 2. `juniper-canopy/notes/JUNIPER_CANOPY_CASCOR-TRAINING-401-APIKEY_AUDIT_2026-06-29.md` +
-   `.../JUNIPER_CANOPY_TRAINING-CONTROL-AUTH_DESIGN_2026-06-30.md` — the "Start is 401-broken" finding. **Pilot F-B shows the
-   browser-control auth (Origin+CSRF+cookie) now works in the running image; re-verify and, if confirmed, mark resolved.**
+   `.../JUNIPER_CANOPY_TRAINING-CONTROL-AUTH_DESIGN_2026-06-30.md` — the "Start is 401-broken" audit/design. The fix **shipped**
+   as canopy #414/#415 (rolled out + verified live 2026-07-01): the browser control surface now authenticates via Origin+CSRF.
+   **Pilot F-B confirms this live** (Origin + CSRF token → 200); the recon ledger flagged it "not implemented" only because it
+   read the notes without the #415 rollout context. Treat as resolved; keep as a regression checkpoint.
 3. `CANOPY_TRAINING_CONTROL_ERROR_SURFACING_DESIGN_2026-06-14.md` — "dead button" error surfacing; needs live confirmation the
    alert renders (F-C is the counter-observation).
 4. `JUNIPER_CANOPY_A1_III_DASHBOARD_INTEGRATION_SCOPE_2026-06-23.md` §2.1 — recurrence `backend_type` mis-bucketing at 5 sites.
@@ -265,7 +267,7 @@ seed the report. Security framing intentionally omitted (§2.2).
 | ID | Dim/Sev | Observation (evidence) | Disposition |
 | --- | --- | --- | --- |
 | **F-A** | D1/S2 | WebSocket `/ws/training` + `/ws/control` handshakes return **403**; canopy log root cause `Per-IP limit reached for 172.19.0.1 (5/5)`. `172.19.0.1` is the Docker bridge gateway, so all host browser clients collapse to one IP sharing a single 5-socket budget (`max_connections_per_ip=5`). Slots stayed pinned 5/5 after the browser closed (reap/leak concern; `idle_timeout_seconds=120`). WS badge stuck "Reconnecting". | new (functional/reliability; container-specific NAT visibility) |
-| **F-B** | D4/S2 | `GET /api/csrf` (Origin) → **200** `{csrf_token,enabled:true}`; `POST /api/train/start` with Origin + `X-CSRF-Token` → **200**; without the token → **403** "Invalid or missing CSRF token." The token itself is the credential — **no session cookie** (`/api/csrf` sets none). Browser-control auth **works** in this image. | **contradicts** the 06-29/06-30 "Start 401-broken" docs (now stale for this build) — confirm & mark resolved |
+| **F-B** | D4/S2 | `GET /api/csrf` (Origin) → **200** `{csrf_token,enabled:true}`; `POST /api/train/start` with Origin + `X-CSRF-Token` → **200**; without the token → **403** "Invalid or missing CSRF token." The token itself is the credential — **no session cookie** (`/api/csrf` sets none). Browser-control auth **works** in this image. | **confirms** the canopy #414/#415 401-fix (shipped + verified live 2026-07-01) — the 06-29/06-30 audit+design were its precursors; mark resolved |
 | **F-C** | D4/S1 | `POST /api/train/start` (authed) → HTTP **200** body `{"status":"started","ok":false,"error":"No network created"}` — self-contradictory (claims "started" while `ok:false`). No UI error alert surfaced on the browser click. Logged canopy-side only (root cause below). | new (correctness: transport- vs op-success conflation; Start does not auto-create a network) |
 | **F-D** | D1/S3 | Single-worker canopy `/v1/health` latency reached **~10 s** under the tool's polling + WS reconnect storm (39 TCP conns), recovering to ~2 ms once quiesced (24 conns). | new (responsiveness under concurrent clients) |
 | **F-E** | D2/S3 | All **15** dashboard tabs render; `USER_MANUAL.md` documents only **5**. | confirms known docs-lag; enumerated live |
@@ -294,9 +296,11 @@ Independent re-verification (§9) reproduced all nine. Precise root causes surfa
   `uvicorn.run` with no `workers=`) while several Dash callbacks make **synchronous authenticated HTTP calls back to that same worker**.
   Under the browser's normal polling this self-contention degrades responsiveness (F-D) and starves best-effort panels (F-F). This is the
   highest-value architectural target for the full audit and should be a first-class checkpoint in §6.5–§6.6.
-- **F-B correction.** There is **no session cookie** — `/api/csrf` sets none; CSRF is a server-side hmac token store (`csrf.py`) and the
-  returned token is itself the credential. The pass/fail behavior (403 without token, 200 with) is exactly as recorded, so the
-  "Start is 401-broken" prior finding is genuinely refuted for this build.
+- **F-B correction + disposition.** There is **no session cookie** — `/api/csrf` sets none; CSRF is a server-side hmac token store
+  (`csrf.py`) and the returned token is itself the credential. The pass/fail behavior (403 without token, 200 with) is exactly as
+  recorded. Disposition is **confirms**, not refutes: the 401 was fixed by canopy #414/#415 (rolled out + verified live
+  2026-07-01) — F-B independently re-confirms that fix on the running image. The 06-29 audit / 06-30 design were the fix's
+  precursors; the recon ledger's "not implemented" read reflected the notes alone, without the #415 rollout.
 
 ## 12. Appendix — key references
 
