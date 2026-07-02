@@ -602,3 +602,251 @@ def test_validate_directory_falls_back_to_skip_when_ecosystem_root_not_found(
 
     assert result.ok is True
     assert result.cross_repo_skipped == 1
+
+
+def test_discover_ecosystem_root_returns_none_outside_ecosystem(tmp_path: Path) -> None:
+    """When git reports no usable common dir AND no parent looks like the
+    ecosystem root, discovery returns None (the final fallback). Guards the
+    ``return None`` tail that the two happy-path discovery tests never reach.
+    """
+    repo_root = tmp_path / "lonely-repo"
+    repo_root.mkdir()
+
+    git_result = mock.Mock(returncode=128, stdout="")
+    with (
+        mock.patch.object(subprocess, "run", return_value=git_result),
+        mock.patch.object(cdl, "_is_ecosystem_root", return_value=False),
+    ):
+        assert discover_ecosystem_root(repo_root) is None
+
+
+# ---------------------------------------------------------------------------
+# _find_markdown_files: file-argument and out-of-tree resolution paths
+# ---------------------------------------------------------------------------
+
+
+def test_find_markdown_files_accepts_direct_file_path(make_repo: Callable[..., Path]) -> None:
+    """A markdown file passed directly (not a directory) is scanned as-is."""
+    repo_root = make_repo()
+    md = repo_root / "README.md"
+    md.write_text("# hi\n", encoding="utf-8")
+
+    files = cdl._find_markdown_files([md], repo_root)
+
+    assert files == [md]
+
+
+def test_find_markdown_files_accepts_file_outside_repo_root(
+    tmp_path: Path,
+    make_repo: Callable[..., Path],
+) -> None:
+    """A file argument that is not under ``repo_root`` (``relative_to``
+    raises ``ValueError``) is still included -- the caller asked for it
+    explicitly.
+    """
+    repo_root = make_repo("repo")
+    outside = tmp_path / "OUTSIDE.md"
+    outside.write_text("# out\n", encoding="utf-8")
+
+    files = cdl._find_markdown_files([outside], repo_root)
+
+    assert outside in files
+
+
+def test_find_markdown_files_skips_broken_symlink_in_scanned_dir(
+    make_repo: Callable[..., Path],
+) -> None:
+    """A dangling ``*.md`` symlink discovered while walking a directory is
+    skipped (``rglob`` yields it, but it does not resolve to a real file).
+    """
+    repo_root = make_repo()
+    sub = repo_root / "sub"
+    sub.mkdir()
+    (sub / "real.md").write_text("# real\n", encoding="utf-8")
+    (sub / "broken.md").symlink_to(sub / "missing-target.md")
+
+    files = cdl._find_markdown_files([repo_root], repo_root)
+
+    names = {f.name for f in files}
+    assert "real.md" in names
+    assert "broken.md" not in names
+
+
+def test_find_markdown_files_includes_dir_outside_repo_root(
+    tmp_path: Path,
+    make_repo: Callable[..., Path],
+) -> None:
+    """When a scanned *directory* lives outside ``repo_root``, the files it
+    contains fail ``relative_to(repo_root)`` and take the ``ValueError``
+    branch, which still adds them (filtered only by the skip-dir set).
+    """
+    repo_root = make_repo("repo")
+    external = tmp_path / "external"
+    external.mkdir()
+    (external / "EXT.md").write_text("# ext\n", encoding="utf-8")
+
+    files = cdl._find_markdown_files([external], repo_root)
+
+    assert any(f.name == "EXT.md" for f in files)
+
+
+# ---------------------------------------------------------------------------
+# validate_file: data/protocol-relative links + cross-repo symlink escape
+# ---------------------------------------------------------------------------
+
+
+def test_validate_file_ignores_data_uri_and_protocol_relative_links(
+    make_repo: Callable[..., Path],
+) -> None:
+    """``data:`` URIs and ``//host`` protocol-relative links are neither
+    validated as files nor counted as cross-repo skips.
+    """
+    repo_root = make_repo()
+    md_file = repo_root / "README.md"
+    md_file.write_text(
+        "\n".join(
+            [
+                "# Title",
+                "![img](data:image/png;base64,iVBORw0KGgo=)",
+                "[proto](//example.com/x)",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    errors, cross_repo_count = validate_file(
+        md_file,
+        repo_root,
+        cross_repo_mode="skip",
+        ecosystem_root=None,
+    )
+
+    assert errors == []
+    assert cross_repo_count == 0
+
+
+def test_validate_file_cross_repo_symlink_escape_is_error(tmp_path: Path) -> None:
+    """A structurally-valid cross-repo link whose target *resolves* (via a
+    symlink) outside the sibling repo is rejected by the boundary check --
+    distinct from the textual ``..`` escape guarded elsewhere.
+    """
+    ecosystem_root = tmp_path / "Juniper"
+    repo_root = ecosystem_root / "juniper-ml"
+    repo_root.mkdir(parents=True)
+    target_repo = ecosystem_root / "juniper-data"
+    target_repo.mkdir()
+    outside = ecosystem_root / "outside"
+    outside.mkdir()
+    (outside / "secret.md").write_text("# secret\n", encoding="utf-8")
+    # juniper-data/escape -> ../outside : escapes the juniper-data boundary.
+    (target_repo / "escape").symlink_to(outside)
+
+    md_file = repo_root / "README.md"
+    md_file.write_text(
+        "# Title\n[x](../juniper-data/escape/secret.md)\n",
+        encoding="utf-8",
+    )
+
+    errors, cross_repo_count = validate_file(
+        md_file,
+        repo_root,
+        cross_repo_mode="check",
+        ecosystem_root=ecosystem_root,
+    )
+
+    assert cross_repo_count == 0
+    assert len(errors) == 1
+    assert "escapes target repository boundary" in errors[0]
+
+
+# ---------------------------------------------------------------------------
+# validate_file: verbose OK/SKIP tracing branches
+# ---------------------------------------------------------------------------
+
+
+def test_validate_file_verbose_prints_ok_and_skip_lines(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """In verbose ``check`` mode, every OK/SKIP class emits a trace line:
+    external skip, valid anchor, cross-repo OK, ecosystem-root OK, and a
+    plain intra-repo file OK.
+    """
+    ecosystem_root = tmp_path / "Juniper"
+    repo_root = ecosystem_root / "juniper-ml"
+    (repo_root / "docs").mkdir(parents=True)
+    (repo_root / "docs" / "target.md").write_text("# t\n", encoding="utf-8")
+
+    sibling = ecosystem_root / "juniper-data"
+    (sibling / "docs").mkdir(parents=True)
+    (sibling / "docs" / "exists.md").write_text("# e\n", encoding="utf-8")
+
+    (ecosystem_root / "CLAUDE.md").write_text("# eco\n", encoding="utf-8")
+
+    md_file = repo_root / "docs" / "page.md"
+    md_file.write_text(
+        "\n".join(
+            [
+                "# Heading One",
+                "[ext](https://example.com)",
+                "[anchor](#heading-one)",
+                "[xrepo](../juniper-data/docs/exists.md)",
+                "[eco](../../CLAUDE.md)",
+                "[file](target.md)",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    errors, cross_repo_count = validate_file(
+        md_file,
+        repo_root,
+        verbose=True,
+        cross_repo_mode="check",
+        ecosystem_root=ecosystem_root,
+    )
+
+    out = capsys.readouterr().out
+    assert errors == []
+    assert cross_repo_count == 0
+    assert "SKIP (external)" in out
+    assert "OK (anchor)" in out
+    assert "OK (cross-repo)" in out
+    assert "OK (ecosystem-root)" in out
+    assert "OK (file)" in out
+
+
+def test_validate_file_verbose_skip_mode_prints_skip_lines(
+    make_repo: Callable[..., Path],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """In verbose ``skip`` mode, both cross-repo and ecosystem-root links
+    emit their SKIP trace lines.
+    """
+    repo_root = make_repo("juniper-ml")
+    (repo_root / "docs").mkdir()
+    md_file = repo_root / "docs" / "page.md"
+    md_file.write_text(
+        "\n".join(
+            [
+                "# Title",
+                "[xrepo](../juniper-data/README.md)",
+                "[eco](../../notes/PLAN.md)",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    errors, cross_repo_count = validate_file(
+        md_file,
+        repo_root,
+        verbose=True,
+        cross_repo_mode="skip",
+        ecosystem_root=None,
+    )
+
+    out = capsys.readouterr().out
+    assert errors == []
+    assert cross_repo_count == 2
+    assert "SKIP (cross-repo)" in out
+    assert "SKIP (ecosystem-root)" in out
