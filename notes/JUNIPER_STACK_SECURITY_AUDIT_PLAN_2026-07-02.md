@@ -86,13 +86,26 @@ worker/control auth; metrics IP allowlist; rate-limit defaults; constant-time ke
   (`main.py:348,355-357`) all auto-disable `/docs`,`/redoc`,`/openapi.json` when auth is enabled; **only juniper-recurrence** leaves
   them permanently exposed (its `juniper_service_core.create_app` at `juniper_service_core/app.py:45` sets no `docs_url`). Verify
   whether recurrence docs should be gated in prod. (Validation corrected the original "only juniper-data gates" over-scope.)
-- **SEC-F05 (Low, verify-shipped) — constant-time key comparison (SEC-01 timing side-channel).** data compares constant-time
-  over the full key list (`api/security.py:80-84`) and canopy CSRF uses `hmac.compare_digest` (`csrf.py:53-72`). Verify cascor
-  and recurrence key comparison is likewise constant-time (requirement `JR-ML-SEC-003`, status *designed*).
-- **Good-news (document as verified):** browser-control gate is fail-closed on missing Origin and requires CSRF
-  (`src/security.py:308-368`); `MetricsAuthMiddleware` is **fail-closed** on absent/unparseable client IP and fail-loud on a bad
-  allowlist (`juniper_observability/middleware/metrics_auth.py:65-84,153-184`); worker `X-API-Key` is validated against the same
-  accept-list as REST and the server assigns worker IDs (does not trust client-proposed IDs).
+- **SEC-F05 (Low, verified strength) — constant-time key comparison (SEC-01 timing side-channel).** data compares constant-time
+  over the full key list (`api/security.py:80-84`), canopy CSRF uses `hmac.compare_digest` (`csrf.py:53-72`), and cascor uses
+  `any(hmac.compare_digest(...))` (`api/security.py:53`). **CONFIRMED constant-time (HO-8):** empirical wrong-vs-near-miss delta
+  1.49%, under the noise floor — no gross byte-position signal. Only theoretical residual: the `any()` short-circuit could leak
+  key-slot/count under a multi-key config (never key content). (Requirement `JR-ML-SEC-003`.)
+- **SEC-F22 (Medium; CONFIRMED live, HO-6) — browser-control gate bypassable from any in-network foothold.** `/api/train/*` are
+  key-exempt and gated only by an Origin allowlist (a **case-insensitive string compare**, `ws_security.py:16-36`) + a CSRF token
+  that `/api/csrf` mints **anonymously** for a same-origin/no-Origin caller (`main.py:485-519`). A non-loopback in-network client
+  (demonstrated: a sidecar at `172.23.0.5`) can mint a token and present a **spoofed `Origin: http://127.0.0.1:8050`** to clear
+  `require_browser_control_auth` (`security.py:308-368`) and drive the full training-control surface (start/pause/resume/stop/
+  reset) **with no real credential**. Two negative controls (no-Origin → 403, no-CSRF → 403) prove the gate is genuinely active,
+  so this is not the SEC-F01 fail-open case — it is a design residual (auth design §7.3) now confirmed exploitable. The **only**
+  effective control today is the loopback bind. Remediation: require a real per-session credential (authenticated-cookie-bound
+  token, or force the server `X-API-Key` via a trusted proxy) — not a spoofable Origin + anonymous CSRF; keep the control surface
+  loopback-bound; never expose it on a routable interface without a fronting authenticating proxy; document the in-network trust.
+- **Good-news (document as verified, with one caveat):** `MetricsAuthMiddleware` is **fail-closed** on absent/unparseable client
+  IP and fail-loud on a bad allowlist (`juniper_observability/middleware/metrics_auth.py:65-84,153-184`); worker `X-API-Key` is
+  validated against the same accept-list as REST and the server assigns worker IDs (does not trust client-proposed IDs). Caveat:
+  the browser-control gate is fail-closed on a *missing/disallowed* Origin (`src/security.py:308-368`) but its allowlist is a
+  spoofable string compare — see **SEC-F22** — so it is not an authenticator against a non-browser client.
 
 ### 4.2 SECRET — secret handling
 
@@ -124,6 +137,12 @@ server-side value bounds; parameterized queries.
   degraded prod bring-up, and demo configs get copied. **SP2 (read-only, done): confirmed no allowlist/redirect re-validation;
   active reachability + redirect-bypass proof → Opus HO-1/HO-7.** Harden: block private/link-local/loopback, re-validate per
   redirect hop or disable redirects, stream with a pre-check, and make the enable-gate a real setting defaulting off.
+  **HO-1/HO-7 outcome (§5.2): PARTIAL — latent, not live.** The endpoint is currently **dead**: `DemoBackend` never defines
+  `import_dataset`, so the `hasattr` guard (`main.py:1360`) returns **501 before any fetch** (verified: internal/loopback/
+  link-local/external/`file://` all 501, no packet emitted). The SSRF sink itself is unguarded and **re-arms the moment the (dead)
+  import feature is fixed** — harden the sink *first*. The off-switch is confirmed non-functional (`extra="ignore"` drops the
+  flag). Note the **dead-feature seam** (import-url + import-file both 501 in demo, masked by mocked tests) — a correctness defect
+  too. Live severity Low (no egress); latent Medium.
 - **SEC-F09 (Low; DEFENSE VERIFIED-STRONG) — deserialization is hardened.** HDF5 snapshot pickle is routed through a
   fail-closed allowlist unpickler `_SnapshotRestrictedUnpickler` (SEC-11, `snapshot_serializer.py:59-79`, called `:1103`; a second
   fail-closed `RestrictedUnpickler` also exists at `cascade_correlation.py:415`); `torch.load(..., weights_only=True)`
@@ -142,6 +161,13 @@ server-side value bounds; parameterized queries.
   check alone. Low severity: `use_websocket_set_params` defaults **False** (REST default, WS falls back to REST). Verify and add
   matching `Field` bounds to the canopy request model and the WS path. (Validation corrected the original "cascor has no numeric
   bounds" over-scope + wrong file citations; fault-injection proof → Opus HO-5.)
+  **HO-5 outcome (§5.2): CONFIRMED, refined.** START path (`TrainingParams`) is fully bounded (422 on out-of-range). Two live
+  residuals: (a) runtime `PATCH /v1/training/params` binds a *different* model `TrainingParamUpdateRequest`
+  (`models/training.py:200-268`) with **lower bounds only** — a huge `max_hidden_units` is accepted with a live network; (b) WS
+  `set_params` (`control_stream.py:373-376`) bypasses pydantic entirely. **Correction:** `use_websocket_set_params` does not exist
+  in cascor; `/ws/control` is **enabled by default** (`disable_ws_control_endpoint=False`), so both surfaces are live (WS is
+  auth-gated but range-unvalidated). Fix = mirror `TrainingParams` `le=` ceilings onto `TrainingParamUpdateRequest` + route WS
+  `set_params` through the same model.
 - **SEC-F11 (Low) — dataset-id traversal guard not uniform across stores.** `_validate_dataset_id` is wired into LocalFS only
   (`storage/local_fs.py:36,93`, with a second `is_relative_to` containment check `:96`). The **postgres** store builds a real
   on-disk artifact path from the id (`postgres_store._artifact_file:136-138`) with **no store-layer guard** — mitigated *solely*
@@ -233,18 +259,19 @@ server-side value bounds; parameterized queries.
 
 | ID | Sev | Class | One-line | Containerized bound |
 | --- | --- | --- | --- | --- |
-| SEC-F01 | High | IDA | Fail-open auth; placeholder/empty secret ⇒ whole stack open | loopback-bound, but stack-wide |
+| SEC-F01 | High | IDA | Fail-open auth; empty/placeholder secret ⇒ whole stack open — **CONFIRMED live (HO-2)** | loopback-bound, but stack-wide |
 | SEC-F07 | High (carry) | SECRET | Single shared SOPS age key, no env sep; drift; Phases 4–5 deferred | at-rest |
-| SEC-F08 | Medium | INJ | import-url SSRF: no host/IP validation, follows redirects, off-switch non-functional | demo-only (+ boot fallback) + authed |
+| SEC-F22 | Medium | IDA | **NEW: browser-control gate bypass from in-network** (spoofed Origin + anon CSRF → full training-control) — **CONFIRMED live (HO-6)** | loopback-bind is the only guard |
+| SEC-F19 | Medium | NAT | IP-keyed caps/allowlists defeated by Docker NAT (self-DoS; dynamic subnet outside allowlist) — **CONFIRMED live (HO-3)** | bridge-wide |
+| SEC-F08 | Med (latent) / Low (live) | INJ | import-url SSRF sink unguarded but **dead behind a 501 guard** (re-arms on feature fix); off-switch non-functional — **HO-1/HO-7 latent** | demo-only; latent |
 | SEC-F17 | Medium | DEP | torch `>=2.10.0` floor absent in app/worker packages (installed 2.12.0 → latent) | declared-min risk |
 | SEC-F18 | Medium | DEP | pip-audit flags inconsistent; recurrence no lockfile/CodeQL; no docker Dependabot | CI-time |
-| SEC-F19 | Medium | NAT | IP-keyed caps/allowlists defeated by Docker NAT (shared cap, subnet-trust) | bridge-wide |
 | SEC-F02 | Medium | IDA | Grafana/Alertmanager default placeholder creds; doc↔compose mismatch | loopback `:3001` |
 | SEC-F03 | Medium | IDA | Rate-limit + worker limiter inconsistent/off | per-service |
 | SEC-F15 | Medium | CONT | redis unhardened; no readonly-rootfs/pids anywhere; test-runner root | internal net |
 | SEC-F20 | Medium | DOS | Single-worker self-call starvation (UX cross-ref) | loopback |
 | SEC-F06 | Medium | SECRET | `cascor_sentry_dsn` never provisioned | benign |
-| SEC-F04/05/10/11/12/13/14/16/21 | Low | mixed | recurrence-docs-exempt, constant-time-verify, set-params-WS-residual, store-guard uniformity, TLS-external, cookie-Secure, CSP-inline, digest-pin, async-denylist | mostly de-rated |
+| SEC-F04/05/10/11/12/13/14/16/21 | Low | mixed | recurrence-docs-exempt, **F05 constant-time CONFIRMED**, **F10 PATCH-upper-bound + WS-pydantic-bypass (refined, HO-5)**, store-guard uniformity, TLS-external, cookie-Secure, CSP-inline, digest-pin, async-denylist | mostly de-rated |
 
 Two items are **verified strengths** to record affirmatively (not findings): deserialization hardening (SEC-F09) and
 no-secret-leakage / MetricsAuth fail-closed (§4.1/§4.2 good-news).
@@ -260,8 +287,35 @@ over-scoped claims** (now fixed above): **SEC-F04** (docs-under-auth is disabled
 exposed, not "only data gates"); **SEC-F10** (cascor's default REST path *does* enforce comprehensive pydantic bounds — the
 residual is only the opt-in WS path; downgraded Medium→Low, citations fixed); **SEC-F18** (the CVE ignore-list is in cascor
 *and* cascor-worker, and recurrence *does* run pip-audit + bandit — only CodeQL + a lockfile are missing). SEC-F09's data-side
-`np.load` wording was tightened (safe-by-default, not explicit). The remaining SP2/SP2′ verification (esp. the §8 Opus items) is
-still pending.
+`np.load` wording was tightened (safe-by-default, not explicit). SP2′ (the §8 Opus items) is **now complete** — see §5.2.
+
+### 5.2 Live confirmation outcomes (SP2′ — Opus, isolated stack, 2026-07-02)
+
+The §8 hand-off register (HO-1…HO-8) was executed by **Opus** against an **isolated throwaway copy** of the stack (compose
+project `secaudit`, bound to loopback `127.0.0.2`, container-name-namespaced; the live 127.0.0.1 stack was untouched throughout
+and the isolated stack was torn down after). Three configs were used: full+empty-secrets (fail-open), canopy internal-demo (SSRF),
+and full+real-secrets (auth-on). The running image `git_sha 381ecd5` matched source HEAD (#417), so these are current-code results.
+
+| HO | Finding | Verdict | Key evidence |
+| --- | --- | --- | --- |
+| HO-2 | SEC-F01 fail-open auth | **CONFIRMED (live)** | Empty secrets → cascor `/v1/training/status`, canopy `/api/status`, data `/v1/datasets`, recurrence `/v1/training/status` all **200 with no key**; live auth-on control = 401. Full source chain verified. |
+| HO-1/HO-7 | SEC-F08 SSRF | **PARTIAL — latent, not live** | Sink is real + unguarded (no host/IP validation; `follow_redirects=True`, no per-hop check), but the endpoint returns **501 before any fetch** — `DemoBackend` never defines `import_dataset`, so the `hasattr` guard (`main.py:1360`) blocks every request. Off-switch confirmed non-functional (`extra="ignore"` drops the flag). Re-arms the moment the (currently dead) import feature is fixed. |
+| HO-3 | SEC-F19 per-IP NAT collapse | **CONFIRMED (live)** | 6 concurrent WS → 5 accept, 6th rejected; log `Per-IP limit reached for 172.23.0.1 (5/5)` = bridge gateway; no `X-Forwarded-For` → one client self-DoSes all. Bridge subnet was **172.23.0.0/16** — *outside* the hardcoded `172.18–21` metrics allowlist, sharpening the dynamic-IPAM risk. |
+| HO-6 | **SEC-F22 (new)** browser-control bypass | **CONFIRMED (live)** | From a non-loopback in-network sidecar (172.23.0.5): anonymous `/api/csrf` mint + a **spoofed `Origin: http://127.0.0.1:8050`** → `POST /api/train/start` **200** (gate bypassed). Two negative controls (no-Origin 403, no-CSRF 403) prove the gate is genuinely active — Origin+anon-CSRF are not authenticators vs a non-browser client. Only guard = the loopback bind. |
+| HO-4 | SEC-F09 deserialization | **CONFIRMED strength (fails closed)** | 7/7 weaponized payloads (os.system, subprocess, eval/exec, unlisted modules, datetime) rejected at `find_class` before construction; deny-by-default allowlist; corroborated by a 2nd restricted unpickler + `torch.load(weights_only=True)`. A control `pickle.loads` dropped a marker (payloads genuinely RCE); zero markers survived the restricted path. |
+| HO-8 | SEC-F05 key-timing | **CONFIRMED constant-time** | `hmac.compare_digest`, single key; empirical (b)-vs-(c) median delta +11.3 µs (1.49%) ≪ ~30% noise floor → no gross byte-position signal. |
+| HO-5 | SEC-F10 param bounds | **CONFIRMED (refined)** | START path (`TrainingParams`) fully bounded (422). Residuals: `PATCH /v1/training/params` binds `TrainingParamUpdateRequest` (`models/training.py:200-268`) with **lower bounds only** (huge `max_hidden_units` accepted with a live network); WS `set_params` (`control_stream.py:373-376`) bypasses pydantic. **Correction:** no `use_websocket_set_params` in cascor — `/ws/control` is enabled by default, so both surfaces are live (WS range-unvalidated). |
+
+**Net effect on the findings.** SEC-F01 is confirmed **High** (fail-open is real and silent). A **new confirmed finding
+SEC-F22** (browser-control gate bypassable from any in-network foothold; Medium, bounded only by the loopback bind) is the most
+serious *live* result — remediation: a real per-session credential (not a spoofable Origin + anonymous CSRF), keep the control
+surface loopback-bound, never expose it routable without a fronting authenticating proxy. SEC-F08 is **downgraded live (dead
+endpoint, no egress) but flagged latent** (Medium) — the unguarded SSRF sink re-arms on any fix of the import feature; harden the
+sink *before* fixing the feature, and note the dead-feature seam (import-url + import-file both 501 in demo, masked by mocked
+tests — a correctness defect too). SEC-F19 is confirmed and sharpened (a dynamic bridge subnet can fall outside the metrics
+allowlist). SEC-F09 and SEC-F05 are **verified strengths**. SEC-F10 stays Low but is re-framed (PATCH upper-bound omission + WS
+pydantic-bypass, both auth-gated). Recommended remediation order: SEC-F01 (fail-closed auth posture) → SEC-F22 (real
+control-surface credential) → SEC-F19 (trusted-proxy client identity) → SEC-F08 harden-then-fix → SEC-F10 model parity.
 
 ## 6. Prior-work integration & diff base
 
@@ -301,6 +355,12 @@ and an **isolated, non-production** bring-up (a throwaway compose stack), never 
 | HO-7 | SSRF redirect bypass (SEC-F08) | offensive redirect chain | a public URL 302→internal | proof `follow_redirects=True` defeats an initial-URL host check | isolated demo stack |
 | HO-8 | API-key timing side-channel (SEC-F05) | offensive timing measurement | cascor/recurrence auth endpoint | measurement of comparison timing variance; confirm constant-time or not | isolated stack |
 
+**Outcomes (SP2′, executed by Opus 2026-07-02 on the isolated `secaudit`/127.0.0.2 stack — full detail in §5.2):** HO-2
+CONFIRMED (fail-open) · HO-1/HO-7 PARTIAL (SSRF sink real but latent behind a 501 guard; off-switch non-functional) · HO-3
+CONFIRMED (per-IP NAT self-DoS) · HO-6 CONFIRMED (browser-control bypass from in-network → new finding **SEC-F22**) · HO-4
+CONFIRMED strength (restricted unpickler fails closed) · HO-8 CONFIRMED constant-time · HO-5 CONFIRMED (REST start bounded;
+PATCH-upper-bound + WS-pydantic-bypass residuals). Isolated stack torn down after; live 127.0.0.1 stack untouched.
+
 Non-handed-off (Fable completes in SP2): all static/read-only confirmations in §4 (allowlist-absent, defaults, floors, caps,
 container inspect, config parity), the hardening recommendations, and the report authoring.
 
@@ -311,7 +371,7 @@ container inspect, config parity), the hardening recommendations, and the report
 | SP0 (done) | Read-only security recon (4 agents) + grounded candidate findings | Fable | §4–§5 |
 | SP1 | Independent multi-agent validation of this plan (re-probe every file:line/default/flow; adversarially test each finding) | Fable subagents | corrected plan |
 | SP2 | Static/read-only verification of each finding at the evidence bar | Fable | verified findings |
-| SP2′ | Active/dual-use verification of the §8 register on an isolated stack | Opus | HO-1…HO-8 artifacts |
+| SP2′ **(done 2026-07-02, §5.2)** | Active/dual-use verification of the §8 register on an isolated stack | Opus | HO-1…HO-8 artifacts ✓ |
 | SP3 | Author the security findings report (Critical→Low, diffed vs the 24-finding baseline) | Fable + Opus (HO items) | report doc |
 | SP4 | Owner triage → issues/PRs; deploy/secret changes are owner-gated | owner | tracked follow-ups |
 
