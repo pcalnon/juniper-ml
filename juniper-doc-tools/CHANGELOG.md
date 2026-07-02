@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CI now enforces a **blocking per-file coverage gate** via
+  `juniper-coverage-gap-map --enforce` (from `juniper-ci-tools>=0.6.0`):
+  every source file must reach >=90% statement coverage and the package's
+  pooled (statement-weighted) coverage must reach >=95%. Expanded the test
+  suite with targeted tests for `check_doc_links.py` (file-argument and
+  out-of-tree scan paths, `data:`/`//` links, the cross-repo symlink-escape
+  boundary check, verbose OK/SKIP tracing) and `cli.py` (the `--cross-repo
+  check` discovery branches) plus an in-process `runpy` smoke test for the
+  `__main__` entry shim, lifting measured coverage from 87.33% to 99.33%
+  pooled. Per-file coverage rollout C-3 (juniper-ml
+  notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md).
+  No runtime or behavioral change.
+
 ## [0.1.1] - 2026-05-19
 
 ### Fixed

@@ -66,7 +66,20 @@ jobs:
           python -m pytest \
             --cov=juniper_doc_tools \
             --cov-report=term-missing \
+            --cov-report=json:coverage.json \
             --cov-fail-under=85
+
+      - name: Enforce per-file coverage gate (blocking)
+        # Per-file coverage rollout C-3 (juniper-ml
+        # notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md):
+        # exit 1 if any source file's statement coverage < 90 OR the
+        # sub-module's pooled (statement-weighted) coverage < 95. The thin
+        # __main__.py `python -m` entry shim is covered by an in-process
+        # runpy smoke test (§2 "prefer a 1-line smoke test over an
+        # exclusion where cheap"), so no --omit is needed here.
+        run: |
+          pip install "juniper-ci-tools>=0.6.0,<0.7.0"
+          juniper-coverage-gap-map --coverage-json coverage.json --enforce
 
   build:
     name: Build distribution
