@@ -57,8 +57,8 @@ export LOW="low"
 ########################################################################################################################################################################################################
 # Define Script Defaults
 ########################################################################################################################################################################################################
-# export DEFAULT_MODEL="${MODEL_FABLE_ALIAS}"
-export DEFAULT_MODEL="${MODEL_OPUS_ALIAS}"
+export DEFAULT_MODEL="${MODEL_FABLE_ALIAS}"
+# export DEFAULT_MODEL="${MODEL_OPUS_ALIAS}"
 
 # export DEFAULT_EFFORT="${HIGH}"
 export DEFAULT_EFFORT="${MAX}"
