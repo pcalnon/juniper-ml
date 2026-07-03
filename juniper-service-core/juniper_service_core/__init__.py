@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     # lazily-exported name resolvable for type checkers and for CodeQL's ``py/undefined-export``
     # query, which cannot see through ``__getattr__``.
     from juniper_service_core.app import create_app
+    from juniper_service_core.auth_posture import AuthPostureError, auth_is_configured, enforce_auth_posture
     from juniper_service_core.dependency_floors import DependencyFloorError, enforce_dependency_floors
     from juniper_service_core.launcher import ManagedService, start_service, wait_for_health
     from juniper_service_core.lifecycle import (
@@ -115,6 +116,10 @@ __all__ = [
     # Dependency-floor boot self-check (lazy, from .dependency_floors -- stdlib-only)
     "enforce_dependency_floors",
     "DependencyFloorError",
+    # Auth-posture boot self-check (lazy, from .auth_posture -- stdlib-only; SEC-F01)
+    "enforce_auth_posture",
+    "auth_is_configured",
+    "AuthPostureError",
     # Security (lazy, from .security)
     "APIKeyAuth",
     "RateLimiter",
@@ -192,6 +197,9 @@ _LAZY_EXPORTS = {
     # but is routed through the lazy path too so the PEP 562 pattern stays uniform.
     "enforce_dependency_floors": "juniper_service_core.dependency_floors",
     "DependencyFloorError": "juniper_service_core.dependency_floors",
+    "enforce_auth_posture": "juniper_service_core.auth_posture",
+    "auth_is_configured": "juniper_service_core.auth_posture",
+    "AuthPostureError": "juniper_service_core.auth_posture",
     "APIKeyAuth": "juniper_service_core.security",
     "RateLimiter": "juniper_service_core.security",
     "api_key_header": "juniper_service_core.security",

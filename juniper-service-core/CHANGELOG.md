@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`enforce_auth_posture(...)`** (new `auth_posture` module) — a boot-time auth-posture
+  self-check (**SEC-F01**), the security companion to the E-8 `enforce_dependency_floors`
+  check. A service calls it at startup, before binding, passing its resolved API keys and
+  whether auth is required in this deployment (`require_auth`); it **fails loud** (logs
+  `CRITICAL` and raises `AuthPostureError`) when `require_auth=True` but no real key is
+  configured, so the server refuses to start rather than silently serving open. This is the
+  failure mode confirmed in the containerized-stack security audit (HO-2): every juniper
+  HTTP service computes `enabled = len(api_keys) > 0`, so an empty/placeholder secret
+  disables `APIKeyAuth` and serves protected routes unauthenticated — with no startup error
+  and a `healthy` health check. Three outcomes: a real key → `INFO` (secured); no key +
+  `require_auth` False → loud `WARNING` (running OPEN); no key + `require_auth` True →
+  `CRITICAL` + raise. A blank/whitespace key (what an empty secret file resolves to) counts
+  as unset. Stdlib-only (preserving the dependency-free top-level import); escape hatch
+  `JUNIPER_SKIP_AUTH_POSTURE_CHECK` bypasses the check, logged loudly. Exported lazily:
+  `enforce_auth_posture`, `auth_is_configured`, `AuthPostureError`. Consuming services adopt
+  it at lifespan (mirroring the E-8 `enforce_dependency_floors(distribution=..., logger=...)`
+  adoption) and set `require_auth=True` outside an explicit dev/open profile — a follow-up
+  per service, gated on the next `juniper-service-core` release.
+
 ### Fixed
 
 - **`[test]` extra now includes `prometheus-client>=0.20.0`** — the `workers/metrics`
