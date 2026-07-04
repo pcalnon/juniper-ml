@@ -97,6 +97,12 @@ _ML_OWN_WORKFLOWS = (
     ".github/workflows/docs-full-check.yml",
 )
 
+# Blocking per-file workflow gates must be paired with the coverage JSON they
+# consume and an enforcing-capable ci-tools install.
+_COVERAGE_GATE_INVOCATION = "juniper-coverage-gap-map --coverage-json coverage.json --enforce"
+_COVERAGE_JSON_REPORT_FLAG = "--cov-report=json:coverage.json"
+_COVERAGE_GATE_MIN_VERSION = "0.6.0"
+
 # The two module halves of the tool (the logic-module + thin-CLI-wrapper
 # pattern mirrored from lint_agents_md_version.py / cli_lint_agents_md_version.py).
 _TOOL_MODULES = (
@@ -133,6 +139,19 @@ def _read_dunder_version(version_py: Path) -> str | None:
 def _extract_pins(yaml_text: str) -> list[tuple[str, str]]:
     """Every ``juniper-ci-tools>=X,<Y`` (lower, upper) pair in the text."""
     return [(m.group(1), m.group(2)) for m in _PIN_PATTERN.finditer(yaml_text)]
+
+
+def _has_admitting_gate_pin(yaml_text: str, current_version: str) -> bool:
+    """Return true when a workflow installs a ci-tools range suitable for the
+    blocking per-file gate.
+
+    The lower bound must be at least 0.6.0, the release that introduced the
+    enforcing coverage gate used by these workflows; the upper bound must still
+    admit the in-tree ci-tools version.
+    """
+    current = _parse_version(current_version)
+    minimum = _parse_version(_COVERAGE_GATE_MIN_VERSION)
+    return any(minimum <= _parse_version(lower) <= current < _parse_version(upper) for lower, upper in _extract_pins(yaml_text))
 
 
 class CoverageGapMapperDriftTest(unittest.TestCase):
@@ -228,6 +247,45 @@ class CoverageGapMapperDriftTest(unittest.TestCase):
             with self.subTest(flag=flag):
                 self.assertIn(flag, text, f"cli_coverage_gap_mapper.py does not declare {flag} -- the C-0 enforcing mode is unwired.")
 
+    def test_blocking_workflow_gates_have_json_input_and_current_ci_tools(self) -> None:
+        """Every blocking workflow gate must have the coverage.json producer and
+        install an enforcing-capable ``juniper-ci-tools`` range.
+
+        This catches the high-blast-radius failure mode where a workflow wires
+        ``juniper-coverage-gap-map --coverage-json coverage.json --enforce`` but
+        later drops ``--cov-report=json:coverage.json`` or relaxes the ci-tools
+        pin below the release that ships the enforcing mode.
+        """
+        if self.current_version is None:
+            self.skipTest("no current version available")
+
+        workflows_dir = self.juniper_ml_root / ".github" / "workflows"
+        gated_workflows: list[Path] = []
+        missing_json: list[Path] = []
+        bad_pin: list[Path] = []
+
+        for workflow in sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml")):
+            text = workflow.read_text(encoding="utf-8")
+            if _COVERAGE_GATE_INVOCATION not in text:
+                continue
+            gated_workflows.append(workflow)
+            if _COVERAGE_JSON_REPORT_FLAG not in text:
+                missing_json.append(workflow)
+            if not _has_admitting_gate_pin(text, self.current_version):
+                bad_pin.append(workflow)
+
+        self.assertGreater(len(gated_workflows), 0, "No blocking per-file coverage workflow gates found; the rollout gate may have been removed.")
+        self.assertEqual(
+            missing_json,
+            [],
+            "Blocking per-file coverage gate workflow(s) do not produce coverage.json via " f"{_COVERAGE_JSON_REPORT_FLAG}: " + ", ".join(str(p.relative_to(self.juniper_ml_root)) for p in missing_json),
+        )
+        self.assertEqual(
+            bad_pin,
+            [],
+            "Blocking per-file coverage gate workflow(s) do not install a juniper-ci-tools range with lower bound >= " f"{_COVERAGE_GATE_MIN_VERSION} that admits current {self.current_version}: " + ", ".join(str(p.relative_to(self.juniper_ml_root)) for p in bad_pin),
+        )
+
 
 class CoverageGapMapperEnforceEndToEndTest(unittest.TestCase):
     """C-0 END-TO-END: invoke the shipped console entry over a synthetic
@@ -313,6 +371,13 @@ class PinHelperTest(unittest.TestCase):
     def test_extract_pins(self) -> None:
         self.assertEqual(_extract_pins('pip install "juniper-ci-tools>=0.1.0,<0.6.0"'), [("0.1.0", "0.6.0")])
         self.assertEqual(_extract_pins("nothing here"), [])
+
+    def test_gate_pin_helper_requires_enforcing_capable_lower_bound(self) -> None:
+        self.assertTrue(_has_admitting_gate_pin('pip install "juniper-ci-tools>=0.6.0,<0.7.0"', "0.6.0"))
+        self.assertFalse(_has_admitting_gate_pin('pip install "juniper-ci-tools>=0.1.0,<0.7.0"', "0.6.0"))
+
+    def test_gate_pin_helper_rejects_current_version_excluded_by_upper_bound(self) -> None:
+        self.assertFalse(_has_admitting_gate_pin('pip install "juniper-ci-tools>=0.6.0,<0.6.1"', "0.6.1"))
 
     def test_script_pattern_matches_canonical_entry(self) -> None:
         self.assertRegex('juniper-coverage-gap-map = "juniper_ci_tools.cli_coverage_gap_mapper:main"', _SCRIPT_PATTERN)
