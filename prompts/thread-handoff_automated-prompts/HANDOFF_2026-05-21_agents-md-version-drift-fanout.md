@@ -1,6 +1,6 @@
 # Handoff — AGENTS.md version-drift lint fanout (2026-05-21, evening)
 
-Continue Juniper ecosystem CI hygiene work. This handoff follows ~3 hours of ad-hoc cleanup that surfaced organically from the prior `handoff_ci-hygiene-completion_2026-05-21.md` verification step. The ecosystem remains in an unusually clean state.
+Continue Juniper ecosystem CI hygiene work. This handoff follows ~3 hours of ad-hoc cleanup that surfaced organically from the prior `HANDOFF_2026-05-21_ci-hygiene-completion.md` verification step. The ecosystem remains in an unusually clean state.
 
 ## Completed this session
 
