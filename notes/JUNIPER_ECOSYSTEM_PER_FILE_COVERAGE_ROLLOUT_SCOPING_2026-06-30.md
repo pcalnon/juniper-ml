@@ -6,7 +6,7 @@
 **License**: MIT License
 **Document Type**: SCOPING (operationalizes Phase C of the audit plan)
 **Status**: Draft — measured; owner-ratified decisions inline
-**Last Updated**: 2026-06-30
+**Last Updated**: 2026-07-04
 
 ---
 
@@ -104,7 +104,7 @@ Order = enabler → free wins → small nudges → real lifts → heavy → defe
 | **C-3** | real coverage lifts, then gate | `doc-tools` (pooled 87→95; check_doc_links/cli + exclude `__main__`), `cascor-client` (pkg pooled 90→95; client/observability/ws_client) | mapper `--enforce` exits 0 | pooled ≥95 + all files ≥90; gate blocking |
 | **C-4** | heavy lift | `service-core` (fix `[test]` prometheus_client + pin branch basis FIRST; then websocket/ + workers/ + the long tail) | mapper `--enforce` exits 0 (statement basis) | 5/5 sub-modules pooled ≥95; all files ≥90; gate blocking |
 | **C-5** | deferred / heavy-env units (measure→lift→gate, worst-first after measurement) | `cascor-model` (also add its first gate), `canopy`, `cascor`, `cascor-worker`, `data`, `recurrence-model`, then `recurrence`-app/-client **after DISC-1** | each in its env per §4 | per-unit per-file 90 + pooled 95; gate blocking |
-| — | special-cased | `juniper-ml` meta (scope to `util/` or exempt), `juniper-deploy` (exempt) | n/a | documented exemption |
+| — | special-cased | `juniper-ml` meta (scope to `util/` or exempt), `juniper-deploy` (exempt) | n/a | documented exemption (**§8**) |
 
 **Owners:** C-0/C-1/C-2 + meta = juniper-ml; ci-tools/doc-tools/config-tools/observability/model-core/service-core = juniper-ml (sub-modules); cascor-client/cascor-worker/data-client/data = their repos; cascor + cascor-model + cascor-protocol = juniper-cascor; canopy = juniper-canopy; recurrence×3 = juniper-recurrence (DISC-1 first).
 
@@ -135,5 +135,16 @@ cd <dir> && COVERAGE_FILE=/tmp/.cov-<unit> /tmp/cov-<unit>/bin/python -m pytest 
 ```
 
 Measured set (2026-06-30): observability, service-core, model-core, ci-tools, config-tools, doc-tools, data-client, cascor-client, cascor-protocol. Repos stayed clean (coverage artifacts redirected to `/tmp`).
+
+---
+
+## 8. Exemption record — special-cased units (amendment 2026-07-04)
+
+Closes the §5 "special-cased" row. Basis re-verified 2026-07-04.
+
+- **`juniper-ml` (meta) — EXEMPT from the per-file / sub-module gate.** The package ships no importable source: `[tool.setuptools] packages = []` (`pyproject.toml:76`), so there is no packaged source tree for a per-file statement gate to measure. The repo's functional surface (`scripts/` + `util/` tooling) remains gated by the behavioural/lint unittest suite under `tests/` (the CI `tests` job) — the gate of record for this unit. The §4 alternative ("optionally scope to `util/` only") was considered and **not adopted** for Phase C: `util/` scripts are path-invoked (never packaged or published), each ships with dedicated behavioural tests that already run on every PR, and a file gate there would extend the ledger beyond the audit's 19 packaged units. A `util/`-scoped gate stays available as an optional post-Phase-C extension.
+- **`juniper-deploy` — EXEMPT.** No importable Python source: the repo's only Python is the compose/config validation suite under `tests/` plus the portable lint test `util/test_workflow_script_paths.py`; its `pyproject.toml` defines no package. The compose / secret / config test suite continues unchanged — there is nothing for a source-coverage gate to measure.
+
+Ledger effect: Phase C completes at **17 gated units + 2 documented exemptions = 19/19 accounted for**.
 
 ---
