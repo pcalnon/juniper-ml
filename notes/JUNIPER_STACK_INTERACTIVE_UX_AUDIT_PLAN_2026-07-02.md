@@ -49,15 +49,15 @@ Authoritative topology (verified live 2026-07-02 via `docker ps` + `docker compo
 `notes/`-cited agent recon, reconfirmed against `juniper-deploy/docker-compose.yml`). Compose project `juniper-deploy`,
 profiles `full` / `demo` / `dev` / `test` / `observability`.
 
-| Service | Host port | Container port | Health | Notes |
-| --- | --- | --- | --- | --- |
-| juniper-canopy | `127.0.0.1:8050` | 8050 | `/v1/health` | Dash UI at `/dashboard`; the click-through target |
-| juniper-cascor | `127.0.0.1:8201` | 8200 | `/v1/health` | CasCor backend; canopy → cascor via `JuniperCascorClient` |
-| juniper-cascor-worker ×2 | none | 8210 | `/v1/health/ready` | distributed training workers |
-| juniper-recurrence | `127.0.0.1:8211` | 8210 | `/v1/health` | LMU / one-shot backend |
-| juniper-data | none (internal) | 8100 | `/v1/health` | dataset service; no host port (reach via `docker compose exec`) |
-| juniper-redis | none (internal) | 6379 | `redis-cli ping` | canopy `REDIS_URL=redis://redis:6379/0` |
-| Observability (profile) | prometheus `127.0.0.1:9090`, grafana `127.0.0.1:3001` | — | — | alertmanager has **no** host port |
+| Service                  | Host port                                             | Container port | Health             | Notes                                                           |
+|--------------------------|-------------------------------------------------------|----------------|--------------------|-----------------------------------------------------------------|
+| juniper-canopy           | `127.0.0.1:8050`                                      | 8050           | `/v1/health`       | Dash UI at `/dashboard`; the click-through target               |
+| juniper-cascor           | `127.0.0.1:8201`                                      | 8200           | `/v1/health`       | CasCor backend; canopy → cascor via `JuniperCascorClient`       |
+| juniper-cascor-worker ×2 | none                                                  | 8210           | `/v1/health/ready` | distributed training workers                                    |
+| juniper-recurrence       | `127.0.0.1:8211`                                      | 8210           | `/v1/health`       | LMU / one-shot backend                                          |
+| juniper-data             | none (internal)                                       | 8100           | `/v1/health`       | dataset service; no host port (reach via `docker compose exec`) |
+| juniper-redis            | none (internal)                                       | 6379           | `redis-cli ping`   | canopy `REDIS_URL=redis://redis:6379/0`                         |
+| Observability (profile)  | prometheus `127.0.0.1:9090`, grafana `127.0.0.1:3001` | —              | —                  | alertmanager has **no** host port                               |
 
 **Bring-up (reference):** `make monitor` (= full + observability) or `make demo` / `make obs-demo` (auto-training demo).
 `make prepare-secrets` first; `make doctor` reports image freshness (data/cascor/canopy/worker only — **not** recurrence).
@@ -248,14 +248,14 @@ Anything that cannot be independently reproduced is downgraded to "unverified" o
 
 ## 10. Execution Phases
 
-| Phase | Work | Output |
-| --- | --- | --- |
-| P0 (done) | Recon: topology, canopy surface inventory, prior-audit ledger; pilot walk-through | this plan + §11 |
-| P1 | Validate this plan (multi-agent, §9) | corrected plan |
-| P2 | Full scripted walk-through §6 under `make monitor` (auth) and `make demo` (auto-train) | raw evidence log |
-| P3 | Author findings report from evidence; tag requirements; set dispositions | audit report doc |
-| P4 | Validate the report (§9); integrate corrections | final report |
-| P5 | (owner) triage → issues/PRs; hand security-adjacent notes to the separate Opus security pass | tracked follow-ups |
+| Phase     | Work                                                                                         | Output             |
+|-----------|----------------------------------------------------------------------------------------------|--------------------|
+| P0 (done) | Recon: topology, canopy surface inventory, prior-audit ledger; pilot walk-through            | this plan + §11    |
+| P1        | Validate this plan (multi-agent, §9)                                                         | corrected plan     |
+| P2        | Full scripted walk-through §6 under `make monitor` (auth) and `make demo` (auto-train)       | raw evidence log   |
+| P3        | Author findings report from evidence; tag requirements; set dispositions                     | audit report doc   |
+| P4        | Validate the report (§9); integrate corrections                                              | final report       |
+| P5        | (owner) triage → issues/PRs; hand security-adjacent notes to the separate Opus security pass | tracked follow-ups |
 
 ## 11. Pilot Walk-Through Observations (live, 2026-07-02 ~02:23–02:41 UTC)
 
@@ -265,17 +265,22 @@ pass — a separate agent that tried to *refute* each finding against the runnin
 refuted** (two required wording corrections, folded in below). They demonstrate the method produces evidence-backed results and
 seed the report. Security framing intentionally omitted (§2.2).
 
-| ID | Dim/Sev | Observation (evidence) | Disposition |
-| --- | --- | --- | --- |
-| **F-A** | D1/S2 | WebSocket `/ws/training` + `/ws/control` handshakes return **403**; canopy log root cause `Per-IP limit reached for 172.19.0.1 (5/5)`. `172.19.0.1` is the Docker bridge gateway, so all host browser clients collapse to one IP sharing a single 5-socket budget (`max_connections_per_ip=5`). Slots stayed pinned 5/5 after the browser closed (reap/leak concern; `idle_timeout_seconds=120`). WS badge stuck "Reconnecting". | new (functional/reliability; container-specific NAT visibility) |
-| **F-B** | D4/S2 | `GET /api/csrf` (Origin) → **200** `{csrf_token,enabled:true}`; `POST /api/train/start` with Origin + `X-CSRF-Token` → **200**; without the token → **403** "Invalid or missing CSRF token." The token itself is the credential — **no session cookie** (`/api/csrf` sets none). Browser-control auth **works** in this image. | **confirms** the canopy #414/#415 401-fix (shipped + verified live 2026-07-01) — the 06-29/06-30 audit+design were its precursors; mark resolved |
-| **F-C** | D4/S1 | `POST /api/train/start` (authed) → HTTP **200** body `{"status":"started","ok":false,"error":"No network created"}` — self-contradictory (claims "started" while `ok:false`). No UI error alert surfaced on the browser click. Logged canopy-side only (root cause below). | new (correctness: transport- vs op-success conflation; Start does not auto-create a network) |
-| **F-D** | D1/S3 | Single-worker canopy `/v1/health` latency reached **~10 s** under the tool's polling + WS reconnect storm (39 TCP conns), recovering to ~2 ms once quiesced (24 conns). | new (responsiveness under concurrent clients) |
-| **F-E** | D2/S3 | All **15** dashboard tabs render; `USER_MANUAL.md` documents only **5**. | confirms known docs-lag; enumerated live |
-| **F-F** | D3/S2 | **Redis** tab shows "DISABLED / Health --" though `juniper-redis` is healthy and `REDIS_URL` is set; canopy logged "Redis metrics/status API request timed out" 37×. Root cause below (single-worker self-call starvation, not redis). | new (architectural: in-process authenticated self-call starves the sole worker) |
-| **F-G** | D2/S3 | **Cassandra** tab present, but **no cassandra service exists** in `docker-compose.yml`. | new (surfaced-but-absent backend) |
-| **F-H** | D3/S3 | **About** tab reads "Juniper Canopy Version **2.2.0**"; `/v1/health` reports version **0.5.0**. | new (output-accuracy: two version strings for one service) |
-| **F-I** | D4/S3 | Running canopy image reports `git_sha=541cafe-**dirty**` — built from an uncommitted tree. | new (provenance/reproducibility) |
+|   ID    | Dim/Sev | Observation (evidence)                                                                                                                                                                       | Disposition                                                                 |
+|:-------:|:-------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------------------|
+| **F-A** |  D1/S2  | WebSocket `/ws/training` + `/ws/control` handshakes return **403**; canopy log root cause `Per-IP limit reached for 172.19.0.1 (5/5)`. `172.19.0.1` is the Docker bridge gateway,            | new (functional/reliability; container-specific NAT visibility)             |
+|         |         | - so all host browser clients collapse to one IP sharing a single 5-socket budget (`max_connections_per_ip=5`). Slots stayed pinned 5/5 after the browser closed (reap/leak concern;         |                                                                             |
+|         |         | - `idle_timeout_seconds=120`). WS badge stuck "Reconnecting".                                                                                                                                |                                                                             |
+| **F-B** |  D4/S2  | `GET /api/csrf` (Origin) → **200** `{csrf_token,enabled:true}`; `POST /api/train/start` with Origin + `X-CSRF-Token` → **200**; without the token → **403** "Invalid or missing CSRF token." | **confirms** canopy #414/#415 401-fix (shipped + verified live 2026-07-01)  |
+|         |         | - The token itself is the credential — **no session cookie** (`/api/csrf` sets none). Browser-control auth **works** in this image.                                                          | — the 06-29/06-30 audit+design were precursors; mark resolved               |
+| **F-C** |  D4/S1  | `POST /api/train/start` (authed) → HTTP **200** body `{"status":"started","ok":false,"error":"No network created"}` — self-contradictory (claims "started" while `ok:false`).                | new (correctness: transport- vs op-success conflation;                      |
+|         |         | - No UI error alert surfaced on the browser click. Logged canopy-side only (root cause below).                                                                                               | Start does not auto-create network)                                         |
+| **F-D** |  D1/S3  | Single-worker canopy `/v1/health` latency reached **~10 s** under the tool's polling + WS reconnect storm (39 TCP conns), recovering to ~2 ms once quiesced (24 conns).                      | new (responsiveness under concurrent clients)                               |
+| **F-E** |  D2/S3  | All **15** dashboard tabs render; `USER_MANUAL.md` documents only **5**.                                                                                                                     | confirms known docs-lag; enumerated live                                    |
+| **F-F** |  D3/S2  | **Redis** tab shows "DISABLED / Health --" though `juniper-redis` is healthy and `REDIS_URL` is set; canopy logged "Redis metrics/status API request timed out" 37×.                         | new (architectural: in-process authenticated self-call starves sole worker) |
+|         |         | - Root cause below (single-worker self-call starvation, not redis).                                                                                                                          |                                                                             |
+| **F-G** |  D2/S3  | **Cassandra** tab present, but **no cassandra service exists** in `docker-compose.yml`.                                                                                                      | new (surfaced-but-absent backend)                                           |
+| **F-H** |  D3/S3  | **About** tab reads "Juniper Canopy Version **2.2.0**"; `/v1/health` reports version **0.5.0**.                                                                                              | new (output-accuracy: two version strings for one service)                  |
+| **F-I** |  D4/S3  | Running canopy image reports `git_sha=541cafe-**dirty**` — built from an uncommitted tree.                                                                                                   | new (provenance/reproducibility)                                            |
 
 ### 11.1 Validation outcome & verified root causes (Phase 1)
 

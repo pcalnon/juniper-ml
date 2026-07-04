@@ -42,18 +42,18 @@ can establish is done here; only the active-confirmation steps are deferred.
 
 ## 3. Trust boundaries & threat model (STRIDE-lite)
 
-| # | Boundary | Primary threats | Where verified |
-| --- | --- | --- | --- |
-| B1 | Internet/LAN → canopy `:8050` (host-published, loopback by default) | Spoofing, Tampering, DoS | §4 IDA, TRANS, NAT |
-| B2 | Browser → canopy `/api/*`, `/ws/*` control surface | CSRF, spoofed Origin, session theft | §4 IDA (browser-control) |
-| B3 | canopy → cascor / data / recurrence (`http://`, `ws://`, internal) | Cleartext creds, MITM on-bridge, SSRF | §4 TRANS, INJ |
-| B4 | worker → cascor `/ws/v1/workers` | Token theft, unauth worker, replay | §4 IDA (WS) |
-| B5 | Prometheus → each `/metrics` | Metrics/PII disclosure, allowlist bypass | §4 IDA (metrics), NAT |
-| B6 | Operator → grafana/prometheus/alertmanager | Default creds, weak admin auth | §4 IDA, SECRET |
-| B7 | Secrets at rest (SOPS) + in transit (compose secrets, `_FILE`) | Key compromise, fail-open provisioning | §4 SECRET |
-| B8 | Host → containers (privilege, rootfs, caps) | Container escape, privilege escalation | §4 CONT |
-| B9 | Docker bridge NAT ↔ IP-keyed controls | Rate-limit/allowlist evasion, self-DoS | §4 NAT |
-| B10 | Untrusted request/file/URL input → sinks | SSRF, deserialization, injection, path traversal | §4 INJ |
+| #   | Boundary                                                            | Primary threats                                  | Where verified           |
+|-----|---------------------------------------------------------------------|--------------------------------------------------|--------------------------|
+| B1  | Internet/LAN → canopy `:8050` (host-published, loopback by default) | Spoofing, Tampering, DoS                         | §4 IDA, TRANS, NAT       |
+| B2  | Browser → canopy `/api/*`, `/ws/*` control surface                  | CSRF, spoofed Origin, session theft              | §4 IDA (browser-control) |
+| B3  | canopy → cascor / data / recurrence (`http://`, `ws://`, internal)  | Cleartext creds, MITM on-bridge, SSRF            | §4 TRANS, INJ            |
+| B4  | worker → cascor `/ws/v1/workers`                                    | Token theft, unauth worker, replay               | §4 IDA (WS)              |
+| B5  | Prometheus → each `/metrics`                                        | Metrics/PII disclosure, allowlist bypass         | §4 IDA (metrics), NAT    |
+| B6  | Operator → grafana/prometheus/alertmanager                          | Default creds, weak admin auth                   | §4 IDA, SECRET           |
+| B7  | Secrets at rest (SOPS) + in transit (compose secrets, `_FILE`)      | Key compromise, fail-open provisioning           | §4 SECRET                |
+| B8  | Host → containers (privilege, rootfs, caps)                         | Container escape, privilege escalation           | §4 CONT                  |
+| B9  | Docker bridge NAT ↔ IP-keyed controls                               | Rate-limit/allowlist evasion, self-DoS           | §4 NAT                   |
+| B10 | Untrusted request/file/URL input → sinks                            | SSRF, deserialization, injection, path traversal | §4 INJ                   |
 
 ## 4. Weakness-class checklist (grounded)
 
