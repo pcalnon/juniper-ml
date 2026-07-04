@@ -35,7 +35,11 @@ Continue the **recurrent-structure add-on** effort for juniper-recurse (how to a
 
 ### 2. juniper-cascor-core deploy (CW-05 / cascor#319 dual-path) — PARALLEL THREAD
 
+<<<<<<< HEAD:prompts/thread-handoff_automated-prompts/handoff_recurrent-structure-add-on_2026-06-07.md
 - **Own detailed handoff:** `prompts/thread-handoff_automated-prompts/handoff_cascor-core-publish-and-dualpath-verify_2026-06-07.md` (on branch `docs/handoff-cascor-core-publish-2026-06-07`, **not on main**). Plan: `notes/JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md` (Wave 0 + Wave 1 ratified; Wave 2 deferred behind a drift-guard).
+=======
+- **Own detailed handoff:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-06-07_cascor-core-publish-and-dualpath-verify.md` (on branch `docs/handoff-cascor-core-publish-2026-06-07`, **not on main**). Plan: `notes/JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md` (Wave 0 + Wave 1 ratified; Wave 2 deferred behind a drift-guard).
+>>>>>>> f876802 (chore(prompts): standardize thread-handoff archive filenames):prompts/thread-handoff_automated-prompts/HANDOFF_2026-06-07_recurrent-structure-add-on.md
 - **Done:** `juniper-cascor-core` Wave 0 (ml#345) + worker Wave 1 (worker#98 — pyproject dep + `candidate_unit`/`ACTIVATION_MAP` import wiring) + cascor#324 (dispatch `int()` fix + worker-payload-normalization drift backport) — all MERGED.
 - **Remaining (critical path, in order):**
   1. **Publish `juniper-cascor-core` 0.1.0.** `publish-cascor-core.yml` is ready (tag `juniper-cascor-core-v*` → TestPyPI→PyPI) but has **never fired** (PyPI 404). **BLOCKED ON PAUL:** configure PyPI + TestPyPI trusted-publishing pending-publisher (admin-only), cut tag/release `juniper-cascor-core-v0.1.0`, approve the pypi dual gate.

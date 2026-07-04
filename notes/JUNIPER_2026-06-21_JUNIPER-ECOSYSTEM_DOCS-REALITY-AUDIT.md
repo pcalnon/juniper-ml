@@ -87,7 +87,7 @@ staleness is captured here rather than edited in-place:
 
 | # | Item | Status | Blocked by | Owner / next |
 | --- | --- | --- | --- | --- |
-| 1 | **WS-6 B3** — replace monkey-patch monitoring with `CascorModel.fit(on_event=…)` sink (retain drain side-channel for the 50 Hz `/ws/training` stream) | **NOT STARTED** (spike done; OQ-B1 = proceed) | — | **next thread** (handoff `handoff_ws6-bphase-b3-on-event-sink_2026-06-21.md`) |
+| 1 | **WS-6 B3** — replace monkey-patch monitoring with `CascorModel.fit(on_event=…)` sink (retain drain side-channel for the 50 Hz `/ws/training` stream) | **NOT STARTED** (spike done; OQ-B1 = proceed) | — | **next thread** (handoff `HANDOFF_2026-06-21_ws6-bphase-b3-on-event-sink.md`) |
 | 2 | **WS-6 B4** — point native conformance at production `CascorModel`; retire the test-only adapter | NOT STARTED | B3 decision | follows B3 |
 | 3 | **WS-6 A-phase (6a)** — cascor `src/api/**` → service-core re-export shims | **BLOCKED** | OUT-11 service-core **0.2.0 publish** (#502) + soak | deferred (DR-1) |
 | 4 | **OUT-11 publish** — `juniper-service-core` 0.2.0 (T1+T2) to PyPI | **READY** (code merged) | Paul publish gate | ml **#502 OPEN** |
