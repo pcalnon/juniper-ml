@@ -52,7 +52,7 @@ class ThreadHandoffArchiveTest(unittest.TestCase):
             for match in _CANONICAL_REFERENCE.finditer(text):
                 references.setdefault(match.group(1), []).append(path.relative_to(_REPO_ROOT).as_posix())
 
-        self.assertGreater(references, {}, "expected at least one top-level note to reference an archived handoff")
+        self.assertTrue(references, "expected at least one top-level note to reference an archived handoff")
 
         missing = {
             name: sources
