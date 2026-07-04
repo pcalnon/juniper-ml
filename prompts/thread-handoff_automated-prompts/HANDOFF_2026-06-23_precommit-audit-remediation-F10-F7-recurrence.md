@@ -51,7 +51,7 @@ Repos in this ecosystem advance **same-day**, and **multiple Claude sessions run
 - **Batch 1** (safe config hardening, 8 PRs) and **Batch 2** (coverage parity, 7 PRs) — MERGED (earlier threads).
 - **B3 — `juniper-recurrence`** onboarding (the one CRITICAL repo) — CORE COMPLETE & MERGED (pre-commit config + bench CI lane + coverage + required-checks + security + the config-actually-passes fix #42).
 - **B4 — juniper-ml monorepo governance (F3)** — `#508` **MERGED**: one `ruff` (`--fix`) + `ruff-format` hook pair (`ruff-pre-commit v0.15.18`) in the **root** `.pre-commit-config.yaml`, scoped to the 6 sub-package dirs; ruff per-file config auto-discovery (doc-tools=320 / rest=512); CI enforcement free via the existing root `ci.yml` pre-commit job. Decisions: `N` kept active but `ignore=["N803","N806"]` (ML Data-Contract `X`/`X_val`/`y`); 2× `N818` exported exceptions grandfathered via `# noqa`; 2 real model-core bugbear fixed (B905/B017).
-- **Wave-1 findings doc** archived — `#509` **MERGED** (`notes/JUNIPER_PRECOMMIT_TESTING_AUDIT_WAVE1_FINDINGS_2026-06-19.md`).
+- **Wave-1 findings doc** archived — `#509` **MERGED** (`notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-WAVE1-FINDINGS.md`).
 - **F14 — orphaned tests wired into `ci.yml`** — `#510` **MERGED**: `test_requirements_drift_check.py` + `test_juniper_plant_all.py` + `test_juniper_chop_all.py` were enumerated-out of the `tests` job; all 3 CI-safe, pass 3.12–3.14.
 - **F11 — dead `util/run_tests.bash` stubs** — **data `#205`** + **cascor `#354`** (both single-commit, CI-green, **OPEN, awaiting Paul's merge** as of handoff). data stub = copied-from-cascor (`Application: juniper_cascor`, `proto.bash`, unreferenced). cascor stub = broken (`/opt/miniforge3/envs/JuniperPython/bin/python` no longer exists; `SCRIPT_DIR`→`util/`; redundant with the real `src/tests/scripts/run_tests.bash`, which was left untouched).
 
@@ -90,9 +90,9 @@ Wheel-install smoke: most repos test only the editable install; the built wheel 
 ## 4. Artifacts & references (all in `juniper-ml`)
 
 - Memory: `project_precommit_testing_audit_2026-06-19.md` — the running record; **read first.**
-- `notes/JUNIPER_PRECOMMIT_TESTING_AUDIT_PLAN_2026-06-19.md` — methodology + rubric.
-- `notes/JUNIPER_PRECOMMIT_TESTING_AUDIT_WAVE1_FINDINGS_2026-06-19.md` — cross-repo drift matrix + findings F1–F17 (interim snapshot; **verify before trusting**).
-- `notes/JUNIPER_RECURRENCE_PRECOMMIT_TESTING_CI_AUDIT_2026-06-21.md` — recurrence deep-dive (§9 = prioritized backlog feeding §2.3).
+- `notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md` — methodology + rubric.
+- `notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-WAVE1-FINDINGS.md` — cross-repo drift matrix + findings F1–F17 (interim snapshot; **verify before trusting**).
+- `notes/JUNIPER_2026-06-21_JUNIPER-RECURRENCE_PRECOMMIT-TESTING-CI-AUDIT.md` — recurrence deep-dive (§9 = prioritized backlog feeding §2.3).
 - Prior handoff: `prompts/thread-handoff_automated-prompts/HANDOFF_2026-06-21_precommit-testing-audit-remediation.md`.
 
 ## 5. Recommended first move

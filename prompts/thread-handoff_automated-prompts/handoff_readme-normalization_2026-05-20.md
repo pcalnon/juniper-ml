@@ -4,12 +4,12 @@
 
 Juniper README Normalization, §12 step 8 (final)
 
-Continue the juniper-deploy README normalization (§12 step 8 of juniper-ml/notes/README_NORMALIZATION_PLAN_2026-05-19.md, governed by §10.8). This is the final PR in the README normalization sequence.
+Continue the juniper-deploy README normalization (§12 step 8 of juniper-ml/notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md, governed by §10.8). This is the final PR in the README normalization sequence.
 
 ## Completed so far (all merged)
 
 - juniper-ml #277 (§12 step 1) — plan + logo asset
-- juniper-ml #280 (§12 step 2) — Research Philosophy canonical draft at notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md
+- juniper-ml #280 (§12 step 2) — Research Philosophy canonical draft at notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md
 - juniper-ml #282 (§12 step 3) — juniper-ml README (reference implementation)
 - juniper-canopy #293 (§12 step 4)
 - juniper-cascor #275, juniper-data #125, juniper-cascor-worker #70 (§12 step 5a/b/c)
@@ -36,7 +36,7 @@ Continue the juniper-deploy README normalization (§12 step 8 of juniper-ml/note
 - Worktree: /home/pcalnon/Development/python/Juniper/worktrees/juniper-deploy--docs--deploy-readme-normalize-2026-05-20--20260520-1112--fd879c21. Branch docs/deploy-readme-normalize-2026-05-20 already created off origin/main (HEAD fd879c21).
 - Markdownlint v0.42.0 (permissive 512-char rule) — long Research Philosophy paragraphs commit without hard-wrapping.
 - Logo source: /home/pcalnon/Development/python/Juniper/juniper-canopy/src/assets/Juniper_Logo_150px.png (43,955 B).
-- Canonical Research Philosophy to inline verbatim: see juniper-ml/notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md §2. No third paragraph for deploy (per §3.3).
+- Canonical Research Philosophy to inline verbatim: see juniper-ml/notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md §2. No third paragraph for deploy (per §3.3).
 - User autonomy mode: "one PR at a time, push and open PR automatically; wait for explicit 'PR merged' signal before next step." Do not run worktree cleanup until told.
 - PR description style: §4 canonical-section checklist table + §11 link-audit block + §10.8 deviation note + sequencing list + Test plan. Use HEREDOC with Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com> in both commit and PR body.
 

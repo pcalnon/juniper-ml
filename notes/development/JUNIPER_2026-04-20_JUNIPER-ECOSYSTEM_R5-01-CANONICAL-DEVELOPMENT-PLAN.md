@@ -4,7 +4,7 @@
 **Version**: 1.0 (produced by 6-round, 21-agent consolidation funnel)
 **Date**: 2026-04-11
 **Author**: Claude Code (Opus 4.6, 1M context) on behalf of Paul Calnon
-**Source**: WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md (v1.3 STABLE, PR #117)
+**Source**: JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md (v1.3 STABLE, PR #117)
 **Lineage**: R0-01..R0-06 -> R1-01..R1-05 -> R2-01..R2-04 -> R3-01..R3-03 -> R4-01..R4-02 -> this document
 
 ---

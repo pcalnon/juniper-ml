@@ -34,7 +34,7 @@ report; §11 seeds the report with pilot observations already captured while val
 ### 2.2 Out of scope (deferred)
 
 - **Security / vulnerability assessment** (architecture and implementation) is covered in the **companion plan**
-  [`JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md`](JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md) as dimension **D5**. The
+  [`JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-SECURITY-AUDIT-PLAN.md`](JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-SECURITY-AUDIT-PLAN.md) as dimension **D5**. The
   planning + read-only enumeration were done here (with Fable); genuinely dual-use *execution* steps (active exploitation,
   PoCs) are handed off to Opus in that doc's §8 register. This UX plan itself does **not** hunt for vulnerabilities; where a
   *reliability/functional* defect happens to touch an auth or rate-limit code path (e.g. the WebSocket per-IP cap in §11 F-A —
@@ -144,9 +144,9 @@ validation pass re-verifies each before the report is authored.
 
 | Control | Expected behavior + doc | Confirm | Dim |
 | --- | --- | --- | --- |
-| "▸ change" `nn-model-change-button` → `model-selection-modal` | Opens the dedicated selection surface. **Implemented as a modal**, though the design's default lean was a Models *tab* (`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`, OQ-1) — resolved-opposite, intentional. | opens modal (no backend). | D2 |
+| "▸ change" `nn-model-change-button` → `model-selection-modal` | Opens the dedicated selection surface. **Implemented as a modal**, though the design's default lean was a Models *tab* (`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`, OQ-1) — resolved-opposite, intentional. | opens modal (no backend). | D2 |
 | Model search `model-search-input` | 350 ms-debounced filter over label/family/category/tags. | client-only. | D1 |
-| Per-row Select `{model-select-btn}` | Swaps the runtime backend; incompatible rows greyed; non-live selectable-but-not-trainable. | `POST /api/model/select` → `_swap_backend` (recurrence routing). **Selecting recurrence exercises the known 5-site `backend_type` mis-bucketing** (`JUNIPER_CANOPY_A1_III_DASHBOARD_INTEGRATION_SCOPE_2026-06-23.md` §2.1). | D4 |
+| Per-row Select `{model-select-btn}` | Swaps the runtime backend; incompatible rows greyed; non-live selectable-but-not-trainable. | `POST /api/model/select` → `_swap_backend` (recurrence routing). **Selecting recurrence exercises the known 5-site `backend_type` mis-bucketing** (`JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md` §2.1). | D4 |
 | Dataset type `nn-dataset-type-dropdown` | Options sourced from the registry (compat forward-gate), not hardcoded. | consumed on Apply/Start. | D1 |
 | Apply Dataset `apply-dataset-button` | Stages a cold-swap; restart applies. | `POST /api/stage_dataset` → cascor `POST /training/dataset`. | D1 |
 | Live Dataset Switch `live-dataset-switch-button` (disabled by default) | Gated by experimental-flags + training-active (F2.3, `ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md`). | opens `live-switch-modal`. **Confirm it enables only when experimental ON + training active.** | D1 D4 |
@@ -199,7 +199,7 @@ The audit builds on the existing `notes/` corpus (full ledger compiled during re
 against the running container rather than trusting their status cells**, because several are 1–4 days stale and one headline
 finding (the 401) was already fixed after those notes were written — the pilot (F-B) confirms the fix live:
 
-1. `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md` — the current-state snapshot; treats per-cluster docs as trailing reality.
+1. `JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md` — the current-state snapshot; treats per-cluster docs as trailing reality.
 2. `juniper-canopy/notes/JUNIPER_CANOPY_CASCOR-TRAINING-401-APIKEY_AUDIT_2026-06-29.md` +
    `.../JUNIPER_CANOPY_TRAINING-CONTROL-AUTH_DESIGN_2026-06-30.md` — the "Start is 401-broken" audit/design. The fix **shipped**
    as canopy #414/#415 (rolled out + verified live 2026-07-01): the browser control surface now authenticates via Origin+CSRF.
@@ -207,16 +207,16 @@ finding (the 401) was already fixed after those notes were written — the pilot
    read the notes without the #415 rollout context. Treat as resolved; keep as a regression checkpoint.
 3. `CANOPY_TRAINING_CONTROL_ERROR_SURFACING_DESIGN_2026-06-14.md` — "dead button" error surfacing; needs live confirmation the
    alert renders (F-C is the counter-observation).
-4. `JUNIPER_CANOPY_A1_III_DASHBOARD_INTEGRATION_SCOPE_2026-06-23.md` §2.1 — recurrence `backend_type` mis-bucketing at 5 sites.
-5. `JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md` — model picker / `task_type` awareness status.
-6. `code-review/CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md` — WS relay "Partial", "dashboard doesn't consume WS data"
+4. `JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md` §2.1 — recurrence `backend_type` mis-bucketing at 5 sites.
+5. `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md` — model picker / `task_type` awareness status.
+6. `code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md` — WS relay "Partial", "dashboard doesn't consume WS data"
    (P5-RC-05/14); re-verify whether the live-metrics WS path is now consumed end-to-end.
-7. `JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md` — the L1/L2 UI-regression harness + the `dbc.Input(type=number)` gap;
+7. `JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md` — the L1/L2 UI-regression harness + the `dbc.Input(type=number)` gap;
    the L3 real-browser layer is exactly what this walk-through extends.
-8. `JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md` — recurrence app has no runtime logging + no Dockerfile (OBS-01/02, OUT-4);
+8. `JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md` — recurrence app has no runtime logging + no Dockerfile (OBS-01/02, OUT-4);
    affects observability of the recurrence backend during the walk-through.
 9. Requirements areas to tag findings against: **UI** (JR-ML-UI-001/002), **WS**, **API**, **OBS**, **DEP**, **DATA**, **TRAIN**,
-   **TEST** (`notes/REQUIREMENTS_INDEX.md`, `notes/requirements/by-area/`).
+   **TEST** (`notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`, `notes/requirements/by-area/`).
 
 ## 8. Findings Ledger Format
 

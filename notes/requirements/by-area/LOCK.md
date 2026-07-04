@@ -98,7 +98,7 @@ Will crash with ModuleNotFoundError if called. Move to test dependencies or add 
 **Status**: proposed  **Priority**: P2  **Category**: LOCK  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 369-381)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 369-381)
 
 **Detail**:
 

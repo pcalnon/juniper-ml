@@ -2,7 +2,7 @@
 
 **Status**: INTERIM — Wave 1 of 3 complete (static + parity). Dynamic (W2) and adversarial verification (W3) pending.
 **Date**: 2026-06-19
-**Method**: 9 parallel per-repo collector agents, read-only, evidence-cited (`file:line` / `cmd→exit`), frozen schema. See plan `JUNIPER_PRECOMMIT_TESTING_AUDIT_PLAN_2026-06-19.md`.
+**Method**: 9 parallel per-repo collector agents, read-only, evidence-cited (`file:line` / `cmd→exit`), frozen schema. See plan `JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md`.
 **Corroboration**: systemic findings (esp. F1, F5) were independently reproduced by ≥8 collectors — strong cross-agent agreement.
 
 Repo keys: can=canopy, cas=cascor, ccl=cascor-client, cwk=cascor-worker, dat=data, dcl=data-client, dep=deploy, ml=juniper-ml, rec=recurrence.

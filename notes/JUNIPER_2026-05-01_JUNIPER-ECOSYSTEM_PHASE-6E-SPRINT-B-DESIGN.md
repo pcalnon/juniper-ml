@@ -33,9 +33,9 @@ post-load FSM state, history-locking semantics, and which controls are
 available next.
 
 This doc supersedes the single B-1 row in
-[`PHASE_6E_DESIGN.md`](./PHASE_6E_DESIGN.md#sprint-b--snapshot-replay-loop)
+[`JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md`](./JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md#sprint-b--snapshot-replay-loop)
 and expands CAN-015 in
-[`JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`](./JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md)
+[`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`](./JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md)
 into:
 
 - **Active (Sprint B)**: CAN-015a (Retrain), CAN-015b (Resume),
@@ -425,9 +425,9 @@ Sprint B and tracked as separate roadmap items:
 **Documented references**:
 
 - This doc, §1, §2.2 ("V2 deferred")
-- [`PHASE_6E_DESIGN.md`](./PHASE_6E_DESIGN.md) — to be updated to point
+- [`JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md`](./JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md) — to be updated to point
   here
-- [`JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`](./JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md)
+- [`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`](./JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md)
   — to be updated with a CAN-015e row
 
 ### 10.2 CAN-015h — Restore editing: weight + topology modification
@@ -521,10 +521,10 @@ immediately after restore today).
 
 This sprint produces / updates:
 
-- **This doc** — `notes/PHASE_6E_SPRINT_B_DESIGN.md` (new)
-- **`notes/PHASE_6E_DESIGN.md`** — replace single B-1 row with the
+- **This doc** — `notes/JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md` (new)
+- **`notes/JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md`** — replace single B-1 row with the
   6-PR breakdown; reference this doc
-- **`notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`**
+- **`notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`**
   — fan out CAN-015 to CAN-015a..d (active) + CAN-015e..f (deferred)
 - **`juniper-cascor/notes/development/PRE-DEPLOYMENT_ROADMAP-2.md`** —
   cross-reference to this doc

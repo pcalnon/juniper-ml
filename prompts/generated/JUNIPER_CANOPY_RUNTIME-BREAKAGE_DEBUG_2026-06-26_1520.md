@@ -3,7 +3,7 @@
 <!--
 Generated prompt — Juniper custom-agent suite. Category: regressions (execution-class).
 Grounded against juniper-canopy @ main c25b7a1 (discovery bundle 2026-06-26, first-party re-probed).
-See the companion analysis: notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md
+See the companion analysis: notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md
 Convention: this is a session-starting prompt; paste it as the opening message of a fresh session.
 -->
 
@@ -74,7 +74,7 @@ Restore basic, working juniper-canopy functionality by finding **all** of the se
 
 ## Assigned Tasks / Directives
 
-1. **Establish ground truth.** Work in an isolated canopy git worktree (canopy `notes/WORKTREE_SETUP_PROCEDURE.md`); run `gh pr list` first as a duplicate-work guard. In `JuniperCanopy1`: run the current test suite via canopy's documented command (its `Makefile` / `AGENTS.md`; respect the CI path-scope — `-m "unit or integration"` skips by-path snapshot/regression tests), and **launch the app** (`./demo`, then load `http://localhost:8050`) to observe the live failures. Capture the actual tracebacks.
+1. **Establish ground truth.** Work in an isolated canopy git worktree (canopy `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`); run `gh pr list` first as a duplicate-work guard. In `JuniperCanopy1`: run the current test suite via canopy's documented command (its `Makefile` / `AGENTS.md`; respect the CI path-scope — `-m "unit or integration"` skips by-path snapshot/regression tests), and **launch the app** (`./demo`, then load `http://localhost:8050`) to observe the live failures. Capture the actual tracebacks.
 2. **Identify every serious issue (do not stop at the three known crashes).** Triage what prevents basic functionality: dataset load/generation, the training-control WebSocket, snapshot save/delete, model selection (cascor and recurrence), the dashboard rendering and status updates. Treat the findings in *Resources* as a verified **starting map**, not an exhaustive list. Consider fanning out to the `auditor` agent for systematic, evidence-backed issue enumeration.
 3. **Determine the root cause of each and isolate the code locations.** For the three known crashes, confirm the env-vs-floor drift empirically (the one-line signature check above) and identify the commits that adopted the new client APIs — note that canopy's **code is correct against its floors**; the **environment** is what drifted, so do not git-bisect canopy source chasing a "bad commit."
    For anything else you find, localize it to `file:line` and explain the mechanism.

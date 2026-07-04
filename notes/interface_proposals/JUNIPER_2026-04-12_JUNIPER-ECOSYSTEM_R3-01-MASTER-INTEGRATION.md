@@ -5,7 +5,7 @@
 **Date**: 2026-04-11
 **Status**: Round 3 consolidation — input to Round 4
 **Inputs consolidated**: R2-01 (best-of synthesis), R2-02 (phase execution contracts), R2-03 (cross-cutting concerns), R2-04 (decision matrix + stakeholder briefing)
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` v1.3 STABLE
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` v1.3 STABLE
 
 ---
 

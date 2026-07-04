@@ -57,7 +57,7 @@ TST-001 CRITICAL (P0). Status shipped per migration. Fixes provided in section 3
 **Status**: proposed  **Priority**: P0  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 220-229)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 220-229)
 
 **Detail**:
 
@@ -72,7 +72,7 @@ TST-001 CRITICAL (P0). Status shipped per migration. Fixes provided in section 3
 **Status**: proposed  **Priority**: P0  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 48-53)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 48-53)
 
 **Detail**:
 
@@ -307,7 +307,7 @@ Prerequisite for other canopy development items.
 **Status**: designed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1674-1682)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1674-1682)
 
 **Notes**:
 
@@ -318,7 +318,7 @@ Prerequisite for other canopy development items.
 **Status**: designed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1486-1504)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1486-1504)
 
 **Notes**:
 
@@ -329,7 +329,7 @@ Prerequisite for other canopy development items.
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 379-380)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 379-380)
 
 **Notes**:
 
@@ -385,7 +385,7 @@ macOS-13 (Intel) removed as deprecated.
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md` (lines 28-42)
+- `juniper-ml/notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md` (lines 28-42)
 
 ### JR-CAN-TEST-010 — Bandit configuration must be consolidated to single file.
 
@@ -416,7 +416,7 @@ varying flags. Standardize command and flags across all paths.
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 282-283)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 282-283)
 
 **Notes**:
 
@@ -429,7 +429,7 @@ varying flags. Standardize command and flags across all paths.
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 283-284)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 283-284)
 
 **Notes**:
 
@@ -454,7 +454,7 @@ after test run for coverage tracking and status badges.
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 1-68)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-05-TESTING-VALIDATION.md` (lines 1-68)
 
 ### JR-CAS-TEST-005 — Establish automated CI/CD pipeline with pytest, coverage, type checking, and linting.
 
@@ -663,7 +663,7 @@ Category A: 8 critical test issues; Phase 1 critical
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CI_VALIDATION_FINDINGS_2026-04-29.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md` (lines 1-50)
 
 ### JR-CCL-TEST-005 — Run full test suite validation after constants refactor to ensure scenario outputs and behaviors unchanged.
 
@@ -755,7 +755,7 @@ Phase 1 (critical): Force sequential training via conftest autouse fixture patch
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 225-225)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 225-225)
 
 **Notes**:
 
@@ -766,28 +766,28 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 252-261)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-05-TESTING-VALIDATION.md` (lines 252-261)
 
 ### JR-ML-TEST-019 — Unit tests for seq numbers, replay buffer, and resume protocol.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 171-207)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-05-TESTING-VALIDATION.md` (lines 171-207)
 
 ### JR-ML-TEST-020 — Unit tests for set_params() method and concurrent correlation.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-05_testing_validation.md` (lines 212-237)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-05-TESTING-VALIDATION.md` (lines 212-237)
 
 ### JR-ML-TEST-021 — Validate CI pipeline: every workflow runs green, soft-fail jobs promoted per-repo to hard gates after shakedown.
 
 **Status**: proposed  **Priority**: P1  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CI_VALIDATION_ROADMAP_2026-04-29.md` (lines 28-51)
+- `juniper-ml/notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-ROADMAP.md` (lines 28-51)
 
 ### JR-CAS-TEST-009 — Defer test optimization: reduce 45-minute test suite to ≤5 minutes.
 
@@ -809,7 +809,7 @@ Deferred optimization; developer productivity; noted in doc status
 **Status**: superseded  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 738-780)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 738-780)
 
 **Notes**:
 
@@ -954,7 +954,7 @@ Root cause: auth_token field matches Bandit regex (RE_WORDS includes "token") in
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 69-69)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 69-69)
 
 **Notes**:
 
@@ -965,7 +965,7 @@ Settled position C-32 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4712-4723)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4712-4723)
 
 **Notes**:
 
@@ -1006,14 +1006,14 @@ Category D: Duplicate fixtures; DRY principle violation
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/CONSOLIDATED_REMEDIATION_PLAN.md` (lines 1-50)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-03_JUNIPER-ECOSYSTEM_CONSOLIDATED-REMEDIATION-PLAN.md` (lines 1-50)
 
 ### JR-ML-TEST-029 — Contract-test pytest marker contract runs on every PR, NOT nightly.
 
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 71-71)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 71-71)
 
 **Notes**:
 
@@ -1024,7 +1024,7 @@ Settled position C-34 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4740-4744)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4740-4744)
 
 **Notes**:
 
@@ -1035,7 +1035,7 @@ Settled position C-34 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4747-4758)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4747-4758)
 
 **Notes**:
 
@@ -1046,7 +1046,7 @@ Settled position C-34 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4761-4772)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4761-4772)
 
 **Notes**:
 
@@ -1094,7 +1094,7 @@ Align condition to use consistent semantics.
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 364-375)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 364-375)
 
 **Detail**:
 
@@ -1109,7 +1109,7 @@ Align condition to use consistent semantics.
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 385-414)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 385-414)
 
 **Detail**:
 
@@ -1124,7 +1124,7 @@ html.P("Network Growth Triggers:", className="mb-1 fw-bold"),
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 423-431)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 423-431)
 
 **Detail**:
 
@@ -1139,7 +1139,7 @@ The `sync_multi_node_checkboxes` callback has components as both Input and Outpu
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2950-2954)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2950-2954)
 
 **Notes**:
 
@@ -1150,7 +1150,7 @@ The `sync_multi_node_checkboxes` callback has components as both Input and Outpu
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3031-3045)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3031-3045)
 
 **Notes**:
 
@@ -1183,7 +1183,7 @@ Audit recommended for codebase-wide cleanup.
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 72-72)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 72-72)
 
 **Notes**:
 
@@ -1225,7 +1225,7 @@ Category B: 5 files; Phase 1 high priority
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_ANALYSIS_03_2026-04-02.md` (lines 1-50)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-ANALYSIS-03.md` (lines 1-50)
 
 ### JR-CAN-TEST-031 — Multiple test files contain 25+ exception suppressions (try/except pass) that hide real errors and should be replaced with proper assertions.
 
@@ -1280,8 +1280,8 @@ circuit breaker resilience, API contract validation.
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 976-1029)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-100)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 976-1029)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-100)
 
 **Detail**:
 
@@ -1349,7 +1349,7 @@ CAN-HIGH-004; HIGH priority post-release item.
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 317-324)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 317-324)
 
 **Detail**:
 
@@ -1364,7 +1364,7 @@ CAN-HIGH-004; HIGH priority post-release item.
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_ANALYSIS_2026-04-03.md` (lines 1-50)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-03_JUNIPER-ECOSYSTEM_REGRESSION-ANALYSIS.md` (lines 1-50)
 
 ### JR-CAN-TEST-036 — RemoteWorkerClient integration must have test coverage and verified integration path.
 
@@ -1505,7 +1505,7 @@ DeprecationWarnings (23): CandidateTrainingWorker.__init__() emits at worker.py:
 **Status**: proposed  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 414-423)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 414-423)
 
 **Notes**:
 

@@ -34,7 +34,7 @@ This patch release introduces `wake_the_claude.bash` (the canonical Claude Code 
 
 - `notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md` — Root cause analysis and fix plan for session-ID handling regressions
 - `notes/SECURITY_REMEDIATION_PLAN.md` — Security vulnerability analysis and remediation plan
-- `notes/pull_requests/PR_SESSION_ID_VALIDATION_BUGFIX.md` — PR description archive
+- `notes/pull_requests/JUNIPER_2026-03-06_JUNIPER-ML_PR-SESSION-ID-VALIDATION-BUGFIX.md` — PR description archive
 - `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md` — PR description template (adopted from sibling repos)
 
 ---

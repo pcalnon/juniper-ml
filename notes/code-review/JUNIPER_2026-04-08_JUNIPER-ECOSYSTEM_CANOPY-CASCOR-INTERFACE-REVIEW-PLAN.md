@@ -7,8 +7,8 @@
 **Status**: ACTIVE
 **Companion Documents**:
 
-- Analysis: `CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md`
-- Roadmap: `CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md`
+- Analysis: `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md`
+- Roadmap: `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md`
 
 ---
 
@@ -65,9 +65,9 @@ Inventory and assess existing analysis documents to avoid duplication and build 
 
 ### 3.2 Tasks
 
-- [x] Read `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (2,406 lines, 20 issues, implementation record)
-- [x] Read `CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (38 findings, CR-006 through CR-076)
-- [x] Read `CASCOR_COMPREHENSIVE_CODE_REVIEW_PLAN_2026-04-04.md` (methodology)
+- [x] Read `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (2,406 lines, 20 issues, implementation record)
+- [x] Read `JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md` (38 findings, CR-006 through CR-076)
+- [x] Read `JUNIPER_2026-04-04_JUNIPER-CASCOR_COMPREHENSIVE-CODE-REVIEW-PLAN.md` (methodology)
 - [x] Read `CASCOR_BACKEND_REFERENCE.md` from canopy docs
 - [x] Assess git history since prior analyses (2026-03-28 to 2026-04-08)
 - [x] Identify remediation PRs and their status
@@ -182,7 +182,7 @@ Write the definitive interface documentation.
 
 ### 8.2 Deliverable
 
-`CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md` containing:
+`JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md` containing:
 
 - [x] Executive summary and interface health assessment
 - [x] Architecture overview with component and data flow diagrams

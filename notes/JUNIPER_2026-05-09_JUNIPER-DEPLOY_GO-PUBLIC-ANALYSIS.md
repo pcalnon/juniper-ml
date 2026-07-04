@@ -284,7 +284,7 @@ Check the GitHub org settings → Secrets → repository access for `ANTHROPIC_A
 
 `notes/` contains plans, audits, and roadmaps that are useful to contributors but reveal internal process detail.
 Recommend **leaving them as-is** — they're a feature, not a bug, for a research-platform repo.
-If desired, move the most internal-process-specific ones (e.g.  `THREAD_HANDOFF_PROCEDURE.md`, `WORKTREE_*_PROCEDURE.md`) into a gitignored or separate `notes-internal/` subtree, but this is purely optional and arguably loses signal for collaborators.
+If desired, move the most internal-process-specific ones (e.g.  `JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`, `WORKTREE_*_PROCEDURE.md`) into a gitignored or separate `notes-internal/` subtree, but this is purely optional and arguably loses signal for collaborators.
 
 ### 6.6 Update README to acknowledge public status (NON-BLOCKER, ~5 min)
 

@@ -4,7 +4,7 @@
 **Author**: Round 0 sub-agent (general-purpose)
 **Date**: 2026-04-11
 **Status**: Initial proposal — pre-consolidation
-**Source doc**: `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -48,7 +48,7 @@ architecture doc — how the cascor server should evolve to support:
 
 ## 2. Source-doc cross-references
 
-The following sections of `WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3) are
+The following sections of `JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3) are
 the authoritative inputs. Every design choice below is anchored to at least one of
 these.
 

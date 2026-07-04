@@ -7,7 +7,7 @@
 **Date**: 2026-06-21
 **Status**: Findings report — read-only audit, no fixes applied (remediation = backlog in §9)
 **License**: MIT License
-**Method**: 5 parallel evidence-cited auditors (read-only) + owner spot-verification of all CRIT/HIGH findings. Rubric: [`notes/JUNIPER_PRECOMMIT_TESTING_AUDIT_PLAN_2026-06-19.md`](JUNIPER_PRECOMMIT_TESTING_AUDIT_PLAN_2026-06-19.md) (Areas A/B/C). This is the deep-dive execution of that ecosystem plan scoped to the one repo it flagged as having **no pre-commit and no root pyproject**.
+**Method**: 5 parallel evidence-cited auditors (read-only) + owner spot-verification of all CRIT/HIGH findings. Rubric: [`notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md`](JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md) (Areas A/B/C). This is the deep-dive execution of that ecosystem plan scoped to the one repo it flagged as having **no pre-commit and no root pyproject**.
 
 **Checkout audited**: `2fd2b81` (clean working tree). At audit time this was 2 commits behind `origin/main` `036fde7` (both bench-only equities-rebench). `origin/main` advanced **during this session** to `461fc4a` — HEAD is now **6 behind**, and the newer commits include the DP-3 P1 readout work (recurrence #30/#31), which is **not** bench-only. Model-package line-refs/findings should therefore be re-confirmed against the tip before remediation; the structural findings (no pre-commit, no coverage config, model-CI lint gap, stale AGENTS.md) are unaffected. Sibling repos under `…/Juniper/` are the desired-state baseline.
 

@@ -32,7 +32,7 @@ Owner-class taxonomy used throughout:
 
 Effort estimates use the pessimistic/expected/optimistic triple, in engineering days. Expected is what R1-05 §4.40 budgets; the variance bounds come from the R1 corpus spread.
 
-Source-doc identifiers (GAP-WS-NN, M-SEC-NN, RISK-NN) cite the canonical `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` v1.3 STABLE.
+Source-doc identifiers (GAP-WS-NN, M-SEC-NN, RISK-NN) cite the canonical `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` v1.3 STABLE.
 
 ---
 

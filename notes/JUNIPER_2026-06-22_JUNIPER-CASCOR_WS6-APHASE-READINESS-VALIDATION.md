@@ -26,10 +26,10 @@ A pre-development reality-check of the **WS-6 A-phase (6a)** — turning cascor'
 re-export shims / subclasses over the now-published `juniper-service-core` 0.2.0 — run before any A-phase
 code, on the principle "validate reality against the design assumptions first."
 
-**Design-of-record validated against:** `notes/JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md` (DR-1..DR-5,
-§2.2 the A/B split) and `notes/JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md` (§5.6 the
+**Design-of-record validated against:** `notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md` (DR-1..DR-5,
+§2.2 the A/B split) and `notes/JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md` (§5.6 the
 per-module CLEAN / ADAPTER / CASCOR-BOUND extraction ledger), with the B-phase plan
-`notes/JUNIPER_CASCOR_WS6_BPHASE_MODEL_CORE_ADOPTION_BUILD_PLAN_2026-06-19.md`.
+`notes/JUNIPER_2026-06-19_JUNIPER-CASCOR_WS6-BPHASE-MODEL-CORE-ADOPTION-BUILD-PLAN.md`.
 
 **Method:** two independent read-only validators surveyed `origin/main` of juniper-cascor and juniper-ml
 (local clones are known-stale) plus live PR/ruleset state and PyPI — one re-derived the §5.6 per-module
@@ -180,4 +180,4 @@ orchestrator-convergence work; keep `routes/{admin,history,workers}` cascor-only
   juniper-ml #473/#476/#478/#484/#492/#496 (T2 steps), #475 (DR ratification), #502 (0.2.0 publish);
   active ruleset 15081045; PyPI `juniper-service-core` releases 0.1.0/0.2.0.
 - Two independent read-only validators (per-module ledger; sequencing/gate/soak); findings cross-checked
-  against `notes/JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+  against `notes/JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`.

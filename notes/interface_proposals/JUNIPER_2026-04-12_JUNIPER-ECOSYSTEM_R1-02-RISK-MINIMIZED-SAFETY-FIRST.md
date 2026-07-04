@@ -5,7 +5,7 @@
 **Date**: 2026-04-11
 **Status**: Round 1 consolidation — input to Round 2
 **Inputs consolidated**: R0-01 (frontend), R0-02 (security), R0-03 (cascor backend), R0-04 (SDK/set_params), R0-05 (testing), R0-06 (ops/phasing/risk)
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 

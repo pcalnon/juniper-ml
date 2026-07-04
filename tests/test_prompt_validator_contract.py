@@ -17,7 +17,7 @@ The ``.claude/**`` subtree is git-tracked via the PR-1 ``.gitignore`` negation b
 excluded from every pre-commit hook except markdownlint, so this unittest -- wired into
 ``.github/workflows/ci.yml`` -- is the behavioural gate for the validator surface.
 
-Design-of-record: ``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.3, S5.5, S8).
+Design-of-record: ``notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`` (S5.3, S5.5, S8).
 Location-agnostic: discovers the repo root by walking up for ``.github/workflows/``.
 """
 

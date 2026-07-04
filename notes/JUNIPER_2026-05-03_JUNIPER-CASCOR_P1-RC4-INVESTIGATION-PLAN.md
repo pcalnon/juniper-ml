@@ -3,7 +3,7 @@
 **Author:** Paul Calnon
 **Date:** 2026-05-03
 **Status:** Plan; ready for user-approved execution
-**Predecessor:** [`V38_GROW_NETWORK_INVESTIGATION_PLAN_2026-05-02.md`](./V38_GROW_NETWORK_INVESTIGATION_PLAN_2026-05-02.md) §7 (closed via Option E retag)
+**Predecessor:** [`JUNIPER_2026-05-02_JUNIPER-CASCOR_V38-GROW-NETWORK-INVESTIGATION-PLAN.md`](./JUNIPER_2026-05-02_JUNIPER-CASCOR_V38-GROW-NETWORK-INVESTIGATION-PLAN.md) §7 (closed via Option E retag)
 **Gating:** P-5 unblocked (recovery env `JuniperCascor1` works for local repro)
 
 ---

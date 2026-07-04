@@ -5,7 +5,7 @@ declares (and, optionally, the pins in its ``requirements.lock``)?
 This module is the library implementation behind the ``juniper-env-drift-check``
 console script. It is the **shared, ecosystem-reusable** form of the
 dependency-satisfaction guard described in the test-suite audit plan §10.1
-(``notes/JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md``): any Juniper
+(``notes/JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md``): any Juniper
 repo can ``pip install juniper-ci-tools`` and assert that its active environment
 satisfies its declared client floors.
 

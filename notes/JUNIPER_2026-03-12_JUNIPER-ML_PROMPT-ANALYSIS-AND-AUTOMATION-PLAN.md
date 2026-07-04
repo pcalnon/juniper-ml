@@ -299,7 +299,7 @@ Analysis of all 131+ prompts reveals a convergent set of section headers. The fo
 - Cleanup procedures
 - Push-before-merge protocol
 
-**Redundancy:** Worktree conventions are restated from CLAUDE.md and `notes/WORKTREE_SETUP_PROCEDURE.md`.
+**Redundancy:** Worktree conventions are restated from CLAUDE.md and `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`.
 
 ### 4.2 Redundancy Summary
 
@@ -1202,8 +1202,8 @@ Given the current ecosystem size, team composition, and existing infrastructure,
 | `Juniper/prompts/history-named-prompts_*/` | Reusable task template prompts |
 | `juniper-ml/scripts/wake_the_claude.bash` | Claude Code launcher with session management |
 | `juniper-ml/scripts/sessions/` | Session ID persistence directory |
-| `juniper-ml/notes/THREAD_HANDOFF_PROCEDURE.md` | Handoff protocol specification |
-| `juniper-ml/notes/WORKTREE_SETUP_PROCEDURE.md` | Worktree creation procedure |
+| `juniper-ml/notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` | Handoff protocol specification |
+| `juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` | Worktree creation procedure |
 
 ### Appendix B: Prompt Type Decision Tree
 

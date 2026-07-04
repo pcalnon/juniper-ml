@@ -4,7 +4,7 @@
 **Component**: juniper-cascor-core (new shared package) · juniper-cascor-worker · juniper-cascor
 **Author**: Paul Calnon
 **Date**: 2026-06-03
-**Status**: **EXECUTED (2026-06-17)** — Wave 0 + Wave 1 shipped; the package is published as **`juniper-cascor-model` 0.1.0** on PyPI (renamed per the platform naming convention; home corrected to the **cascor family** per the [strategy doc](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md), so the §3 "Home = `juniper-ml` subdirectory" row is **superseded**). Wave 2 (cascor self-adoption, retiring the drift-guard) is still deferred. See [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+**Status**: **EXECUTED (2026-06-17)** — Wave 0 + Wave 1 shipped; the package is published as **`juniper-cascor-model` 0.1.0** on PyPI (renamed per the platform naming convention; home corrected to the **cascor family** per the [strategy doc](JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md), so the §3 "Home = `juniper-ml` subdirectory" row is **superseded**). Wave 2 (cascor self-adoption, retiring the drift-guard) is still deferred. See [`JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md).
 
 ---
 
@@ -39,7 +39,7 @@ This document plans that package.
 | Attribute | Decision |
 |---|---|
 | **Name (PyPI)** | `juniper-cascor-core` |
-| **Home** | **SUPERSEDED 2026-06-09** — see [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md) (D1/D2 ratified). The package relocates to the **cascor family** as a subdirectory of `juniper-cascor`, and is **renamed `juniper-cascor-model`**, before first publish. The interim `juniper-ml/juniper-cascor-core/` home and the `juniper-cascor-core` name are retired; every other mechanic in this plan still applies — only the home and distribution name change. |
+| **Home** | **SUPERSEDED 2026-06-09** — see [`JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md`](JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md) (D1/D2 ratified). The package relocates to the **cascor family** as a subdirectory of `juniper-cascor`, and is **renamed `juniper-cascor-model`**, before first publish. The interim `juniper-ml/juniper-cascor-core/` home and the `juniper-cascor-core` name are retired; every other mechanic in this plan still applies — only the home and distribution name change. |
 | **Python** | `>=3.11` (worker floor) — note worker runs 3.14 in-container |
 | **Runtime deps** | `torch`, `numpy`, `PyYAML` (+ optional `dill`, `columnar` behind an extra) |
 | **Build** | setuptools, MIT, mirrors the other shared-package `pyproject.toml` |

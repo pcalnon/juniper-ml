@@ -1,7 +1,7 @@
 # juniper-model-core v0.3.0 — multi-entity walk-forward folds — Release Notes
 
 > Canonical release notes for the GitHub Release [`juniper-model-core-v0.3.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-model-core-v0.3.0) (pcalnon/juniper-ml), authored 2026-06-19
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)). This file is the canonical source for the Release body.
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)). This file is the canonical source for the Release body.
 
 ---
 
@@ -144,9 +144,9 @@ the `groups` parameter and widen their pin.
 
 ## Design & Provenance
 
-- Phase 4 evaluation (multi-ticker recommendation, Option B): `notes/JUNIPER_MODEL_CORE_CROSSVAL_PHASE4_EVALUATION_2026-06-18.md`
-- Build roadmap (decisions D1–D5, ratified 2026-06-17): `notes/JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md`
-- Ratified layer design: `notes/JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`
+- Phase 4 evaluation (multi-ticker recommendation, Option B): `notes/JUNIPER_2026-06-18_JUNIPER-ML_MODEL-CORE-CROSSVAL-PHASE4-EVALUATION.md`
+- Build roadmap (decisions D1–D5, ratified 2026-06-17): `notes/JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md`
+- Ratified layer design: `notes/JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`
 - Pull request: #472 (merge `38f40ce`) · Full changelog: `juniper-model-core/CHANGELOG.md` (`[0.3.0]`)
 
 ---

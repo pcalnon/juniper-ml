@@ -30,6 +30,6 @@ git worktree prune
 Then resume the new work:
 
 1. Create new worktree in juniper-deploy on a branch like infra/track-5b-5c-ci-03-deploy-05-16.
-2. Read CI-03 + DEPLOY-05..DEPLOY-16 details from juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md.
+2. Read CI-03 + DEPLOY-05..DEPLOY-16 details from juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md.
 3. Decide bundling — 13 items may want a split into "CI-03 + critical deploy fixes" vs "deploy hardening batch".
 4. Implement, test (docker compose config, pytest, pre-commit), commit, push, open PR.

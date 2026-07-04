@@ -15,14 +15,14 @@
 **Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 648-680)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md` (lines 648-680)
 
 ### JR-ML-SEC-012 — Enhancement**: Instead of scattered `if demo_mode_instance:` checks, use a common backend interface. Both `DemoMode` and….
 
 **Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 388-438)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 388-438)
 
 **Detail**:
 
@@ -37,7 +37,7 @@
 **Status**: rejected  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 421-436)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 421-436)
 
 **Notes**:
 
@@ -48,7 +48,7 @@
 **Status**: rejected  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 360-378)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 360-378)
 
 **Detail**:
 
@@ -63,7 +63,7 @@
 **Status**: rejected  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_a_security_concurrency_error.md` (lines 463-513)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-A-SECURITY-CONCURRENCY-ERROR.md` (lines 463-513)
 
 **Detail**:
 
@@ -74,7 +74,7 @@
 **Status**: rejected  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 692-742)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-C-CROSSREPO-CLIENTS-API.md` (lines 692-742)
 
 **Detail**:
 
@@ -85,7 +85,7 @@
 **Status**: rejected  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 336-360)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 336-360)
 
 **Detail**:
 
@@ -100,14 +100,14 @@
 **Status**: rejected  **Priority**: P1  **Category**: DATA  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 374-381)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 374-381)
 
 ### JR-ML-SEC-118 — 2A. Validation Loss/Accuracy Overlay Traces.
 
 **Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 74-88)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 74-88)
 
 **Detail**:
 
@@ -118,7 +118,7 @@
 **Status**: rejected  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 453-468)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 453-468)
 
 **Detail**:
 
@@ -133,7 +133,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: rejected  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 93-143)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 93-143)
 
 **Detail**:
 
@@ -148,7 +148,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: rejected  **Priority**: P2  **Category**: DATA  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 348-359)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 348-359)
 
 **Detail**:
 
@@ -163,7 +163,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 323-373)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-C-CROSSREPO-CLIENTS-API.md` (lines 323-373)
 
 **Detail**:
 
@@ -174,7 +174,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 561-611)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-C-CROSSREPO-CLIENTS-API.md` (lines 561-611)
 
 **Detail**:
 
@@ -185,7 +185,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: rejected  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 359-369)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 359-369)
 
 **Detail**:
 
@@ -200,7 +200,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: rejected  **Priority**: P2  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 68-68)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 68-68)
 
 **Notes**:
 
@@ -211,7 +211,7 @@ Settled position C-31 from R3-03 table; cross-round consensus consolidation
 **Status**: rejected  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 234-257)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 234-257)
 
 **Detail**:
 

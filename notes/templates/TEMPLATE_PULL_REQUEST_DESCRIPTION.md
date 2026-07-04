@@ -34,14 +34,14 @@
 
 <!--
   List JR-* IDs touched by this PR. Verb conventions
-  (see notes/REQUIREMENTS_NEXT_STEPS.md §4):
+  (see notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md §4):
 
     Closes JR-*           — fully satisfies the requirement (→ shipped at next refresh).
     Partially closes JR-* — satisfies some parts; specify which.
     References JR-*       — informed by but does not change status.
     Supersedes JR-*       — design replaces the entry (→ old entry superseded at refresh).
 
-  Look up IDs via notes/REQUIREMENTS_INDEX.md or notes/requirements/by-area/<CODE>.md.
+  Look up IDs via notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md or notes/requirements/by-area/<CODE>.md.
   Delete this section if no tracked requirement applies.
 -->
 

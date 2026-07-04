@@ -87,7 +87,7 @@ current version is shown by the badge above; see [`CHANGELOG.md`](./CHANGELOG.md
 
 Part of the [Juniper](https://github.com/pcalnon) ML research platform. Rationale and history:
 
-- [`register_or_reuse` helper design + migration history](../notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md)
+- [`register_or_reuse` helper design + migration history](../notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md)
 - [METRICS-MON R2.1 shared-observability design](../notes/legacy/METRICS_MONITORING_R2.1_SHARED_OBSERVABILITY_DESIGN_2026-04-28.md) (archived)
 
 ## License

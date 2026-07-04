@@ -1,7 +1,7 @@
 """Tests for ``juniper_observability.prometheus_helpers``.
 
 The seven test groups in §6 of
-``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+``notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md``
 plus a few extras for ``register_info_or_update`` and the
 :func:`lazy_register_or_reuse` cache.
 """

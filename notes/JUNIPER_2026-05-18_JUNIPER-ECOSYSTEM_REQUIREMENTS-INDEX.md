@@ -1,9 +1,9 @@
 # Juniper Requirements — Index
 
 **Snapshot date**: 2026-05-12
-**Plan doc**: `REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`
+**Plan doc**: `JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md`
 **Schema reference**: `requirements/README.md`
-**Forward plan**: `REQUIREMENTS_NEXT_STEPS.md` — querying recipes (§3), PR JR-ID convention (§4), refresh/drift tooling (§7–§8)
+**Forward plan**: `JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` — querying recipes (§3), PR JR-ID convention (§4), refresh/drift tooling (§7–§8)
 
 ---
 

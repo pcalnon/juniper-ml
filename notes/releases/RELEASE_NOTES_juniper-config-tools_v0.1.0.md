@@ -1,7 +1,7 @@
 # juniper-config-tools v0.1.0 — Release Notes (archived)
 
 > Archived verbatim from the GitHub Release [`juniper-config-tools-v0.1.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-config-tools-v0.1.0) (pcalnon/juniper-ml), backfilled 2026-06-18
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 
 ---
 
@@ -28,6 +28,6 @@ Reads `new_name` from the environment; falls back to `legacy_name` with one `Dep
 ## Shipped via
 
 - Wave 0 scaffold: #320 (merged 2026-05-22)
-- Migration plan: [`notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md`](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md) (#318)
+- Migration plan: [`notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md`](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md) (#318)
 
 Next: Wave 2 — juniper-cascor-worker CFG-06 implementation consumes `juniper-config-tools>=0.1.0,<0.2.0`.

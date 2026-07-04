@@ -1,7 +1,7 @@
 # juniper-model-core v0.2.0 — cross-validation / fold-executor layer — Release Notes (archived)
 
 > Archived verbatim from the GitHub Release [`juniper-model-core-v0.2.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-model-core-v0.2.0) (pcalnon/juniper-ml), backfilled 2026-06-18
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 
 ---
 
@@ -140,9 +140,9 @@ requires the `[crossval]` extra (numpy). Existing consumers pinned `>=0.1.0,<0.2
 
 ## Design & Provenance
 
-- Build roadmap (decisions D1–D5, ratified 2026-06-17): `notes/JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md`
-- Ratified layer design: `notes/JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`
-- Contract spec (D1–D10): `notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`
+- Build roadmap (decisions D1–D5, ratified 2026-06-17): `notes/JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md`
+- Ratified layer design: `notes/JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`
+- Contract spec (D1–D10): `notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`
 - Pull request: #442 · Full changelog: `juniper-model-core/CHANGELOG.md` (`[0.2.0]`)
 
 ---

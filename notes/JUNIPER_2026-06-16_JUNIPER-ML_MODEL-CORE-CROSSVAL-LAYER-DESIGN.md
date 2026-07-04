@@ -190,7 +190,7 @@ Parallel / distributed fold execution (OQ-11 / WS-8 worker) · canopy *direct* f
 
 ## 9. Cross-references
 
-- WS-4b deferral of the fold executor: [`JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md).
-- Model contract (D3 `**kw`, the lean-ABC philosophy, conformance kit): [`JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`](JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md).
-- Workstream/refactor context (WS-2/3/8, OQ-11): [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md).
+- WS-4b deferral of the fold executor: [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md).
+- Model contract (D3 `**kw`, the lean-ABC philosophy, conformance kit): [`JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md).
+- Workstream/refactor context (WS-2/3/8, OQ-11): [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md).
 - Implementation targets: `juniper-model-core/juniper_model_core/{interfaces,validation,conformance}.py`; the split semantics to mirror: `juniper-data/juniper_data/core/split.py`.

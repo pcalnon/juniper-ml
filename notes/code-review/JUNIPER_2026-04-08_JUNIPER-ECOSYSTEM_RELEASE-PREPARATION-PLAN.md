@@ -2,7 +2,7 @@
 
 **Date**: 2026-04-08
 **Scope**: juniper-ml, juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker, juniper-deploy
-**Prerequisite**: Cross-Project Code Review (CROSS_PROJECT_CODE_REVIEW_2026-04-08.md)
+**Prerequisite**: Cross-Project Code Review (JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md)
 **Purpose**: Phased plan to resolve all release blockers and prepare each application for deployment
 
 ---

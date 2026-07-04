@@ -106,7 +106,7 @@ These items improve completeness and accuracy of existing sections.
 ### Task 3.4: Add Secrets Management section
 
 - **File**: `AGENTS.md`
-- **Change**: Document SOPS encryption workflow, encrypted files, and reference to `notes/SOPS_USAGE_GUIDE.md`
+- **Change**: Document SOPS encryption workflow, encrypted files, and reference to `notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`
 - **Status**: Pending
 
 ### Task 3.5: Document `notes/` subdirectory structure
@@ -193,7 +193,7 @@ These items add useful context but are not critical for correct operation.
 
 ### Task 6.4: Post-merge worktree cleanup
 
-- Follow `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`
+- Follow `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`
 - **Status**: Pending (post-merge)
 
 ---

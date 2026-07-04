@@ -25,8 +25,8 @@ Stage 2. The Stage-0 feasibility spike is **approved (PROCEED)**: the boot → H
 teardown mechanism is proven first-party, so this stage builds the committed runtime surface. Deliver it
 as **one PR off `main`** carrying four coupled changes (Skill + structural lint test + `ci.yml` line +
 AGENTS.md inventory), gated structurally in CI with a documented **manual** smoke-verify the owner runs.
-Spec: `notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` §6.9 (lines 491–526; PR-9 at
-628–630). Spike record: `notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md`.
+Spec: `notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` §6.9 (lines 491–526; PR-9 at
+628–630). Spike record: `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md`.
 
 ---
 
@@ -40,7 +40,7 @@ Spec: `notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` §6.
   `f2ce007 docs(agent-suite): E-1 Stage-0 feasibility spike — PROCEED verdict (#586)`). The spike booted a
   minimal FastAPI stand-in under `JuniperCanopy1`'s uvicorn, got `curl /v1/health` → 200, drove the live
   DOM via the Playwright MCP, and tore down clean with no orphan. Full record:
-  `notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md`. **The kill-criterion did not fire.**
+  `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md`. **The kill-criterion did not fire.**
 - This handoff document was authored on branch `feature/e1-stage1-handoff`; it is the only artifact of the
   authoring step. Your implementation work starts fresh off `main`.
 
@@ -231,7 +231,7 @@ decision in a `notes/` follow-up; do not silently abandon.
 - **One PR off `main`, never auto-merged.** Open the PR and hand off to the owner — Paul approves merges
   and any deployment gate. Do not merge to main yourself.
 - **Worktree isolation** (mandatory): create a worktree under
-  `/home/pcalnon/Development/python/Juniper/worktrees/` per `notes/WORKTREE_SETUP_PROCEDURE.md`. Never
+  `/home/pcalnon/Development/python/Juniper/worktrees/` per `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`. Never
   create a worktree inside the repo.
 - **Each stage is its own PR** (rollback = delete the Skill + test + `ci.yml` line; plan §6.9 line 524).
 
@@ -314,13 +314,13 @@ tool calls; do not background with a bare `&` from a foreground step.
 
 ## Reference docs (by path — open them, do not work from memory)
 
-- Spec: `notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` — §6.9 (E-1 detail, lines
+- Spec: `notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` — §6.9 (E-1 detail, lines
   491–526), PR-9 roadmap entry (628–630), Plan-B (506–509).
-- Spike record: `notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md` — verdict §4, teardown
+- Spike record: `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md` — verdict §4, teardown
   gotchas §3 (98–108), carry-forward §5 (117–131), scope caveats §6 (132–145).
 - Model Skill: `.claude/skills/template-agent/SKILL.md`.
 - Model gate: `tests/test_template_agent_skill_lint.py`.
-- Worktree setup: `notes/WORKTREE_SETUP_PROCEDURE.md`. Cleanup: `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`.
+- Worktree setup: `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`. Cleanup: `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.
 
 ---
 
@@ -353,11 +353,11 @@ tool calls; do not background with a bare `&` from a foreground step.
 - `AGENTS.md:240` — Repository-Structure tree leaf for `test_template_agent_skill_lint.py`
 - `AGENTS.md:334` — `### Tests` section header
 - `AGENTS.md:361` — Tests-prose entry for `test_template_agent_skill_lint.py` (prose-entry model)
-- `notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md:491–526` — §6.9 E-1 detail
-- `notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md:628–630` — PR-9 roadmap entry
-- `notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md:98–108` — the two teardown gotchas
-- `notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md:117–131` — Stage-1 carry-forward + acceptance
-- `notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md:132–145` — real-canopy scope caveat
+- `notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md:491–526` — §6.9 E-1 detail
+- `notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md:628–630` — PR-9 roadmap entry
+- `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md:98–108` — the two teardown gotchas
+- `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md:117–131` — Stage-1 carry-forward + acceptance
+- `notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md:132–145` — real-canopy scope caveat
 
 **juniper-canopy @ `79292bdc`:**
 

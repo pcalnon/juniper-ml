@@ -12,9 +12,9 @@
 > dashboard. Builds on **A1-i** (`RecurrenceServiceAdapter`, canopy #383/#384) and **A1-ii**
 > (`RecurrenceBackend` + `create_backend(nn_model=…)` routing, canopy #385). Design-of-record
 > for the execution-paradigm bridge:
-> [`JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md`](JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md)
+> [`JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`](JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md)
 > (decisions **D1-A / D5 / D6**) and the selection UI
-> [`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md).
+> [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md).
 > Grounded by a three-track read of `main.py`, the frontend panels, and the training-trigger
 > flow (2026-06-23); key `file:line` anchors throughout.
 
@@ -190,6 +190,6 @@ makes it user-reachable. (The global `backend` is a process singleton set once i
   generator/split/load); `model_registry.py` (`ModelSpec`, `get_model_spec`, `RECURRENCE_PROVIDER`);
   `backend/recurrence_backend.py:94-95, 125-151` (`start_training` keys).
 
-**Cross-links**: [`JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md`](JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md)
-(D1-A/D5/D6); [`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md)
+**Cross-links**: [`JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`](JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md)
+(D1-A/D5/D6); [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
 (A0/A1 UI). canopy #368 (model-selection tracker); #383/#384/#385 (A1-i/A1-ii).

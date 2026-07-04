@@ -12,7 +12,7 @@
 ## 1. Purpose & authorization
 
 This is the **security / vulnerability** companion to
-[`JUNIPER_STACK_INTERACTIVE_UX_AUDIT_PLAN_2026-07-02.md`](JUNIPER_STACK_INTERACTIVE_UX_AUDIT_PLAN_2026-07-02.md).
+[`JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-INTERACTIVE-UX-AUDIT-PLAN.md`](JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-INTERACTIVE-UX-AUDIT-PLAN.md).
 The interactive-UX plan covers dimensions D1–D4 (functionality/UX/docs/output/correctness); this plan is **dimension D5 —
 vulnerabilities in architecture and implementation**. It is an **authorized defensive audit of the platform owner's own stack**
 (owner: Paul Calnon / `@pcalnon`, sole CODEOWNER), scoped to the **containerized** deployment (`juniper-deploy` compose), for the
@@ -230,7 +230,7 @@ server-side value bounds; parameterized queries.
   installs unpinned from PyPI); deploy has no CodeQL. Dependabot covers `pip` + `github-actions` but **not the `docker` ecosystem**
   → base images are not auto-updated. Verify/normalize the pip-audit flags; add a recurrence lockfile + CodeQL; add docker to
   Dependabot. (Validation corrected the original "ignore-list only in cascor" + "recurrence has no pip-audit/bandit" over-claims.
-  Cross-refs: `CI_VALIDATION_FINDINGS_2026-04-29.md`, `JR-DAT-OBS-001` "scanners must hard-fail, not `|| true`".)
+  Cross-refs: `JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md`, `JR-DAT-OBS-001` "scanners must hard-fail, not `|| true`".)
 
 ### 4.7 NAT — Docker-NAT defeats IP-keyed controls
 
@@ -252,8 +252,8 @@ server-side value bounds; parameterized queries.
 - **SEC-F21 (carry-forward, Low) — event-loop-freeze deny-list never written; no branch-protection required-checks.** The
   async-route audit shipped and enforces a CI lane, but the project-internal blocking-primitive deny-list (`util/check_async_
   routes.py`) was never written, and **no repo has `required_status_checks` configured** (juniper-data-client has no branch
-  protection at all). Verify enforcement is actually required, not just present. (`FOLLOWUP_ASYNC_ROUTE_AUDIT.md`,
-  `STATUS_FOLLOWUP_ASYNC_ROUTE_AUDIT_2026-05-19.md`.)
+  protection at all). Verify enforcement is actually required, not just present. (`JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md`,
+  `JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_STATUS-FOLLOWUP-ASYNC-ROUTE-AUDIT.md`.)
 
 ## 5. Grounded candidate findings — severity summary
 
@@ -321,7 +321,7 @@ control-surface credential) → SEC-F19 (trusted-proxy client identity) → SEC-
 
 Build on, do not re-derive: the ecosystem baseline `juniper-ml/notes/legacy/SECURITY_AUDIT_PLAN.md` (24 findings; **diff the new
 results against its CRITICAL "WS bypasses auth middleware", HIGH CORS-wildcard/headers/rate-limit, MED pickle-deserialization**);
-the SOPS audit + remediation (deferred Phases 4–5); `JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`; the RC-3 secret-mount
+the SOPS audit + remediation (deferred Phases 4–5); `JUNIPER_2026-05-09_JUNIPER-DEPLOY_GO-PUBLIC-ANALYSIS.md`; the RC-3 secret-mount
 symmetry work (static guards shipped, runtime byte-symmetry test deferred); the cascor secret-indirection investigation (fixed;
 class-level import-guard deferred); the canopy 401 auth — **RESOLVED via #414/#415, verified live 2026-07-01** (see UX plan F-B),
 so *not* an open item; the async-route audit follow-ups. SEC requirements area = 246 reqs / 58 P0 (`requirements/by-area/SEC.md`);
@@ -386,7 +386,7 @@ container inspect, config parity), the hardening recommendations, and the report
 - **Container/deps:** each repo `Dockerfile` + `pyproject.toml`; `.github/workflows/{ci.yml,security-scan.yml}`;
   `dependabot.yml`; `.env.observability`.
 - **Prior docs / requirements:** `legacy/SECURITY_AUDIT_PLAN.md`, `SOPS_AUDIT_AND_REMEDIATION_PLAN.md`,
-  `JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`, `FOLLOWUP_ASYNC_ROUTE_AUDIT.md`, `requirements/by-area/{SEC,OBS}.md`.
+  `JUNIPER_2026-05-09_JUNIPER-DEPLOY_GO-PUBLIC-ANALYSIS.md`, `JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md`, `requirements/by-area/{SEC,OBS}.md`.
 
 > All `file:line` and every grounded finding here are source-cited and re-verified in SP1 (§9) before the report is authored.
 > Live-exercised confirmations are deferred to Opus (§8). Nothing in this plan is a weaponized exploit; it is a defensive

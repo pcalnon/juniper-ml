@@ -9,7 +9,7 @@
 
 juniper-cascor-worker is the only distributed Juniper component with zero deployment infrastructure — no Dockerfile, no systemd unit, no Docker Compose entry. Phase 1 (P0 startup/shutdown fixes) and Phase 2 (systemd units for data/cascor/canopy) are complete. Phase 3 fills this gap so the worker can be deployed via Docker Compose or systemd, matching the patterns established in the other services.
 
-Design specs: `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` sections 6.2, 9.8, 9.9, 10.
+Design specs: `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` sections 6.2, 9.8, 9.9, 10.
 
 ---
 
@@ -177,7 +177,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
 - `scripts/juniper-all-ctl` (modified — add worker to services)
 - `util/juniper_plant_all.bash` (modified — add worker startup)
 - `util/juniper_chop_all.bash` (modified — add worker shutdown)
-- `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (modified — mark Phase 3 steps complete)
+- `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (modified — mark Phase 3 steps complete)
 
 ---
 

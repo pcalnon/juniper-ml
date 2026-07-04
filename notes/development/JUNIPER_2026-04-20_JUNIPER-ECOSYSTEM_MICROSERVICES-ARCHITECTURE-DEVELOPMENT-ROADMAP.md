@@ -4,7 +4,7 @@
 **Created**: 2026-02-25
 **Author**: Paul Calnon / Claude Code
 **Status**: Planning — Implementation Roadmap (No Code Changes)
-**Reference**: [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md) — Sections 2.4, 3.5, 4.3, 5
+**Reference**: [JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md](./JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md) — Sections 2.4, 3.5, 4.3, 5
 
 ---
 
@@ -136,7 +136,7 @@
 
 ## Overview
 
-This document provides detailed implementation plans for each of the recommendations selected in [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md).
+This document provides detailed implementation plans for each of the recommendations selected in [JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md](./JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md).
 
 **Coordinated Application Startup** (Section 2.4):
 
@@ -2296,7 +2296,7 @@ spec:
 
 ## Modes of Operation — Overview
 
-This section provides detailed implementation plans for the three-phase modes-of-operation strategy selected in [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md), Section 3.5:
+This section provides detailed implementation plans for the three-phase modes-of-operation strategy selected in [JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md](./JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md), Section 3.5:
 
 ```bash
 Phase 5 (Immediate):    Refactor DemoMode and CascorServiceAdapter behind a BackendProtocol
@@ -3750,7 +3750,7 @@ docker compose --profile full down
 
 ## Service Discovery and Health Checking — Overview
 
-This section provides the implementation plan for the health check enhancements recommended in [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md), Section 4.3.
+This section provides the implementation plan for the health check enhancements recommended in [JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md](./JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md), Section 4.3.
 
 **Service discovery** continues with the current direct URL approach (`JUNIPER_DATA_URL`, `CASCOR_SERVICE_URL` environment variables). Docker Compose DNS and Kubernetes DNS handle resolution automatically in containerized environments. No service registry infrastructure is needed at this scale (Section 4.2).
 
@@ -4217,7 +4217,7 @@ make down
 
 ## Configuration Management — Overview
 
-This section provides the implementation plan for configuration standardization recommended in [MICROSERVICES_ARCHITECTURE_ANALYSIS.md](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md), Section 5.
+This section provides the implementation plan for configuration standardization recommended in [JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md](./JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md), Section 5.
 
 ```bash
 Phase 9 (Near-term):  Migrate JuniperCanopy to Pydantic BaseSettings and standardize
@@ -4688,7 +4688,7 @@ All phases depend on consistent health endpoints. The current implementation is 
 | `GET /v1/health/live`  | Liveness — is the process running?           | Kubernetes livenessProbe, systemd watchdog             |
 | `GET /v1/health/ready` | Readiness — can the service handle requests? | Kubernetes readinessProbe, Phase 3 Prometheus scraping |
 
-**Enhancement planned**: [Phase 8](#phase-8-enhanced-health-checks-with-dependency-status-immediate) adds dependency health status to `/v1/health/ready` responses with standardized `ReadinessResponse` Pydantic models (see [MICROSERVICES_ARCHITECTURE_ANALYSIS.md, Section 4.3](./MICROSERVICES_ARCHITECTURE_ANALYSIS.md#43-health-check-pattern-recommendation)).
+**Enhancement planned**: [Phase 8](#phase-8-enhanced-health-checks-with-dependency-status-immediate) adds dependency health status to `/v1/health/ready` responses with standardized `ReadinessResponse` Pydantic models (see [JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md, Section 4.3](./JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md#43-health-check-pattern-recommendation)).
 
 ### Logging and Log Aggregation
 

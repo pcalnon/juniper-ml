@@ -13,9 +13,9 @@
 > already-scaffolded `VariableStepLMUMemory` cell into a `juniper_model_core.TrainableModel`
 > implementation — a standalone, fixed-order, Δt-native LMU **regressor**. It is the
 > implementation-side complement to the canonical
-> [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md)
+> [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md)
 > (Parts 3/4/6) and the
-> [`…CASCOR_3D_INGESTION_GATE_2026-06-14.md`](JUNIPER_RECURSE_OQ4_CASCOR_3D_INGESTION_GATE_2026-06-14.md)
+> [`…CASCOR_3D_INGESTION_GATE_2026-06-14.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_RECURSE-OQ4-CASCOR-3D-INGESTION-GATE.md)
 > Part-9c decision (Path B, plan-first). It **does not restate** their theory; it pins file
 > layout, the contract mapping against the *as-shipped* `juniper-model-core` (#416), the
 > numeric design, the test/conformance matrix, and PR sequencing.
@@ -216,8 +216,8 @@ PyPI before the recurrence wheel pins it, §6.8).
 
 ## 12. Cross-references
 
-- Canonical model design: [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md) (Parts 3/4/6; §9.1 current work; OQ-19/20 ratified).
-- Build-side gate (Path A vs B): [`JUNIPER_RECURSE_OQ4_CASCOR_3D_INGESTION_GATE_2026-06-14.md`](JUNIPER_RECURSE_OQ4_CASCOR_3D_INGESTION_GATE_2026-06-14.md).
-- Δt math + reference code + the (now-DONE) fixed-Δt negative control: [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md); POC `util/ad-hoc/verify_delta_t_reference_code.py`.
-- Placement & naming: [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md).
+- Canonical model design: [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md) (Parts 3/4/6; §9.1 current work; OQ-19/20 ratified).
+- Build-side gate (Path A vs B): [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_RECURSE-OQ4-CASCOR-3D-INGESTION-GATE.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_RECURSE-OQ4-CASCOR-3D-INGESTION-GATE.md).
+- Δt math + reference code + the (now-DONE) fixed-Δt negative control: [`JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md); POC `util/ad-hoc/verify_delta_t_reference_code.py`.
+- Placement & naming: [`JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md`](JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md).
 - Contract being implemented: `juniper-model-core/juniper_model_core/{interfaces,topology,events,validation,serialization,conformance}.py` (#416).

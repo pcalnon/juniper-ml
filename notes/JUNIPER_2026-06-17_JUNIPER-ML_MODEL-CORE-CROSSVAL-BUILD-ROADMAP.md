@@ -11,9 +11,9 @@
 
 > **What this is.** A source-validated evaluation of where the cross-validation / fold-executor
 > layer actually stands, followed by a prioritized design / development / testing roadmap. It
-> consumes the ratified design ([`JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`](JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md)),
-> the contract spec ([`JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`](JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md)),
-> and the WS-4b deferral ([`JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md)),
+> consumes the ratified design ([`JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`](JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md)),
+> the contract spec ([`JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md)),
+> and the WS-4b deferral ([`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md)),
 > then checks every load-bearing claim against the **as-built** source in
 > `juniper-model-core/`, `juniper-data/`, and `juniper-recurrence/`. Headline result: the
 > crossval layer is **design-only (0% implemented)**, the design is **substantially accurate**,
@@ -376,12 +376,12 @@ is unblocked.**
 
 ## 11. Cross-references
 
-- Ratified layer design (the spec this roadmap operationalizes): [`JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`](JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md).
-- Model contract + conformance kit (the `TrainableModel` surface, D1-D10): [`JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`](JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md).
-- WS-4b app build (where the executor is the deferred dependency): [`JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md).
-- WS-4 model build (the `LMURegressor` 2nd implementer): [`JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md).
-- Workstream / refactor context (WS-2/3/8, OQ-11): [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md).
-- Placement convention (`-core` = juniper-ml subdir): [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md).
+- Ratified layer design (the spec this roadmap operationalizes): [`JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`](JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md).
+- Model contract + conformance kit (the `TrainableModel` surface, D1-D10): [`JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md).
+- WS-4b app build (where the executor is the deferred dependency): [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md).
+- WS-4 model build (the `LMURegressor` 2nd implementer): [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md).
+- Workstream / refactor context (WS-2/3/8, OQ-11): [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md).
+- Placement convention (`-core` = juniper-ml subdir): [`JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md`](JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md).
 - Implementation targets: `juniper-model-core/juniper_model_core/{interfaces,validation,conformance/reference}.py`; split semantics to mirror: `juniper-data/juniper_data/core/split.py`.
 
 ---

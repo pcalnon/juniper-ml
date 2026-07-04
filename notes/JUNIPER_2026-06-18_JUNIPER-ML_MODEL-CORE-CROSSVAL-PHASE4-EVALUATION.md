@@ -10,7 +10,7 @@
 ---
 
 > **What this is.** The "task A" evaluation of the cross-validation **Phase 4+ deferred items**
-> ([`JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md`](JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md)
+> ([`JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md)
 > §6 Phase 4+, §8) — which to do, in what order, and which to keep parked. Per Paul's instruction it is
 > **gated on an audit** of each deferred item's *designed/expected* state against *current project
 > reality* (so the evaluation reflects reality, not stale design assumptions). Headline: of the five
@@ -22,7 +22,7 @@
 
 ## 1. The deferred set (designed/expected baseline)
 
-From the ratified crossval design ([`…CROSSVAL_LAYER_DESIGN_2026-06-16.md`](JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md) §8)
+From the ratified crossval design ([`…CROSSVAL_LAYER_DESIGN_2026-06-16.md`](JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md) §8)
 and build roadmap (§6 Phase 4+ / §8): parallel/distributed fold execution (WS-8 / OQ-11) ·
 classification held-out metrics · multi-ticker embargo-aware walk-forward (via `ticker_code`) ·
 server-side fold materialization in juniper-data (#168 scope C) · a `score()` method on the
@@ -128,9 +128,9 @@ call) following the same publish-first + release-convention path as 0.2.0.
 
 ## 5. Cross-references
 
-- Crossval layer design (deferred list, D-CV-1…5): [`JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`](JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md).
-- Build roadmap (Phase 4+, OPT-D/F, §8 deferreds): [`JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md`](JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md).
-- Contract (D3 `**kw`, D9 `evaluate()` deferral): [`JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`](JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md).
+- Crossval layer design (deferred list, D-CV-1…5): [`JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`](JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md).
+- Build roadmap (Phase 4+, OPT-D/F, §8 deferreds): [`JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md).
+- Contract (D3 `**kw`, D9 `evaluate()` deferral): [`JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md).
 - Implementation targets: `juniper-model-core/juniper_model_core/crossval/{splits,executor}.py`; data: `juniper-data/juniper_data/generators/equities_seq/`.
 
 ---

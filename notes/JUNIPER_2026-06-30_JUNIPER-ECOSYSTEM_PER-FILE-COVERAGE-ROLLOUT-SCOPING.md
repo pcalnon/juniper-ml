@@ -12,7 +12,7 @@
 
 ## 0. What this is + ratified decisions
 
-Operationalizes **Phase C** of [`JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md`](JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md) (§6 contract, §7 measurement design, §11 Phase C order) into a measured, sequenced, one-PR-per-unit backlog. **Scoping only — no gate is added by this document.**
+Operationalizes **Phase C** of [`JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md`](JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md) (§6 contract, §7 measurement design, §11 Phase C order) into a measured, sequenced, one-PR-per-unit backlog. **Scoping only — no gate is added by this document.**
 
 **Owner-pinned targets (carried, not softened):** every source file ≥ **90%** line coverage; every packaged sub-module ≥ **95%** average.
 

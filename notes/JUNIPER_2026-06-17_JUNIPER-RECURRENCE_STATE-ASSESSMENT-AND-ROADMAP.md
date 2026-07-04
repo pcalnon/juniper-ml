@@ -162,7 +162,7 @@ during the audit; all merge-state conclusions are stated against `origin/*`, not
 
 ### 3.2 Work-stream tracker (doc-claimed vs. actual)
 
-The canonical WS tracker lives in `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md:44-55`. Its status
+The canonical WS tracker lives in `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md:44-55`. Its status
 column predates the last three weeks of execution and is **stale**; the "Actual" column below is the validated reality.
 
 | WS | Scope | Doc status | **Actual status (validated)** |
@@ -211,7 +211,7 @@ of scope — canopy (WS-5 / H2) will need *an* HTTP path to the app (a client li
 
 ### 3.5 The integration surface
 
-- **model-core 0.2.0 crossval/fold-executor**: ratified design (`JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`),
+- **model-core 0.2.0 crossval/fold-executor**: ratified design (`JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`),
   **no code** (exhaustive grep: zero hits for `fold|crossval|cv|executor`). Proposed `juniper_model_core.crossval`
   submodule behind a `[crossval]` extra: `metrics.py` (`score`), `splits.py` (`walk_forward_folds`), `executor.py`
   (`cross_validate(model_factory, …)`). Factory-based, serial v1, no juniper-data change.
@@ -480,13 +480,13 @@ high-leverage.
 
 **Design / plan docs (read in full by the investigation agents):**
 
-- `notes/JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md` — master model design + plan
-- `notes/JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md` — detailed P3-C/LMU design
-- `notes/JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md` — model build plan
-- `notes/JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md` — app build plan
-- `notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md` — model-core interfaces
-- `notes/JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md` — crossval/fold-executor (0.2.0)
-- `notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` — **canonical WS tracker** (`:44-55`)
+- `notes/JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md` — master model design + plan
+- `notes/JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md` — detailed P3-C/LMU design
+- `notes/JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md` — model build plan
+- `notes/JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md` — app build plan
+- `notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md` — model-core interfaces
+- `notes/JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md` — crossval/fold-executor (0.2.0)
+- `notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` — **canonical WS tracker** (`:44-55`)
 - `notes/JUNIPER_RECURSE_OQ4_*` — architecture re-evaluation, dataset audit, 3-D ingestion gate (decision: P3-C/LMU)
 
 **Source trees audited:**
@@ -519,7 +519,7 @@ analysis; `pytest -q` for the model suite (53 passed).
 
 ## Appendix — Package naming map (consolidated from the companion roadmap)
 
-> Folded in from the companion analysis `JUNIPER_RECURRENCE_STATE_AND_ROADMAP_2026-06-17.md` (an
+> Folded in from the companion analysis `JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-AND-ROADMAP.md` (an
 > independent, parallel state-evaluation produced the same session), which has been **consolidated
 > into this canonical roadmap**. Its other unique material — the detailed design/dev options (this
 > doc's §7 is canonical), the verified status-claim diff ledger (covered by §3), and the git/PyPI

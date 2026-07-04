@@ -10,7 +10,7 @@
 
 ## 1. Goal
 
-Search every notes document across all 8 active Juniper repositories, extract every explicit and (under an aggressive threshold) implicit project / application-level requirement, and consolidate them into a single navigable set of markdown files in `juniper-ml/notes/requirements/` with a top-level index at `juniper-ml/notes/REQUIREMENTS_INDEX.md`.
+Search every notes document across all 8 active Juniper repositories, extract every explicit and (under an aggressive threshold) implicit project / application-level requirement, and consolidate them into a single navigable set of markdown files in `juniper-ml/notes/requirements/` with a top-level index at `juniper-ml/notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`.
 
 The output is a **historically-accurate snapshot** of the full requirements picture as of the execution date. Already-shipped requirements are included with `status: shipped`. Each requirement entry must trace back to at least one cited source-document path with line range; hallucinated requirements are the primary risk and the schema enforces traceability.
 
@@ -63,7 +63,7 @@ The plan was reviewed and these five questions were resolved 2026-05-11. Re-open
 **Answer (locked 2026-05-11)**: **Multi-file.** Output structure:
 
 ```bash
-notes/REQUIREMENTS_INDEX.md             ← navigation entrypoint
+notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md             ← navigation entrypoint
 notes/requirements/
 ├── README.md                           ← schema + ID convention reference
 ├── by-area/
@@ -131,7 +131,7 @@ For Phase 3 extraction agents, the following are all treated as candidate requir
 | SLO / SLI definitions                                                     | "Availability SLI: 99.5%"                                                  | requirement | `shipped` if catalogued                  |
 | Naming/format conventions stated as expectations                          | "All Helm charts: version and appVersion must match"                       | requirement | `shipped` if practiced                   |
 | Architectural constraints                                                 | "Worker must not import pydantic at runtime"                               | requirement | `shipped` if test exists                 |
-| Trigger conditions in deferred-design docs                                | The Option C triggers in CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md | requirement | `deferred`                               |
+| Trigger conditions in deferred-design docs                                | The Option C triggers in JUNIPER_2026-05-10_JUNIPER-CANOPY_DASHBOARD-SELF-CALL-REFACTOR.md | requirement | `deferred`                               |
 | Compatibility / pin floors stated as deliberate                           | "juniper-observability >= 0.2.0 floor for register_or_reuse"               | requirement | `shipped`                                |
 
 **Not** treated as requirements:
@@ -159,7 +159,7 @@ Every requirement entry in `by-area/*.md` MUST include the following fields. The
 buffer as Prometheus gauges so operators can detect resume-storm pressure.
 
 **Sources**:
-- juniper-ml/notes/observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md §3.2 (lines 84-118)
+- juniper-ml/notes/observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md §3.2 (lines 84-118)
 - juniper-cascor/notes/METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md §4.1.4 (lines 312-340)
 
 **Detail**: Two `Gauge` collectors named `cascor_ws_replay_buffer_occupancy`
@@ -280,7 +280,7 @@ IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, an
 | 3     | Per-repo extraction, parallel                                                             | 1-3 h wall, 8 Explore agents in parallel | ☐ not started |
 | 4     | Consolidation, dedup, ID assignment, area-grouping                                        | 30-60 min, sequential                    | ☐ not started |
 | 5     | QA pass: random N=20 verification + coverage spot-check                                   | 30 min, 1 Explore agent + supervisor     | ☐ not started |
-| 6     | Ship: commit `notes/REQUIREMENTS_INDEX.md` + `notes/requirements/*.md` to juniper-ml main | 10 min                                   | ☐ not started |
+| 6     | Ship: commit `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md` + `notes/requirements/*.md` to juniper-ml main | 10 min                                   | ☐ not started |
 
 **Pilot recommendation (still in force)**: run all phases against `juniper-ml/notes/` only first (~1 hour total), recalibrate the aggressive-threshold and schema based on what surfaces, then fan out Phase 3 to the other 7 repos. The pilot output is **disposable** — Phase 3 will re-extract `juniper-ml` from scratch in the full-fan-out run.
 
@@ -317,7 +317,7 @@ IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, an
   - `notes/requirements/by-area/*.md` (canonical entries)
   - `notes/requirements/by-repo/*.md` (thin indexes linking to by-area)
   - `notes/requirements/by-status/*.md` (thin indexes linking to by-area)
-  - `notes/REQUIREMENTS_INDEX.md` (navigation entrypoint with stats)
+  - `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md` (navigation entrypoint with stats)
 - Validate: every `Source` path resolves on disk; every PR reference resolves on GitHub.
 
 #### Phase 5 — QA
@@ -374,11 +374,11 @@ IDs are assigned in Phase 4 (after dedup), recorded in `id_assignments.yaml`, an
 
 Per Q3 (snapshot first) and Q4 (notes/ only for v1), the following are explicitly deferred. Each entry includes the conditions under which it should be promoted to active work.
 
-> **2026-05-16 status update (post-v4 ship)**: The forward-looking work captured in this section has now been refined and expanded with v1-v4 empirical experience. The actionable, current version of the forward plan lives in [`REQUIREMENTS_NEXT_STEPS.md`](REQUIREMENTS_NEXT_STEPS.md). The subsections below are retained for historical context (they capture v1-era thinking that informed but does not replace the new doc).
+> **2026-05-16 status update (post-v4 ship)**: The forward-looking work captured in this section has now been refined and expanded with v1-v4 empirical experience. The actionable, current version of the forward plan lives in [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md`](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md). The subsections below are retained for historical context (they capture v1-era thinking that informed but does not replace the new doc).
 
 ### 10.1 Living-document refresh
 
-**v4 status**: Decomposed into 4 separate initiatives in `REQUIREMENTS_NEXT_STEPS.md`: [§4 PR refs](REQUIREMENTS_NEXT_STEPS.md#4-jr-id-references-in-prs), [§5 author-side tagging](REQUIREMENTS_NEXT_STEPS.md#5-author-side-jr-id-tagging-in-notes), [§7 drift detection](REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection), [§8 refresh procedure](REQUIREMENTS_NEXT_STEPS.md#8-periodic-refresh-procedure). All retained as opt-in / wait-for-signal initiatives.
+**v4 status**: Decomposed into 4 separate initiatives in `JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md`: [§4 PR refs](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#4-jr-id-references-in-prs), [§5 author-side tagging](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#5-author-side-jr-id-tagging-in-notes), [§7 drift detection](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#7-stale--drift-detection), [§8 refresh procedure](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#8-periodic-refresh-procedure). All retained as opt-in / wait-for-signal initiatives.
 
 **What** (v1-era framing, retained for context): Convert this from a periodic snapshot into a continuously-maintained artifact that stays in sync with notes/ as new requirements are written or status changes.
 
@@ -408,7 +408,7 @@ The following sources contain real requirement-shaped content but are deferred f
 
 ### 10.4 Cross-repo dependency graph
 
-**v4 status**: **NOT BUILT.** No usage signal yet. The `notes:` field on entries captures cross-references in plain text where authors flagged siblings during extraction. A proper graph view (DOT/Mermaid) remains a "build when someone asks for it" item. Listed implicitly under [`REQUIREMENTS_NEXT_STEPS.md` §10 anti-patterns](REQUIREMENTS_NEXT_STEPS.md#10-anti-patterns--things-not-to-do-next) — don't build speculatively.
+**v4 status**: **NOT BUILT.** No usage signal yet. The `notes:` field on entries captures cross-references in plain text where authors flagged siblings during extraction. A proper graph view (DOT/Mermaid) remains a "build when someone asks for it" item. Listed implicitly under [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §10 anti-patterns](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#10-anti-patterns--things-not-to-do-next) — don't build speculatively.
 
 **Original framing (retained)**: Some requirements depend on others (e.g. canopy's "use juniper-observability register_or_reuse" depends on juniper-observability's "ship register_or_reuse helper"). v1 captures both as independent entries with a `Notes` cross-reference.
 
@@ -430,12 +430,12 @@ This section is the canonical record of where the effort stands. Update at each 
 | 3 — Extraction (pilot: juniper-ml) | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_juniper-ml_2026-05-11.yaml` (635 entries, disposable) | Pilot calibration: discovered Approach-A/B/C sub-bullet inflation (~30-40% of entries were sub-bullets of single decisions). Rule 4 (consolidate-per-decision-block) added to common brief before fan-out. Pilot extraction discarded. |
 | 3 — Extraction (full fan-out, 10 parallel agents) | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_{ml-A,ml-B,ml-C,cas,can,dat,dep,cwk,ccl,dcl}_2026-05-11.yaml` (1,078 entries) | juniper-ml split into 3 sub-slices (ml-A top-level + small dirs; ml-B interface_proposals + proposals; ml-C development + legacy + code-review + regressions). Many agents truncated processing under context-budget pressure — file coverage was 64/625 (10%). |
 | 3b — Gap-fill on uncited score≥50 files | ✅ done | 2026-05-12 | 2026-05-12 | `/tmp/req_extract_3b-{1,2,3,4}_2026-05-11.yaml` (238 entries) | Triggered by Phase-3 coverage gap: 37 files with density score ≥50 were not cited at all, including 14 of 15 interface_proposals/ R-round files. 4 small parallel agents processed 34 of 36 high-priority gap files; ~98% score-≥50 coverage afterward. |
-| 4 — Consolidation | ✅ done | 2026-05-12 | 2026-05-12 | `notes/requirements/**`, `notes/REQUIREMENTS_INDEX.md`, `notes/requirements/id_assignments.yaml` | 1,316 candidates → 1,033 dedupe-merged entries via (owner, category, normalized-brief) bucketing. 283 duplicates collapsed. 31 markdown files + 1 YAML written (15 by-area + 8 by-repo + 7 by-status + README + index). Run via `/tmp/phase4_consolidate.py`. |
+| 4 — Consolidation | ✅ done | 2026-05-12 | 2026-05-12 | `notes/requirements/**`, `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`, `notes/requirements/id_assignments.yaml` | 1,316 candidates → 1,033 dedupe-merged entries via (owner, category, normalized-brief) bucketing. 283 duplicates collapsed. 31 markdown files + 1 YAML written (15 by-area + 8 by-repo + 7 by-status + README + index). Run via `/tmp/phase4_consolidate.py`. |
 | 5 — QA | ✅ done | 2026-05-12 | 2026-05-12 | (findings appended below) | Path/line-range validity 20/20, content fidelity 5/5 spot-check, citation-precision 4/5 (one entry's line range pointed to threat-discussion section while the actual spec was elsewhere in the same file). v1 acceptable. |
 | 6 — Ship | ✅ done | 2026-05-12 | 2026-05-13 | PR #255, merge commit `5705aaff` | Merged to juniper-ml main 2026-05-13. 34 files, 45,085 insertions. See Phase-6 ship record below. |
 | **v2-1 — Citation validation diagnostic** | ✅ done | 2026-05-14 | 2026-05-14 | `/tmp/v2_citation_validate.py` + `/tmp/v2_apply_citation_fixes.py` | Diagnostic across all 1033 v1 entries: 98.3% EXACT, 0.3% NEAR, 1.0% DRIFT, 0% NO_MATCH. Spot-check 5-sample 20%-bad estimate was sampling noise; population precision was excellent. Fixed 8 entries (4 BAD_RANGE off-by-ones, 2 BAD_PATH where one of two sources was fabricated, 2 line_end=None drops) via source-YAML edits + re-consolidation. §12-#2 downgraded from Medium to Low. |
 | **v2-2 — Phase 3c mid-density gap-fill** | ✅ done | 2026-05-14 | 2026-05-14 | `/tmp/req_extract_3c-{1,2a,2b,3a,3a-2,3b,3b-2,4}_2026-05-11.yaml` (804 new entries) | 6 initial agents + 2 follow-ups on truncated slices. 218 mid-density (score 10-49) files in scope; 189 processed (87%). 3c-2b alone yielded 541 entries (code-review files were dense). Ecosystem file coverage now ~330/625 = 53% (was 23% in v1). 3c-3b-2 used 6 invalid category codes; auto-remapped (AR→ARCH, BG→TRAIN, CI→TEST, CL→TOOL, SE→API, TI→TEST). |
-| **v2-3 — Cross-repo content dedup** | ✅ done (limited) | 2026-05-14 | 2026-05-14 | `phase4_consolidate.py` enhanced | Added pre-pass that merges entries with same normalized brief AND same source-basename tuple but different owners. **0 hits** — heuristic too strict. Looser matching (fuzzy brief overlap) deferred to v3 because many same-basename cross-repo pairs are NOT real dups (e.g., `AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` exists in juniper-cascor-client AND juniper-data-client; each is a legitimately separate per-repo audit). Real cross-repo dup potential exists (60 entries cite `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` across ml + can owners). New v3 issue in §12. |
+| **v2-3 — Cross-repo content dedup** | ✅ done (limited) | 2026-05-14 | 2026-05-14 | `phase4_consolidate.py` enhanced | Added pre-pass that merges entries with same normalized brief AND same source-basename tuple but different owners. **0 hits** — heuristic too strict. Looser matching (fuzzy brief overlap) deferred to v3 because many same-basename cross-repo pairs are NOT real dups (e.g., `AGENTS_MD_AUDIT_ANALYSIS_2026-04-02.md` exists in juniper-cascor-client AND juniper-data-client; each is a legitimately separate per-repo audit). Real cross-repo dup potential exists (60 entries cite `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` across ml + can owners). New v3 issue in §12. |
 | **v2-4 — ARCH re-bucket** | ✅ done | 2026-05-14 | 2026-05-14 | `phase4_consolidate.py` enhanced | Added post-dedup pass that scans ARCH entries for strong WS/SEC/PERF/TEST/UI/OBS/API/TRAIN/DATA/LOCK/DEP/OPS/DOC/TOOL keyword signal in brief+detail. 148 entries moved out of ARCH (target distribution: TRAIN=58, WS=29, TEST=11, SEC=10, PERF=10, OBS=9, DATA=6, UI=6, TOOL=5, API=2, DOC=2). ARCH dropped from 42% of corpus to ~24%. |
 | **v2-ship — Regenerate + PR** | ✅ done | 2026-05-14 | 2026-05-14 | PR #257, merge commit `d4bcf5e` | v2 corpus: 2,120 candidates → 1,801 entries (319 dedup'd). 768 net new requirements vs v1's 1,033. 33 files modified, 51,006 insertions / 15,604 deletions. |
 | **v3-1 — Fuzzy cross-repo dedup** | ✅ done | 2026-05-14 | 2026-05-14 | `phase4_consolidate.py` | Replaced v2-3's exact-match heuristic with overlap-coefficient ≥ 0.65 on brief tokens within same-basename clusters. **9 cross-repo pairs collapsed.** Most "cross-repo dups" turned out to be different parts of the same shared document extracted independently (e.g., FINAL_CANOPY_CASCOR has 60 entries from can+ml but only 3 cross-owner pairs at any non-trivial similarity — confirms §12-#10 hypothesis that fuzzy match without manual review correctly handles the per-repo-AGENTS-audit case). |
@@ -465,23 +465,23 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 
 | Repo                  | notes file count | total LOC   | total density score | top file (score)                                                 |
 |-----------------------|------------------|-------------|---------------------|------------------------------------------------------------------|
-| juniper-ml            | 262              | 152,718     | 7,834               | interface_proposals/R1-04_operational_runbook.md (469)           |
+| juniper-ml            | 262              | 152,718     | 7,834               | interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md (469)           |
 | juniper-canopy        | 133              | 58,334      | 2,243               | TEST_SUITE_CICD_ENHANCEMENT_DEVELOPMENT_PLAN.md (166)            |
 | juniper-cascor        | 114              | 55,338      | 2,045               | development/DEVELOPMENT_ROADMAP.md (238)                         |
 | juniper-data          | 47               | 13,830      | 500                 | JUNIPER-DATA_POST-RELEASE_DEVELOPMENT-ROADMAP_2026-02-17.md (73) |
 | juniper-deploy        | 23               | 5,612       | 206                 | SLO_CATALOG_2026-05-03.md (66)                                   |
-| juniper-cascor-worker | 17               | 2,262       | 44                  | WORKTREE_CLEANUP_PROCEDURE_V2.md (7)                             |
-| juniper-cascor-client | 14               | 1,839       | 26                  | WORKTREE_CLEANUP_PROCEDURE_V2.md (7)                             |
-| juniper-data-client   | 15               | 1,737       | 28                  | WORKTREE_CLEANUP_PROCEDURE_V2.md (7)                             |
+| juniper-cascor-worker | 17               | 2,262       | 44                  | JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md (7)                             |
+| juniper-cascor-client | 14               | 1,839       | 26                  | JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md (7)                             |
+| juniper-data-client   | 15               | 1,737       | 28                  | JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md (7)                             |
 | **Total**             | **625**          | **291,670** | **12,926**          | —                                                                |
 
 **Top 5 cross-repo files by density** (Phase-3 priority seed):
 
-1. `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (469, 1,626 LOC)
-2. `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (461, 1,363 LOC)
-3. `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` (450, **15,220 LOC** — by far the largest file)
-4. `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (365, 1,464 LOC)
-5. `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (324, 5,458 LOC)
+1. `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (469, 1,626 LOC)
+2. `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (461, 1,363 LOC)
+3. `juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md` (450, **15,220 LOC** — by far the largest file)
+4. `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (365, 1,464 LOC)
+5. `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (324, 5,458 LOC)
 
 **Observations driving Phase-2 decisions**:
 
@@ -521,18 +521,18 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 - **Line-range validity**: 20 / 20 — every cited `line_start`/`line_end` falls within the source file's actual line count.
 - **Content match (5/20 deep-checked via `sed`)**:
   - 4/5: brief accurately reflects source text at cited line range.
-  - 1/5 (JR-ML-SEC-001): content is real (WS frame-size limits 4 KB / 64 KB) but cited line range (R0-02_security_hardening.md §3 lines 145-180, threat discussion) doesn't pinpoint the actual specification block (same file, lines 562-574). Content fidelity preserved; citation precision off. Treat as a moderate Phase-5 finding.
+  - 1/5 (JR-ML-SEC-001): content is real (WS frame-size limits 4 KB / 64 KB) but cited line range (JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-02-SECURITY-HARDENING.md §3 lines 145-180, threat discussion) doesn't pinpoint the actual specification block (same file, lines 562-574). Content fidelity preserved; citation precision off. Treat as a moderate Phase-5 finding.
   - 1/20 (JR-ML-ARCH-373): "RISK: Criterion" brief is too thin to be a useful requirement — the cited content is a success-criteria *table header* rather than a constituent decision. Phase-4 consolidation should have rejected or expanded this; flagging for v2.
 
 **Coverage spot-check (high-density files)**:
 
 | File                                                                                            | Density score    | Entries assigned | Note                                                                           |
 |-------------------------------------------------------------------------------------------------|------------------|------------------|--------------------------------------------------------------------------------|
-| `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`           | 450 (15,220 LOC) | ~4 (ml-A)        | Significantly under-extracted; only sampled tail. v1 known limitation.         |
-| `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md`                             | 469              | 34 (3b-1)        | Down from pilot's 133 due to consolidation rule. Some loss; acceptable for v1. |
-| `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md`                       | 365              | 13 (3b-2)        | Under-extracted relative to density. Agent over-consolidated.                  |
-| `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` | 324 (5,458 LOC)  | 250 (ml-C)       | Heavy coverage as expected (Approach-A/B/C corpus).                            |
-| `juniper-ml/notes/development/R5-01_canonical_development_plan.md`                              | 235 (2,167 LOC)  | 388 (ml-C)       | Maximum-extraction file; many short C-NN constitution positions.               |
+| `juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`           | 450 (15,220 LOC) | ~4 (ml-A)        | Significantly under-extracted; only sampled tail. v1 known limitation.         |
+| `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md`                             | 469              | 34 (3b-1)        | Down from pilot's 133 due to consolidation rule. Some loss; acceptable for v1. |
+| `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md`                       | 365              | 13 (3b-2)        | Under-extracted relative to density. Agent over-consolidated.                  |
+| `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` | 324 (5,458 LOC)  | 250 (ml-C)       | Heavy coverage as expected (Approach-A/B/C corpus).                            |
+| `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md`                              | 235 (2,167 LOC)  | 388 (ml-C)       | Maximum-extraction file; many short C-NN constitution positions.               |
 
 **Verdict**: v1 acceptable. Hallucination defenses held (no fabricated files or invalid line ranges). The two findings (citation-precision drift in #11, thin brief in #7) are Phase-4 quality issues that should be addressed in v2 iteration — not blockers for shipping v1.
 
@@ -543,8 +543,8 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 | PR                           | [#255](https://github.com/pcalnon/juniper-ml/pull/255)                                                                                             |
 | Merge commit                 | `5705aaff5b90f00cdb3592a80e5fb4654575a6b6`                                                                                                         |
 | Source branch                | `worktree-validated-weaving-pie` (commit `bbb6848`)                                                                                                |
-| Files added                  | 33 (`notes/REQUIREMENTS_INDEX.md`, `notes/requirements/README.md`, 15 `by-area/*.md`, 8 `by-repo/*.md`, 7 `by-status/*.md`, `id_assignments.yaml`) |
-| Files modified               | 1 (`notes/REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`)                                                                                         |
+| Files added                  | 33 (`notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`, `notes/requirements/README.md`, 15 `by-area/*.md`, 8 `by-repo/*.md`, 7 `by-status/*.md`, `id_assignments.yaml`) |
+| Files modified               | 1 (`notes/JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md`)                                                                                         |
 | Total requirements published | 1,033 (1,316 candidates pre-dedup; 283 collapsed)                                                                                                  |
 | Unique source files cited    | 96                                                                                                                                                 |
 | Date shipped                 | 2026-05-13                                                                                                                                         |
@@ -563,7 +563,7 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 | 3 | **Thin briefs** ("RISK: Criterion", etc.)                                                          | Low         | **NOT ADDRESSED** — carried to v3.                                                                                                                                                                                                                        |
 | 4 | **`ARCH` category over-represents at 42%.**                                                        | Low         | **PARTIAL** — v2-4 ARCH re-bucket moved 148 entries to finer codes; ARCH now ~24% of corpus. Some ARCH entries remain that lacked keyword signal for re-bucketing.                                                                                        |
 | 5 | **Cross-round dedup conservative** (R0-R4 proposal overlap).                                       | Low         | **NOT ADDRESSED** — carried to v3. Would need fuzzy-match.                                                                                                                                                                                                |
-| 6 | **Two `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` files** (ml + canopy).                          | Low         | **NOT ADDRESSED** — v2-3 cross-repo dedup heuristic (require exact normalized brief + same basename tuple) got 0 hits because briefs differ across owners. 60 entries cite this basename across both owners; real dup. Needs fuzzy match — carried to v3. |
+| 6 | **Two `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` files** (ml + canopy).                          | Low         | **NOT ADDRESSED** — v2-3 cross-repo dedup heuristic (require exact normalized brief + same basename tuple) got 0 hits because briefs differ across owners. 60 entries cite this basename across both owners; real dup. Needs fuzzy match — carried to v3. |
 | 7 | **Phase-1 agent fabricated its `.md` report.**                                                     | Process     | **APPLIED** — v2 brief reinforced same discipline (machine-checkable YAML only). No agent-summary fabrications detected in Phase-3c.                                                                                                                      |
 
 ### New issues discovered during v2 (status updated at v3 ship)
@@ -596,11 +596,11 @@ Source: `/tmp/notes_inventory_2026-05-11.{md,tsv}` (TSV verified against filesys
 
 | #  | Issue                                                                                              | Severity | Suggested resolution                                                                                                                                                                                                                                                                                                                                                                          |
 |----|----------------------------------------------------------------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 19 | **v1-v4 tooling scripts authored in `/tmp/` are irrecoverable.** Specifically: `phase4_consolidate.py` (Phase-4 base dedupe + v2-3 cross-repo + v2-4 ARCH rebucket + v3-1 fuzzy + v3-2 cross-round + v3-3/v4-3 brief repair), `v2_citation_validate.py` + `v2_apply_citation_fixes.py` (v2-1 QA), and `v4_apply_repairs.py` (v4-1 LLM-repair applier). Session sandboxes that held these have been reaped. The YAML *output* artifacts they produced are recovered in the snapshot at `notes/requirements/`, but the source code cannot be recovered. | Medium | **v5 prerequisite — rebuild from scratch.** Consolidate script → `util/requirements_consolidate.py` using §11 phase-row descriptions as the spec (estimated ~600-800 LOC). Citation validator → subsumed into `util/requirements_drift_check.py` (`--mode full` per [`REQUIREMENTS_NEXT_STEPS.md` §7](REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection)). The `--mode quick` slice shipped 2026-05-18 alongside this entry. Process fix: ecosystem-wide Script-placement rule (parent `Juniper/AGENTS.md` "Cross-Project Conventions"; restated in this repo's [`AGENTS.md` § Script placement](../AGENTS.md#script-placement-mandatory)) now prohibits `/tmp/` for utility scripts; see [`util/ad-hoc/README.md`](../util/ad-hoc/README.md) for the per-script convention. |
+| 19 | **v1-v4 tooling scripts authored in `/tmp/` are irrecoverable.** Specifically: `phase4_consolidate.py` (Phase-4 base dedupe + v2-3 cross-repo + v2-4 ARCH rebucket + v3-1 fuzzy + v3-2 cross-round + v3-3/v4-3 brief repair), `v2_citation_validate.py` + `v2_apply_citation_fixes.py` (v2-1 QA), and `v4_apply_repairs.py` (v4-1 LLM-repair applier). Session sandboxes that held these have been reaped. The YAML *output* artifacts they produced are recovered in the snapshot at `notes/requirements/`, but the source code cannot be recovered. | Medium | **v5 prerequisite — rebuild from scratch.** Consolidate script → `util/requirements_consolidate.py` using §11 phase-row descriptions as the spec (estimated ~600-800 LOC). Citation validator → subsumed into `util/requirements_drift_check.py` (`--mode full` per [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §7](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#7-stale--drift-detection)). The `--mode quick` slice shipped 2026-05-18 alongside this entry. Process fix: ecosystem-wide Script-placement rule (parent `Juniper/AGENTS.md` "Cross-Project Conventions"; restated in this repo's [`AGENTS.md` § Script placement](../AGENTS.md#script-placement-mandatory)) now prohibits `/tmp/` for utility scripts; see [`util/ad-hoc/README.md`](../util/ad-hoc/README.md) for the per-script convention. |
 
 ### Final dispositions (consolidated 2026-05-18)
 
-Each carry-over issue above receives a permanent disposition here. Sourced from [`REQUIREMENTS_NEXT_STEPS.md` §9](REQUIREMENTS_NEXT_STEPS.md#9-12-carry-over-triage). Future refreshes should treat these as closed unless new evidence reopens them.
+Each carry-over issue above receives a permanent disposition here. Sourced from [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §9](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#9-12-carry-over-triage). Future refreshes should treat these as closed unless new evidence reopens them.
 
 | #   | Carry-over                                   | Final disposition                       | Rationale                                                            |
 |-----|----------------------------------------------|-----------------------------------------|----------------------------------------------------------------------|

@@ -19,7 +19,7 @@
 
 > **No Juniper dataset — none of the 11 built generators (the 10 classic + the new `equities_seq`), none of the 3 planned synthetics — requires the star-free ceiling-break, and none requires genuine unbounded-exact-state recurrence.** Not one dataset scores **MODULAR-UNBOUNDED** on the counting axis. The exception list is **EMPTY**.
 
-This **CONFIRMS** the OQ-4 architecture re-evaluation's load-bearing claim. The re-eval (`JUNIPER_RECURSE_OQ4_ARCHITECTURE_REEVALUATION_2026-06-12.md` §1(B), §9, §12) rested its entire recommendation on a single deferred empirical premise: *the star-free ceiling matters only if the workload requires a genuine modulo/period/parity-counting function over arbitrary-length sequences, and forecasting a real-valued series is not such a function.* The re-eval explicitly deferred the proof to "the DATASET AUDIT" and predicted the outcome as "expected." **This audit is that validator, and the prediction holds.**
+This **CONFIRMS** the OQ-4 architecture re-evaluation's load-bearing claim. The re-eval (`JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-ARCHITECTURE-REEVALUATION.md` §1(B), §9, §12) rested its entire recommendation on a single deferred empirical premise: *the star-free ceiling matters only if the workload requires a genuine modulo/period/parity-counting function over arbitrary-length sequences, and forecasting a real-valued series is not such a function.* The re-eval explicitly deferred the proof to "the DATASET AUDIT" and predicted the outcome as "expected." **This audit is that validator, and the prediction holds.**
 
 Reading every shipped generator's actual target construction (not the name) yields:
 
@@ -181,7 +181,7 @@ The audit does not merely find an *absence* (no counting); it finds a *presence*
 
 **VERDICT: VALIDATED (confirm — does not overturn).**
 
-The re-eval's load-bearing syllogism (`JUNIPER_RECURSE_OQ4_ARCHITECTURE_REEVALUATION_2026-06-12.md` §1(B), §9, §12):
+The re-eval's load-bearing syllogism (`JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-ARCHITECTURE-REEVALUATION.md` §1(B), §9, §12):
 
 1. **Premise:** the star-free ceiling matters *only* if the target workload requires a genuine modulo/period/parity-counting function over arbitrary-length sequences (§9).
 2. **Deferred empirical claim:** forecasting a real-valued series is NOT a mod-k task → the Juniper datasets pose no counting requirement. *Proof deferred to "the DATASET AUDIT"; outcome predicted "expected."*
@@ -261,9 +261,9 @@ A dataset whose **target** is a function of a *count over the sequence* — conc
 
 **Corpus documents (under `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/validated-herding-pretzel/notes/`):**
 
-- `JUNIPER_RECURSE_OQ4_ARCHITECTURE_REEVALUATION_2026-06-12.md` — §1(B), §3, §3.2, §4, §4.1, §4.5, §5, §6, §9, §10, §12, §13 (ceiling theory, deferred dataset-audit validator, P3-C/LMU + P1 recommendation, P2/P6 §12 fallback).
-- `JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md` — OQ-5 planned-synthetics list :341,347; WS-0/WS-4 status :33; R1/R2 rows :211-212; RCC smooth-signal guardrail §1.3.1.
-- `JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` — §1.6 / :82 (synthetics regular-by-construction), §2 (equities NPZ Δt), §3/§6 (3-D `dt`/`target_dt` contract, reference), §4.5 (Δt orthogonal to the ceiling).
+- `JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-ARCHITECTURE-REEVALUATION.md` — §1(B), §3, §3.2, §4, §4.1, §4.5, §5, §6, §9, §10, §12, §13 (ceiling theory, deferred dataset-audit validator, P3-C/LMU + P1 recommendation, P2/P6 §12 fallback).
+- `JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md` — OQ-5 planned-synthetics list :341,347; WS-0/WS-4 status :33; R1/R2 rows :211-212; RCC smooth-signal guardrail §1.3.1.
+- `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` — §1.6 / :82 (synthetics regular-by-construction), §2 (equities NPZ Δt), §3/§6 (3-D `dt`/`target_dt` contract, reference), §4.5 (Δt orthogonal to the ceiling).
 
 **Ceiling-theory primary sources (as cited in the re-eval):** Knorozova & Ronca 2024 (recurrent cascades = star-free; Thm 7 / Prop 5/6); Sarrof, Veitsman & Hahn 2024 (SSM/LMU family = star-free); McNaughton & Papert 1971 (star-free = aperiodic); Schützenberger (counter-free = star-free; threshold-countable).
 

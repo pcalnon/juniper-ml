@@ -353,8 +353,8 @@ acceptance — those are tracked as separate items.
 ## 10. References
 
 - **Sibling-package plans (precedent)**:
-  - [`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](./JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
-  - [`notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`](./JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md)
+  - [`notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](./JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)
+  - [`notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`](./JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md)
 - **CFG-06 design doc (consumer of this package)**:
   - [`juniper-cascor-worker/notes/CFG_06_ENV_PREFIX_CONVERGENCE_DESIGN_2026-05-22.md`](https://github.com/pcalnon/juniper-cascor-worker/blob/main/notes/CFG_06_ENV_PREFIX_CONVERGENCE_DESIGN_2026-05-22.md) (merged via [cascor-worker#84](https://github.com/pcalnon/juniper-cascor-worker/pull/84))
 - **Cascor-worker pydantic-at-runtime invariant**:
@@ -364,5 +364,5 @@ acceptance — those are tracked as separate items.
   - cascor `src/api/settings.py::_check_legacy_log_level` (CFG-05)
   - canopy `src/settings.py::_check_legacy_demo_mode` (CFG-04 / CFG-16)
 - **Roadmap reference**:
-  - v7 §20 [CFG-06](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md#cfg-06-cascor_-env-prefix-inconsistent-with-juniper_-convention)
-  - v7 §2.2 [status pass](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md#22-v701--v702-status-pass--configuration--api-contract-items-2026-05-22) (merged via [juniper-ml#317](https://github.com/pcalnon/juniper-ml/pull/317))
+  - v7 §20 [CFG-06](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md#cfg-06-cascor_-env-prefix-inconsistent-with-juniper_-convention)
+  - v7 §2.2 [status pass](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md#22-v701--v702-status-pass--configuration--api-contract-items-2026-05-22) (merged via [juniper-ml#317](https://github.com/pcalnon/juniper-ml/pull/317))

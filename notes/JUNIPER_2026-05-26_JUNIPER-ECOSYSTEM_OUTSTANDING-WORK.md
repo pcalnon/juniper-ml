@@ -113,7 +113,7 @@ This document captures **only what is still open or deferred** as of writing. It
 | CFG-06 Helm chart bump | [[cfg-06-shipped-2026-05-23]] | Same |
 | `juniper-doc-tools` 0.1.1 patch + §5 drift-detection guard rails | [[juniper-doc-tools-pypi-plan]] | Bug or new requirement |
 | gitleaks Node24 override removal (7 repos) | [[gitleaks-node24-override-followup]] | Upstream releases v2.3.10+ on Node 24 |
-| `META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md` JR-ML-* ID assignment | (none) | Next snapshot refresh pass |
+| `JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md` JR-ML-* ID assignment | (none) | Next snapshot refresh pass |
 | Async-route audit centralised deny-list | [[async-route-audit-complete]] | Optional, no urgency |
 
 ---
@@ -186,5 +186,5 @@ All main checkouts current with `origin/main`. No leftover working-branch state 
 
 - Session transcript: in Claude Code session `parsed-foraging-lollipop` (juniper-ml worktree at `.claude/worktrees/parsed-foraging-lollipop/`).
 - Worktree was preserved at session end; no stale artifacts.
-- Related session-handoff procedures: `notes/THREAD_HANDOFF_PROCEDURE.md`.
-- Worktree cleanup procedure: `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`.
+- Related session-handoff procedures: `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`.
+- Worktree cleanup procedure: `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.

@@ -35,9 +35,9 @@ This document consolidates all **currently incomplete** development work across 
 
 | Source Document                       | Repository     | Items Documented                                      |
 |---------------------------------------|----------------|-------------------------------------------------------|
-| `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | juniper-ml     | 91+ items across 16 source documents                  |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | juniper-ml     | 91+ items across 16 source documents                  |
 | `CONSOLIDATED_DEVELOPMENT_HISTORY.md` | juniper-canopy | 99+ issues, 20 P5-RC root causes, Phases 0–3 features |
-| `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | juniper-cascor | ~120 items across 12 source documents                 |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | juniper-cascor | ~120 items across 12 source documents                 |
 
 **Validation method**: Three specialized sub-agents independently validated every incomplete item against the live codebases (juniper-cascor, juniper-canopy, juniper-cascor-client, juniper-cascor-worker, juniper-data, juniper-data-client, juniper-deploy, juniper-ml) using file reads, grep searches, and structural analysis.
 
@@ -409,10 +409,10 @@ This document was produced by cross-referencing:
 
 | Document                              | Location                            | Date       | Items                                   |
 |---------------------------------------|-------------------------------------|------------|-----------------------------------------|
-| `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
 | `CONSOLIDATED_DEVELOPMENT_HISTORY.md` | `juniper-canopy/notes/development/` | 2026-04-17 | 99+ issues from 16 source documents     |
-| `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | `juniper-cascor/notes/development/` | 2026-04-17 | ~120 items from 12 source documents     |
-| `DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` | `juniper-ml/notes/development/`     | 2026-04-19 | 70+ findings from deep audit of 5 repos |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | `juniper-cascor/notes/development/` | 2026-04-17 | ~120 items from 12 source documents     |
+| `JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` | `juniper-ml/notes/development/`     | 2026-04-19 | 70+ findings from deep audit of 5 repos |
 
 **Validation agents (v1.0.0)**:
 

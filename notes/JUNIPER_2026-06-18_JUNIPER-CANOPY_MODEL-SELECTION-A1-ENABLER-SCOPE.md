@@ -12,7 +12,7 @@
 > i.e. to make the `recurrence` (LMU) model genuinely *selectable and trainable*
 > from the dashboard, not just a soft-gated "coming soon" entry. Follows the A0
 > registry (canopy #372) and the selection design-of-record
-> [`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md).
+> [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md).
 > Grounded by a three-slice investigation (recurrence API, canopy backend/dataset
 > flow, juniper-deploy) on 2026-06-18; key `file:line` in §3/§9.
 
@@ -344,6 +344,6 @@ is now an independent earlier phase (§6 Phase 1).
   Dockerfile convention; ports 8100/8201/8050 (recurrence 8211→8210).
 - juniper-data-client: `validate_npz_contract` (ndim-dispatched), `download_artifact_npz`.
 
-**Cross-links:** [`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md)
-(A0/A1 design); [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md)
+**Cross-links:** [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
+(A0/A1 design); [`JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md)
 (§8.2 upstream gating). canopy #368 (model selection tracker).

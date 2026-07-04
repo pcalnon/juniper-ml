@@ -5,7 +5,7 @@
 **Scope**: All 8 active Juniper ecosystem repositories
 **Related**:
 
-- `notes/DEPENDENCY_UPDATE_WORKFLOW.md`
+- `notes/JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`
 - juniper-data commit `1fca801` (2026-04-25) — first constraint-satisfaction adoption
 - juniper-cascor PR #210 main-branch breakage (2026-05-04) — trigger for this redesign
 

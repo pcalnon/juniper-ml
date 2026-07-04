@@ -7,12 +7,12 @@
 
 ---
 
-Continue the Juniper Microservices Startup/Shutdown automation project -- starting **Phase 1: Critical Fixes (P0)** from `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md`.
+Continue the Juniper Microservices Startup/Shutdown automation project -- starting **Phase 1: Critical Fixes (P0)** from `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md`.
 
 ## Prior Thread Completed
 
 - **Comprehensive code review** of all startup/shutdown scripts, Dockerfiles, systemd units, compose files, and documentation across all 8 Juniper repos (juniper-data, juniper-cascor, juniper-canopy, juniper-deploy, juniper-ml, juniper-data-client, juniper-cascor-client, juniper-cascor-worker).
-- **Analysis document written**: `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` -- 700+ lines covering inventory, gap analysis, 3 design approaches with strengths/weaknesses/risks, and a 5-phase development roadmap.
+- **Analysis document written**: `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` -- 700+ lines covering inventory, gap analysis, 3 design approaches with strengths/weaknesses/risks, and a 5-phase development roadmap.
 - **Rewrote `util/juniper_plant_all.bash`**: Added `wait_for_health()` polling, `check_port_available()`, `validate_conda_env()`, `ensure_dir()`, per-service Python binaries (fixed S-05 bug), `set -euo pipefail`, `trap cleanup_on_failure ERR` (recursive-safe), configurable paths/timeouts via env vars, pre-flight checks for curl/ss/uvicorn.
 - **Rewrote `util/juniper_chop_all.bash`**: Added `validate_pid()` via `/proc/<pid>/cmdline`, `graceful_stop()` with SIGTERM->SIGKILL fallback, fixed PID parsing (colon-delimited split), optional `KILL_WORKERS=1` mode, post-shutdown PID file cleanup.
 - **Removed `util/get_cascor_dkdk.bash`** (incomplete dead code).
@@ -21,7 +21,7 @@ Continue the Juniper Microservices Startup/Shutdown automation project -- starti
 
 ## Phase 1 Status: Largely Complete -- Needs Validation Update
 
-The Phase 1 roadmap items from `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` Section 10 are:
+The Phase 1 roadmap items from `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` Section 10 are:
 
 | Step | Task                                               | Status                          |
 |------|----------------------------------------------------|---------------------------------|
@@ -38,7 +38,7 @@ The Phase 1 roadmap items from `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-
 
 ## Remaining Work
 
-1. **Update the analysis document** (`notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md`):
+1. **Update the analysis document** (`notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md`):
    - Update Section 10 Phase 1 to mark all steps as completed with references to the implementing commit.
    - Update Sections 3.1 and 3.2 to reflect the new script behavior (they currently describe the OLD scripts).
    - Update Section 7.3 to note the conda env bug is now fixed.
@@ -58,7 +58,7 @@ The Phase 1 roadmap items from `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-
 - **Worktree**: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/vivid-herding-star`
 - **Branch**: `worktree-vivid-herding-star` (pushed, tracking `origin/worktree-vivid-herding-star`)
 - **PR**: pcalnon/juniper-ml#103 (open, targeting `main`)
-- **Unstaged change**: `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` has a pre-commit auto-format diff (trailing whitespace). Stage and commit as part of the document update.
+- **Unstaged change**: `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` has a pre-commit auto-format diff (trailing whitespace). Stage and commit as part of the document update.
 - **The analysis document describes the OLD scripts in sections 3.1 and 3.2**. The new scripts are already committed. Update the document to match reality.
 - **Approach A (Incremental Fix) was chosen** as the recommended approach (Section 9.4). Do not switch approaches.
 - **Phase 1 P0 items are all implemented** but the document hasn't been updated to reflect this.
@@ -81,5 +81,5 @@ shellcheck util/juniper_plant_all.bash util/juniper_chop_all.bash
 pre-commit run --files util/juniper_plant_all.bash util/juniper_chop_all.bash
 
 # Read the analysis document
-cat notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md
+cat notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md
 ```

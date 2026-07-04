@@ -10,7 +10,7 @@
 
 > The design-of-record for how canopy **displays** 3-D (sequence / irregular-Δt
 > time-series) datasets. Resolves OQ-6 and elaborates **D2** of the A1-enabler scope
-> ([`JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md`](JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md)),
+> ([`JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`](JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md)),
 > which established that *training delivery* is service-side but *dataset display* is
 > canopy's job for 3-D too — gating the dataset load on `ndim==2` is wrong-direction
 > debt. Decided over two rounds of plotly mockups (the canopy renderer); the images are
@@ -181,6 +181,6 @@ regenerate via [`../util/ad-hoc/canopy_3d_viz_mockups.py`](../util/ad-hoc/canopy
 
 ## 9. References
 
-- [`JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md`](JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md) — D2 (3-D display) + OQ-6, which this resolves.
-- [`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md) — the model+dataset selection design-of-record.
+- [`JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`](JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md) — D2 (3-D display) + OQ-6, which this resolves.
+- [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md) — the model+dataset selection design-of-record.
 - Tracks canopy [#368](https://github.com/pcalnon/juniper-canopy/issues/368) (model selection).

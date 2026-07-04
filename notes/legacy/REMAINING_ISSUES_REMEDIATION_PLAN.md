@@ -29,7 +29,7 @@ The prior fix effort (PR #28) resolved 3 user-reported issues and documented 12 
 | 1F | Open (systemic)      | **Resolved**               | CSS variables already handle all CardHeaders and tables via `!important`                                                        |
 | 2A | Documented           | **Fixed**                  | Logger resolves symlinks before mkdir, auto-creates target directory                                                            |
 | 2B | Documented           | **Fixed**                  | `reports/.gitkeep` added, directory now tracked in git                                                                          |
-| 2C | Documented           | **Fixed**                  | `WORKTREE_SETUP_PROCEDURE.md` updated with Step 6 (create gitignored dirs)                                                      |
+| 2C | Documented           | **Fixed**                  | `JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` updated with Step 6 (create gitignored dirs)                                                      |
 | 3A | Pre-existing         | **Fixed**                  | `test_client` fixture now uses `TestClient(app)` context manager for lifespan                                                   |
 | 4A | Unverified           | **Resolved**               | Fix verified in PR #28 (torch.cat)                                                                                              |
 | 5A | Documented           | **Resolved**               | Infrastructure fixes (2A + 2B) eliminate worktree-specific failures; hook scope unchanged (coverage requires integration tests) |
@@ -48,7 +48,7 @@ These four issues are tightly coupled — they all stem from gitignored director
 
 #### Remediation
 
-**2C — Update `WORKTREE_SETUP_PROCEDURE.md`**:
+**2C — Update `JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`**:
 Add a post-setup step after Step 6 (Verify and Begin Work):
 
 ```bash

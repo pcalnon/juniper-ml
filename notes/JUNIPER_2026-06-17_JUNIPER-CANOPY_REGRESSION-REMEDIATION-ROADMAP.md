@@ -19,8 +19,8 @@
 >
 > **Predecessor docs** (both landed via juniper-ml `#430`, 2026-06-16):
 >
-> - [`JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md) — the approved working plan.
-> - [`JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md) — the empirical deliverable.
+> - [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md) — the approved working plan.
+> - [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md) — the empirical deliverable.
 >
 > This document does **not** replace their design content (which remains the design
 > of record for model selection). It corrects their *execution-state* framing, which
@@ -624,13 +624,13 @@ The validators' raw findings are retained in the session record.
 
 **Predecessor docs (juniper-ml `notes/`, superseded framing):**
 
-- [`JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md)
-- [`JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md)
+- [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md)
+- [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md)
 
 **Related juniper-ml `notes/`:**
 
-- [`canopy_frontend_issues_plan_2026-05-09.md`](canopy_frontend_issues_plan_2026-05-09.md) — FRONTEND_ISSUES_PLAN Issues #1–#6 (the prior frontend backlog, all resolved)
-- [`JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md`](JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md) — dataset readiness for the recurrence path
+- [`JUNIPER_2026-05-09_JUNIPER-CANOPY_FRONTEND-ISSUES-PLAN.md`](JUNIPER_2026-05-09_JUNIPER-CANOPY_FRONTEND-ISSUES-PLAN.md) — FRONTEND_ISSUES_PLAN Issues #1–#6 (the prior frontend backlog, all resolved)
+- [`JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md`](JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md) — dataset readiness for the recurrence path
 - the `JUNIPER_RECURRENCE_*` / WS-1 / WS-4 corpus — model-selection upstream
 
 **External literature (juniper-ml `papers/`, retrieved 2026-06-16):**

@@ -9,7 +9,7 @@ Begin implementation of the juniper-canopy frontend remediation plan at juniper-
     - §9 Hard dependencies + mermaid graph
     - §10 Resolution log (Q1–Q4 already CLOSED 2026-05-09)
 2. juniper-canopy/notes/ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md — separate authoritative spec for Issue #3 Phase 2 (live dataset swap behind experimental gate).
-3. juniper-ml/notes/canopy_frontend_issues_plan_2026-05-09.md — pointer with TL;DR + cross-repo summary.
+3. juniper-ml/notes/JUNIPER_2026-05-09_JUNIPER-CANOPY_FRONTEND-ISSUES-PLAN.md — pointer with TL;DR + cross-repo summary.
 4. /home/pcalnon/Development/python/Juniper/CLAUDE.md — ecosystem map, worktree rules.
 
 ## What's been done
@@ -46,13 +46,13 @@ git fetch origin && git status
 sed -n '1900,1930p' src/api/lifecycle/manager.py    # confirm reset() at line 1908 still matches plan §4
 
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
-ls -la notes/canopy_frontend_issues_plan_2026-05-09.md
+ls -la notes/JUNIPER_2026-05-09_JUNIPER-CANOPY_FRONTEND-ISSUES-PLAN.md
 
 ## Git status at handoff (juniper-ml worktree)
 
 - Worktree: /home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/enumerated-prancing-widget
 - Branch: main
-- Untracked (in juniper-ml): notes/canopy_frontend_issues_plan_2026-05-09.md
+- Untracked (in juniper-ml): notes/JUNIPER_2026-05-09_JUNIPER-CANOPY_FRONTEND-ISSUES-PLAN.md
 - Untracked (in juniper-canopy main, separate working dir): notes/FRONTEND_ISSUES_PLAN_2026-05-09.md, notes/ISSUE_3_PHASE_2_LIVE_DATASET_SWAP_2026-05-09.md
 - No staged changes. No uncommitted in-flight work other than the plan files themselves.
 - First housekeeping step: decide whether to commit the three plan files on main of each repo (recommended) or to land them as part of PR-1's branch. Plan files are review-ready; user has approved.

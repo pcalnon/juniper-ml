@@ -36,9 +36,9 @@ This document consolidates all **currently incomplete** development work across 
 
 | Source Document                       | Repository     | Items Documented                                      |
 |---------------------------------------|----------------|-------------------------------------------------------|
-| `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | juniper-ml     | 91+ items across 16 source documents                  |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | juniper-ml     | 91+ items across 16 source documents                  |
 | `CONSOLIDATED_DEVELOPMENT_HISTORY.md` | juniper-canopy | 99+ issues, 20 P5-RC root causes, Phases 0–3 features |
-| `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | juniper-cascor | ~120 items across 12 source documents                 |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | juniper-cascor | ~120 items across 12 source documents                 |
 
 **Validation method (v1.0.0–v2.0.0)**: Three specialized sub-agents independently validated every incomplete item against the live codebases (juniper-cascor, juniper-canopy, juniper-cascor-client, juniper-cascor-worker, juniper-data, juniper-data-client, juniper-deploy, juniper-ml) using file reads, grep searches, and structural analysis.
 
@@ -505,31 +505,31 @@ This document was produced by cross-referencing 34 source documents across the J
 
 | # | Document                              | Location                            | Date       | Items                                   |
 |---|---------------------------------------|-------------------------------------|------------|-----------------------------------------|
-| 1 | `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
+| 1 | `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
 | 2 | `CONSOLIDATED_DEVELOPMENT_HISTORY.md` | `juniper-canopy/notes/development/` | 2026-04-17 | 99+ issues from 16 source documents     |
-| 3 | `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | `juniper-cascor/notes/development/` | 2026-04-17 | ~120 items from 12 source documents     |
-| 4 | `DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` | `juniper-ml/notes/development/`     | 2026-04-19 | 70+ findings from deep audit of 5 repos |
+| 3 | `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | `juniper-cascor/notes/development/` | 2026-04-17 | ~120 items from 12 source documents     |
+| 4 | `JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` | `juniper-ml/notes/development/`     | 2026-04-19 | 70+ findings from deep audit of 5 repos |
 
 ### v3.0.0 Cross-Referenced Source Documents (34 total)
 
 | #  | Document                                                                            | Repository     |
 |----|-------------------------------------------------------------------------------------|----------------|
-| 1  | `notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md`                              | juniper-ml     |
-| 2  | `notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md`                              | juniper-cascor |
+| 1  | `notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`                              | juniper-ml     |
+| 2  | `notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`                              | juniper-cascor |
 | 3  | `notes/development/CONSOLIDATED_DEVELOPMENT_HISTORY.md`                             | juniper-canopy |
-| 4  | `notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md`                                 | juniper-ml     |
-| 5  | `notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md`                             | juniper-ml     |
-| 6  | `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md`                  | juniper-ml     |
-| 7  | `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md`                | juniper-ml     |
+| 4  | `notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md`                                 | juniper-ml     |
+| 5  | `notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md`                             | juniper-ml     |
+| 6  | `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md`                  | juniper-ml     |
+| 7  | `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md`                | juniper-ml     |
 | 8  | `notes/development/CODE_REVIEW_AUDIT_PLAN_2026-04-12_R5-01-aligned.md`              | juniper-canopy |
 | 9  | `notes/development/CODE_REVIEW_DEVELOPMENT_ROADMAP_2026-04-12_R5-01-aligned.md`     | juniper-canopy |
 | 10 | `notes/development/CODE_REVIEW_PLAN_2026-04-12_R5-01-aligned.md`                    | juniper-canopy |
-| 11 | `notes/development/MICROSERVICES_PHASE4_PLAN_2026-04-06.md`                         | juniper-ml     |
-| 12 | `notes/development/MICROSERVICES_PHASE3_PLAN_2026-04-06.md`                         | juniper-ml     |
-| 13 | `notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md`                 | juniper-ml     |
+| 11 | `notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE4-PLAN.md`                         | juniper-ml     |
+| 12 | `notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE3-PLAN.md`                         | juniper-ml     |
+| 13 | `notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md`                 | juniper-ml     |
 | 14 | `notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_PLAN_2026-04-06.md`            | juniper-ml     |
 | 15 | `notes/development/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP.md`              | juniper-canopy |
-| 16 | `notes/development/PHASE_B_IMPLEMENTATION_PLAN.md`                                  | juniper-ml     |
+| 16 | `notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_PHASE-B-IMPLEMENTATION-PLAN.md`                                  | juniper-ml     |
 | 17 | `notes/code-review/CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-*.md`                | juniper-ml     |
 | 18 | `notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-*.md`                           | juniper-ml     |
 | 19 | `notes/code-review/RELEASE_DEVELOPMENT_ROADMAP_2026-04-*.md`                        | juniper-ml     |
@@ -537,8 +537,8 @@ This document was produced by cross-referencing 34 source documents across the J
 | 21 | `notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-*.md`                          | juniper-ml     |
 | 22 | `notes/code-review/CASCOR_COMPREHENSIVE_CODE_REVIEW_PLAN_2026-04-*.md`              | juniper-ml     |
 | 23 | `notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-*.md`                    | juniper-ml     |
-| 24 | `notes/code-review/CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md`                  | juniper-ml     |
-| 25 | `notes/development/R5-01_canonical_development_plan.md`                             | juniper-ml     |
+| 24 | `notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md`                  | juniper-ml     |
+| 25 | `notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md`                             | juniper-ml     |
 | 26 | `notes/development/CODE_REVIEW_ANALYSIS_2026-04-12_R5-01-aligned.md`                | juniper-canopy |
 | 27 | `notes/development/IMPLEMENTATION_PLAN.md`                                          | juniper-canopy |
 | 28 | `notes/development/CASCOR_ENHANCEMENTS_ROADMAP.md`                                  | juniper-cascor |

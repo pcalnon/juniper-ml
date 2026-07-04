@@ -23,13 +23,13 @@ The analysis that led to this plan is at: juniper-ml/notes/SECRETS_MANAGEMENT_AN
 5. juniper-deploy: create .sops.yaml, .env.secrets.example, update .gitignore
 6. Remaining repos: create .sops.yaml + .env.example files
 7. Add no-unencrypted-env pre-commit hook to 5 repos (juniper-cascor, juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker)
-8. Write SOPS_USAGE_GUIDE.md documentation in juniper-ml/notes/
+8. Write JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md documentation in juniper-ml/notes/
 9. Commit changes in each repo
 
 ## Next Steps
 
 - Perform an audit of the code base and configuration for all repos against the Juniper/juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md
-  - Also consider the SECRETS_MANAGEMENT_ANALYSIS.md file and the SOPS_USAGE_GUIDE.md
+  - Also consider the SECRETS_MANAGEMENT_ANALYSIS.md file and the JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md
 - identify and document any remaining tasks or issues identified during audit
 - complete any remaining tasks and remediate any issues identified during audit
 - fully implement the SOPS sulution and integrate it with all active juniper repos.
@@ -56,7 +56,7 @@ The analysis that led to this plan is at: juniper-ml/notes/SECRETS_MANAGEMENT_AN
 ## Git status
 
 on branch main in juniper-ml, notes/SOPS_IMPLEMENTATION_PLAN.md is untracked (commit it first)
-Pre-existing untracked/modified files (not related to this task): .claude/, prompts/, notes/MICROSERVICES_ARCHITECTURE_ANALYSIS.md, notes/PYPI_MANUAL_SETUP_STEPS.md
+Pre-existing untracked/modified files (not related to this task): .claude/, prompts/, notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md, notes/PYPI_MANUAL_SETUP_STEPS.md
 
 ---
 

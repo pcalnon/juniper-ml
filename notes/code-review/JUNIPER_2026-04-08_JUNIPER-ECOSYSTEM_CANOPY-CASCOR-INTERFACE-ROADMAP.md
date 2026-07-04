@@ -7,8 +7,8 @@
 **Status**: ACTIVE
 **Companion Documents**:
 
-- Analysis: `CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md`
-- Plan: `CANOPY_CASCOR_INTERFACE_REVIEW_PLAN_2026-04-08.md`
+- Analysis: `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md`
+- Plan: `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-REVIEW-PLAN.md`
 
 ---
 
@@ -244,7 +244,7 @@ a metrics rendering path.
 
 **Resolution path**: this item has been folded into the
 **WebSocket & Messaging Architecture analysis** (see
-`notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md`). That
+`notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md`). That
 document audits every consumer of `_normalize_metric` and `_to_dashboard_metric`,
 documents the actual nested-vs-flat contract, and only after that audit will it
 recommend whether to remove, keep, or document the redundant keys.
@@ -304,7 +304,7 @@ does not satisfy the broader requirement for a bidirectional WebSocket control
 contract that supports both high-frequency observation and low-latency control.
 
 **Resolution path**: the missing pieces are enumerated and designed in
-`notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md`. They include:
+`notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md`. They include:
 
 1. Adding a `send_set_params(params)` (or equivalent) method to the
    `CascorTrainingControlStream` (or new control client) in `juniper-cascor-client`.
@@ -569,7 +569,7 @@ Add `progress_queue` to persistent forkserver worker pool:
 **Priority**: P3-P4 — Production architecture quality
 **Estimated Duration**: 9-14 days (original) — **ACTUAL: ~0.5 day for typed contract; P5-RC-05 frontend WebSocket wiring STILL OPEN (critical)**
 **Dependencies**: Phases 1-3 complete
-**Status**: **PARTIAL (2026-04-10)** — typed contract done; WebSocket consumption still open. See `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` for the design and implementation plan.
+**Status**: **PARTIAL (2026-04-10)** — typed contract done; WebSocket consumption still open. See `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` for the design and implementation plan.
 
 ### 6.0 Phase 4 Execution Results (2026-04-10, REVISED)
 
@@ -604,7 +604,7 @@ Phase 4 execution status:
 |                                              |                |                           | The current dashboard polls REST (`dcc.Interval` at `dashboard_manager.py:1197`, fetching `/api/status` and `/api/metrics/history` at `dashboard_manager.py:2172,2397`).    |
 |                                              |                |                           | This is **genuinely missing functionality** per canopy requirements: high-volume per-epoch metrics, candidate progress, and live training status updates need               |
 |                                              |                |                           | WebSocket transport for the dashboard to be usable at production training speeds. Browser-side verification challenges are real but solvable — see                          |
-|                                              |                |                           | `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` for the design, the verification strategy (Playwright/Selenium harness, fake-server fixtures,            |
+|                                              |                |                           | `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` for the design, the verification strategy (Playwright/Selenium harness, fake-server fixtures,            |
 |                                              |                |                           | and pyppeteer-style smoke tests), and the implementation plan.                                                                                                              |
 | 6.3 KL-1: Dataset data in service mode       | 3-5 days       | **ALREADY PRESENT**       | `juniper-cascor/src/api/routes/dataset.py:24` exposes `GET /v1/dataset/data`; `juniper-cascor/src/api/lifecycle/manager.py:660-666` serializes `train_x`/`train_y`          |
 |                                              |                |                           | as JSON arrays; `juniper-canopy/src/backend/cascor_service_adapter.py:743-770` consumes the endpoint via `get_dataset_data()`; `juniper-canopy/src/backend/service_backend. |
@@ -666,7 +666,7 @@ Option B: Direct juniper-data integration from canopy
 - [x] BackendProtocol uses typed returns — all 9 previously-untyped methods now use `ControlResult`/`ApplyParamsResult`/`NetworkStatsResult`/`RawTopologyResult`/`DecisionBoundaryResult` (verified 2026-04-10)
 - [x] Demo and service backends return structurally identical data — `demo_backend.apply_params()` standardized to `{ok, data}` envelope to match service backend; other methods already converged (verified 2026-04-10)
 - [x] Contract tests enforce type compliance — `TestPhase4TypedContract` in both `test_service_backend.py` (10 tests) and `test_demo_backend.py` (6 tests) (verified 2026-04-10)
-- [ ] WebSocket relay normalized and consumed by dashboard — relay normalization is COMPLETE (P5-RC-14, `cascor_service_adapter.py:222`); frontend consumption (P5-RC-05) is STILL OPEN, tracked as critical in `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md`
+- [ ] WebSocket relay normalized and consumed by dashboard — relay normalization is COMPLETE (P5-RC-14, `cascor_service_adapter.py:222`); frontend consumption (P5-RC-05) is STILL OPEN, tracked as critical in `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md`
 - [x] Dataset scatter plot functional in service mode — KL-1 fully implemented end-to-end (verified 2026-04-10)
 
 ---

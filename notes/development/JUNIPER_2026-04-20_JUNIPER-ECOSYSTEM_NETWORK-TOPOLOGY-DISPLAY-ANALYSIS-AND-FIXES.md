@@ -84,9 +84,9 @@ This document presents a comprehensive analysis of the network topology display 
 | Document                                   | Focus                                         | Status                                                                                                                                       |
 |--------------------------------------------|-----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | CANOPY_DASHBOARD_DISPLAY_FIXES.md          | 3 display issues (metrics, dataset, topology) | Issue 3 (output weights transposition): **FIXED** (committed in adapter). Issues 1-2: **FIXED** per CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md |
-| DASHBOARD_AUGMENTATION_PLAN.md             | Integrated augmentation (Tasks 1-3)           | Task 3 (layer assignment): **FIXED** — uses 0/1/2 scheme. Tasks 1A-1E: **PARTIALLY IMPLEMENTED**                                             |
+| JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md             | Integrated augmentation (Tasks 1-3)           | Task 3 (layer assignment): **FIXED** — uses 0/1/2 scheme. Tasks 1A-1E: **PARTIALLY IMPLEMENTED**                                             |
 | INTEGRATED_DASHBOARD_PLAN.md               | Unified specification                         | Task 3 (layer values): **FIXED**. Task 4 (test failures): **FIXED** per REMAINING_ISSUES_REMEDIATION_PLAN.md                                 |
-| FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md | 20 connectivity issues                        | **ALL IMPLEMENTED** (P5-RC-01 through P5-RC-18) per document status                                                                          |
+| JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md | 20 connectivity issues                        | **ALL IMPLEMENTED** (P5-RC-01 through P5-RC-18) per document status                                                                          |
 | CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md   | Training state broadcast                      | **ALL PHASES APPLIED** — `_broadcast_training_state()` added to CasCor, candidate pool status derived in adapter                             |
 | CONVERGENCE_UI_FIX_PLAN.md                 | Convergence slider controls                   | **FIXED** (commits c8f2740, e11b100, PR #34)                                                                                                 |
 | CANOPY_DEFERRED_AND_BACKLOG_PLAN.md        | 6-sprint backlog                              | Sprints 1-6: **COMPLETE**                                                                                                                    |
@@ -798,10 +798,10 @@ class TestWebSocketTopologyPush:
 | RC-1: Stale editable install | DATASET_DISPLAY_BUG_ANALYSIS.md | Fixed: `get_dataset_data()` added to client, version bumped to 0.3.0 |
 | RC-2: Narrow exception in adapter | DATASET_DISPLAY_BUG_ANALYSIS.md | Fixed: `get_dataset_data()` now catches `Exception`, has `hasattr` guard |
 | RC-3: Missing in FakeCascorClient | DATASET_DISPLAY_BUG_ANALYSIS-FINAL.md | Fixed: `get_dataset_data()` added to FakeCascorClient (be17329) |
-| P5-RC-01: Metrics format mismatch | FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md | Fixed: all 20 issues resolved |
-| P5-RC-02: Topology format mismatch | FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md | Fixed: `_transform_topology()` implemented with transposition |
+| P5-RC-01: Metrics format mismatch | JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md | Fixed: all 20 issues resolved |
+| P5-RC-02: Topology format mismatch | JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md | Fixed: `_transform_topology()` implemented with transposition |
 | Output weights transposition | CANOPY_DASHBOARD_DISPLAY_FIXES.md Issue 3 | Fixed: transpose logic at adapter lines 627-629 |
-| Layer assignment (0/1/2 scheme) | DASHBOARD_AUGMENTATION_PLAN.md Task 3 | Fixed: layers 0/1/2 in adapter lines 605, 609, 635 |
+| Layer assignment (0/1/2 scheme) | JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md Task 3 | Fixed: layers 0/1/2 in adapter lines 605, 609, 635 |
 | Training state not broadcast | CANDIDATE_TRAINING_DISPLAY_FIXES_PLAN.md | Fixed: `_broadcast_training_state()` added to CasCor |
 | Convergence UI bugs B-5.1..B-5.4 | CONVERGENCE_UI_FIX_PLAN.md | Fixed: PR #34 |
 | Pre-existing test failures | INTEGRATED_DASHBOARD_PLAN.md Task 4 | Fixed: REMAINING_ISSUES_REMEDIATION_PLAN.md |

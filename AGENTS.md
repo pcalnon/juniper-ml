@@ -95,13 +95,13 @@ and the release notes are authored from
 `RELEASE_NOTES_<pkg>_v<version>.md` for a shared / sub-package). For the meta-package the Release
 event triggers `publish.yml`; for a tag-triggered shared / sub-package, cutting the Release
 **creates** the `juniper-<pkg>-v*` tag, which triggers its `publish-<pkg>.yml`. Full steps:
-[`notes/PYPI-PUBLISH-PROCEDURE.md` §11](notes/PYPI-PUBLISH-PROCEDURE.md). (This convention drifted
+[`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md). (This convention drifted
 during rapid concurrent refactoring — several sub-packages shipped tag-only — and is being restored.)
 
 The shared `juniper-observability` package is published separately from the same repo (subdirectory `juniper-observability/`) by `.github/workflows/publish-observability.yml`, triggered by tags matching `juniper-observability-v*`.
 
 The shared `juniper-doc-tools` package (Wave 0 scaffold, plan
-[`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md))
+[`notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md))
 is published from subdirectory `juniper-doc-tools/` by
 `.github/workflows/publish-doc-tools.yml`, triggered by tags matching
 `juniper-doc-tools-v*`. It packages the markdown link validator
@@ -110,7 +110,7 @@ module form) so that the 8 ecosystem repos can replace their inline
 `scripts/check_doc_links.py` copies with a single PyPI dependency.
 
 The shared `juniper-ci-tools` package (Wave 0 scaffold, plan
-[`notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`](notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md))
+[`notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md))
 is published from subdirectory `juniper-ci-tools/` by
 `.github/workflows/publish-ci-tools.yml`, triggered by tags matching
 `juniper-ci-tools-v*`. It packages the dependency-documentation generator
@@ -129,7 +129,7 @@ the canonical implementation.
 - `register_info_or_update(name, description, **info_labels)` — sugar for the `Info` two-step register-then-`.info({...})` pattern.
 - `lazy_register_or_reuse(factory, name, *args, **kwargs)` — like `register_or_reuse` but caches the result in a module-private dict; for the lazy-init-with-`None`-sentinel pattern.
 
-Tests touching these collectors should use `juniper_observability.testing.reset_prometheus_registry`. Minimum pin: `juniper-observability>=0.2.0`. See [`notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md) for the design rationale and the migration history.
+Tests touching these collectors should use `juniper_observability.testing.reset_prometheus_registry`. Minimum pin: `juniper-observability>=0.2.0`. See [`notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md`](notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md) for the design rationale and the migration history.
 
 ## Repository Structure
 
@@ -186,10 +186,10 @@ juniper-ml/
 ├── resources/                 # External resources (AppImages, etc.)
 │
 ├── notes/                     # Development notes, plans, and procedures
-│   ├── WORKTREE_SETUP_PROCEDURE.md       # Worktree creation procedure
-│   ├── WORKTREE_CLEANUP_PROCEDURE_V2.md  # Worktree cleanup procedure (CWD-safe)
-│   ├── THREAD_HANDOFF_PROCEDURE.md       # Thread handoff protocol
-│   ├── SOPS_USAGE_GUIDE.md              # Secrets encryption guide
+│   ├── JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md       # Worktree creation procedure
+│   ├── JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md  # Worktree cleanup procedure (CWD-safe)
+│   ├── JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md       # Thread handoff protocol
+│   ├── JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md              # Secrets encryption guide
 │   ├── backups/               # Backup analysis/plan documents
 │   ├── concurrency/           # Concurrency-related handoff notes
 │   ├── development/           # Development analysis documents
@@ -320,7 +320,7 @@ juniper-ml/
 - `util/worktree_cleanup.bash` -- Automated worktree cleanup with CWD-safe session continuity (V2 procedure). The `MAIN_REPO` path is now derived from `${BASH_SOURCE[0]}` (one directory up from the script) with an optional `JUNIPER_ML_MAIN_REPO` environment override for test fixtures and unusual layouts. Supports `--old-worktree`, `--old-branch`, `--parent-branch`, `--new-worktree`, `--new-branch`, `--skip-pr`, `--skip-remote-delete`, `--dry-run`.
 - `util/reap_pytest_orphans.bash` -- Safely reaps orphaned Juniper pytest multiprocessing children. Supports `JUNIPER_REAP_PROC_ROOT` and `JUNIPER_REAP_KILL_CMD` test hooks for deterministic regression tests.
 - Documentation link validator now lives in [`juniper-doc-tools/`](juniper-doc-tools/) and is published to PyPI as `juniper-doc-tools` (Wave 4 of the doc-link migration plan; install with `pip install juniper-doc-tools` and invoke via `juniper-check-doc-links`).
-- `util/requirements_drift_check.py` -- Drift checker for the requirements snapshot at `notes/requirements/id_assignments.yaml`. Default `--mode quick` validates path resolution + structural line-range integrity for every citation; emits a human report or `--json`. Exit code 1 on any drift. Implements the spec in [`notes/REQUIREMENTS_NEXT_STEPS.md` §7](notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection); `--mode full` / `--mode rewrite` are reserved for future work.
+- `util/requirements_drift_check.py` -- Drift checker for the requirements snapshot at `notes/requirements/id_assignments.yaml`. Default `--mode quick` validates path resolution + structural line-range integrity for every citation; emits a human report or `--json`. Exit code 1 on any drift. Implements the spec in [the requirements next-steps doc §7](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#7-stale--drift-detection); `--mode full` / `--mode rewrite` are reserved for future work.
 - `util/template_data_resolver.py` -- Loader + dotted `resolve()` for the custom-agent suite data layer (`prompts/agent_templates/data/*.yaml`: standing rules, anti-hallucination doctrine, conventions, ecosystem facts, known-misses ledger). Path-invoked (`python util/template_data_resolver.py conventions.handoff_threshold`) or imported; the Template Agent maps these into template slots and RUBRIC R2.5 checks injected conventions against them. Tests: `tests/test_template_data_resolver.py`.
 - `util/template_select_preview.py` -- Offline preview of the Template Agent's category selection (P2): given a task string, prints which template the Skill's `match_signals` step would pick (matched keywords + ranked runner-ups). A preview heuristic (keyword-substring scoring; `generic` fallback), not the Skill's exact judgement. `python util/template_select_preview.py "TASK" [--repo-root P] [--json] [--top N]`; exit 0 always. Tests: `tests/test_template_select_preview.py`.
 - `util/editable_install_drift_check.py` -- Drift checker for juniper editable installs in the conda environments. Reads each env's `*.dist-info/direct_url.json` directly (robust to broken envs); classifies every `juniper-*` editable as `FRESH` / `WORKTREE_PINNED` (under a `worktrees` path) / `ORPHANED` (missing). `*-DEPRECATED` skipped by default; exit 1 on ORPHANED; `--json`; `--fix` re-points orphans to their canonical repo (`--dry-run` previews).
@@ -460,7 +460,7 @@ The repository uses [SOPS](https://github.com/getsops/sops) with age encryption 
 - **Encryption key**: age key configured in `.sops.yaml`
 - **Existing encrypted file**: `.env.enc`
 - **Pre-commit protection**: The `no-unencrypted-env` hook blocks unencrypted `.env` files from being committed
-- **Usage guide**: `notes/SOPS_USAGE_GUIDE.md`
+- **Usage guide**: `notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`
 
 ## Ecosystem Context
 
@@ -487,6 +487,7 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 - Line length: 512 for all linters (flake8, markdownlint)
 - Shell scripts use bash with `shellcheck` compliance
 - Markdown files use `.markdownlint.yaml` configuration
+- `notes/` documents are named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM). Exempt: `notes/{templates,releases,requirements,legacy}/` and README files. Full rules + migration record: [`notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)
 
 ### Script placement (mandatory)
 
@@ -499,7 +500,7 @@ Utility, single-use, temporary, and unfinished scripts MUST be created under `ut
 
 **`/tmp/` is prohibited** as the home for any script that produces, modifies, or analyzes repository content. `/tmp/` is reaped when sessions / sandboxes / containers end, and scripts placed there are lost. `/tmp/` remains acceptable as a scratch *workspace* for intermediate artifacts that the script itself creates and reads (e.g., `uv pip compile -o /tmp/lock && mv /tmp/lock requirements.lock`) — the prohibition is on script *source files*, not on transient data.
 
-**Incident motivating this rule**: `phase4_consolidate.py` and `v2_citation_validate.py` were authored in `/tmp/` across the v1-v4 requirements snapshot effort and are now irrecoverable. See [`notes/REQUIREMENTS_NEXT_STEPS.md` §7](notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection) and [plan-doc §12](notes/REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md#12-open-issues--questions-discovered-during-execution).
+**Incident motivating this rule**: `phase4_consolidate.py` and `v2_citation_validate.py` were authored in `/tmp/` across the v1-v4 requirements snapshot effort and are now irrecoverable. See [`notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §7](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#7-stale--drift-detection) and [plan-doc §12](notes/JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md#12-open-issues--questions-discovered-during-execution).
 
 See [`util/ad-hoc/README.md`](util/ad-hoc/README.md) for the ad-hoc-script convention (file-header requirements, when to graduate to `util/` proper).
 
@@ -509,9 +510,9 @@ See [`util/ad-hoc/README.md`](util/ad-hoc/README.md) for the ad-hoc-script conve
 
 ### Requirements (JR-ID) cross-references
 
-PR descriptions on juniper-ml SHOULD include a `## Requirements` section that lists the [`JR-<REPO>-<AREA>-<NNN>` IDs](notes/REQUIREMENTS_INDEX.md) this PR touches. The repository-level [`.github/pull_request_template.md`](.github/pull_request_template.md) pre-fills the section; delete it only if no tracked requirement applies.
+PR descriptions on juniper-ml SHOULD include a `## Requirements` section that lists the [`JR-<REPO>-<AREA>-<NNN>` IDs](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md) this PR touches. The repository-level [`.github/pull_request_template.md`](.github/pull_request_template.md) pre-fills the section; delete it only if no tracked requirement applies.
 
-**Verb conventions** (from [`REQUIREMENTS_NEXT_STEPS.md` §4](notes/REQUIREMENTS_NEXT_STEPS.md#4-jr-id-references-in-prs)):
+**Verb conventions** (from [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §4](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#4-jr-id-references-in-prs)):
 
 | Verb                    | Meaning                                                                            | Refresh-time effect       |
 | ----------------------- | ---------------------------------------------------------------------------------- | ------------------------- |
@@ -522,11 +523,11 @@ PR descriptions on juniper-ml SHOULD include a `## Requirements` section that li
 
 **Looking up an ID**:
 
-- Browse [`notes/REQUIREMENTS_INDEX.md`](notes/REQUIREMENTS_INDEX.md) or [`notes/requirements/by-area/<CODE>.md`](notes/requirements/) for human-readable views.
-- For programmatic queries, see [`REQUIREMENTS_NEXT_STEPS.md` §3 recipes](notes/REQUIREMENTS_NEXT_STEPS.md#3-snapshot-consumption-recipes).
+- Browse [`notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md) or [`notes/requirements/by-area/<CODE>.md`](notes/requirements/) for human-readable views.
+- For programmatic queries, see [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §3 recipes](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#3-snapshot-consumption-recipes).
 - Never `grep` `id_assignments.yaml` for content — briefs there are truncated.
 
-**Scope**: Apply the convention in PR *descriptions* only — not commit messages. CI lint validating IDs is deferred until the convention has organic uptake (see [`REQUIREMENTS_NEXT_STEPS.md` §6](notes/REQUIREMENTS_NEXT_STEPS.md#6-ci-lint-validating-jr-id-references)).
+**Scope**: Apply the convention in PR *descriptions* only — not commit messages. CI lint validating IDs is deferred until the convention has organic uptake (see [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §6](notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#6-ci-lint-validating-jr-id-references)).
 
 ### Other PR description conventions
 
@@ -544,8 +545,8 @@ Git worktrees allow multiple branches of a repository to be checked out simultan
 
 The full setup and cleanup procedures are defined in:
 
-- **`notes/WORKTREE_SETUP_PROCEDURE.md`** -- Creating a worktree for a new task
-- **`notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`** -- Merging, removing, and pushing after task completion (V2 -- fixes CWD-trap bug)
+- **`notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`** -- Creating a worktree for a new task
+- **`notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`** -- Merging, removing, and pushing after task completion (V2 -- fixes CWD-trap bug)
 
 Read the appropriate file when starting or completing a task.
 
@@ -570,7 +571,7 @@ Example: `juniper-ml--chore--update-deps--20260225-1430--519bda91`
 
 ### Quick Reference
 
-**Setup** (full procedure in `notes/WORKTREE_SETUP_PROCEDURE.md`):
+**Setup** (full procedure in `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`):
 
 ```bash
 cd /home/pcalnon/Development/python/Juniper/juniper-ml
@@ -584,7 +585,7 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
 
-**Cleanup** (full procedure in `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`):
+**Cleanup** (full procedure in `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`):
 
 ```bash
 # Phase 1: Push current work
@@ -637,7 +638,7 @@ This introduces information loss. Instead, Claude Code instances working on this
 project MUST perform a **proactive thread handoff**: transferring a curated,
 high-signal summary to a fresh thread with full context capacity.
 
-The full handoff protocol is defined in **`notes/THREAD_HANDOFF_PROCEDURE.md`**.
+The full handoff protocol is defined in **`notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`**.
 Read that file when a handoff is triggered.
 
 ### When to Trigger a Handoff
@@ -659,7 +660,7 @@ Concretely:
   notification, treat this as a signal that handoff should have already occurred --
   immediately initiate one.
 
-**Additional triggers** (from `notes/THREAD_HANDOFF_PROCEDURE.md`):
+**Additional triggers** (from `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`):
 
 | Condition                   | Indicator                                            |
 | --------------------------- | ---------------------------------------------------- |
@@ -680,7 +681,7 @@ Concretely:
 1. **Checkpoint**: Inventory what was done, what remains, what was discovered,
    and what files are in play
 2. **Compose the handoff goal**: Write a concise, actionable summary
-   (see templates in `notes/THREAD_HANDOFF_PROCEDURE.md`)
+   (see templates in `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`)
 3. Combine checkpoint and handoff goal to create a detailed thread handoff prompt
 4. **Present to user**: Output the handoff prompt and recommend starting a new
    thread with that handoff as the initial prompt

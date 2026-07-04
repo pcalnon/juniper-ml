@@ -15,7 +15,7 @@
 > (`on_event` for the coarse projection via CCN's native `on_epoch_callback`/`on_grow_iteration_callback`
 > hooks + a *retained* drain→broadcast side-channel for the 50 Hz `/ws/training` per-candidate stream).
 > **B4** follows. The **A-phase (6a)** stays blocked on the OUT-11 `juniper-service-core` 0.2.0 publish
-> (ml #502). Full reconciliation: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+> (ml #502). Full reconciliation: `JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`.
 >
 > **⟢ UPDATE 2026-06-23.** **B3 is now fully MERGED** — B3.1 (#352) + B3.2 (#353) + B3.3 (#355, the
 > manager monitoring cutover; the fit/grow monkey-patches are gone). The §0/§5 "B3 NOT STARTED" framing
@@ -23,14 +23,14 @@
 > retire the test-only `CascorModelCoreAdapter`) remains, and it has no PR/branch yet. **`juniper-service-core`
 > 0.2.0 is LIVE on PyPI** (#502 merged), clearing the A-phase publish-blocker — the A-phase remains gated
 > on B4 + the three owner decisions (DR-1 / soak-OQ-17 / manager-appetite); see
-> `JUNIPER_WS6_APHASE_READINESS_VALIDATION_2026-06-22.md`.
+> `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`.
 
 > **What this is.** A build plan for the **B-phase** of the juniper-cascor refactor (WS-6, sub-phase
 > 6b): make the production cascor service operate against the abstract `juniper_model_core`
 > `TrainableModel` / `GrowableModel` interfaces, replacing the *test-only* `CascorModelCoreAdapter`
 > with native production conformance. This is the **dependency-clear** cutover step ratified as
 > **DR-1 (do B now; defer the A-phase decision)** in
-> [`JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md`](JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md) §2
+> [`JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md`](JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md) §2
 > (juniper-ml #475, merged).
 >
 > **The headline decision.** cascor adopts the interface through a **thin production wrapper**
@@ -521,11 +521,11 @@ Each lane runs in low tens of seconds. After lint-green, also `gh workflow run` 
   (D) gate invariants — golden #340 + conformance #341 + run harness. **Validation (§0.1):** an
   independent fact-check (all load-bearing claims confirmed; 3 path/line corrections) + a
   completeness/risk critique (4 HIGH + 4 lesser gaps, all folded into this revision).
-- **Design of record:** [`JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md`](JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md)
-  §2 (DR-1); [`JUNIPER_CASCOR_MODEL_CORE_CONFORMANCE_WIRING_PLAN_2026-06-18.md`](JUNIPER_CASCOR_MODEL_CORE_CONFORMANCE_WIRING_PLAN_2026-06-18.md)
-  (D-C1…D-C5, the adapter mapping). Refactor plan `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`
+- **Design of record:** [`JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md`](JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md)
+  §2 (DR-1); [`JUNIPER_2026-06-18_JUNIPER-CASCOR_MODEL-CORE-CONFORMANCE-WIRING-PLAN.md`](JUNIPER_2026-06-18_JUNIPER-CASCOR_MODEL-CORE-CONFORMANCE-WIRING-PLAN.md)
+  (D-C1…D-C5, the adapter mapping). Refactor plan `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`
   (Part 8 §8.4 A/B split, §2.7 kill-criterion); service-core T2 audit
-  `JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md`.
+  `JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md`.
 - **Gate evidence:** cascor #340 (golden), #341 (conformance), #342 (release enforcement); ruleset
   `juniper-cascor-rules-1` (id 15081045, active) with both gate halves required. model-core installed
   0.2.0 / repo + PyPI 0.3.0; service-core merged-unpublished 0.1.0.

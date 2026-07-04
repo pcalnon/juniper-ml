@@ -2,7 +2,7 @@
 
 **Date**: 2026-03-14
 **Context**: Phase 1.1.4 of the Documentation Audit and Upgrade Plan
-**Reference**: `notes/DOCUMENTATION_AUDIT_V2_PLAN.md`
+**Reference**: `notes/JUNIPER_2026-03-28_JUNIPER-ECOSYSTEM_DOCUMENTATION-AUDIT-V2-PLAN.md`
 
 ---
 
@@ -75,7 +75,7 @@ These items are deferred because they either:
 | R-10 | Remove stale directory structure | Phase 3.2 |
 | R-11 | Rewrite Legacy Directories table | Phase 3.4 parent directory |
 | R-12 | Update Parent Directory Structure tree | Phase 3.4 parent directory |
-| R-13 | Converge THREAD_HANDOFF_PROCEDURE.md | Phase 3.3 procedural docs audit |
+| R-13 | Converge JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md | Phase 3.3 procedural docs audit |
 | R-14 | Document conda environment split | Phase 3.4 parent directory |
 | R-15 | Document Python version split | Phase 3.4 parent directory |
 | R-19 | Fix conda env name in cascor docs | Phase 3.2 |

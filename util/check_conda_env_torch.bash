@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # check_conda_env_torch.bash — diagnose the torch._C shadow described
-# in notes/JUNIPER_CONDA_ENV_REBUILD_PROCEDURE.md (P-5).
+# in notes/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_CONDA-ENV-REBUILD-PROCEDURE.md (P-5).
 #
 # Exit codes:
 #   0 — env is healthy: regular CPython, torch imports, _C resolves to
@@ -63,7 +63,7 @@ if ! "$PYTHON" -c 'import torch' 2>/dev/null; then
             SO_TAGS=$(find "$torch_dir" -maxdepth 1 -name '_C.cpython-*.so' -printf '%f ')
             echo "::error::torch._C/ namespace-package directory present at $torch_dir/_C"
             echo "::error::torch _C.so files alongside it: $SO_COUNT ($SO_TAGS)"
-            echo "          See notes/JUNIPER_CONDA_ENV_REBUILD_PROCEDURE.md for recovery."
+            echo "          See notes/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_CONDA-ENV-REBUILD-PROCEDURE.md for recovery."
             if [[ "$INTERP_FT" == "1" ]]; then
                 exit 2  # FT shadow — most common case
             fi

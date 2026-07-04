@@ -2,7 +2,7 @@
 
 **Author**: Paul Calnon (with Claude Opus 4.7 sub-agent investigation)
 **Date**: 2026-05-27
-**Companion**: [`STACK_REGRESSION_ANALYSIS_2026-05-27.md`](STACK_REGRESSION_ANALYSIS_2026-05-27.md)
+**Companion**: [`JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-ANALYSIS.md`](JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-ANALYSIS.md)
 **Repos in scope**: `juniper-cascor`, `juniper-cascor-client`, `juniper-canopy`, `juniper-deploy`
 
 This document presents remediation options for each root cause from the analysis doc, with the strengths / weaknesses / risks of each approach, the recommended path, and the tests that must accompany each fix.

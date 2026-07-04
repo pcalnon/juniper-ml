@@ -1,7 +1,7 @@
 # Microservices Development, next steps
 
-create a new markdown document: MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md
-use this file to document detailed plans for the selected approaches for the various topics of analysis, based on the contents of the MICROSERVICES_ARCHITECTURE_ANALYSIS.md document.
+create a new markdown document: JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md
+use this file to document detailed plans for the selected approaches for the various topics of analysis, based on the contents of the JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md document.
 
 ## Coordinated application startup
 

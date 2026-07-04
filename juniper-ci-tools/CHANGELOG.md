@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Adds an **opt-in enforcing mode** to `juniper-coverage-gap-map` (non-breaking:
 the advisory exit-0-always behavior remains the default; no other console
 script is affected). This is work-unit **C-0** of the per-file coverage rollout
-(`notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md`).
+(`notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md`).
 
 ### Added
 
@@ -137,7 +137,7 @@ Adds the advisory per-file coverage-gap mapper as a fifth console script
 ### Migration context
 
 Hosts enhancement **E-4** of the juniper-ml custom-agent-suite enhancement
-plan (`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md`
+plan (`notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md`
 §6.7, Phase-2 PR-6). Addresses the systemic gap surfaced by the 2026-06-26
 ecosystem test-suite audit: no per-file coverage gate exists anywhere across
 the Juniper repos. juniper-ml's own workflow pins (`ci.yml`,
@@ -181,7 +181,7 @@ callers are unaffected).
 ### Migration context
 
 This release is Phase 4 (per
-`juniper-ml notes/AGENTS_MD_HEADER_STANDARDIZATION_PLAN_2026-05-22.md`)
+`juniper-ml notes/JUNIPER_2026-05-22_JUNIPER-ECOSYSTEM_AGENTS-MD-HEADER-STANDARDIZATION-PLAN.md`)
 of the AGENTS.md header standardization initiative kicked off in
 juniper-ml#316. The canonical inline lint at
 `juniper-ml tests/test_agents_md_header_schema.py` and the auto-bump
@@ -272,7 +272,7 @@ in-package test, depending on each repo's preferred runner).
 ## [0.1.0] -- 2026-05-20
 
 Initial PyPI scaffold (Wave 0 of the `juniper-ci-tools` migration; plan doc
-`notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md` in the juniper-ml repo).
+`notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md` in the juniper-ml repo).
 
 ### Added
 

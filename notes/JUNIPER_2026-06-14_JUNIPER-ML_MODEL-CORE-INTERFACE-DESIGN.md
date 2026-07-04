@@ -13,18 +13,18 @@
 ## 1. What this is
 
 `juniper-model-core` is the shared **model-contract template** for the Juniper ML platform —
-WS-3 of the model/middleware refactor (`notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`,
+WS-3 of the model/middleware refactor (`notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`,
 §2.3 / §3.3). It defines the minimal interface the Juniper service layer needs from *any*
 learning model, plus a reusable conformance test kit that makes "any new model is pluggable"
 verifiable rather than aspirational.
 
-Per the ratified placement convention (`notes/JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`,
+Per the ratified placement convention (`notes/JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md`,
 D4), `-core` is reserved for genuinely-shared abstractions, which live as **juniper-ml
 subdirectories** alongside `juniper-observability` / `juniper-ci-tools` / etc. The integration
 mechanism is **subclass + inject**, not an entry-point registry.
 
 This document is the canonical spec for the package. The model-side view of how the LMU plugs
-in is `notes/JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md` §6.3.
+in is `notes/JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md` §6.3.
 
 ### Scope
 

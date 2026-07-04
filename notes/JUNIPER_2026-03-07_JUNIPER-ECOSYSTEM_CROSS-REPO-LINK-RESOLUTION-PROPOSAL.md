@@ -214,7 +214,7 @@ Unique targets:
 
 | Link                                                 | Correct Relative Path            |
 |------------------------------------------------------|----------------------------------|
-| `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            | `SOPS_USAGE_GUIDE.md`            |
+| `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            | `JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
 | `../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md`    | `SOPS_IMPLEMENTATION_PLAN.md`    |
 | `../juniper-ml/notes/SOPS_AUDIT_2026-03-02.md`       | `SOPS_AUDIT_2026-03-02.md`       |
 | `../juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md` | `SECRETS_MANAGEMENT_ANALYSIS.md` |
@@ -237,7 +237,7 @@ These reference files in `notes/` that do not exist. Git history confirms **none
 | `STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md` | 575  | Remove link (planned doc, never created)                                         |
 | `PYPI_PUBLISH_PROCEDURE.md`                 | 720  | Replace with `pypi-publish-procedure.md` (exists, different filename convention) |
 | `PYPI_PUBLISH_PLAN_3_PACKAGES.md`           | 720  | Remove link (planned doc, never created)                                         |
-| `WORKTREE_IMPLEMENTATION_PLAN.md`           | 755  | Remove link or redirect to `WORKTREE_SETUP_PROCEDURE.md`                         |
+| `WORKTREE_IMPLEMENTATION_PLAN.md`           | 755  | Remove link or redirect to `JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`                         |
 
 **Total: 5 links:**
 
@@ -455,7 +455,7 @@ Independent of how the link checker handles cross-repo links, the documentation 
 
 | Target Type                                    | Strategy                              | Example                                                         |
 |------------------------------------------------|---------------------------------------|-----------------------------------------------------------------|
-| Intra-repo files                               | Relative path (always resolvable)     | `SOPS_USAGE_GUIDE.md`                                           |
+| Intra-repo files                               | Relative path (always resolvable)     | `JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`                                           |
 | Cross-repo stable files (AGENTS.md, README.md) | Relative path + annotated for CI skip | `../juniper-data/AGENTS.md`                                     |
 | Cross-repo source code files                   | GitHub permalink                      | `https://github.com/.../blob/main/juniper_data/api/settings.py` |
 | Cross-repo docs (may move)                     | Relative path + annotated             | `../juniper-data/docs/api/API_SCHEMAS.md`                       |
@@ -471,10 +471,10 @@ Independent of how the link checker handles cross-repo links, the documentation 
 
 ```markdown
 <!-- BEFORE (broken in CI) -->
-[SOPS Usage Guide](../juniper-ml/notes/SOPS_USAGE_GUIDE.md)
+[SOPS Usage Guide](../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md)
 
 <!-- AFTER (always works) -->
-[SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
+[SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md)
 ```
 
 **Category D fix** -- Replace deep relative link with local reference:
@@ -625,7 +625,7 @@ The 5 missing intra-repo files in Category C were **never committed** to the rep
 | `STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md` | 575  | **Remove link** -- planned doc, never created                                             |
 | `PYPI_PUBLISH_PROCEDURE.md`                 | 720  | **Replace** with `pypi-publish-procedure.md` (existing file, different naming convention) |
 | `PYPI_PUBLISH_PLAN_3_PACKAGES.md`           | 720  | **Remove link** -- planned doc, never created                                             |
-| `WORKTREE_IMPLEMENTATION_PLAN.md`           | 755  | **Remove link** or redirect to `WORKTREE_SETUP_PROCEDURE.md`                              |
+| `WORKTREE_IMPLEMENTATION_PLAN.md`           | 755  | **Remove link** or redirect to `JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`                              |
 
 ---
 
@@ -801,7 +801,7 @@ All copies are byte-for-byte identical (except file headers). Any enhancement to
    ```markdown
    > **Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve
    > locally when all Juniper repos are checked out as siblings. They are skipped during CI
-   > validation. See [CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md)
+   > validation. See [JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md](JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md)
    > for details.
    ```
 
@@ -1068,15 +1068,15 @@ All in `notes/DEVELOPER_CHEATSHEET.md`:
 
 | Line | Link                                                 |
 |------|------------------------------------------------------|
-| 95   | `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            |
-| 106  | `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            |
+| 95   | `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
+| 106  | `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
 | 106  | `../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md`    |
-| 112  | `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            |
-| 123  | `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            |
-| 163  | `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            |
+| 112  | `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
+| 123  | `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
+| 163  | `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
 | 163  | `../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md`    |
 | 163  | `../juniper-ml/notes/SOPS_AUDIT_2026-03-02.md`       |
-| 174  | `../juniper-ml/notes/SOPS_USAGE_GUIDE.md`            |
+| 174  | `../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`            |
 | 174  | `../juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md` |
 | 500  | `../juniper-ml/AGENTS.md`                            |
 | 720  | `../juniper-ml/notes/pypi-publish-procedure.md`      |
@@ -1091,7 +1091,7 @@ All in `notes/DEVELOPER_CHEATSHEET.md`:
 | 575  | `STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md` | Remove                                              |
 | 720  | `PYPI_PUBLISH_PROCEDURE.md`                 | Replace with `pypi-publish-procedure.md`            |
 | 720  | `PYPI_PUBLISH_PLAN_3_PACKAGES.md`           | Remove                                              |
-| 755  | `WORKTREE_IMPLEMENTATION_PLAN.md`           | Remove or redirect to `WORKTREE_SETUP_PROCEDURE.md` |
+| 755  | `WORKTREE_IMPLEMENTATION_PLAN.md`           | Remove or redirect to `JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` |
 
 ### Category D: False-Negative Deep Relative Link (0 CI failures, 1 semantic issue)
 

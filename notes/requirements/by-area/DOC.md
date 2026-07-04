@@ -221,7 +221,7 @@ File: src/main.py
 **Status**: proposed  **Priority**: P1  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 121-121)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 121-121)
 
 **Notes**:
 
@@ -421,7 +421,7 @@ Medium severity: helps agents understand test conventions
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3673-3687)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3673-3687)
 
 **Notes**:
 
@@ -467,12 +467,12 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.3) and AGENTS_MD_UPDATE_PLAN (Step 3.3)
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md` (lines 207-244)
+- `juniper-ml/notes/JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md` (lines 207-244)
 
 **Detail**:
 
 Category B (12 links): self-referencing cross-repo links should be direct relative:
-- ../juniper-ml/notes/SOPS_USAGE_GUIDE.md → SOPS_USAGE_GUIDE.md
+- ../juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md → JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md
 - ../juniper-ml/notes/SOPS_IMPLEMENTATION_PLAN.md → SOPS_IMPLEMENTATION_PLAN.md
 - ../juniper-ml/notes/SOPS_AUDIT_2026-03-02.md → SOPS_AUDIT_2026-03-02.md
 - ../juniper-ml/notes/SECRETS_MANAGEMENT_ANALYSIS.md → SECRETS_MANAGEMENT_ANALYSIS.md
@@ -484,7 +484,7 @@ Category C (5 links): missing files never created, should be removed or redirect
 - Line 575: STEP_7_4_OBSERVABILITY_FOUNDATION_PLAN.md (remove)
 - Line 720: PYPI_PUBLISH_PROCEDURE.md → pypi-publish-procedure.md (rename fix)
 - Line 720: PYPI_PUBLISH_PLAN_3_PACKAGES.md (remove)
-- Line 755: WORKTREE_IMPLEMENTATION_PLAN.md (remove or redirect to WORKTREE_SETUP_PROCEDURE.md)
+- Line 755: WORKTREE_IMPLEMENTATION_PLAN.md (remove or redirect to JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md)
 
 ### JR-CAS-DOC-003 — Fix import alias mistake: datetime import uses pd instead of dt.
 
@@ -502,7 +502,7 @@ Line 38 of cascade_correlation.py: 'import datetime as pd' should be 'import dat
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md` (lines 246-264)
+- `juniper-ml/notes/JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md` (lines 246-264)
 
 **Detail**:
 
@@ -514,7 +514,7 @@ Should be ../CLAUDE.md to reference repo's own CLAUDE.md (symlink to AGENTS.md) 
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2936-2940)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2936-2940)
 
 **Notes**:
 
@@ -566,7 +566,7 @@ codecov docs.
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 1032-1077)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 1032-1077)
 
 **Detail**:
 
@@ -616,7 +616,7 @@ Issue 3.2.5: Commented imports clutter code. Remove or restore with rationale.
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md` (lines 70-175)
+- `juniper-ml/notes/JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md` (lines 70-175)
 
 **Detail**:
 
@@ -662,7 +662,7 @@ Documentation & release phase (MEDIUM priority)
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 370-378)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 370-378)
 
 **Detail**:
 
@@ -720,7 +720,7 @@ set to and why.
 **Status**: proposed  **Priority**: P3  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/CHEATSHEET_SECTION_TO_PROJECT_MAPPING.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-03-15_JUNIPER-ECOSYSTEM_CHEATSHEET-SECTION-TO-PROJECT-MAPPING.md` (lines 1-50)
 
 ### JR-ML-DOC-013 — Maintain developer cheatsheet with current tooling and workflow procedures.
 

@@ -2,7 +2,7 @@
 
 **Author**: Claude Code (Principal Engineer)
 **Date**: 2026-04-03
-**Companion Document**: `REGRESSION_ANALYSIS_2026-04-03.md`
+**Companion Document**: `JUNIPER_2026-04-03_JUNIPER-ECOSYSTEM_REGRESSION-ANALYSIS.md`
 **Status**: Active
 
 ---

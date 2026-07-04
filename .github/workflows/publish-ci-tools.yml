@@ -13,7 +13,7 @@
 # Description:
 #    GitHub Actions publish pipeline for the juniper-ci-tools package
 #    (Wave 1 of the dependency-documentation generator PyPI migration --
-#    see notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md).
+#    see notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md).
 #    Triggered by tags matching ``juniper-ci-tools-v*`` so it stays
 #    decoupled from the juniper-ml meta-package's own ``v*`` release
 #    tags. Publishes to TestPyPI first (with install verification),

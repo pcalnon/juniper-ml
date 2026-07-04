@@ -3,7 +3,7 @@
 **Date**: 2026-03-02
 **Auditor**: Claude Code (Opus 4.6)
 **Scope**: All 8 active Juniper repositories
-**Reference Documents**: `SOPS_IMPLEMENTATION_PLAN.md`, `SOPS_USAGE_GUIDE.md`
+**Reference Documents**: `SOPS_IMPLEMENTATION_PLAN.md`, `JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`
 
 ---
 
@@ -198,7 +198,7 @@ export JUNIPER_CROSS_REPO_DISPATCH="github_pat_..."
 1. Encrypted `.env` → `.env.enc` using `sops -e --input-type dotenv --output-type dotenv .env > .env.enc`
 2. Verified decryption produces identical content
 3. Created `.env.example` documenting the 2 variable names (no values)
-4. Updated `SOPS_USAGE_GUIDE.md` per-repo reference table
+4. Updated `JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md` per-repo reference table
 5. Updated `SOPS_IMPLEMENTATION_PLAN.md` files summary
 
 **Remaining action**: The plaintext `.env` still exists on disk for local use. This is the standard SOPS workflow (gitignored plaintext for runtime, encrypted `.env.enc` for version control). The `.env.enc` should be committed to the repo.
@@ -267,7 +267,7 @@ The implementation plan explicitly notes that credential rotation is out of scop
 | Step 5: juniper-deploy secrets | Complete | Confirmed: `.env.secrets.example`, `.gitignore` with `!` exceptions |
 | Step 6: Remaining repos | Complete | Confirmed: All repos have `.sops.yaml` + `.env.example` (where applicable) |
 | Step 7: Pre-commit hooks | Complete | Confirmed: juniper-cascor, juniper-data, juniper-canopy all have hook |
-| Step 8: Documentation | Complete | Confirmed: `SOPS_USAGE_GUIDE.md` exists and is comprehensive |
+| Step 8: Documentation | Complete | Confirmed: `JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md` exists and is comprehensive |
 | Step 9: GitHub Secrets | Complete | Confirmed: `SOPS_AGE_KEY` present in all 8 repos |
 
 ### Post-Implementation Audit Remediations (2026-03-02) — Verification
@@ -296,8 +296,8 @@ The implementation plan explicitly notes that credential rotation is out of scop
 ### Immediate Actions — COMPLETED
 
 1. ~~**Encrypt or remove juniper-ml `.env`**~~ (Finding F-1) — **DONE**: encrypted to `.env.enc`, created `.env.example`
-2. ~~**Update SOPS_USAGE_GUIDE.md line 159**~~ — **DONE**: changed "ALL 7 repos" to "ALL 8 repos"
-3. ~~**Update SOPS_USAGE_GUIDE.md per-repo table**~~ — **DONE**: juniper-ml now shows `.env.enc` and `.env.example`
+2. ~~**Update JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md line 159**~~ — **DONE**: changed "ALL 7 repos" to "ALL 8 repos"
+3. ~~**Update JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md per-repo table**~~ — **DONE**: juniper-ml now shows `.env.enc` and `.env.example`
 4. ~~**Update SOPS_IMPLEMENTATION_PLAN.md files summary**~~ — **DONE**: added juniper-ml to `.env.example` and `.env.enc` rows
 
 ### Near-Term Actions (Remaining)

@@ -2,7 +2,7 @@
 
 **Date**: 2026-04-29
 **Author**: Paul Calnon (with Claude Opus 4.7)
-**Companion to**: `notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md`
+**Companion to**: `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md`
 **Goal**: Now that the alignment plan is fully implemented (17 commits
 across 8 repos, all on `main`), validate that every workflow runs
 green, root-cause every failure that surfaces, ship the fixes, and
@@ -54,7 +54,7 @@ repo's pipeline goes green.
 ## 2. Inputs
 
 - **Alignment plan**:
-  `notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md` — gap matrix,
+  `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md` — gap matrix,
   templates, sequencing, validation criteria.
 - **Authoritative commit map** (all on `main`):
 
@@ -131,7 +131,7 @@ done
 ## 4. Phase V1 — Document issues
 
 For every workflow where Phase V0 returned `failure`, capture in a
-**single new file** `notes/CI_VALIDATION_FINDINGS_2026-04-29.md`:
+**single new file** `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md`:
 
 - Repo / workflow / job / run-URL.
 - Failure category (one of: pre-commit, unit, integration, codeql,
@@ -224,7 +224,7 @@ unless the user re-enables PR review). Each commit MUST:
 fix(ci): <short description> (V01, V03 — G-CONFIG)
 
 Resolves findings V01 and V03 from the validation pass
-documented in notes/CI_VALIDATION_FINDINGS_2026-04-29.md. Both
+documented in notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md. Both
 share root cause G-CONFIG (<one-line summary>).
 
 Promotes <integration-tests | trivy-fs | …> from soft-fail to
@@ -281,7 +281,7 @@ re-walk the alignment plan in full and:
 
 ### Phase V1 — Documentation
 
-- [ ] Create `notes/CI_VALIDATION_FINDINGS_2026-04-29.md`.
+- [ ] Create `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md`.
 - [ ] Populate Index table with one row per failing run.
 
 ### Phase V2 — Root-cause

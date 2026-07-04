@@ -69,7 +69,7 @@ When the secret isn't configured:
   - The Lockfile Freshness check on the PR stays red forever even after the lockfile is updated, because the PR's CI was last run before the lockfile commit landed.
 - For juniper-canopy, V18 is the same shape on the canopy `lockfile-update.yml`.
 
-Both findings are flagged in `notes/CI_VALIDATION_FINDINGS_2026-04-29.md` as "deferred — depends on user-side secret config" because no amount of code change in either repo can solve them without the secret being provisioned.
+Both findings are flagged in `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md` as "deferred — depends on user-side secret config" because no amount of code change in either repo can solve them without the secret being provisioned.
 
 ### 1.4 Repos that need the secret
 
@@ -242,7 +242,7 @@ Dependabot is configured for weekly Python updates in each repo. The next time i
 
 #### 2.6.3 Confirm V17/V18 closure
 
-Once §2.6.1 or §2.6.2 succeeds, update `notes/CI_VALIDATION_FINDINGS_2026-04-29.md` to mark V17 and V18 as **fixed (verified)**, citing the verification run URLs. Update `notes/CI_ALIGNMENT_AUDIT_2026-04-29.md` fleet table to drop V17 and V18 from each row's deferral list.
+Once §2.6.1 or §2.6.2 succeeds, update `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md` to mark V17 and V18 as **fixed (verified)**, citing the verification run URLs. Update `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-ALIGNMENT-AUDIT.md` fleet table to drop V17 and V18 from each row's deferral list.
 
 ---
 
@@ -325,7 +325,7 @@ If the token is leaked (e.g., accidentally pasted into a public issue, committed
 | Generate a detailed walkthrough for creating and configuring the secrets | §2              | ✅ — three credential options, per-step UI navigation, secret provisioning, verification                               |
 | Consider and document best practices and security concerns               | §3              | ✅ — least-privilege, expiration/rotation, audit, org-vs-user, branch protection, required checks, token-leak response |
 | Audit and validate all aspects                                           | §4              | ✅                                                                                                                     |
-| Write into notes/                                                        | this file       | ✅ — `notes/V17_V18_CROSS_REPO_DISPATCH_TOKEN_SETUP_2026-05-02.md`                                                     |
+| Write into notes/                                                        | this file       | ✅ — `notes/JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_V17-V18-CROSS-REPO-DISPATCH-TOKEN-SETUP.md`                                                     |
 | Lint and fix syntax violations                                           | post-write step | runs after this file is saved (see §4.3)                                                                               |
 
 ### 4.2 Cross-checks against the actual workflow code
@@ -346,7 +346,7 @@ The walkthrough was validated against the live workflow contents:
 After saving, run:
 
 ```bash
-markdownlint -c .markdownlint.yaml notes/V17_V18_CROSS_REPO_DISPATCH_TOKEN_SETUP_2026-05-02.md
+markdownlint -c .markdownlint.yaml notes/JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_V17-V18-CROSS-REPO-DISPATCH-TOKEN-SETUP.md
 ```
 
 The juniper-ml `.markdownlint.yaml` sets `line-length: 512` and disables `ol-prefix` — which this document complies with.
@@ -374,7 +374,7 @@ If you just want to clear V17 and V18 right now and read the rationale later:
    - `https://github.com/pcalnon/juniper-canopy/settings/secrets/actions/new`
    - `https://github.com/pcalnon/juniper-data/settings/secrets/actions/new`
 3. Wait for the next Dependabot PR in either repo. Confirm the lockfile-update workflow runs green and that `ci.yml` re-runs on the post-update commit.
-4. Mark V17 and V18 fixed-verified in `notes/CI_VALIDATION_FINDINGS_2026-04-29.md`.
+4. Mark V17 and V18 fixed-verified in `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md`.
 
 If you want to also clear the four latent cases (cascor / cascor-client / cascor-worker / data-client), add those four repos to the same fine-grained PAT's repository-access list and provision the secret in each.
 

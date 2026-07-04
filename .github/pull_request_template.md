@@ -2,8 +2,8 @@
 <!--
   Optional Requirements block (juniper-ml convention).
   Delete if the PR doesn't touch any tracked requirement.
-  Convention: notes/REQUIREMENTS_NEXT_STEPS.md §4
-  Snapshot:   notes/REQUIREMENTS_INDEX.md
+  Convention: notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md §4
+  Snapshot:   notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md
 -->
 
 ## Summary
@@ -19,7 +19,7 @@
     References JR-*       — informed by but does not change status.
     Supersedes JR-*       — design replaces the entry; old one will be marked `superseded` at next refresh.
 
-  Look up IDs via notes/REQUIREMENTS_INDEX.md or notes/requirements/by-area/<CODE>.md.
+  Look up IDs via notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md or notes/requirements/by-area/<CODE>.md.
   Delete this section if no requirements apply.
 -->
 

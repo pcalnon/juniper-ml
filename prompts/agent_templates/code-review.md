@@ -28,7 +28,7 @@ Identify and document every material issue in the target, classified so the owne
 
 ## Key Deliverables & Requirements
 
-- A findings document written to `notes/`, named `JUNIPER_<APP>_<SUBJECT>_CODE_REVIEW_<YYYY-MM-DD>.md`, grouping issues by type and severity.
+- A findings document written to `notes/`, named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<SUBJECT>-CODE-REVIEW.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM; SUBJECT in UPPER-KEBAB-CASE), grouping issues by type and severity.
 - Every cited `file:line` is real (present in the grounding bundle); no invented paths, symbols, APIs, flags, or versions.
 
 ## Constraints

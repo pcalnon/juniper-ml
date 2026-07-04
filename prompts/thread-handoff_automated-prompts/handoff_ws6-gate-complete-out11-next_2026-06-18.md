@@ -53,7 +53,7 @@ had detailed plans first) and **unbuilt** (no `routes/`/websocket/worker module 
    - the **recurrence app's routers** — `juniper-recurrence/juniper-recurrence/juniper_recurrence/routers/`
      `{training,predict,model,dataset,crossval,_common}.py` (the concrete routes a generic T2 abstracts);
    - **cascor's existing** `src/api/**` routes + websocket + worker (the production T2 source);
-   - platform-roadmap doc `notes/JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md` (OUT-11
+   - platform-roadmap doc `notes/JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md` (OUT-11
      entry: "needed in full by WS-6; partially exercised by WS-4b routes").
 3. **Then** the WS-6 cutover (6a/6b) is unblocked: cascor adopts service-core T1+T2 + makes the
    model-core conformance native (replacing the test-only OUT-13 adapter).
@@ -74,7 +74,7 @@ had detailed plans first) and **unbuilt** (no `routes/`/websocket/worker module 
   `npx markdownlint-cli@0.42.0 --config=./.markdownlint.yaml <doc>` (line-length 512). `--fix` fixes
   blank-line rules (MD022/031/032/058) but NOT line-length — wrap prose manually; **table rows can't
   wrap, so trim** their cells.
-- **Canonical docs.** Status Tracker = `notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`
+- **Canonical docs.** Status Tracker = `notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`
   (reconciled to 2026-06-18 via #465/#466). The platform-roadmap doc tracks OUT-* items but
   self-disclaims its per-§3/§4 status cells as point-in-time 2026-06-17 snapshots — don't trust those cells.
 - **Process guardrails.** No merge without Paul's explicit per-PR "merged" signal **and** `gh pr view`

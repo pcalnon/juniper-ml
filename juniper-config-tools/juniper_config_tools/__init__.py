@@ -10,7 +10,7 @@ The public API is intentionally narrow in 0.1.0:
 - :func:`env_with_legacy_alias` -- read an env var's canonical name with
   optional legacy-alias fallback that emits a DeprecationWarning.
 
-See ``notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md`` in
+See ``notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md`` in
 the juniper-ml repo for the design rationale, the constraint that
 forced the package boundary (juniper-cascor-worker's pydantic-at-runtime
 invariant), and the wave plan.

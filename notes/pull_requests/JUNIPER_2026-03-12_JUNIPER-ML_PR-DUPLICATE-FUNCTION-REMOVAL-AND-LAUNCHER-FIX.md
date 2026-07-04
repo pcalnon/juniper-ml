@@ -106,7 +106,7 @@ OK
 
 - `scripts/default_interactive_session_claude_code.bash` — Default interactive launcher with env-driven skip-permissions
 - `notes/wake_the_claude_failure_analysis.md` — Full root cause analysis
-- `notes/pull_requests/PR_DUPLICATE_FUNCTION_REMOVAL_AND_LAUNCHER_FIX.md` — This PR description
+- `notes/pull_requests/JUNIPER_2026-03-12_JUNIPER-ML_PR-DUPLICATE-FUNCTION-REMOVAL-AND-LAUNCHER-FIX.md` — This PR description
 
 ### Modified Components
 

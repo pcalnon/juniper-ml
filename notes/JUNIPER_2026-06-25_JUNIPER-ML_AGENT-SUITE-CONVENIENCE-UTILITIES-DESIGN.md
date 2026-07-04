@@ -23,7 +23,7 @@ except markdownlint (`tests/test_agents_frontmatter.py:10-13`).
 
 This document was produced **by the suite's own `planner` agent** as a dogfooding exercise: every
 proposal below validates the design by *consuming* it. The full design-of-record is
-`notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`.
+`notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`.
 
 ## 2. Purpose and scope
 
@@ -329,7 +329,7 @@ P5), following the established `tempfile` + `subprocess` idiom. No utility write
 Every `file:line` cited above was read in-repo during grounding (agents, Skill, manifest, RUBRIC, data
 resolver, discovery CLI + symbol probe, installer, and the five `test_*.py` gates), and the discovery
 bundle at HEAD `21d77008` was consulted. The target path
-`notes/JUNIPER_juniper-ml_agent-suite-convenience-utilities_DESIGN_2026-06-25.md` was confirmed absent
+`notes/JUNIPER_2026-06-25_JUNIPER-ML_AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md` was confirmed absent
 before writing. No API, path, flag, or version above is asserted that was not observed in the repository.
 For ratification, recommend a cross-validation read of §6 against the live `manifest.yaml` and
 `util/prompt_discovery/cli.py` before P1 implementation begins.

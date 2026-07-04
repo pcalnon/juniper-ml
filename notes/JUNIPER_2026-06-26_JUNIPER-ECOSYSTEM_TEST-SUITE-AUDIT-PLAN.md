@@ -18,7 +18,7 @@ authoring session — execution is downstream, one PR per work unit (§11).
 It is grounded against the real repositories under `/home/pcalnon/Development/python/Juniper/`
 (henceforth `$J`) at the time of writing. Every cited `file:line` was re-probed first-party against
 the actual repo (directive 1). The starting point was the 19-unit survey in
-[`notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md`](JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md);
+[`notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md`](JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md);
 **§3 records every place reality differed from that survey.** Where a claim could not be grounded it
 is flagged, not invented.
 
@@ -338,7 +338,7 @@ table.
    take the **first** candidate that actually contains the markers — a `§5`/`## 5` crash-site section
    **and** at least one `(X-N)` issue ID. Most-recently-modified alone is **not** trusted (a `touch`ed
    or incomplete sibling could win the sort). **Proven this run:** the validated pick is
-   `$J/juniper-ml/notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` (only matching doc today;
+   `$J/juniper-ml/notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md` (only matching doc today;
    the `flickering-zooming-finch` seed is gone). *Robust long-term option:* keep a one-line pointer
    file `$J/juniper-ml/notes/CURRENT_CANOPY_DEBUG_DOC` so discovery is explicit, not glob-inferred.
 2. **Parse two distinct, stable key spaces** (skeptical-pass fix — the §5 sites have no source IDs):

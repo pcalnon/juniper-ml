@@ -25,7 +25,7 @@ What this proposal does NOT do:
 
 **Method**: I read all six R0 proposals in full, extracted every disagreement statement (`§11`, `§12`, `§13`, `§14` style sections) plus every implicit conflict (e.g., R0-03 says command_response has no seq; R0-04 uses a `request_id` field that R0-02 calls `command_id` — three proposals, three vocabularies for the same idea). I then applied the resolution criteria from §2 below to each.
 
-When in doubt about a cited claim, I cross-checked against the source architecture doc (`juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` v1.3 STABLE) and against the current state of cascor `manager.py`. Cross-checks are cited inline.
+When in doubt about a cited claim, I cross-checked against the source architecture doc (`juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` v1.3 STABLE) and against the current state of cascor `manager.py`. Cross-checks are cited inline.
 
 ---
 

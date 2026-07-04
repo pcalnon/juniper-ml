@@ -14,7 +14,7 @@
 #    GitHub Actions publish pipeline for the juniper-config-tools
 #    package (Wave 1 of the env-var alias-with-deprecation helper PyPI
 #    migration -- see
-#    notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md).
+#    notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md).
 #    Triggered by tags matching ``juniper-config-tools-v*`` so it stays
 #    decoupled from the juniper-ml meta-package's own ``v*`` release
 #    tags. Publishes to TestPyPI first (with install verification),

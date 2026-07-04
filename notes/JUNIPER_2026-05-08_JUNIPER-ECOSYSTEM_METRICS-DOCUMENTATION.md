@@ -519,14 +519,14 @@ Wire it in `conftest.py` as `autouse=True` whenever the test module touches Prom
 ### 7.2 Pre-commit
 
 The cross-repo `Async-route audit (BUG-JD-10 class)` ruff hook (`ASYNC*` codes) catches sync-in-async footguns that would manifest as latency-metric regressions.
-The async-route audit lane is wired in all four service repos (`juniper-cascor`, `juniper-data`, `juniper-canopy`, `juniper-cascor-worker`) and in `juniper-ml`'s pre-commit config — see `notes/FOLLOWUP_ASYNC_ROUTE_AUDIT.md`.
+The async-route audit lane is wired in all four service repos (`juniper-cascor`, `juniper-data`, `juniper-canopy`, `juniper-cascor-worker`) and in `juniper-ml`'s pre-commit config — see `notes/JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md`.
 
 ---
 
 ## 8. References
 
-- Shared helper design: `notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`
-- Async route audit follow-ups: `notes/FOLLOWUP_ASYNC_ROUTE_AUDIT.md`
+- Shared helper design: `notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md`
+- Async route audit follow-ups: `notes/JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md`
 - SLO catalog (drives `juniper_slo_*` rule groups): `notes/SLO_CATALOG_2026-05-03.md`
 - Per-service AGENTS.md files for service-specific commands and architecture
 - Parent ecosystem map: `/home/pcalnon/Development/python/Juniper/CLAUDE.md`

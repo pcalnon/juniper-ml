@@ -591,10 +591,10 @@ No fabricated or unsupported claim is used as load-bearing anywhere in this docu
 
 **Corpus notes (VERIFIED, repo `notes/`):**
 
-- `JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md` (PROPOSALS) — §2 (cascor today stateless), §3 (P1/P2/P3 defs), §4 (validation), §5 ("TDNN, not recurrence"; batch ⊥ time), §6/§7 (window N≈30, stateless-per-window, T=1 subsumption).
-- `JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` (DELTA-T) — §4.3 (no elapsed-time notion), §4.5 (orthogonality to ceiling), §5 (A-D table), §6.1 (`X.ndim` dispatch / `dt` keys), §8.7 (measured `e_reg`/`e_irr`/grid-invariance), §11 (recommendation A default, C principled).
-- `JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md` (MODEL) — §0.3 (C1), §1.3.3-1.3.4 (LMU long-horizon; Approach-C), §1.6 (OQ-4 reopened, OQ-7).
-- `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` (REFACTOR) — §0.3 (C1), §2.4/§2.8/§2.9 (additive contract, OQ-6, OQ-11), Part 5 (status; grounding-pass line numbers not load-bearing).
+- `JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md` (PROPOSALS) — §2 (cascor today stateless), §3 (P1/P2/P3 defs), §4 (validation), §5 ("TDNN, not recurrence"; batch ⊥ time), §6/§7 (window N≈30, stateless-per-window, T=1 subsumption).
+- `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` (DELTA-T) — §4.3 (no elapsed-time notion), §4.5 (orthogonality to ceiling), §5 (A-D table), §6.1 (`X.ndim` dispatch / `dt` keys), §8.7 (measured `e_reg`/`e_irr`/grid-invariance), §11 (recommendation A default, C principled).
+- `JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md` (MODEL) — §0.3 (C1), §1.3.3-1.3.4 (LMU long-horizon; Approach-C), §1.6 (OQ-4 reopened, OQ-7).
+- `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` (REFACTOR) — §0.3 (C1), §2.4/§2.8/§2.9 (additive contract, OQ-6, OQ-11), Part 5 (status; grounding-pass line numbers not load-bearing).
 
 **POC artifact (VERIFIED):**
 

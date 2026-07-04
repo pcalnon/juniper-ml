@@ -4,7 +4,7 @@
 **Author**: Paul Calnon
 **Started**: 2026-06-24
 **Status**: COMPLETE 2026-06-25 — all 9 migrated (only the `juniper-ml` root README intentionally stays Style A)
-**Design of record**: [`JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md`](JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md)
+**Design of record**: [`JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md`](JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md)
 **Template**: [`templates/TEMPLATE_README_PACKAGE.md`](templates/TEMPLATE_README_PACKAGE.md) ·
 **Callout snippet**: [`templates/SNIPPET_JUNIPER_PLATFORM_CALLOUT.md`](templates/SNIPPET_JUNIPER_PLATFORM_CALLOUT.md)
 

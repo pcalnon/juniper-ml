@@ -302,7 +302,7 @@ cd /home/pcalnon/Development/python/Juniper/<repo>
 git fetch origin && git checkout main && git pull origin main
 BRANCH_NAME="release/v<version>-prep"
 git branch "$BRANCH_NAME" main
-# ... (full worktree creation per WORKTREE_SETUP_PROCEDURE.md)
+# ... (full worktree creation per JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md)
 ```
 
 ### Step 4.2: Apply Fixes in Worktrees
@@ -348,7 +348,7 @@ pip install juniper-ml==0.4.0
 
 ### Step 4.7: Worktree Cleanup
 
-Per WORKTREE_CLEANUP_PROCEDURE_V2.md, clean up all worktrees after successful releases.
+Per JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md, clean up all worktrees after successful releases.
 
 ---
 

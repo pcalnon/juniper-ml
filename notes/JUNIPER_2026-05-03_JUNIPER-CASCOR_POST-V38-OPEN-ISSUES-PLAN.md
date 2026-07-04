@@ -211,7 +211,7 @@ This plan is followed by immediate execution per the user directive. Implementat
 3. Investigate P-2 cluster B (replay-control-range) on the same branch; fix; verify the test passes.
 4. Open the P-2 PR; merge once CI green.
 5. Confirm cascor main is fully green on the post-merge CI run.
-6. Update the deferred-items list in `notes/CI_ALIGNMENT_AUDIT_2026-04-29.md` (and findings doc) to mark P-2 and P-3 as closed; the cascor-side post-V38 backlog reduces to P-1 only.
+6. Update the deferred-items list in `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-ALIGNMENT-AUDIT.md` (and findings doc) to mark P-2 and P-3 as closed; the cascor-side post-V38 backlog reduces to P-1 only.
 
 P-1, P-4, P-5 remain documented here as future-cycle items.
 
@@ -303,7 +303,7 @@ After the conftest fix, every Unit Tests + Coverage matrix job (Python 3.12/3.13
 After saving, run:
 
 ```bash
-markdownlint -c .markdownlint.yaml notes/POST_V38_OPEN_ISSUES_PLAN_2026-05-03.md
+markdownlint -c .markdownlint.yaml notes/JUNIPER_2026-05-03_JUNIPER-CASCOR_POST-V38-OPEN-ISSUES-PLAN.md
 ```
 
 Compliance: line-length 512, no trailing-punctuation in headings, single h1.

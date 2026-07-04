@@ -15,7 +15,7 @@
 **Status**: in-progress  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/observability/GRAFANA_DASHBOARDS_STATE_AND_GAPS_2026-05-10.md` (lines 125-135)
+- `juniper-ml/notes/observability/JUNIPER_2026-05-10_JUNIPER-DEPLOY_GRAFANA-DASHBOARDS-STATE-AND-GAPS.md` (lines 125-135)
 
 **Detail**:
 
@@ -66,7 +66,7 @@ V2 revision addressing issues from initial plan.
 **Status**: in-progress  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/observability/GRAFANA_DASHBOARDS_STATE_AND_GAPS_2026-05-10.md` (lines 142-150)
+- `juniper-ml/notes/observability/JUNIPER_2026-05-10_JUNIPER-DEPLOY_GRAFANA-DASHBOARDS-STATE-AND-GAPS.md` (lines 142-150)
 
 **Detail**:
 
@@ -78,7 +78,7 @@ In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) af
 **Status**: in-progress  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 108-116)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 108-116)
 
 **Detail**:
 

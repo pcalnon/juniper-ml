@@ -1,7 +1,7 @@
 """Cross-repo drift detection for the ``juniper-ci-tools`` pin in
 each consumer repo's CI workflow.
 
-Plan §5.1 of ``notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md``:
+Plan §5.1 of ``notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md``:
 
    "Soft-warn on > 2 minors of lag; hard-fail when the upper bound
    excludes the current version."

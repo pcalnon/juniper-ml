@@ -6,8 +6,8 @@
 **Owner**: Paul Calnon
 **Status**: ACTIVE
 **Scope**: juniper-canopy, juniper-cascor, juniper-cascor-client (full interface audit)
-**Prior Art**: `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (P5-RC-01 through P5-RC-18, 2026-03-28, IMPLEMENTED)
-**Prior Art**: `CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (CR-006 through CR-076, 38 findings)
+**Prior Art**: `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (P5-RC-01 through P5-RC-18, 2026-03-28, IMPLEMENTED)
+**Prior Art**: `JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md` (CR-006 through CR-076, 38 findings)
 
 ---
 
@@ -84,9 +84,9 @@ This document **supersedes and consolidates** the following prior analyses:
 
 | Document                                              | Date       | Findings                            | Status                                 |
 |-------------------------------------------------------|------------|-------------------------------------|----------------------------------------|
-| `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md`          | 2026-03-28 | P5-RC-01 through P5-RC-18, KL-1     | IMPLEMENTED (FIX-A through FIX-K)      |
-| `CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md`           | 2026-04-04 | CR-006 through CR-076 (38 findings) | Partially remediated via PRs #104-#118 |
-| `CASCOR_COMPREHENSIVE_CODE_REVIEW_PLAN_2026-04-04.md` | 2026-04-04 | Methodology and tooling             | Executed                               |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md`          | 2026-03-28 | P5-RC-01 through P5-RC-18, KL-1     | IMPLEMENTED (FIX-A through FIX-K)      |
+| `JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md`           | 2026-04-04 | CR-006 through CR-076 (38 findings) | Partially remediated via PRs #104-#118 |
+| `JUNIPER_2026-04-04_JUNIPER-CASCOR_COMPREHENSIVE-CODE-REVIEW-PLAN.md` | 2026-04-04 | Methodology and tooling             | Executed                               |
 
 This document adds:
 
@@ -1230,7 +1230,7 @@ ServiceBackend.initialize():
 |            |                          |                  | -- (`StatusResult`, `MetricsResult`, `TopologyResult`, `DatasetResult`), returns dicts |                                                                             |
 | KL-1       | Connection Analysis      | Known Limitation | Dataset scatter plot empty in service mode                                             | Architectural                                                               |
 | Appendix G | Metrics Granularity      | Architectural    | candidate training, no metrics.                                                        | Planned (Options A+C)                                                       |
-|            |                          |                  | -- (see `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` Appendix G)                       |                                                                             |
+|            |                          |                  | -- (see `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` Appendix G)                       |                                                                             |
 | NEW-01     | This review (2026-04-08) | LOW              | `_normalize_metric` returns nested+flat format;                                        | Code quality                                                                |
 |            |                          |                  | -- `_to_dashboard_metric` discards nested                                              |                                                                             |
 | NEW-02     | This review (2026-04-08) | LOW              | CasCor/Canopy `TrainingState` fields differ:                                           | Maintenance hazard                                                          |

@@ -13,9 +13,9 @@
 > CLI service that wraps the already-shipped `LMURegressor` (WS-4a) on the already-extracted
 > `juniper-service-core` framework (WS-2), fed 3-D NPZ windows via `juniper-data-client`
 > (`equities_seq`, WS-1). It is the application-side complement to the
-> [`JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md)
+> [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md)
 > (the model only) and the canonical
-> [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md)
+> [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md)
 > (§6.3/§6.4/§6.8). It **does not restate** their theory; it pins the app's file layout, its usage
 > of the *as-built* `juniper-service-core` (not the aspirational §2.3 description), the endpoint
 > surface, settings, the data path, the test matrix, the publish ordering, and PR sequencing.
@@ -310,13 +310,13 @@ walk-forward split (WS-4 data follow-ups) · trained projection / nonlinear read
 
 ## 16. Cross-references
 
-- Model build plan: [`JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md).
+- Model build plan: [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md).
 - Canonical model design (§6.3 model-core, §6.4 service-core lifecycle, §6.8 deploy/ports/env/publish-first):
-  [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md).
+  [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md).
 - Refactor + workstream plan (§2.3 architecture, §2.7 phasing, Part 4 risk register):
-  [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md).
+  [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md).
 - Model-core contract (Decision D3 `**kw` on fit/predict):
-  [`JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`](JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md).
+  [`JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md).
 - As-built service-core: `juniper-service-core/juniper_service_core/{app,lifecycle,settings,security,middleware,health,secrets,launcher}.py`.
 - As-built model: `juniper-recurrence/juniper-recurrence-model/juniper_recurrence_model/model.py` (`LMURegressor`).
 - Data foundation: juniper-data #169/#170/#171 + data-client #87 (`equities_seq`, 3-D NPZ).

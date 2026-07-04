@@ -30,9 +30,9 @@ Continue the **Juniper Stack Regression Cascade** by shipping **E.2** (WebSocket
 
 **Analysis + plan docs** (all already committed on this worktree's branch `worktree-quiet-roaming-parnas` and available at `juniper-ml/notes/`):
 
-- `STACK_REGRESSION_ANALYSIS_2026-05-27.md` — original investigation.
-- `STACK_REGRESSION_REMEDIATION_PLAN_2026-05-27.md` — original A/B/C plan.
-- `STACK_REGRESSION_CORRECTIONS_2026-05-27.md` — independent-validator corrections (E.0–E.3 framing lives here; **read this first**).
+- `JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-ANALYSIS.md` — original investigation.
+- `JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-REMEDIATION-PLAN.md` — original A/B/C plan.
+- `JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-CORRECTIONS.md` — independent-validator corrections (E.0–E.3 framing lives here; **read this first**).
 
 ---
 
@@ -146,8 +146,8 @@ docker logs juniper-cascor 2>&1 | grep "401 Unauthorized" | grep "172.20.0"   # 
 - `juniper-cascor/src/api/settings.py:108-121, 291-297` — Settings + allowlist
 - `juniper-canopy/src/backend/cascor_service_adapter.py:121-152, 227-252` — supervisor reconnect loop + adapter init
 - `juniper-deploy/docker-compose.yml:147-208, 364-412` — cascor + canopy service env blocks
-- `juniper-ml/notes/STACK_REGRESSION_CORRECTIONS_2026-05-27.md` — corrected E.0–E.3 framing (read first)
-- `juniper-ml/notes/STACK_REGRESSION_ANALYSIS_2026-05-27.md` — original analysis (now partly superseded; see corrections doc)
+- `juniper-ml/notes/JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-CORRECTIONS.md` — corrected E.0–E.3 framing (read first)
+- `juniper-ml/notes/JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-ANALYSIS.md` — original analysis (now partly superseded; see corrections doc)
 
 ---
 
@@ -164,6 +164,6 @@ docker logs juniper-cascor 2>&1 | grep "401 Unauthorized" | grep "172.20.0"   # 
 
 Spawn parallel sub-agents to scaffold each PR-2-* in its own worktree (E.2 is genuinely parallel work across the four repos). Sync on the cascor-client release timing — that is the only hard dependency. Then ship E.3 as a one-line bump once cascor-client 0.5.0 is on PyPI.
 
-After all merge, perform the worktree-cleanup-v2 procedure per `juniper-ml/notes/WORKTREE_CLEANUP_PROCEDURE_V2.md` for each branch.
+After all merge, perform the worktree-cleanup-v2 procedure per `juniper-ml/notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` for each branch.
 
 Total estimated wall time for E.2 + E.3: 60–90 min plus PyPI publish delay (5 min trusted-publishing).

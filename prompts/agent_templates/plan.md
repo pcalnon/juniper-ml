@@ -30,7 +30,7 @@ Produce a clear, owner-actionable design / plan / analysis document for the subj
 
 ## Key Deliverables & Requirements
 
-- A single document written to `notes/`, named `JUNIPER_<APP>_<SUBJECT>_<TYPE>_<YYYY-MM-DD>.md` (TYPE one of DESIGN / PLAN / ROADMAP / ANALYSIS); refuse and report if the path already exists.
+- A single document written to `notes/`, named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<DESCRIPTION-PHRASE>.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM; the UPPER-KEBAB-CASE phrase ends with the doc type -- -DESIGN / -PLAN / -ROADMAP / -ANALYSIS); refuse and report if the path already exists.
 - Every cited `file:line` is real (present in the grounding bundle); no invented paths, symbols, APIs, flags, or versions.
 
 ## Constraints

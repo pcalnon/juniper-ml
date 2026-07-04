@@ -3,7 +3,7 @@
 **Owner**: Paul Calnon • **Status**: Implemented (h-6 in review) • **Created**: 2026-05-02 • **Last updated**: 2026-05-04
 **Tracks**: `CAN-015g` (Replay V2 — per-epoch weight history),
 `CAN-015h` (Restore editing — weight + topology modification)
-**Parent design**: [`PHASE_6E_SPRINT_B_DESIGN.md`](./PHASE_6E_SPRINT_B_DESIGN.md) §10
+**Parent design**: [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](./JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md) §10
 
 ---
 
@@ -756,12 +756,12 @@ this work without exception.
 
 ## Documentation deliverables
 
-- **This doc** — `notes/PHASE_6E_DEFERRED_CAN-015GH_DESIGN.md` (new).
-- **`PHASE_6E_SPRINT_B_DESIGN.md`** — update §10 to point to this
+- **This doc** — `notes/JUNIPER_2026-05-04_JUNIPER-ECOSYSTEM_PHASE-6E-DEFERRED-CAN-015GH-DESIGN.md` (new).
+- **`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`** — update §10 to point to this
   doc as the active design.
-- **`PHASE_6E_DESIGN.md`** — replace the deferred line items with a
+- **`JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md`** — replace the deferred line items with a
   reference to this doc.
-- **`JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`** —
+- **`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`** —
   add CAN-015g and CAN-015h rows pointing here (parent design noted
   this in §10 was still TODO).
 - **cascor `notes/development/`** — CHANGELOG line per PR, plus a

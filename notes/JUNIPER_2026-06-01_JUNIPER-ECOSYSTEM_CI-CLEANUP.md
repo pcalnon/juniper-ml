@@ -52,7 +52,7 @@ item 1  is in progress
 
 ---
 
-**Other items (from notes/CI_CLEANUP.md)**:
+**Other items (from notes/JUNIPER_2026-06-01_JUNIPER-ECOSYSTEM_CI-CLEANUP.md)**:
 
 1. Cascor / data deferred pre-commit failures — explicitly deferred; root cause is conda_environment_ci_2026-05-18_17:21:29.yaml filename (colons-in-filenames choke yamllint).
 2. Manually trigger docs-full-check.yml — 10-min validation that §5.1 / §5.2 drift lints work in real CI vs. the just-shipped v0.2.0.
@@ -76,7 +76,7 @@ Outstanding follow-ups (none release-blocking)
 
 **Tier 3 — deferred until natural trigger:**
 
-5. JR-ML- ID assignment.* Waits for the next snapshot refresh (per notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md §4). Not actionable until then.
+5. JR-ML- ID assignment.* Waits for the next snapshot refresh (per notes/JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md §4). Not actionable until then.
 6. [servers] test-installation in CI. Heavy (~2 GB with torch via cascor); would only justify itself if a [servers] regression actually shipped. Schema lint covers the typo class.
 
 ---
@@ -162,7 +162,7 @@ SKIPPED [1] src/tests/unit/test_obs_wire_ws_metrics.py:407: PrometheusMiddleware
 
 ---
 
-File written: notes/OUTSTANDING_WORK_2026-05-26.md (190 lines, untracked in this worktree-parsed-foraging-lollipop worktree).
+File written: notes/JUNIPER_2026-05-26_JUNIPER-ECOSYSTEM_OUTSTANDING-WORK.md (190 lines, untracked in this worktree-parsed-foraging-lollipop worktree).
 
 What's in the doc
 
@@ -180,7 +180,7 @@ What's in the doc
 
 ---
 
-● Document created at notes/TEST_INFRASTRUCTURE_WRAPUP_2026-05-26.md in the juniper-ml worktree (/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/snoopy-stirring-fiddle/notes/TEST_INFRASTRUCTURE_WRAPUP_2026-05-26.md).
+● Document created at notes/JUNIPER_2026-05-26_JUNIPER-ECOSYSTEM_TEST-INFRASTRUCTURE-WRAPUP.md in the juniper-ml worktree (/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/snoopy-stirring-fiddle/notes/JUNIPER_2026-05-26_JUNIPER-ECOSYSTEM_TEST-INFRASTRUCTURE-WRAPUP.md).
 
 Eight sections:
 

@@ -4,7 +4,7 @@
 **Author:** Paul Calnon (Claude Code, custom-agent suite)
 **Continue:** the per-file coverage rollout — remaining C-5 heavy-env units **canopy, cascor, cascor-worker, recurrence-model**, then the **meta/deploy exemption documentation**. One PR per unit, task-executor agents in centralized worktrees, owner-gated merges.
 
-**READ FIRST (juniper-ml main):** `notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md` (§2 waiver policy, §4 deferred-unit rows, §5 C-5, §6 risks) + parent plan `notes/JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md`.
+**READ FIRST (juniper-ml main):** `notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md` (§2 waiver policy, §4 deferred-unit rows, §5 C-5, §6 risks) + parent plan `notes/JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md`.
 
 ## Completed (this session)
 
@@ -40,7 +40,7 @@
 ```bash
 for p in "pcalnon/juniper-cascor 365" "pcalnon/juniper-data 211" "pcalnon/juniper-recurrence 79" "pcalnon/juniper-recurrence 80"; do set -- $p; gh pr view "$2" --repo "$1" --json number,state --jq '"\(.number) \(.state)"'; done
 git -C /home/pcalnon/Development/python/Juniper/juniper-ml fetch origin && git -C /home/pcalnon/Development/python/Juniper/juniper-ml log --oneline -1 origin/main   # expect >= 0b4319e
-ls /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md
+ls /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md
 ```
 
 ## Git state

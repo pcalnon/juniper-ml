@@ -3,7 +3,7 @@
 **Project**: juniper-canopy (subject of audit) / juniper-ml (doc home)
 **Author**: Paul Calnon
 **License**: MIT License
-**Status**: Empirically-validated deliverable (supersedes the working plan `JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md`)
+**Status**: Empirically-validated deliverable (supersedes the working plan `JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md`)
 **Last Updated**: 2026-06-16
 
 > **⚠️ STATUS UPDATE (2026-06-17): §3 and §7 are now stale.** Canopy `#366` (merged
@@ -12,11 +12,11 @@
 > §3.2/§3.3 mark "deferred"; `KNOWN_ORPHANS` is now empty. The model-selection design
 > (§4) and accessibility analysis remain the design of record. Current state +
 > go-forward roadmap:
-> [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md).
+> [`JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md).
 >
 > This is the evidence-backed deliverable produced after the empirical phase. It
 > supersedes the approved working plan
-> [`JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md).
+> [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md).
 > Every internal claim carries a `file:line` reference against juniper-canopy
 > `test/ui-regression-harness` (base `c07dab8`); every external citation is
 > retrieved into [`../papers/`](../papers/) with a specific URL + accessed-date.
@@ -433,7 +433,7 @@ doc (#3) references both. Merge upstream-first.
 
 **Internal cross-links (not re-retrieved):**
 
-- `JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md` — the approved working plan
+- `JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md` — the approved working plan
   this supersedes.
 - `notes/FRONTEND_ISSUES_PLAN_2026-05-09.md` (Issues #1–#6),
   `notes/CANOPY_TRAINING_CONTROL_ERROR_SURFACING_DESIGN_2026-06-14.md` — the

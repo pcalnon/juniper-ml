@@ -27,8 +27,8 @@ Continue implementing the Juniper CasCor Concurrency Architecture Plan.
 - Recommended approach: Approach A (WebSocket for remote) + existing MP for local
 - The plan's Phase structure was revised: 1a -> 1b -> 2 -> 3 -> 4
 - Implementation spans juniper-cascor and juniper-cascor-worker repos (accessible from parent /home/pcalnon/Development/python/Juniper/)
-- Thread handoff procedure: notes/THREAD_HANDOFF_PROCEDURE.md
-- Worktree cleanup procedure: notes/WORKTREE_CLEANUP_PROCEDURE_V2.md
+- Thread handoff procedure: notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md
+- Worktree cleanup procedure: notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md
 
 ## Verification commands:
 - git log --oneline -5 (verify plan commit exists)

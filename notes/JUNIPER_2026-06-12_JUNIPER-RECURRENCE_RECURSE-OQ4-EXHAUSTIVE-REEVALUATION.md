@@ -12,7 +12,7 @@
 > **What this is.**
 > A consolidated, adversarially-verified decision map for *how (and whether) to give Cascade-Correlation recurrent capability*, integrating the full option space — P1–P6, ESN, NEAT, LMU/SSM, P2 group-units, and the negative-eigenvalue linear-RNN — under constraint **C1** (first-principles, no library black box).
 > It folds in four new investigation threads (T1 P6, T2 ESN/NEAT, T3 LMU/SSM, T4 a juniper-data operational-demands audit) plus a head-to-head **held-out generalization POC**, on top of the prior P1–P5 evaluations.
-> Pairs with — does not duplicate — the P4/P5 evaluation (`JUNIPER_RECURSE_DELAY_LINE_NODE_DESIGN_EVAL_2026-06-09.md`, PR #400), the [P1/P2/P3 proposals](JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md), and the [Δt doc](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md).
+> Pairs with — does not duplicate — the P4/P5 evaluation (`JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-DELAY-LINE-NODE-DESIGN-EVAL.md`, PR #400), the [P1/P2/P3 proposals](JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md), and the [Δt doc](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md).
 
 **Headline verdict — two findings that settle the reevaluation.**
 
@@ -171,7 +171,7 @@ That is the dividing line.
     - Pursue a breaker *only* when a temporal dataset with a **verified non-star-free (parity / mod-n / group) target** is added.
     - If it fires, the rational route is a **negative-eigenvalue input-dependent linear-RNN block grown as a candidate unit** (Grazzi — general + trainable), *not* output enrichment (P6 rejected) and *not* P2 (no recipe) unless a constructive recipe is found.
     - NEAT only if a second engine is acceptable.
-4. **Correction applied (2026-06-13):** the model doc (`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`) asserted ESN/LMU "does not share RCC's star-free ceiling" — a **category error** (ESN/LMU *are* star-free; Sarrof–Veitsman–Hahn 2024 + the measured ESN parity collapse contradict it).
+4. **Correction applied (2026-06-13):** the model doc (`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`) asserted ESN/LMU "does not share RCC's star-free ceiling" — a **category error** (ESN/LMU *are* star-free; Sarrof–Veitsman–Hahn 2024 + the measured ESN parity collapse contradict it).
     - **Now retracted/corrected in place** to "fading-memory regression, not ceiling-breaking," with a RESOLVED callout added to §1.3 (the offending text was at the current line ~190, with related instances at ~153 / ~170 — the earlier ":173" reference had drifted).
 
 ## 8. Open questions
@@ -198,9 +198,9 @@ That is the dividing line.
 
 ## Cross-references
 
-- P4 + P5 evaluation (the star-free family): `JUNIPER_RECURSE_DELAY_LINE_NODE_DESIGN_EVAL_2026-06-09.md` (PR #400)
-- OQ-4 proposals (P1/P2/P3): [`JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md`](JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md)
-- Irregular-Δt & continuous-time (LMU/Approach-C): [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md)
+- P4 + P5 evaluation (the star-free family): `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-DELAY-LINE-NODE-DESIGN-EVAL.md` (PR #400)
+- OQ-4 proposals (P1/P2/P3): [`JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md`](JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md)
+- Irregular-Δt & continuous-time (LMU/Approach-C): [`JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md)
 - Empirical POC: [`../util/ad-hoc/verify_oq4_expressivity_suite.py`](../util/ad-hoc/verify_oq4_expressivity_suite.py)
 
 ---

@@ -4,7 +4,7 @@
 **Author**: Round 0 sub-agent (general-purpose)
 **Date**: 2026-04-11
 **Status**: Initial proposal — pre-consolidation
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE, 2029 lines)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE, 2029 lines)
 
 ---
 
@@ -632,7 +632,7 @@ The architecture doc's §11 lists 7 remaining open questions. Each is converted 
 
 ### Q4 — In-flight refactors of `dashboard_manager.py`
 
-- **Default**: coordinate timing with release prep referenced in `CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` §6.0.
+- **Default**: coordinate timing with release prep referenced in `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` §6.0.
 - **Decider**: Paul + the refactor author (self, in the Juniper case).
 - **Deadline**: **before Phase B kickoff** (merge conflicts are ~guaranteed otherwise).
 - **Proposed resolution**: audit all open PRs against `dashboard_manager.py` before Phase B starts; either wait for them to merge or coordinate branching from a shared base. Document in the Phase B PR description: "rebased on <commit-sha> after refactor-X."

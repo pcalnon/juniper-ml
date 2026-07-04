@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`notes/` file naming convention adopted + 251 files renamed.** Every document in `notes/` (except the exempt `templates/`, `releases/`, `requirements/`, `legacy/` subdirectories and README files) now follows `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<CONTENTS-DESCRIPTION-PHRASE>.md`, where REPO is one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM (ECOSYSTEM = cross-repo/platform-wide). Dates were taken from the old filename when present, else the file's last git-commit date. All ~7,000 in-repo references (markdown links, workflow comments, `id_assignments.yaml` citations, test/util docstrings) were rewritten in the same branch; the planner/auditor agents and the plan/audit/code-review prompt templates now emit the new name shape. Convention source of truth: `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`; full old→new mapping: `util/ad-hoc/2026-07-04_notes_rename_map.tsv`.
 - **DP-3 follow-up: `[recurrence]` extra app + client pins bumped to `>=0.2.0,<0.3.0`; model floor tightened to `>=0.1.5,<0.2.0`.** Now that `juniper-recurrence` 0.2.0 and `juniper-recurrence-client` 0.2.0 are published to PyPI — the releases that expose the full DP-3 readout spectrum (`linear` / `rff` / `mlp`) plus `ridge="gcv"` over the HTTP / CLI / client edge — the `[recurrence]` extra (and thus `[all]`) bumps both pins from `>=0.1.0,<0.2.0` to `>=0.2.0,<0.3.0`, so `pip install juniper-ml[recurrence]` resolves the new edge features. The `juniper-recurrence-model` pin is **also bumped from `>=0.1.0,<0.2.0` to `>=0.1.5,<0.2.0`** to match the real floor: `juniper-recurrence` 0.2.0 itself requires `juniper-recurrence-model>=0.1.5` (the 0.1.5 `MLPReadoutSpec` the `readout="mlp"` edge needs), so the meta-package's declared floor now reflects the effective floor instead of understating it. Publish-first follow-up to the 0.2.0 releases; the matching lint contract in `tests/test_pyproject_extras.py` updates in lockstep (RK-11).
 - **R5: new `[recurrence]` extra — the Δt-native recurrence stack.** Adds a dedicated `recurrence` optional-dependency group pinning `juniper-recurrence-model>=0.1.0,<0.2.0` (the closed-form variable-Δt LMU regressor on the `juniper-model-core` `TrainableModel` seam) `juniper-recurrence>=0.1.0,<0.2.0` (the FastAPI/CLI application that wraps it), and `juniper-recurrence-client>=0.1.0,<0.2.0` (the HTTP client for that service, DEP-8), now that all three are published to PyPI (WS-4 / WS-4b). `[all]` aggregates it, so `pip install juniper-ml[recurrence]` / `[all]` resolves the recurrence model + app + client. The matching lint contract in `tests/test_pyproject_extras.py` updates in lockstep (RK-11); the `AGENTS.md` / `README.md` / `docs/QUICK_START.md` / `docs/REFERENCE.md` extras tables pick up the new row.
 - **WS-3 follow-up: `juniper-model-core` added to the `[tools]` extra (and thus `[all]`).** Now that `juniper-model-core` 0.1.0 is published to PyPI, `[tools]` pins `juniper-model-core>=0.1.0,<0.2.0` (capped per the pre-1.0 convention), so `pip install juniper-ml[tools]` / `[all]` resolves the shared model-contract package. This is the deferred, publish-first follow-up to juniper-ml#416 (the package scaffold), which intentionally withheld extras wiring until the package was on PyPI. The matching lint contract in `tests/test_pyproject_extras.py` updates in lockstep (RK-11), and a new `tests/test_model_core_drift.py` guards the pin against future version drift.
@@ -65,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`juniper-ml[all]` install-size advisory corrected** in
   `docs/QUICK_START.md`, `notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`,
-  and `notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`. The
+  and `notes/JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md`. The
   original v0.5.0 estimate of "roughly 2 GB" understated the resolved
   on-disk footprint by ~2.5x: the actual figure measured against PyPI
   on 2026-05-21 (Python 3.13, Linux x86_64) was **5 GB on disk after
@@ -104,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   same module can be dropped into any Juniper repo's `tests/` to
   catch the same drift class there.
 
-- **`notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`** -- source
+- **`notes/JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md`** -- source
   requirements doc for the meta-package extras surface. Specifies the
   declared groups, `[all]` aggregate semantics, version-bump policy,
   documentation-consistency surfaces, regression-coverage expectations,
@@ -175,7 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **§5 drift-detection guard rails** for the `juniper-doc-tools` PyPI
   migration (plan
-  [`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
+  [`notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)
   §5.1 + §5.2). Closes the open follow-ups from Wave 4.
   - `tests/test_doc_tools_drift.py` — consumer-version-pin lint. Reads
     the current `juniper-doc-tools` version from
@@ -208,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `util/check_doc_links.py` bumped to **v0.7.0**: classifies ecosystem-root paths (`../../CLAUDE.md`, `../../AGENTS.md`, `../../notes/`, `../../prompts/`, `../../resources/`, `../../backups/`, `../../logs/`, `../../worktrees/`, `../../juniper-legacy/`, `../../Juniper{,1}.code-workspace`) the same way as cross-repo `../juniper-X/` links: subject to the `--cross-repo` policy (skip/warn/check). Restores parity with the more permissive behavior repo docs were already relying on without silently accepting truly broken outside-repo links. 5 new regression tests in `tests/test_check_doc_links.py` cover the ecosystem-root paths and a guard against misclassifying intra-repo links that happen to traverse a `notes/`-named directory.
 - `tests/test_workflow_script_paths.py` — new lint test that walks `.github/workflows/*.yml`, extracts every script path referenced via `python|bash <path>` / `python3 -m unittest ... <path.py>` / `$VAR <path>` patterns, and asserts each path exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18 when a script was renamed without updating the workflow. Designed to be copy-and-paste portable into the other Juniper repos' `tests/` directories.
 - **`juniper-doc-tools` subpackage scaffold** — Wave 0 of the doc-link
-  validator PyPI migration ([plan](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)).
+  validator PyPI migration ([plan](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)).
   New `juniper-doc-tools/` subdirectory packages the v0.7.0 markdown link
   validator as a PyPI distribution with a stable CLI surface
   (`juniper-check-doc-links` + `python -m juniper_doc_tools`), a small
@@ -310,7 +311,7 @@ See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4
 - `scripts/remove_stale_worktrees.bash` — Iterates through and removes stale git worktrees
 - `scripts/test_resume_file_safety.bash` — Focused regression script that verifies invalid `--resume <file.txt>` input returns non-zero and preserves the source file
 - `notes/stack_overflow_answer.txt` — Reference material on managing conda environments programmatically in bash scripts
-- `notes/pull_requests/PR_TOOLING_MORE_CLAUDE_UTILS.md` — PR description archive
+- `notes/pull_requests/JUNIPER_2026-03-15_JUNIPER-ML_PR-TOOLING-MORE-CLAUDE-UTILS.md` — PR description archive
 - `notes/DEVELOPER_CHEATSHEET.md` — Added session ID workflow documentation, `wake_the_claude.bash` quick runbook, regression-test commands, `--resume` alias handling, interactive-vs-headless launch behavior, and troubleshooting sections
 - `docs/DOCUMENTATION_OVERVIEW.md` — Added navigation links for Claude session tooling runbooks
 - New test coverage in `tests/test_wake_the_claude.py` for default launcher argument forwarding, permissions handling, and prompt token validation
@@ -319,7 +320,7 @@ See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4
 
 - `scripts/wake_the_claude.bash` — Uncommented `EFFORT_VALUE` and `MODEL_VALUE` assignments; refactored nohup logging to handle missing log files; changed debug output to standard echo; consolidated exit status checks
 - `.github/workflows/ci.yml` — Standardized comment spacing for action version tags (dependabot version bumps)
-- `notes/CONDA_DEPENDENCY_FILE_HEADER.md` — Renamed back from `.yaml` to `.md` (matching all other repos' naming convention)
+- `notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md` — Renamed back from `.yaml` to `.md` (matching all other repos' naming convention)
 - `CHANGELOG.md` — Added version identifiers to section headers for released versions
 - Documentation formatting pass across `notes/` planning documents — standardized Markdown table alignment, added `bash` language tags to code blocks, converted URLs to Markdown link syntax
 
@@ -340,7 +341,7 @@ See [`notes/releases/RELEASE_NOTES_v0.4.0.md`](notes/releases/RELEASE_NOTES_v0.4
 - `scripts/wake_the_claude.bash` — Shell script to launch Claude Code sessions with configurable flags, session persistence, and resume support
 - `notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md` — Root cause analysis and fix plan
 - `notes/SECURITY_REMEDIATION_PLAN.md` — Security vulnerability analysis and remediation plan
-- `notes/pull_requests/PR_SESSION_ID_VALIDATION_BUGFIX.md` — PR description archive
+- `notes/pull_requests/JUNIPER_2026-03-06_JUNIPER-ML_PR-SESSION-ID-VALIDATION-BUGFIX.md` — PR description archive
 - `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md` — PR description template (adopted from sibling repos)
 
 ### Fixed, 0.2.1

@@ -2,7 +2,7 @@
 
 **Date**: 2026-05-19
 **Author**: Paul Calnon
-**Status**: Draft for review — §12 step 2 of [`README_NORMALIZATION_PLAN_2026-05-19.md`](README_NORMALIZATION_PLAN_2026-05-19.md)
+**Status**: Draft for review — §12 step 2 of [`JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md`](JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md)
 **Consumed by**: Per-README inline copies produced by §12 steps 3–8 of the same plan
 
 ---

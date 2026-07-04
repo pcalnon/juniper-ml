@@ -13,7 +13,7 @@ Implement a previously completed development plan that includes the following Ju
 
 The development plan is in the following location:
 
-`/home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`
+`/home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`
 
 ## Juniper Project
 

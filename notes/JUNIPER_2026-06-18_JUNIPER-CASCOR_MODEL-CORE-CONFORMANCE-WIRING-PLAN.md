@@ -11,11 +11,11 @@
 
 > **⟢ STATUS 2026-06-21.** SHIPPED — cascor #341 (merged; required status check; test-only
 > `CascorModelCoreAdapter` baseline). The WS-6 B-phase then made cascor adopt the interface natively
-> (B1–B2b merged, #345–#347); B4 will retire this adapter. See `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+> (B1–B2b merged, #345–#347); B4 will retire this adapter. See `JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`.
 
 > **What this is.** A build plan for wiring `juniper-cascor`'s `CascadeCorrelationNetwork` to the
 > `juniper-model-core` **conformance kit** — **OUT-13** in
-> [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md)
+> [`JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md)
 > and the **second half of the WS-6 trigger-gate** (the first half, the golden/snapshot suite
 > OUT-12, shipped in juniper-cascor#340 and is a required check). Together they gate the WS-6
 > cutover: cascor may refactor onto `juniper-service-core` / `juniper-model-core` only if both

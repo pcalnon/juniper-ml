@@ -1,7 +1,7 @@
 # `register_or_reuse` — Analysis & Design — 2026-05-05
 
 **Project**: Juniper
-**File Name**: `REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`
+**File Name**: `JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md`
 **Description**: Promote a single canonical idempotent-`prometheus_client`-collector
 helper into `juniper-observability` so the recurring "Duplicated timeseries"
 bug pattern has one fix point instead of N copy-pasted inline guards.
@@ -21,7 +21,7 @@ bug pattern has one fix point instead of N copy-pasted inline guards.
 > - §6 Phased migration plan — PROPOSAL; sequencing depends on user approval of §5 API shape.
 > - §7 Open questions — UNRESOLVED; needs user decision before entry plan.
 >
-> **Forward pointer:** OBS-COLLECTOR-IDEMPOTENT entry plan (not yet written). Once written, it will land in `notes/code-review/` and supersede this design doc as the implementation authority. Tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR).
+> **Forward pointer:** OBS-COLLECTOR-IDEMPOTENT entry plan (not yet written). Once written, it will land in `notes/code-review/` and supersede this design doc as the implementation authority. Tracked in `notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (parallel PR).
 >
 > **Path to COMPLETED:** This doc moves to `notes/legacy/` once (a) the helper lands in `juniper-observability` and (b) the migration PRs against the ~10 call sites all merge, OR the proposal is formally rejected.
 

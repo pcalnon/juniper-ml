@@ -2,7 +2,7 @@
 
 **Date**: 2026-05-20
 **Author**: Paul Calnon (with Claude Opus 4.7)
-**Trigger**: CLN-CC-13 ecosystem-wide sweep ([v7 roadmap](./JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md)). Production-code `sys.path.append` hacks were cleaned up across cascor + canopy (PRs cascor [#279](https://github.com/pcalnon/juniper-cascor/pull/279)/[#280](https://github.com/pcalnon/juniper-cascor/pull/280), canopy [#297](https://github.com/pcalnon/juniper-canopy/pull/297)). This doc audits whether the remaining test-infrastructure `sys.path.insert` calls in cascor + canopy conftests are still necessary or can be removed in a follow-up pass.
+**Trigger**: CLN-CC-13 ecosystem-wide sweep ([v7 roadmap](./JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md)). Production-code `sys.path.append` hacks were cleaned up across cascor + canopy (PRs cascor [#279](https://github.com/pcalnon/juniper-cascor/pull/279)/[#280](https://github.com/pcalnon/juniper-cascor/pull/280), canopy [#297](https://github.com/pcalnon/juniper-canopy/pull/297)). This doc audits whether the remaining test-infrastructure `sys.path.insert` calls in cascor + canopy conftests are still necessary or can be removed in a follow-up pass.
 
 ---
 

@@ -2,12 +2,12 @@
 
 **Date**: 2026-05-19 (last updated 2026-05-21 for `juniper-ml` 0.5.0 extras-surface expansion)
 **Author**: Paul Calnon
-**Status**: SUPERSEDED (partial) 2026-06-24 by [`JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md`](JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md) — see banner below
+**Status**: SUPERSEDED (partial) 2026-06-24 by [`JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md`](JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md) — see banner below
 **Applies to**: All ten application/library repositories in the Juniper ecosystem
 
 ---
 
-> **⚠️ Superseded (partial), 2026-06-24.** The per-package *structure* mandated by this plan — the logo + platform-intro preamble (§3, §5), the canonical Style-A section order (§4), the ecosystem-wide Research Philosophy on every package (§7.7, §9), and the Active Research Components / Design Notes substitution (§10.9, §10.10) — is superseded by [`JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md`](JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md), which adopts the lean *badges + problem-first* style as canonical for individual package READMEs (the full platform narrative now lives only in the `juniper-ml` root README). This document is retained for historical context and for the parts **not** superseded — the writing-register guidance (§1) and the §11 documentation-audit procedure.
+> **⚠️ Superseded (partial), 2026-06-24.** The per-package *structure* mandated by this plan — the logo + platform-intro preamble (§3, §5), the canonical Style-A section order (§4), the ecosystem-wide Research Philosophy on every package (§7.7, §9), and the Active Research Components / Design Notes substitution (§10.9, §10.10) — is superseded by [`JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md`](JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md), which adopts the lean *badges + problem-first* style as canonical for individual package READMEs (the full platform narrative now lives only in the `juniper-ml` root README). This document is retained for historical context and for the parts **not** superseded — the writing-register guidance (§1) and the §11 documentation-audit procedure.
 
 ## 1. Motivation and Scope
 
@@ -393,7 +393,7 @@ Each repository's PR carries the same shape: preamble + application heading + Di
 - Application heading: `## Juniper Cascor`. Description: three-to-five sentences naming this as the Cascade-Correlation training service, naming the REST + WebSocket interface, naming the candidate-pool training protocol, and stating its relationship to `juniper-cascor-worker`.
 - Distribution section added.
 - Dependency Lockfile section retained and refreshed; reference the constraint-mode freshness gate and the `/tmp/`-and-`mv` regeneration footgun captured in memory.
-- Active Research Components: name the CasCor reference implementation, the distributed candidate-pool training, and the multi-network orchestration (see `juniper-ml/notes/PHASE_6E_DESIGN.md` and `PHASE_6E_MULTI_NETWORK_DESIGN.md`). The METRICS-MON R3.7 macOS CI integration soak completed 2026-05-15 and is mentioned only insofar as it enables cross-platform reproducibility claims.
+- Active Research Components: name the CasCor reference implementation, the distributed candidate-pool training, and the multi-network orchestration (see `juniper-ml/notes/JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md` and `JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md`). The METRICS-MON R3.7 macOS CI integration soak completed 2026-05-15 and is mentioned only insofar as it enables cross-platform reproducibility claims.
 - Quick Start, Research Philosophy: replaced per §8 and §9.
 
 ### 10.4 `juniper-data`
@@ -449,7 +449,7 @@ Each repository's PR carries the same shape: preamble + application heading + Di
 - Distribution section added.
 - Ecosystem Compatibility: minimum-pin row (`juniper-observability>=0.2.0`) and consumer compatibility table.
 - Architecture: short ASCII diagram showing the consumer services that import the package.
-- Active Research Components: omitted (infrastructure library); a `## Design Notes` subsection at the same position in the order points at `notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`. This deviation, like §10.8's, is recorded here.
+- Active Research Components: omitted (infrastructure library); a `## Design Notes` subsection at the same position in the order points at `notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md`. This deviation, like §10.8's, is recorded here.
 - Quick Start: standard block.
 
 ### 10.10 `juniper-doc-tools`
@@ -460,7 +460,7 @@ Each repository's PR carries the same shape: preamble + application heading + Di
 - Ecosystem Compatibility: minimum-pin row (`juniper-doc-tools>=0.1.0`) and a consumer-compatibility table that lists which repositories have completed the migration from the legacy `scripts/check_doc_links.py` to the packaged CLI.
 - Architecture: short ASCII diagram showing the CI lanes that invoke `juniper-check-doc-links` and the consumer repositories that import `juniper_doc_tools` as a library.
 - Service Configuration, Docker Deployment, Dependency Lockfile: omitted (library package; no service, no Docker image, no lockfile).
-- Active Research Components: omitted (infrastructure library); a `## Design Notes` subsection at the same position in the order points at `notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`. This deviation, like §10.8's and §10.9's, is recorded here.
+- Active Research Components: omitted (infrastructure library); a `## Design Notes` subsection at the same position in the order points at `notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`. This deviation, like §10.8's and §10.9's, is recorded here.
 - Quick Start: standard block; Verification is `juniper-check-doc-links --version` (zero-runtime-dependencies, no network).
 - Documentation: link to the migration-plan note above and to the parent `juniper-ml/docs/REFERENCE.md` entry for the CLI; cross-link from `juniper-observability`'s Documentation section because the two packages travel together.
 

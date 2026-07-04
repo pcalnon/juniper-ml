@@ -85,7 +85,7 @@ Test 001 always failed because:
 
 - `notes/SESSION_ID_VALIDATION_BUGFIX_PLAN.md` — Root cause analysis, fix plan, and execution log
 - `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md` — PR description template
-- `notes/pull_requests/PR_SESSION_ID_VALIDATION_BUGFIX.md` — This PR description
+- `notes/pull_requests/JUNIPER_2026-03-06_JUNIPER-ML_PR-SESSION-ID-VALIDATION-BUGFIX.md` — This PR description
 
 ### Modified Components
 

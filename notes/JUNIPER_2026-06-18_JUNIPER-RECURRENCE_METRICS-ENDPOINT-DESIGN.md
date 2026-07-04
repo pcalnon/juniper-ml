@@ -199,7 +199,7 @@ Worktree off `juniper-recurrence` `main`; PR; no merge without Paul's explicit s
 
 ## 10. Cross-references
 
-- WS-4b app build plan (§6 endpoint surface, §14 deferred `/metrics`): [`JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4B_APP_BUILD_PLAN_2026-06-15.md)
-- Canonical recurrence roadmap: [`JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md)
-- Idempotent collector helpers: [`observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md`](observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md)
+- WS-4b app build plan (§6 endpoint surface, §14 deferred `/metrics`): [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4B-APP-BUILD-PLAN.md)
+- Canonical recurrence roadmap: [`JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md)
+- Idempotent collector helpers: [`observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md`](observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md)
 - Reference wiring (cross-repo): `juniper-data/juniper_data/api/app.py`; `juniper-observability/juniper_observability/{prometheus.py, middleware/metrics_auth.py, middleware/prometheus.py}`

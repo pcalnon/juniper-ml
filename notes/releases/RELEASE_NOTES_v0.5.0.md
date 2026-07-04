@@ -1,7 +1,7 @@
 # juniper-ml v0.5.0 — servers + tools extras — Release Notes (archived)
 
 > Archived verbatim from the GitHub Release [`v0.5.0`](https://github.com/pcalnon/juniper-ml/releases/tag/v0.5.0) (pcalnon/juniper-ml), backfilled 2026-06-18
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 
 ---
 
@@ -35,7 +35,7 @@
   same module can be dropped into any Juniper repo's `tests/` to
   catch the same drift class there.
 
-- **`notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`** -- source
+- **`notes/JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md`** -- source
   requirements doc for the meta-package extras surface. Specifies the
   declared groups, `[all]` aggregate semantics, version-bump policy,
   documentation-consistency surfaces, regression-coverage expectations,
@@ -106,7 +106,7 @@
 
 - **§5 drift-detection guard rails** for the `juniper-doc-tools` PyPI
   migration (plan
-  [`notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
+  [`notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)
   §5.1 + §5.2). Closes the open follow-ups from Wave 4.
   - `tests/test_doc_tools_drift.py` — consumer-version-pin lint. Reads
     the current `juniper-doc-tools` version from
@@ -139,7 +139,7 @@
 - `util/check_doc_links.py` bumped to **v0.7.0**: classifies ecosystem-root paths (`../../CLAUDE.md`, `../../AGENTS.md`, `../../notes/`, `../../prompts/`, `../../resources/`, `../../backups/`, `../../logs/`, `../../worktrees/`, `../../juniper-legacy/`, `../../Juniper{,1}.code-workspace`) the same way as cross-repo `../juniper-X/` links: subject to the `--cross-repo` policy (skip/warn/check). Restores parity with the more permissive behavior repo docs were already relying on without silently accepting truly broken outside-repo links. 5 new regression tests in `tests/test_check_doc_links.py` cover the ecosystem-root paths and a guard against misclassifying intra-repo links that happen to traverse a `notes/`-named directory.
 - `tests/test_workflow_script_paths.py` — new lint test that walks `.github/workflows/*.yml`, extracts every script path referenced via `python|bash <path>` / `python3 -m unittest ... <path.py>` / `$VAR <path>` patterns, and asserts each path exists in the repo. Cross-repo paths (`juniper-X/...`) are skipped as runtime-resolved. Catches the failure class that broke 3 juniper-X CIs on 2026-05-18 when a script was renamed without updating the workflow. Designed to be copy-and-paste portable into the other Juniper repos' `tests/` directories.
 - **`juniper-doc-tools` subpackage scaffold** — Wave 0 of the doc-link
-  validator PyPI migration ([plan](notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)).
+  validator PyPI migration ([plan](notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)).
   New `juniper-doc-tools/` subdirectory packages the v0.7.0 markdown link
   validator as a PyPI distribution with a stable CLI surface
   (`juniper-check-doc-links` + `python -m juniper_doc_tools`), a small

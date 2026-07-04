@@ -26,7 +26,7 @@
 > **DP-3 P2 fully shipped** (data #203, rec #44/#45, findings ml #511; capacity gap +0.83). Accordingly the
 > §1 "WS-6 B3 NOT STARTED" / "A-phase BLOCKED on publish" / "WS-5 A1 NOT STARTED" rows and the §3 register's
 > WS-6-B3 / WS-5-A1 / OUT-11-publish items are **superseded**. The WS-6 A-phase is now gated on **B4 + three
-> owner decisions** (DR-1 / soak-OQ-17 / manager-appetite) — see `JUNIPER_WS6_APHASE_READINESS_VALIDATION_2026-06-22.md`.
+> owner decisions** (DR-1 / soak-OQ-17 / manager-appetite) — see `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`.
 
 ## §1. Verified current reality (2026-06-21)
 
@@ -52,35 +52,35 @@
 
 | Doc | Stale claim | Reality | Action |
 | --- | --- | --- | --- |
-| `JUNIPER_CASCOR_WS6_BPHASE_MODEL_CORE_ADOPTION_BUILD_PLAN_2026-06-19.md` | §5 PR table reads as pending (plan-tense) | B1/B2a/B2b merged #345–#347; B3 spike-done | **Status banner added** (B1/B2a/B2b shipped; B3 OQ-B1 decided; B4 pending; A-phase ⇢ OUT-11 #502) |
-| `JUNIPER_CASCOR_GOLDEN_REGRESSION_SUITE_BUILD_PLAN_2026-06-17.md` | design-tense | SHIPPED cascor #340 (required check) | **Status banner added** |
-| `JUNIPER_CASCOR_MODEL_CORE_CONFORMANCE_WIRING_PLAN_2026-06-18.md` | design-tense | SHIPPED cascor #341 (test-only adapter) | **Status banner added** |
-| `JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md` | §2.2 OUT-11 "step 3 remaining"; B-phase un-started | OUT-11 T2 fully merged (publish #502 pending); B-phase shipped | **Status banner added** (points here) |
-| `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` (canonical Status Tracker) | WS-6 cells pre-B-phase; WS-5 = PLANNED | B-phase shipped; WS-5 A0 shipped | **WS-6 + WS-5 cells refreshed** |
-| `JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md` | §3 WS-5/WS-6/OUT-13 cells (self-disclaimed point-in-time) | as §1 above | **"verified 2026-06-21 → see this audit" pointer added** |
+| `JUNIPER_2026-06-19_JUNIPER-CASCOR_WS6-BPHASE-MODEL-CORE-ADOPTION-BUILD-PLAN.md` | §5 PR table reads as pending (plan-tense) | B1/B2a/B2b merged #345–#347; B3 spike-done | **Status banner added** (B1/B2a/B2b shipped; B3 OQ-B1 decided; B4 pending; A-phase ⇢ OUT-11 #502) |
+| `JUNIPER_2026-06-17_JUNIPER-CASCOR_GOLDEN-REGRESSION-SUITE-BUILD-PLAN.md` | design-tense | SHIPPED cascor #340 (required check) | **Status banner added** |
+| `JUNIPER_2026-06-18_JUNIPER-CASCOR_MODEL-CORE-CONFORMANCE-WIRING-PLAN.md` | design-tense | SHIPPED cascor #341 (test-only adapter) | **Status banner added** |
+| `JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md` | §2.2 OUT-11 "step 3 remaining"; B-phase un-started | OUT-11 T2 fully merged (publish #502 pending); B-phase shipped | **Status banner added** (points here) |
+| `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` (canonical Status Tracker) | WS-6 cells pre-B-phase; WS-5 = PLANNED | B-phase shipped; WS-5 A0 shipped | **WS-6 + WS-5 cells refreshed** |
+| `JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md` | §3 WS-5/WS-6/OUT-13 cells (self-disclaimed point-in-time) | as §1 above | **"verified 2026-06-21 → see this audit" pointer added** |
 
 ### Flagged for owner refresh (concurrent-session-owned — NOT edited here, to avoid conflicts)
 
 These docs are stale on *execution framing* but are owned/maintained by active concurrent sessions; their
 staleness is captured here rather than edited in-place:
 
-- **model-core**: `JUNIPER_MODEL_CORE_STATE_AND_ROADMAP_2026-06-17.md` (says 0.2.0 designed-not-built →
-  reality 0.3.0 + crossval built); `JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md` (PR-1 executed).
-- **recurrence**: `JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md` is canonical (has a
-  2026-06-18 update; +3 patch versions behind now); `JUNIPER_RECURRENCE_STATE_AND_ROADMAP_2026-06-17.md`
+- **model-core**: `JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-STATE-AND-ROADMAP.md` (says 0.2.0 designed-not-built →
+  reality 0.3.0 + crossval built); `JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md` (PR-1 executed).
+- **recurrence**: `JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md` is canonical (has a
+  2026-06-18 update; +3 patch versions behind now); `JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-AND-ROADMAP.md`
   is a **31-line redirect stub** → the assessment doc (proper archive+pointer, not duplication; leave).
-  `JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md` is "design/ratification" but Rung-2a/2 are
+  `JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md` is "design/ratification" but Rung-2a/2 are
   already shipping (sequencing inversion, not a contradiction; DP-3 P2-remaining = ml #501 handoff).
-- **service-core**: `JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md` (T2 merged; publish
+- **service-core**: `JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md` (T2 merged; publish
   #502 open) — owner session active.
-- **canopy**: `JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md` + `..._A1_ENABLER_SCOPE_2026-06-18.md`
+- **canopy**: `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md` + `..._A1_ENABLER_SCOPE_2026-06-18.md`
   read as pre-implementation; reality = A0 + 3-D viz shipped, A1 training-integration not started. The
   `..._REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md` and `..._3D_DATASET_VISUALIZATION_DESIGN_2026-06-19.md`
   are CURRENT/accurate. The two `..._2026-06-15` audit docs self-flag as superseded.
 
 ### Cruft
 
-- **`notes/temp.md`** — a stray scratch file (mis-titled "juniper-canopy", "notes file for a new run-all-tests
+- **`notes/JUNIPER_2026-05-02_JUNIPER-CANOPY_TEMP.md`** — a stray scratch file (mis-titled "juniper-canopy", "notes file for a new run-all-tests
   script"). **Flagged for removal** (not deleted here — not authored by this session; confirm with Paul).
 
 ## §3. Genuinely incomplete / not-started work register

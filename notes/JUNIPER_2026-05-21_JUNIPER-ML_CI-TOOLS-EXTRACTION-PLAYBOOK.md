@@ -7,7 +7,7 @@
 This is the condensed how-to for extracting a duplicated CI script out
 of the 6 consumer repos and into the shared `juniper-ci-tools` package.
 For background, motivation, and the long-form per-wave plan see
-[`JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`](JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md);
+[`JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md);
 this file is the abridged operational sequence for future extractions.
 
 ---
@@ -170,7 +170,7 @@ git -C <repo> worktree prune
 - **Worktree location:** `/home/pcalnon/Development/python/Juniper/worktrees/`
   per the centralized worktree convention.
 - **Commit + PR body:** lead with "Wave 4 of the dep-docs PyPI migration
-  plan (juniper-ml `notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`
+  plan (juniper-ml `notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`
   §3.4 v0.<N>.0 extension)"; include md5 of the deleted inline copy and
   the local pre-validation output.
 - **Drift coverage:** the existing `juniper-ml/tests/test_ci_tools_drift.py`

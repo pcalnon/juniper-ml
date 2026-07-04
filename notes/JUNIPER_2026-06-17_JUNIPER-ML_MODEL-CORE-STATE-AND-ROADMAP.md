@@ -16,7 +16,7 @@
 > (`interfaces.py`); the **coverage gate is raised to 95** (`ci-model-core.yml`); and the parent Status
 > Tracker was reconciled (#439/#465/#466). Of the OW-* items, only **OW-12** (GrowableModel re-tighten),
 > **OW-19** (`workflow_dispatch` verify), and **OW-20** (conftest autoload guard) remain genuinely open
-> (all minor). Authoritative current-state: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+> (all minor). Authoritative current-state: `JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`.
 
 ## 0. Purpose and how to read this document
 
@@ -35,12 +35,12 @@ worktree (cross-repo state), it is marked **UNVERIFIED** rather than asserted.
 
 **Companion documents** (the canonical specs this roadmap sits on top of):
 
-- `notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md` — the ratified 0.1.0 contract (D1–D10).
-- `notes/JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md` — the 0.2.0 cross-validation / fold-executor design.
-- `notes/JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md` — a **concurrent, focused** crossval 0.2.0 *build* roadmap (PR-1 mechanics + the F-CRIT-1 version/pin lint trap), produced by a parallel session. **This document is the umbrella state+roadmap; that one is the deep-dive on the crossval build (this roadmap's Phase 2 / G3).** Not present in this worktree — verify before consolidating.
-- `notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` — the parent program + canonical Status Tracker.
-- `notes/JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md` — the placement convention (D4).
-- `notes/JUNIPER_RECURRENCE_*` and `notes/JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md` — the consumer/model side (WS-4 / WS-4b).
+- `notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md` — the ratified 0.1.0 contract (D1–D10).
+- `notes/JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md` — the 0.2.0 cross-validation / fold-executor design.
+- `notes/JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md` — a **concurrent, focused** crossval 0.2.0 *build* roadmap (PR-1 mechanics + the F-CRIT-1 version/pin lint trap), produced by a parallel session. **This document is the umbrella state+roadmap; that one is the deep-dive on the crossval build (this roadmap's Phase 2 / G3).** Not present in this worktree — verify before consolidating.
+- `notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` — the parent program + canonical Status Tracker.
+- `notes/JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md` — the placement convention (D4).
+- `notes/JUNIPER_RECURRENCE_*` and `notes/JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md` — the consumer/model side (WS-4 / WS-4b).
 
 ---
 
@@ -502,7 +502,7 @@ This document's factual basis and option analysis were validated by independent 
 
 **Post-validation reconciliation (2026-06-17).** After the validation pass, a memory-index check surfaced
 **concurrent-session work** this roadmap was then reconciled against: (a) a focused crossval *build* roadmap
-(`notes/JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md`) carrying finding **F-CRIT-1** — bumping
+(`notes/JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md`) carrying finding **F-CRIT-1** — bumping
 `_version`→0.2.0 turns `test_model_core_drift` + `test_pyproject_extras` (required CI) red unless the `[tools]` pin
 widens to `<0.3.0` in the *same* PR; **independently verified here** against `tests/test_model_core_drift.py` (it
 reads `_version.py` dynamically). OW-7 / OW-9 / R4 were corrected and R10 added accordingly. (b) WS-4b's real state
@@ -537,7 +537,7 @@ cross-reference each other in §0.
   verify* the orchestrator's preliminary findings rather than echo them. The dependency-free import, the D3
   drift, and the 66-test pass were each reproduced by an agent running code/`grep`.
 - **First-hand orchestrator reads:** `interfaces.py`, `lifecycle.py`,
-  `JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`, `JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`,
+  `JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`, `JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`,
   and the parent doc's Status Tracker — used to cross-check, not rubber-stamp, the survey output (the D3 drift and
   the "API-ratified-but-provisional" nuance were caught first-hand and confirmed by the survey).
 

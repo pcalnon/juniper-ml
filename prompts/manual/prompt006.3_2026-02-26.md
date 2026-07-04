@@ -49,7 +49,7 @@
 
 - juniper-data-client has a known issue: v0.3.1 TestPyPI publish failed with 403 (trusted publisher mismatch). See Appendix A of notes/PYPI_PUBLISH_PROCEDURE.md for the fix. Its publish.yml already has SHA-pinned actions.
 - SHA hashes for action pinning (reference): actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 (v4.2.2), actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 (v5.6.0), pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e (v1.13.0)
-- Worktree procedures: Each repo has notes/WORKTREE_SETUP_PROCEDURE.md and notes/WORKTREE_CLEANUP_PROCEDURE.md
+- Worktree procedures: Each repo has notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md and notes/WORKTREE_CLEANUP_PROCEDURE.md
 - Conda env: conda activate JuniperPython
 - Procedure doc: notes/PYPI_PUBLISH_PROCEDURE.md has the full pattern to follow
 

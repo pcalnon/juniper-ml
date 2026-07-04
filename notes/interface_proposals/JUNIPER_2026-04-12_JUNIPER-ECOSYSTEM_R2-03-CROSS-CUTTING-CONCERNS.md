@@ -5,7 +5,7 @@
 **Date**: 2026-04-11
 **Status**: Round 2 consolidation — input to Round 3
 **Inputs consolidated**: R1-01, R1-02, R1-03, R1-04, R1-05
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -641,7 +641,7 @@ Runbooks, PR descriptions, changelog entries, threat-model acknowledgements, arc
 4. **Changelog entry**: a PR without a `CHANGELOG.md` entry under the appropriate heading fails CI.
 5. **CODEOWNERS entries** for all 7 files listed above. `.github/CODEOWNERS` committed.
 6. **Threat-model ack** on security-touching PRs — CI grep check in PR description.
-7. **Source doc patches**: Round 5 produces a single patch PR to `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` containing all R1-05-flagged items.
+7. **Source doc patches**: Round 5 produces a single patch PR to `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` containing all R1-05-flagged items.
 8. **Post-mortem template** exists in `juniper-ml/notes/templates/post_mortem_template.md` before Phase B ships.
 9. **Documentation inventory audit**: a Round 4 check verifies every deliverable in R2-03 §8.4 is present.
 

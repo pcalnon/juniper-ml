@@ -12,7 +12,7 @@ Continue the Juniper Microservices Architecture Development Roadmap. Begin Phase
 ## Remaining work — Phase 6 (14 tasks)
 
 The authoritative task list is at:
-/home/pcalnon/Development/python/Juniper/juniper-ml/notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md lines 2870-3291
+/home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md lines 2870-3291
 
 ## Tasks by repo
 
@@ -74,7 +74,7 @@ cd /home/pcalnon/Development/python/Juniper/juniper-data-client && git status
 
 ### Read Phase 6 task definitions
 
-File: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md lines 2870-3291
+File: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md lines 2870-3291
 
 #### Read each repo's AGENTS.md before working on it
 

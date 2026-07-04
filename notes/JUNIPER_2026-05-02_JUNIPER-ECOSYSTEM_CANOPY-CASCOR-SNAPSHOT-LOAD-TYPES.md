@@ -142,9 +142,9 @@ The controls providing access to the four operations/endpoints, described in the
 Work should be done using which of the PR breakdowns?
 
 - 2 paired PRs (cascor + canopy) as proposed
-- single combined PR per the original PHASE_6E_DESIGN.md row
+- single combined PR per the original JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md row
 
-**Lean:** Existing PHASE_6E_DESIGN.md:85-86 describes B as 1 PR but follows the same single-row pattern Sprint A used for paired wire-throughs — I'm treating it as 2 PRs to match the established cascor+canopy pairing.
+**Lean:** Existing JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md:85-86 describes B as 1 PR but follows the same single-row pattern Sprint A used for paired wire-throughs — I'm treating it as 2 PRs to match the established cascor+canopy pairing.
 
 **Answer:**
 Use the 2 paired PRs (Sprint A style) as recommended.
@@ -232,14 +232,14 @@ Documentation deliverables
 
 After Q5 confirmation:
 
-1. New juniper-ml/notes/PHASE_6E_SPRINT_B_DESIGN.md — deep-dive doc covering:
+1. New juniper-ml/notes/JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md — deep-dive doc covering:
     - Four-endpoint matrix with semantics, FSM transitions, response shapes
     - Time-index concept (UI metadata, not state-affecting for Restore/Resume/Retrain)
     - Replay V1 scope (metrics + topology) + V2 deferred (weight history)
     - Restore editing scope deferred (weights, topology endpoints)
     - PR breakdown
-2. Update juniper-ml/notes/PHASE_6E_DESIGN.md — replace the 1-row B-1 entry with the new 6-PR breakdown; reference the new design doc
-3. Update juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md — fan out CAN-015 to CAN-015a through CAN-015d, plus deferred items CAN-015e (weight replay) and CAN-015f (Restore editing)
+2. Update juniper-ml/notes/JUNIPER_2026-05-02_JUNIPER-ECOSYSTEM_PHASE-6E-DESIGN.md — replace the 1-row B-1 entry with the new 6-PR breakdown; reference the new design doc
+3. Update juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md — fan out CAN-015 to CAN-015a through CAN-015d, plus deferred items CAN-015e (weight replay) and CAN-015f (Restore editing)
 4. Update juniper-cascor/notes/development/PRE-DEPLOYMENT_ROADMAP-2.md and juniper-canopy/notes/development/JUNIPER-CANOPY_POST-RELEASE_DEVELOPMENT-ROADMAP.md — point at the new design doc
 
 Implementation order (post-design)

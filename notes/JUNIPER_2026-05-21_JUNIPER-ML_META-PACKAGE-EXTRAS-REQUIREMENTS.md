@@ -13,7 +13,7 @@ This document specifies the requirements governing the `juniper-ml` meta-package
 
 The extras surface is a public PyPI contract. Adding, removing, or renaming an extra is observable by every external caller; consequently it warrants explicit requirement tracking rather than being managed only as ad-hoc `pyproject.toml` edits.
 
-The document is written in the style of source notes docs that feed the snapshot consolidation pipeline (`REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md` Phase 4). HTML `<!-- requirement: JR-* -->` markers are intentionally omitted because no IDs have yet been assigned; the next refresh that processes this file is expected to allocate IDs in the `JR-ML-DEP-*` family (or a new `META` family if introduced).
+The document is written in the style of source notes docs that feed the snapshot consolidation pipeline (`JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md` Phase 4). HTML `<!-- requirement: JR-* -->` markers are intentionally omitted because no IDs have yet been assigned; the next refresh that processes this file is expected to allocate IDs in the `JR-ML-DEP-*` family (or a new `META` family if introduced).
 
 ---
 
@@ -110,16 +110,16 @@ Users who learn this only after running `pip install` in a constrained environme
 When this document is processed by the next snapshot consolidation pass:
 
 1. Each numbered requirement in §3 should be allocated a `JR-ML-*` ID. The natural category code is `DEP` (deployment-config — Docker, Compose, K8s, Helm, image build) — extras surface is a build-and-distribute concern — or a new `META` family if the maintainers decide the meta-package distribution surface deserves its own area code.
-2. The resulting IDs should be referenced from `juniper-ml#295` (the v0.5.0 introduction of `[servers]` + `[tools]`), `juniper-ml#293` (`[ci-tools]`), and `juniper-ml#299` (the docs-polish + lint PR) using `Closes JR-*` / `Partially closes JR-*` verbs per `REQUIREMENTS_NEXT_STEPS.md` §4.
-3. After IDs are assigned, this document can be amended with inline `<!-- requirement: JR-* -->` markers per `REQUIREMENTS_NEXT_STEPS.md` §5 to enable bidirectional mapping from prose to ID.
+2. The resulting IDs should be referenced from `juniper-ml#295` (the v0.5.0 introduction of `[servers]` + `[tools]`), `juniper-ml#293` (`[ci-tools]`), and `juniper-ml#299` (the docs-polish + lint PR) using `Closes JR-*` / `Partially closes JR-*` verbs per `JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §4.
+3. After IDs are assigned, this document can be amended with inline `<!-- requirement: JR-* -->` markers per `JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §5 to enable bidirectional mapping from prose to ID.
 
 ---
 
 ## 5. References
 
-- `REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md` — Phase 4 consolidation methodology that this document is shaped for.
-- `REQUIREMENTS_NEXT_STEPS.md` §4 — JR-ID PR-reference convention.
-- `REQUIREMENTS_NEXT_STEPS.md` §5 — Author-side `<!-- requirement: JR-* -->` markers in source docs.
+- `JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md` — Phase 4 consolidation methodology that this document is shaped for.
+- `JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §4 — JR-ID PR-reference convention.
+- `JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §5 — Author-side `<!-- requirement: JR-* -->` markers in source docs.
 - `juniper-ml/pyproject.toml` — Authoritative extras declaration.
 - `juniper-ml/tests/test_pyproject_extras.py` — Lint test enforcing §3.1 + §3.2 + §3.5.
 - `juniper-ml#293`, `#295`, `#299` — PRs that established and refined the extras surface this document describes.

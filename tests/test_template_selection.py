@@ -10,7 +10,7 @@ Companion to ``tests/test_template_library_drift.py``; both are the sole gate fo
 ``prompts/agent_templates/`` because ``prompts/**`` is excluded from all pre-commit hooks, so this
 test MUST stay wired into ``.github/workflows/ci.yml``.
 
-Design-of-record: ``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.4).
+Design-of-record: ``notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`` (S5.4).
 Location-agnostic: discovers the repo root by walking up for ``.github/workflows/``.
 """
 

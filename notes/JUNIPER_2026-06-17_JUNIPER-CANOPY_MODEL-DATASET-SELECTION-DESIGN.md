@@ -9,8 +9,8 @@
 **Status**: Design-of-record (forks resolved 2026-06-17; pending A0 implementation)
 
 > Captures the design for canopy's model + dataset selection, refining
-> [`JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md)
-> §4 and [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md)
+> [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md)
+> §4 and [`JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md)
 > §7.1/§8.2/§8.3/§8.4. Supersedes the roadmap §8.3 "gate on `ndim`" conclusion (§1). Decisions
 > D1–D8 were ratified in discussion 2026-06-17 after a four-agent validation pass
 > (§12). Tracked by canopy issue [#368](https://github.com/pcalnon/juniper-canopy/issues/368).
@@ -361,7 +361,7 @@ design is **E** below.
 
 **References:**
 
-- [`JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`](JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md) §4 — original design + a11y citations (`papers/`).
-- [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md) §5.1/§7.1/§8.2/§8.3/§8.4 — supersedes the §8.3 `ndim`-gate conclusion; §8.4 = the stranded `recurrence` service.
+- [`JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`](JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md) §4 — original design + a11y citations (`papers/`).
+- [`JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md) §5.1/§7.1/§8.2/§8.3/§8.4 — supersedes the §8.3 `ndim`-gate conclusion; §8.4 = the stranded `recurrence` service.
 - Canopy anchors: hardcoded options + default `src/frontend/dashboard_manager.py:1114-1121`; value reads `:3558`, `:3839`, `:3896`; `src/canopy_constants.py` dataset params; existing full-width `dbc.Tabs` panel + `live-switch-modal` pattern (surface reuse).
 - Tracking: canopy issue [#368](https://github.com/pcalnon/juniper-canopy/issues/368).

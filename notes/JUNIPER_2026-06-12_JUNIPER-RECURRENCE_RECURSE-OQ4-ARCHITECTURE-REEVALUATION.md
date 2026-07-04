@@ -214,4 +214,4 @@ The entire ceiling-break debate is downstream of one unanswered question: **does
 
 ---
 
-*Working draft. Pairs with the [P4](JUNIPER_RECURSE_OQ4_DELAY_LINE_OUTPUT_MODULE_EVAL_2026-06-09.md) and [P5](JUNIPER_RECURSE_OQ4_P5_RECURRENT_OUTPUT_LAYER_EVAL_2026-06-10.md) evaluations and the [Δt-handling note](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md). The dataset audit (§9) is the deferred validator. Lead-assembled from verified workflow outputs; not yet through an automated critic pass.*
+*Working draft. Pairs with the [P4](JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-OQ4-DELAY-LINE-OUTPUT-MODULE-EVAL.md) and [P5](JUNIPER_2026-06-10_JUNIPER-RECURRENCE_RECURSE-OQ4-P5-RECURRENT-OUTPUT-LAYER-EVAL.md) evaluations and the [Δt-handling note](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md). The dataset audit (§9) is the deferred validator. Lead-assembled from verified workflow outputs; not yet through an automated critic pass.*

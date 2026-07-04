@@ -17,7 +17,7 @@
 **Status**: shipped  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 156-182)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 156-182)
 
 **Detail**:
 
@@ -32,7 +32,7 @@
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 14-28)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 14-28)
 
 **Detail**:
 
@@ -43,8 +43,8 @@
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 280-289)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 216-225)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 280-289)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 216-225)
 
 **Notes**:
 
@@ -57,7 +57,7 @@
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 127-152)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 127-152)
 
 **Detail**:
 
@@ -72,7 +72,7 @@
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 97-126)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 97-126)
 
 **Detail**:
 
@@ -87,7 +87,7 @@
 **Status**: proposed  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 394-412)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 394-412)
 
 **Detail**:
 
@@ -131,7 +131,7 @@ Docker: multi-stage Dockerfile, CPU-only PyTorch, non-root user, requirements.lo
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 689-714)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 689-714)
 
 **Detail**:
 
@@ -146,7 +146,7 @@ context: ../juniper-cascor-worker
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1138-1146)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1138-1146)
 
 **Notes**:
 
@@ -157,7 +157,7 @@ context: ../juniper-cascor-worker
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 196-207)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 196-207)
 
 **Notes**:
 
@@ -168,7 +168,7 @@ context: ../juniper-cascor-worker
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 669-689)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 669-689)
 
 **Detail**:
 
@@ -183,7 +183,7 @@ FROM python:3.14-slim AS builder
 **Status**: designed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1220-1258)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1220-1258)
 
 **Notes**:
 
@@ -223,7 +223,7 @@ Security hardening: NoNewPrivileges=true, ProtectSystem=strict, ProtectHome=read
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 235-251)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 235-251)
 
 **Detail**:
 
@@ -238,7 +238,7 @@ Security hardening: NoNewPrivileges=true, ProtectSystem=strict, ProtectHome=read
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 299-315)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 299-315)
 
 **Detail**:
 
@@ -315,28 +315,28 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/observability/IMAGE_BUILD_BUGS_2026-05-10.md` (lines 1-50)
+- `juniper-ml/notes/observability/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_IMAGE-BUILD-BUGS.md` (lines 1-50)
 
 ### JR-ML-DEP-016 — juniper-deploy P0: define SECRETS_DIR and SECRETS_FILES variables in Makefile.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md` (lines 47-60)
+- `juniper-ml/notes/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-DEVELOPMENT-ROADMAP.md` (lines 47-60)
 
 ### JR-ML-DEP-017 — Release readiness checklist: pre-commit compliance, test pass, version sync across 6 applications.
 
 **Status**: proposed  **Priority**: P1  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 1-50)
 
 ### JR-ML-DEP-018 — A.2 Container/Deploy Files.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 831-846)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 831-846)
 
 **Detail**:
 
@@ -347,7 +347,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 2870-3070)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 2870-3070)
 
 **Notes**:
 
@@ -358,7 +358,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 62-97)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 62-97)
 
 **Detail**:
 
@@ -373,7 +373,7 @@ but app may be configured differently. Use env vars or expose-port-agnostic prob
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 409-420)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 409-420)
 
 **Detail**:
 
@@ -402,7 +402,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 20-26)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 20-26)
 
 **Detail**:
 
@@ -417,7 +417,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 451-651)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 451-651)
 
 **Notes**:
 
@@ -428,7 +428,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 3783-3983)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 3783-3983)
 
 **Notes**:
 
@@ -439,7 +439,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 198-398)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 198-398)
 
 **Notes**:
 
@@ -457,7 +457,7 @@ output structured results to journal. Non-zero exit enables OnFailure= triggers.
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 504-529)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 504-529)
 
 **Detail**:
 
@@ -487,7 +487,7 @@ Identified by v4. Validation found 4 additional hardcoded localhost URLs beyond 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 1472-1672)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 1472-1672)
 
 **Notes**:
 
@@ -498,7 +498,7 @@ Identified by v4. Validation found 4 additional hardcoded localhost URLs beyond 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 3294-3494)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 3294-3494)
 
 **Notes**:
 
@@ -530,7 +530,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 424-434)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 424-434)
 
 **Detail**:
 
@@ -545,7 +545,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 4251-4451)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 4251-4451)
 
 **Notes**:
 
@@ -556,7 +556,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 727-735)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 727-735)
 
 **Detail**:
 
@@ -567,7 +567,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 360-364)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 360-364)
 
 **Notes**:
 
@@ -578,7 +578,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 575-604)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 575-604)
 
 **Detail**:
 
@@ -593,7 +593,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 243-258)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 243-258)
 
 **Detail**:
 
@@ -604,7 +604,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 616-627)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 616-627)
 
 **Detail**:
 
@@ -619,14 +619,14 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 386-394)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 386-394)
 
 ### JR-ML-DEP-037 — Remediation Summary.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 156-169)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 156-169)
 
 **Detail**:
 
@@ -637,7 +637,7 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 1040-1240)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 1040-1240)
 
 **Notes**:
 
@@ -648,14 +648,14 @@ Tasks 2.1–2.14 define complete implementation with resource limits, health che
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 412-421)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 412-421)
 
 ### JR-ML-DEP-040 — There is no unified multi-service startup mechanism. Each service is started independently:.
 
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 97-116)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 97-116)
 
 **Detail**:
 
@@ -670,7 +670,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` (lines 2348-2548)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` (lines 2348-2548)
 
 **Notes**:
 
@@ -681,7 +681,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 375-386)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 375-386)
 
 **Detail**:
 
@@ -696,7 +696,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 171-188)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 171-188)
 
 **Detail**:
 
@@ -711,7 +711,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: proposed  **Priority**: P2  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 353-363)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 353-363)
 
 **Detail**:
 
@@ -726,7 +726,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: shipped  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 243-264)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 243-264)
 
 **Detail**:
 
@@ -741,7 +741,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: designed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 754-785)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 754-785)
 
 **Detail**:
 
@@ -752,7 +752,7 @@ There is no unified multi-service startup mechanism. Each service is started ind
 **Status**: deferred  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 591-603)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 591-603)
 
 **Detail**:
 
@@ -779,7 +779,7 @@ curl-based probe (add curl to base image) for more flexible checks.
 **Status**: proposed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 299-328)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 299-328)
 
 **Detail**:
 
@@ -794,7 +794,7 @@ curl-based probe (add curl to base image) for more flexible checks.
 **Status**: proposed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 270-285)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 270-285)
 
 **Detail**:
 
@@ -805,7 +805,7 @@ curl-based probe (add curl to base image) for more flexible checks.
 **Status**: proposed  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 785-804)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 785-804)
 
 **Detail**:
 

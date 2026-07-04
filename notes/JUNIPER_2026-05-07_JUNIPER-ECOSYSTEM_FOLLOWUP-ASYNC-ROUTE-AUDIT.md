@@ -3,7 +3,7 @@
 **Status**: open (created 2026-05-07)
 **Owner**: Paul Calnon
 **Trigger**: see per-item triggers below
-**Source plan**: [`ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md`](./ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md)
+**Source plan**: [`JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md`](./JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md)
 **Estimated effort**: ~30 minutes (item 1) + ~2 hours (item 2, only if triggered)
 
 ---
@@ -109,6 +109,6 @@ done
 
 ## Related
 
-- [`ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md`](./ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md) — the source plan, §0 ledger lists every Phase-1–4 PR
-- [`ASYNC_ROUTE_VIOLATIONS_2026-05-06.md`](./ASYNC_ROUTE_VIOLATIONS_2026-05-06.md) — Phase 0 enumeration
+- [`JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md`](./JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md) — the source plan, §0 ledger lists every Phase-1–4 PR
+- [`JUNIPER_2026-05-06_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-VIOLATIONS.md`](./JUNIPER_2026-05-06_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-VIOLATIONS.md) — Phase 0 enumeration
 - BUG-JD-10 — the original incident that motivated the migration (juniper-data `batch_update_tags` route)

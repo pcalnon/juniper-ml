@@ -7,8 +7,8 @@
 **Owner**: Paul Calnon
 **Cross-refs**:
 
-- Plan doc: [`REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`](REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md) — §10 future-work, §11 ship history, §12 known issues
-- Snapshot index: [`REQUIREMENTS_INDEX.md`](REQUIREMENTS_INDEX.md)
+- Plan doc: [`JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md`](JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md) — §10 future-work, §11 ship history, §12 known issues
+- Snapshot index: [`JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`](JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md)
 - Schema reference: [`requirements/README.md`](requirements/README.md)
 
 ---

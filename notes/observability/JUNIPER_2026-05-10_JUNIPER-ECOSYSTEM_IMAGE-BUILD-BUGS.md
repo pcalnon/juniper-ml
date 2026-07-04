@@ -2,7 +2,7 @@
 
 **Author**: Paul Calnon
 **Date**: 2026-05-10
-**Discovered during**: end-to-end Grafana provisioning verification (see `GRAFANA_DASHBOARDS_STATE_AND_GAPS_2026-05-10.md`)
+**Discovered during**: end-to-end Grafana provisioning verification (see `JUNIPER_2026-05-10_JUNIPER-DEPLOY_GRAFANA-DASHBOARDS-STATE-AND-GAPS.md`)
 **Stack version**: `juniper-deploy@26f4ae8` (post-PR #65) with `--profile full --profile observability`
 
 Two pre-existing image-build bugs block the `juniper-canopy` and `juniper-cascor-worker` containers from starting under the observability profile. Both are dependency-installation problems, not code bugs.
@@ -155,7 +155,7 @@ The `juniper-canopy` scrape target shows `down` only because of Bug 1, and the w
 | Bug 2 — worker missing `juniper-cascor-protocol` | juniper-cascor-worker | regenerate `requirements-cpu.lock` + rebuild | **MERGED** as `pcalnon/juniper-cascor-worker#58` (`7757c38`) |
 | CI gap — CPU lockfile freshness check | juniper-cascor-worker | new pyproject-deps-in-lockfile assertion in `lockfile-check` job | **MERGED** with worker PR #58 |
 | Bug 3 — canopy `/metrics` API-key gated | juniper-canopy | add `/metrics` to `EXEMPT_PATH_PREFIXES` (prefix form, see below) | **MERGED** as `pcalnon/juniper-canopy#262` (`6d1c81b`) |
-| Bug 4 — canopy dashboard self-calls 401 under prod auth | juniper-canopy | inject `X-API-Key` into all 44 dashboard self-call sites | **PR `pcalnon/juniper-canopy#265` open** (Option B; verified end-to-end). Long-term Option C refactor deferred — see [`CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md`](./CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md) |
+| Bug 4 — canopy dashboard self-calls 401 under prod auth | juniper-canopy | inject `X-API-Key` into all 44 dashboard self-call sites | **PR `pcalnon/juniper-canopy#265` open** (Option B; verified end-to-end). Long-term Option C refactor deferred — see [`JUNIPER_2026-05-10_JUNIPER-CANOPY_DASHBOARD-SELF-CALL-REFACTOR.md`](./JUNIPER_2026-05-10_JUNIPER-CANOPY_DASHBOARD-SELF-CALL-REFACTOR.md) |
 
 ---
 
@@ -236,7 +236,7 @@ Three options, with the rough trade-offs that drove the choice:
 
 - **Option A — env override to disable canopy auth.** Set `CANOPY_API_KEY_FILE` to point at the local empty `secrets/canopy_api_key.txt`. Auth disabled, dashboard works, ~30 second change. Not appropriate for production deployments. **Applied immediately for stack validation.**
 - **Option B — inject `X-API-Key` in dashboard self-calls.** Add a small helper that returns `{"X-API-Key": <key>}` when the key is configured; sprinkle `headers=internal_api_headers()` across all 44 sites. Closes the production auth-broken bug without changing the architecture. **Shipped as `pcalnon/juniper-canopy#265`.**
-- **Option C — drop the HTTP self-call indirection entirely.** Refactor the Dash callbacks to call the FastAPI route handlers as direct in-process Python functions, eliminating TCP loopback, full middleware traversal, JSON serialize/deserialize, and synthetic Prometheus traffic. **Deferred** — design and trigger conditions captured separately in [`CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md`](./CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md).
+- **Option C — drop the HTTP self-call indirection entirely.** Refactor the Dash callbacks to call the FastAPI route handlers as direct in-process Python functions, eliminating TCP loopback, full middleware traversal, JSON serialize/deserialize, and synthetic Prometheus traffic. **Deferred** — design and trigger conditions captured separately in [`JUNIPER_2026-05-10_JUNIPER-CANOPY_DASHBOARD-SELF-CALL-REFACTOR.md`](./JUNIPER_2026-05-10_JUNIPER-CANOPY_DASHBOARD-SELF-CALL-REFACTOR.md).
 
 ### Why B before C
 

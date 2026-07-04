@@ -4,7 +4,7 @@
 **Author**: Round 0 sub-agent (general-purpose)
 **Date**: 2026-04-11
 **Status**: Initial proposal — pre-consolidation
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -547,7 +547,7 @@ This is the parallel raw-WebSocket client. Its removal is straightforward:
 - Delete lines 1490-1526 entirely.
 - Delete the `ws-metrics-buffer` init callback (the broken one returning `no_update`) — it is replaced by the new drain callback in §3.2.2.
 - Delete references to `window._juniper_ws_buffer`, `window._juniper_ws_topology`, `window._juniper_ws_state` globals anywhere else in `dashboard_manager.py`. The topology and state drain callbacks (currently at `dashboard_manager.py:1531-1564`) must be updated to call `window._juniperWsDrain.drainTopology()` / `drainState()` instead.
-- Add a brief comment at the deletion site: `# Former parallel WebSocket client deleted in Phase B — see R0-01_frontend_performance.md and GAP-WS-03. All WebSocket subscriptions now flow through assets/websocket_client.js + assets/ws_dash_bridge.js.`
+- Add a brief comment at the deletion site: `# Former parallel WebSocket client deleted in Phase B — see JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md and GAP-WS-03. All WebSocket subscriptions now flow through assets/websocket_client.js + assets/ws_dash_bridge.js.`
 
 Post-deletion verification: `grep -r "_juniper_ws_" juniper-canopy/src/frontend/` returns zero matches. `grep -r "new WebSocket" juniper-canopy/src/frontend/` returns zero matches in any Python or JS file (the only `new WebSocket(...)` call should be inside `assets/websocket_client.js` itself).
 

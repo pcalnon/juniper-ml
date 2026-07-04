@@ -1,7 +1,7 @@
 """Cross-repo drift detection for the ``juniper-doc-tools`` pin in
 each consumer repo's CI workflow.
 
-Plan §5.1 of ``notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md``:
+Plan §5.1 of ``notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md``:
 
    "A range that falls outside the supported window (more than 2 minor
    versions behind current) gets surfaced as a soft warning, not a

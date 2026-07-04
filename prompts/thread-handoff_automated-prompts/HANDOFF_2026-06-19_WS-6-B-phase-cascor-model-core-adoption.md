@@ -12,7 +12,7 @@
 Resume **WS-6 — the juniper-cascor refactor — at its B-phase**: make production cascor **implement the
 model-core `TrainableModel` / `GrowableModel` interfaces natively**, replacing the *test-only*
 `CascorModelCoreAdapter`. This is the **dependency-clear** cutover step ratified as **DR-1 (do B now;
-defer the A-phase decision)** in `notes/JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md` (juniper-ml #475,
+defer the A-phase decision)** in `notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md` (juniper-ml #475,
 merged).
 
 **Approach: design-first, multi-PR.** Do NOT dive straight into production cascor code. Mirror the
@@ -34,7 +34,7 @@ pattern used for the OUT-12/13 gate and the reevaluation:
   **#472 MERGED**; GitHub Release `juniper-model-core-v0.3.0` cut (`--latest=false`); **LIVE on PyPI**
   (publish job success; version endpoint HTTP 200). Notes archived (`#474`). F-CRIT-1 lockstep done
   (`[tools]` pin `<0.4.0` + `test_pyproject_extras`).
-- **WS-5/WS-6 reevaluation** — juniper-ml **#475 MERGED** (`notes/JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md`);
+- **WS-5/WS-6 reevaluation** — juniper-ml **#475 MERGED** (`notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md`);
   **DR-1…DR-5 ratified** (see below). Built from 4 sub-agents (2 reality audits + fact-check + completeness critic).
 - **Doc-hygiene status reconcile** — juniper-ml **#479 OPEN** (doc-links pass): roadmap + parent-plan
   WS-5/WS-6 + OUT-12/13 cells corrected to merged reality.
@@ -88,7 +88,7 @@ pattern used for the OUT-12/13 gate and the reevaluation:
   concurrent branches before claiming any item — the remote check misses local-only / just-pushed branches.
 - **cascor API reality + adapter mappings** live in memory `project_cascor_golden_suite_plan_2026-06-17`,
   in the merged adapter `src/tests/conformance/cascor_model_core_adapter.py` (cascor #341), and in the
-  wiring plan `notes/JUNIPER_CASCOR_MODEL_CORE_CONFORMANCE_WIRING_PLAN_2026-06-18.md` (cascor repo).
+  wiring plan `notes/JUNIPER_2026-06-18_JUNIPER-CASCOR_MODEL-CORE-CONFORMANCE-WIRING-PLAN.md` (cascor repo).
 - **Standing rules:** Paul approves merges + PyPI/deploy gates (drive to the gate, hand off). Worktrees
   in `/home/pcalnon/Development/python/Juniper/worktrees/`. Scripts under `util/` (never `/tmp/`). Run
   cascor / model-core suites on the **JuniperCascor1** conda env (GIL; model-core 0.3.0 available).

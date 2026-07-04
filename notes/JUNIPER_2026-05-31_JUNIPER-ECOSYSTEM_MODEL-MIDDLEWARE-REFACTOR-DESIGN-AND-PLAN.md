@@ -12,16 +12,16 @@
 > **⟢ 2026-06-21 reconciliation.** WS-6 B-phase **B1/B2a/B2b MERGED** (cascor #345–#347; main `f3ec5d9`),
 > B3 next (spike-done, OQ-B1=proceed); WS-5 A0 + 3-D viz SHIPPED (canopy #372/#374–#379), A1 not started;
 > OUT-11 service-core T2 merged, **0.2.0 publish pending (ml #502)**; model-core 0.3.0, recurrence-model
-> 0.1.4, juniper-data 0.8.0. Authoritative current state: `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+> 0.1.4, juniper-data 0.8.0. Authoritative current state: `JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`.
 
 > **Document status:** design of record. **WS-0 RATIFIED 2026-06-14.** **Execution state (2026-06-18, reconciled into the Status Tracker below):** WS-1/WS-2/WS-3/WS-4 shipped & published
 > (`juniper-service-core` 0.1.0 + `juniper-model-core` 0.1.0/0.2.0 on PyPI; the WS-4b recurrence app + `POST /v1/crossval` landed on `juniper-recurrence` main). The model-core **cross-validation
 > layer** (0.2.0) is **shipped**, and the **WS-6 trigger is MET** (cascor golden #340 + conformance #341 both green). **WS-5 / WS-7 remain** (WS-8 deferred). Broader reconciled roadmap:
-> [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+> [`JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md).
 > This document covers the **service/middleware refactor** (extracting the model↔service seam into shared packages so any new model plugs in) plus the **shared scaffolding** for the whole effort.
 > The companion document covers the recurrent model itself.
 >
-> **Provenance:** This document is the **refactor half** of a 2026-06-03 two-way split of the original single master plan (`JUNIPER_RECURSE_DESIGN_AND_PLAN_2026-05-31.md`).
+> **Provenance:** This document is the **refactor half** of a 2026-06-03 two-way split of the original single master plan (`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-DESIGN-AND-PLAN.md`).
 > It is also the designated home for content that is **cross-cutting** to both halves (Status Tracker, binding constraints, method, Risk Register, Open-Questions table, Verification Log, internal sources) — each such block is marked **⚑ CROSS-CUTTING (review)**.
 > All WS-*/OQ-*/RK-*/C*/F* identifiers are preserved verbatim across both halves.
 > The original five-lens verification pass (Round 1, 2026-05-31) covered the combined content and is reproduced in full in Part 7.
@@ -30,7 +30,7 @@
 
 | Document                                                                                               | Scope                                                                                                                                                                                      |
 |:-------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **[Recurrent Model Design & Plan](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)** — *companion* | The recurrent NN capability: requirements, candidate-architecture survey, top-3 deep dives, recommendation, model-level testing, model risks & open questions, external literature survey. |
+| **[Recurrent Model Design & Plan](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md)** — *companion* | The recurrent NN capability: requirements, candidate-architecture survey, top-3 deep dives, recommendation, model-level testing, model risks & open questions, external literature survey. |
 |                                                                                                        | -- **Note (RESOLVED 2026-06-14):** the model pick is **P3-C / LMU + Approach-C**; OQ-4 resolved (ceiling not binding — dataset audit).                                                                                                            |
 | **This document** — *Model/Middleware Refactor*                                                        | Extracting `juniper-service-core` + `juniper-model-core` from cascor (the "model-addition template"), juniper-data extensions, canopy generalization, ecosystem changes, phased rollout,   |
 |                                                                                                        | -- middleware/cross-cutting testing, and the shared scaffolding.                                                                                                                           |
@@ -56,7 +56,7 @@
 | **WS-2** | Extract `juniper-service-core` (Tier-1 generic infra)                    | 2.3         | L    | `SHIPPED`   | WS-0             | Additive shared package; cascor adopts behind a no-op shim                                                                                 |
 | **WS-3** | Define `juniper-model-core` abstract interfaces                          | 2.3         | M    | `SHIPPED`   | WS-0             | **SHIPPED** — 0.1.0 on PyPI; ABCs + event/serialization contracts + conformance kit (66 tests / ~97%); 0.2.0 crossval designed, not built                                                                        |
 | **WS-4** | Build `juniper-recurrence` (LMU reference model) + `juniper-recurrence-client` | A§1.5 / 2.3 | L    | `SHIPPED`   | WS-1, WS-2, WS-3 | **Model SHIPPED** — LMU passes the model-core conformance kit 10/10. **App (WS-4b) SHIPPED** — full FastAPI app on `juniper-recurrence` main (#6–#19), incl. `POST /v1/crossval` consuming model-core 0.2.0; pins `juniper-model-core[crossval]>=0.2.0`.                                                 |
-| **WS-5** | Generalize `juniper-canopy` (model-agnostic UI + recurrence backend)        | 2.5         | M    | `IN PROGRESS` | WS-4           | **A0 registry shipped** (canopy #372); A1 surface + D2 3-D display designed-only. Builds on canopy's `BackendProtocol` seam. See `JUNIPER_WS5_WS6_REEVALUATION_2026-06-19.md`                                  |
+| **WS-5** | Generalize `juniper-canopy` (model-agnostic UI + recurrence backend)        | 2.5         | M    | `IN PROGRESS` | WS-4           | **A0 registry shipped** (canopy #372); A1 surface + D2 3-D display designed-only. Builds on canopy's `BackendProtocol` seam. See `JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_WS5-WS6-REEVALUATION.md`                                  |
 | **WS-6** | Refactor `juniper-cascor` onto shared packages                           | 2.3 / 2.7   | L    | `PLANNED`   | WS-2, WS-3, WS-4 | **TRIGGER MET 2026-06-18** (golden #340 + conformance #341 green; recurrence LMU 10/10 + `/crossval` app). Gate passed — but the cutover depends on **OUT-11** (service-core's T2 surface: routes/websocket/worker, designed-not-built; only T1 ships); 6a/6b begins once that lands (kill-criterion §2.7). De-risks production system                                     |
 | **WS-7** | Ecosystem integration: `juniper-deploy`, `juniper-ml` extras             | 2.6         | S    | `IN PROGRESS`   | WS-4             | **IN PROGRESS** — juniper-ml `[tools]` extras done (model-core + service-core); juniper-deploy compose service still pending                                                                                                        |
 | **WS-8** | (future) `juniper-recurrence-worker` distributed training                   | 2.6         | L    | `DEFERRED`  | WS-4             | **Trigger:** recurrence training cost justifies distribution                                                                                  |
@@ -107,7 +107,7 @@ The following were decided by Paul before drafting and are treated as fixed inpu
 These are not requirements the user re-stated; they are pre-existing platform commitments that the design must honor. Each is cited.
 
 - **C1 — First-principles implementation.** *"…implemented from the primary literature without recourse to higher-level abstractions that elide the algorithm's operational detail… candidate units, correlation objectives, weight-freezing semantics, and the structural events that grow the network are first-class artifacts of the codebase rather than internal details of a library wrapper."*
-  - (`RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md` §2.) → The recurrent model's recurrence, state, and growth must be inspectable code, **not** a `torch.nn.LSTM` black box.
+  - (`JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md` §2.) → The recurrent model's recurrence, state, and growth must be inspectable code, **not** a `torch.nn.LSTM` black box.
   - This constraint materially shapes the model ranking (companion Part 1).
 - **C2 — Dual-mode application shape.** Every Juniper service has a FastAPI `create_app()` factory (`server.py`) **and** a standalone CLI (`main.py`), Pydantic settings with an env prefix, and the canonical 6-field `AGENTS.md` header (enforced by `tests/test_agents_md_header_schema.py`). juniper-recurrence follows this exactly; env prefix `JUNIPER_RECURSE_`.
 - **C3 — Shared-data contract.** Datasets flow `juniper-data → juniper-data-client → model` as NPZ artifacts. All dataset capability belongs to `juniper-data` (per the user's component-boundary statement). juniper-recurrence must consume datasets via `juniper-data-client`, not generate its own.
@@ -491,9 +491,9 @@ It asserts, for a supplied model factory + tiny dataset fixture:
 | Cascor architecture & conventions  | `juniper-cascor/AGENTS.md`                                                                                                | §2.1–2.2 seam, conventions, testing                                   |
 | Cascor model↔service seam          | `juniper-cascor/src/api/lifecycle/manager.py`, `src/api/routes/**`, `src/snapshots/**`                                    | §2.1 coupling (module-level)                                          |
 | Cascor architecture guide          | `juniper-cascor/notes/ARCHITECTURE_GUIDE.md`                                                                              | Context (not deep-read)                                               |
-| Research philosophy (canonical)    | `juniper-ml/notes/RESEARCH_PHILOSOPHY_CANONICAL_DRAFT_2026-05-19.md`                                                      | C1, platform thesis, §0.3                                             |
+| Research philosophy (canonical)    | `juniper-ml/notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_RESEARCH-PHILOSOPHY-CANONICAL-DRAFT.md`                                                      | C1, platform thesis, §0.3                                             |
 | Architectural design journal       | `Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common-API, #4 New-ABC, #5 ABC-client, #7 split-cascor) | §2.1–2.3 prior intent, ABC, split-cascor; #5 ↔ juniper-recurrence-client |
-| Multi-network orchestration design | `juniper-ml/notes/PHASE_6E_MULTI_NETWORK_DESIGN.md`                                                                       | "network populations" context                                         |
+| Multi-network orchestration design | `juniper-ml/notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md`                                                                       | "network populations" context                                         |
 | Observability exports (0.3.x)      | `juniper-ml/juniper-observability/juniper_observability/**`                                                               | C4, reuse inventory                                                   |
 | Shared-package template            | `juniper-ml/juniper-{config,ci,doc}-tools/**`, `juniper-ml/pyproject.toml`                                                | §2.3 packaging/pin convention                                         |
 | Data service & contract            | `juniper-data/juniper_data/**` (generators/, api/routes/datasets.py, core/split.py)                                       | §2.4 gap analysis                                                     |
@@ -765,4 +765,4 @@ Because cascor (the production system, and the most-coupled node in both stacks)
 
 ---
 
-*End of refactor document. This is a living plan — the Status Tracker, Open-Questions table, Verification Log, and Part 8 migration runbook above are canonical for the whole effort (both this document and the [companion model document](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)).*
+*End of refactor document. This is a living plan — the Status Tracker, Open-Questions table, Verification Log, and Part 8 migration runbook above are canonical for the whole effort (both this document and the [companion model document](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md)).*

@@ -2,7 +2,7 @@
 
 **Author**: Paul Calnon (Claude-assisted)
 **Date**: 2026-05-10
-**Companion to**: [`JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`](./JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md) §6.4 / item #7
+**Companion to**: [`JUNIPER_2026-05-09_JUNIPER-DEPLOY_GO-PUBLIC-ANALYSIS.md`](./JUNIPER_2026-05-09_JUNIPER-DEPLOY_GO-PUBLIC-ANALYSIS.md) §6.4 / item #7
 **Status**: Walkthrough — execute end-to-end after any repo flips visibility (last flip: `juniper-deploy` 2026-05-10).
 
 ---

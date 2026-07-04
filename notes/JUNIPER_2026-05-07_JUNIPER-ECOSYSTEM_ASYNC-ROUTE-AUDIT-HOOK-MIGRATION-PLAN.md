@@ -3,7 +3,7 @@
 **Owner**: Paul Calnon
 **Created**: 2026-05-05
 **Status**: **Complete (2026-05-06)** — all four phases shipped across the four in-scope repos.
-**Source audit**: [`ROADMAP_AUDIT_2026-05-05.md`](./ROADMAP_AUDIT_2026-05-05.md) §9.4
+**Source audit**: [`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md`](./JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md) §9.4
 
 ---
 
@@ -11,7 +11,7 @@
 
 | Phase | Repo | PR | Result |
 |---|---|---|---|
-| 0 (discovery) | all 4 | [`ASYNC_ROUTE_VIOLATIONS_2026-05-06.md`](./ASYNC_ROUTE_VIOLATIONS_2026-05-06.md) | 27 violations enumerated; worker clean |
+| 0 (discovery) | all 4 | [`JUNIPER_2026-05-06_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-VIOLATIONS.md`](./JUNIPER_2026-05-06_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-VIOLATIONS.md) | 27 violations enumerated; worker clean |
 | 1 (wiring, disabled) | juniper-data | data#92 | merged |
 | 1 (wiring, disabled) | juniper-cascor | cascor#231 | merged |
 | 1 (wiring, disabled) | juniper-canopy | canopy#243 | merged |
@@ -37,7 +37,7 @@
 3. (Pending first regression) — the next BUG-JD-10-class introduction will be caught in PR.
 4. (Pending 2026-11) — semi-annual `# noqa: ASYNC*` audit.
 
-**Open follow-ups** (deferred, not blocking) — tracked in [`FOLLOWUP_ASYNC_ROUTE_AUDIT.md`](./FOLLOWUP_ASYNC_ROUTE_AUDIT.md):
+**Open follow-ups** (deferred, not blocking) — tracked in [`JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md`](./JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md):
 - Item 1: branch-protection rule additions — each repo's "Require status checks" list still needs the new `Async-route audit (BUG-JD-10 class)` lane added (GitHub UI-only, no code change).
 - Item 2: centralised deny-list (§5.2 / Q3) — the `juniper-ml/util/check_async_routes.py` script for project-internal blocking calls (`store.get_meta`, etc.) has not been written. Phase 0 found that ruff's stdlib coverage caught all 27 sites without it; revisit if a future BUG-JD-10-class slips through.
 - Doc-link hygiene: this plan is now referenced from inline comments in 4 repos' `ci.yml` and `.pre-commit-config.yaml`; if it ever moves, update those comments.
@@ -306,7 +306,7 @@ Per repo:
 
 1. **Phase 0 timing**: should the violation enumeration happen now (before approving the rest of the plan), or after the plan is approved and we proceed in earnest? Doing it now adds 30 minutes but makes the scope of Phase 3 concrete.
 
-   **Answer (2026-05-06)**: enumeration runs now. **Done** — see [`ASYNC_ROUTE_VIOLATIONS_2026-05-06.md`](./ASYNC_ROUTE_VIOLATIONS_2026-05-06.md). Headline: 27 total violations across 4 in-scope repos (15 production, 12 test); Phase 3 effort revised down to **~2.5 hours total** of code work. Worker is already clean.
+   **Answer (2026-05-06)**: enumeration runs now. **Done** — see [`JUNIPER_2026-05-06_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-VIOLATIONS.md`](./JUNIPER_2026-05-06_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-VIOLATIONS.md). Headline: 27 total violations across 4 in-scope repos (15 production, 12 test); Phase 3 effort revised down to **~2.5 hours total** of code work. Worker is already clean.
 
 2. **Phase 4 enforcement order**: the proposed order (data → cascor → canopy → worker) optimises for blast radius. Alternative: enforce on the smallest first (worker → canopy → data → cascor) for confidence-building. Pick one.
 

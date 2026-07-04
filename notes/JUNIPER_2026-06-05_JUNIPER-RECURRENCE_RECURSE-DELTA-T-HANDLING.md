@@ -11,8 +11,8 @@
 
 > **Status:** DRAFT analysis note. **Planning/analysis only** — nothing here is implemented until the relevant workstream (WS-1 / WS-3 / WS-4) is opened and ratified.
 > **Provenance:** Produced from a working session on irregular-Δt datasets. Grounded against the equities generator on disk (`juniper-data/juniper_data/generators/equities/generator.py` v1.0.0) and both halves of the recurse design:
-> [`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md) (model) and
-> [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) (refactor/contract).
+> [`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md) (model) and
+> [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md) (refactor/contract).
 > **Scope:** This note is effectively an addendum to the recurse model open questions on irregular-Δt handling (tracked there as **[OQ-7]**, model-owned; the separate NPZ-3-D-contract question is **[OQ-6]**, refactor-owned — see §4.4). It proposes concrete, C1-compliant answers and is intended as input to WS-1 (data contract), WS-3 (`juniper-model-core` interfaces), and WS-4 (the recurse model).
 
 ---
@@ -744,7 +744,7 @@ Open questions surfaced/clarified here:
 
 ## Sources / cross-references
 
-- Recurse model design: [`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md) §1.2–1.6, §3.2.
-- Refactor/contract design: [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) §0.3 (C1–C5), §2.3–2.4, §2.8–2.9, §3.
+- Recurse model design: [`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md) §1.2–1.6, §3.2.
+- Refactor/contract design: [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md) §0.3 (C1–C5), §2.3–2.4, §2.8–2.9, §3.
 - Equities generator: `juniper-data/juniper_data/generators/equities/{generator.py,defaults.py,params.py}` (v1.0.0).
 - Δt / continuous-time literature: Che et al. 2018 (GRU-D); Rubanova, Chen & Duvenaud 2019 (Latent-ODE); Shukla & Marlin 2021 (mTAN); Horn et al. 2020 (SeFT); Voelker, Kajić & Eliasmith 2019 (LMU); Gu et al. 2020 (HiPPO); Mei & Eisner 2017 (Neural Hawkes); López de Prado 2018 (purged/embargoed CV).

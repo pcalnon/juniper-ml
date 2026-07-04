@@ -5,7 +5,7 @@
 **Date**: 2026-04-11
 **Status**: Round 2 consolidation — input to Round 3
 **Inputs consolidated**: R1-01 (critical-path minimum-viable), R1-02 (risk-minimized safety-first), R1-03 (maximalist comprehensive), R1-04 (operational runbook), R1-05 (disagreement reconciliation)
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -806,7 +806,7 @@ This section details every decision in §2. Each has: Question, Why it matters, 
 ### 3.55 D-55: Source-doc patches deferred to Round 5
 
 - **Question**: Which source-doc text changes are batched into Round 5 vs patched inline during the relevant phase?
-- **Recommended default**: **Batch in Round 5**. The canonical patch list (D01, D02, D15, D16, D19, D20, D37, D38, D39 from R1-05) updates `WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` to v1.4 in one pass.
+- **Recommended default**: **Batch in Round 5**. The canonical patch list (D01, D02, D15, D16, D19, D20, D37, D38, D39 from R1-05) updates `JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` to v1.4 in one pass.
 - **Who decides**: R5
 - **Decision deadline**: Pre-canonical
 - **Cost of deferring**: None.

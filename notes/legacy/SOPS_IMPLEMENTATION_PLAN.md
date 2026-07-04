@@ -83,7 +83,7 @@ Hook definition:
 
 ### Step 8: Documentation — COMPLETE
 
-Created `juniper-ml/notes/SOPS_USAGE_GUIDE.md` with setup instructions, daily workflow, per-repo reference, CI/CD integration pattern, key rotation procedure, and troubleshooting.
+Created `juniper-ml/notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md` with setup instructions, daily workflow, per-repo reference, CI/CD integration pattern, key rotation procedure, and troubleshooting.
 
 ### Step 9: GitHub Secrets — COMPLETE
 
@@ -100,7 +100,7 @@ Stored the age private key as `SOPS_AGE_KEY` GitHub Secret in all 8 repos (junip
 | `.env.secrets.example` | Created | juniper-deploy |
 | `.gitignore` | Modified (added `.env` + `.env.secrets` + variants) | All 8 repos |
 | `.pre-commit-config.yaml` | Modified (added hook) | juniper-cascor, juniper-data, juniper-canopy |
-| `notes/SOPS_USAGE_GUIDE.md` | Created | juniper-ml |
+| `notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md` | Created | juniper-ml |
 | `SOPS_AGE_KEY` | GitHub Secret set | All 8 repos |
 
 ## Verification — COMPLETE

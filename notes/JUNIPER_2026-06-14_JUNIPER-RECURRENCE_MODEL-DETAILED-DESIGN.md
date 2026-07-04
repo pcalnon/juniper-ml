@@ -73,14 +73,14 @@ This is a *review-and-synthesis* deliverable. The following prior artifacts were
 
 **Notes (design/eval corpus):**
 
-- `JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md` — the decision map (read in full).
-- `JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` — the four Δt approaches + Approach-C math + verification (digested in full).
-- `JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md` — model landscape, top-3, §1.3.4 Δt-native LMU, OQ answers (digested in full).
-- `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` — integration seam, model-core/service-core, WS/OQ/RK registers (digested in full).
-- `JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md` — P1/P2/P3 proposals + Workstream-0 + BPTT/RTRL (read in full).
-- `JUNIPER_RECURSE_DELAY_LINE_NODE_DESIGN_EVAL_2026-06-09.md` + `JUNIPER_RECURSE_OQ4_DELAY_LINE_OUTPUT_MODULE_EVAL_2026-06-09.md` — P4 (digested).
-- `JUNIPER_RECURSE_OQ4_P7_GRAZZI_BLOCK_DESIGN_2026-06-13.md` — P7 ceiling-breaker (digested).
-- `JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md` + `JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md` — placement/naming (digested).
+- `JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md` — the decision map (read in full).
+- `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` — the four Δt approaches + Approach-C math + verification (digested in full).
+- `JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md` — model landscape, top-3, §1.3.4 Δt-native LMU, OQ answers (digested in full).
+- `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` — integration seam, model-core/service-core, WS/OQ/RK registers (digested in full).
+- `JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md` — P1/P2/P3 proposals + Workstream-0 + BPTT/RTRL (read in full).
+- `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-DELAY-LINE-NODE-DESIGN-EVAL.md` + `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-OQ4-DELAY-LINE-OUTPUT-MODULE-EVAL.md` — P4 (digested).
+- `JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-P7-GRAZZI-BLOCK-DESIGN.md` — P7 ceiling-breaker (digested).
+- `JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md` + `JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md` — placement/naming (digested).
 
 **POC scripts (`util/ad-hoc/`):** `verify_delta_t_reference_code.py` (read in full — the Approach-C reference), `verify_oq4_expressivity_suite.py`, `verify_delay_line_node_eval.py`, `verify_fir_horizon_boundary.py`, `verify_p5_recurrent_output_eval.py`, `verify_p6_narx_mlp_output_eval.py`, `verify_p7_grazzi_block_growth.py`.
 
@@ -88,10 +88,10 @@ This is a *review-and-synthesis* deliverable. The following prior artifacts were
 
 **Concurrent-session work incorporated (2026-06-14, post-merge).** After this synthesis was drafted, four further recurrence documents merged to `main` from a parallel session and are reconciled here:
 
-- `JUNIPER_RECURSE_OQ4_ARCHITECTURE_REEVALUATION_2026-06-12.md` — a *second*, distinct 2026-06-12 re-eval (188-agent; P6 / P2-P3-hybrid / P3-C-pairings / LMU-SSM), notable for the **REPRESENTABILITY vs LEARNABILITY vs DEPLOYED-bound** axis separation and the same bottom line (ship P3-C/LMU via Approach-C fixed-order + P1; P2 only if counting required; P6 as representability reference). Complements — does not duplicate — the `…EXHAUSTIVE_REEVALUATION…` decision map.
-- `JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md` — the standalone dataset audit (exception list empty; irregular Δt is the one cross-cutting demand).
-- `JUNIPER_RECURSE_OQ4_P5_RECURRENT_OUTPUT_LAYER_EVAL_2026-06-10.md` — the P5 evaluation.
-- **`JUNIPER_RECURSE_OQ4_CASCOR_3D_INGESTION_GATE_2026-06-14.md`** — the **build-side** scoping of current-work item (c): exactly how cascor must change to ingest 3-D windows. Its findings refine §4.3 (the "ndim>2 cap" is a three-tier boundary, not one cap), §6.1/§6.6 (cascor drops the Δt channel today), and §9.1(c) (Path A flatten=P4 trap vs Path B recurrent). VERIFIED-CODE against cascor `main @ 0914ca1`, 5-agent validated.
+- `JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-ARCHITECTURE-REEVALUATION.md` — a *second*, distinct 2026-06-12 re-eval (188-agent; P6 / P2-P3-hybrid / P3-C-pairings / LMU-SSM), notable for the **REPRESENTABILITY vs LEARNABILITY vs DEPLOYED-bound** axis separation and the same bottom line (ship P3-C/LMU via Approach-C fixed-order + P1; P2 only if counting required; P6 as representability reference). Complements — does not duplicate — the `…EXHAUSTIVE_REEVALUATION…` decision map.
+- `JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md` — the standalone dataset audit (exception list empty; irregular Δt is the one cross-cutting demand).
+- `JUNIPER_2026-06-10_JUNIPER-RECURRENCE_RECURSE-OQ4-P5-RECURRENT-OUTPUT-LAYER-EVAL.md` — the P5 evaluation.
+- **`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_RECURSE-OQ4-CASCOR-3D-INGESTION-GATE.md`** — the **build-side** scoping of current-work item (c): exactly how cascor must change to ingest 3-D windows. Its findings refine §4.3 (the "ndim>2 cap" is a three-tier boundary, not one cap), §6.1/§6.6 (cascor drops the Δt channel today), and §9.1(c) (Path A flatten=P4 trap vs Path B recurrent). VERIFIED-CODE against cascor `main @ 0914ca1`, 5-agent validated.
 
 ## 0.4 Relationship to the existing documents
 
@@ -779,17 +779,17 @@ def test_lmu_grid_invariance():
 
 # Appendix B — Cross-references & provenance
 
-- **Decision map:** `JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md`
-- **Architecture re-eval (P6 / P2-P3-hybrid / P3-C-pairings / LMU-SSM; REPRESENTABILITY/LEARNABILITY/DEPLOYED axes):** `JUNIPER_RECURSE_OQ4_ARCHITECTURE_REEVALUATION_2026-06-12.md`
-- **Dataset audit (requirement validator):** `JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md`
-- **Cascor 3-D ingestion gate (build-side scoping of item c; two-IPC-path + three-tier analysis):** `JUNIPER_RECURSE_OQ4_CASCOR_3D_INGESTION_GATE_2026-06-14.md`
-- **P5 recurrent-output eval:** `JUNIPER_RECURSE_OQ4_P5_RECURRENT_OUTPUT_LAYER_EVAL_2026-06-10.md`
-- **Δt math & reference code:** `JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`; POC `util/ad-hoc/verify_delta_t_reference_code.py`
-- **Model landscape & §1.3.4 Δt-native LMU:** `JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`
-- **Substrate & shared packages, WS/OQ/RK registers:** `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`
-- **P1/P2/P3 proposals + Workstream-0:** `JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md`
-- **Alternatives (P4–P7):** `JUNIPER_RECURSE_DELAY_LINE_NODE_DESIGN_EVAL_2026-06-09.md`, `JUNIPER_RECURSE_OQ4_DELAY_LINE_OUTPUT_MODULE_EVAL_2026-06-09.md`, `JUNIPER_RECURSE_OQ4_P7_GRAZZI_BLOCK_DESIGN_2026-06-13.md`
-- **Placement & naming:** `JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`, `JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md`
+- **Decision map:** `JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md`
+- **Architecture re-eval (P6 / P2-P3-hybrid / P3-C-pairings / LMU-SSM; REPRESENTABILITY/LEARNABILITY/DEPLOYED axes):** `JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-ARCHITECTURE-REEVALUATION.md`
+- **Dataset audit (requirement validator):** `JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md`
+- **Cascor 3-D ingestion gate (build-side scoping of item c; two-IPC-path + three-tier analysis):** `JUNIPER_2026-06-14_JUNIPER-RECURRENCE_RECURSE-OQ4-CASCOR-3D-INGESTION-GATE.md`
+- **P5 recurrent-output eval:** `JUNIPER_2026-06-10_JUNIPER-RECURRENCE_RECURSE-OQ4-P5-RECURRENT-OUTPUT-LAYER-EVAL.md`
+- **Δt math & reference code:** `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`; POC `util/ad-hoc/verify_delta_t_reference_code.py`
+- **Model landscape & §1.3.4 Δt-native LMU:** `JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`
+- **Substrate & shared packages, WS/OQ/RK registers:** `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`
+- **P1/P2/P3 proposals + Workstream-0:** `JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md`
+- **Alternatives (P4–P7):** `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-DELAY-LINE-NODE-DESIGN-EVAL.md`, `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-OQ4-DELAY-LINE-OUTPUT-MODULE-EVAL.md`, `JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-P7-GRAZZI-BLOCK-DESIGN.md`
+- **Placement & naming:** `JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md`, `JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md`
 - **POCs:** `util/ad-hoc/verify_{delta_t_reference_code,oq4_expressivity_suite,delay_line_node_eval,fir_horizon_boundary,p5_recurrent_output_eval,p6_narx_mlp_output_eval,p7_grazzi_block_growth}.py`
 
 ---

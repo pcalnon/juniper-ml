@@ -11,7 +11,7 @@
 
 > **What this is.** The design + gate-audit + build plan for the **T2 surface** of `juniper-service-core` —
 > the websocket subsystem, worker subsystem + `TaskDistributor`, generic routes, and lifecycle base that the
-> service template is missing. **OUT-11** in [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md);
+> service template is missing. **OUT-11** in [`JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md);
 > the consumer that pulls it is WS-6's A-phase (cascor adoption). Sequenced (Paul, 2026-06-19): **ratify this
 > note → audit that OUT-11's gates aren't already met (§5) → full build (§6).**
 >

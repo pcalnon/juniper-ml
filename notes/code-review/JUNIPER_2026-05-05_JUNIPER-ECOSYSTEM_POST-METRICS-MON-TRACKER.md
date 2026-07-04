@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 
 **Project:** Juniper ML (cross-repo)
-**File Name:** `notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md`
+**File Name:** `notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md`
 **Description:** Single-source tracker for items that survived the close of the METRICS-MON program (juniper-ml#192) and the subsequent 27-finding observability audit (juniper-ml#195). Captures the soak-window calibration work, alertmanager production wire-up, log-only-severity gate-lift gating, deferred bucket re-evaluation, the snap-confined `amtool` validation gap, the deferred TRAIN-ARCH-01 mini-batch design, and any items found while drafting this tracker. The intent is that the next agent or human picking this up has one document to start from.
 **Author:** Paul Calnon
 **Version:** 0.1.0
@@ -14,8 +14,8 @@
 **Source documents (must read first when picking this up):**
 
 - [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 (residual follow-ups)
-- [`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) §5 (consolidated action items)
-- [`../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`](../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md) §4 (3.2 state)
+- [`JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`](JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md) §5 (consolidated action items)
+- [`../observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md`](../observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md) §4 (3.2 state)
 - juniper-deploy `notes/SLO_CATALOG_2026-05-03.md` §2.6, §6 Q6 (cross-repo)
 - juniper-deploy `notes/ALERTMANAGER_NOTIFICATION_RUNBOOK.md` §4 (rotation), §7 (limitations) (cross-repo)
 - juniper-cascor `notes/observability/HISTOGRAM_BUCKETS_RATIONALE_2026-05-02.md` §5.4 (D.2 acceptance) (cross-repo)
@@ -392,7 +392,7 @@ Retire when either:
 - §2 has zero open rows for ≥ 30 days, **or**
 - A successor tracker (e.g. `POST_METRICS_MON_TRACKER_2026-09-01.md` for a 2026-Q3 program close) supersedes it.
 
-Retirement procedure: `git mv notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md notes/legacy/` in a doc-only PR; leave a tombstone link in any document that references this tracker.
+Retirement procedure: `git mv notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md notes/legacy/` in a doc-only PR; leave a tombstone link in any document that references this tracker.
 
 ---
 
@@ -409,8 +409,8 @@ Retirement procedure: `git mv notes/code-review/POST_METRICS_MON_TRACKER_2026-05
 ### Primary
 
 - [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) §6 — residual follow-ups (juniper-ml#192)
-- [`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) §5 — consolidated action items (juniper-ml#195)
-- [`../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`](../observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md) §4 — finding 3.2 state and Option B recommendation (juniper-ml#197)
+- [`JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`](JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md) §5 — consolidated action items (juniper-ml#195)
+- [`../observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md`](../observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md) §4 — finding 3.2 state and Option B recommendation (juniper-ml#197)
 
 ### Cross-repo
 

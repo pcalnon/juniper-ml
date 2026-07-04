@@ -15,8 +15,8 @@
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 360-410)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 398-450)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 360-410)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 398-450)
 
 **Notes**:
 
@@ -33,8 +33,8 @@
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 325-359)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 361-397)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 325-359)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 361-397)
 
 **Notes**:
 
@@ -51,8 +51,8 @@
 **Status**: superseded  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 289-324)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 323-360)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 289-324)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 323-360)
 
 **Notes**:
 
@@ -69,8 +69,8 @@
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 477-526)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 527-581)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 477-526)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 527-581)
 
 **Notes**:
 
@@ -87,8 +87,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 527-557)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 582-614)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 527-557)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 582-614)
 
 **Notes**:
 
@@ -105,8 +105,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 101-135)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 120-156)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 101-135)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 120-156)
 
 **Notes**:
 
@@ -123,8 +123,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 52-75)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 65-92)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 52-75)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 65-92)
 
 **Notes**:
 
@@ -141,8 +141,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 245-288)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 277-322)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 245-288)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 277-322)
 
 **Notes**:
 
@@ -159,8 +159,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 136-193)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 157-223)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 136-193)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 157-223)
 
 **Notes**:
 
@@ -177,8 +177,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 558-606)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 615-666)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 558-606)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 615-666)
 
 **Notes**:
 
@@ -195,8 +195,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 411-438)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 451-486)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 411-438)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 451-486)
 
 **Notes**:
 
@@ -213,7 +213,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 39-64)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 39-64)
 
 **Notes**:
 
@@ -224,7 +224,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 658-698)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 658-698)
 
 **Notes**:
 
@@ -235,7 +235,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 805-825)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 805-825)
 
 **Notes**:
 
@@ -246,7 +246,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 697-716)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 697-716)
 
 **Notes**:
 
@@ -257,7 +257,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 781-804)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 781-804)
 
 **Notes**:
 
@@ -268,7 +268,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 717-737)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 717-737)
 
 **Notes**:
 
@@ -279,7 +279,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: TEST  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 738-780)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 738-780)
 
 **Notes**:
 
@@ -290,8 +290,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 607-634)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 667-696)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 607-634)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 667-696)
 
 **Notes**:
 
@@ -308,8 +308,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 194-244)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 224-276)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 194-244)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 224-276)
 
 **Notes**:
 
@@ -326,8 +326,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 76-100)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 93-119)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 76-100)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 93-119)
 
 **Notes**:
 
@@ -344,8 +344,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 439-476)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 487-526)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 439-476)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 487-526)
 
 **Notes**:
 
@@ -362,8 +362,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 11-33)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 11-38)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 11-33)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 11-38)
 
 **Notes**:
 
@@ -380,7 +380,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 635-657)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 635-657)
 
 **Notes**:
 
@@ -391,7 +391,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 826-900)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 826-900)
 
 **Notes**:
 
@@ -402,7 +402,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_b_active_bugs.md` (lines 1-100)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-B-ACTIVE-BUGS.md` (lines 1-100)
 
 **Notes**:
 
@@ -413,7 +413,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: PERF  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_d_quality_housekeeping_perf_config.md` (lines 1-100)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-D-QUALITY-HOUSEKEEPING-PERF-CONFIG.md` (lines 1-100)
 
 **Notes**:
 
@@ -424,7 +424,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 34-51)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 34-51)
 
 **Notes**:
 
@@ -435,7 +435,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 901-941)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 901-941)
 
 **Notes**:
 

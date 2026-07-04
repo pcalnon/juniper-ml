@@ -18,7 +18,7 @@ ImportError: Failed to load PyTorch C extensions:
 ```
 
 Affects every cascor/canopy local repro that needs torch. Tracked as
-**P-5** in [`POST_V38_OPEN_ISSUES_PLAN_2026-05-03.md`](./POST_V38_OPEN_ISSUES_PLAN_2026-05-03.md).
+**P-5** in [`JUNIPER_2026-05-03_JUNIPER-CASCOR_POST-V38-OPEN-ISSUES-PLAN.md`](./JUNIPER_2026-05-03_JUNIPER-CASCOR_POST-V38-OPEN-ISSUES-PLAN.md).
 The error has blocked local diagnosis of P-1 (RC-4 multiprocessing
 race) since the V38 cycle.
 

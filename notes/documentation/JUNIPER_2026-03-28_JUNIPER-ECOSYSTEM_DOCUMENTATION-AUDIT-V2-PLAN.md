@@ -114,7 +114,7 @@ grep -rn "juniper-dataClient\|juniper-cascorClient" docs/ --include="*.md"
 |------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | `README.md`                                          | `conda activate juniper-canopy` -> `conda activate JuniperPython`; annotate deploy URL; R-21: version 0.25.0 -> 0.3.0 |
 | `.github/instructions/copilot-instructions.md`       | `JuniperCanopy` -> `JuniperPython` (3 instances)                                                                      |
-| `notes/CONDA_DEPENDENCY_FILE_HEADER.md`              | `name: juniper-canopy` -> `name: JuniperPython`                                                                       |
+| `notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md`              | `name: juniper-canopy` -> `name: JuniperPython`                                                                       |
 | `docs/ci_cd/CICD_ENVIRONMENT_SETUP.md`               | `name: juniper-canopy` conda ref                                                                                      |
 | AGENTS.md                                            | R-16: `docs/CONSTANTS_GUIDE.md` -> `docs/cascor/CONSTANTS_GUIDE.md`                                                   |
 | AGENTS.md                                            | R-17: `src/constants.py` -> `src/canopy_constants.py`                                                                 |
@@ -226,7 +226,7 @@ grep -rn "juniper-cascorClient\|juniper-cascorError\|training_stream\|control_st
 
 | File                                                      | Issues                                                                                |
 |-----------------------------------------------------------|---------------------------------------------------------------------------------------|
-| `notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` | ~30 `juniper-dataClient`/`juniper-cascorClient` instances (verify revert fixes these) |
+| `notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` | ~30 `juniper-dataClient`/`juniper-cascorClient` instances (verify revert fixes these) |
 | `notes/CANOPY_REPO_RENAME_MIGRATION_PLAN.md`              | Leave as-is (this doc analyzes the rename; kebab examples are intentional)            |
 | README.md                                                 | R-39 deploy link fix (verify committed); annotate deploy URL as private               |
 
@@ -276,7 +276,7 @@ Run global checks after all per-repo work:
 ### 10.1 Conda Environment Names
 
 ```bash
-grep -rn "conda activate" juniper-*/README.md juniper-*/docs/**/*.md juniper-*/notes/WORKTREE_SETUP_PROCEDURE.md
+grep -rn "conda activate" juniper-*/README.md juniper-*/docs/**/*.md juniper-*/notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md
 ```
 
 Expected correct mappings:

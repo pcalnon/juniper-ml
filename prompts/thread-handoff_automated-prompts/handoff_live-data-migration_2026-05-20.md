@@ -1,6 +1,6 @@
 # New thread handoff prompt
 
-Continue picking off actionable items from the v7 outstanding-development roadmap (`juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`) one small-PR at a time.
+Continue picking off actionable items from the v7 outstanding-development roadmap (`juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`) one small-PR at a time.
 
 ## Completed this session (2026-05-19 → 2026-05-20)
 

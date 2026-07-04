@@ -3,7 +3,7 @@
 - **Author**: Paul Calnon
 - **Date**: 2026-05-10
 - **Scope**: Full picture of Grafana dashboards (and their wiring) across the Juniper ecosystem, derived from `notes/` references in `juniper-ml`.
-- **Source corpus**: 48 markdown files under `juniper-ml/notes/` containing the substring `grafana` (case-insensitive). Most authoritative inputs: `JUNIPER_METRICS_DOCUMENTATION.md`, `code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md`, `code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`, `observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`, `code-review/POST_METRICS_MON_TRACKER_2026-05-05.md`, `legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, `JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`.
+- **Source corpus**: 48 markdown files under `juniper-ml/notes/` containing the substring `grafana` (case-insensitive). Most authoritative inputs: `JUNIPER_2026-05-08_JUNIPER-ECOSYSTEM_METRICS-DOCUMENTATION.md`, `code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md`, `code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`, `observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md`, `code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md`, `legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, `JUNIPER_2026-05-09_JUNIPER-DEPLOY_GO-PUBLIC-ANALYSIS.md`.
 
 > ⚠️ This document is a snapshot of `notes/` claims. It does **not** verify by reading `juniper-deploy/` directly. Treat all named files/paths in `juniper-deploy/` as load-bearing claims to spot-check before acting.
 
@@ -125,7 +125,7 @@ The notes consistently identify the following open issues. The first three are *
 
 ### G1. Stale dashboard panels (7 broken)
 
-**Source**: `code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` §3.12.
+**Source**: `code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` §3.12.
 
 - 3 cascor inference panels query `juniper_cascor_inference_*` metrics that were removed by OBS-WIRE-01 (`juniper-cascor#204`). Result: "no data" overlays in `juniper-cascor.json`.
 - 4 worker-bridge "pending" placeholder text panels were never replaced with real PromQL after the worker bridges shipped (`juniper-cascor#188`, `#218`).
@@ -133,7 +133,7 @@ The notes consistently identify the following open issues. The first three are *
 
 ### G2. Alertmanager `tickets` and `default` receivers silently drop
 
-**Source**: `code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` §3.2; `observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md` §4.
+**Source**: `code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` §3.2; `observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md` §4.
 
 - Both receivers exist as no-op placeholders. Any alert routed to `default` (warning/info fall-through, finding B.1) or `tickets` (R5.4 slow-burn) is dropped without notice.
 - **Soft blocker**: must be wired before lifting log-only severity on SLOs 3.3/3.4 at the **2026-06-02 soak-close** (POST_METRICS_MON_TRACKER §3.3, §3.4).
@@ -141,14 +141,14 @@ The notes consistently identify the following open issues. The first three are *
 
 ### G3. `juniper_data_datasets_cached` Gauge has no production caller
 
-**Source**: `code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` §3.11.
+**Source**: `code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` §3.11.
 
 - Defined in `juniper-data/api/observability.py`, exercised by mocks in tests, but never emitted at any cache mutation site. Audit Dim A missed it (grep was cascor/canopy-heavy).
 - User direction (2026-05-06): **wire**, do not remove. In-flight sister PR exists.
 
 ### G4. ~11 dead `cascor_ws_*` metrics (audit finding A.9)
 
-**Source**: `observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md` §3.
+**Source**: `observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md` §3.
 
 Defined in `juniper-cascor/src/api/observability.py` lines 443–633 with **zero production callers**. Two were wired by OBS-WIRE-01 (`#204`, merged 2026-05-03):
 
@@ -161,19 +161,19 @@ Still dead (per §3.1–§3.12): `cascor_ws_seq_current`, `cascor_ws_replay_buff
 
 ### G5. Canopy middleware order skews per-request labels
 
-**Source**: `OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` §4.3, finding C.1.
+**Source**: `JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` §4.3, finding C.1.
 
 `PrometheusMiddleware` is added after `RequestIdMiddleware` at `main.py:312`, so under FastAPI's LIFO outer-first execution it runs **before** the request-id ContextVar is set. Cascor and data have the correct order.
 
 ### G6. Cascor `training_step_duration_seconds` only ever has `phase="output"`
 
-**Source**: `OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` §4.1.6, finding A.6.
+**Source**: `JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` §4.1.6, finding A.6.
 
 The SLO catalogue PromQL filters `phase=~"input|candidate|output"`, but the metric is hard-coded to `phase="output"` at `manager.py:1328`. Either drop the (effectively constant) `phase` label or add input/candidate emission sites.
 
 ### G7. WS-handler histogram bucket tightness
 
-**Source**: `OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` §4.4, finding D.2.
+**Source**: `JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` §4.4, finding D.2.
 
 `cascor_ws_command_handler_seconds` 50 ms SLO target sits one bucket below the 100 ms `+inf` cap → limited breach-detection precision. Deferred to R5.1c post-soak calibration per `juniper-cascor/notes/HISTOGRAM_BUCKETS_RATIONALE.md` §5.4.
 
@@ -309,13 +309,13 @@ These apply regardless of which per-gap option you pick.
 
 ## 6. Files referenced (for direct follow-up reading)
 
-- `JUNIPER_METRICS_DOCUMENTATION.md` §4.1–§4.5
-- `code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md`
-- `code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` §3.2, §4.1.6, §4.3, §4.4
-- `code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` §3.3, §3.4, §3.11, §3.12
-- `observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md` §3.1–§3.15, §4, §5.1, §5.2
+- `JUNIPER_2026-05-08_JUNIPER-ECOSYSTEM_METRICS-DOCUMENTATION.md` §4.1–§4.5
+- `code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md`
+- `code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` §3.2, §4.1.6, §4.3, §4.4
+- `code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` §3.3, §3.4, §3.11, §3.12
+- `observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md` §3.1–§3.15, §4, §5.1, §5.2
 - `legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md` §4.1, §4.3
-- `JUNIPER_DEPLOY_GO_PUBLIC_ANALYSIS_2026-05-09.md`
+- `JUNIPER_2026-05-09_JUNIPER-DEPLOY_GO-PUBLIC-ANALYSIS.md`
 - (cross-repo, claimed) `juniper-deploy/notes/SLO_CATALOG_2026-05-03.md`
 - (cross-repo, claimed) `juniper-deploy/grafana/provisioning/dashboards/{juniper-overview,juniper-cascor,juniper-canopy,juniper-data}.json`
 - (cross-repo, claimed) `juniper-deploy/prometheus/{prometheus.yml,alert_rules.yml,recording_rules.yml}`

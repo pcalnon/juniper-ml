@@ -3,7 +3,7 @@
 
 Reads ``notes/requirements/id_assignments.yaml`` and reports whether each
 entry's cited sources still resolve. Implements ``--mode quick`` from the
-spec at ``notes/REQUIREMENTS_NEXT_STEPS.md`` §7: path + structural
+spec at ``notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md`` §7: path + structural
 line-range validity, no file reads.
 
 ``--mode full`` and ``--mode rewrite`` are placeholders for future work
@@ -70,7 +70,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         prog="requirements_drift_check.py",
         description=(
             "Validate the Juniper requirements snapshot for citation drift. "
-            "See notes/REQUIREMENTS_NEXT_STEPS.md §7 for the spec."
+            "See notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md §7 for the spec."
         ),
     )
     p.add_argument(
@@ -262,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.mode != "quick":
         print(
             f"ERROR: --mode {args.mode} is not yet implemented. "
-            "Only --mode quick is available; see notes/REQUIREMENTS_NEXT_STEPS.md §7 "
+            "Only --mode quick is available; see notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md §7 "
             "for the full/rewrite spec.",
             file=sys.stderr,
         )

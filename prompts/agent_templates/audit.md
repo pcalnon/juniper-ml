@@ -29,7 +29,7 @@ Produce a classified findings report for the scope above so the owner can triage
 
 ## Key Deliverables & Requirements
 
-- A findings report written to `notes/`, named `JUNIPER_<APP>_<SUBJECT>_AUDIT_<YYYY-MM-DD>.md`, grouped by area or severity with a summary count by severity; refuse and report if the path already exists.
+- A findings report written to `notes/`, named `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<SUBJECT>-AUDIT.md` (REPO one of ML / CANOPY / RECURRENCE / CASCOR / CASCOR-CLIENT / CASCOR-WORKER / DATA / DATA-CLIENT / DEPLOY / ECOSYSTEM; SUBJECT in UPPER-KEBAB-CASE), grouped by area or severity with a summary count by severity; refuse and report if the path already exists.
 - Every code / doc claim cites a real `file:line`; every external claim cites a URL + fetched excerpt; no invented findings.
 
 ## Constraints

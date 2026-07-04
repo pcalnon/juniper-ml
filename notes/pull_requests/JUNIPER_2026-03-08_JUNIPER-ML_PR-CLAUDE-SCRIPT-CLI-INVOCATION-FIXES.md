@@ -129,7 +129,7 @@ Additionally, the script always launched Claude via `nohup ... &` (headless mode
 
 ## Related Issues / Tickets
 
-- Related PRs: `PR_SESSION_ID_VALIDATION_BUGFIX.md`, `PR_PREVENT_RESUME_ARBITRARY_FILE_DELETION.md` (follow-up fixes merged to `main` that address session validation bugs discovered during this branch's development)
+- Related PRs: `JUNIPER_2026-03-06_JUNIPER-ML_PR-SESSION-ID-VALIDATION-BUGFIX.md`, `JUNIPER_2026-03-07_JUNIPER-ML_PR-PREVENT-RESUME-ARBITRARY-FILE-DELETION.md` (follow-up fixes merged to `main` that address session validation bugs discovered during this branch's development)
 
 ---
 

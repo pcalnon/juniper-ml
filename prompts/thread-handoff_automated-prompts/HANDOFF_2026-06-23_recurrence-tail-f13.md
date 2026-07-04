@@ -49,7 +49,7 @@
 
 ## 2. What remains (do in this order)
 
-All recurrence work = **`juniper-recurrence` repo, worktree off fresh `origin/main`, PR-to-main, Paul merges.** No JR-ID (net-new). Full spec: [`notes/JUNIPER_RECURRENCE_PRECOMMIT_TESTING_CI_AUDIT_2026-06-21.md`](../../notes/JUNIPER_RECURRENCE_PRECOMMIT_TESTING_CI_AUDIT_2026-06-21.md) §9 backlog (items 10, 11, 12, 14) — verify line refs against current files.
+All recurrence work = **`juniper-recurrence` repo, worktree off fresh `origin/main`, PR-to-main, Paul merges.** No JR-ID (net-new). Full spec: [`notes/JUNIPER_2026-06-21_JUNIPER-RECURRENCE_PRECOMMIT-TESTING-CI-AUDIT.md`](../../notes/JUNIPER_2026-06-21_JUNIPER-RECURRENCE_PRECOMMIT-TESTING-CI-AUDIT.md) §9 backlog (items 10, 11, 12, 14) — verify line refs against current files.
 
 ### Verified repo facts (re-confirm, but these held on 2026-06-23 origin/main)
 

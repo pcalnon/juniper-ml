@@ -44,7 +44,7 @@ Re-verify each row against the real repo before relying on it (directive 1); the
 | `juniper-data-client`              | pytest             | `ci.yml` — 80                                        | no                                         |
 | `juniper-deploy`                   | pytest             | none (no importable source)                          | no                                         |
 
-For the **full per-unit detail** (exact commands, src/test file counts, exactly where each threshold lives) and this session's meta-analysis, see the companion document in the juniper-ml repo at `notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` (repo-relative — resolves in the juniper-ml checkout).
+For the **full per-unit detail** (exact commands, src/test file counts, exactly where each threshold lives) and this session's meta-analysis, see the companion document in the juniper-ml repo at `notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md` (repo-relative — resolves in the juniper-ml checkout).
 It is **enrichment**; the table above is sufficient to act on.
 
 **The coverage units (19 total: 8 top-level + 11 packaged sub-modules).**
@@ -93,7 +93,7 @@ The `juniper-cascor-model` outlier (no gate, `pytest -v` only) is a **real PyPI 
 
 **The contemporaneous canopy debug-findings document (the regression-test source; expect it to grow).**
 
-- Seed copy: `$J/juniper-ml/.claude/worktrees/flickering-zooming-finch/notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` — note this is a **volatile worktree path**; you must re-discover the current canonical copy each run (directive 4).
+- Seed copy: `$J/juniper-ml/.claude/worktrees/flickering-zooming-finch/notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md` — note this is a **volatile worktree path**; you must re-discover the current canonical copy each run (directive 4).
   - Its **§5** holds a crash-site table (columns `Package | Installed | Floor | Lock pin | API | Result`) plus confirmed crash sites:
     - `$J/juniper-canopy/src/demo_mode.py:918-921` and `:1795-1798`;
     - `$J/juniper-canopy/src/backend/cascor_service_adapter.py:44`, `:131-134`, `:1537`;
@@ -128,7 +128,7 @@ A known suite gotcha to carry into the measurement design: dotted `--cov=pkg.sub
 
 **Prior canopy test-harness art (build on, do not reinvent).**
 
-- `$J/juniper-ml/notes/JUNIPER_CANOPY_AUDIT_AND_HARNESS_PLAN_2026-06-15.md` and `$J/juniper-ml/notes/JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md` — the existing L1 control-graph lint + L2 behavioral gate on canopy PRs.
+- `$J/juniper-ml/notes/JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-AND-HARNESS-PLAN.md` and `$J/juniper-ml/notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md` — the existing L1 control-graph lint + L2 behavioral gate on canopy PRs.
 The new click-through work extends this, it does not replace it.
 
 ## Primary Objective

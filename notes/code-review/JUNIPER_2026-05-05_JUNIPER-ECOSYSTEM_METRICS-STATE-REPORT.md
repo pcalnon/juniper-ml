@@ -4,12 +4,12 @@
 | Field         | Value                                                                                                |
 | ------------- | ---------------------------------------------------------------------------------------------------- |
 | **Project**   | Juniper                                                                                              |
-| **File Name** | `notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md`                                       |
+| **File Name** | `notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md`                                       |
 | **Description** | Snapshot, as of 2026-05-05, of the metrics / SLO / dashboard / alert state across all 8 Juniper repos after the close of the METRICS-MON program (juniper-ml#192) and the post-program 27-finding audit (juniper-ml#195). Verified directly against `origin/main` of every cited repo, not against prior summaries. |
 | **Author**    | Paul Calnon                                                                                          |
 | **Version**   | 0.1.0                                                                                                |
 | **License**   | MIT License                                                                                          |
-| **Status**    | SNAPSHOT — point-in-time inventory; not a roadmap. Carry-forward items live in `POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel branch). |
+| **Status**    | SNAPSHOT — point-in-time inventory; not a roadmap. Carry-forward items live in `JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (parallel branch). |
 
 ---
 
@@ -611,7 +611,7 @@ gap is a *production-caller* gap, not a test gap — see §15.
 
 ## 11. Outstanding work (carry-forward tracker)
 
-Cross-reference: `notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md`
+Cross-reference: `notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md`
 (parallel-PR branch `docs/post-metrics-mon-tracker`; not yet on
 origin/main at the time of this snapshot — verified by `git log` showing
 commit `27f4def` on the tracker branch).
@@ -663,7 +663,7 @@ doc §5):
 | **D.2 / D.5 cascor histogram bucket pin tests** | juniper-cascor#217 (audit d2+d5) |
 
 The remaining open items are all P3 / soft-blocker items tracked in
-`POST_METRICS_MON_TRACKER_2026-05-05.md` (§11 above) — none represent
+`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (§11 above) — none represent
 operationally meaningful uncovered surface.
 
 ---
@@ -712,7 +712,7 @@ operationally meaningful uncovered surface.
   drives the Gmail / SMTP rotation.
 
 Cross-link: `SLO_CATALOG_2026-05-03.md` §2.6 + §6 Q6 (soak window) and
-`POST_METRICS_MON_TRACKER_2026-05-05.md` §3.1 (CALIB-01 detail).
+`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` §3.1 (CALIB-01 detail).
 
 ---
 
@@ -722,8 +722,8 @@ Cross-link: `SLO_CATALOG_2026-05-03.md` §2.6 + §6 Q6 (soak window) and
 
 - `juniper-deploy/notes/SLO_CATALOG_2026-05-03.md` (v1.0.0)
 - `juniper-ml/notes/code-review/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (juniper-ml#195 / #194)
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` *(parallel branch — not yet on origin/main)*
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (juniper-ml#195 / #194)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` *(parallel branch — not yet on origin/main)*
 
 ### Per-phase entry / design docs
 
@@ -779,7 +779,7 @@ Cross-link: `SLO_CATALOG_2026-05-03.md` §2.6 + §6 Q6 (soak window) and
 ## 15. Unexpected findings — discrepancies vs prior docs
 
 Two findings that were **not** flagged in the existing audit
-(`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`) or the
+(`JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`) or the
 program-close note (`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`).
 Both surfaced during the verification grep sweep for this snapshot
 report.
@@ -809,7 +809,7 @@ not from this gauge, so the SLI is unaffected.
 metrics inventory") lists 12+ cascor / canopy metrics by ID
 (A.1 / A.2a–e / A.3a / A.3b / A.4 / A.5a / A.5b) but **does not
 list `juniper_data_datasets_cached`**. Verified against
-`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` lines
+`JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` lines
 matching `datasets_cached` (zero matches — confirmed via
 `grep datasets_cached`). The audit was scoped against the 5 catalog SLIs
 plus the cascor + canopy emission audits and did not re-audit the
@@ -857,7 +857,7 @@ bridged"* will look at the cascor dashboard, see the bridge-pending
 text panels, and conclude the bridge is still pending. **Severity P2**.
 
 **Discrepancy with prior docs.** The carry-forward tracker
-(`POST_METRICS_MON_TRACKER_2026-05-05.md`) does not list a
+(`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md`) does not list a
 "refresh stale dashboard panels post audit-close" item. The audit doc
 A.5 was tracked but its dashboard half was not explicitly carried
 forward.

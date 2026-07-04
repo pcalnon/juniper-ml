@@ -2,7 +2,7 @@
 
 **Owner**: Paul Calnon (audit by Claude Code)
 **Audit date**: 2026-05-05
-**Roadmap audited**: [`JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`](./JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md)
+**Roadmap audited**: [`JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`](./JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md)
 **Roadmap version / date**: v7.0.0, 2026-04-23
 **Scope**: All 8 Juniper repositories (`juniper-cascor`, `juniper-canopy`, `juniper-data`, `juniper-data-client`, `juniper-cascor-client`, `juniper-cascor-worker`, `juniper-deploy`, `juniper-ml`)
 

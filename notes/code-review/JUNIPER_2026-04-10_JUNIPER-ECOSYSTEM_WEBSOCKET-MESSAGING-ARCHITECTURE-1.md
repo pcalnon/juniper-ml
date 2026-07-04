@@ -4,9 +4,9 @@
 **Author**: Claude Code (Opus 4.6, 1M context) on behalf of Paul Calnon
 **Status**: v1.3 (post round-1 + round-2 + round-3 subagent integration) — STABLE
 **Scope**: end-to-end messaging architecture between juniper-canopy, juniper-cascor-client, and juniper-cascor; WebSocket vs REST transport split per UI element; latency tolerance matrix; implementation plan for the gaps.
-**Supersedes**: the premature deferral language in `CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` §6.0 (P5-RC-05 marked DEFERRED) and §3.5 (canopy `set_params` integration test marked WONT-DO). Both items are critical functionality, not won't-do work.
+**Supersedes**: the premature deferral language in `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` §6.0 (P5-RC-05 marked DEFERRED) and §3.5 (canopy `set_params` integration test marked WONT-DO). Both items are critical functionality, not won't-do work.
 
-**Action required**: update `CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` §3.5 and §6.0 to reference this document and remove the WONT-DO/DEFERRED markings. PR #116 covers this.
+**Action required**: update `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` §3.5 and §6.0 to reference this document and remove the WONT-DO/DEFERRED markings. PR #116 covers this.
 
 **Primary audience**: engineer implementing Phases A-H. **Secondary**: future-Claude resuming the work after a thread handoff. **Tertiary**: PMs and stakeholders evaluating scope (read §0.1 TL;DR and §1 only).
 
@@ -68,8 +68,8 @@ Browser-side verification uses Playwright (§8) plus the official Dash `dash_duo
 - **Risk severity (§10)**: High / Medium / Low (qualitative; orthogonal to gap severity)
 - **GAP-WS-NN** — enumerated gaps in the WebSocket pipeline; see §7. Each gap has a unique ID, severity, location, current state, target state, and remediation hook.
 - **Identifier prefixes from prior reviews**:
-  - **P5-RC-NN** — issues from `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (2026-03-28)
-  - **CR-NNN** — issues from `CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md`
+  - **P5-RC-NN** — issues from `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (2026-03-28)
+  - **CR-NNN** — issues from `JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md`
   - **NEW-NN** — issues surfaced during the 2026-04-09 Phase 1 verification pass
 - **Latency budgets**: see §5 — distinguishes *control feedback latency* (slider→DOM, must be <16 ms, achieved by Dash clientside), *ack latency* (slider→backend ack, target by parameter class), and *effect observation latency* (slider→training-effect→chart-update, dominated by training step time).
 - **Roles** (used consistently throughout):
@@ -2018,7 +2018,7 @@ The original draft had 8 open questions; several have been resolved into recomme
 
 3. **Should `set_params` updates be journaled?** A historical record of parameter changes is useful for debugging and reproducing experiments. This is out of scope of this document but worth considering for a future change. **Defer until after Phase C.**
 
-4. **Are there any in-flight refactors of `dashboard_manager.py` that would conflict with this work?** Coordinate timing with the release prep work referenced in `CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` §6.0. **Coordinate before Phase B kickoff.**
+4. **Are there any in-flight refactors of `dashboard_manager.py` that would conflict with this work?** Coordinate timing with the release prep work referenced in `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` §6.0. **Coordinate before Phase B kickoff.**
 
 5. **Should cascor and canopy adopt a versioned subprotocol (`juniper-cascor.v1`)?** §11.2 of the protocol review (Reviewer 1) raised this. Adding `Sec-WebSocket-Protocol` would enable graceful version migration when the envelope changes (e.g., when GAP-WS-13 sequence numbers land). Currently there is no mechanism to reject an outdated client. **Defer; revisit if/when a v2 envelope is needed.**
 
@@ -2039,10 +2039,10 @@ The original draft had 8 open questions; several have been resolved into recomme
 
 ### Internal documents
 
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` — original Phase 1-4 roadmap
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md` — interface analysis
-- `juniper-ml/notes/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` — historical 20-issue registry (P5-RC-01 through P5-RC-18 + KL-1)
-- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` — cascor code review (CR-006 through CR-076)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` — original Phase 1-4 roadmap
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md` — interface analysis
+- `juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` — historical 20-issue registry (P5-RC-01 through P5-RC-18 + KL-1)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md` — cascor code review (CR-006 through CR-076)
 
 ### Pull requests referenced
 

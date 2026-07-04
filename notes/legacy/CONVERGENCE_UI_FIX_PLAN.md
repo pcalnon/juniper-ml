@@ -166,7 +166,7 @@ git push origin fix/convergence-ui-validation
 gh pr create --base main --head fix/convergence-ui-validation
 ```
 
-Then follow `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`.
+Then follow `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.
 
 ---
 

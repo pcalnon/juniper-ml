@@ -10,7 +10,7 @@
 
 ## 1. Context & motivation
 
-Extracting `juniper-cascor-core` (the CW-05 candidate-training core; see [`JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md`](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md)) was placed, by default, as a **subdirectory of `juniper-ml`** — mirroring the four existing
+Extracting `juniper-cascor-core` (the CW-05 candidate-training core; see [`JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md)) was placed, by default, as a **subdirectory of `juniper-ml`** — mirroring the four existing
 shared packages (`juniper-observability`, `juniper-ci-tools`, `juniper-doc-tools`, `juniper-config-tools`).
 That worked mechanically, but it surfaced a structural question worth answering **before** more model code follows the same path:
 
@@ -142,7 +142,7 @@ Reading: model apps **depend on** the common ports and **register** their adapte
 
 This proposal does not invent a new direction — it **generalizes one already in flight**:
 
-- **`juniper-recurse` design** ([`JUNIPER_RECURSE_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_DESIGN_AND_PLAN_2026-05-31.md), in review) ratifies extracting **`juniper-service-core`** (generic FastAPI/settings/security/middleware/websocket/worker/lifecycle-base) and **`juniper-model-core`** (the abstract `TrainableModel`/`GrowableModel`, event/serialization contracts, conformance kit).
+- **`juniper-recurse` design** ([`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-DESIGN-AND-PLAN.md), in review) ratifies extracting **`juniper-service-core`** (generic FastAPI/settings/security/middleware/websocket/worker/lifecycle-base) and **`juniper-model-core`** (the abstract `TrainableModel`/`GrowableModel`, event/serialization contracts, conformance kit).
   - Reuses `juniper-observability` / `juniper-data-client` / `juniper-config-tools`; and **assigns all dataset capability to `juniper-data`**.
   - Its T1/T2/T3 tiering (pure-infra → `service-core`; semi-generic base + cascor subclass; cascor-specific stays in cascor) *is* the commonality axis; "apps subclass routes/lifecycle and inject their `TrainableModel`" *is* the ports-and-adapters mechanism.
 - **Architectural Design Journal** (`Juniper/notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md`) ideas **#2 Common API**, **#4 New ABC**, **#7 Split up juniper-cascor** point the same way (extract shared base; keep model-specific subclasses), and the journal's **"shared by default, override if needed"** rule is the per-symbol version of the same principle.
@@ -201,7 +201,7 @@ Low-risk because the package is unpublished and consumer pins are name-stable:
   - The recurse middleware-refactor design adopts **compile-time subclassing + dependency injection** (apps subclass routes/lifecycle and inject their `TrainableModel`), *not* a runtime entry-point registry. The §3 rule's "discovered (e.g. Python entry points)" is illustrative only; the operative mechanism is subclass + inject.
   - Placement conclusions are mechanism-independent, so nothing in §5/§8 changes. (Original question, now answered: what discovery mechanism do the `*-core` ports use for adapters — entry-points group, or an explicit `register()` at import?)
 - **OQ-2 — Where do the shared `*-core` packages physically live? RESOLVED 2026-06-09 (D4).**
-  - **Decision:** the `juniper-ml` subdirectory-published pattern — the established approach, alongside observability / ci-tools / doc-tools / config-tools. Revisit only if `model-core` / `service-core` code volume later argues for standalone repos. (See [`JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md`](JUNIPER_PACKAGE_PLACEMENT_AND_RELOCATION_PLAN_2026-06-09.md) §8.)
+  - **Decision:** the `juniper-ml` subdirectory-published pattern — the established approach, alongside observability / ci-tools / doc-tools / config-tools. Revisit only if `model-core` / `service-core` code volume later argues for standalone repos. (See [`JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md`](JUNIPER_2026-06-09_JUNIPER-ECOSYSTEM_PACKAGE-PLACEMENT-AND-RELOCATION-PLAN.md) §8.)
 - **OQ-3 — Client libraries.**
   - `juniper-cascor-client` / future `juniper-recurse-client` are model-specific by name but thin; confirm they follow the per-model-family rule (they already do).
 - **OQ-4 — Naming. RESOLVED 2026-06-09 (D2/D4).**

@@ -1,6 +1,6 @@
 ---
 name: auditor
-description: Run a systematic checklist review of a Juniper area -- code, config, docs, CI, or a cross-repo concern -- and produce a findings report in notes/. Use when the deliverable is an AUDIT -- a classified list of findings, each backed by concrete evidence (code file:line, doc file:line, and external URLs with fetched content). Read-heavy plus WebFetch; writes one notes/ JUNIPER_<APP>_<SUBJECT>_AUDIT_<DATE>.md and changes nothing else.
+description: Run a systematic checklist review of a Juniper area -- code, config, docs, CI, or a cross-repo concern -- and produce a findings report in notes/. Use when the deliverable is an AUDIT -- a classified list of findings, each backed by concrete evidence (code file:line, doc file:line, and external URLs with fetched content). Read-heavy plus WebFetch; writes one notes/ JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<SUBJECT>-AUDIT.md and changes nothing else.
 tools: Read, Grep, Glob, Bash, WebFetch, Write
 model: opus
 effort: max
@@ -37,7 +37,10 @@ report in `notes/`**. You change nothing — you observe, verify, classify, and 
 
 ## Output
 
-- Write to `notes/` as `JUNIPER_<APP>_<SUBJECT>_AUDIT_<DATE>.md` (DATE `YYYY-MM-DD`). **Refuse and
+- Write to `notes/` as `JUNIPER_<YYYY-MM-DD>_JUNIPER-<REPO>_<SUBJECT>-AUDIT.md` (REPO one of `ML` /
+  `CANOPY` / `RECURRENCE` / `CASCOR` / `CASCOR-CLIENT` / `CASCOR-WORKER` / `DATA` / `DATA-CLIENT` /
+  `DEPLOY`, or `ECOSYSTEM` for cross-repo subjects; date = document date; SUBJECT is UPPER-KEBAB-CASE;
+  full rules in `notes/JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`). **Refuse and
   report** if the path already exists. Change nothing else.
 
 ## Anti-hallucination

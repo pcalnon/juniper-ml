@@ -1,7 +1,7 @@
 # Juniper Observability Audit and Outstanding Issues — 2026-05-03
 
 **Project**: Juniper
-**File Name**: OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md
+**File Name**: JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md
 **Description**: Tracks observability gaps, errors, and outstanding work items at the
 completion of the METRICS-MON program (closed 2026-05-03 via juniper-ml#192). Seeded
 with 3 known residuals from the program-close note and extended with comprehensive
@@ -9,19 +9,19 @@ audit findings across 8 repos.
 **Author**: Paul Calnon
 **Version**: 0.1.0
 **License**: MIT
-**Status**: ACTIVE — superseded as the canonical post-program tracker by `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR `docs/post-metrics-mon-tracker`); retained here as the audit-finding reference.
+**Status**: ACTIVE — superseded as the canonical post-program tracker by `notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (parallel PR `docs/post-metrics-mon-tracker`); retained here as the audit-finding reference.
 
 ---
 
-> **STATUS 2026-05-05:** This document remains ACTIVE but is no longer the canonical post-program issue tracker. Residual triage / sequencing has migrated to `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (in-flight on a parallel PR). This doc is preserved as the **canonical audit-findings reference** — the 27 findings tabulated in §4 + §5 are the source of truth that the new tracker indexes into. Do not add new issues here; add them to the new tracker and (if they expand audit coverage) cross-link back to the relevant §4 dimension.
+> **STATUS 2026-05-05:** This document remains ACTIVE but is no longer the canonical post-program issue tracker. Residual triage / sequencing has migrated to `notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (in-flight on a parallel PR). This doc is preserved as the **canonical audit-findings reference** — the 27 findings tabulated in §4 + §5 are the source of truth that the new tracker indexes into. Do not add new issues here; add them to the new tracker and (if they expand audit coverage) cross-link back to the relevant §4 dimension.
 >
 > **Per-section status:**
 >
-> - §3 Seed residuals (3.1 SLO calibration / 3.2 alertmanager tickets / 3.3 TRAIN-ARCH-01) — all still OPEN. 3.2 partially analysed in `notes/observability/A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md`; awaiting OBS-ROUTE-01 sub-track. 3.1 awaiting 2026-06-02 soak review. 3.3 user-deferred.
+> - §3 Seed residuals (3.1 SLO calibration / 3.2 alertmanager tickets / 3.3 TRAIN-ARCH-01) — all still OPEN. 3.2 partially analysed in `notes/observability/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md`; awaiting OBS-ROUTE-01 sub-track. 3.1 awaiting 2026-06-02 soak review. 3.3 user-deferred.
 > - §4 Audit findings (Dim A–E, 27 items) — partially closed by OBS-WIRE-01 (juniper-cascor#204) which addressed A.1–A.6. Remaining items still OPEN; tracked in the new tracker.
 > - §5 Consolidated action items — OPEN list, now mirrored in the new tracker.
 >
-> **Forward pointer:** New tracker (`POST_METRICS_MON_TRACKER_2026-05-05.md`) for live status; OBS-WIRE-02 / OBS-ROUTE-01 entry plans (when written) for the A.9 + 3.2 work; `JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` for the snapshot view.
+> **Forward pointer:** New tracker (`JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md`) for live status; OBS-WIRE-02 / OBS-ROUTE-01 entry plans (when written) for the A.9 + 3.2 work; `JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` for the snapshot view.
 >
 > **Path to COMPLETED:** This doc moves to `notes/legacy/` once every §3 / §4 item it tabulates is closed (resolved or explicitly deferred-with-tracking-link). Triggering condition: post-program tracker reaches "all items terminal".
 

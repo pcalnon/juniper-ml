@@ -14,7 +14,7 @@ Exit codes: 0 = healthy (WARN allowed unless ``--strict``); 1 = >=1 FAIL (or >=1
 ``--strict``); 2 = bad arguments.
 
 Built as a dogfood of the suite: the ``planner`` agent designed it
-(``notes/JUNIPER_juniper-ml_agent-suite-convenience-utilities_DESIGN_2026-06-25.md`` §P1), and
+(``notes/JUNIPER_2026-06-25_JUNIPER-ML_AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md`` §P1), and
 the ``implement-plan`` template + ``prompt-validator`` validated the spec. Behavioural
 coverage: ``tests/test_agent_suite_doctor.py``.
 """

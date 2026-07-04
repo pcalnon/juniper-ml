@@ -46,7 +46,7 @@ This release expands the developer-tooling surface around Claude Code workflows:
 - `notes/DEVELOPER_CHEATSHEET.md` — Added session ID workflow documentation, `wake_the_claude.bash` quick runbook, regression-test commands, `--resume` alias handling, interactive-vs-headless launch behavior, and troubleshooting sections
 - `docs/DOCUMENTATION_OVERVIEW.md` — Added navigation links for Claude session tooling runbooks
 - `notes/stack_overflow_answer.txt` — Reference material on managing conda environments programmatically in bash scripts
-- `notes/pull_requests/PR_TOOLING_MORE_CLAUDE_UTILS.md` — PR description archive
+- `notes/pull_requests/JUNIPER_2026-03-15_JUNIPER-ML_PR-TOOLING-MORE-CLAUDE-UTILS.md` — PR description archive
 
 ---
 
@@ -88,7 +88,7 @@ This release expands the developer-tooling surface around Claude Code workflows:
 
 - `scripts/wake_the_claude.bash` — Uncommented `EFFORT_VALUE` and `MODEL_VALUE` assignments; refactored nohup logging to handle missing log files; changed debug output to standard echo; consolidated exit status checks
 - `.github/workflows/ci.yml` — Standardized comment spacing for action version tags (Dependabot version bumps)
-- `notes/CONDA_DEPENDENCY_FILE_HEADER.md` — Renamed back from `.yaml` to `.md` (matching all other repos' naming convention)
+- `notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md` — Renamed back from `.yaml` to `.md` (matching all other repos' naming convention)
 - `CHANGELOG.md` — Added version identifiers to section headers for released versions
 - Documentation formatting pass across `notes/` planning documents — standardized Markdown table alignment, added `bash` language tags to code blocks, converted URLs to Markdown link syntax
 

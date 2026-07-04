@@ -5,7 +5,7 @@ Curated, version-controlled prompt **templates** for the Juniper custom-agent su
 instantiates a **copy**, fills it, and validates the result before emitting it to
 `prompts/generated/`.
 
-- **Design-of-record:** [`notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`](../../notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md) (§5.4).
+- **Design-of-record:** [`notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`](../../notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md) (§5.4).
 - **Sole gate:** [`tests/test_template_library_drift.py`](../../tests/test_template_library_drift.py).
   `prompts/**` is excluded from every pre-commit hook, so this drift test (wired into
   `ci.yml`) is the only thing keeping the library consistent. Any edit here must keep it green.

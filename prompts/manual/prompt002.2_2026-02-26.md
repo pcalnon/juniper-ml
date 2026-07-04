@@ -1,12 +1,12 @@
 # Microservices Architecture Changes
 
-Continue developing MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md by adding
+Continue developing JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md by adding
 detailed implementation plans for the Modes of Operation section (Section 3 from
-MICROSERVICES_ARCHITECTURE_ANALYSIS.md).
+JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md).
 
 ## Completed so far
 
-- Created juniper-ml/notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md
+- Created juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md
 - Wrote detailed development roadmaps for all four Coordinated Application Startup phases:
   - Phase 1: Makefile + Docker Compose (Immediate) — 10 sections, 7 tasks
   - Phase 2: systemd Service Units (Near-Term) — 11 sections, 14 tasks
@@ -15,15 +15,15 @@ MICROSERVICES_ARCHITECTURE_ANALYSIS.md).
 
 ## Remaining work
 
-- Add new sections to MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md covering the Modes of Operation roadmap, following the phased recommendation from MICROSERVICES_ARCHITECTURE_ANALYSIS.md Section 3.5:
+- Add new sections to JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md covering the Modes of Operation roadmap, following the phased recommendation from JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md Section 3.5:
   - Phase 1 (Immediate): Refactor Option 1 — unify DemoMode and CascorServiceAdapter behind a common BackendProtocol interface. Eliminate scattered if/else branching in main.py.
   - Phase 2 (Near-term): Adopt Option 3 — add FakeCascorClient and FakeDataClient to client libraries. Use dependency injection in CascorServiceAdapter to swap real and fake clients. Improves unit testing.
   - Phase 3 (With Docker): Adopt Option 5 — add a demo profile to Docker Compose that runs real CasCor with auto-start configuration. Most realistic demo experience for stakeholders.
 
 ## Key context
 
-- The roadmap file is at: juniper-ml/notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md
-- The analysis file is at: juniper-ml/notes/MICROSERVICES_ARCHITECTURE_ANALYSIS.md
+- The roadmap file is at: juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md
+- The analysis file is at: juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md
 - CLAUDE.md has been updated: JuniperCanopy/ is now legacy. The active dashboard code may have moved or been absorbed into juniper-cascor or another active repo.  Verify before referencing file paths.
 - Active repos: juniper-cascor, juniper-data, juniper-data-client, juniper-cascor-client, juniper-cascor-worker, juniper-ml, juniper-deploy
 - Legacy dirs (no .git): JuniperCanopy/, JuniperCascor/, JuniperData/
@@ -35,15 +35,15 @@ MICROSERVICES_ARCHITECTURE_ANALYSIS.md).
 
 ## Verification for new thread
 
-- Read juniper-ml/notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md to see current state
-- Read juniper-ml/notes/MICROSERVICES_ARCHITECTURE_ANALYSIS.md Section 3 for the analysis
+- Read juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md to see current state
+- Read juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md Section 3 for the analysis
 - Read the parent CLAUDE.md at /home/pcalnon/Development/python/Juniper/CLAUDE.md for
   updated ecosystem structure
 - Check if JuniperCanopy code has been migrated to an active repo
 
 ## Git status
 
-- juniper-ml/notes/MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md is a new untracked file
+- juniper-ml/notes/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md is a new untracked file
 - No other changes in flight
 - No active worktree for this task (planning only, no code changes)
 

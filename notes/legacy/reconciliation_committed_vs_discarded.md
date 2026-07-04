@@ -2,7 +2,7 @@
 
 **Date**: 2026-03-19
 **Thread**: `imperative-meandering-steele` (branch conversation)
-**Input**: `notes/thread_implementation_delta_analysis.md`
+**Input**: `notes/JUNIPER_2026-03-28_JUNIPER-CASCOR_THREAD-IMPLEMENTATION-DELTA-ANALYSIS.md`
 
 ---
 

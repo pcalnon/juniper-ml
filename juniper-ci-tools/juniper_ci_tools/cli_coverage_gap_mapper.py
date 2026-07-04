@@ -17,7 +17,7 @@ Two inputs (the JSON path is primary)::
     python -m juniper_ci_tools.cli_coverage_gap_mapper --coverage-json coverage.json
 
 Enforcing mode (opt-in; work-unit C-0 of the per-file coverage rollout,
-``notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md``)::
+``notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md``)::
 
     # Exit 1 if any source file's STATEMENT coverage < 90 OR any sub-module's
     # POOLED coverage < 95; exit 0 when clean. Thresholds are tunable and

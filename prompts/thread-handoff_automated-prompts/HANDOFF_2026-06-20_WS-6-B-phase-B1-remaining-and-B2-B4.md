@@ -12,7 +12,7 @@
 Finish **WS-6 B-phase PR-B1** (juniper-cascor), then proceed through **B2a → B2b → B3 → B4** per the
 ratified build plan. The design is done and ratified; this is execution.
 
-- **Design of record (READ FIRST):** `notes/JUNIPER_CASCOR_WS6_BPHASE_MODEL_CORE_ADOPTION_BUILD_PLAN_2026-06-19.md`
+- **Design of record (READ FIRST):** `notes/JUNIPER_2026-06-19_JUNIPER-CASCOR_WS6-BPHASE-MODEL-CORE-ADOPTION-BUILD-PLAN.md`
   on juniper-ml `main` (merged via #485). §4–§5 are the implementation spec; §3 is the behavior-preservation
   contract; §9 holds the two open decisions (OQ-B1, OQ-B2).
 - **Memory:** `project_cascor_ws6_bphase_plan_2026-06-19.md` (full status + grounded facts).

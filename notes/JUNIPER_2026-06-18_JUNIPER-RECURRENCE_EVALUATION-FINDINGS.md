@@ -24,7 +24,7 @@
 > the linear readout on every near-linear dataset — closing the readout spectrum (linear → RFF → MLP)
 > end-to-end.
 > Method + bands:
-> [`JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md);
+> [`JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-DESIGN.md`](JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-DESIGN.md);
 > harness + raw results: `bench/` in pcalnon/juniper-recurrence (PRs #23, #27, #29; `bench/results/REPORT.md`).
 
 ---
@@ -257,12 +257,12 @@ The ratified verdict is scored only on the three pre-registered datasets (DP-5 g
 
 ## 7. Cross-references
 
-- Evaluation design + bands: [`JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_DESIGN_2026-06-18.md)
-- Canonical roadmap (Wave-2 / OQ-7): [`JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md)
-- LMU numeric design + the fixed-Δt negative control: [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md)
+- Evaluation design + bands: [`JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-DESIGN.md`](JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-DESIGN.md)
+- Canonical roadmap (Wave-2 / OQ-7): [`JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md)
+- LMU numeric design + the fixed-Δt negative control: [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md)
 - Harness + raw results: `bench/` in pcalnon/juniper-recurrence (`bench/results/REPORT.md`)
 - §3.2 re-bench: juniper-data #195 (`regression_target`), juniper-recurrence #29 (bench), and the
   readout-regularization follow-up juniper-recurrence #28
-- DP-3 readout spectrum design: [`JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md`](JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md)
+- DP-3 readout spectrum design: [`JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md`](JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md)
 - §3.3 DP-3 P2 capacity: juniper-data #203 (`delay_product` generator), juniper-recurrence #44 (bench RFF row), juniper-recurrence #45 (HTTP `readout` enum)
-- §3.4 DP-3 P3 capacity (torch MLP, Rung 2b): juniper-recurrence-model 0.1.5 (`MLPReadout`/`MLPReadoutSpec` + LMURegressor validation plumbing, juniper-recurrence #50/#54), juniper-recurrence #56 (bench MLP row + `[bench-torch]` extra); decision D5 in [`JUNIPER_DECISIONS_RATIFIED_2026-06-23.md`](JUNIPER_DECISIONS_RATIFIED_2026-06-23.md)
+- §3.4 DP-3 P3 capacity (torch MLP, Rung 2b): juniper-recurrence-model 0.1.5 (`MLPReadout`/`MLPReadoutSpec` + LMURegressor validation plumbing, juniper-recurrence #50/#54), juniper-recurrence #56 (bench MLP row + `[bench-torch]` extra); decision D5 in [`JUNIPER_2026-06-23_JUNIPER-ECOSYSTEM_DECISIONS-RATIFIED.md`](JUNIPER_2026-06-23_JUNIPER-ECOSYSTEM_DECISIONS-RATIFIED.md)

@@ -11,13 +11,13 @@
 > progress" state is stale — the entire iteration merged 2026-06-16 (canopy `#364`
 > harness, `#366` wired **all three** orphan controls, juniper-ml `#430` docs/papers).
 > Current state + go-forward roadmap:
-> [`JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md`](JUNIPER_CANOPY_REGRESSION_REMEDIATION_ROADMAP_2026-06-17.md).
+> [`JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_REGRESSION-REMEDIATION-ROADMAP.md).
 >
 > This is the durable, version-controlled copy of the **approved execution plan**.
 > It guides the build of the automated UI-regression harness, the trivially-scoped
 > dead-control fixes, and the model-selection design. It is **distinct from — and
 > will be superseded by — the richer, evidence-backed deliverable** produced after
-> the empirical phase, `JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`
+> the empirical phase, `JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`
 > (created during execution).
 
 ---
@@ -111,7 +111,7 @@ Targeted, validated retrieval: NN/g on disabled buttons; WAI-ARIA Authoring Prac
 
 ## Deliverable document
 
-`juniper-ml/notes/JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`, sections:
+`juniper-ml/notes/JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`, sections:
 1. Context & motivation (recurrence integration + blocker regressions)
 2. Current-state audit (architecture, control-surface inventory w/ `file:line`, dead-button taxonomy, Docker-image caveat)
 3. Empirically-validated regression catalog (per item: repro artifact, root cause `file:line`, severity, fix-now vs defer)

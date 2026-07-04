@@ -17,17 +17,17 @@
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 81-131)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 81-131)
 
 ### JR-ML-WS-002 — Cascor must add optional seq field to all WebSocket messages and implement replay buffer with ReplayOutOfRange exception.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 233-299)
-- `juniper-ml/notes/interface_proposals/R1-03_maximalist_comprehensive.md` (lines 352-420)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 39-39)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 112-112)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 233-299)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-03-MAXIMALIST-COMPREHENSIVE.md` (lines 352-420)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 39-39)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 112-112)
 
 **Detail**:
 
@@ -54,29 +54,29 @@ ReplayOutOfRange raised when last_seq < oldest_available - 1.
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 200-243)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 200-243)
 
 ### JR-ML-WS-004 — Cascor server_instance_id UUID generation and advertisement.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 281-333)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 281-333)
 
 ### JR-ML-WS-005 — Cascor snapshot_seq in status endpoint under same lock as seq counter.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 787-820)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 787-820)
 
 ### JR-ML-WS-006 — Cascor training_stream must implement two-phase registration, resume frame handler with replay, and 1 Hz state throttle coalescer.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 363-450)
-- `juniper-ml/notes/interface_proposals/R1-03_maximalist_comprehensive.md` (lines 416-475)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 363-450)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-03-MAXIMALIST-COMPREHENSIVE.md` (lines 416-475)
 
 **Detail**:
 
@@ -103,8 +103,8 @@ GAP-WS-13, GAP-WS-21, GAP-WS-22, GAP-WS-29. R0-03 §8 scenario handling. Phase A
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 407-453)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 45-45)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 407-453)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 45-45)
 
 **Notes**:
 
@@ -115,22 +115,22 @@ GAP-WS-13, GAP-WS-21, GAP-WS-22, GAP-WS-29. R0-03 §8 scenario handling. Phase A
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 133-200)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 133-200)
 
 ### JR-ML-WS-009 — CascorControlStream must expose async set_params(params, timeout=1.0) method for WebSocket parameter updates.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 98-103)
-- `juniper-ml/notes/interface_proposals/R1-03_maximalist_comprehensive.md` (lines 159-170)
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 1-50)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1482-1492)
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 243-331)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 40-40)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-92)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 114-114)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 217-217)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 98-103)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-03-MAXIMALIST-COMPREHENSIVE.md` (lines 159-170)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 1-50)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1482-1492)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 243-331)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 40-40)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-92)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 114-114)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 217-217)
 
 **Detail**:
 
@@ -155,7 +155,7 @@ Preserves existing command() API. Includes latency instrumentation via _client_l
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R4-02_executive_ready_deliverable.md` (lines 28-66)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R4-02-EXECUTIVE-READY-DELIVERABLE.md` (lines 28-66)
 
 **Detail**:
 
@@ -180,7 +180,7 @@ Pre-flight checks (must complete before Phase B PR): (1) Confirm ecosystem clean
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 298-306)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 298-306)
 
 **Detail**:
 
@@ -195,14 +195,14 @@ Pre-flight checks (must complete before Phase B PR): (1) Confirm ecosystem clean
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 931-1016)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 931-1016)
 
 ### JR-ML-WS-013 — Phase B: browser ws_dash_bridge drain, Plotly.extendTraces, connection-status store, polling kill.
 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 433-594)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 433-594)
 
 **Detail**:
 
@@ -267,8 +267,8 @@ Two-flag logic: `enabled = enable_browser_ws_bridge AND NOT disable_ws_bridge`. 
 **Status**: proposed  **Priority**: P0  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R4-01_comprehensive_master_plan.md` (lines 33-40)
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 130-135)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R4-01-COMPREHENSIVE-MASTER-PLAN.md` (lines 33-40)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 130-135)
 
 **Detail**:
 
@@ -349,12 +349,12 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 
 [v2 ARCH→WS re-bucket] Backward-compatible at deployment level via --legacy. Operators may continue legacy mode during migration window. Default mode changed; no fallback default.
 
-### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](../../code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md#29-security-model-required-before-phase-d).
+### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](../../code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md#29-security-model-required-before-phase-d).
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 21-45)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 21-45)
 
 **Notes**:
 
@@ -365,7 +365,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1128-1131)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 1128-1131)
 
 **Notes**:
 
@@ -376,7 +376,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1174-1182)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1174-1182)
 
 **Notes**:
 
@@ -387,7 +387,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 974-977)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 974-977)
 
 **Notes**:
 
@@ -398,7 +398,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 46-77)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 46-77)
 
 **Notes**:
 
@@ -409,7 +409,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1875-1897)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 1875-1897)
 
 **Notes**:
 
@@ -420,7 +420,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1898-1915)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 1898-1915)
 
 **Notes**:
 
@@ -431,7 +431,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 437-440)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 437-440)
 
 **Notes**:
 
@@ -442,7 +442,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 815-823)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 815-823)
 
 **Notes**:
 
@@ -453,7 +453,7 @@ v0.3.0 (2026-04-08): WebSocket worker agent (new default) with long-lived WebSoc
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 120-120)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 120-120)
 
 **Notes**:
 
@@ -464,7 +464,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 389-390)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 389-390)
 
 **Notes**:
 
@@ -475,7 +475,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 94-150)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 94-150)
 
 **Notes**:
 
@@ -516,7 +516,7 @@ Phases: 1a security fixes, 1b WebSocket endpoint, 2 remote agent, 3 unified dist
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 219-219)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 219-219)
 
 **Notes**:
 
@@ -527,15 +527,15 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 61-62)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 61-62)
 
 ### JR-ML-WS-030 — Browser must send ping frame every 30s; expect pong within 5s; close and reconnect on timeout.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 400-450)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1313-1318)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 400-450)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1313-1318)
 
 **Detail**:
 
@@ -552,7 +552,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 229-230)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 229-230)
 
 **Notes**:
 
@@ -563,7 +563,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 243-244)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 243-244)
 
 **Notes**:
 
@@ -576,7 +576,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 257-258)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 257-258)
 
 **Notes**:
 
@@ -589,7 +589,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 245-246)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 245-246)
 
 **Notes**:
 
@@ -602,7 +602,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 273-274)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 273-274)
 
 **Notes**:
 
@@ -615,7 +615,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 236-237)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 236-237)
 
 **Notes**:
 
@@ -626,7 +626,7 @@ GAP-WS-12. Phase F (Day 11). Does not bypass auth (heartbeat inside authenticate
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 221-221)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 221-221)
 
 **Notes**:
 
@@ -637,8 +637,8 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 1-100)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1161-1276)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 1-100)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1161-1276)
 
 **Detail**:
 
@@ -660,8 +660,8 @@ Phase C (Day 10). Feature flag default False per R0-04 §5.6 ack-vs-effect analy
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 100-200)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1217-1260)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 100-200)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1217-1260)
 
 **Detail**:
 
@@ -680,28 +680,28 @@ Enables Phase C and Phase D. Separate from metrics relay (Day 7). Histogram buck
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 916-928)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 916-928)
 
 ### JR-ML-WS-041 — Cascor backpressure handling with 0.5s per-send timeout (quick fix).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 454-525)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 454-525)
 
 ### JR-ML-WS-042 — Cascor command_id echo in control responses for per-command correlation.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 821-915)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 821-915)
 
 ### JR-ML-WS-043 — Cascor Phase 0-cascor: sequence numbers, replay buffer, resume protocol, state coalescer fix.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 128-240)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 128-240)
 
 **Detail**:
 
@@ -735,7 +735,7 @@ seq monotonic in staging, 24h soak zero gaps. Rollback: git revert (15 min TTF).
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R4-01_comprehensive_master_plan.md` (lines 112-242)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R4-01-COMPREHENSIVE-MASTER-PLAN.md` (lines 112-242)
 
 **Detail**:
 
@@ -770,7 +770,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 131-132)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 131-132)
 
 **Notes**:
 
@@ -781,7 +781,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 146-147)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 146-147)
 
 **Notes**:
 
@@ -792,7 +792,7 @@ Plus D-NN decision mapping, effort table, feature flag inventory.
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 220-220)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 220-220)
 
 **Notes**:
 
@@ -803,7 +803,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 222-222)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 222-222)
 
 **Notes**:
 
@@ -814,532 +814,532 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1338-1342)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1338-1342)
 
 ### JR-ML-WS-050 — GAP-WS-01: through GAP-WS-33), ranging from P0 (security, auth, replay protocol, REST polling bandwid.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 149-153)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 149-153)
 
 ### JR-ML-WS-051 — GAP-WS-01: — `juniper-cascor-client` lacks WebSocket `set_params`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1236-1240)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1236-1240)
 
 ### JR-ML-WS-052 — GAP-WS-02: through GAP-WS-05) | Playwright e2e: `test_browser_receives_metrics_event`, `test_chart_up.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1784-1788)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1784-1788)
 
 ### JR-ML-WS-053 — GAP-WS-02: — Browser-side `cascorWS` / `cascorControlWS` are dead code.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1249-1253)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1249-1253)
 
 ### JR-ML-WS-054 — GAP-WS-03: — Parallel raw-WebSocket clientside callback at `dashboard_manager.py:1490`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1257-1261)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1257-1261)
 
 ### JR-ML-WS-055 — GAP-WS-04: note about background tab throttling.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2003-2007)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2003-2007)
 
 ### JR-ML-WS-056 — GAP-WS-04: — `ws-metrics-buffer` store never populated.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1265-1269)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1265-1269)
 
 ### JR-ML-WS-057 — GAP-WS-05: — No clientside callback drains WS stores into chart inputs.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1273-1277)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1273-1277)
 
 ### JR-ML-WS-058 — GAP-WS-06: — Training control buttons use REST POST instead of WebSocket.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1289-1293)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1289-1293)
 
 ### JR-ML-WS-059 — GAP-WS-07: (backpressure) sooner. **Decision needed before Phase E.**.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2015-2019)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2015-2019)
 
 ### JR-ML-WS-060 — GAP-WS-07: backpressure with per-send timeout) lands before or together with Phase B (GAP-WS-13 seque.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1170-1174)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1170-1174)
 
 ### JR-ML-WS-061 — GAP-WS-07: — No backpressure / slow client handling in cascor `WebSocketManager`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1297-1301)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1297-1301)
 
 ### JR-ML-WS-062 — GAP-WS-08: — No end-to-end browser test for the WebSocket path.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1307-1311)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1307-1311)
 
 ### JR-ML-WS-063 — GAP-WS-09: integration tests that exercise the failure modes.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1437-1441)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1437-1441)
 
 ### JR-ML-WS-064 — GAP-WS-09: — No cascor-side integration test for `set_params` on `/ws/control`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1320-1324)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1320-1324)
 
 ### JR-ML-WS-065 — GAP-WS-10: + the canopy adapter refactor + GAP-WS-32 (per-command timeouts).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1855-1859)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1855-1859)
 
 ### JR-ML-WS-066 — GAP-WS-10: — No canopy-side integration test for `set_params` round-trip.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1332-1336)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1332-1336)
 
 ### JR-ML-WS-067 — GAP-WS-11: + §4.4 phased plan.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1923-1927)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1923-1927)
 
 ### JR-ML-WS-068 — GAP-WS-11: Phase H).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1532-1536)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1532-1536)
 
 ### JR-ML-WS-069 — GAP-WS-11: — Canopy `_normalize_metric` dual format is undocumented for external consumers.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1340-1344)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1340-1344)
 
 ### JR-ML-WS-070 — GAP-WS-12: — No WebSocket heartbeat / ping-pong reciprocity.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1348-1352)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1348-1352)
 
 ### JR-ML-WS-071 — GAP-WS-13: (P1) — Lossless reconnect via sequence numbers and replay buffer.** Required components:.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1142-1146)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1142-1146)
 
 ### JR-ML-WS-072 — GAP-WS-13: (sequence numbers + replay), GAP-WS-14 (Plotly extendTraces), GAP-WS-15 (rAF coalescing),.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1829-1833)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1829-1833)
 
 ### JR-ML-WS-073 — GAP-WS-13: a server that doesn't recognize the `resume` command will respond with `command_response`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1214-1218)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1214-1218)
 
 ### JR-ML-WS-074 — GAP-WS-13: Lossless Reconnect via Sequence Numbers and Replay Buffer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2177-2188)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2177-2188)
 
 ### JR-ML-WS-075 — GAP-WS-13: reconnect+replay protocol — `server_start_time` change forces all clients to do a full RES.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2005-2009)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2005-2009)
 
 ### JR-ML-WS-076 — GAP-WS-13: sequence numbers land). Currently there is no mechanism to reject an outdated client. **De.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2023-2027)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2023-2027)
 
 ### JR-ML-WS-077 — GAP-WS-13: — Lossless reconnect via sequence numbers and replay buffer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1356-1360)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1356-1360)
 
 ### JR-ML-WS-078 — GAP-WS-14: (`extendTraces`), this keeps the per-frame cost under 17 ms.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1377-1381)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1377-1381)
 
 ### JR-ML-WS-079 — GAP-WS-14: above. Kept here for reference link integrity.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1442-1446)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1442-1446)
 
 ### JR-ML-WS-080 — GAP-WS-14: mandates `Plotly.extendTraces(maxPoints=5000)`; ring buffer in `ws-metrics-buffer` (last 1.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2001-2005)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2001-2005)
 
 ### JR-ML-WS-081 — GAP-WS-14: Plotly `extendTraces` with `maxPoints` Limit.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2146-2160)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2146-2160)
 
 ### JR-ML-WS-082 — GAP-WS-14: — Plotly chart updates must use `extendTraces` with `maxPoints`.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1364-1368)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1364-1368)
 
 ### JR-ML-WS-083 — GAP-WS-15: Browser-Side rAF Coalescing for 50Hz Candidate Events.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2163-2174)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2163-2174)
 
 ### JR-ML-WS-084 — GAP-WS-15: — Browser-side rAF coalescing for high-frequency events.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1372-1376)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1372-1376)
 
 ### JR-ML-WS-085 — GAP-WS-16: `/api/metrics/history` Polling Bandwidth Bomb (~3 MB/s).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2129-2143)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2129-2143)
 
 ### JR-ML-WS-086 — GAP-WS-16: — `/api/metrics/history` polling is the bandwidth bomb (P0 motivator).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1380-1384)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1380-1384)
 
 ### JR-ML-WS-087 — GAP-WS-17: — `permessage-deflate` compression not configured.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1388-1392)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1388-1392)
 
 ### JR-ML-WS-088 — GAP-WS-18: chunking or REST fallback; document the threshold; add a server-side size guard.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2007-2011)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2007-2011)
 
 ### JR-ML-WS-089 — GAP-WS-18: Topology Message >64KB Causes Connection Teardown.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2219-2238)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2219-2238)
 
 ### JR-ML-WS-090 — GAP-WS-18: — Topology message can exceed 64 KB silently.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1396-1400)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1396-1400)
 
 ### JR-ML-WS-091 — GAP-WS-19: in §7.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 229-233)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 229-233)
 
 ### JR-ML-WS-092 — GAP-WS-19: — `close_all()` does not hold `_lock` (CR-025 partial).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1404-1408)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1404-1408)
 
 ### JR-ML-WS-093 — GAP-WS-20: (P3)**: normalize bidirectional envelope to use `{type, timestamp, data}` everywhere. Trac.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 482-486)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 482-486)
 
 ### JR-ML-WS-094 — GAP-WS-20: — Bidirectional envelope asymmetry.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1412-1416)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1412-1416)
 
 ### JR-ML-WS-095 — GAP-WS-21: (P1)** in §7.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 555-559)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 555-559)
 
 ### JR-ML-WS-096 — GAP-WS-21: 1 Hz State Throttle Drops Terminal Transitions.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2241-2246)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2241-2246)
 
 ### JR-ML-WS-097 — GAP-WS-21: debouncer rewrite) AND state event rate goes >5 Hz.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1528-1532)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1528-1532)
 
 ### JR-ML-WS-098 — GAP-WS-21: — 1 Hz state throttle drops terminal transitions.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1420-1424)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1420-1424)
 
 ### JR-ML-WS-099 — GAP-WS-22: (P2)** in §7.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 745-749)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 745-749)
 
 ### JR-ML-WS-100 — GAP-WS-22: (protocol error responses).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1908-1912)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1908-1912)
 
 ### JR-ML-WS-101 — GAP-WS-22: — Protocol error responses not specified.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1431-1435)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1431-1435)
 
 ### JR-ML-WS-102 — GAP-WS-23: (P1)** in §7: clientside chart updates must use `Plotly.extendTraces()` with `maxPoints` p.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1022-1026)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1022-1026)
 
 ### JR-ML-WS-103 — GAP-WS-23: — `Plotly.extendTraces` with `maxPoints` (alias of GAP-WS-14).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1439-1443)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1439-1443)
 
 ### JR-ML-WS-104 — GAP-WS-24: (P2)** in §7. Phase B includes the instrumentation; Phase C+ uses the data to validate (or.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1037-1041)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1037-1041)
 
 ### JR-ML-WS-105 — GAP-WS-24: — Production WebSocket latency instrumentation.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1444-1448)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1444-1448)
 
 ### JR-ML-WS-106 — GAP-WS-25: (polling toggle).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1385-1389)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1385-1389)
 
 ### JR-ML-WS-107 — GAP-WS-25: polling toggle.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1386-1390)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1386-1390)
 
 ### JR-ML-WS-108 — GAP-WS-25: WebSocket-Health-Aware Polling Toggle.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2191-2202)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2191-2202)
 
 ### JR-ML-WS-109 — GAP-WS-25: — WebSocket-health-aware polling toggle.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1452-1456)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1452-1456)
 
 ### JR-ML-WS-110 — GAP-WS-26: Visible Connection Status Indicator.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2205-2216)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2205-2216)
 
 ### JR-ML-WS-111 — GAP-WS-26: — Visible connection status indicator.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1460-1464)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1460-1464)
 
 ### JR-ML-WS-112 — GAP-WS-27: — Per-IP connection caps and DoS protection.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1468-1472)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1468-1472)
 
 ### JR-ML-WS-113 — GAP-WS-28: Multi-Key `update_params` Torn-Write Race.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2249-2260)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2249-2260)
 
 ### JR-ML-WS-114 — GAP-WS-28: — Multi-key `update_params` torn-write race.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1476-1480)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1476-1480)
 
 ### JR-ML-WS-115 — GAP-WS-29: for the exception-handling path.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1180-1184)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1180-1184)
 
 ### JR-ML-WS-116 — GAP-WS-29: — `broadcast_from_thread` discards future exceptions.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1484-1488)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1484-1488)
 
 ### JR-ML-WS-117 — GAP-WS-30: — Reconnect backoff has no jitter (thundering herd risk).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1492-1496)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1492-1496)
 
 ### JR-ML-WS-118 — GAP-WS-31: Unbounded Reconnect Cap — Stops After 10.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2263-2274)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2263-2274)
 
 ### JR-ML-WS-119 — GAP-WS-31: — Unbounded reconnect attempts cap (currently capped at 10).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1500-1504)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1500-1504)
 
 ### JR-ML-WS-120 — GAP-WS-32: per-command correlation IDs + `pending verification` state pending matching `command_respo.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 2004-2008)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 2004-2008)
 
 ### JR-ML-WS-121 — GAP-WS-32: Per-Command Timeouts and Orphaned-Command Resolution.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2277-2288)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2277-2288)
 
 ### JR-ML-WS-122 — GAP-WS-32: — Per-command timeouts and orphaned-command resolution.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1508-1512)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1508-1512)
 
 ### JR-ML-WS-123 — GAP-WS-33: — Demo mode failure visibility.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 1516-1520)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 1516-1520)
 
 ### JR-ML-WS-124 — lifecycle/manager.py state coalescer; terminal transitions bypass throttle (GAP-WS-21).
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 118-118)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 118-118)
 
 **Notes**:
 
@@ -1350,7 +1350,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 113-113)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 113-113)
 
 **Notes**:
 
@@ -1361,21 +1361,21 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 60-61)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 60-61)
 
 ### JR-ML-WS-127 — MISSING: Status: server-side PRESENT (cascor accepts and handles the command); client-side MISSING.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` (lines 729-730)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` (lines 729-730)
 
 ### JR-ML-WS-128 — Phase 0-cascor: Cascor /ws/training emits monotonic seq, advertises server_instance_id+replay_buffer_capacity, supports resume, fixes state coalescer.
 
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-91)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-91)
 
 **Notes**:
 
@@ -1386,10 +1386,10 @@ Phase 0-cascor major milestone from R3-03 Phase index (§2); orchestrates implem
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 250-350)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1278-1355)
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 792-864)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-97)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 250-350)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1278-1355)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 792-864)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-97)
 
 **Detail**:
 
@@ -1410,7 +1410,7 @@ Rollback: `JUNIPER_CANOPY_BUTTONS_USE_WS=false` (instant) or revert P12→P11. D
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-99)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-99)
 
 **Notes**:
 
@@ -1421,7 +1421,7 @@ Phase F major milestone from R3-03 Phase index (§2); orchestrates implementatio
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 115-115)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 115-115)
 
 **Notes**:
 
@@ -1432,7 +1432,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 146-147)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 146-147)
 
 **Notes**:
 
@@ -1443,7 +1443,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 218-218)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 218-218)
 
 **Notes**:
 
@@ -1454,7 +1454,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 116-116)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 116-116)
 
 **Notes**:
 
@@ -1465,7 +1465,7 @@ Phase 0-cascor checklist item from R3-03 §3.1 deliverables
 **Status**: shipped  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 48-48)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 48-48)
 
 **Notes**:
 
@@ -1494,15 +1494,15 @@ Two-layer implementation: global ~/.claude/CLAUDE.md + project CLAUDE.md. Trigge
 **Status**: deferred  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-03_cascor_backend.md` (lines 1017-1029)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-03-CASCOR-BACKEND.md` (lines 1017-1029)
 
 ### JR-ML-WS-138 — `src/api/websocket/worker_stream.py:159-164` — server generates `worker_id = f"worker-{uuid.uuid4().hex[:12]}"`. Client-supplied value is st.
 
 **Status**: superseded  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 76-100)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 93-119)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 76-100)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 93-119)
 
 **Notes**:
 
@@ -1519,7 +1519,7 @@ Two-layer implementation: global ~/.claude/CLAUDE.md + project CLAUDE.md. Trigge
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 47-47)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 47-47)
 
 **Notes**:
 
@@ -1541,7 +1541,7 @@ Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service archi
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 280-287)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 280-287)
 
 **Detail**:
 
@@ -1556,7 +1556,7 @@ Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service archi
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 293-352)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 293-352)
 
 **Notes**:
 
@@ -1567,8 +1567,8 @@ Phase 1: Update version 0.3.17 → 0.4.0, restructure to lead with service archi
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 350-400)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1307-1340)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 350-400)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1307-1340)
 
 **Detail**:
 
@@ -1586,7 +1586,7 @@ RISK-13. Phase D (Day 11). Playwright test: test_orphaned_command_resolves_via_s
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 46-46)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 46-46)
 
 **Notes**:
 
@@ -1597,7 +1597,7 @@ Settled position C-09 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3728-3742)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3728-3742)
 
 **Notes**:
 
@@ -1619,7 +1619,7 @@ Comprehensive extraction plan synthesizing 3 proposals, phases 0-4 complete (76 
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 38-38)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 38-38)
 
 **Notes**:
 
@@ -1630,7 +1630,7 @@ Settled position C-01 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 32-38)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 32-38)
 
 **Detail**:
 
@@ -1671,7 +1671,7 @@ Phase 1b WebSocket endpoint with JWT auth, binary message frames, task assignmen
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 123-132)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 123-132)
 
 **Detail**:
 
@@ -1686,7 +1686,7 @@ Phase 1b WebSocket endpoint with JWT auth, binary message frames, task assignmen
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 62-62)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 62-62)
 
 **Notes**:
 
@@ -1697,7 +1697,7 @@ Settled position C-25 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 51-51)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 51-51)
 
 **Notes**:
 
@@ -1708,8 +1708,8 @@ Settled position C-14 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 706-789)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-96)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 706-789)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-96)
 
 **Detail**:
 
@@ -1746,7 +1746,7 @@ Canary: 7 days production >=0 orphaned commands before flag flip PR. / Phase C m
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 924-973)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 924-973)
 
 **Detail**:
 
@@ -1770,7 +1770,7 @@ manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5252-5266)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5252-5266)
 
 **Notes**:
 
@@ -1781,7 +1781,7 @@ manual firewall drop → dead conn within 40 s, 48h soak no NaN delays. Rollback
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 42-42)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 42-42)
 
 **Notes**:
 
@@ -1792,7 +1792,7 @@ Settled position C-05 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 44-44)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 44-44)
 
 **Notes**:
 
@@ -1803,7 +1803,7 @@ Settled position C-07 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 54-54)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 54-54)
 
 **Notes**:
 
@@ -1814,7 +1814,7 @@ Settled position C-17 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 56-56)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 56-56)
 
 **Notes**:
 
@@ -1825,7 +1825,7 @@ Settled position C-19 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 146-147)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 146-147)
 
 **Notes**:
 
@@ -1836,7 +1836,7 @@ Settled position C-19 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 41-41)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 41-41)
 
 **Notes**:
 
@@ -1847,7 +1847,7 @@ Settled position C-04 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 43-43)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 43-43)
 
 **Notes**:
 
@@ -1875,7 +1875,7 @@ CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; deferred until R5-01 phases complet
 **Status**: proposed  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 354-382)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 354-382)
 
 **Notes**:
 

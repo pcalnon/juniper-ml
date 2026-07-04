@@ -2,8 +2,8 @@
 
 This directory is the consolidated, deduplicated v1 snapshot of all explicit and (aggressive-threshold) implicit requirements identified across the 8 active Juniper repositories' `notes/` directories, as of 2026-05-12.
 
-**Source plan**: `../REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md`
-**Top-level navigation**: `../REQUIREMENTS_INDEX.md`
+**Source plan**: `../JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md`
+**Top-level navigation**: `../JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md`
 
 ---
 
@@ -53,7 +53,7 @@ Each requirement entry includes:
 
 ## Querying
 
-For worked recipes ("open P0/P1 SEC entries", "requirements citing file X", per-area / per-repo / per-status views) see [`../REQUIREMENTS_NEXT_STEPS.md` §3](../REQUIREMENTS_NEXT_STEPS.md#3-snapshot-consumption-recipes). It also lists what *not* to do (e.g., don't grep `id_assignments.yaml` for content — briefs are truncated; don't link to line numbers in `by-area/*.md` — they shift on regen).
+For worked recipes ("open P0/P1 SEC entries", "requirements citing file X", per-area / per-repo / per-status views) see [`../JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §3](../JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#3-snapshot-consumption-recipes). It also lists what *not* to do (e.g., don't grep `id_assignments.yaml` for content — briefs are truncated; don't link to line numbers in `by-area/*.md` — they shift on regen).
 
 ## Coverage and limitations
 

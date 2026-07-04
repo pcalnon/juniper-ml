@@ -17,16 +17,16 @@
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md` (lines 25-97)
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md` (lines 24-96)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md` (lines 25-97)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md` (lines 24-96)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 1:'] From REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 1:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md
 
 ---
 
-[v3 brief repaired from cited content; was: 'Phase 1:'] From REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 1:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
@@ -35,16 +35,16 @@
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md` (lines 100-127)
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md` (lines 99-126)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md` (lines 100-127)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md` (lines 99-126)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 2:'] From REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 2:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md
 
 ---
 
-[v3 brief repaired from cited content; was: 'Phase 2:'] From REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 2:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
@@ -53,18 +53,18 @@
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/CONSOLIDATED_DEVELOPMENT_ROADMAP.md` (lines 51-100)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md` (lines 51-100)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 1:'] From CONSOLIDATED_DEVELOPMENT_ROADMAP.md
+[v3 brief repaired from cited content; was: 'Phase 1:'] From JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md
 
 ### JR-ML-ARCH-004 — Applications Affected.
 
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 411-421)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 411-421)
 
 **Notes**:
 
@@ -75,11 +75,11 @@
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 10-46)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md` (lines 10-46)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 1:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 1:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md
 
 ### JR-CAS-ARCH-001 — Extract duplicated ActivationWithDerivative class to shared module to prevent divergence in ACTIVATION_MAP.
 
@@ -129,7 +129,7 @@ Codebase validation (2026-02-18) CONFIRMED.
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 145-146)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 145-146)
 
 ### JR-CAS-ARCH-004 — Remove hardcoded absolute paths in test file for cross-platform portability.
 
@@ -150,7 +150,7 @@ os.path.dirname(__file__).
 **Status**: proposed  **Priority**: P0  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 558-569)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 558-569)
 
 **Detail**:
 
@@ -165,7 +165,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1505-1554)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1505-1554)
 
 **Notes**:
 
@@ -176,7 +176,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1629-1635)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1629-1635)
 
 **Notes**:
 
@@ -187,7 +187,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1307-1357)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1307-1357)
 
 **Notes**:
 
@@ -198,7 +198,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1618-1628)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1618-1628)
 
 **Notes**:
 
@@ -209,7 +209,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1656-1673)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1656-1673)
 
 **Notes**:
 
@@ -220,7 +220,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1068-1096)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1068-1096)
 
 **Notes**:
 
@@ -231,8 +231,8 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 603-617)
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 617-630)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 603-617)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 617-630)
 
 **Detail**:
 
@@ -253,7 +253,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 208-221)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 208-221)
 
 **Notes**:
 
@@ -264,7 +264,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 156-165)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 156-165)
 
 **Notes**:
 
@@ -275,7 +275,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 224-248)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 224-248)
 
 **Notes**:
 
@@ -286,7 +286,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 96-118)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 96-118)
 
 **Notes**:
 
@@ -297,7 +297,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1129-1137)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1129-1137)
 
 **Notes**:
 
@@ -308,7 +308,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1147-1155)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1147-1155)
 
 **Notes**:
 
@@ -319,7 +319,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1183-1188)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1183-1188)
 
 **Notes**:
 
@@ -330,7 +330,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1119-1128)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1119-1128)
 
 **Notes**:
 
@@ -341,7 +341,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1165-1173)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1165-1173)
 
 **Notes**:
 
@@ -352,7 +352,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1409-1464)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1409-1464)
 
 **Notes**:
 
@@ -363,7 +363,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1683-1733)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1683-1733)
 
 **Notes**:
 
@@ -374,7 +374,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 142-155)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 142-155)
 
 **Notes**:
 
@@ -385,7 +385,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1643-1653)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1643-1653)
 
 **Notes**:
 
@@ -396,7 +396,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 249-257)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 249-257)
 
 **Notes**:
 
@@ -407,7 +407,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1555-1593)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1555-1593)
 
 **Notes**:
 
@@ -418,7 +418,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1018-1042)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1018-1042)
 
 **Notes**:
 
@@ -429,7 +429,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 51-60)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 51-60)
 
 **Notes**:
 
@@ -440,7 +440,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 258-308)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 258-308)
 
 **Notes**:
 
@@ -451,7 +451,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 134-141)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 134-141)
 
 **Notes**:
 
@@ -462,7 +462,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1290-1306)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1290-1306)
 
 **Notes**:
 
@@ -473,7 +473,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1206-1209)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1206-1209)
 
 **Notes**:
 
@@ -484,7 +484,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 121-133)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 121-133)
 
 **Notes**:
 
@@ -495,7 +495,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 61-82)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 61-82)
 
 **Notes**:
 
@@ -506,7 +506,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1465-1483)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1465-1483)
 
 **Notes**:
 
@@ -517,7 +517,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1259-1289)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1259-1289)
 
 **Notes**:
 
@@ -528,7 +528,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: designed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1043-1067)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1043-1067)
 
 **Notes**:
 
@@ -539,7 +539,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 376-377)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 376-377)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -548,7 +548,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 377-378)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 377-378)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -557,49 +557,49 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 378-379)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 378-379)
 
 ### JR-ML-ARCH-044 — 07: 50-conn cap hit (multi-tenant).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 381-382)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 381-382)
 
 ### JR-ML-ARCH-045 — 08: Demo mode parity breaks.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 382-383)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 382-383)
 
 ### JR-ML-ARCH-046 — 09: Phase C unexpected behavior.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 383-384)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 383-384)
 
 ### JR-ML-ARCH-047 — 10: Browser memory exhaustion.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 384-385)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 384-385)
 
 ### JR-ML-ARCH-048 — 13: Orphaned commands after timeout.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 387-388)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 387-388)
 
 ### JR-ML-ARCH-049 — --: Mid-week deploys for behavior-changing flag flips only.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 300-301)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 300-301)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -608,7 +608,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 301-302)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 301-302)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -617,7 +617,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 296-297)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 296-297)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -626,7 +626,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 297-298)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 297-298)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -635,7 +635,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 299-300)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 299-300)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -644,7 +644,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 298-299)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 298-299)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -653,16 +653,16 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md` (lines 130-203)
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md` (lines 129-202)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md` (lines 130-203)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md` (lines 129-202)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 3:'] From REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 3:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md
 
 ---
 
-[v3 brief repaired from cited content; was: 'Phase 3:'] From REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 3:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
@@ -671,7 +671,7 @@ route: receiver=default, group_by=[alertname,service], group_wait=30s, group_int
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 344-345)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 344-345)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -706,14 +706,14 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md` (lines 1-50)
 
 ### JR-ML-ARCH-058 — `audit_log_enabled`: B-pre-a.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 315-316)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 315-316)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -722,7 +722,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 349-350)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 349-350)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -731,7 +731,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 347-348)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 347-348)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -740,7 +740,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 346-347)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 346-347)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -749,7 +749,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 348-349)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 348-349)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -758,7 +758,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 345-346)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 345-346)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -767,7 +767,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 351-352)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 351-352)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -776,7 +776,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 352-353)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 352-353)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -785,7 +785,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 350-351)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 350-351)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -794,7 +794,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 355-356)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 355-356)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -803,7 +803,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 354-355)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 354-355)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -812,7 +812,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 353-354)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 353-354)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -821,7 +821,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 356-357)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 356-357)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -830,294 +830,294 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 536-561)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 536-561)
 
 ### JR-ML-ARCH-072 — BUG-CC-02: `cascade_add` Correlation Hardcoded to `0.0`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 564-578)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 564-578)
 
 ### JR-ML-ARCH-073 — BUG-CC-03: `or` Fallback Bugs for Falsy Values in spiral_problem.py.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 581-595)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 581-595)
 
 ### JR-ML-ARCH-074 — BUG-CC-04: Version Strings Inconsistent Across File Headers.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 598-612)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 598-612)
 
 ### JR-ML-ARCH-075 — BUG-CC-05: `remote_client_0.py` Hardcoded Old Monorepo Path.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 615-641)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 615-641)
 
 ### JR-ML-ARCH-076 — BUG-CC-06: 32 Test Files Have Hardcoded `sys.path.append` to Old Monorepo.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 644-658)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 644-658)
 
 ### JR-ML-ARCH-077 — BUG-CC-07: `TrainingMonitor.current_phase` Never Updated by State Machine.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 661-675)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 661-675)
 
 ### JR-ML-ARCH-078 — BUG-CC-08: Undeclared Global `shared_object_dict`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 678-692)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 678-692)
 
 ### JR-ML-ARCH-079 — BUG-CC-09: `validate_training_results` Uninitialized Variable When `max_epochs=0`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 695-709)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 695-709)
 
 ### JR-ML-ARCH-080 — BUG-CC-10: `validate_training` Validation Variables Not Initialized for No-Validation-Data Path.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 712-726)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 712-726)
 
 ### JR-ML-ARCH-081 — BUG-CC-11: Walrus Operator Precedence Bug in `utils.py`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 729-743)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 729-743)
 
 ### JR-ML-ARCH-082 — BUG-CC-12: `load_dataset` Uses `yaml.safe_load` Instead of `torch.load`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 746-779)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 746-779)
 
 ### JR-ML-ARCH-083 — BUG-CC-13: `RateLimiter._counters` Never Pruned — Unbounded Memory Growth.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 782-796)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 782-796)
 
 ### JR-ML-ARCH-084 — BUG-CC-14: `HandshakeCooldown._rejections` Never Pruned for Non-Blocked IPs.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 799-813)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 799-813)
 
 ### JR-ML-ARCH-085 — BUG-CC-15: `RequestBodyLimitMiddleware` Reads Full Body Before Size Check.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 816-830)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 816-830)
 
 ### JR-ML-ARCH-086 — BUG-CC-16: `_last_state_broadcast_time` Unprotected Cross-Thread R/W.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 833-841)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 833-841)
 
 ### JR-ML-ARCH-087 — BUG-CC-18: Dummy Candidate Results on Double Training Failure — Silent Corruption.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 855-863)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 855-863)
 
 ### JR-ML-ARCH-088 — BUG-CN-01: `_stop.clear()` Race — `_perform_reset()` Without Lock.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 868-882)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 868-882)
 
 ### JR-ML-ARCH-089 — BUG-CN-02: DashboardManager God Class (3,232 Lines).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 885-907)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 885-907)
 
 ### JR-ML-ARCH-090 — BUG-CN-03: 226 `hasattr` Guards in Tests Skip Test Logic.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 910-924)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 910-924)
 
 ### JR-ML-ARCH-091 — BUG-CN-04: `_api_base_url` Hardcoded to `127.0.0.1`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 927-941)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 927-941)
 
 ### JR-ML-ARCH-092 — BUG-CN-05: Service Populate Param Values with Int Defaults.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 944-958)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 944-958)
 
 ### JR-ML-ARCH-093 — BUG-CN-06: 1 Hz State Throttle Drops Terminal Transitions.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 961-976)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 961-976)
 
 ### JR-ML-ARCH-094 — BUG-CN-07: Duplicate `APP_VERSION` Assignment.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 979-993)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 979-993)
 
 ### JR-ML-ARCH-095 — BUG-CN-08: `_demo_snapshots` List Grows Unbounded in Demo Mode.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 996-1010)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 996-1010)
 
 ### JR-ML-ARCH-096 — BUG-CN-09: `WebSocketManager.active_connections` Not Thread Safe.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1013-1027)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1013-1027)
 
 ### JR-ML-ARCH-097 — BUG-CN-10: `message_count` Increment Not Atomic.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1030-1044)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1030-1044)
 
 ### JR-ML-ARCH-098 — BUG-CN-11: `regenerate_dataset` Mutates State Without Lock.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1047-1055)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1047-1055)
 
 ### JR-ML-ARCH-099 — BUG-CN-12: `config_manager._load_config()` Returns {} on Any Error.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1058-1066)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1058-1066)
 
 ### JR-ML-ARCH-100 — BUG-JD-01: `batch_export` Builds Entire ZIP in Memory — OOM Risk.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1071-1093)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1071-1093)
 
 ### JR-ML-ARCH-101 — BUG-JD-02: `delete()` TOCTOU Race Condition.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1096-1110)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1096-1110)
 
 ### JR-ML-ARCH-102 — BUG-JD-03: `update_meta` Writes Without Temp File — Partial Data Exposure.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1113-1127)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1113-1127)
 
 ### JR-ML-ARCH-103 — BUG-JD-04: Deterministic IDs with `seed=None` → Stale Cache Returns.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1130-1144)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1130-1144)
 
 ### JR-ML-ARCH-104 — BUG-JD-05: `_version_lock` Is Class Variable — Won't Work Across Workers.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1147-1169)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1147-1169)
 
 ### JR-ML-ARCH-105 — BUG-JD-06: `ReadinessResponse.timestamp` Uses Naive `datetime.now()`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1172-1186)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1172-1186)
 
 ### JR-ML-ARCH-106 — BUG-JD-07: `record_dataset_generation()` Defined but Never Called.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1189-1203)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1189-1203)
 
 ### JR-ML-ARCH-107 — BUG-JD-08: `record_access()` Defined but Never Called.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1206-1220)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1206-1220)
 
 ### JR-ML-ARCH-108 — BUG-JD-10: ALL Storage Operations Block Async Event Loop.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1240-1248)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1240-1248)
 
 ### JR-ML-ARCH-109 — BUG-JD-11: `record_access` TOCTOU Race on access_count Increment.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1251-1259)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1251-1259)
 
 ### JR-ML-ARCH-110 — C-01: Correlation field is `command_id`, NOT `request_id` -- every repo, every test.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 228-229)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 228-229)
 
 ### JR-ML-ARCH-111 — C-03: `set_params` default timeout = 1.0 s (not 5.0 s).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 230-231)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 230-231)
 
 ### JR-ML-ARCH-112 — C-04: SDK fails fast on disconnect; no reconnect queue; no SDK-level retries.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 242-243)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 242-243)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1126,28 +1126,28 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 231-232)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 231-232)
 
 ### JR-ML-ARCH-114 — C-07: `replay_buffer_capacity` added to `connection_established`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 232-233)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 232-233)
 
 ### JR-ML-ARCH-115 — C-08: Two-phase registration via `_pending_connections` set.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 233-234)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 233-234)
 
 ### JR-ML-ARCH-116 — C-13: Phase B-pre splits into B-pre-a (gates B) + B-pre-b (gates D).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 269-270)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 269-270)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -1156,7 +1156,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 270-271)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 270-271)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -1165,7 +1165,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 272-273)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 272-273)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -1174,7 +1174,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 244-245)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 244-245)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1183,7 +1183,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 246-247)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 246-247)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1192,7 +1192,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 274-275)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 274-275)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -1201,7 +1201,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 275-276)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 275-276)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -1210,7 +1210,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 247-248)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 247-248)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1219,7 +1219,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 258-259)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 258-259)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1228,7 +1228,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 248-249)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 248-249)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1237,7 +1237,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 259-260)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 259-260)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1246,7 +1246,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 260-261)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 260-261)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1255,7 +1255,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 276-277)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 276-277)
 
 *Merged from 4 extraction candidates (slices: ml-C).*
 
@@ -1264,7 +1264,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 249-250)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 249-250)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1273,7 +1273,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 250-251)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 250-251)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1282,7 +1282,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 261-262)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 261-262)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1291,7 +1291,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 262-263)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 262-263)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1300,7 +1300,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 294-295)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 294-295)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1309,7 +1309,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 286-287)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 286-287)
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
@@ -1318,7 +1318,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 287-288)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 287-288)
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
@@ -1327,14 +1327,14 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 235-236)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 235-236)
 
 ### JR-ML-ARCH-137 — C-42: Error-budget burn-rate rule operationally binding (if 99.9% budget burns in <1 day, freeze non-relia.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 288-289)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 288-289)
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
@@ -1343,7 +1343,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 357-358)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 357-358)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1352,7 +1352,7 @@ with clear error message.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 358-359)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 358-359)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1377,7 +1377,7 @@ CODE_REVIEW_ANALYSIS v0.4.0; fixed with contextvars.ContextVar in alignment with
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-03_cross_cutting_concerns.md` (lines 261-340)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-03-CROSS-CUTTING-CONCERNS.md` (lines 261-340)
 
 **Detail**:
 
@@ -1398,63 +1398,63 @@ Cross-cutting. Principle from R1-02 principle 2. Dedup with R3-03.
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4216-4231)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4216-4231)
 
 ### JR-ML-ARCH-142 — CONC-02: `_last_state_broadcast_time` Unprotected Cross-Thread R/W.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4234-4249)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4234-4249)
 
 ### JR-ML-ARCH-143 — CONC-04: ALL Storage Operations Block Async Event Loop (juniper-data).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4278-4301)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4278-4301)
 
 ### JR-ML-ARCH-144 — CONC-07: `regenerate_dataset` Mutates State Without Lock.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4304-4319)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4304-4319)
 
 ### JR-ML-ARCH-145 — CONC-08: `is_running` Reads/Writes Inconsistently Locked.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4322-4336)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4322-4336)
 
 ### JR-ML-ARCH-146 — CONC-09: Fire-and-Forget `asyncio.create_task` Without Stored Reference.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4339-4353)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4339-4353)
 
 ### JR-ML-ARCH-147 — CONC-10: Health Monitor Deregister/Assign Race Window.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4356-4370)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4356-4370)
 
 ### JR-ML-ARCH-148 — CONC-12: `record_access` TOCTOU on access_count Increment.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4373-4388)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4373-4388)
 
 ### JR-ML-ARCH-149 — Correctness: no seq gaps.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 147-148)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 147-148)
 
 ### JR-CCL-ARCH-001 — Create production constants module juniper_cascor_client/constants.py with ~30 constants (URLs, timeouts, retries, status codes).
 
@@ -1483,77 +1483,77 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 118-119)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 118-119)
 
 ### JR-ML-ARCH-151 — D-3: Two-flag browser bridge (D-17 + D-18).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 120-121)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 120-121)
 
 ### JR-ML-ARCH-152 — D-4: REST paths preserved forever (D-21, D-54, D-56).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 121-122)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 121-122)
 
 ### JR-ML-ARCH-153 — D-7: Phase C flag-flip criteria (D-48).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 124-125)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 124-125)
 
 ### JR-ML-ARCH-154 — D-8: Kill-switch MTTR tested (D-53).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 125-126)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 125-126)
 
 ### JR-ML-ARCH-155 — D-Correctness: no seq gaps: `cascor_ws_seq_gap_detected_total`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 147-148)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 147-148)
 
 ### JR-ML-ARCH-156 — D-Observability: full pipe: All canonical metrics present on `/metrics`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 149-150)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 149-150)
 
 ### JR-ML-ARCH-157 — D-**P0: polling eliminated**: `canopy_rest_polling_bytes_per_sec{endpoint="/api/metrics/history"}`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 145-146)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 145-146)
 
 ### JR-ML-ARCH-158 — D-Recovery: kill switches work: Every switch flipped in staging.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 150-151)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 150-151)
 
 ### JR-ML-ARCH-159 — D-Risk: Severity.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 129-130)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 129-130)
 
 ### JR-ML-ARCH-160 — D: `JUNIPER_CANOPY_ENABLE_WS_CONTROL_BUTTONS=false`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 359-360)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 359-360)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1562,7 +1562,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 360-361)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 360-361)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1571,7 +1571,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 317-318)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 317-318)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1580,7 +1580,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 308-309)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 308-309)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1589,7 +1589,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 313-314)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 313-314)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1598,7 +1598,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 361-362)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 361-362)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1607,7 +1607,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 307-308)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 307-308)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1616,7 +1616,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 309-310)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 309-310)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1625,7 +1625,7 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 311-312)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 311-312)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1634,56 +1634,56 @@ Part of hardcoded-values refactor (HIGH priority)
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4412-4426)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4412-4426)
 
 ### JR-ML-ARCH-170 — ERR-07: `raise HTTPException` Without `from e` — Broad Except Masks Programming Errors (data).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4463-4477)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4463-4477)
 
 ### JR-ML-ARCH-171 — ERR-08: `str(e)` in Batch Create Error Response — Information Disclosure (data).
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4480-4494)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4480-4494)
 
 ### JR-ML-ARCH-172 — ERR-09: `remote_client_0.process_tasks()` Catches All Exceptions, Only Prints.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4497-4511)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4497-4511)
 
 ### JR-ML-ARCH-173 — ERR-12: `config_manager._load_config()` Returns {} on Any Error.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4514-4529)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4514-4529)
 
 ### JR-ML-ARCH-174 — ERR-13: `arc_agi` Generator Silent Fallback on Any Exception.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4532-4546)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4532-4546)
 
 ### JR-ML-ARCH-175 — ERR-14: `CascorMetricsStream.stream()` Swallows ConnectionClosed.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4549-4571)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4549-4571)
 
 ### JR-ML-ARCH-176 — F: `JUNIPER_DISABLE_WS_AUTO_RECONNECT=true`.
 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 362-363)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 362-363)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1705,7 +1705,7 @@ Silently absorbed by **kwargs. Fix: remove invalid parameters or implement Spira
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 363-364)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 363-364)
 
 *Merged from 3 extraction candidates (slices: ml-C).*
 
@@ -1714,7 +1714,7 @@ Silently absorbed by **kwargs. Fix: remove invalid parameters or implement Spira
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 364-365)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 364-365)
 
 *Merged from 2 extraction candidates (slices: ml-C).*
 
@@ -1723,7 +1723,7 @@ Silently absorbed by **kwargs. Fix: remove invalid parameters or implement Spira
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 149-150)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 149-150)
 
 ### JR-CAN-ARCH-002 — Phase 1 Addendum—6 backend fixes (KeyError guards, thread safety, connection leaks).
 
@@ -1761,7 +1761,7 @@ Silently absorbed by **kwargs. Fix: remove invalid parameters or implement Spira
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-101)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-101)
 
 **Notes**:
 
@@ -1772,7 +1772,7 @@ Phase H major milestone from R3-03 Phase index (§2); orchestrates implementatio
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 337-338)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 337-338)
 
 *Merged from 5 extraction candidates (slices: ml-C).*
 
@@ -1781,7 +1781,7 @@ Phase H major milestone from R3-03 Phase index (§2); orchestrates implementatio
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 150-151)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 150-151)
 
 ### JR-CCL-ARCH-002 — Refactor testing/fake_client.py to use testing constants (~40 replacements of hardcoded values).
 
@@ -1814,7 +1814,7 @@ using old-style constructor parameters. Dead code creating confusion. Remove or 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 310-311)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 310-311)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1823,7 +1823,7 @@ using old-style constructor parameters. Dead code creating confusion. Remove or 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 316-317)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 316-317)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1832,7 +1832,7 @@ using old-style constructor parameters. Dead code creating confusion. Remove or 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 314-315)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 314-315)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1841,7 +1841,7 @@ using old-style constructor parameters. Dead code creating confusion. Remove or 
 **Status**: proposed  **Priority**: P1  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 312-313)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 312-313)
 
 *Merged from 6 extraction candidates (slices: ml-C).*
 
@@ -1850,7 +1850,7 @@ using old-style constructor parameters. Dead code creating confusion. Remove or 
 **Status**: deferred  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 61-61)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 61-61)
 
 **Notes**:
 
@@ -1861,7 +1861,7 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 **Status**: rejected  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 234-257)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 234-257)
 
 **Detail**:
 
@@ -1876,8 +1876,8 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 360-410)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 398-450)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 360-410)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 398-450)
 
 **Notes**:
 
@@ -1894,8 +1894,8 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 325-359)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 361-397)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 325-359)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 361-397)
 
 **Notes**:
 
@@ -1912,8 +1912,8 @@ Settled position C-24 from R3-03 table; cross-round consensus consolidation
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 477-526)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 527-581)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 477-526)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 527-581)
 
 **Notes**:
 
@@ -1930,8 +1930,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 527-557)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 582-614)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 527-557)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 582-614)
 
 **Notes**:
 
@@ -1948,8 +1948,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 101-135)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 120-156)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 101-135)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 120-156)
 
 **Notes**:
 
@@ -1966,8 +1966,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 52-75)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 65-92)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 52-75)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 65-92)
 
 **Notes**:
 
@@ -1984,8 +1984,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 245-288)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 277-322)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 245-288)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 277-322)
 
 **Notes**:
 
@@ -2002,8 +2002,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 136-193)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 157-223)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 136-193)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 157-223)
 
 **Notes**:
 
@@ -2020,8 +2020,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 558-606)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 615-666)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 558-606)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 615-666)
 
 **Notes**:
 
@@ -2038,8 +2038,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 411-438)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 451-486)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 411-438)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 451-486)
 
 **Notes**:
 
@@ -2056,7 +2056,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 39-64)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 39-64)
 
 **Notes**:
 
@@ -2067,7 +2067,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 658-698)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 658-698)
 
 **Notes**:
 
@@ -2078,7 +2078,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 805-825)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 805-825)
 
 **Notes**:
 
@@ -2089,7 +2089,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 697-716)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 697-716)
 
 **Notes**:
 
@@ -2100,7 +2100,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 781-804)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 781-804)
 
 **Notes**:
 
@@ -2111,7 +2111,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 717-737)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 717-737)
 
 **Notes**:
 
@@ -2122,8 +2122,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 194-244)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 224-276)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 194-244)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 224-276)
 
 **Notes**:
 
@@ -2140,8 +2140,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 439-476)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 487-526)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 439-476)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 487-526)
 
 **Notes**:
 
@@ -2158,8 +2158,8 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 11-33)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 11-38)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 11-33)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 11-38)
 
 **Notes**:
 
@@ -2176,7 +2176,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 635-657)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 635-657)
 
 **Notes**:
 
@@ -2187,7 +2187,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 826-900)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 826-900)
 
 **Notes**:
 
@@ -2198,7 +2198,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 34-51)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 34-51)
 
 **Notes**:
 
@@ -2209,7 +2209,7 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: superseded  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 901-941)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 901-941)
 
 **Notes**:
 
@@ -2220,16 +2220,16 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md` (lines 206-239)
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md` (lines 205-238)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md` (lines 206-239)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md` (lines 205-238)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 4:'] From REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 4:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md
 
 ---
 
-[v3 brief repaired from cited content; was: 'Phase 4:'] From REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 4:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
@@ -2238,18 +2238,18 @@ Superseded: V5 VALIDATED snapshot; check v6/v7 remediation entries
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/CONSOLIDATED_DEVELOPMENT_ROADMAP.md` (lines 156-230)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md` (lines 156-230)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 3:'] From CONSOLIDATED_DEVELOPMENT_ROADMAP.md
+[v3 brief repaired from cited content; was: 'Phase 3:'] From JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md
 
 ### JR-ML-ARCH-214 — **After deduplication**: ~85 unique items not present in v2.0.0.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 588-594)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 588-594)
 
 **Detail**:
 
@@ -2277,14 +2277,14 @@ Remove remote_client_0.py or align queue names.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/FOLLOWUP_ASYNC_ROUTE_AUDIT.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_FOLLOWUP-ASYNC-ROUTE-AUDIT.md` (lines 1-50)
 
 ### JR-ML-ARCH-216 — Background CascorControlStream supervisor task in canopy adapter.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 447-473)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 447-473)
 
 ### JR-CAN-ARCH-004 — Bypass state sync normalization fragility: CascorStateSync uses raw client, bypassing adapter layer (ISS-13).
 
@@ -2306,168 +2306,168 @@ Identified by v7. This is the architectural fragility enabling cascading issues.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/POST_V38_OPEN_ISSUES_PLAN_2026-05-03.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-05-03_JUNIPER-CASCOR_POST-V38-OPEN-ISSUES-PLAN.md` (lines 1-50)
 
 ### JR-ML-ARCH-218 — CAS-006: Auto-Snap Best Network.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2446-2450)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2446-2450)
 
 ### JR-ML-ARCH-219 — CC-01: `_recv_loop` Catches Bare `Exception`.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3656-3670)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3656-3670)
 
 ### JR-ML-ARCH-220 — CC-05: CI Doesn't Test Python 3.14.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3690-3698)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3690-3698)
 
 ### JR-ML-ARCH-221 — CC-06: `command()` Never Sends `type` Field.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3701-3708)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3701-3708)
 
 ### JR-ML-ARCH-222 — CC-07: NpzFile Resource Leak in data-client.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3711-3725)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3711-3725)
 
 ### JR-ML-ARCH-223 — CC-13: `_recv_loop` Silently Drops Non-Correlated Server Messages.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3762-3776)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3762-3776)
 
 ### JR-ML-ARCH-224 — CC-14: `_handle_response()` Calls `response.json()` Unconditionally.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3779-3793)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3779-3793)
 
 ### JR-ML-ARCH-225 — CC-16: `FakeCascorClient.wait_for_ready()` Returns True Immediately.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3813-3827)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3813-3827)
 
 ### JR-ML-ARCH-226 — CC-17: `FakeCascorClient.wait_for_ready()` Missing `self._lock`.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3830-3844)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3830-3844)
 
 ### JR-ML-ARCH-227 — CFG-01: `torch` Imported but Missing from canopy Dependencies.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4883-4897)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4883-4897)
 
 ### JR-ML-ARCH-228 — CFG-02: `sentry-sdk` in Core Dependencies but Only Used Optionally.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4900-4914)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4900-4914)
 
 ### JR-ML-ARCH-229 — CFG-03: `SENTRY_SDK_DSN` vs `JUNIPER_CASCOR_SENTRY_DSN` — Dual Env Vars.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4917-4931)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4917-4931)
 
 ### JR-ML-ARCH-230 — CFG-04: `JUNIPER_DATA_URL` Read via Raw `os.getenv`, Bypasses Settings.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4934-4948)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4934-4948)
 
 ### JR-ML-ARCH-231 — CFG-05: `CASCOR_LOG_LEVEL` vs `JUNIPER_CASCOR_LOG_LEVEL` — Both Needed.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4951-4965)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4951-4965)
 
 ### JR-ML-ARCH-232 — CFG-06: `CASCOR_*` Env Prefix Inconsistent with `JUNIPER_*` Convention.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4968-4982)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4968-4982)
 
 ### JR-ML-ARCH-233 — CFG-07: Port 8200 vs 8201 Confusion.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4985-4999)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4985-4999)
 
 ### JR-ML-ARCH-234 — CFG-08: Rate Limiting Defaults Differ Across Services.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5002-5016)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5002-5016)
 
 ### JR-ML-ARCH-235 — CFG-09: `audit_log_path` Defaults to `/var/log/` — Requires Root.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5019-5041)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5019-5041)
 
 ### JR-ML-ARCH-236 — CFG-12: `setuptools>=82.0` vs `>=61.0` Elsewhere.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5044-5058)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5044-5058)
 
 ### JR-ML-ARCH-237 — CFG-13: `python-dotenv` in canopy Core Deps but Never Imported.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5061-5075)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5061-5075)
 
 ### JR-ML-ARCH-238 — CFG-16: `CASCOR_DEMO_MODE` Read Directly, Bypasses Settings.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5095-5109)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5095-5109)
 
 ### JR-ML-ARCH-239 — CI-03: juniper-deploy CI Runs ZERO Tests.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4667-4681)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4667-4681)
 
 ### JR-ML-ARCH-240 — CI-07: Inconsistent GitHub Actions Versions Across Repos.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4726-4737)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4726-4737)
 
 ### JR-DCL-ARCH-001 — Create juniper_data_client/constants.py module to centralize ~60 hardcoded values across codebase.
 
@@ -2497,77 +2497,77 @@ Keep mathematical constants clearly separated from configuration constants.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3906-3920)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3906-3920)
 
 ### JR-ML-ARCH-242 — CW-03: No Integration Tests.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3940-3954)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3940-3954)
 
 ### JR-ML-ARCH-243 — CW-04: Timeout Error Sends `candidate_uuid: ""` Instead of Actual UUID.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3957-3971)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3957-3971)
 
 ### JR-ML-ARCH-244 — CW-05: Dynamic Import `from candidate_unit.candidate_unit import CandidateUnit`.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3974-3996)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3974-3996)
 
 ### JR-ML-ARCH-245 — CW-06: `receive_json()` in Registration Path — No JSONDecodeError Catch.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3999-4006)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3999-4006)
 
 ### JR-ML-ARCH-246 — CW-07: No Validation of `tensor_manifest` Keys Against Received Binary Frames.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4009-4023)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4009-4023)
 
 ### JR-ML-ARCH-247 — DC-01: GENERATOR_CIRCLE = "circle" — Server Has "circles".
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3849-3853)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3849-3853)
 
 ### JR-ML-ARCH-248 — DC-02: GENERATOR_MOON = "moon" — No Server Generator.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3856-3860)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3856-3860)
 
 ### JR-ML-ARCH-249 — DC-03: Missing Constants for 5 Server Generators.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3863-3867)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3863-3867)
 
 ### JR-ML-ARCH-250 — DEPLOY-04: K8s Canopy Missing Service URL Env Vars.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3386-3397)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3386-3397)
 
 ### JR-ML-ARCH-251 — Expand/collapse indicator.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 71-84)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 71-84)
 
 **Detail**:
 
@@ -2582,7 +2582,7 @@ Keep mathematical constants clearly separated from configuration constants.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 310-314)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 310-314)
 
 **Detail**:
 
@@ -2597,7 +2597,7 @@ Extend to accept and store all new `nn_*` and `cn_*` keyword arguments. Unknown 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 403-432)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 403-432)
 
 ### JR-CAS-ARCH-010 — Fix boolean parameter initialization using "or" fallback in spiral_problem.py.
 
@@ -2629,77 +2629,77 @@ Line 37 already has import datetime. Remove the confusing import.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2881-2895)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2881-2895)
 
 ### JR-ML-ARCH-255 — HSK-02: `src/remote_client/` Directory Still Exists.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2898-2902)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2898-2902)
 
 ### JR-ML-ARCH-256 — HSK-03: `src/spiral_problem/check.py` — 600-Line Stale Duplicate.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2905-2909)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2905-2909)
 
 ### JR-ML-ARCH-257 — HSK-04: 32 Test Files with Hardcoded `sys.path.append`.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2912-2916)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2912-2916)
 
 ### JR-ML-ARCH-258 — HSK-11: `wake_the_claude.bash` `DEBUG="${TRUE}"` Hardcoded ON.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3013-3028)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3013-3028)
 
 ### JR-ML-ARCH-259 — HSK-13: 169 Hardcoded ThemeColors Remain in canopy.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3048-3062)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3048-3062)
 
 ### JR-ML-ARCH-260 — HSK-14: `resume_session.bash` Contains Hardcoded Session UUID.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3065-3087)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3065-3087)
 
 ### JR-ML-ARCH-261 — HSK-19: Stale Files in Repo Root.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3166-3180)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3166-3180)
 
 ### JR-ML-ARCH-262 — HSK-20: `claude_interactive.bash:17` `DEBUG="${TRUE}"` Hardcoded.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3183-3198)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3183-3198)
 
 ### JR-ML-ARCH-263 — HSK-21: `wake_the_claude.bash:53` Stale TODO Comment.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3201-3215)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3201-3215)
 
 ### JR-ML-ARCH-264 — HSK-22: `wake_the_claude.bash:547` TODO — Model Parameter Never Validated.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3218-3232)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3218-3232)
 
 ### JR-CAN-ARCH-005 — NetworkVisualizer callback is overloaded and must be split.
 
@@ -2718,7 +2718,7 @@ callbacks for layout changes, theme changes, and data updates.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 50-50)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 50-50)
 
 **Notes**:
 
@@ -2729,7 +2729,7 @@ Settled position C-13 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 65-65)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 65-65)
 
 **Notes**:
 
@@ -2740,7 +2740,7 @@ Settled position C-28 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-04_sdk_set_params.md` (lines 254-272)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-04-SDK-SET-PARAMS.md` (lines 254-272)
 
 ### JR-CAS-ARCH-012 — Remove direct absolute path hardcoding that breaks on non-development machines.
 
@@ -2769,7 +2769,7 @@ Lines 530 and 548: self.snapshot_counter = 0 appears twice. Second is redundant.
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` (lines 3600-3610)
+- `juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md` (lines 3600-3610)
 
 **Detail**:
 
@@ -2842,42 +2842,42 @@ Path objects are always truthy even for empty strings. Use 'if x is None' instea
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 147-148)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 147-148)
 
 ### JR-ML-ARCH-270 — RISK: Criterion.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 143-144)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 143-144)
 
 ### JR-ML-ARCH-271 — RISK: Observability: full pipe.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 149-150)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 149-150)
 
 ### JR-ML-ARCH-272 — RISK: **P0: polling eliminated**.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 145-146)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 145-146)
 
 ### JR-ML-ARCH-273 — RISK: Recovery: kill switches work.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 150-151)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 150-151)
 
 ### JR-ML-ARCH-274 — ROBUST-01: Dummy Candidate Results on Double Training Failure — Silent Corruption.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4574-4597)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4574-4597)
 
 ### JR-CAS-ARCH-018 — Run mypy and categorize type errors, then gradually increase strictness.
 
@@ -2915,28 +2915,28 @@ Identified by v4, v6, v7. Architectural root cause hierarchy shows ISS-17 at ape
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4789-4800)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4789-4800)
 
 ### JR-ML-ARCH-276 — TQ-03: Worker Config Validation Tests with No Assertions.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4803-4814)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4803-4814)
 
 ### JR-ML-ARCH-277 — TQ-05: 10 Unit Tests Import httpx (Integration-Level).
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4824-4835)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4824-4835)
 
 ### JR-ML-ARCH-278 — When `cn-multi-candidate-checkbox` is unchecked (default), the entire sub-group must be disabled:.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 214-234)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 214-234)
 
 **Detail**:
 
@@ -2951,112 +2951,112 @@ Note: Callback #9 (`toggle_cn_selection_inputs`) should also check the checkbox 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2509-2524)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2509-2524)
 
 ### JR-ML-ARCH-280 — XREPO-02: 503 Not in `RETRYABLE_STATUS_CODES`.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2571-2586)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2571-2586)
 
 ### JR-ML-ARCH-281 — XREPO-03: No `FakeCascorControlStream` — Testing Gap for WS Control.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2589-2604)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2589-2604)
 
 ### JR-ML-ARCH-282 — XREPO-04: Protocol Constants Alignment Is Manual.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2607-2629)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2607-2629)
 
 ### JR-ML-ARCH-283 — XREPO-05: State Name Inconsistency — UPPERCASE vs Title-Case vs FSM Constants.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2632-2646)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2632-2646)
 
 ### JR-ML-ARCH-284 — XREPO-06: `epochs_max` Default Discrepancy.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2649-2663)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2649-2663)
 
 ### JR-ML-ARCH-285 — XREPO-07: `command()` vs `set_params()` Message Format Inconsistency.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2666-2681)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2666-2681)
 
 ### JR-ML-ARCH-286 — XREPO-08: Three Distinct WS Message Formats.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2684-2692)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2684-2692)
 
 ### JR-ML-ARCH-287 — XREPO-09: Client `create_dataset()` Missing `tags` and `ttl_seconds`.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2695-2709)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2695-2709)
 
 ### JR-ML-ARCH-288 — XREPO-11: Client Retries Non-Idempotent Mutations (POST, DELETE).
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2729-2743)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2729-2743)
 
 ### JR-ML-ARCH-289 — XREPO-12: `y` Tensor Received but Never Used in Worker.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2746-2760)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2746-2760)
 
 ### JR-ML-ARCH-290 — XREPO-13: Health Endpoint `status` Value Inconsistency.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2763-2771)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2763-2771)
 
 ### JR-ML-ARCH-291 — XREPO-14: FakeClient State Constants Use Different Vocabulary.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2774-2789)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2774-2789)
 
 ### JR-ML-ARCH-292 — XREPO-15: Error Response Format Inconsistent.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2792-2800)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2792-2800)
 
 ### JR-ML-ARCH-293 — XREPO-16: Client Missing Methods for 4 Server Endpoints.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2803-2818)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2803-2818)
 
 ### JR-ML-ARCH-294 — XREPO-17: `candidate_progress` WS Message Not in Client Constants.
 
 **Status**: proposed  **Priority**: P2  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2821-2836)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2821-2836)
 
 ### JR-CAS-ARCH-019 — Remove legacy spiral generator code once JuniperData is stable and proven.
 
@@ -3075,16 +3075,16 @@ remove legacy spiral generator from spiral_problem.py.
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md` (lines 242-263)
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md` (lines 241-262)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md` (lines 242-263)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md` (lines 241-262)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 5:'] From REGRESSION_DEVELOPMENT_ROADMAP_06_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 5:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-06.md
 
 ---
 
-[v3 brief repaired from cited content; was: 'Phase 5:'] From REGRESSION_DEVELOPMENT_ROADMAP_02_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 5:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-02.md
 
 *Merged from 2 extraction candidates (slices: 3b-3).*
 
@@ -3093,11 +3093,11 @@ remove legacy spiral generator from spiral_problem.py.
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/CONSOLIDATED_DEVELOPMENT_ROADMAP.md` (lines 233-265)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md` (lines 233-265)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 4:'] From CONSOLIDATED_DEVELOPMENT_ROADMAP.md
+[v3 brief repaired from cited content; was: 'Phase 4:'] From JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md
 
 ### JR-CAN-ARCH-008 — Environment variable parsing must fix boolean/integer precedence bug.
 
@@ -3123,44 +3123,44 @@ to parse as False instead of 0. Reorder checks: int/float before bool.
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 107-162)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md` (lines 107-162)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 4:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 4:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md
 
 ### JR-ML-ARCH-299 — Goal**: Fix parameter initialization and value mapping issues.
 
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 68-104)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md` (lines 68-104)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 3:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 3:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md
 
 ### JR-ML-ARCH-300 — Goal**: Implement new features requested in the regression report.
 
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 165-187)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md` (lines 165-187)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 5:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+[v3 brief repaired from cited content; was: 'Phase 5:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md
 
 ### JR-ML-ARCH-301 — juniper-canopy: **3066 passed**, 100 skipped, 12 pre-existing failures (state sync + topology handler), 3 collection errors (missing….
 
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/CONSOLIDATED_DEVELOPMENT_ROADMAP.md` (lines 268-323)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md` (lines 268-323)
 
 **Notes**:
 
-[v3 brief repaired from cited content; was: 'Phase 5:'] From CONSOLIDATED_DEVELOPMENT_ROADMAP.md
+[v3 brief repaired from cited content; was: 'Phase 5:'] From JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md
 
 ### JR-CAN-ARCH-009 — Layout type sprint must forward positional/keyword parameters correctly.
 
@@ -3179,7 +3179,7 @@ or explicit forwarding to preserve full signature.
 **Status**: proposed  **Priority**: P3  **Category**: ARCH  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 544-555)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 544-555)
 
 **Detail**:
 

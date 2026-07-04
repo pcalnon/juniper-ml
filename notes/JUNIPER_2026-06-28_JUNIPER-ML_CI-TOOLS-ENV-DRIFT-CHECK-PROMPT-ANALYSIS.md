@@ -13,7 +13,7 @@
 ## 1. Purpose
 
 This session was asked to **develop a validated, correct, effective prompt** (not to perform the work) that **begins implementing** the ecosystem test-suite audit plan
-([`JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md`](JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md), merged as juniper-ml#569), using the custom-agent suite ("appropriate sub-agents").
+([`JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md`](JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md), merged as juniper-ml#569), using the custom-agent suite ("appropriate sub-agents").
 
 **Deliverables produced this session:**
 

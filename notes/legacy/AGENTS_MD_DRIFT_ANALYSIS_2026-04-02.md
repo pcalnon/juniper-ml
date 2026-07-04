@@ -220,7 +220,7 @@ AGENTS.md only documents `.github/workflows/publish.yml`. The repository now has
 
 ## 10. Undocumented `notes/` Subdirectory Structure
 
-AGENTS.md references `notes/WORKTREE_SETUP_PROCEDURE.md`, `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`, and `notes/THREAD_HANDOFF_PROCEDURE.md` but does not document the full notes directory structure:
+AGENTS.md references `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`, `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`, and `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` but does not document the full notes directory structure:
 
 | Subdirectory | Contents | Purpose |
 |--------------|----------|---------|
@@ -286,7 +286,7 @@ AGENTS.md makes no mention of SOPS encryption. The repository has:
 - `.sops.yaml` — Configuration for age-based encryption of `.env` and `.env.secrets` files
 - `.env.enc` — Encrypted environment file
 - Pre-commit hook blocking unencrypted `.env` files
-- `notes/SOPS_USAGE_GUIDE.md` — Usage documentation
+- `notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md` — Usage documentation
 
 ---
 

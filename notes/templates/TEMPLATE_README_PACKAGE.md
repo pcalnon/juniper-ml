@@ -1,6 +1,6 @@
 <!--
   TEMPLATE — lean Juniper package README.
-  Canonical style per notes/JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md.
+  Canonical style per notes/JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md.
 
   HOW TO USE:
     1. Copy this file to <package>/README.md.

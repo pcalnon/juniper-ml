@@ -31,8 +31,8 @@ defaults from false to true (matches docker-compose.yml).
 **Status**: proposed  **Priority**: P0  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-06_ops_phasing_risk.md` (lines 79-110)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 850-870)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-06-OPS-PHASING-RISK.md` (lines 79-110)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 850-870)
 
 **Detail**:
 
@@ -54,7 +54,7 @@ All 8 must be true before Phase D PR eligible. Per R0-06 §3.2. Non-parallelizab
 **Status**: proposed  **Priority**: P0  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/ROADMAP_AUDIT_2026-05-05.md` (lines 232-242)
+- `juniper-ml/notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md` (lines 232-242)
 
 ### JR-CCL-OPS-001 — Configure Dependabot for automated weekly dependency updates.
 
@@ -85,8 +85,8 @@ Root causes: RC-1 missing JuniperData service lifecycle management, RC-2 ${VAR:d
 **Status**: proposed  **Priority**: P1  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R1-02_risk_minimized_safety_first.md` (lines 29-47)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1044-1046)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-02-RISK-MINIMIZED-SAFETY-FIRST.md` (lines 29-47)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1044-1046)
 
 **Detail**:
 
@@ -117,7 +117,7 @@ Shipped in v0.2.0 (2026-03-21); ecosystem standard convention
 **Status**: rejected  **Priority**: P2  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 68-68)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 68-68)
 
 **Notes**:
 
@@ -150,7 +150,7 @@ Operational tuning only.
 **Status**: proposed  **Priority**: P2  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 79-79)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 79-79)
 
 **Notes**:
 
@@ -161,14 +161,14 @@ Settled position C-42 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/PYPI-PUBLISH-PROCEDURE.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` (lines 1-50)
 
 ### JR-ML-OPS-008 — Kill switch MTTR ≤5 min, CI-tested, staging-drilled.
 
 **Status**: proposed  **Priority**: P2  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 76-76)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 76-76)
 
 **Notes**:
 
@@ -179,7 +179,7 @@ Settled position C-39 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: OPS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 73-73)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 73-73)
 
 **Notes**:
 

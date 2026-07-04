@@ -209,8 +209,8 @@ Logging: YAML relative paths, three independent mechanisms, CWD-dependent resolu
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 323-330)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 259-266)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 323-330)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 259-266)
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
@@ -219,224 +219,224 @@ Logging: YAML relative paths, three independent mechanisms, CWD-dependent resolu
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1317-1343)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1317-1343)
 
 ### JR-ML-TOOL-004 — CLN-CC-02: Delete Stale `check.py` Duplicate (600 Lines).
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1346-1361)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1346-1361)
 
 ### JR-ML-TOOL-005 — CLN-CC-03: Remove 9 Local `import traceback` in cascade_correlation.py.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1364-1378)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1364-1378)
 
 ### JR-ML-TOOL-006 — CLN-CC-04: Enable mypy Strict Mode.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1381-1395)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1381-1395)
 
 ### JR-ML-TOOL-007 — CLN-CC-05: Legacy Spiral Code — Trivial Getter/Setter Methods, No @deprecated.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1398-1412)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1398-1412)
 
 ### JR-ML-TOOL-008 — CLN-CC-06: Remove "Roll" Concept in CandidateUnit.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1415-1421)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1415-1421)
 
 ### JR-ML-TOOL-009 — CLN-CC-07: Candidate Factory Refactor.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1424-1430)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1424-1430)
 
 ### JR-ML-TOOL-010 — CLN-CC-08: Remove Commented-Out Code Blocks.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1433-1439)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1433-1439)
 
 ### JR-ML-TOOL-011 — CLN-CC-09: Line Length Reduction to 120 Characters.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1442-1448)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1442-1448)
 
 ### JR-ML-TOOL-012 — CLN-CC-10: `utils.py:238` — Broken `check_object_pickleability` Uses `dill` Not in Deps.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1451-1473)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1451-1473)
 
 ### JR-ML-TOOL-013 — CLN-CC-11: `snapshot_serializer.py` — Extend Optimizer Support (In-Code TODO).
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1476-1490)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1476-1490)
 
 ### JR-ML-TOOL-014 — CLN-CC-12: `.ipynb_checkpoints` Directories Committed to Repository.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1493-1507)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1493-1507)
 
 ### JR-ML-TOOL-015 — CLN-CC-13: `sys.path.append` at Module Level in cascade_correlation.py.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1510-1524)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1510-1524)
 
 ### JR-ML-TOOL-016 — CLN-CC-14: Empty `# TODO :` Headers in 18+ Files.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1527-1541)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1527-1541)
 
 ### JR-ML-TOOL-017 — CLN-CC-15: `_object_attributes_to_table` Return Type Annotation Wrong.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1544-1558)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1544-1558)
 
 ### JR-ML-TOOL-018 — CLN-CN-01: `theme-table` CSS Class Never Implemented.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1563-1588)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1563-1588)
 
 ### JR-ML-TOOL-019 — CLN-CN-02: NPZ Validation Only in DemoMode, Not ServiceBackend.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1591-1605)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1591-1605)
 
 ### JR-ML-TOOL-020 — CLN-CN-03: Performance Test Suite Minimal.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1608-1622)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1608-1622)
 
 ### JR-ML-TOOL-021 — CLN-CN-04: JuniperData-Specific Error Handling Missing.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1625-1639)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1625-1639)
 
 ### JR-ML-TOOL-022 — CLN-CN-05: DashboardManager Extraction (3,232 → Component Classes).
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1642-1657)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1642-1657)
 
 ### JR-ML-TOOL-023 — CLN-CN-06: Re-enable Remaining MyPy Disabled Codes.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1660-1674)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1660-1674)
 
 ### JR-ML-TOOL-024 — CLN-CN-07: Real Backend Path Test Coverage.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1677-1691)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1677-1691)
 
 ### JR-ML-TOOL-025 — CLN-CN-08: Convert Skipped Integration Tests (4 Files with `requires_server`).
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1694-1708)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1694-1708)
 
 ### JR-ML-TOOL-026 — CLN-CN-09: main.py Coverage Gap (84% vs 95% Target).
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1711-1725)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1711-1725)
 
 ### JR-ML-TOOL-027 — CLN-CN-10: `main.py` Is 2,543 Lines — Second God File.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1728-1742)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1728-1742)
 
 ### JR-ML-TOOL-028 — CLN-CN-11: `metrics_panel.py` Is 1,790 Lines — Third God File.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1745-1759)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1745-1759)
 
 ### JR-ML-TOOL-029 — CLN-CN-12: `network_visualizer.py:1512` — Active TODO Indicating Logging Error Bug.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1762-1776)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1762-1776)
 
 ### JR-ML-TOOL-030 — CLN-CN-13: Deprecated `_generate_spiral_dataset_local()` Still Called.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1779-1793)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1779-1793)
 
 ### JR-ML-TOOL-031 — CLN-CN-14: `np.random.seed(42)` Sets Global Numpy Seed.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1796-1810)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1796-1810)
 
 ### JR-ML-TOOL-032 — CLN-JD-01: `python-dotenv` Hard Dependency for Optional ARC-AGI Feature.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1815-1829)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1815-1829)
 
 ### JR-ML-TOOL-033 — CLN-JD-02: `FakeDataClient.close()` Destroys Data.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1832-1846)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1832-1846)
 
 ### JR-ML-TOOL-034 — CLN-JD-03: Module-Level `create_app()` at `app.py:142` — Import-Time Side Effects.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1849-1863)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1849-1863)
 
 ### JR-CAS-TOOL-007 — Code quality & compliance improvements: coverage thresholds, strict MyPy, pre-commit hooks, lint compliance tests.
 
@@ -487,14 +487,14 @@ Decision 1 (✅ IMPLEMENTED): ActivationWithDerivative → src/utils/activation.
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/PROMPT_ANALYSIS_AND_AUTOMATION_PLAN.md` (lines 326-466)
+- `juniper-ml/notes/JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md` (lines 326-466)
 
 ### JR-ML-TOOL-036 — Fix broken check_object_pickleability function in utils.py:238 which uses dill not in dependencies.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` (lines 3580-3590)
+- `juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md` (lines 3580-3590)
 
 **Detail**:
 
@@ -506,7 +506,7 @@ Function is broken. Fix by either adding dill to deps or refactoring to use pick
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2985-3010)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2985-3010)
 
 **Notes**:
 
@@ -517,7 +517,7 @@ Function is broken. Fix by either adding dill to deps or refactoring to use pick
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3090-3112)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3090-3112)
 
 **Notes**:
 
@@ -528,7 +528,7 @@ Function is broken. Fix by either adding dill to deps or refactoring to use pick
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3115-3129)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3115-3129)
 
 **Notes**:
 
@@ -539,7 +539,7 @@ Function is broken. Fix by either adding dill to deps or refactoring to use pick
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3132-3146)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3132-3146)
 
 **Notes**:
 
@@ -550,7 +550,7 @@ Function is broken. Fix by either adding dill to deps or refactoring to use pick
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3149-3163)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3149-3163)
 
 **Notes**:
 
@@ -561,14 +561,14 @@ Function is broken. Fix by either adding dill to deps or refactoring to use pick
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/PROMPT_ANALYSIS_AND_AUTOMATION_PLAN.md` (lines 1081-1150)
+- `juniper-ml/notes/JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md` (lines 1081-1150)
 
 ### JR-ML-TOOL-043 — Implement thread handoff procedure: context transfer, worktree state, verification commands.
 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/THREAD_HANDOFF_IMPLEMENTATION.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-IMPLEMENTATION.md` (lines 1-50)
 
 ### JR-CAS-TOOL-009 — Not-started items: coverage gates per-module, MyPy strict mode, Spider legacy code removal, Docker end-to-end validation.
 
@@ -590,7 +590,7 @@ CAS-REF-002: Coverage gates (per-module thresholds, P2, S effort). CAS-REF-003: 
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` (lines 3568-3580)
+- `juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md` (lines 3568-3580)
 
 **Detail**:
 
@@ -603,7 +603,7 @@ line 64 top-level import. Effort: 30 minutes.
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` (lines 3590-3600)
+- `juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md` (lines 3590-3600)
 
 **Detail**:
 
@@ -616,7 +616,7 @@ These should be in .gitignore. Effort: 10 minutes.
 **Status**: proposed  **Priority**: P2  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/MCP_SERVER_SETUP_PLAN.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-03-09_JUNIPER-ML_MCP-SERVER-SETUP-PLAN.md` (lines 1-50)
 
 ### JR-ML-TOOL-047 — Implement V2 worktree cleanup procedure.
 
@@ -634,7 +634,7 @@ Development workflow optimization.
 **Status**: proposed  **Priority**: P3  **Category**: TOOL  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-02_phase_execution_contracts.md` (lines 1080-1099)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-02-PHASE-EXECUTION-CONTRACTS.md` (lines 1080-1099)
 
 **Detail**:
 

@@ -587,13 +587,13 @@
 **Lines:** 1181--1199
 **Primary:** juniper-ml (ecosystem procedure)
 **Secondary:** All repos
-**Accuracy:** Current. Commands match WORKTREE_SETUP_PROCEDURE.md.
+**Accuracy:** Current. Commands match JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md.
 
 #### 13b. Merge and Clean Up a Worktree
 **Lines:** 1201--1215
 **Primary:** juniper-ml (ecosystem procedure)
 **Secondary:** All repos
-**Accuracy:** **FLAG -- STALE.** This section shows a direct `git merge` + `git push origin main` workflow, but WORKTREE_CLEANUP_PROCEDURE_V2.md (referenced in CLAUDE.md) uses a PR-based workflow (`gh pr create`). The V2 procedure explicitly avoids direct merges to main. The cheatsheet should be updated to match V2 or at minimum note the PR-based approach.
+**Accuracy:** **FLAG -- STALE.** This section shows a direct `git merge` + `git push origin main` workflow, but JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md (referenced in CLAUDE.md) uses a PR-based workflow (`gh pr create`). The V2 procedure explicitly avoids direct merges to main. The cheatsheet should be updated to match V2 or at minimum note the PR-based approach.
 
 **Whole-section content to ADD:**
 - Reference to `scripts/worktree_cleanup.bash` automated cleanup script
@@ -834,7 +834,7 @@ These are content gaps identified from the task specification that should be fil
 
 | Gap | Description |
 |-----|-------------|
-| **Worktree cleanup V2** | Update merge procedure to use PR-based workflow per WORKTREE_CLEANUP_PROCEDURE_V2.md |
+| **Worktree cleanup V2** | Update merge procedure to use PR-based workflow per JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md |
 | **`scripts/worktree_cleanup.bash`** | Document the automated cleanup script |
 | **Cross-repo dependency update** | Procedure for updating a shared dependency across multiple repos |
 | **Release coordination** | How to coordinate releases across interdependent packages |

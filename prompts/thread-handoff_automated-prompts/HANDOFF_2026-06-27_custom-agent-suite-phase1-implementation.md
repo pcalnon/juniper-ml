@@ -10,7 +10,7 @@ Continue the **custom-agent suite enhancement effort** by implementing **Phase 1
 
 ## The authoritative plan (read it first)
 
-`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` — read **§6.1–6.5** (per-enhancement design/files/gate/acceptance/risk) and **§7** (PR sequence + the AGENTS.md-contention note).
+`notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` — read **§6.1–6.5** (per-enhancement design/files/gate/acceptance/risk) and **§7** (PR sequence + the AGENTS.md-contention note).
 The plan was authored, 4-independent-agent validated (anchor-grounding + convention/RUBRIC = PASS; feasibility + completeness/risk = CONCERNS, all majors resolved), and is the source of truth.
 Use the plan's **recommended designs** for the two Phase-1-relevant open questions (D-1 staleness = HEAD-commit-time primary + configurable TTL secondary; E-2 is ml-owned, canopy-process adoption is a separate follow-up).
 

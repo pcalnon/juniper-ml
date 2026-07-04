@@ -22,13 +22,13 @@ Claude Code's behavior is controlled through a hierarchy of instruction files:
 ```
 ~/.claude/CLAUDE.md          <- Global: applies to ALL Claude Code sessions on this machine
 <project>/CLAUDE.md           <- Project: applies to sessions in this project
-<project>/notes/THREAD_HANDOFF_PROCEDURE.md  <- Protocol: templates and detailed handoff rules
+<project>/notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md  <- Protocol: templates and detailed handoff rules
 ```
 
 The implementation uses **two layers**:
 
 1. **Global layer** (`~/.claude/CLAUDE.md`): Defines the universal policy — all Claude Code instances must prefer handoff over compaction, with the trigger threshold and execution protocol.
-2. **Project layer** (`<project>/CLAUDE.md`): Reinforces the policy for the specific project and references the project-specific `THREAD_HANDOFF_PROCEDURE.md` for templates and protocol details.
+2. **Project layer** (`<project>/CLAUDE.md`): Reinforces the policy for the specific project and references the project-specific `JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` for templates and protocol details.
 
 ---
 
@@ -46,16 +46,16 @@ The implementation uses **two layers**:
 - Lists additional triggers (15+ tool calls, phase boundaries, degraded recall, multi-file transitions, user request)
 - Lists exclusions (nearly complete task, sharp thread, tightly coupled work)
 - Defines the 5-step execution protocol (checkpoint, compose, present, verify, git status)
-- References `notes/THREAD_HANDOFF_PROCEDURE.md` for templates
+- References `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` for templates
 
 ### 2. Global ~/.claude/CLAUDE.md — Pre-existing (Unchanged)
 
 **File**: `~/.claude/CLAUDE.md`
 **Change**: None — this file already contained the Thread Handoff policy at global scope, installed during a prior project's implementation.
 
-### 3. THREAD_HANDOFF_PROCEDURE.md — Created
+### 3. JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md — Created
 
-**File**: `notes/THREAD_HANDOFF_PROCEDURE.md`
+**File**: `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`
 **Change**: Created new file adapted from the JuniperCascor project's version.
 
 **Content**:
@@ -72,9 +72,9 @@ The implementation uses **two layers**:
 - Examples cover dependency version updates and version conflicts rather than method implementations
 - "Multi-module transition" renamed to "Multi-file transition" since there are no source code modules
 
-### 4. THREAD_HANDOFF_IMPLEMENTATION.md — Created
+### 4. JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-IMPLEMENTATION.md — Created
 
-**File**: `notes/THREAD_HANDOFF_IMPLEMENTATION.md`
+**File**: `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-IMPLEMENTATION.md`
 **Change**: Created new file (this document).
 
 ---
@@ -88,7 +88,7 @@ The implementation uses **two layers**:
 
 ### Step 1: Create the Thread Handoff Procedure Document
 
-Create `notes/THREAD_HANDOFF_PROCEDURE.md` (or equivalent location) in your project. You can copy the one from this project or the JuniperCascor project, adapting the templates for your project's concerns:
+Create `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` (or equivalent location) in your project. You can copy the one from this project or the JuniperCascor project, adapting the templates for your project's concerns:
 
 ```markdown
 # Thread Handoff Procedure
@@ -130,7 +130,7 @@ This introduces information loss. Instead, Claude Code instances working on this
 project MUST perform a **proactive thread handoff**: transferring a curated,
 high-signal summary to a fresh thread with full context capacity.
 
-The full handoff protocol is defined in **`notes/THREAD_HANDOFF_PROCEDURE.md`**.
+The full handoff protocol is defined in **`notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`**.
 Read that file when a handoff is triggered.
 
 ### When to Trigger a Handoff
@@ -151,7 +151,7 @@ Concretely:
   notification, treat this as a signal that handoff should have already occurred —
   immediately initiate one.
 
-**Additional triggers** (from `notes/THREAD_HANDOFF_PROCEDURE.md`):
+**Additional triggers** (from `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`):
 
 | Condition                   | Indicator                                            |
 | --------------------------- | ---------------------------------------------------- |
@@ -171,7 +171,7 @@ Concretely:
 1. **Checkpoint**: Inventory what was done, what remains, what was discovered,
    and what files are in play
 2. **Compose the handoff goal**: Write a concise, actionable summary
-   (see templates in `notes/THREAD_HANDOFF_PROCEDURE.md`)
+   (see templates in `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`)
 3. **Present to user**: Output the handoff goal and recommend starting a new
    thread with that goal as the initial prompt
 4. **Include verification commands**: Specify how the new thread should verify
@@ -190,7 +190,7 @@ Concretely:
 
 ### Step 3: Create or Update the Global ~/.claude/CLAUDE.md
 
-Create `~/.claude/CLAUDE.md` to apply the handoff policy to **all** Claude Code sessions on the machine, regardless of project. See the global CLAUDE.md for the format — it defines the same policy at global scope and defers to project-specific `THREAD_HANDOFF_PROCEDURE.md` files when present.
+Create `~/.claude/CLAUDE.md` to apply the handoff policy to **all** Claude Code sessions on the machine, regardless of project. See the global CLAUDE.md for the format — it defines the same policy at global scope and defers to project-specific `JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` files when present.
 
 ### Step 4: Verify the Integration
 
@@ -208,8 +208,8 @@ After creating/modifying the files:
 | ---- | ----- | ------- |
 | `~/.claude/CLAUDE.md` | Global (all projects) | Universal handoff-over-compaction policy |
 | `CLAUDE.md` | Project | Project-specific handoff instructions with procedure reference |
-| `notes/THREAD_HANDOFF_PROCEDURE.md` | Project | Full protocol, templates, examples |
-| `notes/THREAD_HANDOFF_IMPLEMENTATION.md` | Project | This document — implementation record and replication guide |
+| `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md` | Project | Full protocol, templates, examples |
+| `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-IMPLEMENTATION.md` | Project | This document — implementation record and replication guide |
 
 ---
 
@@ -226,7 +226,7 @@ Starting at 1% is the minimum — it risks compaction firing mid-handoff if the 
 
 ### Why Both Global and Project-Level Instructions?
 
-- **Global** ensures the policy applies even to projects without their own THREAD_HANDOFF_PROCEDURE.md
+- **Global** ensures the policy applies even to projects without their own JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md
 - **Project-level** adds project-specific templates and references the detailed procedure document
 - The two layers are complementary, not contradictory — both say the same thing, with the project level adding specificity
 
@@ -255,4 +255,4 @@ Unlike JuniperCascor (which has extensive source code, tests, and modules), this
 
 | Date | Change |
 | ---- | ------ |
-| 2026-02-23 | Initial implementation: created THREAD_HANDOFF_PROCEDURE.md, created this document, added section to project CLAUDE.md. Adapted from JuniperCascor project's implementation. |
+| 2026-02-23 | Initial implementation: created JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md, created this document, added section to project CLAUDE.md. Adapted from JuniperCascor project's implementation. |

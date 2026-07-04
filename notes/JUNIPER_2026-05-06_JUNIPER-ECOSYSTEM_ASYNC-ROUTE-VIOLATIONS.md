@@ -3,7 +3,7 @@
 **Owner**: Paul Calnon
 **Run date**: 2026-05-06
 **Tool**: `ruff 0.15.6` with `--select ASYNC --exit-zero --output-format=concise`
-**Migration plan**: [`ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md`](./ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md) §4 Phase 0
+**Migration plan**: [`JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md`](./JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md) §4 Phase 0
 **Companion fix PRs (already shipped)**: [juniper-data #90](https://github.com/pcalnon/juniper-data/pull/90) (BUG-JD-10 spot-fix)
 
 ---
@@ -122,7 +122,7 @@ All ASYNC109 in `tests/unit/test_*.py` files. Standard pytest-async pattern — 
 
 ## 5. What this enumeration changes in the migration plan
 
-Concrete updates feeding back into [`ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md`](./ASYNC_ROUTE_AUDIT_HOOK_MIGRATION_PLAN.md):
+Concrete updates feeding back into [`JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md`](./JUNIPER_2026-05-07_JUNIPER-ECOSYSTEM_ASYNC-ROUTE-AUDIT-HOOK-MIGRATION-PLAN.md):
 
 - **§3 scope table**: confirmed; the four in-scope repos are correct. Worker has zero violations — easiest enforcement.
 - **§4 Phase 3 effort** ("varies — 1 hr to 1 day"): **revised down to ~2.5 hours total** across the three repos with non-zero counts.

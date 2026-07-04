@@ -61,8 +61,8 @@ def temp_repo(tmp_path: Path) -> Path:
 
     (tmp_path / "pyproject.toml").write_text(PYPROJECT, encoding="utf-8")
     (tmp_path / "notes").mkdir()
-    (tmp_path / "notes" / "PIP_DEPENDENCY_FILE_HEADER.md").write_text(PIP_HEADER, encoding="utf-8")
-    (tmp_path / "notes" / "CONDA_DEPENDENCY_FILE_HEADER.md").write_text(CONDA_HEADER, encoding="utf-8")
+    (tmp_path / "notes" / "JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md").write_text(PIP_HEADER, encoding="utf-8")
+    (tmp_path / "notes" / "JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md").write_text(CONDA_HEADER, encoding="utf-8")
     return tmp_path
 
 

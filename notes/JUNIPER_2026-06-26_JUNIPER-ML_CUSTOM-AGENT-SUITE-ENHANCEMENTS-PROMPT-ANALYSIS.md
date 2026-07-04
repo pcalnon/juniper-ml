@@ -21,8 +21,8 @@ The owner's constraints on the prompt: the downstream work must **begin with an 
 phase**, then a **planning phase**; **every aspect of the plan must be vetted and validated by multiple,
 independent sub-agents**; and **implementation must be gated on the owner's approval of the planning
 document**. The owner directed particular attention to the two most-recent dogfooding analyses
-(`notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` and
-`notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md`). Custom agents were to be employed as needed,
+(`notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md` and
+`notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md`). Custom agents were to be employed as needed,
 and a meta-analysis was to record additional helpful agent specializations and any other Juniper issues
 discovered.
 
@@ -78,8 +78,8 @@ effectiveness review surfaced no blocker).
    - `Explore` ×2 inventoried the `.claude/` agent+skill surface and the `prompts/agent_templates/` library
      + data layer + `util/` + `tests/`, each citing `file:line`.
    - `general-purpose` ×1 deep-read the `notes/` design history (the design-of-record
-     `JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`, the convenience-utilities design, the genesis
-     `PROMPT_ANALYSIS_AND_AUTOMATION_PLAN.md`, and both 2026-06-26 dogfooding analyses) and consolidated the
+     `JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`, the convenience-utilities design, the genesis
+     `JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md`, and both 2026-06-26 dogfooding analyses) and consolidated the
      gap ledger.
 2. **First-party verification (direct).** Confirmed the load-bearing open/fixed states rather than trusting
    the notes: D-1 (`test_status` has no ttl/mtime guard) **open**; A-1 (`cli.py:80` exposes only

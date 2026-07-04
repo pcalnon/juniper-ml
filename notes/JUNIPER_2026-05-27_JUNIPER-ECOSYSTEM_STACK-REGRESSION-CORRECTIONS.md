@@ -2,7 +2,7 @@
 
 **Author**: Paul Calnon (with Claude Opus 4.7 + independent validator sub-agent)
 **Date**: 2026-05-27
-**Supersedes (in part)**: [`STACK_REGRESSION_ANALYSIS_2026-05-27.md`](STACK_REGRESSION_ANALYSIS_2026-05-27.md) §1, §3.5, §5, §7; [`STACK_REGRESSION_REMEDIATION_PLAN_2026-05-27.md`](STACK_REGRESSION_REMEDIATION_PLAN_2026-05-27.md) §0, §1.1 (PR-2 scoping), §1.4, §3.
+**Supersedes (in part)**: [`JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-ANALYSIS.md`](JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-ANALYSIS.md) §1, §3.5, §5, §7; [`JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-REMEDIATION-PLAN.md`](JUNIPER_2026-05-27_JUNIPER-ECOSYSTEM_STACK-REGRESSION-REMEDIATION-PLAN.md) §0, §1.1 (PR-2 scoping), §1.4, §3.
 
 A second sub-agent reviewed the original analysis + plan independently, and several material errors surfaced. Live-state probes between the original report and the review showed the running stack also changed (a container restart at 22:57 UTC re-mounted cascor's `juniper_cascor_api_keys` from a populated 43-byte token, while canopy still mounts the 33-byte JSON-list placeholder). This addendum is the corrected source of truth; the original docs are kept for traceability of how the picture changed.
 

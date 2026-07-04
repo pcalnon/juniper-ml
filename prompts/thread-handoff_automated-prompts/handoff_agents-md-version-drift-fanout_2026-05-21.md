@@ -74,7 +74,7 @@ All 7 pyproject-having Juniper repos now lint-protected against the same drift c
 - I'm in `/home/pcalnon/Development/python/Juniper/juniper-ml` (the main repo, not a worktree).
 - Branch protection actively enforcing across all 8 repos; `gh pr merge --admin` is required and worked throughout the session.
 - juniper-canopy local main is now in sync with origin (Paul's WIP `feat/env-and-settings-normalization-2026-05-20` landed mid-session as PR #308, merge 2acfc81).
-- juniper-ml untracked files (Paul's): `notes/CI_CLEANUP.md`, `prompts/prompt112_2026-05-21.md`, 6 prior handoffs in `prompts/thread-handoff_automated-prompts/`, `util/ad-hoc/apply_dep_docs_swap.py`, `util/ad-hoc/wave4_delete_inline_dep_docs.sh`. This handoff adds a 7th prompt file.
+- juniper-ml untracked files (Paul's): `notes/JUNIPER_2026-06-01_JUNIPER-ECOSYSTEM_CI-CLEANUP.md`, `prompts/prompt112_2026-05-21.md`, 6 prior handoffs in `prompts/thread-handoff_automated-prompts/`, `util/ad-hoc/apply_dep_docs_swap.py`, `util/ad-hoc/wave4_delete_inline_dep_docs.sh`. This handoff adds a 7th prompt file.
 - Solo-author rule: all 8 repos have `require_code_owner_review: false` or no `pull_request` rule. Don't re-introduce.
 - Pre-commit hook in juniper-ml will reformat with black on commit — the version-drift lint test was reformatted on first commit; that's normal, just `git add` and re-commit.
 - **Portable test convention**: the lint test discovers its own repo root by walking up for `pyproject.toml + AGENTS.md`. Same pattern as `test_workflow_script_paths.py`. Resist any temptation to hardcode paths in future ports.

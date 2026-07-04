@@ -10,7 +10,7 @@
 ---
 
 > **This document has been consolidated.** Its content was merged into the canonical recurrence
-> roadmap — [`JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md) —
+> roadmap — [`JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md) —
 > which is now the single source of truth for the recurrence state assessment, defect register,
 > outstanding-work inventory, roadmap, design/dev options, risks, and open questions.
 
@@ -28,4 +28,4 @@ The v0.1.0 release notes this document referenced are archived at
 
 ---
 
-➡️ **Canonical roadmap:** [`JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md)
+➡️ **Canonical roadmap:** [`JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md)

@@ -15,7 +15,7 @@
 **Status**: shipped  **Priority**: P0  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 826-876)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 826-876)
 
 **Detail**:
 
@@ -70,7 +70,7 @@ DATA-017 complete. security.py confirmed.
 **Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 124-156)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 124-156)
 
 **Detail**:
 
@@ -85,7 +85,7 @@ DATA-017 complete. security.py confirmed.
 **Status**: shipped  **Priority**: P0  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 156-182)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 156-182)
 
 **Detail**:
 
@@ -346,7 +346,7 @@ DATA-016 complete.
 **Status**: shipped  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 216-266)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 216-266)
 
 **Detail**:
 
@@ -1517,7 +1517,7 @@ Root causes: RC-1 missing JuniperData service lifecycle management, RC-2 ${VAR:d
 **Status**: shipped  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 251-301)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 251-301)
 
 **Detail**:
 
@@ -1563,7 +1563,7 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 **Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 54-74)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 54-74)
 
 **Detail**:
 
@@ -1578,7 +1578,7 @@ Comprehensive test remediation addressing 54 ERROR tests (missing pytest-mock), 
 **Status**: shipped  **Priority**: P1  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 280-307)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 280-307)
 
 **Detail**:
 
@@ -1686,7 +1686,7 @@ P0 critical (10 fixed): type mismatches, field consistency, gradient descent, ma
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 176-226)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 176-226)
 
 **Detail**:
 
@@ -1729,7 +1729,7 @@ Phase 3 supplementary content (medium priority): (3.1) Expand Key Files table (a
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 334-370)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 334-370)
 
 **Detail**:
 
@@ -1744,7 +1744,7 @@ Phase 3 supplementary content (medium priority): (3.1) Expand Key Files table (a
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 423-433)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 423-433)
 
 **Detail**:
 
@@ -1781,7 +1781,7 @@ See histogram_rationale file for bucket selection rationale.
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 96-146)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 96-146)
 
 **Detail**:
 
@@ -1796,7 +1796,7 @@ See histogram_rationale file for bucket selection rationale.
 **Status**: shipped  **Priority**: P2  **Category**: WS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 48-48)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 48-48)
 
 **Notes**:
 
@@ -1912,7 +1912,7 @@ Phase 2 feature; shipped with 17 tests, visual regression verification recommend
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 59-59)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 59-59)
 
 **Notes**:
 
@@ -1923,7 +1923,7 @@ Settled position C-22 from R3-03 table; cross-round consensus consolidation
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 200-213)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 200-213)
 
 **Detail**:
 
@@ -1938,7 +1938,7 @@ Settled position C-22 from R3-03 table; cross-round consensus consolidation
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 67-107)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 67-107)
 
 **Detail**:
 
@@ -2024,7 +2024,7 @@ Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 60-60)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 60-60)
 
 **Notes**:
 
@@ -2061,7 +2061,7 @@ Shipped in v0.2.0 (2026-03-21); ecosystem standard convention
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 421-439)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 421-439)
 
 **Detail**:
 
@@ -2072,7 +2072,7 @@ cause: the pre-METRICS-MON observability scaffolding in
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 424-446)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 424-446)
 
 **Detail**:
 
@@ -2087,7 +2087,7 @@ cause: the pre-METRICS-MON observability scaffolding in
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 310-330)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 310-330)
 
 **Detail**:
 
@@ -2102,7 +2102,7 @@ cause: the pre-METRICS-MON observability scaffolding in
 **Status**: shipped  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 69-81)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 69-81)
 
 **Detail**:
 
@@ -2132,7 +2132,7 @@ Handoff protocol: (1) Checkpoint current state (task, completed, remaining, disc
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 331-370)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 331-370)
 
 **Detail**:
 
@@ -2147,7 +2147,7 @@ Handoff protocol: (1) Checkpoint current state (task, completed, remaining, disc
 **Status**: shipped  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 89-105)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 89-105)
 
 **Detail**:
 
@@ -2162,7 +2162,7 @@ Handoff protocol: (1) Checkpoint current state (task, completed, remaining, disc
 **Status**: shipped  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 676-699)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 676-699)
 
 **Detail**:
 
@@ -2188,7 +2188,7 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 **Status**: shipped  **Priority**: P3  **Category**: DEP  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 243-264)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 243-264)
 
 **Detail**:
 
@@ -2203,7 +2203,7 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 **Status**: shipped  **Priority**: P3  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 391-412)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 391-412)
 
 **Detail**:
 
@@ -2214,7 +2214,7 @@ Naming convention: <repo-name>--<branch-name>--<YYYYMMDD-HHMM>--<short-hash>. Al
 **Status**: shipped  **Priority**: P3  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 207-227)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 207-227)
 
 **Detail**:
 

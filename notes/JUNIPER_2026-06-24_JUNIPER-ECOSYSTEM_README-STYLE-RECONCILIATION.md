@@ -4,7 +4,7 @@
 **Author**: Paul Calnon
 **Date**: 2026-06-24
 **Status**: RATIFIED 2026-06-24 (Paul Calnon) — the §3 recommendation is adopted as written
-**Supersedes (partial)**: [`README_NORMALIZATION_PLAN_2026-05-19.md`](README_NORMALIZATION_PLAN_2026-05-19.md)
+**Supersedes (partial)**: [`JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md`](JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md)
 
 ---
 
@@ -19,7 +19,7 @@ migration proceeds per §5.
 
 | | **Style A — Normalized house style** | **Style B — Lean accessible overview** |
 |---|---|---|
-| Defined by | [`README_NORMALIZATION_PLAN_2026-05-19.md`](README_NORMALIZATION_PLAN_2026-05-19.md) | Emergent (no written standard yet) |
+| Defined by | [`JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md`](JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md) | Emergent (no written standard yet) |
 | Opens with | Right-aligned logo + shared "Juniper is an AI/ML research platform…" platform intro | One-line tagline + PyPI/Python/License **badges** |
 | Versioning | Hardcoded compatibility tables / "Latest published" columns | Badges (auto-update) |
 | Sections | Distribution → Ecosystem Compatibility → Architecture (ASCII) → Related Services → **Active Research Components / Design Notes** → Quick Start → **Research Philosophy** (shared 2-paragraph essay) → Documentation → License | Problem-first intro → Install → Quick start → What's in the box → Status → Design link → License |
@@ -67,7 +67,7 @@ Concretely, a canonical package README is:
 ## 5. Migration sketch (all docs-only, incremental, low-risk)
 
 - **Phase 0 — Ratify.** Approve this note; mark the relevant sections of
-  `README_NORMALIZATION_PLAN_2026-05-19.md` as superseded. *(Done 2026-06-24, in the same PR as this
+  `JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md` as superseded. *(Done 2026-06-24, in the same PR as this
   note.)*
 - **Phase 1 — Template.** Add `notes/templates/TEMPLATE_README_PACKAGE.md` (the lean skeleton) and a
   reusable "Part of the Juniper platform" snippet. Do a quick inventory confirming which of the ~16

@@ -5,7 +5,7 @@
 **Date**: 2026-04-11
 **Status**: Round 1 consolidation — input to Round 2
 **Inputs consolidated**: R0-01 (frontend), R0-02 (security), R0-03 (cascor backend), R0-04 (SDK set_params), R0-05 (testing), R0-06 (ops/phasing/risk)
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -15,7 +15,7 @@ This is the one-time setup every engineer picking up the work must perform befor
 
 ### 0.1 Read the background
 
-- [ ] Read the architecture doc (`juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md`) §0-§5 for the motivation and latency model.
+- [ ] Read the architecture doc (`juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md`) §0-§5 for the motivation and latency model.
 - [ ] Skim §6 (reconnect protocol), §7 (GAP-WS-NN list), §9 (phase plan), §10 (risks).
 - [ ] Read R0-01 §3.2 (Option B drain pattern), R0-02 §4.1/§4.2 (Origin + CSRF), R0-03 §3 (replay buffer), R0-04 §4 (SDK set_params), R0-05 §4 (test plan), R0-06 §3 (phase ordering).
 - [ ] If a project-local runbook conflicts with this doc, this runbook wins for tactical steps but the project-local doc wins for tooling paths.

@@ -42,7 +42,7 @@ Success = `All N remote tasks completed successfully` + workers `tasks_completed
 
 ## Decision for Paul
 
-Publish 0.1.0 from juniper-ml now (unblocks worker/deploy) vs first resolve the deferred org-strategy question (`notes/JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md` recommends moving juniper-cascor-core to the cascor family). **Recommend publish-now**; the repo-move is a separate future migration (package name is stable either way).
+Publish 0.1.0 from juniper-ml now (unblocks worker/deploy) vs first resolve the deferred org-strategy question (`notes/JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md` recommends moving juniper-cascor-core to the cascor family). **Recommend publish-now**; the repo-move is a separate future migration (package name is stable either way).
 
 ## Key context
 

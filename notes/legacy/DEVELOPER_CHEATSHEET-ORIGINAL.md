@@ -27,7 +27,7 @@ Use the project-specific cheatsheets instead:
 
 **Link conventions:** Cross-repo relative links (e.g., `../juniper-data/...`) resolve locally when all Juniper repos are checked out as siblings.
 They are skipped during CI validation. Source code file links use GitHub URLs for durability.
-See [CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) for details.
+See [JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md](JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md) for details.
 
 ---
 
@@ -126,7 +126,7 @@ Decrypt the encrypted `.env` to inspect values.
 sops -d --input-type dotenv --output-type dotenv .env.enc
 ```
 
-> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Add a New Secret
 
@@ -137,13 +137,13 @@ sops -d --input-type dotenv --output-type dotenv .env.enc
 5. If the variable is consumed by Docker, also add it to `juniper-deploy/.env.example` with a commented-out default
 
 > **Pre-commit guard:** The `no-unencrypted-env` hook blocks committing plaintext `.env` files.
-> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
+> **Docs:** [SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [Deploy .env.example](../juniper-deploy/.env.example)
 
 ### Change an Existing Secret
 
 Same as [Add a New Secret](#add-a-new-secret) -- decrypt, edit the value, re-encrypt, commit `.env.enc`.
 
-> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
+> **Docs:** [SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md)
 
 ### Remove a Secret
 
@@ -154,7 +154,7 @@ Same as [Add a New Secret](#add-a-new-secret) -- decrypt, edit the value, re-enc
 5. Remove from `juniper-deploy/.env.example` if present
 6. Commit all changes
 
-> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md)
+> **Docs:** [SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md)
 
 ### Enable API Key Authentication
 
@@ -194,7 +194,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Ensure `.env` is in `.gitignore`
 6. Commit `.env.enc` and `.sops.yaml`
 
-> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [SOPS Audit](SOPS_AUDIT_2026-03-02.md)
+> **Docs:** [SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) | [SOPS Implementation Plan](SOPS_IMPLEMENTATION_PLAN.md) | [SOPS Audit](SOPS_AUDIT_2026-03-02.md)
 
 ### Rotate the SOPS Age Key
 
@@ -205,7 +205,7 @@ unset JUNIPER_DATA_API_KEYS
 5. Update the `SOPS_AGE_KEY` GitHub Actions secret in each repo
 6. Commit updated `.sops.yaml` and `.env.enc` files
 
-> **Docs:** [SOPS Usage Guide](SOPS_USAGE_GUIDE.md) | [Secrets Management Analysis](SECRETS_MANAGEMENT_ANALYSIS.md)
+> **Docs:** [SOPS Usage Guide](JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) | [Secrets Management Analysis](SECRETS_MANAGEMENT_ANALYSIS.md)
 
 ---
 
@@ -936,7 +936,7 @@ If `--cross-repo check` reports "Ecosystem root not found":
 3. Use the scheduled full validation workflow for periodic ecosystem checks:
    `.github/workflows/docs-full-check.yml` (runs weekly and on manual dispatch).
 
-> **Docs:** [Cross-Repo Link Resolution Proposal](CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md) | [docs-full-check.yml](../.github/workflows/docs-full-check.yml)
+> **Docs:** [Cross-Repo Link Resolution Proposal](JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md) | [docs-full-check.yml](../.github/workflows/docs-full-check.yml)
 
 ---
 
@@ -1211,7 +1211,7 @@ git worktree add "$WORKTREE_DIR" "$BRANCH_NAME"
 cd "$WORKTREE_DIR"
 ```
 
-> **Docs:** Per-repo [WORKTREE_SETUP_PROCEDURE.md](../juniper-data/notes/WORKTREE_SETUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation) | [Worktree Setup Procedure](WORKTREE_SETUP_PROCEDURE.md)
+> **Docs:** Per-repo [JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md](../juniper-data/notes/WORKTREE_SETUP_PROCEDURE.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation) | [Worktree Setup Procedure](JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md)
 
 ### Merge and Clean Up a Worktree
 
@@ -1227,7 +1227,7 @@ git push origin --delete "$BRANCH_NAME"
 git worktree prune
 ```
 
-> **Docs:** Per-repo [WORKTREE_CLEANUP_PROCEDURE_V2.md](WORKTREE_CLEANUP_PROCEDURE_V2.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation)
+> **Docs:** Per-repo [JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md](JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md) | [Ecosystem Worktree Conventions](../AGENTS.md#worktree-procedures-mandatory--task-isolation)
 
 ---
 

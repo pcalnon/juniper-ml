@@ -1,9 +1,9 @@
 # A.9 + 3.2 State Analysis — Current Gaps and Proposed Fixes — 2026-05-03
 
 **Project**: Juniper
-**File Name**: A9_AND_3_2_STATE_ANALYSIS_2026-05-03.md
+**File Name**: JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_A9-AND-3-2-STATE-ANALYSIS.md
 **Description**: Re-verifies two findings from the post-METRICS-MON observability
-audit ([`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](../code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md))
+audit ([`JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`](../code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md))
 against current `origin/main` of all relevant repos: A.9 (12+ broad cascor
 `cascor_ws_*` dead metrics) and 3.2 (Alertmanager `tickets` receiver placeholder).
 Documents actual state, names what OBS-WIRE-01 (juniper-cascor#204) closed vs
@@ -24,7 +24,7 @@ left open, and proposes concrete next sub-tracks.
 > - §6 OBS-ROUTE-01 proposal (alertmanager tickets receiver) — OPEN; entry plan not yet written, no PR yet.
 > - §7 Open questions for both sub-tracks — UNRESOLVED; awaiting user decision.
 >
-> **Forward pointer:** Live tracking via the new post-program tracker `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). Closing this doc requires OBS-WIRE-02 entry plan + PR (A.9) and OBS-ROUTE-01 entry plan + PR (3.2) to merge — at which point this analysis becomes purely historical and moves to `notes/legacy/`.
+> **Forward pointer:** Live tracking via the new post-program tracker `notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (parallel PR). Closing this doc requires OBS-WIRE-02 entry plan + PR (A.9) and OBS-ROUTE-01 entry plan + PR (3.2) to merge — at which point this analysis becomes purely historical and moves to `notes/legacy/`.
 >
 > **Path to COMPLETED:** Both sub-tracks shipped or formally cancelled.
 
@@ -410,7 +410,7 @@ a stub. A single sub-track that wires all three receivers fixes both.
 | Trade-off | Note |
 |-----------|------|
 | Complexity | Medium. Requires a small webhook bridge service or a custom payload mapper — Alertmanager's native webhook payload doesn't match the GitHub `repository_dispatch` schema. The cleanest path is `prometheus-msteams`-style sidecar or a tiny FastAPI bridge. |
-| Secrets | One PAT with `repo` scope. Stored via SOPS-encrypted env per the project's [`SOPS_USAGE_GUIDE.md`](../SOPS_USAGE_GUIDE.md) pattern. Mount at `/etc/alertmanager/secrets/`. |
+| Secrets | One PAT with `repo` scope. Stored via SOPS-encrypted env per the project's [`JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`](../JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) pattern. Mount at `/etc/alertmanager/secrets/`. |
 | Operational footprint | Adds 1 sidecar container to `juniper-deploy/docker-compose.yml`. Alerts produce GitHub issues with a `slow-burn` label. |
 
 **Option B — Email (SMTP) via Gmail relay**
@@ -586,10 +586,10 @@ ship OBS-ROUTE-01 now.**
 ## 6. References
 
 ### Audit and prior-art docs
-- juniper-ml#195 — [`OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md`](../code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md) — the parent audit doc; §4.1 + §5 (A.9 row), §3.2
+- juniper-ml#195 — [`JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`](../code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md) — the parent audit doc; §4.1 + §5 (A.9 row), §3.2
 - juniper-ml#192 — [`METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`](../legacy/METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md) — METRICS-MON close, identifies 6 residuals
 - juniper-ml#187 — [`METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md`](../legacy/METRICS_MONITORING_R5_ENTRY_PLAN_2026-05-02.md) — Q-style entry-plan format reference
-- [`SOPS_USAGE_GUIDE.md`](../SOPS_USAGE_GUIDE.md) — SOPS pattern referenced in §4.4
+- [`JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`](../JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) — SOPS pattern referenced in §4.4
 
 ### Cross-thread merges (A.9-relevant)
 - juniper-cascor#204 — `obs-wire-01` — wired A.3 (`broadcast_send_duration_seconds`, `command_handler_seconds`); explicitly deferred A.9 (PR body "Out of scope" section)

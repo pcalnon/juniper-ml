@@ -10,8 +10,8 @@
 ---
 
 > **What this is.** An adversarial, anti-hallucination-gated evaluation of a *fourth* proposal — **"P4"** — for adding recurrence to Cascade-Correlation: a multi-step **delay element (shift register)** appended as the final output stage of a hidden node. It is evaluated as two arms (the design as written, plus a feedback variant requested 2026-06-09) and feeds the OQ-4 model pick. It **pairs with, and does not duplicate,** the three-proposal exploration in
-> [`JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md`](JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md) (P1/P2/P3) and the irregular-Δt analysis in
-> [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md).
+> [`JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md`](JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md) (P1/P2/P3) and the irregular-Δt analysis in
+> [`JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md).
 >
 > **Headline verdict.** P4 is a sound, **C1-clean** way to give a cascor node *finite temporal memory* — but it is a **horizon / embedding mechanism, not a fix for the OQ-4 representational ceiling.**
 > - **ARM A** (as written — the shift register *stores* past outputs, no feedback) is a **constructively-grown Time-Delay Neural Network (TDNN / FIR)**. It is *not* recurrence in the dynamical-systems sense.
@@ -252,10 +252,10 @@ P5 ⊃ P4-FIR (it *is* P4-FIR plus the recurrent output). It adds genuine — if
 
 ## Cross-references
 
-- OQ-4 proposals (P1/P2/P3): [`JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md`](JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md)
-- Irregular-Δt & continuous-time: [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md)
-- Model design (read-only here): [`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)
-- Refactor / temporal substrate (read-only here): [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md)
+- OQ-4 proposals (P1/P2/P3): [`JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md`](JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md)
+- Irregular-Δt & continuous-time: [`JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md)
+- Model design (read-only here): [`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md)
+- Refactor / temporal substrate (read-only here): [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md)
 - Empirical POC: [`../util/ad-hoc/verify_delay_line_node_eval.py`](../util/ad-hoc/verify_delay_line_node_eval.py)
 
 ---

@@ -12,13 +12,13 @@
 > **⟢ STATUS 2026-06-21.** DR-1..DR-5 ratified; since then: WS-6 B-phase **B1/B2a/B2b MERGED** (cascor
 > #345/#346/#347); OUT-11 service-core T2 fully merged (0.2.0 publish = ml #502, pending); WS-5 A0 + 3-D
 > viz shipped (canopy #372, #374–#379). §2.2's "OUT-11 step 3 remaining" is superseded. See
-> `JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`.
+> `JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`.
 >
 > **⟢ UPDATE 2026-06-23.** (a) **WS-6 B-phase B3 fully MERGED** (cascor B3.1 #352 / B3.2 #353 / B3.3 #355 —
 > the `on_event` cutover; only **B4** remains) and **service-core 0.2.0 is LIVE on PyPI** (#502), so the
 > A-phase publish-blocker is cleared. (b) **DR-1 is NOT a committed B→A** — it was ratified only as "defer
 > the A-decision"; the A-phase is now gated on B4 + DR-1 / soak (OQ-17) / manager-appetite (see
-> `JUNIPER_WS6_APHASE_READINESS_VALIDATION_2026-06-22.md`). (c) **WS-5 A1 is no longer "0% built"** — A1-i
+> `JUNIPER_2026-06-22_JUNIPER-CASCOR_WS6-APHASE-READINESS-VALIDATION.md`). (c) **WS-5 A1 is no longer "0% built"** — A1-i
 > (canopy #383, `RecurrenceServiceAdapter`) + A1-ii (#385, `RecurrenceBackend` + provider-keyed routing,
 > the D1-A one-shot bridge) shipped; A1-iii scope = #516. The §1/§2.3/§3.1 "A1 designed-only / 0% built"
 > and "`execution`-field-first" claims are superseded (routing shipped via `provider`/`status`, no
@@ -227,10 +227,10 @@ doc-only PRs after a `gh pr list` check**, not blanket in-place edits: the paren
 mid-edit by concurrent sessions (the roadmap itself declined its own hygiene fixes for that reason), so
 mirror that caution (RK-11).
 
-1. **`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`** §3.3/§4: WS-6 still shows "Not
+1. **`JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`** §3.3/§4: WS-6 still shows "Not
    started / gate not captured" and OUT-13 "▶ NEXT" — both stale post-#341 (the doc self-admits its body
    cells were not rewritten). Update to "gate ARMED; cutover B-ready, A-blocked-on-OUT-11."
-2. **`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`** Status Tracker line 54: WS-5 is
+2. **`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`** Status Tracker line 54: WS-5 is
    still `PLANNED`; A0 (#372) has shipped → mark **WS-5 IN PROGRESS (A0 done; A1/D2 designed)**. (The
    WS-6 row was already corrected by #466.)
 3. **MEMORY / notes** that cite "A0 = canopy #368" should read **#372** (#368 is the issue); the canopy
@@ -274,16 +274,16 @@ Ordered by dependency-clarity (earlier items have no upstream blocker):
 
 ## 8. Provenance
 
-- WS-6 design of record: `JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` (Part 2.3/2.7,
-  Part 8 §8.4), `JUNIPER_CASCOR_GOLDEN_REGRESSION_SUITE_BUILD_PLAN_2026-06-17.md`,
-  `JUNIPER_CASCOR_MODEL_CORE_CONFORMANCE_WIRING_PLAN_2026-06-18.md` (cascor repo).
-- WS-5 design of record: `JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md` (D1–D8),
-  `JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md` (D1/D2/D3 + phases),
-  `JUNIPER_CANOPY_AUDIT_REGRESSIONS_AND_MODEL_SELECTION_2026-06-15.md`.
-- OUT-11: `JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md` (Option 3 / GO-scoped; OQ-11
+- WS-6 design of record: `JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` (Part 2.3/2.7,
+  Part 8 §8.4), `JUNIPER_2026-06-17_JUNIPER-CASCOR_GOLDEN-REGRESSION-SUITE-BUILD-PLAN.md`,
+  `JUNIPER_2026-06-18_JUNIPER-CASCOR_MODEL-CORE-CONFORMANCE-WIRING-PLAN.md` (cascor repo).
+- WS-5 design of record: `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md` (D1–D8),
+  `JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md` (D1/D2/D3 + phases),
+  `JUNIPER_2026-06-15_JUNIPER-CANOPY_AUDIT-REGRESSIONS-AND-MODEL-SELECTION.md`.
+- OUT-11: `JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md` (Option 3 / GO-scoped; OQ-11
   resolution §5.2/§5.6); juniper-ml #473.
 - Platform roadmap (B→A §5.4; S2 §6.1; A↔OUT-11 edge line 312):
-  `JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`.
+  `JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`.
 - Evidence: cascor #328 / #340 / #341; canopy #364 / #365 / #366 / #372 / #373; juniper-ml #466 / #473.
   Audit basis: `origin/main` of all three repos (2026-06-19), active ruleset 15081045. Synthesis
   fact-checked + completeness-critiqued by two independent adversarial passes.

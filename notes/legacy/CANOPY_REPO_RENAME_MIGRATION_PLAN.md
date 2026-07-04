@@ -699,7 +699,7 @@ Recommendation: update actively referenced notes, leave clearly historical/archi
 
 **Step 1.14 — Create worktree procedure files**:
 
-Canopy currently lacks `notes/WORKTREE_SETUP_PROCEDURE.md` and `notes/WORKTREE_CLEANUP_PROCEDURE.md`. Create these using the new `juniper-canopy` path, following the templates from other repos (e.g., `juniper-ml/notes/`).
+Canopy currently lacks `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` and `notes/WORKTREE_CLEANUP_PROCEDURE.md`. Create these using the new `juniper-canopy` path, following the templates from other repos (e.g., `juniper-ml/notes/`).
 
 **Step 1.15 — Commit and push branch** (do NOT merge yet):
 
@@ -1012,6 +1012,6 @@ git revert HEAD --no-edit && git push origin main
 - [ ] All affected repos committed and pushed
 - [ ] Parent `CLAUDE.md` / `AGENTS.md` updated
 - [ ] Canopy CLAUDE.md / AGENTS.md updated
-- [ ] Canopy worktree procedures (`notes/WORKTREE_SETUP_PROCEDURE.md`, `notes/WORKTREE_CLEANUP_PROCEDURE.md`) created for new path
+- [ ] Canopy worktree procedures (`notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`, `notes/WORKTREE_CLEANUP_PROCEDURE.md`) created for new path
 - [ ] CI workflow `ENV_NAME` updated (if Decision 2 applied)
 - [ ] Conda environment YAML names updated (if Decision 2 applied)

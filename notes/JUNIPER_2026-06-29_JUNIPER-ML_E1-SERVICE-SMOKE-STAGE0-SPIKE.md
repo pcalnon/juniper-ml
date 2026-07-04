@@ -13,7 +13,7 @@
 
 The **Stage-0 feasibility spike** for enhancement **E-1** (live-runtime / service-smoke diagnostician),
 mandated by the custom-agent-suite enhancement plan
-[`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` §6.9](JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md)
+[`notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` §6.9](JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md)
 (PR-8). E-1 targets gap **A-2** — the "green tests / dead app" failure class that none of the shipped
 units catch at runtime (a service that imports clean and passes its unit tests but 500s on a real
 request, fails to bind, or dies on boot).

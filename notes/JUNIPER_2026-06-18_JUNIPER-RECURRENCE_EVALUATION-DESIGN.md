@@ -22,7 +22,7 @@
 
 ## 1. Goal and scope
 
-The roadmap ([`…STATE_ASSESSMENT_AND_ROADMAP…`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md))
+The roadmap ([`…STATE_ASSESSMENT_AND_ROADMAP…`](JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md))
 Wave-2 exit criterion: *"a reproducible benchmark report on ≥1 irregular-Δt and ≥1 regular-Δt dataset,
 with baselines; and the OQ-7 'completed-state' gate met (I1 + I2)."* This design delivers it.
 
@@ -164,10 +164,10 @@ Worktree off `juniper-recurrence` `main`; PR; no merge without Paul's explicit s
 
 ## 11. Cross-references
 
-- Canonical roadmap (Wave-2 exit; C2/I2; DP-5/DP-3; OQ-14): [`JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md`](JUNIPER_RECURRENCE_STATE_ASSESSMENT_AND_ROADMAP_2026-06-17.md)
-- Crossval / fold-executor layer (the `cross_validate` API): [`JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md`](JUNIPER_MODEL_CORE_CROSSVAL_LAYER_DESIGN_2026-06-16.md)
-- LMU numeric design + the §9.1a fixed-Δt negative control: [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md)
-- Δt math + windowing invariants (I1–I5) + the grid-invariance bound: [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md)
-- Dataset audit (which datasets need the Δt path): [`JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md`](JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md)
-- App `/metrics` (sibling fast-follow, same as-built pattern): [`JUNIPER_RECURRENCE_METRICS_ENDPOINT_DESIGN_2026-06-18.md`](JUNIPER_RECURRENCE_METRICS_ENDPOINT_DESIGN_2026-06-18.md)
+- Canonical roadmap (Wave-2 exit; C2/I2; DP-5/DP-3; OQ-14): [`JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-ASSESSMENT-AND-ROADMAP.md)
+- Crossval / fold-executor layer (the `cross_validate` API): [`JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md`](JUNIPER_2026-06-16_JUNIPER-ML_MODEL-CORE-CROSSVAL-LAYER-DESIGN.md)
+- LMU numeric design + the §9.1a fixed-Δt negative control: [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md)
+- Δt math + windowing invariants (I1–I5) + the grid-invariance bound: [`JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md)
+- Dataset audit (which datasets need the Δt path): [`JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md`](JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md)
+- App `/metrics` (sibling fast-follow, same as-built pattern): [`JUNIPER_2026-06-18_JUNIPER-RECURRENCE_METRICS-ENDPOINT-DESIGN.md`](JUNIPER_2026-06-18_JUNIPER-RECURRENCE_METRICS-ENDPOINT-DESIGN.md)
 - Generators / executor source (cross-repo): `juniper-data/juniper_data/generators/{irregular_sine,multi_sine,mackey_glass}/`; `juniper-ml/juniper-model-core/juniper_model_core/crossval/{executor,splits,metrics}.py`

@@ -4,7 +4,7 @@
 **Author**: Round 0 sub-agent (general-purpose)
 **Date**: 2026-04-11
 **Status**: Initial proposal — pre-consolidation
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 

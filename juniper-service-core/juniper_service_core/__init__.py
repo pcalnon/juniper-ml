@@ -4,7 +4,7 @@ A genuinely-shared abstraction (the ``-core`` suffix): the minimal, model-agnost
 FastAPI plumbing every Juniper model service needs -- an app factory
 (:func:`create_app`), a pydantic-settings base (:class:`SettingsBase`), and a generic
 liveness/readiness health router. WS-2 of the model/middleware refactor
-(``notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`` in the
+(``notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`` in the
 juniper-ml repo).
 
 **Dependency-free top-level import.** Importing this top-level package pulls **no**

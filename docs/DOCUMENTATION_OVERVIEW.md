@@ -72,7 +72,7 @@
 | File                                          | Lines | Type             | Purpose                                                                                       |
 |-----------------------------------------------|-------|------------------|-----------------------------------------------------------------------------------------------|
 | **CANOPY_EXTERNAL_CASCOR_PLAN.md**            | ~470  | Integration Plan | Cross-repo plan for connecting juniper-canopy to an externally running juniper-cascor service |
-| **DOCUMENTATION_AUDIT_SUMMARY_2026-03-15.md** | ~100  | Summary          | Status and outcomes of ecosystem-wide documentation audit/upgrade work                        |
+| **JUNIPER_2026-03-15_JUNIPER-ECOSYSTEM_DOCUMENTATION-AUDIT-SUMMARY.md** | ~100  | Summary          | Status and outcomes of ecosystem-wide documentation audit/upgrade work                        |
 
 ---
 

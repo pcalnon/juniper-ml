@@ -15,7 +15,7 @@ The public API is:
 For CLI usage, install the package and run :program:`juniper-check-doc-links`
 or ``python -m juniper_doc_tools``; the CLI surface is in :mod:`cli`.
 
-See ``notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`` in the
+See ``notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`` in the
 juniper-ml repo for the design rationale and migration plan.
 """
 

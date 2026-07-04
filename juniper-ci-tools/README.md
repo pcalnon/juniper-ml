@@ -15,7 +15,7 @@ repos. This package distributes that fix as `pip install`-able tooling so it
 cannot drift again.
 
 This work mirrors the
-[`juniper-doc-tools` PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
+[`juniper-doc-tools` PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)
 that addressed the analogous 2026-05-18 doc-link validator incident.
 
 ## Installation
@@ -69,12 +69,12 @@ This will:
 
 1. Create `conf/` if needed.
 2. Back up any existing `conf/requirements_ci.txt` with a timestamp infix.
-3. Render `notes/PIP_DEPENDENCY_FILE_HEADER.md` (substituting placeholders
+3. Render `notes/JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md` (substituting placeholders
    like `<X.Y.Z ...>`, `<YYYY-MM-dd ...>`, `<Python Version>`, `<Pip Version>`)
    and append `pip list --format=freeze` output.
 4. If `conda` is on `PATH`: back up any existing
    `conf/conda_environment_ci.yaml`, render
-   `notes/CONDA_DEPENDENCY_FILE_HEADER.md`, append the dependency block
+   `notes/JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md`, append the dependency block
    extracted from `conda env export --no-builds` (using the awk-equivalent
    logic that produces valid YAML), and validate the result with
    `yaml.safe_load`.
@@ -90,8 +90,8 @@ exits non-zero.
 | `--repo-root` | cwd | Repo root containing `pyproject.toml` |
 | `--conf-dir` | `conf` | Output directory |
 | `--notes-dir` | `notes` | Directory containing header templates |
-| `--pip-header` | `PIP_DEPENDENCY_FILE_HEADER.md` | Pip header template filename |
-| `--conda-header` | `CONDA_DEPENDENCY_FILE_HEADER.md` | Conda header template filename |
+| `--pip-header` | `JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md` | Pip header template filename |
+| `--conda-header` | `JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md` | Conda header template filename |
 | `--pip-filename` | `requirements_ci.txt` | Pip output filename |
 | `--conda-filename` | `conda_environment_ci.yaml` | Conda output filename |
 | `--no-conda` | off | Skip conda generation even if conda is installed |

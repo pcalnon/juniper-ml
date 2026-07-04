@@ -26,7 +26,7 @@ Two corollaries that sharpen the build plan:
 - **The data side is already 3-D-ready; cascor is the sole unready consumer.** `equities_seq` emits `(W, 64, 10)` windows with explicit per-step `dt` and `target_dt` channels, and `juniper-data-client` already dispatches 2-D vs 3-D in `validate_npz_contract`. cascor's NPZ ingestion reads *only* the 2-D contract keys (`X_train`/`y_train`/`X_test`/`y_test` + `X_full`/`y_full`) and **never touches `dt`/`target_dt`** — so the irregular-Δt signal that is the entire point of the P3-C/LMU pick is dropped at the cascor boundary today (§7).
 - **The distributed worker is *transport*-ready but not *math*-ready.** cascor has two IPC paths. The in-process candidate pool uses `SharedTrainingMemory`, whose binary descriptor stores exactly two shape dims (the hard cap). The *distributed* worker uses a *different* serializer (`SharedBinaryFrame`) that already round-trips N-D tensors — but it then runs the cascor-core `CandidateUnit` math, which is 2-D (`torch.sum(x * weights, dim=1)`). So neither path is end-to-end 3-D-capable; they are blocked at different layers (§5).
 
-This investigation is the **build-side** complement to the design arc: the [dataset audit](JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md) already concluded the star-free ceiling-break is *not required* by any Juniper dataset, which is what makes the FLATTEN/P4 shortcut both available and undesirable — the requirement points at P3-C/LMU, the path the flatten shortcut cannot reach.
+This investigation is the **build-side** complement to the design arc: the [dataset audit](JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md) already concluded the star-free ceiling-break is *not required* by any Juniper dataset, which is what makes the FLATTEN/P4 shortcut both available and undesirable — the requirement points at P3-C/LMU, the path the flatten shortcut cannot reach.
 
 ---
 
@@ -51,7 +51,7 @@ This investigation is the **build-side** complement to the design arc: the [data
 `DATA-SIDE` (juniper-data, juniper-data-client; corroborated by prior memory + the §14 sweep). Included so the doc records *where* the boundary actually sits.
 
 - **`equities_seq` generator** emits 3-D windows. Per split (train/test/full): `X (W, L, F)` with default `L = 64` lookback and `F = 10` features (`generators/equities_seq/...`, lookback default in `params.py:30`, 10 features in `equities/defaults.py:50-61`), `y (W, 2)` one-hot direction, `y_reg (W, 1)` next-day close. All float32.
-- **The 3-D / Δt contract adds keys** beyond the classic six: per-step `dt (W, L)` (elapsed calendar days, `dt[:,0]==0`), `target_dt (W,)` (irregular horizon to the predicted day), `date (W, L)`, `window_end_date (W,)`, `ticker_code (W,)`, `observed_mask (W, L)`, plus singleton `ticker_vocab`. Canonical spec: `JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` §6.1.
+- **The 3-D / Δt contract adds keys** beyond the classic six: per-step `dt (W, L)` (elapsed calendar days, `dt[:,0]==0`), `target_dt (W,)` (irregular horizon to the predicted day), `date (W, L)`, `window_end_date (W,)`, `ticker_code (W,)`, `observed_mask (W, L)`, plus singleton `ticker_vocab`. Canonical spec: `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` §6.1.
 - **juniper-data-client already dispatches on rank.** `validate_npz_contract` branches `X.ndim == 2` (legacy tabular, untouched) vs `X.ndim == 3` (sequence: validates `dt ≥ 0`, `dt[:,0]==0`, mask consistency) — `contract.py:41-126` (dispatch `:63-73`, `dt` checks `:91-98`); NPZ key constants in `constants.py:219-243`.
 
 **Takeaway:** the producer and the transport client speak 3-D. The contract was shipped by the WS-1 data foundation (juniper-data #169/#170/#171 + juniper-data-client #87). cascor is the one consumer that cannot yet read it.
@@ -138,7 +138,7 @@ Once Tiers 1–2 are lifted, a 3-D array reaches the 2-D core. There are exactly
 ### Path A — FLATTEN `(batch, lookback, features) → (batch, lookback·features)`
 
 - **Cost:** a single reshape ahead of Tier 2; no core change. By far the cheapest.
-- **What it is:** a fixed-window lag-embedding (Takens). This is **precisely the P4 delay-line design** evaluated in `JUNIPER_RECURSE_OQ4_DELAY_LINE_OUTPUT_MODULE_EVAL_2026-06-09.md` — FIR, inherits the star-free ceiling, horizon hard-capped at the window, and it **discards `dt`** (a flattened window has no place for per-step elapsed time unless `dt` is concatenated as extra columns, which only re-encodes it as more static features). The OQ-4 evals ranked P4 *weakest*. `INFERRED` (flatten ≡ P4 lag-embedding).
+- **What it is:** a fixed-window lag-embedding (Takens). This is **precisely the P4 delay-line design** evaluated in `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-OQ4-DELAY-LINE-OUTPUT-MODULE-EVAL.md` — FIR, inherits the star-free ceiling, horizon hard-capped at the window, and it **discards `dt`** (a flattened window has no place for per-step elapsed time unless `dt` is concatenated as extra columns, which only re-encodes it as more static features). The OQ-4 evals ranked P4 *weakest*. `INFERRED` (flatten ≡ P4 lag-embedding).
 - **When it is acceptable:** as a finite-memory baseline / smoke-test of the data path, explicitly labeled as lag-embedding — never as the recurrent deliverable.
 
 ### Path B — recurrent forward over the lookback axis (P1 / P3-C / LMU)
@@ -194,7 +194,7 @@ The honest headline: **there is no cheap path to *recurrent* 3-D ingestion.** Th
 
 ## 11. Recommendation (requirement-first) + decision framing
 
-1. **Do not ship Path A as the answer.** Flatten/P4 is available and cheap, but the [dataset audit](JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md) found *no* dataset needs the ceiling-break, and the one cross-cutting demand is irregular Δt — which Path A cannot represent. Building the cheap thing would spend effort to land on the weakest option. Use Path A only as an explicitly-labeled finite-memory smoke-test of the ingestion plumbing.
+1. **Do not ship Path A as the answer.** Flatten/P4 is available and cheap, but the [dataset audit](JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md) found *no* dataset needs the ceiling-break, and the one cross-cutting demand is irregular Δt — which Path A cannot represent. Building the cheap thing would spend effort to land on the weakest option. Use Path A only as an explicitly-labeled finite-memory smoke-test of the ingestion plumbing.
 2. **Scope Path B as a fixed-order recurrent block fronting the existing 2-D cascade head** (P3-C/LMU via Approach-C, per re-eval §9), with **P1** as the cheap hidden-recurrence increment. This consumes `dt`/`target_dt` (§7) and sidesteps the candidate-growability + 2-D-per-unit math by keeping the recurrent block outside the cascade growth loop.
 3. **Sequence the plumbing prerequisites with the model, not before it:** (a) cascor NPZ ingestion to call `validate_npz_contract` and carry `dt`/`target_dt` (§7); (b) a 3-D-aware input contract (shape-tuple config, §4.2 #13); (c) the in-process descriptor extension (§8) *if* the recurrent block trains via the in-process pool; the worker path needs only the math change (§5).
 4. **The only standalone, no-regret change** is the descriptor extension (§8) — but even that should land with Path B, since on its own it moves 3-D tensors the core cannot train on.
@@ -214,11 +214,11 @@ The honest headline: **there is no cheap path to *recurrent* 3-D ingestion.** Th
 
 ## 13. Cross-references
 
-- `JUNIPER_RECURSE_OQ4_DATASET_AUDIT_2026-06-13.md` — the requirement validator (ceiling-break not required; irregular Δt is the demand). The reason Path A is a trap.
-- `JUNIPER_RECURSE_OQ4_ARCHITECTURE_REEVALUATION_2026-06-12.md` — the model pick (P3-C/LMU + P1); §9 fixed-order recurrent block.
-- `JUNIPER_RECURSE_OQ4_DELAY_LINE_OUTPUT_MODULE_EVAL_2026-06-09.md` — P4 = the flatten/lag-embedding Path A lands on.
-- `JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` — the 3-D / Δt NPZ contract spec (§6.1 canonical keys).
-- `JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md` — P1–P6 corpus root.
+- `JUNIPER_2026-06-13_JUNIPER-RECURRENCE_RECURSE-OQ4-DATASET-AUDIT.md` — the requirement validator (ceiling-break not required; irregular Δt is the demand). The reason Path A is a trap.
+- `JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-ARCHITECTURE-REEVALUATION.md` — the model pick (P3-C/LMU + P1); §9 fixed-order recurrent block.
+- `JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-OQ4-DELAY-LINE-OUTPUT-MODULE-EVAL.md` — P4 = the flatten/lag-embedding Path A lands on.
+- `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` — the 3-D / Δt NPZ contract spec (§6.1 canonical keys).
+- `JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md` — P1–P6 corpus root.
 
 ---
 

@@ -16,7 +16,7 @@ A scoping pass against juniper-cascor `main` reframes that.
 | CAN-011 (activation surface) | Blocked on cascor algorithm | **Wire-through** — `_init_activation_function` reads `config.activation_function_name` from a registry |
 | CAN-014 (snapshot tuning capture) | Blocked on snapshot lifecycle | **Largely shipped** — `serializer.save_network(..., include_training_state=True)` already serializes config alongside weights |
 | CAN-013 (integration mode) | Blocked on cascor algorithm | **Partially wired** — `candidates_per_layer > 1` already routes through `add_units_as_layer`; only the multi-mode strategy pattern is greenfield |
-| CAN-015 (snapshot operations: Restore / Replay / Resume / Retrain) | A-5 unblocked baseline; design expanded 2026-05-01 — see [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md) | Medium-Large — four endpoints + 3 new FSM states + replay player UI; CAN-015e (replay-with-weights) and CAN-015f (weight/topology editing) deferred |
+| CAN-015 (snapshot operations: Restore / Replay / Resume / Retrain) | A-5 unblocked baseline; design expanded 2026-05-01 — see [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md) | Medium-Large — four endpoints + 3 new FSM states + replay player UI; CAN-015e (replay-with-weights) and CAN-015f (weight/topology editing) deferred |
 | CAN-021 (parallel-network ensemble) | Deferred to 6E | **Genuinely XL** — single-`self.network` assumption baked into lifecycle |
 
 This isn't the recurring "shipped-but-not-marked" pattern from Tracks 5/6 audits — the CAN-* items genuinely had no UI. But the *cascor groundwork* the items were waiting for is mostly already there. Wiring it through is small-medium PRs, not the cross-repo algorithm sprint Phase 6E was originally scoped as.
@@ -70,8 +70,8 @@ This is the only genuinely XL item in Phase 6E.
 **Updated 2026-04-29** after user direction:
 
 1. CAS-005 held for Sprint D (was Sprint C in the original plan).
-2. CAN-013 expanded to full weighted_ensemble and given its own sprint (Sprint C). Detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
-3. Multi-network architecture (CAS-008 / CAS-009 / CAN-021) lifted out into its own design doc + sprint (Sprint E). See [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md).
+2. CAN-013 expanded to full weighted_ensemble and given its own sprint (Sprint C). Detailed design in [`JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md`](JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md).
+3. Multi-network architecture (CAS-008 / CAS-009 / CAN-021) lifted out into its own design doc + sprint (Sprint E). See [`JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md`](JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md).
 
 Grouping by surface affinity (= what touches the same files / mental model), not strictly by ID order. Each row is one PR.
 
@@ -89,7 +89,7 @@ Grouping by surface affinity (= what touches the same files / mental model), not
 |     | (CAN-014)                                         |                | is dropped on load, fix it                                                          | indicator after restore                        | Mostly tests; small-but-hardening                |
 
 
-**Sprint B — snapshot operations: Restore / Replay / Resume / Retrain (6 PRs, see [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md))**
+**Sprint B — snapshot operations: Restore / Replay / Resume / Retrain (6 PRs, see [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md))**
 
 | #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
 |-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
@@ -111,7 +111,7 @@ Grouping by surface affinity (= what touches the same files / mental model), not
 | B-6 | **Canopy replay player UI**                       | —              | —                                                                                   | canopy / M–L                                   | Play/Pause/speed slider (bidirectional 0.1×–10×) |
 |     | (CAN-015f, V1)                                    |                |                                                                                     |                                                | /scrubber/range selector; depends on B-3         |
 
-**Sprint C — CAN-013 full (5 PRs, see `CAN_013_INTEGRATION_MODE_DESIGN.md`)**
+**Sprint C — CAN-013 full (5 PRs, see `JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md`)**
 
 | #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
 |-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
@@ -133,7 +133,7 @@ Grouping by surface affinity (= what touches the same files / mental model), not
 | D-1 | **CAS-005: shared-code extraction**               | M–L            | Move duplicated cascor↔worker code                                                  | None                                           | Evolution Held for Sprint D per user direction;  |
 |     |                                                   |                | into a `juniper-core` package                                                       |                                                | mechanically independent of other sprints        |
 
-**Sprint E — multi-network XL (7 PRs, see `PHASE_6E_MULTI_NETWORK_DESIGN.md`)**
+**Sprint E — multi-network XL (7 PRs, see `JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md`)**
 
 | #   | PR                                                | Scope          | Cascor changes                                                                      | Canopy changes                                 | Notes                                            |
 |-----|---------------------------------------------------|----------------|-------------------------------------------------------------------------------------|------------------------------------------------|--------------------------------------------------|
@@ -165,13 +165,13 @@ Sprint E (XL, ~2+ weeks, separate):       E-1 .. E-7
 
 Sprint A delivers visible UI surfaces (optimizer / activation / epoch-separation pickers, auto-snapshot toggle, snapshot tuning capture) without any algorithmic risk. After A, 3 of 6 deferred CAN items are unblocked and the dashboard exposes the major training knobs.
 
-Sprint B grew (2026-05-01) from a single replay-loop PR to a four-endpoint snapshot-operations matrix (Restore for inspection, Replay for playback, Resume for training continuation, Retrain for fresh training). See [`PHASE_6E_SPRINT_B_DESIGN.md`](PHASE_6E_SPRINT_B_DESIGN.md) for the full scope, FSM extensions, response shape unification, and deferred work (CAN-015e replay-with-weights, CAN-015f Restore weight/topology editing).
+Sprint B grew (2026-05-01) from a single replay-loop PR to a four-endpoint snapshot-operations matrix (Restore for inspection, Replay for playback, Resume for training continuation, Retrain for fresh training). See [`JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md`](JUNIPER_2026-05-01_JUNIPER-ECOSYSTEM_PHASE-6E-SPRINT-B-DESIGN.md) for the full scope, FSM extensions, response shape unification, and deferred work (CAN-015e replay-with-weights, CAN-015f Restore weight/topology editing).
 
-Sprint C is the deepest single-feature work — full CAN-013 with the new ensemble-unit type. Five PRs walking through the layers (config → forward pass → output retraining → serialization → UI). Detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
+Sprint C is the deepest single-feature work — full CAN-013 with the new ensemble-unit type. Five PRs walking through the layers (config → forward pass → output retraining → serialization → UI). Detailed design in [`JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md`](JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md).
 
 Sprint D is independent and can land anytime — slotted after C only because A/B/C carry visible UI value, while CAS-005 is internal cleanup.
 
-Sprint E gets its own design doc in [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md). The user has agreed to a separate scoping pass; no Sprint E code lands until that doc lands first.
+Sprint E gets its own design doc in [`JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md`](JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md). The user has agreed to a separate scoping pass; no Sprint E code lands until that doc lands first.
 
 ## Out of scope for Phase 6E
 
@@ -192,8 +192,8 @@ These items are bundled in §25.2 6E but warrant deferring or splitting off:
 The three open questions from the original draft were resolved in conversation with the user:
 
 1. ~~Sprint A vs. C ordering — CAS-005~~ → **Held for Sprint D**. Sprint A keeps the visible UI wins; cleanup ships after the user-visible surface is complete.
-2. ~~CAN-013 narrow vs. extended~~ → **Full CAN-013 implemented**, including weighted_ensemble. Moved to its own sprint (Sprint C) with detailed design in [`CAN_013_INTEGRATION_MODE_DESIGN.md`](CAN_013_INTEGRATION_MODE_DESIGN.md).
-3. ~~Multi-network design pass~~ → **Separate design doc**, [`PHASE_6E_MULTI_NETWORK_DESIGN.md`](PHASE_6E_MULTI_NETWORK_DESIGN.md). No Sprint E code lands until that doc reaches review.
+2. ~~CAN-013 narrow vs. extended~~ → **Full CAN-013 implemented**, including weighted_ensemble. Moved to its own sprint (Sprint C) with detailed design in [`JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md`](JUNIPER_2026-04-29_JUNIPER-CASCOR_CAN-013-INTEGRATION-MODE-DESIGN.md).
+3. ~~Multi-network design pass~~ → **Separate design doc**, [`JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md`](JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_PHASE-6E-MULTI-NETWORK-DESIGN.md). No Sprint E code lands until that doc reaches review.
 
 Open questions raised inside the new design docs (lower-priority, can be picked up at PR-implementation time):
 

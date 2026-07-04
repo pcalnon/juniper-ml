@@ -29,8 +29,8 @@ The current `WORKTREE_CLEANUP_PROCEDURE.md` instructs the Claude Code agent to:
 |------|----------|--------|
 | `notes/WORKTREE_CLEANUP_PROCEDURE.md` | Current | CWD trap; no PR creation; no new worktree; hardcoded main merge |
 | `notes/history/WORKTREE_CLEANUP_PROCEDURE.md` | History | Same CWD trap; references wrong repo path (`juniper` not `juniper-ml`) |
-| `notes/WORKTREE_SETUP_PROCEDURE.md` | Current | Works, but references centralized `worktrees/` dir (not `.claude/worktrees/`) |
-| `notes/history/WORKTREE_SETUP_PROCEDURE.md` | History | Same centralized path issue; different naming convention |
+| `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` | Current | Works, but references centralized `worktrees/` dir (not `.claude/worktrees/`) |
+| `notes/history/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` | History | Same centralized path issue; different naming convention |
 
 ### Helper Scripts (on `tooling/more_claude_utils`)
 
@@ -184,7 +184,7 @@ These are prototyping artifacts already removed on `tooling/more_claude_utils`.
 
 ## Updated Procedure Document
 
-### New: `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`
+### New: `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`
 
 Replaces `notes/WORKTREE_CLEANUP_PROCEDURE.md` with the V2 procedure. The old file will be moved to `notes/history/`.
 
@@ -200,7 +200,7 @@ Key changes from V1:
 ## Implementation Order
 
 1. [x] Analysis complete
-2. [x] Write `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md` — updated procedure
+2. [x] Write `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` — updated procedure
 3. [x] Write `scripts/worktree_cleanup.bash` — main cleanup script (5 phases, dry-run support)
 4. [ ] Update existing scripts (cleanup_open_worktrees, remove_stale, prune_branches) — deferred to `tooling/more_claude_utils` branch
 5. [x] Remove ad-hoc scripts (a.bash, b.bash, c.bash)
@@ -235,7 +235,7 @@ Key changes from V1:
 ## References
 
 - Current procedure: `notes/WORKTREE_CLEANUP_PROCEDURE.md`
-- Setup procedure: `notes/WORKTREE_SETUP_PROCEDURE.md`
+- Setup procedure: `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`
 - PR template: `notes/templates/TEMPLATE_PULL_REQUEST_DESCRIPTION.md`
 - Example PRs: `notes/pull_requests/PR_*.md`
-- Thread handoff: `notes/THREAD_HANDOFF_PROCEDURE.md`
+- Thread handoff: `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`

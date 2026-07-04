@@ -48,7 +48,7 @@ docs, plus operational logging and a couple of CI gating refinements.
   observability, (E) testing, (F) CI/CD + pre-commit + release, (G) docs/notes + design-reality gap.
 - **Method**: seven parallel evidence-cited sub-audits, each grounded against the juniper-ml
   design-of-record corpus (`JUNIPER_RECURRENCE_*` design / build-plan / evaluation / DP-3 / state docs)
-  and the prior `JUNIPER_RECURRENCE_PRECOMMIT_TESTING_CI_AUDIT_2026-06-21.md`. The five highest-severity
+  and the prior `JUNIPER_2026-06-21_JUNIPER-RECURRENCE_PRECOMMIT-TESTING-CI-AUDIT.md`. The five highest-severity
   findings were **independently re-verified against source** by the synthesizer.
 - **Limitation**: static analysis only — no on-host conda env carries the app's deps, so test suites
   and coverage percentages were **not re-executed** (the ~98 %/98 %/94 % figures are pyproject-comment

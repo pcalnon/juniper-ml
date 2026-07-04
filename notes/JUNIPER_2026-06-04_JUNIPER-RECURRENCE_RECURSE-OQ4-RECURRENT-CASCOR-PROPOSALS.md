@@ -9,11 +9,11 @@
 
 ---
 
-> **What this is.** A working record of the exploration into *how to add recurrent capability to Cascade-Correlation*, opened because **[OQ-4] was reopened** (RCC's no-count/no-group "star-free" representational ceiling is architectural, not guardrail-fixable). It captures three independently-generated proposals, the multi-agent validation of those proposals, and the running analysis of two open design questions. It feeds the model pick in the companion **[Recurrent Model Design & Plan](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)** (§1.5 / §1.6 [OQ-4]) and the substrate/wiring work in **[Model/Middleware Refactor Design & Plan](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md)**.
+> **What this is.** A working record of the exploration into *how to add recurrent capability to Cascade-Correlation*, opened because **[OQ-4] was reopened** (RCC's no-count/no-group "star-free" representational ceiling is architectural, not guardrail-fixable). It captures three independently-generated proposals, the multi-agent validation of those proposals, and the running analysis of two open design questions. It feeds the model pick in the companion **[Recurrent Model Design & Plan](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md)** (§1.5 / §1.6 [OQ-4]) and the substrate/wiring work in **[Model/Middleware Refactor Design & Plan](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md)**.
 >
 > **Status of the pieces:** §3 proposals = drafted + validated. §4 validation = complete. §5 (Q1 batching) = analyzed. §6 (Qa window) = decided. §7 (Qb mechanics + wiring) = **resolved** (BPTT-over-window default; RTRL deferred). §8 = RTRL future work.
 >
-> **Addendum (2026-06-09):** a fourth proposal — **P4**, a per-node *output* delay-line ("recurrent structure add-on") — is evaluated separately in [P4 Output-Delay-Line Adversarial Evaluation](JUNIPER_RECURSE_OQ4_DELAY_LINE_OUTPUT_MODULE_EVAL_2026-06-09.md). Verdict: it is an **FIR / Takens delay-embedding, not recurrence** (no feedback in cascor's feed-forward DAG); it inherits the star-free ceiling and therefore does *not* advance OQ-4. Its sole edge is integration cheapness (candidate-training objective + worker transports untouched). For genuine recurrence prefer P1/P3.
+> **Addendum (2026-06-09):** a fourth proposal — **P4**, a per-node *output* delay-line ("recurrent structure add-on") — is evaluated separately in [P4 Output-Delay-Line Adversarial Evaluation](JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-OQ4-DELAY-LINE-OUTPUT-MODULE-EVAL.md). Verdict: it is an **FIR / Takens delay-embedding, not recurrence** (no feedback in cascor's feed-forward DAG); it inherits the star-free ceiling and therefore does *not* advance OQ-4. Its sole edge is integration cheapness (candidate-training objective + worker transports untouched). For genuine recurrence prefer P1/P3.
 
 ---
 
@@ -163,4 +163,4 @@ Cache frozen trajectories `(B,T,·)`; train candidates with **BPTT-over-the-wind
 
 ---
 
-*Working draft. Pairs with the [model doc](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md) ([OQ-4]) and the [refactor doc](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) (temporal substrate / WS-1).*
+*Working draft. Pairs with the [model doc](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md) ([OQ-4]) and the [refactor doc](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md) (temporal substrate / WS-1).*

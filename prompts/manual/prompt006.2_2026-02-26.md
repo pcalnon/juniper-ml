@@ -31,7 +31,7 @@ Key context:
 - Worktrees go in /home/pcalnon/Development/python/Juniper/worktrees/ with naming convention:
 "\<repo-name>--\<branch-name>--\<YYYYMMDD-HHMM>--\<short-hash>"
 - Plan file: /home/pcalnon/.claude/plans/groovy-scribbling-storm.md
-- Worktree procedures: each repo has notes/WORKTREE_SETUP_PROCEDURE.md and notes/WORKTREE_CLEANUP_PROCEDURE.md
+- Worktree procedures: each repo has notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md and notes/WORKTREE_CLEANUP_PROCEDURE.md
 
 Remaining work:
 

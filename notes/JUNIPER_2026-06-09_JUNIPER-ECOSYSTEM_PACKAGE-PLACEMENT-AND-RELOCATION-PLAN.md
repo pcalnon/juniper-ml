@@ -4,17 +4,17 @@
 **Scope**: Cross-repo (juniper-ml + its 5 sub-packages, juniper-cascor\*, juniper-data\*, juniper-canopy, the planned `*-core` packages, future model apps)
 **Author**: Paul Calnon
 **Date**: 2026-06-09
-**Status**: **Decisions D1–D5 RATIFIED by Paul 2026-06-09** (recorded in §8). Execution — the actual relocation/rename PRs — is a separate step and out of scope for this planning doc. The governing §3 rule lives in the [strategy doc](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md).
-**Builds on**: [`JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md`](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md) (the governing rule)
-**Reconciles**: [`JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md`](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md), [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md), [`CI_TOOLS_EXTRACTION_PLAYBOOK.md`](CI_TOOLS_EXTRACTION_PLAYBOOK.md)
+**Status**: **Decisions D1–D5 RATIFIED by Paul 2026-06-09** (recorded in §8). Execution — the actual relocation/rename PRs — is a separate step and out of scope for this planning doc. The governing §3 rule lives in the [strategy doc](JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md).
+**Builds on**: [`JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md`](JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md) (the governing rule)
+**Reconciles**: [`JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md), [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md), [`JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md`](JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md)
 
 ---
 
-> **⚠️ EXECUTION STATUS UPDATE (2026-06-17): SHIPPED.** The relocation + rename planned here is **complete**: `juniper-cascor-core` left `juniper-ml` and is published as **`juniper-cascor-model` 0.1.0** on PyPI (juniper-ml#410, juniper-cascor#328, juniper-cascor-worker#102); the CW-05 stopgap was removed (juniper-deploy#115) and cascor#319 / worker#97 are closed. Only the deferred **Wave 2** (cascor self-adoption of the package, retiring the drift-guard) remains. The "execution is a separate step / out of scope" framing in the header and the §4 "404 — NOT published" row are now **historical**. Current reconciled state + remaining tail: [`JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md`](JUNIPER_PLATFORM_ENVIRONMENT_STATE_AND_ROADMAP_2026-06-17.md).
+> **⚠️ EXECUTION STATUS UPDATE (2026-06-17): SHIPPED.** The relocation + rename planned here is **complete**: `juniper-cascor-core` left `juniper-ml` and is published as **`juniper-cascor-model` 0.1.0** on PyPI (juniper-ml#410, juniper-cascor#328, juniper-cascor-worker#102); the CW-05 stopgap was removed (juniper-deploy#115) and cascor#319 / worker#97 are closed. Only the deferred **Wave 2** (cascor self-adoption of the package, retiring the drift-guard) remains. The "execution is a separate step / out of scope" framing in the header and the §4 "404 — NOT published" row are now **historical**. Current reconciled state + remaining tail: [`JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md`](JUNIPER_2026-06-17_JUNIPER-ECOSYSTEM_PLATFORM-ENVIRONMENT-STATE-AND-ROADMAP.md).
 
 ## 0. Purpose and how to read this document
 
-The [Code Organization Strategy](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md) (2026-06-05) established **the rule** for where Juniper code should live: *place by commonality; the dependency arrow points specific → common; extend via ports/adapters, not by bundling model code into common repos.*
+The [Code Organization Strategy](JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md) (2026-06-05) established **the rule** for where Juniper code should live: *place by commonality; the dependency arrow points specific → common; extend via ports/adapters, not by bundling model code into common repos.*
 That document derived the rule and drew one immediate consequence (`juniper-cascor-core` should leave `juniper-ml`).
 It did **not** apply the rule package-by-package to the whole ecosystem, nor did it produce an executable relocation/validation plan.
 
@@ -85,11 +85,11 @@ This is Dependency Inversion + Open/Closed applied to repos: the common tier is 
 
 The audit surfaced three points where the source documents are inconsistent or stale. Resolving them is a prerequisite for an accurate package-by-package application of the rule.
 
-- **R1 — Extension *mechanism* (strategy OQ-1).** The §3 rule's phrase "discovered (e.g. Python entry points)" describes a *runtime plugin-registry* mechanism, but the [middleware refactor design](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) actually chose **compile-time subclassing + dependency injection** ("apps subclass routes/lifecycle and inject their `TrainableModel`"), *not* an entry-point registry.
+- **R1 — Extension *mechanism* (strategy OQ-1).** The §3 rule's phrase "discovered (e.g. Python entry points)" describes a *runtime plugin-registry* mechanism, but the [middleware refactor design](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md) actually chose **compile-time subclassing + dependency injection** ("apps subclass routes/lifecycle and inject their `TrainableModel`"), *not* an entry-point registry.
   The strategy doc's own **OQ-1 flags this as open and defers it to the recurse `juniper-model-core` work** — which has since landed on subclass+inject.
   **Resolution:** the *placement* conclusion (model-specific code lives with the model; the common tier never imports it) holds **identically** under either mechanism, so no package placement in this plan changes.
   The strategy doc's mechanism wording should be annotated to point at the refactor's subclass+inject decision (see §9). This plan adopts **subclass + inject** as the operative mechanism.
-- **R2 — `juniper-cascor-core`'s home (migration plan §3 vs. strategy §8).** The [cascor-core migration plan](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md) (2026-06-03) fixes the home as "`juniper-ml/juniper-cascor-core/` subdirectory".
+- **R2 — `juniper-cascor-core`'s home (migration plan §3 vs. strategy §8).** The [cascor-core migration plan](JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md) (2026-06-03) fixes the home as "`juniper-ml/juniper-cascor-core/` subdirectory".
   The strategy doc (2026-06-05, two days later) **supersedes that**: it states cascor-core "should not live in `juniper-ml`" and, under "**Where it belongs:**", assigns it to "the **cascor family**".
   **Resolution:** the migration plan's home assignment is **superseded**; all of its other mechanics (the Wave 0/1/2 extraction boundary, the gap fixes, the drift-guard, the publish workflow) **remain valid** and are reused verbatim in §6.3.
 - **R3 — "core" naming overload (strategy OQ-4).** "core" is doing double duty: `model-core` / `service-core` denote *shared abstractions*, while `cascor-core` denotes *a specific model's code*. The strategy doc suggests `juniper-cascor-model` for the specific tier. This is a live decision **because the package is still unpublished** (renaming is free now, costly later). It is carried as an open decision in §6.5 / §8.
@@ -121,9 +121,9 @@ All rows below were verified live against the real repos under `/home/pcalnon/De
 
 | Package                  | Source doc                                                                  | Planned class                       | Planned home                       | Placement status                                                 |
 |--------------------------|-----------------------------------------------------------------------------|-------------------------------------|------------------------------------|------------------------------------------------------------------|
-| `juniper-service-core`   | [refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) | generic infra (agnostic)            | shared tier                        | **home OPEN** (juniper-ml subdir vs standalone — strategy OQ-2)  |
-| `juniper-model-core`     | [refactor](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md) | abstract model interface (agnostic) | shared tier                        | **home OPEN** (strategy OQ-2)                                    |
-| `juniper-recurse`        | [recurse model](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)        | model app (specific)                | own repo `pcalnon/juniper-recurse` | DECIDED (own repo); gated on WS-0 ratification + OQ-4 model pick |
+| `juniper-service-core`   | [refactor](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md) | generic infra (agnostic)            | shared tier                        | **home OPEN** (juniper-ml subdir vs standalone — strategy OQ-2)  |
+| `juniper-model-core`     | [refactor](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md) | abstract model interface (agnostic) | shared tier                        | **home OPEN** (strategy OQ-2)                                    |
+| `juniper-recurse`        | [recurse model](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md)        | model app (specific)                | own repo `pcalnon/juniper-recurse` | DECIDED (own repo); gated on WS-0 ratification + OQ-4 model pick |
 | `juniper-recurse-client` | refactor (WS-7)                                                             | model client (specific)             | own repo (implied)                 | follows per-family rule; not yet scoped                          |
 | `juniper-recurse-worker` | refactor (WS-8)                                                             | model worker (specific)             | own repo (implied)                 | DEFERRED (trigger-gated)                                         |
 
@@ -142,7 +142,7 @@ All rows below were verified live against the real repos under `/home/pcalnon/De
 
 All four are **model-agnostic cross-cutting libraries** (metrics/logging middleware; dependency-doc and lint generators; the doc-link validator; the env-alias helper).
 They map exactly to the strategy §5 row "Cross-cutting libraries → shared pkgs in the juniper-ml tier." Each is published from a juniper-ml subdirectory via a namespaced `juniper-<pkg>-v*` tag workflow, and all four are live on PyPI.
-This is the **established, proven extraction pattern** (the [CI-tools extraction playbook](CI_TOOLS_EXTRACTION_PLAYBOOK.md), proven 3×). No change.
+This is the **established, proven extraction pattern** (the [CI-tools extraction playbook](JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md), proven 3×). No change.
 `juniper-ml` itself remains the meta-package and the host of this tier — its identity as the *shared/common* tier is **preserved precisely because** the one model-specific intruder (cascor-core) leaves.
 
 ### 5.2 Data tier
@@ -260,7 +260,7 @@ Phase B fixes it cleanly: this branch (docs/oq4-p7-gra
 
 ### 6.3 Sequenced relocation + publish steps
 
-This reuses the [migration plan](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md)'s Wave 0/1/2 mechanics (valid) with the **home corrected to the cascor family** per R2, and follows the strategy §10 migration sketch.
+This reuses the [migration plan](JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md)'s Wave 0/1/2 mechanics (valid) with the **home corrected to the cascor family** per R2, and follows the strategy §10 migration sketch.
 
 **Phase 1 — Home + name (RATIFIED 2026-06-09).** D1: **subdirectory of `juniper-cascor`** (`juniper-cascor/juniper-cascor-model/`). D2: **renamed `juniper-cascor-model`**. With these decided, the remaining phases are mechanical execution.
 
@@ -366,10 +366,10 @@ The user-stated blocker — "completing this package relocation is a blocker for
 
 Discovered during the audit; each is a low-risk accuracy fix. They are **listed, not applied**, to keep this pass strictly investigatory and to avoid colliding with concurrent sessions. Recommend a separate small docs PR.
 
-- **Stale status headers (factual drift):** `JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md` still reads "Status: Proposed" though doc-tools is shipped and on PyPI (0.1.1); `JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md` still reads "Status: Draft — pending design sign-off" though config-tools is shipped (0.1.0). Update both headers to "Shipped".
-- **`JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md` §3 "Home" row** says "`juniper-ml/juniper-cascor-core/` subdirectory". Annotate it as **superseded by the strategy doc §8 and this plan** (home = cascor family), keeping all other mechanics.
-- **`JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md` OQ-1** — annotate that the recurse refactor resolved the extension mechanism to **subclass + dependency injection** (not entry-point discovery), and soften the §3 rule's "discovered (e.g. Python entry points)" wording accordingly.
-- **`META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`** lists `[tools]` with three members (predating config-tools); the live `[tools]` extra has four (ci-tools, config-tools, doc-tools, observability). Back-fill the doc.
+- **Stale status headers (factual drift):** `JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md` still reads "Status: Proposed" though doc-tools is shipped and on PyPI (0.1.1); `JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md` still reads "Status: Draft — pending design sign-off" though config-tools is shipped (0.1.0). Update both headers to "Shipped".
+- **`JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md` §3 "Home" row** says "`juniper-ml/juniper-cascor-core/` subdirectory". Annotate it as **superseded by the strategy doc §8 and this plan** (home = cascor family), keeping all other mechanics.
+- **`JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md` OQ-1** — annotate that the recurse refactor resolved the extension mechanism to **subclass + dependency injection** (not entry-point discovery), and soften the §3 rule's "discovered (e.g. Python entry points)" wording accordingly.
+- **`JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md`** lists `[tools]` with three members (predating config-tools); the live `[tools]` extra has four (ci-tools, config-tools, doc-tools, observability). Back-fill the doc.
 
 ---
 
@@ -403,10 +403,10 @@ The revision also added the GitHub-ruleset required-check teardown (§6.3 Phase 
 
 ## Appendix B — Source documents and provenance
 
-- Governing rule: [`JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md`](JUNIPER_CODE_ORGANIZATION_STRATEGY_2026-06-05.md) — proposal, pending ratification.
-- Cascor-core mechanics (home superseded by the strategy doc): [`JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md`](JUNIPER_CASCOR_CORE_PYPI_MIGRATION_PLAN_2026-06-03.md).
-- Extraction pattern: [`CI_TOOLS_EXTRACTION_PLAYBOOK.md`](CI_TOOLS_EXTRACTION_PLAYBOOK.md), [`JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`](JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md), [`JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md), [`JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md`](JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md).
-- Future packages: [`JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md), [`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md).
-- Extras contract: [`META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`](META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md).
+- Governing rule: [`JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md`](JUNIPER_2026-06-05_JUNIPER-ECOSYSTEM_CODE-ORGANIZATION-STRATEGY.md) — proposal, pending ratification.
+- Cascor-core mechanics (home superseded by the strategy doc): [`JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-06-03_JUNIPER-CASCOR_CORE-PYPI-MIGRATION-PLAN.md).
+- Extraction pattern: [`JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md`](JUNIPER_2026-05-21_JUNIPER-ML_CI-TOOLS-EXTRACTION-PLAYBOOK.md), [`JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md), [`JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md), [`JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md`](JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md).
+- Future packages: [`JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md), [`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md).
+- Extras contract: [`JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md`](JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md).
 - Parent architectural journal: `../../notes/JUNIPER_ARCHITECTURAL_DESIGN_JOURNAL.md` (ideas #2 Common API, #4 New ABC, #7 Split up juniper-cascor; "shared by default, override if needed").
 - Ground truth: live filesystem + PyPI inspection, 2026-06-09.

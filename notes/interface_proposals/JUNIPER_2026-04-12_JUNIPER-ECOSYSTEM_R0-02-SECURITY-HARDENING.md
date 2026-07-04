@@ -4,7 +4,7 @@
 **Author**: Round 0 sub-agent (general-purpose)
 **Date**: 2026-04-11
 **Status**: Initial proposal — pre-consolidation
-**Source doc**: `notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -48,7 +48,7 @@ exposure.
 ## 2. Source-doc cross-references
 
 All identifiers below refer to
-`notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` v1.3.
+`notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` v1.3.
 
 ### 2.1 Threat and risk IDs (primary)
 
@@ -1398,7 +1398,7 @@ even though the source doc marks it P2 and defers to a separate PR.
 
 ## 9. Disagreements with the source doc
 
-Explicit deltas from `WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md`
+Explicit deltas from `JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md`
 v1.3:
 
 ### 9.1 Effort estimate for Phase B-pre is low

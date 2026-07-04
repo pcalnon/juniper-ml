@@ -17,7 +17,7 @@
 > (conformance/serialization, ML soundness, packaging/determinism, API/backcompat) — Appendix A.
 >
 > **Why now.** The §3.2 re-bench
-> ([`JUNIPER_RECURRENCE_EVALUATION_FINDINGS_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_FINDINGS_2026-06-18.md))
+> ([`JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-FINDINGS.md`](JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-FINDINGS.md))
 > showed the `equities_seq` r²≈−50 "failure" was **dominantly an unregularized-readout artifact** (the
 > bench's `ridge=0` default), not target non-stationarity — and that on a stationary **log-return**
 > target a *regularized* readout reaches the efficient-market predictability ceiling (r²≈0) and beats
@@ -301,11 +301,11 @@ Ratified by Paul:
 ## 10. Cross-references
 
 - Evaluation findings (motivating §3.2):
-  [`JUNIPER_RECURRENCE_EVALUATION_FINDINGS_2026-06-18.md`](JUNIPER_RECURRENCE_EVALUATION_FINDINGS_2026-06-18.md)
+  [`JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-FINDINGS.md`](JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-FINDINGS.md)
 - WS-4 model build plan (ratified D-WS4-1/2/3 + "torch enters here"):
-  [`JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md`](JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md)
+  [`JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md`](JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md)
 - LMU numeric design:
-  [`JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`](JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md)
+  [`JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`](JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md)
 - Readout-regularization follow-up: juniper-recurrence#28 · target-conditioning: juniper-data#195 · bench: juniper-recurrence#29
 - Reference: Rahimi & Recht (2007), *Random Features for Large-Scale Kernel Machines*, NeurIPS.
 

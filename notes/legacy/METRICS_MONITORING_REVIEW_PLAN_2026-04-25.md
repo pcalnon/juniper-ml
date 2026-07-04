@@ -13,7 +13,7 @@
 ---
 
 
-> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (parallel PR). This doc is preserved for historical reference; do not edit.
 
 ---
 
@@ -401,8 +401,8 @@ The review is complete when **all** of the following hold:
 
 ## 12. Constraints, conventions, and procedures
 
-- **Worktree procedures** (mandatory): all implementation work — including any in-scope corrections in Phase 7 — uses centralized worktrees per `notes/WORKTREE_SETUP_PROCEDURE.md` and `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`.
-- **Thread handoff** (mandatory): if context utilization exceeds 80% or is projected to exceed 90% before the current task completes, perform a thread handoff per `notes/THREAD_HANDOFF_PROCEDURE.md`. Write the handoff prompt under `juniper-ml/prompts/thread-handoff_automated-prompts/` and invoke `juniper-ml/scripts/wake_the_claude.bash` with `--worktree <name> --effort high --dangerously-skip-permissions`. Cease operation once `wake_the_claude.bash` is called.
+- **Worktree procedures** (mandatory): all implementation work — including any in-scope corrections in Phase 7 — uses centralized worktrees per `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` and `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`.
+- **Thread handoff** (mandatory): if context utilization exceeds 80% or is projected to exceed 90% before the current task completes, perform a thread handoff per `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`. Write the handoff prompt under `juniper-ml/prompts/thread-handoff_automated-prompts/` and invoke `juniper-ml/scripts/wake_the_claude.bash` with `--worktree <name> --effort high --dangerously-skip-permissions`. Cease operation once `wake_the_claude.bash` is called.
 - **Line length**: 512 across all linters per cross-repo conventions.
 - **Pre-commit**: must pass on every commit; do not bypass with `--no-verify`.
 - **Commit/PR cadence**: small, focused PRs per finding cluster; **never merge directly to main**; create PR per worktree-cleanup-v2.
@@ -426,7 +426,7 @@ If validation surfaces a discrepancy, the **document is corrected first** (analy
 After the review (and any in-scope Phase 7 corrections) merge:
 
 1. Commit, push, and open PRs for any document/code/infra changes.
-2. After PRs merge, perform Worktree Cleanup V2 per `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md` (Phase 1–4) for the worktree(s) created during review.
+2. After PRs merge, perform Worktree Cleanup V2 per `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` (Phase 1–4) for the worktree(s) created during review.
 3. Run `git worktree prune` and confirm no stale worktrees remain.
 4. Capture post-review HEAD SHAs in this plan's Appendix A so the roadmap has a stable starting point.
 

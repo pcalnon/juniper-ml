@@ -10,9 +10,9 @@
 ---
 
 > **What this is.**
-> The design + open-problem investigation for **"P7"**: growing a **Grazzi negative-eigenvalue input-dependent linear-RNN block** (the one ceiling-breaker the [OQ-4 exhaustive reevaluation](JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md) found to be *both general and trainable*) as a **Cascade-Correlation candidate unit**.
+> The design + open-problem investigation for **"P7"**: growing a **Grazzi negative-eigenvalue input-dependent linear-RNN block** (the one ceiling-breaker the [OQ-4 exhaustive reevaluation](JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md) found to be *both general and trainable*) as a **Cascade-Correlation candidate unit**.
 > The motivating constraint: the cheap star-free default (P4-FIR + Δt) is *near-term* only; mid/long-term needs a true ceiling-breaker, and P7 is the cascor-native route.
-> Pairs with the reevaluation, the [P1/P2/P3 proposals](JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md), the [Δt doc](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md), and the [model doc](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md).
+> Pairs with the reevaluation, the [P1/P2/P3 proposals](JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md), the [Δt doc](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md), and the [model doc](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md).
 >
 > **Headline finding (and it overturned the prediction).**
 > The central open question was: *can cascor's correlation objective — a centered second-order statistic — ever drive a block to the **negative eigenvalues** that state-tracking needs, or is it constitutionally blind to group structure?*
@@ -159,10 +159,10 @@ Cheaper than P2 only in that it *has* a training recipe.
 
 ## Cross-references
 
-- OQ-4 exhaustive reevaluation (why P7 is the route): [`JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md`](JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md)
-- OQ-4 proposals (P1/P2/P3): [`JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md`](JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md)
-- Irregular-Δt / continuous-time: [`JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md`](JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md)
-- Model design & plan (OQ-4 RESOLVED callout): [`JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md`](JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md)
+- OQ-4 exhaustive reevaluation (why P7 is the route): [`JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md`](JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md)
+- OQ-4 proposals (P1/P2/P3): [`JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md`](JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md)
+- Irregular-Δt / continuous-time: [`JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`](JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md)
+- Model design & plan (OQ-4 RESOLVED callout): [`JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md`](JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md)
 - Empirical POC: [`../util/ad-hoc/verify_p7_grazzi_block_growth.py`](../util/ad-hoc/verify_p7_grazzi_block_growth.py)
 
 ---

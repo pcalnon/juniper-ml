@@ -4,11 +4,11 @@
 **Version:** 2.0.0
 **Status:** PARTIALLY COMPLETE — Phase 1 items done, Phase 2-4 remaining
 **Scope:** juniper-canopy (primary), juniper-cascor + juniper-cascor-client (dataset endpoint)
-**Prerequisite:** FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md Appendix G (Tiers 0-2 all merged)
+**Prerequisite:** JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md Appendix G (Tiers 0-2 all merged)
 **Synthesized From:**
 
 - `juniper-ml/notes/CANOPY_DASHBOARD_DISPLAY_FIXES.md` v1.0.0
-- `juniper-ml/notes/DEPENDENCY_UPDATE_WORKFLOW.md` v1.0.0
+- `juniper-ml/notes/JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md` v1.0.0
 - Claude Code plan exploration (2026-03-29)
 
 ---
@@ -186,7 +186,7 @@ already only fetches when the Dataset tab is active.
 
 ### 3.4 Dependency Update When Adding Client Method
 
-Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:
+Per `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:
 
 1. Publish new client version (or use git dependency during development)
 2. Update canopy's `pyproject.toml` to require the new minimum client version
@@ -265,7 +265,7 @@ coordination and a dependency version bump per the workflow in section 7.
 ## 7. Cross-Repo Dependency Workflow
 
 When Task 2 Phase 2 adds `get_dataset_data()` to juniper-cascor-client, follow this process
-(from `DEPENDENCY_UPDATE_WORKFLOW.md`):
+(from `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`):
 
 1. Implement and publish new cascor-client version with `get_dataset_data()`
 2. In canopy's `pyproject.toml`, bump `juniper-cascor-client>=X.Y.Z`
@@ -413,5 +413,5 @@ All three tasks validated by specialized sub-agents (2026-03-29):
 
 ---
 
-*Synthesized from CANOPY_DASHBOARD_DISPLAY_FIXES.md v1.0.0, DEPENDENCY_UPDATE_WORKFLOW.md v1.0.0,
+*Synthesized from CANOPY_DASHBOARD_DISPLAY_FIXES.md v1.0.0, JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md v1.0.0,
 and Claude Code plan exploration. Supersedes the individual source documents for implementation.*

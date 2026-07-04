@@ -1,7 +1,7 @@
 # juniper-service-core v0.4.0 — E-8 boot-time dependency-floor self-check — Release Notes
 
 > Authored from [`notes/templates/TEMPLATE_RELEASE_NOTES.md`](../templates/TEMPLATE_RELEASE_NOTES.md)
-> and archived per the release-notes convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> and archived per the release-notes convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 > Used as the body of the GitHub Release [`juniper-service-core-v0.4.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.4.0).
 
 ---
@@ -122,7 +122,7 @@ None. The **canopy adoption** (canopy calling `enforce_dependency_floors` at the
 
 ## Design & Provenance
 
-- Plan: `notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` §6.11 (E-8, the
+- Plan: `notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` §6.11 (E-8, the
   app-startup self-check / the primary E-1 Plan-B and E-2 prevention companion)
 - Pull request: E-8 boot-time dependency-floor self-check + 0.4.0 bump #596
 - Full changelog: `juniper-service-core/CHANGELOG.md` (`[0.4.0]`)

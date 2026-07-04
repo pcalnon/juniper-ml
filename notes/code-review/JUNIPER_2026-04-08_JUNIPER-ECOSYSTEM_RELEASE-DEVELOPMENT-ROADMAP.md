@@ -3,8 +3,8 @@
 **Date**: 2026-04-08
 **Companion documents**:
 
-- `CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` — Full findings with file:line references
-- `RELEASE_PREPARATION_PLAN_2026-04-08.md` — Phased execution plan with fix details
+- `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` — Full findings with file:line references
+- `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` — Phased execution plan with fix details
 
 ---
 

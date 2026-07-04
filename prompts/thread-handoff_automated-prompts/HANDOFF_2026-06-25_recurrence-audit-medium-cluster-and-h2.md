@@ -5,7 +5,7 @@
 **Prepared by**: Claude Code (Opus 4.8)
 **Created**: 2026-06-25
 **Purpose**: Continue the `juniper-recurrence` **full-audit remediation** backlog. The audit
-([`notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md`](../../notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md),
+([`notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md`](../../notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md),
 shipped as juniper-ml#546) is the **source of truth** for every finding ID below. High-sev **H1** and
 Mediums **M1/M2/M3** are shipped; the controlling-thread **tasks 1 (drift-consumer activation)** and
 **2 (publish-trigger sweep)** are PR'd and green. What remains, in the user's stated order:
@@ -18,7 +18,7 @@ Mediums **M1/M2/M3** are shipped; the controlling-thread **tasks 1 (drift-consum
 1. **Read the audit (source of truth):**
 
    ```bash
-   cat /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md
+   cat /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md
    ```
 
    §3 = finding inventory (3 High · 14 Medium · ~18 Low · 0 Critical); §4 = High/Medium detail;

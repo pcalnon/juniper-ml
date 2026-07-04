@@ -3,7 +3,7 @@
 > **Archived copy** of the GitHub release [`juniper-recurrence-v0.1.0`](https://github.com/pcalnon/juniper-recurrence/releases/tag/juniper-recurrence-v0.1.0)
 > (published to PyPI 2026-06-17). Format follows [`notes/templates/TEMPLATE_RELEASE_NOTES.md`](../templates/TEMPLATE_RELEASE_NOTES.md);
 > generated from the app git log, `juniper-recurrence/CHANGELOG.md`, and the `notes/` design corpus.
-> See also the state + roadmap: [`JUNIPER_RECURRENCE_STATE_AND_ROADMAP_2026-06-17.md`](../JUNIPER_RECURRENCE_STATE_AND_ROADMAP_2026-06-17.md).
+> See also the state + roadmap: [`JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-AND-ROADMAP.md`](../JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-AND-ROADMAP.md).
 
 **Release Date:** 2026-06-17
 **Version:** 0.1.0
@@ -112,7 +112,7 @@ This is a new package — no migration required.
 - **WS-7:** add `juniper-recurrence` to `juniper-ml[servers]`/`[all]`.
 - **model-core 0.2.0 `crossval`** layer + a `/v1/crossval` endpoint.
 - `/v1/metrics` observability; deferred model increments (`target_dt` memory-advance, trained/nonlinear readout).
-- See `notes/JUNIPER_RECURRENCE_STATE_AND_ROADMAP_2026-06-17.md`.
+- See `notes/JUNIPER_2026-06-17_JUNIPER-RECURRENCE_STATE-AND-ROADMAP.md`.
 
 ---
 

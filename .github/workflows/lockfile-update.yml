@@ -6,7 +6,7 @@
 # Description:
 #    Refresh pinned CI lockfiles weekly via PR. Drop into a target repo's
 #    `.github/workflows/lockfile-update.yml`. As of Wave 2 of the dep-docs
-#    PyPI migration (notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md),
+#    PyPI migration (notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md),
 #    this installs `juniper-ci-tools` from PyPI and invokes the
 #    `juniper-generate-dep-docs` console script to regenerate
 #    `conf/requirements_ci.txt` and `conf/conda_environment_ci.yaml`.

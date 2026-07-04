@@ -6,11 +6,11 @@
 - **Scope**: juniper-canopy (primary), juniper-cascor, juniper-cascor-client
 - **Supersedes**:
   - `CANOPY_DASHBOARD_DISPLAY_FIXES.md` v1.0.0
-  - `DASHBOARD_AUGMENTATION_PLAN.md` v2.0.0
+  - `JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` v2.0.0
 - **Prerequisites**:
-  - FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md — all Appendix E fixes (MERGED ✅)
-  - FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md — Appendix F phase display fix (MERGED ✅)
-  - FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md — Appendix G Tiers 0-2 (MERGED ✅)
+  - JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md — all Appendix E fixes (MERGED ✅)
+  - JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md — Appendix F phase display fix (MERGED ✅)
+  - JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md — Appendix G Tiers 0-2 (MERGED ✅)
   - Output weights transposition fix for `_transform_topology()` (APPLIED ✅, uncommitted)
 
 ---
@@ -435,7 +435,7 @@ pytest src/tests/unit/api/ -q                         # All API tests pass
 
 This plan reconciles the following discrepancies between the source documents:
 
-| Issue                          | CANOPY_DASHBOARD_DISPLAY_FIXES.md                 | DASHBOARD_AUGMENTATION_PLAN.md           | Resolution                                                    |
+| Issue                          | CANOPY_DASHBOARD_DISPLAY_FIXES.md                 | JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md           | Resolution                                                    |
 |--------------------------------|---------------------------------------------------|------------------------------------------|---------------------------------------------------------------|
 | Appendix G state               | Assumed not yet implemented                       | Correctly assumes merged                 | **Merged confirmed** ✅                                       |
 | Topology issue                 | Output weights transposition only                 | Transposition + layer assignment         | **Both issues real**, transposition fixed, layer fix included |

@@ -94,7 +94,7 @@ apart from this untracked plan document).
 
 - **A subagent's working directory resets between tool calls.** This is a first-party platform fact (confirmed
   by this very agent's operating constraints and consistent with the DOR's Skill-vs-subagent analysis at
-  `notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md:186`: "a Skill executes inline in the main loop").
+  `notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md:186`: "a Skill executes inline in the main loop").
   A subagent therefore cannot reliably manage a long-lived `uvicorn` / Dash process across steps. **=> E-1 must
   be a Skill** (persistent state in the main conversation, native MCP access), not a subagent. (This same
   CWD-reset property is also why E-3's validator re-probe must explicitly name `<target>` — §6.4.)
@@ -102,7 +102,7 @@ apart from this untracked plan document).
   grounding probe; environment fact, not a repo anchor — re-confirm at build, see below). E-1 Stage 2's UI
   driving is therefore platform-supported.
 - **Nested-subagent fan-out and subagent-MCP grants are "confirm-at-build."** The DOR's primitive-mechanics
-  reference (`notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md:539` "Appendix B"; and lines 226-227:
+  reference (`notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md:539` "Appendix B"; and lines 226-227:
   "nested subagents require a recent Claude Code version — confirm at build (Appendix B), else run checks
   sequentially in one subagent") flags these as build-time verifications, not plan-time assumptions. The E-1
   Stage-0 spike (§6.9, PR-8) exists precisely to discharge this risk.
@@ -213,7 +213,7 @@ landing (§4 ledger; run by the `auditor` agent or the E-2 tool once it exists).
   a suite unit, and the primary E-1 Plan-B (§6.11).
 - **Deferred audit:** S-1 — the ecosystem env-drift sweep, gated on E-2 landing (the tool S-1 needs is E-2).
 - **Rejected:** OQ-2 — a DB/queryable backend contradicts the genesis "what NOT to build" doctrine
-  (`notes/PROMPT_ANALYSIS_AND_AUTOMATION_PLAN.md`) and is redundant with `util/generated_prompt_index.py`. This
+  (`notes/JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md`) and is redundant with `util/generated_prompt_index.py`. This
   **escalates** OQ-2 from the DOR's "YAML for round 1; a queryable store is future work if the snippet set
   grows" (`DOR:490`) to a **hard reject** — justified because the future-work trigger (queryability needed) is
   **already moot**: `generated_prompt_index.py` provides it without a backend.
@@ -227,7 +227,7 @@ landing (§4 ledger; run by the `auditor` agent or the E-2 tool once it exists).
 Each subsection carries: **design sketch · affected files (with `file:line`) · test/dogfood plan + the exact
 `tests/` gate + the `ci.yml` wiring note · acceptance criteria · risk + rollback · owner repo · JR-ID**. SHAPE
 decisions from the reconciliation are carried verbatim. No JR-ID is invented — where unknown, the PR author
-looks one up in `notes/REQUIREMENTS_INDEX.md` at authoring time (per the `AGENTS.md` PR conventions).
+looks one up in `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-INDEX.md` at authoring time (per the `AGENTS.md` PR conventions).
 
 ### Phase 1 — near-term core
 
@@ -668,10 +668,10 @@ Deliberately excluded so their absence is intentional, not dropped:
 ## 8. Cross-References
 
 Each enhancement mapped to the design-of-record decisions/open-questions
-(`notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`) and the dogfooding analyses' gap IDs
-(`notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` = CANOPY;
-`notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` = TAUDIT;
-`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PROMPT-ANALYSIS_2026-06-26.md` = companion).
+(`notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`) and the dogfooding analyses' gap IDs
+(`notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md` = CANOPY;
+`notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md` = TAUDIT;
+`notes/JUNIPER_2026-06-26_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PROMPT-ANALYSIS.md` = companion).
 
 | Enhancement | DOR decision / OQ | Dogfooding gap ID |
 |-------------|-------------------|-------------------|

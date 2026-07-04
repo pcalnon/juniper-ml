@@ -37,7 +37,7 @@ OQ-4 spike decisions). This hands off **A1b-1**, the first of two A1b slices.
    (branch `feat/canopy-model-table`). Re-grep every line number below — they drift.
 
 4. **Design-of-record** (binding; do not relitigate):
-   [`notes/JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](../../notes/JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md)
+   [`notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](../../notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
    — §5 surfaces, D7 (dedicated full-width surface), D8 (lifecycle), §5.2 (the model table),
    §5.3 (the bidirectional gate), §5.7 (gated models), §5.8 (degenerate states).
 

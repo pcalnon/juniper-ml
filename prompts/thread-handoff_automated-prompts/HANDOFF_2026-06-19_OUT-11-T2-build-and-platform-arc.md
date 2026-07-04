@@ -11,7 +11,7 @@
 
 Resume the **`juniper-service-core` T2-surface build (OUT-11)** — specifically **build step 1**, then the
 remaining phases — per the **ratified design + gate-audit** in juniper-ml **PR #468**
-(`notes/JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md`). Paul approved proceeding to the build
+(`notes/JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md`). Paul approved proceeding to the build
 (Option 3, full T2) after the design (4) and gate-audit; the audit gate is **GO**.
 
 > **Path note:** Paul asked for the handoff under `notes/thread-handoff_automated-prompts/`, but the established

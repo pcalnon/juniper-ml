@@ -62,7 +62,7 @@ This document consolidates all development work documented in the 16 source file
 
 ## 3. Canopy–CasCor Connection and Data Contract Fixes
 
-**Source**: `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md`
+**Source**: `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md`
 **Status**: ALL 20 ISSUES IMPLEMENTED
 
 The connection analysis identified 20 root causes (P5-RC-01 through P5-RC-18, P5-RC-12b, KL-1) for the canopy dashboard failing to display data from an external cascor instance. The fundamental problem was that service mode emitted flat metrics and weight-oriented topology while the dashboard expected nested metrics and graph-oriented topology (built against demo mode).
@@ -94,7 +94,7 @@ The connection analysis identified 20 root causes (P5-RC-01 through P5-RC-18, P5
 
 ## 4. Network Topology Display Fixes
 
-**Source**: `NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md`
+**Source**: `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md`
 **Status**: ALL PHASES IMPLEMENTED
 
 | ID   | Severity | Description                                             | Status                                                                 | Commit                    |
@@ -135,7 +135,7 @@ The connection analysis identified 20 root causes (P5-RC-01 through P5-RC-18, P5
 
 ## 6. Meta Parameters Enhancement
 
-**Source**: `META_PARAMETERS_ENHANCEMENT_PLAN.md`
+**Source**: `JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md`
 **Status**: ✅ IMPLEMENTED
 
 The Training Parameters card was restructured into a "Meta Parameters" card with two collapsible subsections:
@@ -154,7 +154,7 @@ The Training Parameters card was restructured into a "Meta Parameters" card with
 
 ## 7. Dashboard Augmentation
 
-**Source**: `DASHBOARD_AUGMENTATION_PLAN.md`
+**Source**: `JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md`
 **Status**: PARTIALLY COMPLETE
 
 ### Phase 1 (canopy-only) — COMPLETE
@@ -195,7 +195,7 @@ The Training Parameters card was restructured into a "Meta Parameters" card with
 
 ## 8. Critical Bug Fixes (Phase 1)
 
-**Source**: `PHASE1_CRITICAL_FIXES_PLAN.md`
+**Source**: `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_PHASE1-CRITICAL-FIXES-PLAN.md`
 **Status**: ALL IMPLEMENTED
 
 | Bug   | Description                                                             | Fix                                                                                         | Status         |
@@ -223,7 +223,7 @@ The Training Parameters card was restructured into a "Meta Parameters" card with
 
 ## 10. Microservices Architecture
 
-**Sources**: `MICROSERVICES_ARCHITECTURE_ANALYSIS.md`, `MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md`, `MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md`, `MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md`, `MICROSERVICES_PHASE3_PLAN_2026-04-06.md`, `MICROSERVICES_PHASE4_PLAN_2026-04-06.md`
+**Sources**: `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md`, `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md`, `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md`, `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md`, `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE3-PLAN.md`, `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE4-PLAN.md`
 
 ### Phase 1: Critical Startup/Shutdown Fixes — ✅ COMPLETE (commit `03aec86`)
 
@@ -296,7 +296,7 @@ The Training Parameters card was restructured into a "Meta Parameters" card with
 
 ## 11. WebSocket Migration (R5-01 Canonical Plan)
 
-**Sources**: `R5-01_canonical_development_plan.md`, `PHASE_B_IMPLEMENTATION_PLAN.md`
+**Sources**: `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md`, `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_PHASE-B-IMPLEMENTATION-PLAN.md`
 **Status**: PHASES 0 AND B PARTIALLY COMPLETE; PHASES C–H NOT STARTED
 
 ### Phase 0-cascor (seq/replay/resume) — ✅ IMPLEMENTED
@@ -386,21 +386,21 @@ The Training Parameters card was restructured into a "Meta Parameters" card with
 | Document                                            | Date       | Primary Focus                                                | Implementation Status                         |
 |-----------------------------------------------------|------------|--------------------------------------------------------------|-----------------------------------------------|
 | `CONVERGENCE_UI_FIX_PLAN.md`                        | 2026-03-19 | Convergence checkbox/threshold bugs B-5.1–B-5.7              | ✅ COMPLETE                                   |
-| `DASHBOARD_AUGMENTATION_PLAN.md`                    | 2026-03-29 | Metrics UI, dataset tab, topology fixes                      | ⚠️ PARTIALLY COMPLETE                         |
-| `FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md`        | 2026-03-28 | 20 root causes for canopy–cascor data contract mismatch      | ✅ ALL IMPLEMENTED                            |
-| `META_PARAMETERS_ENHANCEMENT_PLAN.md`               | 2026-03-21 | Restructured sidebar with NN/CN subsections                  | ✅ IMPLEMENTED                                |
-| `MICROSERVICES_ARCHITECTURE_ANALYSIS.md`            | 2026-02-25 | Startup orchestration, modes of operation, service discovery | ✅ ANALYSIS COMPLETE, recommendations adopted |
-| `MICROSERVICES_PHASE3_PLAN_2026-04-06.md`           | 2026-04-06 | Worker Dockerfile, docker-compose, systemd                   | ✅ COMPLETE                                   |
-| `MICROSERVICES_PHASE4_PLAN_2026-04-06.md`           | 2026-04-06 | Kubernetes Helm chart                                        | ✅ COMPLETE                                   |
-| `MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md`   | 2026-04-06 | Comprehensive startup/shutdown code review, 5-phase roadmap  | Phases 1–4 ✅, Phase 5 ❌                     |
-| `MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md`   | 2026-04-06 | systemd service units for all services                       | ✅ COMPLETE                                   |
-| `MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md` | 2026-02-25 | 9-phase implementation roadmap (Phases 1–9)                  | Phases 1–4 ✅, 5–9 ❌                         |
-| `NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md`    | 2026-03-31 | 6 topology bugs + weight heatmap feature                     | ✅ ALL PHASES IMPLEMENTED                     |
-| `PHASE_B_IMPLEMENTATION_PLAN.md`                    | 2026-04-12 | WebSocket browser drain wiring (P0 win)                      | ✅ IMPLEMENTED                                |
-| `PHASE1_CRITICAL_FIXES_PLAN.md`                     | 2026-04-01 | Progress bar denominator + drain thread race condition       | ✅ ALL IMPLEMENTED                            |
-| `R5-01_canonical_development_plan.md`               | 2026-04-11 | Full WebSocket migration canonical plan (10 phases)          | ⚠️ Phases 0, A, B ✅; B-pre-a ⚠️; C–H ❌      |
+| `JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md`                    | 2026-03-29 | Metrics UI, dataset tab, topology fixes                      | ⚠️ PARTIALLY COMPLETE                         |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md`        | 2026-03-28 | 20 root causes for canopy–cascor data contract mismatch      | ✅ ALL IMPLEMENTED                            |
+| `JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md`               | 2026-03-21 | Restructured sidebar with NN/CN subsections                  | ✅ IMPLEMENTED                                |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md`            | 2026-02-25 | Startup orchestration, modes of operation, service discovery | ✅ ANALYSIS COMPLETE, recommendations adopted |
+| `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE3-PLAN.md`           | 2026-04-06 | Worker Dockerfile, docker-compose, systemd                   | ✅ COMPLETE                                   |
+| `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE4-PLAN.md`           | 2026-04-06 | Kubernetes Helm chart                                        | ✅ COMPLETE                                   |
+| `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md`   | 2026-04-06 | Comprehensive startup/shutdown code review, 5-phase roadmap  | Phases 1–4 ✅, Phase 5 ❌                     |
+| `JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md`   | 2026-04-06 | systemd service units for all services                       | ✅ COMPLETE                                   |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md` | 2026-02-25 | 9-phase implementation roadmap (Phases 1–9)                  | Phases 1–4 ✅, 5–9 ❌                         |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md`    | 2026-03-31 | 6 topology bugs + weight heatmap feature                     | ✅ ALL PHASES IMPLEMENTED                     |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_PHASE-B-IMPLEMENTATION-PLAN.md`                    | 2026-04-12 | WebSocket browser drain wiring (P0 win)                      | ✅ IMPLEMENTED                                |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_PHASE1-CRITICAL-FIXES-PLAN.md`                     | 2026-04-01 | Progress bar denominator + drain thread race condition       | ✅ ALL IMPLEMENTED                            |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md`               | 2026-04-11 | Full WebSocket migration canonical plan (10 phases)          | ⚠️ Phases 0, A, B ✅; B-pre-a ⚠️; C–H ❌      |
 | `REMAINING_ISSUES_REMEDIATION_PLAN.md`              | 2026-03-17 | Dark mode, worktree DX, test failures, code cleanup          | ✅ ALL 5 WORK UNITS COMPLETE                  |
-| `JUNIPER_ECOSYSTEM_CODE_AUDIT.md`                   | 2026-04-17 | Full 8-repo code audit                                       | ✅ ANALYSIS COMPLETE (read-only)              |
+| `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md`                   | 2026-04-17 | Full 8-repo code audit                                       | ✅ ANALYSIS COMPLETE (read-only)              |
 
 ---
 

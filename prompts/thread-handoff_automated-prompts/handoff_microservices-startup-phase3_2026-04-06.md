@@ -7,7 +7,7 @@
 
 ---
 
-Continue the Juniper Microservices Startup/Shutdown automation project -- starting **Phase 3: Worker Deployment & Container Integration (P1)** from `notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md`.
+Continue the Juniper Microservices Startup/Shutdown automation project -- starting **Phase 3: Worker Deployment & Container Integration (P1)** from `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md`.
 
 ## Prior Threads Completed
 
@@ -24,8 +24,8 @@ Continue the Juniper Microservices Startup/Shutdown automation project -- starti
 - **juniper-data** (PR #35 merged): Created `scripts/juniper-data.service` (systemd user unit, 2G mem, 200% CPU) and `scripts/juniper-data-ctl` management CLI.
 - **juniper-cascor** (PR #115 merged): Created `scripts/juniper-cascor.service` (systemd user unit, 4G mem, 400% CPU, `After=juniper-data.service`) and `scripts/juniper-cascor-ctl` management CLI.
 - **juniper-ml**: Created `scripts/juniper-all.target` (groups all services via `Wants=`) and `scripts/juniper-all-ctl` (coordinated start/stop/status/health/logs/resources). Added `--systemd` flag (`USE_SYSTEMD=1` env var) to both `juniper_plant_all.bash` and `juniper_chop_all.bash`. Fixed pre-existing shellcheck warning and duplicate PID file check.
-- Analysis document (`notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md`) updated to v1.2.0 with Phase 2 marked completed.
-- Implementation plan at `notes/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md`.
+- Analysis document (`notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md`) updated to v1.2.0 with Phase 2 marked completed.
+- Implementation plan at `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md`.
 
 ## Phase 3 Scope
 
@@ -70,7 +70,7 @@ git log --oneline -5
 python3 -m unittest -v tests/test_wake_the_claude.py tests/test_check_doc_links.py tests/test_worktree_cleanup.py
 
 # Read the analysis document (Phase 3 section)
-head -770 notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md | tail -20
+head -770 notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md | tail -20
 
 # Read the worker AGENTS.md for project context
 cat /home/pcalnon/Development/python/Juniper/juniper-cascor-worker/AGENTS.md
@@ -82,6 +82,6 @@ cat /home/pcalnon/Development/python/Juniper/juniper-deploy/AGENTS.md
 ls /home/pcalnon/Development/python/Juniper/worktrees/ | grep systemd
 
 # Read the design specs for worker Dockerfile and compose service
-sed -n '/### 9.8/,/### 9.9/p' notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md
-sed -n '/### 9.9/,/---/p' notes/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md
+sed -n '/### 9.8/,/### 9.9/p' notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md
+sed -n '/### 9.9/,/---/p' notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md
 ```

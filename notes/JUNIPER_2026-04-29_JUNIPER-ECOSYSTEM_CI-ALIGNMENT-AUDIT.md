@@ -4,9 +4,9 @@
 **Author**: Paul Calnon (with Claude Opus 4.7)
 **Companion docs**:
 
-- `notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md` — original plan.
-- `notes/CI_VALIDATION_ROADMAP_2026-04-29.md` — validation phases V0–V5.
-- `notes/CI_VALIDATION_FINDINGS_2026-04-29.md` — single source of truth
+- `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md` — original plan.
+- `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-ROADMAP.md` — validation phases V0–V5.
+- `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md` — single source of truth
   for every issue surfaced by the validation pass.
 
 This document audits the original alignment plan against the final

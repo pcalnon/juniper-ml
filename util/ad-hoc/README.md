@@ -6,7 +6,7 @@ This directory is the home for scripts that:
 - Are work-in-progress and not yet ready for promotion to `util/` proper.
 - Support a one-off investigation, migration, or analysis tied to a specific PR / incident.
 
-It exists because the alternative — authoring such scripts in `/tmp/` — caused real, irrecoverable loss in the v1–v4 requirements-snapshot effort (`phase4_consolidate.py`, `v2_citation_validate.py`). See [`../../notes/REQUIREMENTS_NEXT_STEPS.md` §7](../../notes/REQUIREMENTS_NEXT_STEPS.md#7-stale--drift-detection) and [plan-doc §12](../../notes/REQUIREMENTS_IDENTIFICATION_PLAN_2026-05-11.md#12-open-issues--questions-discovered-during-execution).
+It exists because the alternative — authoring such scripts in `/tmp/` — caused real, irrecoverable loss in the v1–v4 requirements-snapshot effort (`phase4_consolidate.py`, `v2_citation_validate.py`). See [`../../notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` §7](../../notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md#7-stale--drift-detection) and [plan-doc §12](../../notes/JUNIPER_2026-05-11_JUNIPER-ECOSYSTEM_REQUIREMENTS-IDENTIFICATION-PLAN.md#12-open-issues--questions-discovered-during-execution).
 
 The repo-level rule lives in [`../../AGENTS.md`](../../AGENTS.md#script-placement-mandatory); the ecosystem-level restatement lives in the parent `Juniper/AGENTS.md` "Cross-Project Conventions" section (one directory above this repo, outside the juniper-ml git tree).
 

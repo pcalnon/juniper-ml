@@ -245,7 +245,7 @@ Owner-driven follow-up (this audit changed nothing). All commands are for the **
 ## 9. Provenance
 
 - **What S-1 is**: the final item of the custom-agent-suite enhancement plan
-  (`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md`):
+  (`notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md`):
   - `:159` — S-1 ledger row: *"Sibling-env plain-wheel drift unaudited … the downstream **use** of E-2 (an
     audit, gated on E-2 landing)."*
   - `:214` — *"Deferred audit: S-1 — the ecosystem env-drift sweep, gated on E-2 landing (the tool S-1 needs

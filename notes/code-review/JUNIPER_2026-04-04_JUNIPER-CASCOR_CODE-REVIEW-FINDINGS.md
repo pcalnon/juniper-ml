@@ -7,7 +7,7 @@
 **Repository:** `juniper-cascor` (path: `/home/pcalnon/Development/python/Juniper/juniper-cascor`)
 **Baseline commit:** `2ca3729fb8af0d96aad6be7594d4ae8477245317`
 **Baseline branch:** `fix/ci-duplicate-params-and-imports`
-**Companion document:** `CASCOR_COMPREHENSIVE_CODE_REVIEW_PLAN_2026-04-04.md` (Phase 0-1, CR-001 through CR-005)
+**Companion document:** `JUNIPER_2026-04-04_JUNIPER-CASCOR_COMPREHENSIVE-CODE-REVIEW-PLAN.md` (Phase 0-1, CR-001 through CR-005)
 
 ---
 

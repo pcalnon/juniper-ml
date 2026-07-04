@@ -5,7 +5,7 @@
 **Date**: 2026-04-11
 **Status**: Round 3 consolidation — input to Round 4
 **Inputs consolidated**: R2-01 (best-of synthesis), R2-02 (phase execution contracts), R2-03 (cross-cutting concerns), R2-04 (decision matrix) — R2-04 defaults applied as settled positions
-**Source doc**: `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (v1.3 STABLE)
+**Source doc**: `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (v1.3 STABLE)
 
 ---
 
@@ -45,7 +45,7 @@ This section is the "law of the migration." Every subsequent phase references th
 | **D-11** | **Phase 0-cascor is carved out** of Phase B as a separate ≈2-day server-only PR. Cascor main carries the new envelope fields (`seq`, `server_instance_id`, `replay_buffer_capacity`, `emitted_at_monotonic`, `resume` frame family) for **≥1 week** before canopy Phase B consumes them. The 1-week soak is the additive-contract validation window | R2-04 §3.11, R2-02 §1.2 |
 | **D-13** | **GAP-WS-19 (`close_all` lock) is RESOLVED on main.** Verified at `juniper-cascor/src/api/websocket/manager.py:138-156`. Not in any phase scope. Only a regression test `test_close_all_holds_lock` lands (belt-and-suspenders) in Phase 0-cascor | R2-04 §3.13, R2-02 §1.2 |
 | **D-23** | **Phase B-pre is split into B-pre-a and B-pre-b.** B-pre-a = frame-size caps + per-IP caps + `/ws/training` Origin + audit logger skeleton; gates Phase B. B-pre-b = `/ws/control` Origin + CSRF first-frame + rate limit + idle timeout + adapter HMAC + audit Prometheus counters; gates Phase D. B-pre-a is ~0.5 day; B-pre-b is ~1.5-2 days. Phase B-pre-b runs **in parallel with Phase B**, not before it | R2-04 §3.23, R2-02 §1.2 |
-| **D-55** | Source-doc text patches (D-01, D-02, D-11, D-12, D-13, D-15, D-16, D-19, D-20, D-24, D-25, D-26, D-37, D-38, D-39) are **batched in Round 5** as a single v1.4 patch PR to `WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` | R2-04 §3.55 |
+| **D-55** | Source-doc text patches (D-01, D-02, D-11, D-12, D-13, D-15, D-16, D-19, D-20, D-24, D-25, D-26, D-37, D-38, D-39) are **batched in Round 5** as a single v1.4 patch PR to `JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` | R2-04 §3.55 |
 | **D-56 (implicit)** | **REST deprecation is never planned.** "Preserve forever" means permanent. A future RFC is required for any REST removal | R2-04 §5.1 |
 | **D-61 (implicit)** | **Mid-week deploys only for behavior-changing flag flips** (D-17 P7, D-47, D-49). Phase 0-cascor, Phase A-SDK, and B-pre-a can deploy any day | R2-04 §5.6 |
 
@@ -1825,7 +1825,7 @@ R2-04 §6 lists items 7-13 as still-open questions for a human to decide. **R3-0
 
 - [x] Did not re-derive Phase C/D/E scope — reused R2-02 deliverables verbatim
 - [x] Did not introduce new GAP-WS / M-SEC / RISK identifiers beyond what R2-04/R2-03 already carry
-- [x] Did not modify any files other than R3-02_decision_resolved_blueprint.md
+- [x] Did not modify any files other than JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-02-DECISION-RESOLVED-BLUEPRINT.md
 - [x] Did not add alternatives language anywhere in the body (§1-§17); only §18 contains alternative references and only for justification
 - [x] Every decision has a resolved position with a source citation
 - [x] Every phase has a go/no-go criterion

@@ -165,7 +165,7 @@ Don't do Option C "because it's cleaner." Do it when one or more of the followin
 ## 8. References
 
 - Option B: `pcalnon/juniper-canopy#265` (PR with `frontend/internal_api.py` + 44 site injection)
-- Bug 4 capture: `juniper-ml/notes/observability/IMAGE_BUILD_BUGS_2026-05-10.md` (Bug 4 section, if/when added)
+- Bug 4 capture: `juniper-ml/notes/observability/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_IMAGE-BUILD-BUGS.md` (Bug 4 section, if/when added)
 - Canopy middleware: `juniper-canopy/src/middleware.py` and `juniper-canopy/src/canopy_constants.py` (`EXEMPT_PATHS`, `EXEMPT_PATH_PREFIXES`)
 - FastAPI handlers entrypoint: `juniper-canopy/src/main.py:223+` (mounts) and `juniper-canopy/src/api/` (handler modules)
 - Dash callback layer: `juniper-canopy/src/frontend/dashboard_manager.py` (orchestrator) and `juniper-canopy/src/frontend/components/` (panel components)

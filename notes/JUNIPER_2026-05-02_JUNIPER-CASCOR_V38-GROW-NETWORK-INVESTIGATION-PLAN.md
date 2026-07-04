@@ -614,7 +614,7 @@ investigation requirements:
 | Suggest several options to address each element                    | §3              | ✅ — 5 options spanning production-fix, test-parameter-loosening, test-redesign, skip/xfail, integration-tier migration |
 | Evaluate options' strengths/weaknesses/risks/guard rails           | §4              | ✅ — table + cross-cutting considerations                                                                               |
 | Recommend a preferred option with justification                    | §5              | ✅ — Option A primary, Option E fallback, with reasoning grounded in the V22-pattern observation                        |
-| Document results into notes/                                       | this file       | ✅ — `notes/V38_GROW_NETWORK_INVESTIGATION_PLAN_2026-05-02.md`                                                          |
+| Document results into notes/                                       | this file       | ✅ — `notes/JUNIPER_2026-05-02_JUNIPER-CASCOR_V38-GROW-NETWORK-INVESTIGATION-PLAN.md`                                                          |
 | Audit and validate all aspects                                     | this section    | ✅                                                                                                                      |
 | Lint markdown, fix syntax violations                               | post-write step | runs after this file is saved (see process notes below)                                                                 |
 
@@ -635,7 +635,7 @@ investigation requirements:
 After saving, run:
 
 ```bash
-markdownlint -c .markdownlint.yaml notes/V38_GROW_NETWORK_INVESTIGATION_PLAN_2026-05-02.md
+markdownlint -c .markdownlint.yaml notes/JUNIPER_2026-05-02_JUNIPER-CASCOR_V38-GROW-NETWORK-INVESTIGATION-PLAN.md
 ```
 
 The juniper-ml `.markdownlint.yaml` sets `line-length: 512` and
@@ -661,11 +661,11 @@ rows and prose paragraphs intentionally use long lines for readability.
   - [25251743281](https://github.com/pcalnon/canopy/actions/runs/25251743281) — canopy HEAD `8cc72d9`, all unit-test legs green (used as the closeout reference)
 
 - Findings doc:
-  `notes/CI_VALIDATION_FINDINGS_2026-04-29.md` (V38 row, status
+  `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-VALIDATION-FINDINGS.md` (V38 row, status
   "partially fixed" — V38a/V38c carried as deferred).
 
 - Audit doc:
-  `notes/CI_ALIGNMENT_AUDIT_2026-04-29.md` (V38a/c noted in cascor
+  `notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-ALIGNMENT-AUDIT.md` (V38a/c noted in cascor
   fleet-table row).
 
 ---

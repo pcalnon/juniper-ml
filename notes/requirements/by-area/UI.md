@@ -17,8 +17,8 @@
 **Status**: proposed  **Priority**: P0  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 250-350)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1087-1159)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 250-350)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1087-1159)
 
 **Detail**:
 
@@ -37,8 +37,8 @@ GAP-WS-16, GAP-WS-25. Bandwidth elimination dependent on extendTraces. Phase B (
 **Status**: proposed  **Priority**: P0  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 1-100)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 970-1045)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 1-100)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 970-1045)
 
 **Detail**:
 
@@ -59,8 +59,8 @@ GAP-WS-04, GAP-WS-05. Bound-in-handler cap non-negotiable per R0-01 §3.2.5. rAF
 **Status**: proposed  **Priority**: P0  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 150-250)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1049-1158)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 150-250)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1049-1158)
 
 **Detail**:
 
@@ -250,7 +250,7 @@ V2 revision addressing issues from initial plan.
 **Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1594-1615)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1594-1615)
 
 **Notes**:
 
@@ -261,7 +261,7 @@ V2 revision addressing issues from initial plan.
 **Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1110-1118)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1110-1118)
 
 **Notes**:
 
@@ -287,7 +287,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 **Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 630-669)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 630-669)
 
 **Detail**:
 
@@ -302,7 +302,7 @@ After=network-online.target juniper-data.service
 **Status**: designed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1191-1205)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1191-1205)
 
 **Notes**:
 
@@ -313,7 +313,7 @@ After=network-online.target juniper-data.service
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 386-387)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 386-387)
 
 **Notes**:
 
@@ -336,8 +336,8 @@ Extract to shared helper. File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 500-550)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 981-991)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 500-550)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 981-991)
 
 **Detail**:
 
@@ -386,7 +386,7 @@ Design option: Add get_decision_boundary_data() to CascorIntegration that querie
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 549-566)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 549-566)
 
 **Detail**:
 
@@ -416,7 +416,7 @@ Dataset/Decision Boundary tab shows "No data available" when connected to real C
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 137-151)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 137-151)
 
 **Detail**:
 
@@ -458,7 +458,7 @@ UX issue; component refactor required.
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 160-168)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 160-168)
 
 **Detail**:
 
@@ -469,7 +469,7 @@ UX issue; component refactor required.
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-94)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-94)
 
 **Notes**:
 
@@ -480,7 +480,7 @@ Phase B major milestone from R3-03 Phase index (§2); orchestrates implementatio
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 89-102)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 89-102)
 
 **Notes**:
 
@@ -506,7 +506,7 @@ Also adds clientside blur-on-Apply and validation styling (invalid=True border).
 **Status**: proposed  **Priority**: P1  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 448-460)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 448-460)
 
 **Notes**:
 
@@ -587,7 +587,7 @@ Phase 2 feature; shipped with 17 tests, visual regression verification recommend
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 67-107)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 67-107)
 
 **Detail**:
 
@@ -646,7 +646,7 @@ Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 **Status**: shipped  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 310-330)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 310-330)
 
 **Detail**:
 
@@ -675,7 +675,7 @@ Phase 3 P2 fix; doc status COMPLETE; requires UI schema change
 **Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 536-555)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 536-555)
 
 **Detail**:
 
@@ -690,7 +690,7 @@ Add a `dbc.RadioItems` or `dbc.ButtonGroup` toggle to the NetworkVisualizer's co
 **Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 249-257)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 249-257)
 
 **Detail**:
 
@@ -712,7 +712,7 @@ Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`
 **Status**: designed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 105-114)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 105-114)
 
 **Detail**:
 
@@ -727,14 +727,14 @@ Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`
 **Status**: deferred  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/observability/CANOPY_DASHBOARD_SELF_CALL_REFACTOR_2026-05-10.md` (lines 1-50)
+- `juniper-ml/notes/observability/JUNIPER_2026-05-10_JUNIPER-CANOPY_DASHBOARD-SELF-CALL-REFACTOR.md` (lines 1-50)
 
 ### JR-ML-UI-027 — All services handle signals adequately at the application level. The gap is in the orchestration scripts that don't verify shutdown….
 
 **Status**: rejected  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 453-468)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 453-468)
 
 **Detail**:
 
@@ -749,7 +749,7 @@ All services handle signals adequately at the application level. The gap is in t
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 818-831)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 818-831)
 
 **Detail**:
 
@@ -772,7 +772,7 @@ Audit all links and update URLs or remove invalid references.
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 534-543)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 534-543)
 
 **Detail**:
 
@@ -787,7 +787,7 @@ Audit all links and update URLs or remove invalid references.
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 107-128)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 107-128)
 
 **Detail**:
 
@@ -802,50 +802,50 @@ Audit all links and update URLs or remove invalid references.
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1990-1994)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1990-1994)
 
 ### JR-ML-UI-032 — CAN-003: Retain Candidate Pool Data Per Node Addition.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2000-2004)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2000-2004)
 
 ### JR-ML-UI-033 — CAN-CRIT-001: Decision Boundary Non-Functional in Production/Service Mode.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1912-1926)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1912-1926)
 
 ### JR-ML-UI-034 — CAN-CRIT-002: Save/Load Snapshot in Adapter — Blocked on `/v1/snapshots/*` API.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1929-1943)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1929-1943)
 
 ### JR-ML-UI-035 — CAN-DEF-008: Advanced 3D Node Interactions.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1980-1983)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1980-1983)
 
 ### JR-ML-UI-036 — CAN-HIGH-005: Remote Worker Status Dashboard.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1946-1960)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1946-1960)
 
 ### JR-ML-UI-037 — Canopy dashboard must display WebSocket connection status badge (connected green, reconnecting yellow, offline red).
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 350-400)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1108-1120)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 350-400)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1108-1120)
 
 **Detail**:
 
@@ -862,8 +862,8 @@ GAP-WS-26 (P2). Also mirrors demo mode parity (RISK-08, GAP-WS-33). Phase B (Day
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 550-600)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1364-1370)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 550-600)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1364-1370)
 
 **Detail**:
 
@@ -899,7 +899,7 @@ Part of Issue
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 361-385)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 361-385)
 
 **Detail**:
 
@@ -949,7 +949,7 @@ Identified by v4. Known Phase 1 limitation; architectural enhancement scope.
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 66-66)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 66-66)
 
 **Notes**:
 
@@ -960,7 +960,7 @@ Settled position C-29 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 38-46)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 38-46)
 
 **Detail**:
 
@@ -975,7 +975,7 @@ Settled position C-29 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 26-32)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 26-32)
 
 **Detail**:
 
@@ -990,8 +990,8 @@ Settled position C-29 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 450-500)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1116-1130)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 450-500)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1116-1130)
 
 **Detail**:
 
@@ -1008,7 +1008,7 @@ RISK-08, GAP-WS-33. Phase B (Day 9). Demo users see same UI feedback as live use
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 76-85)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 76-85)
 
 ### JR-ML-UI-045 — Design and implement integrated dashboard combining Canopy and CasCor metrics.
 
@@ -1022,7 +1022,7 @@ RISK-08, GAP-WS-33. Phase B (Day 9). Demo users see same UI feedback as live use
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 257-267)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 257-267)
 
 **Detail**:
 
@@ -1037,7 +1037,7 @@ RISK-08, GAP-WS-33. Phase B (Day 9). Demo users see same UI feedback as live use
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 479-485)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 479-485)
 
 **Detail**:
 
@@ -1064,7 +1064,7 @@ theme_constants.py for centralized management and dark/light theme support.
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 385-389)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 385-389)
 
 **Detail**:
 
@@ -1079,7 +1079,7 @@ In demo mode, networks with 2+ hidden units display an **incomplete topology** �
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 42-54)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 42-54)
 
 **Detail**:
 
@@ -1090,7 +1090,7 @@ In demo mode, networks with 2+ hidden units display an **incomplete topology** �
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 1963-1977)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 1963-1977)
 
 ### JR-CAN-UI-030 — Modulo toggle for theme switching must use Dash State, not module-level flag.
 
@@ -1109,7 +1109,7 @@ Can cause race conditions in multi-user scenarios. Use dcc.Store for theme state
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 58-58)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 58-58)
 
 **Notes**:
 
@@ -1120,7 +1120,7 @@ Settled position C-21 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 253-263)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 253-263)
 
 **Detail**:
 
@@ -1135,7 +1135,7 @@ Settled position C-21 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 263-298)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 263-298)
 
 **Detail**:
 
@@ -1162,16 +1162,16 @@ immediate feedback without requiring Apply-button interaction.
 
 Part of Issue
 
-### JR-ML-UI-054 — Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:.
+### JR-ML-UI-054 — Per `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 187-200)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 187-200)
 
 **Detail**:
 
-Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:
+Per `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`, after adding `get_dataset_data()` to juniper-cascor-client:
 
 **Notes**:
 
@@ -1182,7 +1182,7 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 356-364)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 356-364)
 
 **Detail**:
 
@@ -1197,7 +1197,7 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 522-528)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 522-528)
 
 **Detail**:
 
@@ -1208,7 +1208,7 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 658-672)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 658-672)
 
 **Detail**:
 
@@ -1219,7 +1219,7 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 732-754)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 732-754)
 
 **Detail**:
 
@@ -1230,7 +1230,7 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 341-356)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 341-356)
 
 **Detail**:
 
@@ -1241,7 +1241,7 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 464-472)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 464-472)
 
 **Detail**:
 
@@ -1256,9 +1256,9 @@ Per `DEPENDENCY_UPDATE_WORKFLOW.md`, after adding `get_dataset_data()` to junipe
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R0-01_frontend_performance.md` (lines 50-120)
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1475-1485)
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 53-53)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R0-01-FRONTEND-PERFORMANCE.md` (lines 50-120)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1475-1485)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 53-53)
 
 **Detail**:
 
@@ -1292,7 +1292,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 84-99)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 84-99)
 
 **Detail**:
 
@@ -1307,7 +1307,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 434-444)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 434-444)
 
 **Detail**:
 
@@ -1322,7 +1322,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 229-239)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 229-239)
 
 **Detail**:
 
@@ -1337,7 +1337,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md` (lines 184-195)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md` (lines 184-195)
 
 **Detail**:
 
@@ -1352,7 +1352,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 78-89)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 78-89)
 
 **Detail**:
 
@@ -1367,7 +1367,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/MICROSERVICES_ARCHITECTURE_ANALYSIS.md` (lines 655-663)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-ANALYSIS.md` (lines 655-663)
 
 **Detail**:
 
@@ -1393,7 +1393,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 389-431)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 389-431)
 
 **Detail**:
 
@@ -1408,7 +1408,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 41-48)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 41-48)
 
 **Detail**:
 
@@ -1423,7 +1423,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 532-536)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 532-536)
 
 **Detail**:
 
@@ -1438,7 +1438,7 @@ The current topology visualization is exclusively **node-centric** — showing n
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 522-532)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 522-532)
 
 **Detail**:
 
@@ -1453,7 +1453,7 @@ The `get_dataset_data()` method (line 733) already demonstrates the correct patt
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 488-504)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 488-504)
 
 **Detail**:
 
@@ -1468,7 +1468,7 @@ The `get_dataset_data()` method (line 733) already demonstrates the correct patt
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 471-492)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 471-492)
 
 **Notes**:
 
@@ -1479,7 +1479,7 @@ The `get_dataset_data()` method (line 733) already demonstrates the correct patt
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 31-39)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 31-39)
 
 **Detail**:
 
@@ -1494,18 +1494,18 @@ The `get_dataset_data()` method (line 733) already demonstrates the correct patt
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_08_UI_LOCK_AND_VISUALIZATION.md` (lines 1-45)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CANOPY_PROPOSAL-08-UI-LOCK-AND-VISUALIZATION.md` (lines 1-45)
 
 ### JR-ML-UI-077 — v1.0.0–v2.0.0 Primary Sources.
 
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 504-513)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 504-513)
 
 **Detail**:
 
-| 1 | `CONSOLIDATED_DEVELOPMENT_RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
+| 1 | `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md`  | `juniper-ml/notes/development/`     | 2026-04-17 | 91+ items from 16 source documents      |
 
 ### JR-ML-UI-078 — Work Unit 1: Worktree Developer Experience (HIGH).
 

@@ -30,7 +30,7 @@
 
 ## Secrets Management (SOPS)
 
-> See: `notes/SOPS_USAGE_GUIDE.md`
+> See: `notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`
 
 | Task            | Command                                                            |
 |-----------------|--------------------------------------------------------------------|
@@ -144,7 +144,7 @@ Constraint: publish jobs currently run on GitHub-hosted `ubuntu-latest` runners 
 
 ## Git Worktrees
 
-> See: `notes/WORKTREE_SETUP_PROCEDURE.md` | `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`
+> See: `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md` | `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`
 
 **Create:** From repo root on clean `main`, create branch, then:
 
@@ -248,8 +248,8 @@ Metric pattern: `<namespace>_<subsystem>_<metric>_<unit>` -- namespaces: `junipe
 - [Ecosystem Guide](../AGENTS.md) -- project map, dependency graph, conventions
 - [juniper-ml REFERENCE](REFERENCE.md) -- package metadata, extras, version history
 - [Deprecated Master Cheatsheet](../notes/legacy/DEVELOPER_CHEATSHEET-ORIGINAL.md) -- archived monolithic cross-project reference (relocated to `notes/history/` in 2026-04, consolidated into `notes/legacy/` 2026-05-05)
-- [Worktree Setup](../notes/WORKTREE_SETUP_PROCEDURE.md) | [Worktree Cleanup V2](../notes/WORKTREE_CLEANUP_PROCEDURE_V2.md)
-- [SOPS Usage Guide](../notes/SOPS_USAGE_GUIDE.md) -- complete secrets management reference
+- [Worktree Setup](../notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md) | [Worktree Cleanup V2](../notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md)
+- [SOPS Usage Guide](../notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md) -- complete secrets management reference
 
 ---
 

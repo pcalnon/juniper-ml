@@ -1,7 +1,7 @@
 # juniper-service-core v0.2.0 — T2 surface (lifecycle / routes / snapshots / replay / websocket / workers) — Release Notes
 
 > Authored from [`notes/templates/TEMPLATE_RELEASE_NOTES.md`](../templates/TEMPLATE_RELEASE_NOTES.md)
-> and archived per the release-notes convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> and archived per the release-notes convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 > Used as the body of the GitHub Release [`juniper-service-core-v0.2.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.2.0).
 
 ---
@@ -136,7 +136,7 @@ correlation-based **result reduction** and the cascade `Task`/`TaskResult` envel
 
 ## Design & Provenance
 
-- Design, gate-audit & build plan: `notes/JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md`
+- Design, gate-audit & build plan: `notes/JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md`
 - Pull requests: T2 routes/lifecycle #473 · snapshots #476 · replay #478 · websocket #484 · worker foundations #492 · worker coordinator + `/ws/workers` #496
 - Full changelog: `juniper-service-core/CHANGELOG.md` (`[0.2.0]`)
 

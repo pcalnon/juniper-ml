@@ -732,7 +732,7 @@ juniper-cascor-worker:
 ### Phase 2: systemd & Service Management (P1) -- COMPLETED
 
 **Goal**: Provide OS-native service management for all three core services.
-**Status**: All steps completed on 2026-04-06. Implementation plan at `notes/MICROSERVICES_SYSTEMD_PHASE2_PLAN_2026-04-06.md`.
+**Status**: All steps completed on 2026-04-06. Implementation plan at `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-SYSTEMD-PHASE2-PLAN.md`.
 
 | Step | Task                                                                   | Files                                                                             | Status                  |
 |------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------|-------------------------|
@@ -755,7 +755,7 @@ juniper-cascor-worker:
 
 **Goal**: Enable containerized deployment of the distributed worker.
 
-**Completed**: 2026-04-06. Implementation plan: `notes/MICROSERVICES_PHASE3_PLAN_2026-04-06.md`.
+**Completed**: 2026-04-06. Implementation plan: `notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE3-PLAN.md`.
 
 | Step | Task                                                                      | Files                                                         | Est. Complexity | Status |
 |------|---------------------------------------------------------------------------|---------------------------------------------------------------|-----------------|--------|
@@ -786,7 +786,7 @@ juniper-cascor-worker:
 
 **Goal**: Enable k8s deployment of the full stack.
 **Status**: Implemented in `juniper-deploy` branch `feature/phase4-kubernetes`.
-**Implementation plan**: `juniper-ml/notes/MICROSERVICES_PHASE4_PLAN_2026-04-06.md`
+**Implementation plan**: `juniper-ml/notes/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-PHASE4-PLAN.md`
 
 | Step | Task                                                | Files                                | Status |
 |------|-----------------------------------------------------|--------------------------------------|--------|

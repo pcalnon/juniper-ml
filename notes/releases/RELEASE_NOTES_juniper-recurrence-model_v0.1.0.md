@@ -1,7 +1,7 @@
 # juniper-recurrence-model v0.1.0 — Δt-Native LMU (First Recurrence Release) — Release Notes (archived)
 
 > Archived verbatim from the GitHub Release [`juniper-recurrence-model-v0.1.0`](https://github.com/pcalnon/juniper-recurrence/releases/tag/juniper-recurrence-model-v0.1.0) (pcalnon/juniper-recurrence), backfilled 2026-06-18
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 
 ---
 
@@ -163,9 +163,9 @@ None functional. The following are **deliberately deferred** (not defects):
 
 - **PyPI:** <https://pypi.org/project/juniper-recurrence-model/0.1.0/>
 - **Full changelog:** [`juniper-recurrence-model/CHANGELOG.md`](https://github.com/pcalnon/juniper-recurrence/blob/main/juniper-recurrence-model/CHANGELOG.md)
-- **Design of record:** `notes/JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md` (juniper-ml)
-- **WS-4 build plan:** `notes/JUNIPER_RECURRENCE_WS4_MODEL_BUILD_PLAN_2026-06-15.md` (juniper-ml)
-- **Δt-handling / Approach-C math:** `notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` (juniper-ml)
+- **Design of record:** `notes/JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md` (juniper-ml)
+- **WS-4 build plan:** `notes/JUNIPER_2026-06-15_JUNIPER-RECURRENCE_WS4-MODEL-BUILD-PLAN.md` (juniper-ml)
+- **Δt-handling / Approach-C math:** `notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` (juniper-ml)
 
 ---
 

@@ -112,7 +112,7 @@ pytest tests/ -v
 
 Part of the [Juniper](https://github.com/pcalnon) ML research platform. The architecture and the
 cascor extraction plan are the model/middleware refactor design of record
-(`notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` in `juniper-ml`).
+(`notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` in `juniper-ml`).
 
 ## License
 

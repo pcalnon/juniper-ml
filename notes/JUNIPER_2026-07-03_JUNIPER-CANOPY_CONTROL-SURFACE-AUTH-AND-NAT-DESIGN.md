@@ -14,7 +14,7 @@
 ## 1. Purpose & scope
 
 This is the remediation design-of-record for the **two live-confirmed findings** from the containerized-stack security audit
-([`notes/JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md`](JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md), §4.1 / §4.7 / §5.2):
+([`notes/JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-SECURITY-AUDIT-PLAN.md`](JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-SECURITY-AUDIT-PLAN.md), §4.1 / §4.7 / §5.2):
 
 - **SEC-F22** — the canopy browser training-control gate is bypassable from any in-network foothold (confirmed live, HO-6).
 - **SEC-F19** — Docker NAT defeats every IP-keyed control (confirmed live, HO-3).
@@ -434,7 +434,7 @@ un-gated; the design must make "trust XFF only from the proxy IP" a hard invaria
 - HO-3 (SEC-F19): 6 WS → 5 accept, 6th rejected; log `Per-IP limit reached for 172.23.0.1 (5/5)` (bridge gateway); live bridge
   `172.23.0.0/16` outside the `172.18-21` metrics allowlist — audit §5.2.
 
-**Prior work / references:** `notes/JUNIPER_STACK_SECURITY_AUDIT_PLAN_2026-07-02.md` (§4.1, §4.7, §5.2, §8 HO-3/HO-6);
+**Prior work / references:** `notes/JUNIPER_2026-07-02_JUNIPER-ECOSYSTEM_STACK-SECURITY-AUDIT-PLAN.md` (§4.1, §4.7, §5.2, §8 HO-3/HO-6);
 `juniper-canopy/notes/JUNIPER_CANOPY_TRAINING-CONTROL-AUTH_DESIGN_2026-06-30.md` (§7.3 residual, the shipped gate);
 `juniper-deploy/notes/poc/POC_REMEDIATION_PLAN_2026-05-27.md` (`MetricsAuthMiddleware` history);
 `juniper-ml/notes/legacy/SECURITY_AUDIT_PLAN.md` (24-finding baseline).

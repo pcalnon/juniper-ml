@@ -66,9 +66,9 @@ Repos in this ecosystem advance **same-day**, and **multiple Claude sessions run
 ## 4. Artifacts & references (all in `juniper-ml`)
 
 - Memory: `project_precommit_testing_audit_2026-06-19.md` — the running record; **read first.**
-- `notes/JUNIPER_PRECOMMIT_TESTING_AUDIT_PLAN_2026-06-19.md` — methodology + rubric (Areas A/B/C), multi-agent-validated.
-- `notes/JUNIPER_PRECOMMIT_TESTING_AUDIT_WAVE1_FINDINGS_2026-06-19.md` — cross-repo drift matrix + findings F1–F17.
-- `notes/JUNIPER_RECURRENCE_PRECOMMIT_TESTING_CI_AUDIT_2026-06-21.md` — recurrence deep-dive (§8 = the pre-commit profile, §9 = the prioritized backlog).
+- `notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-PLAN.md` — methodology + rubric (Areas A/B/C), multi-agent-validated.
+- `notes/JUNIPER_2026-06-19_JUNIPER-ECOSYSTEM_PRECOMMIT-TESTING-AUDIT-WAVE1-FINDINGS.md` — cross-repo drift matrix + findings F1–F17.
+- `notes/JUNIPER_2026-06-21_JUNIPER-RECURRENCE_PRECOMMIT-TESTING-CI-AUDIT.md` — recurrence deep-dive (§8 = the pre-commit profile, §9 = the prioritized backlog).
 
 ## 5. Recommended first move
 
