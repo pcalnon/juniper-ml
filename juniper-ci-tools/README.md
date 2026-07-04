@@ -158,6 +158,14 @@ coverage rollout):
   truth for what counts. Zero-statement files (re-export `__init__.py`) already
   score 100 %, so `--omit` is for thin `__main__.py` / CLI shims and the like.
 
+Scope the gate to repos or sub-packages with importable source trees. `--omit`
+is a measured-file exclusion, not a whole-repo escape hatch: use it for specific
+paths that appear in `coverage.json` and match the rollout's exclusion policy
+(for example a thin dispatch-only `__main__.py`). Repos with no importable
+package, such as the `juniper-ml` meta-package (`packages = []`) or
+`juniper-deploy`, are accounted for by the Phase C exemption ledger instead of
+by running the mapper against an empty source tree.
+
 Exit codes: `0` (advisory always, or an enforcing run that is clean), `1`
 (enforcing only — a file or sub-module is under its floor; every offender is
 listed, no silent truncation), `2` (usage / structural error — no input, an
