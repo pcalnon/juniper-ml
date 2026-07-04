@@ -166,6 +166,9 @@ jobs:
           # prompts/generated/ by the emit-name convention + a SAFETY-gated prune (no delete
           # without --yes; .gitkeep/non-convention files never touched; dir read from conventions.yaml).
           python3 -m unittest -v tests/test_generated_prompt_index.py
+          # tests/test_thread_handoff_archive.py: drift guard for the archived handoff prompt
+          # filename convention and top-level note references to archived handoff prompts.
+          python3 -m unittest -v tests/test_thread_handoff_archive.py
           # tests/test_install_agents.py: drives util/install_agents.bash (the ~/.claude
           # mirror, PR 6a) against a synthetic source + throwaway target -- idempotent,
           # reversible, dry-run-safe, no-clobber. Stdlib only (subprocess/tempfile).
