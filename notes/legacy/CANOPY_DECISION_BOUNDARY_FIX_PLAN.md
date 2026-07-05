@@ -522,12 +522,12 @@ Tests:
 
 | File                                                       | Change                                               | Root Cause |
 |------------------------------------------------------------|------------------------------------------------------|------------|
-| `src/demo_mode.py`                                           | Fix forward() cascade + add weight training          | RC-6, RC-7 |
-| `src/backend/demo_backend.py`                                | Add thread safety (acquire _lock)                    | RC-8       |
-| `src/tests/unit/test_mock_cascor_forward.py`                 | New: cascade forward tests                           | T-6        |
-| `src/tests/unit/test_demo_weight_training.py`                | New: weight training simulation tests                | T-7        |
-| `src/tests/unit/test_demo_backend_thread_safety.py`          | New: thread safety tests                             | T-8        |
-| `src/tests/integration/test_demo_boundary_evolution.py`      | New: boundary evolution integration tests            | T-9        |
+| `src/demo_mode.py`                                         | Fix forward() cascade + add weight training          | RC-6, RC-7 |
+| `src/backend/demo_backend.py`                              | Add thread safety (acquire _lock)                    | RC-8       |
+| `src/tests/unit/test_mock_cascor_forward.py`               | New: cascade forward tests                           | T-6        |
+| `src/tests/unit/test_demo_weight_training.py`              | New: weight training simulation tests                | T-7        |
+| `src/tests/unit/test_demo_backend_thread_safety.py`        | New: thread safety tests                             | T-8        |
+| `src/tests/integration/test_demo_boundary_evolution.py`    | New: boundary evolution integration tests            | T-9        |
 
 ### No changes required
 
