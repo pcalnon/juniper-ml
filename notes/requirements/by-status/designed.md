@@ -1252,7 +1252,6 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.3 TRAIN-ARCH-01 cascor mini-batch restoration']
-<<<<<<< HEAD
 
 ### JR-ML-TRAIN-103 — Trigger / due date.** None — opportunistic. May get pulled in if TRAIN-ARCH-01 unblocks (Q4 of that design doc covers the per-step vs…
 
@@ -1270,5 +1269,3 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 [v3 brief repaired from cited content; was: '3.7 R5.6-THROTTLE — Cascor 25-epoch emit throttle removal']
 
-=======
->>>>>>> 55be33d (removed trailing whitespace)
