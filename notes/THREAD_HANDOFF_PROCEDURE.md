@@ -2,7 +2,7 @@
 
 **Purpose**: Preserve context fidelity during long-running Claude Code sessions by proactively handing off to a new thread before context compaction degrades output quality.
 
-**Last Updated**: 2026-02-23
+**Last Updated**: 2026-07-04
 
 ---
 
@@ -23,13 +23,14 @@ A **proactive handoff** transfers a curated, high-signal summary to a fresh thre
 
 Trigger a handoff when **any** of the following conditions are met:
 
-| Condition                   | Indicator                                                                                                                   |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Context saturation**      | Thread has performed 15+ tool calls or edited 5+ files                                                                      |
-| **Phase boundary**          | A logical phase of work is complete (e.g., planning done → implementation starting; implementation done → testing starting) |
-| **Degraded recall**         | The agent re-reads a file it already read, or asks a question it already resolved                                           |
-| **Multi-file transition**   | Moving between major concerns (e.g., `pyproject.toml` → CI/CD workflows → documentation)                                   |
-| **User request**            | User says "hand off", "new thread", "continue in a fresh thread", or similar                                                |
+| Condition                  | Indicator                                                                                                                   |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Pre-compaction trigger** | Context utilization is within 1% to 5% of the compaction threshold (the current project policy is 95-99%)                   |
+| **Context saturation**     | Thread has performed 15+ tool calls or edited 5+ files                                                                      |
+| **Phase boundary**         | A logical phase of work is complete (e.g., planning done -> implementation starting; implementation done -> testing starting) |
+| **Degraded recall**        | The agent re-reads a file it already read, or asks a question it already resolved                                           |
+| **Multi-file transition**  | Moving between major concerns (e.g., `pyproject.toml` -> CI/CD workflows -> documentation)                                  |
+| **User request**           | User says "hand off", "new thread", "continue in a fresh thread", or similar                                               |
 
 **Do NOT handoff** when:
 
@@ -82,7 +83,32 @@ Key context:
 
 ### Step 3: Execute the Handoff
 
-Present the handoff goal to the user and recommend starting a new thread with it as the initial prompt.
+1. Present the handoff goal to the user and recommend starting a new thread with it as the initial prompt.
+2. Archive the exact handoff prompt under `prompts/thread-handoff_automated-prompts/`.
+3. State the current branch, git status, staged files, and uncommitted work before ending the thread.
+
+### Step 4: Archive Filename Convention
+
+Archived handoff prompts use this filename shape:
+
+```text
+prompts/thread-handoff_automated-prompts/HANDOFF_YYYY-MM-DD_<session-description>.md
+```
+
+Rules:
+
+- Use the handoff date immediately after the `HANDOFF_` prefix.
+- Put the descriptive slug after the date. Use short, scan-friendly words separated by hyphens.
+- Replace spaces, underscores, dots, and other punctuation in the subject with hyphens.
+- Keep meaningful project/workstream identifiers when they are part of the subject (`WS-6`, `OUT-11`, `CFG`, `API`, etc.).
+- Move sequencing into the slug instead of the date (`HANDOFF_2026-05-20_live-data-migration-1.md`, not a time suffix on the date).
+- Use ASCII in filenames; transliterate symbols where practical (`irregular-dt` rather than symbol-bearing source text).
+
+Examples:
+
+- `HANDOFF_2026-06-21_ws6-bphase-b3-on-event-sink.md`
+- `HANDOFF_2026-07-01_per-file-coverage-rollout-c4-c5.md`
+- `HANDOFF_2026-05-20_live-data-migration-1.md`
 
 ---
 
@@ -170,7 +196,7 @@ Key context from prior phases:
 
 ## Best Practices
 
-1. **Handoff early, not late** — A handoff at 70% context usage is better than compaction at 95%
+1. **Handoff early, not late** — Use the 95-99% pre-compaction trigger, and hand off earlier at natural phase boundaries when the remaining work would otherwise cross that threshold
 2. **One handoff per phase boundary** — Don't chain 5 handoffs for one task; batch related work
 3. **Include the verification command** — Always tell the new thread how to check its work (`python -m build`, `twine check dist/*`, etc.)
 4. **Reference CLAUDE.md** — The new thread will read it automatically, but call out any conventions relevant to the remaining work
