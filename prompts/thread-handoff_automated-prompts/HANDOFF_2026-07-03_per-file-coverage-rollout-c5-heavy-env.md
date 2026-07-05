@@ -18,7 +18,8 @@
 
 ## Remaining work
 
-1. **On each owner-merge signal:** verify `gh pr view` state=MERGED, then gated worktree cleanup (live-cwd scan + clean-tree + merged-only; delete lingering remote branch — recurrence does NOT auto-delete). Executor worktrees under `/home/pcalnon/Development/python/Juniper/worktrees/`: `juniper-cascor--test--cascor-model-coverage-gate--20260703-0525--b3e6817e`, `juniper-data--feature--per-file-coverage-gate--20260703-0527--9c85399b`, `juniper-recurrence--test--recurrence-app-coverage-gate--20260703-0558--038859c9`, `juniper-recurrence--test--recurrence-client-coverage-gate--20260703-0559--038859c9`, plus this handoff's `juniper-ml--docs--handoff-c5-heavy-env--20260703-0620--0b4319e5`.
+1. **On each owner-merge signal:** verify `gh pr view` state=MERGED, then gated worktree cleanup (live-cwd scan + clean-tree + merged-only; delete lingering remote branch — recurrence does NOT auto-delete).
+    - Executor worktrees under `/home/pcalnon/Development/python/Juniper/worktrees/`: `juniper-cascor--test--cascor-model-coverage-gate--20260703-0525--b3e6817e`, `juniper-data--feature--per-file-coverage-gate--20260703-0527--9c85399b`, `juniper-recurrence--test--recurrence-app-coverage-gate--20260703-0558--038859c9`, `juniper-recurrence--test--recurrence-client-coverage-gate--20260703-0559--038859c9`, plus this handoff's `juniper-ml--docs--handoff-c5-heavy-env--20260703-0620--0b4319e5`.
 2. **canopy** — `JuniperCanopy1` env; measure the WHOLE `src` (today's gate is a unit+regression subset); expect subset-scope findings (flag, don't fake); canopy unit tests span 2 dirs; regen panel snapshot only if `get_layout()` changes (it shouldn't — tests only).
 3. **cascor** — `JuniperCascor1`; bash harness `src/tests/scripts/run_tests.bash`, subset `-m "unit and not slow"`; the LARGEST unit — expect a C-4-style split (lift PR(s) → separate gate PR last).
 4. **cascor-worker** — torch; the CPU-torch fresh-venv recipe from cascor-model works (`pip install --index-url https://download.pytorch.org/whl/cpu torch`).
@@ -46,3 +47,5 @@ ls /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_ECOSYSTEM_P
 ## Git state
 
 All delivered work lives on remote PR branches (nothing uncommitted); the 5 worktrees above await post-merge cleanup. juniper-ml main HEAD at handoff ≈ `0b4319e` (C-4 gate live). Start the new thread clean: `git fetch origin` per repo and verify against refreshed `origin/main`, never the parked working trees.
+
+---
