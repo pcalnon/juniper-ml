@@ -90,4 +90,3 @@ The tension here was: the audit called both BUG-CC-12 and BUG-JD-10 "confirmed s
 Pick #1 was selected, executed, and resolved as documentation-only work: both BUG-CC-12 and BUG-JD-10 were already fixed. The audit doc has been updated with the verification (see §5). No code change shipped from this pick.
 
 **Next on the queue**: top-3 pick #2 — wire `training_sessions_active` Gauge in cascor `lifecycle/manager.py` (P1 cluster A.1 from [`code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md`](code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md)). ~1 day, unblocks three permanently-inert alerts in one PR.
-
