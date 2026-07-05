@@ -70,8 +70,8 @@ Retire when: the OQ-4 model pick is ratified; measured numbers folded into
 Related: util/ad-hoc/verify_p5_recurrent_output_eval.py (P5 helpers reused),
          util/ad-hoc/verify_delay_line_node_eval.py (P4 FIR helpers reused),
          util/ad-hoc/verify_p6_narx_mlp_output_eval.py (P6 helpers reused),
-         notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md (S8 LMU reference),
-         notes/JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md
+         notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md (S8 LMU reference),
+         notes/JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md
 """
 
 from __future__ import annotations
@@ -496,7 +496,7 @@ def mlp_readout_predict(feats, params):
 # =========================================================================== #
 def lmu_matrices(d):
     """Canonical LMU / HiPPO-LegT A, B (theta-free: theta*m_dot = A m + B u).
-    Verbatim from notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md S8.2."""
+    Verbatim from notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md S8.2."""
     A = np.zeros((d, d))
     B = np.zeros((d, 1))
     for i in range(d):

@@ -1,7 +1,7 @@
 # juniper-service-core v0.3.0 — create_app(lifespan=) — Release Notes
 
 > Authored from [`notes/templates/TEMPLATE_RELEASE_NOTES.md`](../templates/TEMPLATE_RELEASE_NOTES.md)
-> and archived per the release-notes convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> and archived per the release-notes convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 > Used as the body of the GitHub Release [`juniper-service-core-v0.3.0`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-service-core-v0.3.0).
 
 ---
@@ -99,7 +99,7 @@ None.
 
 ## Design & Provenance
 
-- Motivation: `notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md` (H1 follow-up)
+- Motivation: `notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md` (H1 follow-up)
 - Pull request: `create_app(lifespan=)` + 0.3.0 bump #550
 - Full changelog: `juniper-service-core/CHANGELOG.md` (`[0.3.0]`)
 

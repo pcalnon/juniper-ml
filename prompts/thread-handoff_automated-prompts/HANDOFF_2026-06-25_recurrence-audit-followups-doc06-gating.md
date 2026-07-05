@@ -5,7 +5,7 @@
 **Prepared by**: Claude Code (Opus 4.8)
 **Created**: 2026-06-25
 **Purpose**: Close out the `juniper-recurrence` **full-audit remediation** backlog. The audit
-([`notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md`](../../notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md),
+([`notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md`](../../notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md),
 shipped as juniper-ml#546) is the **source of truth** for every finding ID. As of this handoff **every
 High-sev (H1, H2) and every Medium except DOC-06 is addressed.** What remains is one docs-only PR
 (**DOC-06**), plus two server-side gating items that are **Paul's** to action.
@@ -17,7 +17,7 @@ High-sev (H1, H2) and every Medium except DOC-06 is addressed.** What remains is
 1. **Read the audit** — §4 "Medium — remaining", §6, §7 (DOC-06 = line 85/193; OBS-04 = line 79/184):
 
    ```bash
-   sed -n '178,196p' /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_RECURRENCE_FULL_AUDIT_2026-06-24.md
+   sed -n '178,196p' /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-06-24_JUNIPER-RECURRENCE_FULL-AUDIT.md
    ```
 
 2. **Confirm this session's PRs all merged** (#66–#70 + the dependabot fan-out #71–#74):

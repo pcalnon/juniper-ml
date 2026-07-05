@@ -183,7 +183,7 @@ If the real canopy boot or the UI drive proves intractable (real-boot fragility,
 coupling, MCP-grant variance), do **not** force E-1: fall back to the plan's **Plan-B** (the E-8
 boot-time self-check + the E-2 manual env-floor check + a hand-run `curl` smoke script) and record the
 decision in a `notes/` follow-up. See
-`notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md` §6.9.
+`notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md` §6.9.
 
 ## Guardrails
 

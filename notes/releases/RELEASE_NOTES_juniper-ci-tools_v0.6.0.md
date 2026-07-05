@@ -48,7 +48,7 @@ juniper-coverage-gap-map --coverage-json coverage.json --enforce \
 
 ### The two enforcing bases (deliberately different from the advisory display)
 
-The gate uses different bases than the advisory report so it is apples-to-apples across units regardless of each unit's branch setting (the basis choices ratified in `notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md` §0):
+The gate uses different bases than the advisory report so it is apples-to-apples across units regardless of each unit's branch setting (the basis choices ratified in `notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md` §0):
 
 - **Per-file basis = statement** coverage (`covered_statements / num_statements`), surfaced as the new `FileCoverage.statement_percent` property — **not** the branch-inclusive `percent_covered` the advisory report shows (a repo running `branch = true` reports a branch-inclusive percent).
 - **Sub-module basis = pooled** (statement-weighted `Σcovered / Σstatements`) via `SubmoduleCoverage.below_pooled_bar` — **not** the mean-of-files average the advisory report shows. The two diverge for small files and can flip a sub-module's outcome.
@@ -116,7 +116,7 @@ pip install --force-reinstall juniper-ci-tools==0.5.1
 
 ## Known Issues
 
-- **No unit CI is on the blocking gate yet.** C-0 ships the enforcing *mode* only; wiring `--enforce` as a blocking step into each unit's CI is work-unit C-1+ of the rollout (`notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md` §5).
+- **No unit CI is on the blocking gate yet.** C-0 ships the enforcing *mode* only; wiring `--enforce` as a blocking step into each unit's CI is work-unit C-1+ of the rollout (`notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md` §5).
 - **Waiver file (`coverage-waivers.yaml`) not yet implemented.** The audit plan's structured-waiver mechanism (§7.4) is deferred; the current excluded-files lever is `--omit`.
 
 ---
@@ -133,8 +133,8 @@ pip install --force-reinstall juniper-ci-tools==0.5.1
 
 ## Links
 
-- Per-file coverage rollout scoping (C-0): [../JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md](../JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md)
-- Test-suite audit plan (§6 contract, §7 enforcement design): [../JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md](../JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md)
+- Per-file coverage rollout scoping (C-0): [../JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md](../JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md)
+- Test-suite audit plan (§6 contract, §7 enforcement design): [../JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md](../JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md)
 - Package changelog: [../../juniper-ci-tools/CHANGELOG.md](../../juniper-ci-tools/CHANGELOG.md)
 - Previous release: [RELEASE_NOTES_juniper-ci-tools_v0.5.1.md](RELEASE_NOTES_juniper-ci-tools_v0.5.1.md)
 

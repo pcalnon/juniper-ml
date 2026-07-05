@@ -2,9 +2,9 @@
 
 - **Version**: 1.0.0
 - **Date**: 2026-03-29
-- **Status**: PARTIALLY COMPLETE — Issues 1 and 3 resolved; Issue 2 remains. Superseded by DASHBOARD_AUGMENTATION_PLAN.md for remaining work.
+- **Status**: PARTIALLY COMPLETE — Issues 1 and 3 resolved; Issue 2 remains. Superseded by JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md for remaining work.
 - **Scope**: juniper-canopy, juniper-cascor
-- **Prerequisite**: FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md (all prior fixes applied)
+- **Prerequisite**: JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md (all prior fixes applied)
 
 ---
 

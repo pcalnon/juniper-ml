@@ -4,7 +4,7 @@ TRAINED, recurrent OUTPUT MAP that is a HIDDEN MLP (a true NARX network), rather
 than P5's single self-recurrent output neuron.
 
 WHY P6 EXISTS.  The P5 evaluation (verify_p5_recurrent_output_eval.py /
-JUNIPER_RECURSE_DELAY_LINE_NODE_DESIGN_EVAL_2026-06-09.md P5 update) showed that a
+JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-DELAY-LINE-NODE-DESIGN-EVAL.md P5 update) showed that a
 *single* self-recurrent output node CANNOT lift the star-free / no-count ceiling:
 parity o(t)=XOR(x(t),o(t-1)) needs the second-order cross-term x(t).o(t-1), and a
 single linear-threshold neuron cannot represent XOR (Minsky & Papert 1969). That

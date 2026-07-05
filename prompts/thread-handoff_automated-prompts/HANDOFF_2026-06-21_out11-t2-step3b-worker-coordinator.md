@@ -7,7 +7,7 @@ the `/ws/workers` stream**, the design-heavy half of the worker subsystem.
 
 Approach (unchanged, ratified): **"extract base, keep cascor subclass,"** driven by a stub — de-cascor
 cascor's modules onto the `juniper-model-core` interfaces. **cascor is untouched; its adoption is WS-6.**
-Canonical plan: `notes/JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md` — **§5.6** (the
+Canonical plan: `notes/JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md` — **§5.6** (the
 per-module extraction ledger + the OQ-11 worker verdict), **§6** (build plan), **§9** (as-built + the
 step-3 `3a`/`3b` split, updated by #492).
 

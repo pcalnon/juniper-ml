@@ -12,7 +12,7 @@
 #
 # Description:
 #    CI pipeline for the juniper-model-core package (WS-3 of the model/middleware refactor --
-#    see notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md). Runs on PRs and pushes
+#    see notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md). Runs on PRs and pushes
 #    that touch the package or its tests. The juniper-ml meta-package's own ci.yml continues
 #    to gate the meta-package; this workflow handles the model-core subpackage independently.
 #

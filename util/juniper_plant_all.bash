@@ -122,7 +122,7 @@ JUNIPER_CASCOR_URL="http://${JUNIPER_CASCOR_HOST}:${JUNIPER_CASCOR_PORT}"
 # at import time, leaving server.py crashing immediately on ``import torch``
 # and the /v1/health endpoint never coming up. Both envs now also carry
 # matching activate.d/deactivate.d hooks that strip the rust_mudgeon LIBTORCH
-# bleed-through (see juniper-ml/notes/CASCOR_CONDA_ENV_FIX_2026-05-07.md).
+# bleed-through (see juniper-ml/notes/JUNIPER_2026-05-07_JUNIPER-CASCOR_CONDA-ENV-FIX.md).
 # Override JUNIPER_CASCOR_CONDA only if you have a known-good alternative env.
 JUNIPER_CASCOR_CONDA="${JUNIPER_CASCOR_CONDA:-JuniperCascor1}"
 JUNIPER_CASCOR_PYTHON="${JUNIPER_CONDA_DIR}/envs/${JUNIPER_CASCOR_CONDA}/bin/python"

@@ -1,6 +1,6 @@
 """Dogfood / drift gate for the ``juniper-coverage-gap-map`` console script
 (enhancement E-4, plan
-``notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md`` §6.7,
+``notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md`` §6.7,
 Phase-2 PR-6).
 
 The advisory per-file coverage-gap mapper is hosted in the
@@ -28,7 +28,7 @@ test is the **structural** dogfood gate, modelled on
    point over a synthetic ``coverage.json`` exits ``1`` on a gap, ``0`` when
    clean, ``0`` on ``--help``, and ``0`` for the advisory default (no
    ``--enforce``). Work-unit C-0 of
-   ``notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md``.
+   ``notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md``.
 
 Why this is (mostly) a STRUCTURAL gate (the manual-verify note)
 --------------------------------------------------------------

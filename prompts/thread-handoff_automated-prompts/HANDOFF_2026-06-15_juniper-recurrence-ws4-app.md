@@ -27,9 +27,9 @@ cd /home/pcalnon/Development/python/Juniper/juniper-recurrence && pytest juniper
 ```
 
 Read first: the WS-4 model-build plan (`juniper-ml/notes/`, merged as ml#424) and the design of
-record `juniper-ml/notes/JUNIPER_RECURRENCE_MODEL_DETAILED_DESIGN_2026-06-14.md`
+record `juniper-ml/notes/JUNIPER_2026-06-14_JUNIPER-RECURRENCE_MODEL-DETAILED-DESIGN.md`
 (§6 integration; §0.5 C2 dual-mode; §6.8 deploy/ports/env). Refactor plan + WS register:
-`juniper-ml/notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`.
+`juniper-ml/notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`.
 
 ## Completed (the session that produced this handoff)
 

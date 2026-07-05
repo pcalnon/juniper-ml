@@ -67,7 +67,7 @@ def test_version_is_stable_string():
     """0.4.0 — additive minor: build provenance. ``set_build_info`` gains
     keyword-only ``git_sha`` / ``build_date`` passthrough labels, and
     ``ReadinessResponse`` gains optional ``git_sha`` / ``build_date`` fields
-    (juniper-ml ``notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md``). Both are
+    (juniper-ml ``notes/JUNIPER_2026-06-14_JUNIPER-ECOSYSTEM_BUILD-PROVENANCE-DESIGN.md``). Both are
     backward-compatible — no public-symbol change vs ``0.3.1``. Consumers
     wanting the deployed-revision labels should pin
     ``juniper-observability>=0.4.0``.

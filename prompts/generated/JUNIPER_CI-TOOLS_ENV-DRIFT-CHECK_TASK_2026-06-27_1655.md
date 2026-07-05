@@ -2,7 +2,7 @@
 
 <!--
 Custom-agent suite: a filled copy of prompts/agent_templates/task.md (execution-class).
-Implements Phase A1 / §10.1 of notes/JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md.
+Implements Phase A1 / §10.1 of notes/JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md.
 Grounded first-party against juniper-ml (HEAD = current main) + juniper-canopy (HEAD 31c7c995);
 validated against prompts/agent_templates/RUBRIC.md by the prompt-validator subagent.
 The downstream session WRITES CODE + opens PRs (it does not merge or publish).
@@ -18,7 +18,7 @@ Ground every claim in these real, re-verified artifacts; **re-confirm each in-re
 
 **The plan of record (what this implements):**
 
-- `juniper-ml/notes/JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md` — **§10.1** (the dependency-satisfaction check / durable guard), **§9.3 row `EFD`**, **§11 Phase A1 + Phase D "D-tool"**. This task builds §10.1's **shared, reusable** tool. The canopy-local MVP already shipped (next bullet), so **do not re-create it — generalize it**.
+- `juniper-ml/notes/JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md` — **§10.1** (the dependency-satisfaction check / durable guard), **§9.3 row `EFD`**, **§11 Phase A1 + Phase D "D-tool"**. This task builds §10.1's **shared, reusable** tool. The canopy-local MVP already shipped (next bullet), so **do not re-create it — generalize it**.
 
 **Reference logic to GENERALIZE (do NOT duplicate — the canopy test stays):**
 
@@ -48,7 +48,7 @@ Ground every claim in these real, re-verified artifacts; **re-confirm each in-re
 
 **Conventions (current canonical):** line-length **512**; deliverable docs → `notes/`; Python `>=3.11` (ci-tools) / `>=3.12` (juniper-ml); one-PR-per-work-unit; no-merge-without-PR; worktree isolation under `/home/pcalnon/Development/python/Juniper/worktrees/`; thread-handoff at **95–99%** of compaction. Canopy test env: `JuniperCanopy1`.
 
-**Known red herring (do not chase):** the canopy discovery bundle's `test_status.failing_count: 188` is the documented **stale-`.pytest_cache` artifact** (`juniper-ml/notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` §5 — a 6-week-old `lastfailed`); canopy collects cleanly. Ignore it.
+**Known red herring (do not chase):** the canopy discovery bundle's `test_status.failing_count: 188` is the documented **stale-`.pytest_cache` artifact** (`juniper-ml/notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md` §5 — a 6-week-old `lastfailed`); canopy collects cleanly. Ignore it.
 
 ## Primary Objective
 

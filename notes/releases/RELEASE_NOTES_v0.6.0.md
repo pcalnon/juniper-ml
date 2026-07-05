@@ -1,7 +1,7 @@
 # juniper-ml v0.6.0 — extras floor-bump — Release Notes (archived)
 
 > Archived verbatim from the GitHub Release [`v0.6.0`](https://github.com/pcalnon/juniper-ml/releases/tag/v0.6.0) (pcalnon/juniper-ml), backfilled 2026-06-18
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 
 ---
 
@@ -79,7 +79,7 @@ See the full CHANGELOG section below for context.
 
 - **`juniper-ml[all]` install-size advisory corrected** in
   `docs/QUICK_START.md`, `notes/releases/RELEASE_WALKTHROUGH_juniper-ml-v0.5.0_2026-05-21.md`,
-  and `notes/META_PACKAGE_EXTRAS_REQUIREMENTS_2026-05-21.md`. The
+  and `notes/JUNIPER_2026-05-21_JUNIPER-ML_META-PACKAGE-EXTRAS-REQUIREMENTS.md`. The
   original v0.5.0 estimate of "roughly 2 GB" understated the resolved
   on-disk footprint by ~2.5x: the actual figure measured against PyPI
   on 2026-05-21 (Python 3.13, Linux x86_64) was **5 GB on disk after

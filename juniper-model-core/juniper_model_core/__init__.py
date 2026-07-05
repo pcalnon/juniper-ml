@@ -12,7 +12,7 @@ references ``numpy`` only in type annotations. The conformance kit
 (:mod:`juniper_model_core.conformance`) *does* use numpy at runtime -- install the
 ``[conformance]`` extra to run it.
 
-See ``notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`` (in the juniper-ml repo) for
+See ``notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`` (in the juniper-ml repo) for
 the full design rationale and the ratified decision ledger (D1-D10).
 """
 

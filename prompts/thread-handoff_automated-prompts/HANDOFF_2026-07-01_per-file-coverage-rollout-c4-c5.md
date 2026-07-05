@@ -11,8 +11,8 @@
 Roll out a **blocking per-file coverage gate** across the Juniper ecosystem's 19 coverage units: every source file **≥90% statement**, every packaged sub-module **≥95% statement-weighted pooled**. This is **Phase C** of the test-suite audit.
 
 **READ FIRST (both on juniper-ml main):**
-- `notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md` — the sequenced backlog (C-0..C-5), measured gap data, ratified decisions, excluded-files policy. **This is the operating doc.**
-- `notes/JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md` — the parent audit plan (§6 contract, §7 measurement design).
+- `notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md` — the sequenced backlog (C-0..C-5), measured gap data, ratified decisions, excluded-files policy. **This is the operating doc.**
+- `notes/JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md` — the parent audit plan (§6 contract, §7 measurement design).
 
 ---
 

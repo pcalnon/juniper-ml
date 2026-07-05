@@ -10,7 +10,7 @@ Continue Juniper ecosystem CI hygiene + branch-protection cleanup. The session h
 - Dep-docs script: sed → awk #69 → python yaml #72 — all chased wrong root cause. Real fix in #74: `pip install -q pyyaml` in ci.yml + `pyyaml>=6.0` in pyproject `[test]` extras. The script's `python -c "import yaml" 2>/dev/null` swallowed `ModuleNotFoundError` and surfaced it as misleading "invalid YAML syntax".
 - Lockfile guardrails (auto-regen on pyproject change + pre-commit presence guard) ported across all 4 lockfile-having repos.
 - pip-audit: 11 unpatched torch PYSEC IDs (2025-189..197, 2025-210, 2026-139) `--ignore-vuln`'d in juniper-cascor #282 + juniper-cascor-worker #75 with documented re-eval cadence (quarterly).
-- Status docs: notes/STATUS_FOLLOWUP_ASYNC_ROUTE_AUDIT_2026-05-19.md + notes/STATUS_ROADMAP_AUDIT_2026-05-19.md in juniper-ml.
+- Status docs: notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_STATUS-FOLLOWUP-ASYNC-ROUTE-AUDIT.md + notes/JUNIPER_2026-05-19_JUNIPER-ML_STATUS-ROADMAP-AUDIT.md in juniper-ml.
 
 ## Current state (2026-05-20)
 
@@ -32,7 +32,7 @@ Continue Juniper ecosystem CI hygiene + branch-protection cleanup. The session h
 - Branch-protection is ACTIVELY ENFORCING; BLOCKED merges need `gh pr merge --admin` (I have admin). Already used once on cascor-client #49 earlier.
 - Quality Gate is an aggregator — don't add to required-checks elsewhere without ensuring its dependent jobs reliably pass.
 - Solo-author rule: ALL 8 repos now have `require_code_owner_review: false` or no `pull_request` rule. Don't re-introduce.
-- `notes/REQUIREMENTS_NEXT_STEPS.md` + `notes/STATUS_ROADMAP_AUDIT_2026-05-19.md` track requirements work; v5 consolidate script is irrecoverable (plan-doc §12 #19).
+- `notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md` + `notes/JUNIPER_2026-05-19_JUNIPER-ML_STATUS-ROADMAP-AUDIT.md` track requirements work; v5 consolidate script is irrecoverable (plan-doc §12 #19).
 - pip-audit `--ignore-vuln` list re-evaluation cadence: quarterly, or when pip-audit advisory DB syncs a new torch release.
 
 ## Verification commands for the new thread

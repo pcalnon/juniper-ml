@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   check` discovery branches) plus an in-process `runpy` smoke test for the
   `__main__` entry shim, lifting measured coverage from 87.33% to 99.33%
   pooled. Per-file coverage rollout C-3 (juniper-ml
-  notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md).
+  notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md).
   No runtime or behavioral change.
 
 ## [0.1.1] - 2026-05-19

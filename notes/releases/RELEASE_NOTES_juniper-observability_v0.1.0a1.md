@@ -1,7 +1,7 @@
 # juniper-observability v0.1.0a1 — alpha (R2.1.1 / METRICS-MON seed-06) — Release Notes (archived)
 
 > Archived verbatim from the GitHub Release [`juniper-observability-v0.1.0a1`](https://github.com/pcalnon/juniper-ml/releases/tag/juniper-observability-v0.1.0a1) (pcalnon/juniper-ml), backfilled 2026-06-18
-> per the release-notes archival convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> per the release-notes archival convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 
 ---
 

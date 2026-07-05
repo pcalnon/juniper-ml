@@ -1,6 +1,6 @@
 # Live Data Migration
 
-Continue picking off actionable items from the v7 outstanding-development roadmap (juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md) one small-PR at a time.
+Continue picking off actionable items from the v7 outstanding-development roadmap (juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md) one small-PR at a time.
 
 ## Completed in this session (2026-05-20)
 
@@ -10,7 +10,7 @@ Continue picking off actionable items from the v7 outstanding-development roadma
 - juniper-data-client #66 (CLN-JD-02 FakeDataClient.close preserves data + new reset())
 - juniper-data #127 (CLN-JD-03 lazy get_app() factory + uvicorn --factory, 9 files), #130 (ERR-07/08 narrow except + correlation-ID error)
 - juniper-canopy #297 (main.py:93 dead-comment), #299 (API-01 health status "healthy" → "ok")
-- juniper-ml #286 (notes/CONFTEST_SYS_PATH_AUDIT_2026-05-20.md — closeout doc for CLN-CC-13 sweep)
+- juniper-ml #286 (notes/JUNIPER_2026-05-20_JUNIPER-ECOSYSTEM_CONFTEST-SYS-PATH-AUDIT.md — closeout doc for CLN-CC-13 sweep)
 
 ## Where the session ended
 

@@ -4,7 +4,7 @@ Grazzi negative-eigenvalue input-dependent linear-RNN block that does parity
 (held-out), or does ONLY ordinary task-loss gradient descent train it?
 
 THE DECISIVE QUESTION (Paul, 2026-06-13).  The merged OQ-4 exhaustive
-reevaluation (notes/JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md)
+reevaluation (notes/JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md)
 settled that the entire star-free family (RCC / P4-FIR / P5 / P6 / ESN / LMU /
 vanilla-SSM) does NOT break the star-free / no-count ceiling, and that the only
 general+trainable ceiling-breaker is a NEGATIVE-EIGENVALUE INPUT-DEPENDENT
@@ -90,7 +90,7 @@ Retire when: the P7 design decision is ratified; measured numbers folded into th
 Related: util/ad-hoc/verify_p5_recurrent_output_eval.py (|corr|+BPTT helpers reused),
          util/ad-hoc/verify_oq4_expressivity_suite.py  (held-out protocol reused),
          util/ad-hoc/verify_p6_narx_mlp_output_eval.py  (NARX BPTT precedent),
-         notes/JUNIPER_RECURSE_OQ4_EXHAUSTIVE_REEVALUATION_2026-06-12.md,
+         notes/JUNIPER_2026-06-12_JUNIPER-RECURRENCE_RECURSE-OQ4-EXHAUSTIVE-REEVALUATION.md,
          arXiv:2411.12537 (Grazzi et al., ICLR 2025 -- the negative-eigenvalue block)
 """
 

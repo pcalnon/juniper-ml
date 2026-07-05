@@ -37,7 +37,7 @@ def set_build_info(
 
     Always carries ``version`` + ``python_version``. When ``git_sha`` /
     ``build_date`` are supplied (the build-provenance path — see juniper-ml
-    ``notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md``) they are added as
+    ``notes/JUNIPER_2026-06-14_JUNIPER-ECOSYSTEM_BUILD-PROVENANCE-DESIGN.md``) they are added as
     additional Info labels so the deployed source revision is visible in
     Prometheus/Grafana. They are omitted when ``None`` (e.g. local dev or
     a pre-rollout image), keeping the metric clean rather than emitting

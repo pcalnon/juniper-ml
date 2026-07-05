@@ -229,7 +229,7 @@ repos:
   # Documentation link validation (juniper-doc-tools)
   # Wave 3 of the doc-link migration plan; mirrors the per-PR docs CI lane
   # so devs catch broken markdown links locally before push.
-  # See juniper-ml notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md.
+  # See juniper-ml notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md.
   # ═══════════════════════════════════════════════════════════════════════════
   - repo: local
     hooks:

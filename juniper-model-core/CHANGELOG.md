@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Initial scaffold (WS-3).** `juniper-model-core` defines the shared model-contract template
   for the Juniper ML platform, designed against two real implementers (Cascade-Correlation +
   the Δt-native LMU) per the ratified decision ledger D1–D10
-  (`notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md`):
+  (`notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md`):
   - `TrainableModel` / `GrowableModel` ABCs (`interfaces.py`) — numpy at the boundary, no
     classification assumptions in the generic surface (RK-6); `GrowableModel` kept minimal /
     provisional until RCC is the second implementer (RK-4).

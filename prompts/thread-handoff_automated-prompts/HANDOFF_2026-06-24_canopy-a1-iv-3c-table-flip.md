@@ -38,9 +38,9 @@ policy.
    first (a concurrent session may touch canopy). Re-grep every line number below — they drift.
 
 4. **Design-of-record** (juniper-ml `notes/`):
-   - [`JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md`](../../notes/JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md)
+   - [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](../../notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
      — the A1 selection-UI design (§5 surface; D2/D4/D7/D8; A1b/iv-4 = the faceted table).
-   - [`JUNIPER_CANOPY_A1_III_DASHBOARD_INTEGRATION_SCOPE_2026-06-23.md`](../../notes/JUNIPER_CANOPY_A1_III_DASHBOARD_INTEGRATION_SCOPE_2026-06-23.md)
+   - [`JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md`](../../notes/JUNIPER_2026-06-23_JUNIPER-CANOPY_A1-III-DASHBOARD-INTEGRATION-SCOPE.md)
      — A1-iii (the route-side dataset-ref plumbing iv-3c consumes).
 
 ---

@@ -4,7 +4,7 @@
 **Scope**: juniper-cascor, juniper-canopy
 **Author**: Claude Code (Opus 4.6)
 **Status**: Active
-**Companion Document**: REGRESSION_ANALYSIS_2026-04-03.md
+**Companion Document**: JUNIPER_2026-04-03_JUNIPER-ECOSYSTEM_REGRESSION-ANALYSIS.md
 
 ---
 

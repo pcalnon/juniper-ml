@@ -1,7 +1,7 @@
 """Canonical regression-metric math, shared by the conformance kit and the crossval layer.
 
 Single source of truth (decision D1 / OPT-A A2 in
-``notes/JUNIPER_MODEL_CORE_CROSSVAL_BUILD_ROADMAP_2026-06-17.md``): both the held-out scorer
+``notes/JUNIPER_2026-06-17_JUNIPER-ML_MODEL-CORE-CROSSVAL-BUILD-ROADMAP.md``): both the held-out scorer
 (:mod:`juniper_model_core.crossval.metrics`) and the conformance kit's reference model
 (:mod:`juniper_model_core.conformance.reference`) compute regression metrics from *this* one
 implementation, so the two can never drift.

@@ -1,6 +1,6 @@
 <!--
   Canonical "Part of the Juniper platform" callout for lean package READMEs.
-  Style of record: notes/JUNIPER_README_STYLE_RECONCILIATION_2026-06-24.md.
+  Style of record: notes/JUNIPER_2026-06-24_JUNIPER-ECOSYSTEM_README-STYLE-RECONCILIATION.md.
 
   Purpose: every lean package README carries a SHORT ecosystem on-ramp instead
   of the full platform intro + Research Philosophy essay (which lives only in

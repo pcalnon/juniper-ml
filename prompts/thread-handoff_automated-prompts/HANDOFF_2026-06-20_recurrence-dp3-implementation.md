@@ -14,7 +14,7 @@ the step-3 *design* are now done; this prompt is the *build*.
 
 Implement **DP-3** — the **ratified readout-spectrum design** for `LMURegressor` — in
 `juniper-recurrence/juniper-recurrence-model/`, phased **P1 → P2 → P3**. The design-of-record (read it
-first) is juniper-ml `notes/JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md` (PR #491,
+first) is juniper-ml `notes/JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md` (PR #491,
 **v0.2.0**, ratified §8a). Its **Appendix A** (four independent sub-agent reviews) and §3/§6/§7 carry
 the binding constraints — do not relitigate them.
 
@@ -83,7 +83,7 @@ the binding constraints — do not relitigate them.
 ```text
 Implement DP-3 — the ratified readout-spectrum for the juniper-recurrence LMU regressor — phased P1→P2→P3.
 
-Read first: juniper-ml notes/JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md (the ratified
+Read first: juniper-ml notes/JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md (the ratified
 design-of-record, v0.2.0; §8a = ratification, Appendix A = the 4 sub-agent reviews with the binding
 constraints). The model lives in juniper-recurrence/juniper-recurrence-model/.
 

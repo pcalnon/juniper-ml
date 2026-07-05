@@ -44,7 +44,7 @@ class PrometheusMiddleware(BaseHTTPMiddleware):
         # duplicate registration (test sessions that re-create the app,
         # in-process service restarts) instead of crashing app startup
         # with ``ValueError: Duplicated timeseries``. See
-        # ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+        # ``notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md``
         # in juniper-ml for the full rationale.
         self._request_count = register_or_reuse(
             Counter,

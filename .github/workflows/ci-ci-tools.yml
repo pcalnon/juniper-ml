@@ -13,7 +13,7 @@
 # Description:
 #    CI pipeline for the juniper-ci-tools package (Wave 0 of the
 #    dependency-documentation generator PyPI migration -- see
-#    notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md). Runs on
+#    notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md). Runs on
 #    PRs and pushes that touch the package or its tests. The juniper-ml
 #    meta-package's own ci.yml continues to gate the meta-package; this
 #    workflow handles the ci-tools subpackage lifecycle independently,
@@ -72,7 +72,7 @@ jobs:
 
       - name: Enforce per-file coverage gate (blocking)
         # Per-file coverage rollout C-2 (juniper-ml
-        # notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md):
+        # notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md):
         # exit 1 if any source file's statement coverage < 90 OR the
         # sub-module's pooled (statement-weighted) coverage < 95. __main__.py
         # is a pure `python -m` entry shim and is excluded per the §2

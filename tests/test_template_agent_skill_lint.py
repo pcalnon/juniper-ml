@@ -11,7 +11,7 @@ does not exist.
 ``.claude/**`` is git-tracked via the PR-1 ``.gitignore`` negation but excluded from every
 pre-commit hook except markdownlint, so this unittest -- wired into ``ci.yml`` -- is the gate.
 
-Design-of-record: ``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.1, S5.2, S8).
+Design-of-record: ``notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`` (S5.1, S5.2, S8).
 Location-agnostic: discovers the repo root by walking up for ``.github/workflows/``.
 """
 

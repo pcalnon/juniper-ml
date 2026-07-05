@@ -12,7 +12,7 @@ A discovery failure -- ``repo_context`` cannot resolve the target repo's HEAD --
 proceed on an empty-but-valid bundle (design S5.1 step 2).
 
 Part of the custom-agent suite (PR 4). Design-of-record:
-``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.6).
+``notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`` (S5.6).
 """
 
 from __future__ import annotations

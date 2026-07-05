@@ -2,7 +2,7 @@
 
 Continue the **`juniper-service-core` T2-surface build (OUT-11)** — next is **step 2, the WebSocket
 subsystem** — per the ratified design + as-built status in
-`notes/JUNIPER_SERVICE_CORE_T2_SURFACE_DESIGN_AND_AUDIT_2026-06-19.md` (§5.6 module ledger, §6 build
+`notes/JUNIPER_2026-06-19_JUNIPER-ML_SERVICE-CORE-T2-SURFACE-DESIGN-AND-AUDIT.md` (§5.6 module ledger, §6 build
 plan, **§9 as-built + deferred follow-ups**). Approach is "extract base, keep cascor subclass," proven
 by model-core's **regression** `ReferenceGrowableModel` stub (RK-6 guard). cascor is untouched; its
 adoption is WS-6.

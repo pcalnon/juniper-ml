@@ -5,7 +5,7 @@ so the probes import this module by its bare name once the package directory is 
 path (the script's own directory is on ``sys.path`` when ``cli.py`` is run by path).
 
 Part of the custom-agent suite (PR 4). Design-of-record:
-``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.6).
+``notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`` (S5.6).
 """
 
 from __future__ import annotations

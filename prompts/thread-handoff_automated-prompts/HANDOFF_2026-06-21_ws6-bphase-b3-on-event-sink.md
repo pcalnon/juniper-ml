@@ -45,7 +45,7 @@ WS-granularity test green throughout. Paul approves all merges + PyPI/deploy gat
 3. **A-phase (6a)** — BLOCKED: needs `juniper-service-core` **0.2.0** on PyPI (ml **#502** OPEN — T2 is merged
    but unpublished) + soak. Not this task; deferred per DR-1.
 
-## Current Juniper state (verified 2026-06-21 — see `notes/JUNIPER_DOCS_REALITY_AUDIT_2026-06-21.md`)
+## Current Juniper state (verified 2026-06-21 — see `notes/JUNIPER_2026-06-21_JUNIPER-ECOSYSTEM_DOCS-REALITY-AUDIT.md`)
 
 - **PyPI**: model-core 0.3.0 · service-core 0.1.0 (T1; T2 merged-unpublished, #502) · recurrence 0.1.1 ·
   recurrence-model 0.1.4 · recurrence-client 0.1.0 · juniper-data 0.8.0.
@@ -82,7 +82,7 @@ gh pr view 502 -R pcalnon/juniper-ml    # OUT-11 0.2.0 publish (A-phase unblocke
 
 - cascor `origin/main` = `f3ec5d9` (#347). B1/B2a/B2b worktrees retired. **B3 worktree READY:**
   `/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--refactor--ws6-bphase-b3-on-event-sink--20260621-1902--f3ec5d9b` (branch `refactor/ws6-bphase-b3-on-event-sink`, off `f3ec5d9`). No B3 WIP yet.
-- Plan: juniper-ml **#485** `notes/JUNIPER_CASCOR_WS6_BPHASE_MODEL_CORE_ADOPTION_BUILD_PLAN_2026-06-19.md` §5 PR-B3.
+- Plan: juniper-ml **#485** `notes/JUNIPER_2026-06-19_JUNIPER-CASCOR_WS6-BPHASE-MODEL-CORE-ADOPTION-BUILD-PLAN.md` §5 PR-B3.
   Decision: juniper-ml **#475** (DR-1). Predecessors: cascor #340/#341 (gate), #345/#346/#347 (B1/B2a/B2b).
 - **Memory**: `project_cascor_ws6_bphase_plan_2026-06-19.md` is the canonical session record (B-phase shipped,
   B3 spike + OQ-B1 decision, the recurring gotchas).

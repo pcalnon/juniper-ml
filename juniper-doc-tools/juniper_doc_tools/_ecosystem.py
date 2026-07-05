@@ -3,7 +3,7 @@
 These are split out so future tools (e.g., cross-repo coverage rollups,
 ecosystem-wide doc-quality lints) can reuse the same authoritative sets
 without grepping the validator. The hardcoding is intentional -- see the
-CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md design note for the security
+JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md design note for the security
 rationale (auto-discovery from the filesystem would let a maliciously-named
 sibling directory be implicitly trusted).
 """

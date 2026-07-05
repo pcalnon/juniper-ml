@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/pcalnon/juniper-ml/tests/fixtures/prompt_validator/verdict.schema.json",
   "title": "prompt-validator verdict",
-  "description": "Pinned typed verdict the prompt-validator subagent returns to the /template-agent Skill. Source of truth: notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md (section 5.3) and prompts/templates/RUBRIC.md. The Skill acts on this object deterministically; the contract is enforced by tests/test_prompt_validator_contract.py.",
+  "description": "Pinned typed verdict the prompt-validator subagent returns to the /template-agent Skill. Source of truth: notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md (section 5.3) and prompts/templates/RUBRIC.md. The Skill acts on this object deterministically; the contract is enforced by tests/test_prompt_validator_contract.py.",
   "type": "object",
   "additionalProperties": false,
   "required": [

@@ -68,7 +68,7 @@ Foundational data contract enforced by E2E tests.
 
 **Sources**:
 
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 433-442)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 433-442)
 
 **Detail**:
 
@@ -84,8 +84,8 @@ Foundational data contract enforced by E2E tests.
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 479-488)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 387-396)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 479-488)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 387-396)
 
 **Notes**:
 
@@ -99,7 +99,7 @@ Foundational data contract enforced by E2E tests.
 
 **Sources**:
 
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 324-340)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 324-340)
 
 **Detail**:
 
@@ -153,7 +153,7 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 
 **Sources**:
 
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 392-402)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 392-402)
 
 **Detail**:
 
@@ -169,8 +169,8 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 453-466)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 364-377)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 453-466)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 364-377)
 
 **Detail**:
 
@@ -188,7 +188,7 @@ Critical integration plan Phase 0 (CRITICAL): Replace local client with shared p
 
 **Sources**:
 
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 374-381)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 374-381)
 
 ### JR-CAN-DATA-002 — CascorIntegration must implement save_snapshot() and load_snapshot() for persistence and recovery
 
@@ -213,7 +213,7 @@ HDF5 snapshot creation exists in main.py but only for demo mode state.
 
 **Sources**:
 
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 331-381)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 331-381)
 
 **Detail**:
 
@@ -229,7 +229,7 @@ dbc.Card (className="mb-3")
 
 **Sources**:
 
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 66-82)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 66-82)
 
 **Detail**:
 
@@ -245,7 +245,7 @@ dbc.Card (className="mb-3")
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 348-359)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 348-359)
 
 **Detail**:
 
@@ -261,7 +261,7 @@ dbc.Card (className="mb-3")
 
 **Sources**:
 
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 775-794)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 775-794)
 
 **Detail**:
 
@@ -277,7 +277,7 @@ test_websocket_topology_push.py — New integration test
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 204-214)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 204-214)
 
 **Detail**:
 
@@ -309,7 +309,7 @@ Method: adapt_for_dataset_swap(network, before_dims, after_dims) → ArchChanges
 
 **Sources**:
 
-- `juniper-ml/notes/interface_proposals/R1-04_operational_runbook.md` (lines 1371-1382)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R1-04-OPERATIONAL-RUNBOOK.md` (lines 1371-1382)
 
 **Detail**:
 
@@ -328,7 +328,7 @@ RISK-01. Phase H (Day 12) regression gate. Must not ship Phase B without test in
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3870-3884)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3870-3884)
 
 **Notes**:
 
@@ -340,7 +340,7 @@ RISK-01. Phase H (Day 12) regression gate. Must not ship Phase B without test in
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3887-3901)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3887-3901)
 
 **Notes**:
 
@@ -352,7 +352,7 @@ RISK-01. Phase H (Day 12) regression gate. Must not ship Phase B without test in
 
 **Sources**:
 
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 114-149)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 114-149)
 
 **Detail**:
 
@@ -368,7 +368,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 390-397)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 390-397)
 
 **Detail**:
 
@@ -384,7 +384,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 201-209)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 201-209)
 
 **Detail**:
 
@@ -400,7 +400,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 187-195)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 187-195)
 
 **Detail**:
 
@@ -416,7 +416,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 402-409)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 402-409)
 
 **Detail**:
 
@@ -432,7 +432,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 305-314)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 305-314)
 
 **Detail**:
 
@@ -448,8 +448,8 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 248-257)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 203-216)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 248-257)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 203-216)
 
 **Notes**:
 
@@ -463,7 +463,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3534-3538)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3534-3538)
 
 ### JR-ML-DATA-023 — JD-PERF-02: `filter_datasets`/`get_stats` Load ALL Metadata
 
@@ -471,7 +471,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3541-3555)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3541-3555)
 
 ### JR-ML-DATA-024 — JD-PERF-03: `list_versions` Loads All Metadata
 
@@ -479,7 +479,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3558-3569)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3558-3569)
 
 ### JR-ML-DATA-025 — JD-PERF-04: No Connection Pooling for Postgres
 
@@ -487,7 +487,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3572-3586)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3572-3586)
 
 ### JR-ML-DATA-026 — JD-PERF-05: Readiness Probe Filesystem Glob
 
@@ -495,7 +495,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3589-3593)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3589-3593)
 
 ### JR-ML-DATA-027 — JD-SEC-01: Path Traversal via `dataset_id` in Filesystem Paths
 
@@ -503,7 +503,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3485-3507)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3485-3507)
 
 ### JR-ML-DATA-028 — JD-SEC-02: API Key Comparison Not Constant-Time (data)
 
@@ -511,7 +511,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3510-3518)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3510-3518)
 
 ### JR-ML-DATA-029 — JD-SEC-03: Rate Limiter Memory Unbounded (data)
 
@@ -519,7 +519,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3521-3529)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3521-3529)
 
 ### JR-ML-DATA-030 — `juniper_data_client/__init__.py` — update `__version__` to `"0.4.0"`
 
@@ -527,7 +527,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 63-73)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 63-73)
 
 **Detail**:
 
@@ -543,7 +543,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 67-78)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 67-78)
 
 **Detail**:
 
@@ -559,7 +559,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 505-522)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 505-522)
 
 **Notes**:
 
@@ -571,7 +571,7 @@ MAX_MAX_ITERATIONS: Final[int] = 100000
 
 **Sources**:
 
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 39-56)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 39-56)
 
 **Detail**:
 
@@ -604,7 +604,7 @@ CAN-HIGH-002; HIGH priority post-release item; marked PARTIALLY IMPLEMENTED.
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 466-479)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 466-479)
 
 **Detail**:
 
@@ -620,7 +620,7 @@ CAN-HIGH-002; HIGH priority post-release item; marked PARTIALLY IMPLEMENTED.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 95-108)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 95-108)
 
 **Detail**:
 
@@ -632,7 +632,7 @@ CAN-HIGH-002; HIGH priority post-release item; marked PARTIALLY IMPLEMENTED.
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 381-388)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 381-388)
 
 **Detail**:
 
@@ -648,7 +648,7 @@ CAN-HIGH-002; HIGH priority post-release item; marked PARTIALLY IMPLEMENTED.
 
 **Sources**:
 
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 501-505)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 501-505)
 
 **Detail**:
 
@@ -664,7 +664,7 @@ Several `CascorServiceAdapter` methods catch only `JuniperCascorClientError`, wh
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 483-496)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 483-496)
 
 **Detail**:
 
@@ -680,7 +680,7 @@ Several `CascorServiceAdapter` methods catch only `JuniperCascorClientError`, wh
 
 **Sources**:
 
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 206-220)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 206-220)
 
 **Detail**:
 
@@ -696,7 +696,7 @@ Several `CascorServiceAdapter` methods catch only `JuniperCascorClientError`, wh
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2712-2726)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2712-2726)
 
 **Notes**:
 
@@ -708,7 +708,7 @@ Several `CascorServiceAdapter` methods catch only `JuniperCascorClientError`, wh
 
 **Sources**:
 
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 348-354)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 348-354)
 
 **Detail**:
 

@@ -10,7 +10,7 @@
 
 ## Completed so far (all MERGED)
 
-Spec of record: `notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` (juniper-ml#378) — §6 contract, §7 leakage test, §8 Approach C. Decomposition chosen with Paul: **4 dependency-ordered PRs, "windowing-first, lean contract."**
+Spec of record: `notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` (juniper-ml#378) — §6 contract, §7 leakage test, §8 Approach C. Decomposition chosen with Paul: **4 dependency-ordered PRs, "windowing-first, lean contract."**
 
 - **`juniper-data#169`** (MERGED) — `juniper_data/generators/_sequence.py`: `window_one_ticker` + `_yyyymmdd_to_ordinal` (per-entity windowing; derives per-step `dt` from row dates; splits windows by target-time). `tests/unit/test_sequence_windowing_leakage.py`: Hypothesis property test pinning invariants **I1–I5**. `hypothesis` added to the `test` extra.
 - **`juniper-data#170`** (MERGED) — `core/meta.py::compute_shape_meta(arrays, task_type)`; `DatasetMeta.n_classes`/`class_distribution` made **optional** + new **`task_type`** field; `task_type` declared per generator in `GENERATOR_REGISTRY`; route dispatches (`n_features` = trailing axis → handles 2-D + 3-D; `argmax`/`class_distribution` only for classification). 2-D classification path **byte-identical**.

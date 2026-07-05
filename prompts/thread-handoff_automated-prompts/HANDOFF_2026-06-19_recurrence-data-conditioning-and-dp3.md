@@ -38,7 +38,7 @@ Resume the **juniper-recurrence** work — **step 2 then step 3** of Paul's 2026
 - **Recurrence eval extensions** (juniper-recurrence #27, merged) — noise sweep + equities_seq; the
   Δt advantage is **noise-robust** (+57% → +51% → +38% to noise_std=0.25); equities failure as above.
 - **Findings v1.1 + DP-3 ranking** (juniper-ml #477, merged) —
-  `notes/JUNIPER_RECURRENCE_EVALUATION_FINDINGS_2026-06-18.md` §3.1 + §5.
+  `notes/JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-FINDINGS.md` §3.1 + §5.
 - **Recurrence `[bench]` pin** → `>=0.7.0` (juniper-recurrence #25, merged).
 
 ## Open PRs for Paul (Paul approves all merges + PyPI/deploy gates)
@@ -53,7 +53,7 @@ Continue the juniper-recurrence work — steps 2 then 3 of the 2026-06-19 plan.
 
 Completed: juniper-data 0.7.0 + 0.7.1 are on PyPI (0.7.1 fixed the equities wheel-packaging
 defect — sp500_constituents.csv now ships); the recurrence eval extensions (noise sweep +
-equities_seq) and findings v1.1 (notes/JUNIPER_RECURRENCE_EVALUATION_FINDINGS_2026-06-18.md,
+equities_seq) and findings v1.1 (notes/JUNIPER_2026-06-18_JUNIPER-RECURRENCE_EVALUATION-FINDINGS.md,
 §3.1 + §5 DP-3 ranking) are merged.
 
 Step 2 — Data-conditioning follow-up (task #25): the eval showed the LMU fails on equities_seq's

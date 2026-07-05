@@ -144,7 +144,7 @@ instruct the oracle to perform the tasks listed below, using the following, addi
 ### Deliverables
 
 - write the resulting document into a markdown file in the ~/Development/python/Juniper/juniper-canopy/notes/integration/proposals directory
-- use the following filename: FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md
+- use the following filename: JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md
 
 ### Validation
 

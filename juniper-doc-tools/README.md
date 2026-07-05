@@ -72,7 +72,7 @@ see [`CHANGELOG.md`](./CHANGELOG.md). Pin `juniper-doc-tools>=0.1.0,<0.2.0`.
 
 Part of the [Juniper](https://github.com/pcalnon) ML research platform. The PyPI-migration plan
 (four-wave structure + per-repo PR references):
-[`JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md`](../notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md).
+[`JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md`](../notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md).
 
 ## License
 

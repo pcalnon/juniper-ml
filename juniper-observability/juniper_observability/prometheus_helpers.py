@@ -13,7 +13,7 @@ sites across 5 repos, with two subtly different implementations
 ("adopt existing" vs "drop and recreate") in the wild.
 
 These helpers consolidate the pattern. See
-``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+``notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md``
 in the juniper-ml repo for the full analysis, rationale, and
 migration plan.
 

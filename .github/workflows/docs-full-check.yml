@@ -50,11 +50,11 @@
 #    - Runs on schedule/dispatch only (not on PRs or forks)
 #    - Clones public repos via HTTPS (read-only, no tokens needed)
 #    - Minimal permissions (contents: read)
-#    - See CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md for security analysis
+#    - See JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md for security analysis
 #
 # References:
-#    - CROSS_REPO_LINK_RESOLUTION_PROPOSAL.md (Phase 2)
-#    - notes/ANTHROPIC_API_KEY_ACCESS_VALIDATION_WALKTHROUGH_2026-05-10.md (§7)
+#    - JUNIPER_2026-03-07_JUNIPER-ECOSYSTEM_CROSS-REPO-LINK-RESOLUTION-PROPOSAL.md (Phase 2)
+#    - notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md (§7)
 #####################################################################################################################################################################################################
 
 name: Docs Full Check
@@ -109,7 +109,7 @@ jobs:
           ls -1 "$GITHUB_WORKSPACE"
 
       # Wave 2 / Wave 4 of the doc-link migration plan
-      # (notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md): the
+      # (notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md): the
       # validator is installed from PyPI instead of run from the deleted
       # scripts/check_doc_links.py inline copy.
       - name: Install juniper-doc-tools
@@ -215,7 +215,7 @@ jobs:
           fi
 
       # Wave 4 / §5 of the dep-docs PyPI migration plan
-      # (notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md).
+      # (notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md).
       # Installs the published juniper-ci-tools package used by §5.1
       # (test_ci_tools_drift.py auto-discovers it via the on-disk
       # checkout, but the §5.2 downstream-consumer integration step

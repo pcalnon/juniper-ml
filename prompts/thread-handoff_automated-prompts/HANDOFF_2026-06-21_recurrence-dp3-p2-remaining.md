@@ -15,7 +15,7 @@ Implement the **remaining DP-3 P2** for `juniper-recurrence`, in order: **(1) th
 (juniper-data generator), **(2) the bench RFF row + findings update**, **(3) the HTTP `readout` enum**
 (app + client). The design-of-record (read first; binding constraints in §3/§6/§7 + Appendix A — do
 not relitigate) is juniper-ml
-`notes/JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md` (ratified §8a, v0.2.0).
+`notes/JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md` (ratified §8a, v0.2.0).
 
 ## Completed this session (all shipped + verified)
 
@@ -78,7 +78,7 @@ not relitigate) is juniper-ml
 ```text
 Continue DP-3 P2 for juniper-recurrence (remaining), in order: P2-data → P2-bench → P2c.
 
-Read first: juniper-ml notes/JUNIPER_RECURRENCE_DP3_READOUT_SPECTRUM_DESIGN_2026-06-20.md (ratified
+Read first: juniper-ml notes/JUNIPER_2026-06-20_JUNIPER-RECURRENCE_DP3-READOUT-SPECTRUM-DESIGN.md (ratified
 design-of-record; binding constraints §3/§6/§7 + Appendix A — do not relitigate). P1 + P2a are SHIPPED:
 juniper-recurrence-model 0.1.4 is LIVE on PyPI (RFFReadout/RFFReadoutSpec, registered "rff").
 

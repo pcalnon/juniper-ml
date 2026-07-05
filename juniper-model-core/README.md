@@ -53,8 +53,8 @@ order, and — for `GrowableModel` — `grow_step` incrementing `n_units`) again
 
 ## Design
 
-See `notes/JUNIPER_MODEL_CORE_INTERFACE_DESIGN_2026-06-14.md` and
-`notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` (§2.3, §3.3) in the
+See `notes/JUNIPER_2026-06-14_JUNIPER-ML_MODEL-CORE-INTERFACE-DESIGN.md` and
+`notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` (§2.3, §3.3) in the
 juniper-ml repository.
 
 ## License

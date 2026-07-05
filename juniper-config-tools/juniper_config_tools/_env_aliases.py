@@ -26,7 +26,7 @@ Design properties (kept narrow on purpose for 0.1.0):
   ``stacklevel=2`` so the warning reports the caller's location,
   not this module's.
 
-See ``notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md``
+See ``notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md``
 in the juniper-ml repo for the design discussion that motivated the
 package boundary and the API surface choices.
 """

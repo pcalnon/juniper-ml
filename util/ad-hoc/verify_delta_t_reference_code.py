@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ad-hoc verification of the reference code in notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md.
+"""Ad-hoc verification of the reference code in notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md.
 
 Single-use diligence check (util/ad-hoc/ per the script-placement rule; NOT /tmp/).
 Verifies:

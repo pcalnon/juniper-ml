@@ -1,7 +1,7 @@
 # Juniper CI workflow templates
 
 These files are the **canonical sources** referenced by the cross-repo CI
-pipeline alignment plan (`notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md`).
+pipeline alignment plan (`notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md`).
 
 ## Files
 
@@ -23,7 +23,7 @@ pipeline alignment plan (`notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md`).
 For each target repo, copy the applicable templates into the repo's
 `.github/workflows/` and customize the values flagged in each file's
 header. The §6 per-repo plan in
-`notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md` lists the exact set
+`notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md` lists the exact set
 of templates each repo needs.
 
 ## Action / version pins

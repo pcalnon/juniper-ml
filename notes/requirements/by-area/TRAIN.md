@@ -464,7 +464,7 @@ Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1636-1642)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1636-1642)
 
 **Notes**:
 
@@ -475,7 +475,7 @@ Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1156-1164)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1156-1164)
 
 **Notes**:
 
@@ -486,7 +486,7 @@ Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1210-1219)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1210-1219)
 
 **Notes**:
 
@@ -497,7 +497,7 @@ Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1099-1109)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1099-1109)
 
 **Notes**:
 
@@ -508,7 +508,7 @@ Root cause RC-11; Phase 3 finding; doc status indicates implementation complete
 **Status**: designed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 168-195)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 168-195)
 
 **Notes**:
 
@@ -537,7 +537,7 @@ management and health checks.
 **Status**: rejected  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 360-378)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 360-378)
 
 **Detail**:
 
@@ -552,7 +552,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 342-343)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 342-343)
 
 **Notes**:
 
@@ -565,7 +565,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 339-340)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 339-340)
 
 **Notes**:
 
@@ -578,7 +578,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 340-341)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 340-341)
 
 **Notes**:
 
@@ -591,7 +591,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 341-342)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 341-342)
 
 **Notes**:
 
@@ -604,7 +604,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 380-381)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 380-381)
 
 **Notes**:
 
@@ -615,7 +615,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 385-386)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 385-386)
 
 **Notes**:
 
@@ -626,7 +626,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 388-389)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 388-389)
 
 **Notes**:
 
@@ -637,7 +637,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 295-296)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 295-296)
 
 **Notes**:
 
@@ -650,18 +650,18 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/CONSOLIDATED_DEVELOPMENT_ROADMAP.md` (lines 103-153)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md` (lines 103-153)
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 2:'] From CONSOLIDATED_DEVELOPMENT_ROADMAP.md
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 2:'] From JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-ROADMAP.md
 
 ### JR-ML-TRAIN-027 — A-SDK: Downgrade cascor-client pin.
 
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 343-344)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 343-344)
 
 **Notes**:
 
@@ -674,7 +674,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 491-505)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 491-505)
 
 **Detail**:
 
@@ -689,7 +689,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 234-235)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 234-235)
 
 **Notes**:
 
@@ -700,7 +700,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 256-257)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 256-257)
 
 **Notes**:
 
@@ -713,7 +713,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 268-269)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 268-269)
 
 **Notes**:
 
@@ -726,7 +726,7 @@ management and health checks.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R2-03_cross_cutting_concerns.md` (lines 59-146)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R2-03-CROSS-CUTTING-CONCERNS.md` (lines 59-146)
 
 **Detail**:
 
@@ -762,7 +762,7 @@ shared package installable by both applications.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 148-149)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 148-149)
 
 **Notes**:
 
@@ -791,7 +791,7 @@ Dataset Configuration.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 119-120)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 119-120)
 
 **Notes**:
 
@@ -802,7 +802,7 @@ Dataset Configuration.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 135-136)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 135-136)
 
 **Notes**:
 
@@ -813,7 +813,7 @@ Dataset Configuration.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 148-149)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 148-149)
 
 **Notes**:
 
@@ -824,7 +824,7 @@ Dataset Configuration.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 133-134)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 133-134)
 
 **Notes**:
 
@@ -835,7 +835,7 @@ Dataset Configuration.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R4-01_comprehensive_master_plan.md` (lines 76-94)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R4-01-COMPREHENSIVE-MASTER-PLAN.md` (lines 76-94)
 
 **Detail**:
 
@@ -858,7 +858,7 @@ D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lif
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4429-4443)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4429-4443)
 
 **Notes**:
 
@@ -869,7 +869,7 @@ D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lif
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4446-4460)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4446-4460)
 
 **Notes**:
 
@@ -880,7 +880,7 @@ D orphaned-command UI state (+risk), E queue tuning (+risk), F reconnect-cap lif
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/ROADMAP_AUDIT_2026-05-05.md` (lines 71-77)
+- `juniper-ml/notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_ROADMAP-AUDIT.md` (lines 71-77)
 
 **Notes**:
 
@@ -939,7 +939,7 @@ Blocks training completion.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 537-544)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 537-544)
 
 **Detail**:
 
@@ -961,7 +961,7 @@ Blocking training completion; high priority fix.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 131-171)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 131-171)
 
 **Detail**:
 
@@ -976,8 +976,8 @@ Blocking training completion; high priority fix.
 **Status**: proposed  **Priority**: P1  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 315-323)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 251-259)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 315-323)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 251-259)
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
@@ -1038,7 +1038,7 @@ _select_best_candidates() and add_units_as_layer() methods already exist.
 **Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 324-330)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 324-330)
 
 **Detail**:
 
@@ -1049,7 +1049,7 @@ _select_best_candidates() and add_units_as_layer() methods already exist.
 **Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 419-434)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 419-434)
 
 **Detail**:
 
@@ -1064,7 +1064,7 @@ _select_best_candidates() and add_units_as_layer() methods already exist.
 **Status**: designed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 314-331)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 314-331)
 
 **Detail**:
 
@@ -1079,8 +1079,8 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: superseded  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V4_VALIDATED.md` (lines 289-324)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V5_VALIDATED.md` (lines 323-360)
+- `juniper-ml/notes/development/JUNIPER_2026-04-21_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V4-VALIDATED.md` (lines 289-324)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V5-VALIDATED.md` (lines 323-360)
 
 **Notes**:
 
@@ -1097,7 +1097,7 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: superseded  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/partials/v6_partial_agent_b_active_bugs.md` (lines 1-100)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-B-ACTIVE-BUGS.md` (lines 1-100)
 
 **Notes**:
 
@@ -1108,7 +1108,7 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 760-775)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 760-775)
 
 **Detail**:
 
@@ -1123,14 +1123,14 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_07_ADAM_OPTIMIZER_PATHOLOGY.md` (lines 1-44)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-07-ADAM-OPTIMIZER-PATHOLOGY.md` (lines 1-44)
 
 ### JR-ML-TRAIN-056 — Add `progress_queue` to persistent forkserver worker pool:.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 543-556)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 543-556)
 
 **Detail**:
 
@@ -1145,7 +1145,7 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 214-243)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 214-243)
 
 **Detail**:
 
@@ -1160,7 +1160,7 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 154-182)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 154-182)
 
 **Detail**:
 
@@ -1175,7 +1175,7 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 460-471)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 460-471)
 
 **Notes**:
 
@@ -1201,14 +1201,14 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_02_CANDIDATE_QUALITY_DECAY.md` (lines 1-40)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-02-CANDIDATE-QUALITY-DECAY.md` (lines 1-40)
 
 ### JR-ML-TRAIN-061 — CFG-14: `juniper-cascor-client>=0.1.0` Allows Outdated Incompatible Versions.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 5078-5092)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 5078-5092)
 
 **Notes**:
 
@@ -1219,7 +1219,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4643-4657)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4643-4657)
 
 **Notes**:
 
@@ -1230,7 +1230,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4660-4664)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4660-4664)
 
 **Notes**:
 
@@ -1241,7 +1241,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4698-4709)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4698-4709)
 
 **Notes**:
 
@@ -1252,7 +1252,7 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 56-71)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 56-71)
 
 **Detail**:
 
@@ -1267,14 +1267,14 @@ After architecture adaptation, drop candidate pool. Submit new training future w
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_04_CONVERGENCE_TIMING.md` (lines 1-46)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-04-CONVERGENCE-TIMING.md` (lines 1-46)
 
 ### JR-ML-TRAIN-067 — DEFAULT_CANDIDATE_CORRELATION_THRESHOLD: Final[float] = 0.001.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 149-197)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 149-197)
 
 **Detail**:
 
@@ -1289,7 +1289,7 @@ DEFAULT_CANDIDATE_CORRELATION_THRESHOLD: Final[float] = 0.001
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 99-114)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 99-114)
 
 **Detail**:
 
@@ -1353,7 +1353,7 @@ Mismatch 2 of 5 identified.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 357-361)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 357-361)
 
 **Detail**:
 
@@ -1368,7 +1368,7 @@ Mismatch 2 of 5 identified.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 475-479)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 475-479)
 
 **Detail**:
 
@@ -1394,7 +1394,7 @@ During `CascorStateSync.sync()`, the topology is fetched and transformed correct
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 340-345)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 340-345)
 
 **Detail**:
 
@@ -1437,7 +1437,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2919-2933)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2919-2933)
 
 **Notes**:
 
@@ -1448,7 +1448,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2943-2947)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2943-2947)
 
 **Notes**:
 
@@ -1459,7 +1459,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 2957-2982)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 2957-2982)
 
 **Notes**:
 
@@ -1470,7 +1470,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3235-3249)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3235-3249)
 
 **Notes**:
 
@@ -1481,7 +1481,7 @@ Variable initialized as None; if training loop doesn't execute (e.g. max_epochs=
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 3252-3277)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 3252-3277)
 
 **Notes**:
 
@@ -1507,14 +1507,14 @@ CAS-INT-001 through CAS-INT-009 verified complete. Items include: API path valid
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/V38_GROW_NETWORK_INVESTIGATION_PLAN_2026-05-02.md` (lines 1-50)
+- `juniper-ml/notes/JUNIPER_2026-05-02_JUNIPER-CASCOR_V38-GROW-NETWORK-INVESTIGATION-PLAN.md` (lines 1-50)
 
 ### JR-ML-TRAIN-079 — `juniper-cascor-client/testing/__init__.py` exports `FakeCascorClient` and `FakeCascorTrainingStream` only. No fake for….
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 345-349)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 345-349)
 
 **Detail**:
 
@@ -1548,7 +1548,7 @@ Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent casco
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 306-317)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 306-317)
 
 **Detail**:
 
@@ -1563,7 +1563,7 @@ Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent casco
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 228-239)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 228-239)
 
 **Detail**:
 
@@ -1578,8 +1578,8 @@ Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent casco
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 330-337)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 266-273)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 330-337)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 266-273)
 
 *Merged from 2 extraction candidates (slices: 3c-2b).*
 
@@ -1588,7 +1588,7 @@ Requires P2-PRE-1 pause/stop audit. Original draft referenced non-existent casco
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 81-89)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 81-89)
 
 **Detail**:
 
@@ -1618,14 +1618,14 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_05_OUTPUT_WEIGHT_INIT.md` (lines 1-38)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-05-OUTPUT-WEIGHT-INIT.md` (lines 1-38)
 
 ### JR-ML-TRAIN-085 — Outstanding**: No version bump for unreleased constants refactor. Integration test marker defined but zero tests.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 381-392)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 381-392)
 
 **Detail**:
 
@@ -1640,14 +1640,14 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_01_PHANTOM_TRAINING_PHASE.md` (lines 30-48)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-01-PHANTOM-TRAINING-PHASE.md` (lines 30-48)
 
 ### JR-ML-TRAIN-087 — Phase 0-cascor is a carve-out from Phase B.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/interface_proposals/R3-03_lean_execution_document.md` (lines 49-49)
+- `juniper-ml/notes/interface_proposals/JUNIPER_2026-04-12_JUNIPER-ECOSYSTEM_R3-03-LEAN-EXECUTION-DOCUMENT.md` (lines 49-49)
 
 **Notes**:
 
@@ -1658,7 +1658,7 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 315-322)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 315-322)
 
 **Detail**:
 
@@ -1669,14 +1669,14 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_10_POST_RESET_DESYNC.md` (lines 1-38)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-10-POST-RESET-DESYNC.md` (lines 1-38)
 
 ### JR-ML-TRAIN-090 — Priority**: SHOULD complete before release.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` (lines 113-131)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` (lines 113-131)
 
 **Detail**:
 
@@ -1691,7 +1691,7 @@ ISS-05 MODERATE. During initial state sync (state_sync.py:115-129), CascorStateS
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 377-387)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 377-387)
 
 **Detail**:
 
@@ -1722,14 +1722,14 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_09_RESIDUAL_VARIANCE_COLLAPSE.md` (lines 1-46)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-09-RESIDUAL-VARIANCE-COLLAPSE.md` (lines 1-46)
 
 ### JR-ML-TRAIN-093 — RISK: Correctness: no state loss.
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/R5-01_canonical_development_plan.md` (lines 148-149)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_R5-01-CANONICAL-DEVELOPMENT-PLAN.md` (lines 148-149)
 
 **Notes**:
 
@@ -1740,7 +1740,7 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_03_SPIRAL_COMPLEXITY.md` (lines 1-50)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-03-SPIRAL-COMPLEXITY.md` (lines 1-50)
 
 ### JR-CAS-TRAIN-031 — Support multiple optimizer types via configuration (Adam, SGD, RMSprop, AdamW).
 
@@ -1754,14 +1754,14 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/proposals/PROPOSAL_06_TANH_SATURATION.md` (lines 1-38)
+- `juniper-ml/notes/proposals/JUNIPER_2026-03-19_JUNIPER-CASCOR_PROPOSAL-06-TANH-SATURATION.md` (lines 1-38)
 
 ### JR-ML-TRAIN-096 — Task 3 (Topology).
 
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DASHBOARD_AUGMENTATION_PLAN.md` (lines 366-374)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_DASHBOARD-AUGMENTATION-PLAN.md` (lines 366-374)
 
 **Detail**:
 
@@ -1772,7 +1772,7 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 402-409)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 402-409)
 
 **Detail**:
 
@@ -1787,7 +1787,7 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 245-251)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 245-251)
 
 **Notes**:
 
@@ -1798,7 +1798,7 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4775-4786)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4775-4786)
 
 **Notes**:
 
@@ -1809,7 +1809,7 @@ Remove or reconnect to active candidate pool UI.
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V6_REMEDIATION_ANALYSIS.md` (lines 4817-4821)
+- `juniper-ml/notes/development/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V6-REMEDIATION-ANALYSIS.md` (lines 4817-4821)
 
 **Notes**:
 
@@ -1836,7 +1836,7 @@ CODE_REVIEW_ANALYSIS (R5-01 aligned) v0.4.0; partially remediated prior; full co
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 349-353)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 349-353)
 
 **Detail**:
 
@@ -1851,7 +1851,7 @@ Worker protocol constants (`MSG_TYPE_*`, `BINARY_FRAME_*`) must remain bit-ident
 **Status**: proposed  **Priority**: P2  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 374-381)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 374-381)
 
 **Detail**:
 
@@ -1883,7 +1883,7 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 **Status**: designed  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 227-243)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 227-243)
 
 **Detail**:
 
@@ -1898,8 +1898,8 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 **Status**: deferred  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V3_VALIDATED.md` (lines 159-175)
-- `juniper-ml/notes/development/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS.md` (lines 130-144)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V3-VALIDATED.md` (lines 159-175)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS.md` (lines 130-144)
 
 **Detail**:
 
@@ -1916,11 +1916,11 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 **Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 190-220)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md` (lines 190-220)
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 6:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 6:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md
 
 ### JR-CAS-TRAIN-033 — CasCor juniper-cascor bug: TrainingMonitor.current_phase never updated during training (ISS-08).
 
@@ -1976,11 +1976,11 @@ Current architecture embeds CasCor within Canopy process. Deferral justified by 
 **Status**: proposed  **Priority**: P3  **Category**: TRAIN  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/regressions/REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md` (lines 49-65)
+- `juniper-ml/notes/regressions/JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md` (lines 49-65)
 
 **Notes**:
 
-[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 2:'] From REGRESSION_DEVELOPMENT_ROADMAP_04_2026-04-02.md
+[v2 ARCH→TRAIN re-bucket] [v3 brief repaired from cited content; was: 'Phase 2:'] From JUNIPER_2026-04-02_JUNIPER-ECOSYSTEM_REGRESSION-DEVELOPMENT-ROADMAP-04.md
 
 ### JR-CAS-TRAIN-035 — Per-instance queue management to avoid cross-instance interference.
 

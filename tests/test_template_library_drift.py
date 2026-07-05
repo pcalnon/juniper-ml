@@ -9,7 +9,7 @@ This is the **sole gate** for the library because ``prompts/**`` is excluded fro
 pre-commit hooks (``.pre-commit-config.yaml`` global ``exclude``), so this test MUST
 stay wired into ``.github/workflows/ci.yml``'s regression-test list.
 
-Design-of-record: ``notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`` (S5.4, S9).
+Design-of-record: ``notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`` (S5.4, S9).
 
 Location-agnostic: discovers the repo root by walking up for ``.github/workflows/`` so
 the file can live anywhere in any Juniper repo's ``tests/`` directory. PR 2a ships the

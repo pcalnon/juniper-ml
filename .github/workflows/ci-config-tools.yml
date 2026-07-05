@@ -13,7 +13,7 @@
 # Description:
 #    CI pipeline for the juniper-config-tools package (Wave 0 of the
 #    env-var alias-with-deprecation helper PyPI migration -- see
-#    notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md). Runs
+#    notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md). Runs
 #    on PRs and pushes that touch the package or its tests. The
 #    juniper-ml meta-package's own ci.yml continues to gate the meta-
 #    package; this workflow handles the config-tools subpackage

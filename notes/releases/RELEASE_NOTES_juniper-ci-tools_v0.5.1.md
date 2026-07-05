@@ -72,6 +72,6 @@ juniper-env-drift-check --help    # now resolves (was exit 127 in 0.5.0)
 ## Links
 
 - Original tool: #579 · Entry-point clobber: #580 · Consolidation follow-up: #588
-- Test-suite audit plan §10.1: [../JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md](../JUNIPER_ECOSYSTEM_TEST_SUITE_AUDIT_PLAN_2026-06-26.md)
+- Test-suite audit plan §10.1: [../JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md](../JUNIPER_2026-06-26_JUNIPER-ECOSYSTEM_TEST-SUITE-AUDIT-PLAN.md)
 
 ---

@@ -9,7 +9,7 @@
 
 Continue building the Juniper **custom-agent suite** at **PR3 (the validator subagent)**. The
 design is ratified and the template library is fully merged to `main`; the remaining work is the
-executable pieces. **Read first:** `notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`
+executable pieces. **Read first:** `notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`
 (v2, ratified). **Recall memory** `project_custom_agent_suite` (decisions, roadmap, gotchas).
 
 ## Completed (merged to `main`)

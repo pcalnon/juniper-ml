@@ -3,7 +3,7 @@
 # validate_claude_yaml_access.bash — Audit .github/workflows/claude.yml for safe public-repo deployment
 #
 # Verifies the three structural safeguards documented in
-# notes/ANTHROPIC_API_KEY_ACCESS_VALIDATION_WALKTHROUGH_2026-05-10.md:
+# notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md:
 #
 #   L2  Trigger-surface audit:    no `pull_request_target:` / `workflow_run:`
 #   L3a If-guard presence:        the `claude:` job declares an `if:`

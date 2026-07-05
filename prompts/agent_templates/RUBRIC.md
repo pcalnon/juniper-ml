@@ -5,7 +5,7 @@ before the Template Agent emits it. Each check has a **stable ID** (so the verdi
 and `tests/test_template_library_drift.py` can assert coverage), an objective **decision procedure**,
 and a **default severity**.
 
-- **Design-of-record:** [`../../notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md`](../../notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md) (§5.3, §5.5, §5.8).
+- **Design-of-record:** [`../../notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md`](../../notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md) (§5.3, §5.5, §5.8).
 - **Inputs the validator receives:** the drafted prompt, the task description, the discovery
   **grounding bundle** (real `file:line` / symbols / versions / ports / env, stamped with provenance),
   and this rubric.

@@ -18,7 +18,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 574-619)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 574-619)
 
 **Detail**:
 
@@ -34,7 +34,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/partials/v6_partial_agent_a_security_concurrency_error.md` (lines 9-59)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-A-SECURITY-CONCURRENCY-ERROR.md` (lines 9-59)
 
 **Detail**:
 
@@ -46,7 +46,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/partials/v6_partial_agent_e_dashboard_ws_infra_deploy_testing.md` (lines 9-59)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-E-DASHBOARD-WS-INFRA-DEPLOY-TESTING.md` (lines 9-59)
 
 **Detail**:
 
@@ -58,7 +58,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/partials/v6_partial_agent_e_dashboard_ws_infra_deploy_testing.md` (lines 127-177)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-E-DASHBOARD-WS-INFRA-DEPLOY-TESTING.md` (lines 127-177)
 
 **Detail**:
 
@@ -70,7 +70,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 556-574)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 556-574)
 
 **Detail**:
 
@@ -86,7 +86,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1505-1554)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1505-1554)
 
 **Notes**:
 
@@ -98,7 +98,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 420-433)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 420-433)
 
 **Detail**:
 
@@ -114,7 +114,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1594-1615)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1594-1615)
 
 **Notes**:
 
@@ -126,7 +126,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 439-448)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 439-448)
 
 **Detail**:
 
@@ -136,13 +136,13 @@
 
 [v3 brief repaired from cited content; was: 'Primary']
 
-### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](../../code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md#29-security-model-required-before-phase-d)
+### JR-ML-WS-015 — [§2.9 Security Model (REQUIRED)](../../code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md#29-security-model-required-before-phase-d)
 
 **Status**: designed  **Priority**: P1  **Category**: WS  **Owner**: ml
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 21-45)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 21-45)
 
 **Notes**:
 
@@ -154,7 +154,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1629-1635)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1629-1635)
 
 **Notes**:
 
@@ -166,7 +166,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1307-1357)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1307-1357)
 
 **Notes**:
 
@@ -178,7 +178,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1618-1628)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1618-1628)
 
 **Notes**:
 
@@ -190,7 +190,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1636-1642)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1636-1642)
 
 **Notes**:
 
@@ -202,7 +202,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1656-1673)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1656-1673)
 
 **Notes**:
 
@@ -214,7 +214,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1068-1096)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1068-1096)
 
 **Notes**:
 
@@ -226,8 +226,8 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 603-617)
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 617-630)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 603-617)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 617-630)
 
 **Detail**:
 
@@ -249,7 +249,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 208-221)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 208-221)
 
 **Notes**:
 
@@ -261,7 +261,7 @@
 
 **Sources**:
 
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 689-714)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 689-714)
 
 **Detail**:
 
@@ -277,7 +277,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 156-165)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 156-165)
 
 **Notes**:
 
@@ -289,7 +289,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 224-248)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 224-248)
 
 **Notes**:
 
@@ -301,7 +301,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 96-118)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 96-118)
 
 **Notes**:
 
@@ -313,7 +313,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 193-222)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 193-222)
 
 **Detail**:
 
@@ -329,7 +329,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1128-1131)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 1128-1131)
 
 **Notes**:
 
@@ -341,7 +341,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 402-419)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 402-419)
 
 **Detail**:
 
@@ -357,7 +357,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1129-1137)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1129-1137)
 
 **Notes**:
 
@@ -369,7 +369,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1110-1118)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1110-1118)
 
 **Notes**:
 
@@ -381,7 +381,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1156-1164)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1156-1164)
 
 **Notes**:
 
@@ -393,7 +393,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1147-1155)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1147-1155)
 
 **Notes**:
 
@@ -405,7 +405,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1174-1182)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1174-1182)
 
 **Notes**:
 
@@ -417,7 +417,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1183-1188)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1183-1188)
 
 **Notes**:
 
@@ -429,7 +429,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1119-1128)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1119-1128)
 
 **Notes**:
 
@@ -441,7 +441,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1138-1146)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1138-1146)
 
 **Notes**:
 
@@ -453,7 +453,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1165-1173)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1165-1173)
 
 **Notes**:
 
@@ -465,7 +465,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1409-1464)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1409-1464)
 
 **Notes**:
 
@@ -477,7 +477,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 83-95)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 83-95)
 
 **Notes**:
 
@@ -489,7 +489,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1683-1733)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1683-1733)
 
 **Notes**:
 
@@ -501,7 +501,7 @@ context: ../juniper-cascor-worker
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 974-977)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 974-977)
 
 **Notes**:
 
@@ -529,7 +529,7 @@ New module cascor_constants/constants_api/constants_api_defaults.py with 43 cons
 
 **Sources**:
 
-- `juniper-ml/notes/development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` (lines 433-442)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` (lines 433-442)
 
 **Notes**:
 
@@ -541,7 +541,7 @@ New module cascor_constants/constants_api/constants_api_defaults.py with 43 cons
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 142-155)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 142-155)
 
 **Notes**:
 
@@ -553,7 +553,7 @@ New module cascor_constants/constants_api/constants_api_defaults.py with 43 cons
 
 **Sources**:
 
-- `juniper-ml/notes/development/partials/v6_partial_agent_c_crossrepo_clients_api.md` (lines 9-59)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-C-CROSSREPO-CLIENTS-API.md` (lines 9-59)
 
 **Detail**:
 
@@ -565,7 +565,7 @@ New module cascor_constants/constants_api/constants_api_defaults.py with 43 cons
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1674-1682)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1674-1682)
 
 **Notes**:
 
@@ -577,7 +577,7 @@ New module cascor_constants/constants_api/constants_api_defaults.py with 43 cons
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 46-77)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 46-77)
 
 **Notes**:
 
@@ -605,7 +605,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1643-1653)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1643-1653)
 
 **Notes**:
 
@@ -617,7 +617,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 249-257)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 249-257)
 
 **Notes**:
 
@@ -629,7 +629,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1210-1219)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1210-1219)
 
 **Notes**:
 
@@ -641,7 +641,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 196-207)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 196-207)
 
 **Notes**:
 
@@ -653,7 +653,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1875-1897)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 1875-1897)
 
 **Notes**:
 
@@ -665,7 +665,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1486-1504)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1486-1504)
 
 **Notes**:
 
@@ -677,7 +677,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1555-1593)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1555-1593)
 
 **Notes**:
 
@@ -689,7 +689,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1099-1109)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1099-1109)
 
 **Notes**:
 
@@ -701,7 +701,7 @@ Collapsible card structure with 22 component IDs, 10 Dash callbacks for toggles/
 
 **Sources**:
 
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 630-669)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 630-669)
 
 **Detail**:
 
@@ -717,7 +717,7 @@ After=network-online.target juniper-data.service
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1018-1042)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1018-1042)
 
 **Notes**:
 
@@ -729,7 +729,7 @@ After=network-online.target juniper-data.service
 
 **Sources**:
 
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 669-689)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 669-689)
 
 **Detail**:
 
@@ -745,7 +745,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 51-60)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 51-60)
 
 **Notes**:
 
@@ -757,7 +757,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 258-308)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 258-308)
 
 **Notes**:
 
@@ -769,7 +769,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 134-141)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 134-141)
 
 **Notes**:
 
@@ -781,7 +781,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1290-1306)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1290-1306)
 
 **Notes**:
 
@@ -793,7 +793,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1191-1205)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1191-1205)
 
 **Notes**:
 
@@ -805,7 +805,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 1898-1915)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 1898-1915)
 
 **Notes**:
 
@@ -817,7 +817,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 168-195)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 168-195)
 
 **Notes**:
 
@@ -829,7 +829,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1206-1209)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1206-1209)
 
 **Notes**:
 
@@ -841,7 +841,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 121-133)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 121-133)
 
 **Notes**:
 
@@ -853,7 +853,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 61-82)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 61-82)
 
 **Notes**:
 
@@ -865,7 +865,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 437-440)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 437-440)
 
 **Notes**:
 
@@ -877,7 +877,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/WEBSOCKET_MESSAGING_ARCHITECTURE_2026-04-10.md` (lines 815-823)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE.md` (lines 815-823)
 
 **Notes**:
 
@@ -889,7 +889,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1465-1483)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1465-1483)
 
 **Notes**:
 
@@ -901,7 +901,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1259-1289)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1259-1289)
 
 **Notes**:
 
@@ -913,7 +913,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1043-1067)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1043-1067)
 
 **Notes**:
 
@@ -925,7 +925,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/FINAL_CANOPY_CASCOR_CONNECTION_ANALYSIS.md` (lines 1220-1258)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_FINAL-CANOPY-CASCOR-CONNECTION-ANALYSIS.md` (lines 1220-1258)
 
 **Notes**:
 
@@ -937,7 +937,7 @@ FROM python:3.14-slim AS builder
 
 **Sources**:
 
-- `juniper-ml/notes/development/NETWORK_TOPOLOGY_DISPLAY_ANALYSIS_AND_FIXES.md` (lines 536-555)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_NETWORK-TOPOLOGY-DISPLAY-ANALYSIS-AND-FIXES.md` (lines 536-555)
 
 **Detail**:
 
@@ -953,7 +953,7 @@ Add a `dbc.RadioItems` or `dbc.ButtonGroup` toggle to the NetworkVisualizer's co
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 249-257)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 249-257)
 
 **Detail**:
 
@@ -969,7 +969,7 @@ Per audit finding C.1 (juniper-canopy): canopy's `RequestIdMiddleware`
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` (lines 324-330)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` (lines 324-330)
 
 **Detail**:
 
@@ -993,7 +993,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 419-434)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 419-434)
 
 **Detail**:
 
@@ -1009,7 +1009,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 454-465)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 454-465)
 
 **Detail**:
 
@@ -1033,7 +1033,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 415-423)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 415-423)
 
 **Detail**:
 
@@ -1049,7 +1049,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 859-877)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md` (lines 859-877)
 
 ### JR-ML-SEC-114 — Per-phase entry / design docs
 
@@ -1057,7 +1057,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 728-740)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 728-740)
 
 **Detail**:
 
@@ -1069,7 +1069,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CASCOR_CODE_REVIEW_FINDINGS_2026-04-04.md` (lines 1058-1076)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-04_JUNIPER-CASCOR_CODE-REVIEW-FINDINGS.md` (lines 1058-1076)
 
 ### JR-ML-OBS-056 — Phase B (polling elimination — P0 WIN) — ✅ IMPLEMENTED
 
@@ -1077,7 +1077,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/development/CONSOLIDATED_DEVELOPMENT_RECORD.md` (lines 330-341)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CONSOLIDATED-DEVELOPMENT-RECORD.md` (lines 330-341)
 
 **Detail**:
 
@@ -1089,7 +1089,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 275-305)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 275-305)
 
 **Detail**:
 
@@ -1113,7 +1113,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/development/DEEP_AUDIT_FIVE_REPOS_2026-04-19.md` (lines 105-114)
+- `juniper-ml/notes/development/JUNIPER_2026-04-19_JUNIPER-ECOSYSTEM_DEEP-AUDIT-FIVE-REPOS.md` (lines 105-114)
 
 **Detail**:
 
@@ -1129,7 +1129,7 @@ Batch-level metrics collection.
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 378-388)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 378-388)
 
 **Detail**:
 
@@ -1157,7 +1157,7 @@ Two-layer implementation: global ~/.claude/CLAUDE.md + project CLAUDE.md. Trigge
 
 **Sources**:
 
-- `juniper-ml/notes/development/META_PARAMETERS_ENHANCEMENT_PLAN.md` (lines 314-331)
+- `juniper-ml/notes/development/JUNIPER_2026-04-20_JUNIPER-CANOPY_META-PARAMETERS-ENHANCEMENT-PLAN.md` (lines 314-331)
 
 **Detail**:
 
@@ -1173,7 +1173,7 @@ epochs: TrainingParamConfig = TrainingParamConfig(min=10, max=10000000, default=
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/JUNIPER_METRICS_STATE_REPORT_2026-05-05.md` (lines 746-764)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_METRICS-STATE-REPORT.md` (lines 746-764)
 
 **Detail**:
 
@@ -1203,7 +1203,7 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/CANOPY_CASCOR_INTERFACE_ROADMAP_2026-04-08.md` (lines 378-402)
+- `juniper-ml/notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ROADMAP.md` (lines 378-402)
 
 **Detail**:
 
@@ -1219,7 +1219,7 @@ but sys.path mutation remains. Long-term: IPC or make Cascor installable package
 
 **Sources**:
 
-- `juniper-ml/notes/development/partials/v6_partial_agent_e_dashboard_ws_infra_deploy_testing.md` (lines 392-428)
+- `juniper-ml/notes/development/partials/JUNIPER_2026-04-23_JUNIPER-ECOSYSTEM_V6-PARTIAL-AGENT-E-DASHBOARD-WS-INFRA-DEPLOY-TESTING.md` (lines 392-428)
 
 **Detail**:
 
@@ -1231,7 +1231,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Sources**:
 
-- `juniper-ml/notes/development/MICROSERVICES_STARTUP_CODE_REVIEW_2026-04-06.md` (lines 754-785)
+- `juniper-ml/notes/development/JUNIPER_2026-04-06_JUNIPER-ECOSYSTEM_MICROSERVICES-STARTUP-CODE-REVIEW.md` (lines 754-785)
 
 **Detail**:
 
@@ -1243,7 +1243,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/OBSERVABILITY_AUDIT_AND_OUTSTANDING_ISSUES_2026-05-03.md` (lines 126-176)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-03_JUNIPER-ECOSYSTEM_OBSERVABILITY-AUDIT-AND-OUTSTANDING-ISSUES.md` (lines 126-176)
 
 **Detail**:
 
@@ -1252,7 +1252,6 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.3 TRAIN-ARCH-01 cascor mini-batch restoration']
-<<<<<<< HEAD
 
 ### JR-ML-TRAIN-103 — Trigger / due date.** None — opportunistic. May get pulled in if TRAIN-ARCH-01 unblocks (Q4 of that design doc covers the per-step vs…
 
@@ -1260,7 +1259,7 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 
 **Sources**:
 
-- `juniper-ml/notes/code-review/POST_METRICS_MON_TRACKER_2026-05-05.md` (lines 227-243)
+- `juniper-ml/notes/code-review/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (lines 227-243)
 
 **Detail**:
 
@@ -1269,6 +1268,3 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.7 R5.6-THROTTLE — Cascor 25-epoch emit throttle removal']
-
-=======
->>>>>>> 55be33d (removed trailing whitespace)

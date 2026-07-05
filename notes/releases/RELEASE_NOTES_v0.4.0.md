@@ -85,9 +85,9 @@ Quick command-line wrappers for common cascor REST endpoints:
 ### Cross-Project Documentation
 
 - Cross-project regression analysis, remediation plans, and development roadmaps in `notes/`
-- `notes/code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` — full findings with file:line references
-- `notes/code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md` — phased execution plan with fix details
-- `notes/code-review/RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md` — prioritized roadmap that drove this release cycle
+- `notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` — full findings with file:line references
+- `notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md` — phased execution plan with fix details
+- `notes/code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-DEVELOPMENT-ROADMAP.md` — prioritized roadmap that drove this release cycle
 
 ---
 
@@ -201,7 +201,7 @@ util/worktree_cleanup.bash \
   --parent-branch main
 ```
 
-See `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md` for the full procedure.
+See `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md` for the full procedure.
 
 ---
 
@@ -220,7 +220,7 @@ See `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md` for the full procedure.
 
 ### Roadmap
 
-See [Release Development Roadmap](../code-review/RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md) for the cross-project view of release-prep progress.
+See [Release Development Roadmap](../code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-DEVELOPMENT-ROADMAP.md) for the cross-project view of release-prep progress.
 
 ---
 
@@ -260,7 +260,7 @@ This release ships alongside the following coordinated ecosystem releases:
 ## Links
 
 - [Full Changelog](../../CHANGELOG.md)
-- [Cross-Project Code Review](../code-review/CROSS_PROJECT_CODE_REVIEW_2026-04-08.md)
-- [Release Preparation Plan](../code-review/RELEASE_PREPARATION_PLAN_2026-04-08.md)
-- [Release Development Roadmap](../code-review/RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md)
+- [Cross-Project Code Review](../code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md)
+- [Release Preparation Plan](../code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-PREPARATION-PLAN.md)
+- [Release Development Roadmap](../code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-DEVELOPMENT-ROADMAP.md)
 - [Previous Release: v0.3.0](RELEASE_NOTES_v0.3.0.md)

@@ -6,8 +6,8 @@
 **Origin**: Completion of the **3-D dataset visualization design (Phases 1–3)** for juniper-canopy —
 5 PRs merged (#374 / #375 / #377 / #378 / #379). This hands off the **A1 recurrence *training*
 integration**, the larger model-selection enabler.
-**Design-of-record (read first)**: `notes/JUNIPER_CANOPY_MODEL_SELECTION_A1_ENABLER_SCOPE_2026-06-18.md`
-(D1–D5) and `notes/JUNIPER_CANOPY_MODEL_DATASET_SELECTION_DESIGN_2026-06-17.md` (A0 / A1 selection UI).
+**Design-of-record (read first)**: `notes/JUNIPER_2026-06-18_JUNIPER-CANOPY_MODEL-SELECTION-A1-ENABLER-SCOPE.md`
+(D1–D5) and `notes/JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md` (A0 / A1 selection UI).
 
 ---
 

@@ -24,7 +24,7 @@ Both changes are additive and backward-compatible: existing two-argument
 ``set_build_info`` callers and pre-0.4.0 ``ReadinessResponse`` consumers are
 unaffected (no public-symbol change). This is the foundation release for the
 ecosystem build-provenance / stale-image-detection effort — see juniper-ml
-``notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md``. Consumers wanting the
+``notes/JUNIPER_2026-06-14_JUNIPER-ECOSYSTEM_BUILD-PROVENANCE-DESIGN.md``. Consumers wanting the
 provenance labels should pin ``juniper-observability>=0.4.0``.
 
 ## [0.3.1] - 2026-05-30
@@ -127,7 +127,7 @@ provenance labels should pin ``juniper-observability>=0.4.0``.
   introduced in ``0.2.0`` instead of inlining the try/except + REGISTRY-
   lookup pattern. Pure internal refactor — production behaviour and the
   collectors' wire format are unchanged. Phase 1 of the migration plan
-  in ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``.
+  in ``notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md``.
 
 ## [0.2.0] - 2026-05-05
 
@@ -165,7 +165,7 @@ Minor bump for additive new public API surface. No breaking changes vs `0.1.1`; 
 ### Notes
 
 - See
-  ``notes/observability/REGISTER_OR_REUSE_HELPER_DESIGN_2026-05-05.md``
+  ``notes/observability/JUNIPER_2026-05-05_JUNIPER-ML_REGISTER-OR-REUSE-HELPER-DESIGN.md``
   in the juniper-ml repo for the full analysis, design rationale,
   trade-off comparison vs cascor's pre-existing ``_register_or_reuse``,
   and the phased migration plan for the 11 production call sites.

@@ -11,7 +11,7 @@ This session closed it end-to-end across 8 ecosystem repos.
 
 ## What shipped this session (chronological)
 
-- Waves 0/1/2/4 of juniper-ml/notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md (14 PRs across 8 repos: scaffold -> publish -> CI swap -> delete inline copies) - juniper-doc-tools 0.1.1 patch (files_with_errors count fix)
+- Waves 0/1/2/4 of juniper-ml/notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md (14 PRs across 8 repos: scaffold -> publish -> CI swap -> delete inline copies) - juniper-doc-tools 0.1.1 patch (files_with_errors count fix)
 - §5 drift-detection guard rails: tests/test_doc_tools_drift.py + weekly downstream-consumer integration step in docs-full-check.yml
 - README markdownlint fix ported to cascor + data (matched juniper-ml#283)
 - Workflow-path lint refactor (location-agnostic) + port to 6 consumer repos at util/test_workflow_script_paths.py

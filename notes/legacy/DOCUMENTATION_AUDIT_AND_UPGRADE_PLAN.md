@@ -90,9 +90,9 @@ An earlier **DOCUMENTATION_AUDIT_V2_PLAN** (2026-03-02) addressed PascalCase/keb
 | ID    | Task                                      | Details                                                                                                                                                                                                                           |
 |-------|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1.1.1 | Audit V2 Phase 0 status                   | **COMPLETE.** All 8 repos clean on main. CLAUDE.md symlinks correct in all repos.                                                                                                                                                 |
-| 1.1.2 | Inventory incomplete V2 remediation items | **COMPLETE.** 47 items inventoried: 7 previously complete, 3 fixed this session, 1 partial, 36 deferred. See `notes/V2_AUDIT_DISPOSITION_2026-03-14.md`.                                                                          |
+| 1.1.2 | Inventory incomplete V2 remediation items | **COMPLETE.** 47 items inventoried: 7 previously complete, 3 fixed this session, 1 partial, 36 deferred. See `notes/JUNIPER_2026-03-14_JUNIPER-ECOSYSTEM_V2-AUDIT-DISPOSITION.md`.                                                                          |
 | 1.1.3 | Execute remaining critical V2 items       | **COMPLETE.** R-01: deleted 1 misplaced file (scope was overstated). R-07: false positive (no fix needed). R-16: already fixed. R-17: fixed (AGENTS.md + CONSTANTS_GUIDE.md). R-18: already fixed. R-25: version bumped to 0.3.2. |
-| 1.1.4 | Document V2 disposition                   | **COMPLETE.** Written to `notes/V2_AUDIT_DISPOSITION_2026-03-14.md` with full item-by-item disposition, deferral rationale, and success criteria assessment.                                                                      |
+| 1.1.4 | Document V2 disposition                   | **COMPLETE.** Written to `notes/JUNIPER_2026-03-14_JUNIPER-ECOSYSTEM_V2-AUDIT-DISPOSITION.md` with full item-by-item disposition, deferral rationale, and success criteria assessment.                                                                      |
 
 #### Phase 1.1 Success Criteria (Unblocking Gate)
 
@@ -233,9 +233,9 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 
 | ID | Task | Details |
 |----|------|---------|
-| 2.3.1 | Evaluate juniper-ml notes/ for additions | Review: `SOPS_USAGE_GUIDE.md`, `SOPS_IMPLEMENTATION_PLAN.md`, `SOPS_AUDIT_2026-03-02.md`, `PYPI_DEPLOYMENT_PLAN.md`, `pypi-publish-procedure.md`, `MICROSERVICES-ARCHITECTURE_DEVELOPMENT-ROADMAP.md`. Extract quick-reference procedures missing from the master cheatsheet. |
-| 2.3.2 | Evaluate juniper-cascor notes/ for additions | Review: `ARCHITECTURE_GUIDE.md`, `FEATURES_GUIDE.md`, `API_REFERENCE.md`, `DEPENDENCY_UPDATE_WORKFLOW.md`, `CI_PIPELINE_DEVELOPMENT_PLAN.md`. Extract architecture-specific quick references, CasCor algorithm parameters, and CI pipeline specifics. |
-| 2.3.3 | Evaluate juniper-data notes/ for additions | Review: `DEPENDENCY_UPDATE_WORKFLOW.md`, `PRECOMMIT_SIM108_FIX_PLAN.md`, `releases/RELEASE_NOTES_v0.4.2.md`. Extract generator-specific procedures, storage backend configuration, and ruff migration details. |
+| 2.3.1 | Evaluate juniper-ml notes/ for additions | Review: `JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`, `SOPS_IMPLEMENTATION_PLAN.md`, `SOPS_AUDIT_2026-03-02.md`, `PYPI_DEPLOYMENT_PLAN.md`, `pypi-publish-procedure.md`, `JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_MICROSERVICES-ARCHITECTURE-DEVELOPMENT-ROADMAP.md`. Extract quick-reference procedures missing from the master cheatsheet. |
+| 2.3.2 | Evaluate juniper-cascor notes/ for additions | Review: `ARCHITECTURE_GUIDE.md`, `FEATURES_GUIDE.md`, `API_REFERENCE.md`, `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`, `CI_PIPELINE_DEVELOPMENT_PLAN.md`. Extract architecture-specific quick references, CasCor algorithm parameters, and CI pipeline specifics. |
+| 2.3.3 | Evaluate juniper-data notes/ for additions | Review: `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`, `PRECOMMIT_SIM108_FIX_PLAN.md`, `releases/RELEASE_NOTES_v0.4.2.md`. Extract generator-specific procedures, storage backend configuration, and ruff migration details. |
 | 2.3.4 | Evaluate juniper-canopy notes/ for additions | Review: `development/IMPLEMENTATION_PLAN.md`, `development/DEVELOPMENT_ROADMAP.md`, `fixes/` directory (7 fix files), `analysis/DEMO_HANG_ANALYSIS_2026-01-03.md`. Extract dashboard-specific troubleshooting, demo mode issues, and integration testing procedures. |
 | 2.3.5 | Evaluate juniper-data-client notes/ for additions | Review: `juniper-data-client_OTHER_DEPENDENCIES.md`, `POLYREPO_MIGRATION_PLAN.md`. Extract client-specific patterns and migration notes. |
 | 2.3.6 | Evaluate juniper-cascor-client notes/ for additions | Review: `juniper-cascor-client_OTHER_DEPENDENCIES.md`. Extract WebSocket-specific patterns and troubleshooting. |
@@ -319,8 +319,8 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 
 | ID | Task | Details |
 |----|------|---------|
-| 3.3.1 | Audit procedural docs across all projects | Verify these files are present and consistent in all 8 projects: `WORKTREE_SETUP_PROCEDURE.md`, `WORKTREE_CLEANUP_PROCEDURE.md` (or V2), `THREAD_HANDOFF_PROCEDURE.md`. Identify version drift between copies. |
-| 3.3.2 | Audit dependency docs across all projects | Verify presence and accuracy of: `DEPENDENCY_UPDATE_WORKFLOW.md`, `CONDA_DEPENDENCY_FILE_HEADER.md`, `PIP_DEPENDENCY_FILE_HEADER.md`, `*_OTHER_DEPENDENCIES.md`. |
+| 3.3.1 | Audit procedural docs across all projects | Verify these files are present and consistent in all 8 projects: `JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`, `WORKTREE_CLEANUP_PROCEDURE.md` (or V2), `JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`. Identify version drift between copies. |
+| 3.3.2 | Audit dependency docs across all projects | Verify presence and accuracy of: `JUNIPER_2026-03-30_JUNIPER-CANOPY_DEPENDENCY-UPDATE-WORKFLOW.md`, `JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md`, `JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md`, `*_OTHER_DEPENDENCIES.md`. |
 | 3.3.3 | Identify and classify stale notes | For each project, classify every file in `notes/` as: ACTIVE (current, referenced), HISTORICAL (should be in `history/`), or OBSOLETE (should be deleted). |
 | 3.3.4 | Verify history/ subdirectory organization | Ensure all projects with historical docs have a `notes/history/` directory and that superseded documents have been properly moved there. |
 | 3.3.5 | Verify templates/ subdirectory consistency | Compare `notes/templates/` across projects. Standardize the template set: `TEMPLATE_DEVELOPMENT_ROADMAP.md`, `TEMPLATE_ISSUE_TRACKING.md`, `TEMPLATE_PULL_REQUEST_DESCRIPTION.md`, `TEMPLATE_RELEASE_NOTES.md`, `TEMPLATE_SECURITY_RELEASE_NOTES.md`. |
@@ -444,7 +444,7 @@ When extracting content from project `notes/` and `docs/` files for cheatsheet i
 
 | ID | Task | Details |
 |----|------|---------|
-| 5.3.1 | Generate audit summary report | **COMPLETE.** Written to `notes/DOCUMENTATION_AUDIT_SUMMARY_2026-03-15.md`. |
+| 5.3.1 | Generate audit summary report | **COMPLETE.** Written to `notes/JUNIPER_2026-03-15_JUNIPER-ECOSYSTEM_DOCUMENTATION-AUDIT-SUMMARY.md`. |
 | 5.3.2 | Update this plan with completion status | **COMPLETE.** All tasks marked with final status in this document. |
 | 5.3.3 | Document recovery procedure | **COMPLETE.** Phase 3 structural changes were committed in separate, granular commits per repo. Recovery: `git revert <commit>` on the specific rename commit. Commits: cascor ci/ rename (`3086ea0`), cascor UPPER_SNAKE rename (`aad820b`), canopy ADR (`6955d40`). |
 | 5.3.4 | Establish ongoing maintenance guidance | **COMPLETE.** Maintenance guidelines documented in `Juniper/notes/DOCUMENTATION_STANDARDS.md` Section 7 (review cadence, documentation debt, standardization migrations). Each project's DOCUMENTATION_OVERVIEW.md links to the standards doc via ecosystem guide. |

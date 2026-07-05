@@ -2,7 +2,7 @@
 
 Covers ``--mode quick``: structural validation of (path, line_start, line_end)
 triples in a synthetic id_assignments.yaml fixture. See the tool's docstring
-and notes/REQUIREMENTS_NEXT_STEPS.md §7 for the spec.
+and notes/JUNIPER_2026-05-18_JUNIPER-ECOSYSTEM_REQUIREMENTS-NEXT-STEPS.md §7 for the spec.
 """
 
 from __future__ import annotations

@@ -19,13 +19,13 @@ Cascor-worker's strict "no Pydantic at runtime" invariant (pinned by
 package exists with a **stdlib-only** dependency policy.
 
 This work mirrors the
-[`juniper-doc-tools` PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md)
+[`juniper-doc-tools` PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md)
 (2026-05-18 doc-link validator incident) and the
-[`juniper-ci-tools` PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md)
+[`juniper-ci-tools` PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md)
 (2026-05-20 dep-docs generator divergence).
 
 The full design and rollout plan lives at
-[`notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md`](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md)
+[`notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md`](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md)
 in the juniper-ml repo.
 
 ## Installation

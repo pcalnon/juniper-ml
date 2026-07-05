@@ -126,12 +126,12 @@ python util/agent_suite_doctor.py --repo-root . --json   # current OK/WARN/FAIL 
 
 **The design & analysis record (read these in Phase 0):**
 
-- `notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md` — **design-of-record** (D-1…D-6 decisions;
+- `notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md` — **design-of-record** (D-1…D-6 decisions;
   OQ-1…OQ-8 open questions; the round-1/round-2 PR roadmap).
-- `notes/JUNIPER_juniper-ml_agent-suite-convenience-utilities_DESIGN_2026-06-25.md` — convenience-utilities design (all 5 shipped).
-- `notes/PROMPT_ANALYSIS_AND_AUTOMATION_PLAN.md` — genesis analysis (6 prompt types; "what NOT to build").
-- `notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` — dogfooding analysis (§6 gaps). **Read in full.**
-- `notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` — dogfooding analysis (§6 gaps, richest source). **Read in full.**
+- `notes/JUNIPER_2026-06-25_JUNIPER-ML_AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md` — convenience-utilities design (all 5 shipped).
+- `notes/JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md` — genesis analysis (6 prompt types; "what NOT to build").
+- `notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md` — dogfooding analysis (§6 gaps). **Read in full.**
+- `notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md` — dogfooding analysis (§6 gaps, richest source). **Read in full.**
 
 **Candidate enhancement catalog (starting point — re-verify status, then evaluate; NOT exhaustive, NOT authoritative):**
 
@@ -347,12 +347,12 @@ ll
 
 **The design & analysis record (read these in Phase 0):**
 
-- `notes/JUNIPER_ML_CUSTOM_AGENT_SUITE_DESIGN_2026-06-23.md` — **design-of-record** (D-1…D-6 decisions;
+- `notes/JUNIPER_2026-06-23_JUNIPER-ML_CUSTOM-AGENT-SUITE-DESIGN.md` — **design-of-record** (D-1…D-6 decisions;
   OQ-1…OQ-8 open questions; the round-1/round-2 PR roadmap).
-- `notes/JUNIPER_juniper-ml_agent-suite-convenience-utilities_DESIGN_2026-06-25.md` — convenience-utilities design (all 5 shipped).
-- `notes/PROMPT_ANALYSIS_AND_AUTOMATION_PLAN.md` — genesis analysis (6 prompt types; "what NOT to build").
-- `notes/JUNIPER_ML_TEST_SUITE_AUDIT_PROMPT_ANALYSIS_2026-06-26.md` — dogfooding analysis (§6 gaps). **Read in full.**
-- `notes/JUNIPER_CANOPY_DEBUG-PROMPT_ANALYSIS_2026-06-26.md` — dogfooding analysis (§6 gaps, richest source). **Read in full.**
+- `notes/JUNIPER_2026-06-25_JUNIPER-ML_AGENT-SUITE-CONVENIENCE-UTILITIES-DESIGN.md` — convenience-utilities design (all 5 shipped).
+- `notes/JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md` — genesis analysis (6 prompt types; "what NOT to build").
+- `notes/JUNIPER_2026-06-26_JUNIPER-ML_TEST-SUITE-AUDIT-PROMPT-ANALYSIS.md` — dogfooding analysis (§6 gaps). **Read in full.**
+- `notes/JUNIPER_2026-06-26_JUNIPER-CANOPY_DEBUG-PROMPT-ANALYSIS.md` — dogfooding analysis (§6 gaps, richest source). **Read in full.**
 
 **Candidate enhancement catalog (starting point — re-verify status, then evaluate; NOT exhaustive, NOT authoritative):**
 

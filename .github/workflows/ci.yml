@@ -398,7 +398,7 @@ jobs:
           python-version: ${{ env.PYTHON_TEST_VERSION }}
 
       # Wave 2 of the doc-link migration plan
-      # (notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md): the
+      # (notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md): the
       # validator is installed from PyPI instead of run from the inline
       # util/check_doc_links.py copy. The inline copy stays in place
       # through Wave 4 so this swap remains a one-line revert.
@@ -460,7 +460,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Claude.yml access audit: structurally validates the live
   # .github/workflows/claude.yml against the L2/L3 safeguards from
-  # notes/ANTHROPIC_API_KEY_ACCESS_VALIDATION_WALKTHROUGH_2026-05-10.md.
+  # notes/JUNIPER_2026-05-10_JUNIPER-ECOSYSTEM_ANTHROPIC-API-KEY-ACCESS-VALIDATION-WALKTHROUGH.md.
   # The validator's unit tests already run inside the `tests:` matrix;
   # this job additionally exercises the script against the real claude.yml
   # so a regression in the workflow file itself blocks merge.
@@ -505,7 +505,7 @@ jobs:
           pip install -e .
 
       # Wave 2 of the dep-docs PyPI migration (plan
-      # notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md):
+      # notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md):
       # invoke the PyPI-published juniper-ci-tools console script
       # instead of the inline util/generate_dep_docs.sh. The inline
       # script will be removed from the tree in Wave 4 once the new

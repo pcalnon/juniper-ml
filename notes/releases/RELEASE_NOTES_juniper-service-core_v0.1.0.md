@@ -1,6 +1,6 @@
 # juniper-service-core v0.1.0 — initial scaffold (T1 service infra) — Release Notes
 
-> Archived per the release-notes convention (see [`notes/PYPI-PUBLISH-PROCEDURE.md` §11](../PYPI-PUBLISH-PROCEDURE.md)).
+> Archived per the release-notes convention (see [`notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` §11](../JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md)).
 > **Backfill:** `0.1.0` was published to PyPI on **2026-06-16** via a *tag-only* push (tag
 > `juniper-service-core-v0.1.0`), before the publish workflow's GitHub-Release gate existed — so no
 > Release was cut at the time. This file is the body of the **backfilled** GitHub Release for that
@@ -67,7 +67,7 @@ juniper_service_core` pulls no third-party runtime dependency; the rest resolves
 
 ## Design & Provenance
 
-- Refactor plan (WS-2): `notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md`
+- Refactor plan (WS-2): `notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md`
 - Pull requests: scaffold #417 · T1 security #419 · launcher #420 · synchronous lifecycle #422
 - Full changelog: `juniper-service-core/CHANGELOG.md` (`[0.1.0]`)
 

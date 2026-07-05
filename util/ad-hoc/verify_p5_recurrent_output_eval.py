@@ -73,10 +73,10 @@ Created: 2026-06-10
 Status: ad-hoc - investigation (P5 frozen-FIR cascade + trained recurrent output)
 Retire when: P5 design decision is ratified or the arm is dropped; this PoC's
              measured numbers are folded into the P5 design doc.
-Related: notes/JUNIPER_RECURSE_DELAY_LINE_NODE_DESIGN_EVAL_2026-06-09.md,
+Related: notes/JUNIPER_2026-06-09_JUNIPER-RECURRENCE_RECURSE-DELAY-LINE-NODE-DESIGN-EVAL.md,
          util/ad-hoc/verify_delay_line_node_eval.py (P4 PoC; helpers reused),
-         notes/JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md,
-         notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md
+         notes/JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md,
+         notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md
 """
 
 from __future__ import annotations

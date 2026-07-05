@@ -107,7 +107,7 @@ Document:
 Document the SOPS encryption workflow:
 - What is encrypted (`.env`, `.env.secrets`)
 - How to decrypt/encrypt
-- Reference `notes/SOPS_USAGE_GUIDE.md`
+- Reference `notes/JUNIPER_2026-03-02_JUNIPER-ECOSYSTEM_SOPS-USAGE-GUIDE.md`
 - Pre-commit hook that blocks unencrypted env files
 
 ---
@@ -154,9 +154,9 @@ List available MCP servers that Claude Code sessions can access, referencing `.s
 ### Step 5.2: Verify `notes/` procedure references
 
 Confirm all referenced procedure files exist and are current:
-- `notes/WORKTREE_SETUP_PROCEDURE.md`
-- `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`
-- `notes/THREAD_HANDOFF_PROCEDURE.md`
+- `notes/JUNIPER_2026-03-02_JUNIPER-ML_WORKTREE-SETUP-PROCEDURE.md`
+- `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`
+- `notes/JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`
 
 ### Step 5.3: Create missing directories
 
@@ -204,7 +204,7 @@ bash scripts/test_resume_file_safety.bash
 
 ### Step 7.3: Post-merge cleanup
 
-- Follow `notes/WORKTREE_CLEANUP_PROCEDURE_V2.md`
+- Follow `notes/JUNIPER_2026-06-25_JUNIPER-ML_WORKTREE-CLEANUP-PROCEDURE-V2.md`
 
 ---
 

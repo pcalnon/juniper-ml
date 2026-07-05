@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] -- 2026-05-22
 
 Initial release — Wave 0 of the
-[juniper-config-tools PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md).
+[juniper-config-tools PyPI migration plan](https://github.com/pcalnon/juniper-ml/blob/main/notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md).
 
 ### Added
 

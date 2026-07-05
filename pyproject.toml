@@ -35,7 +35,7 @@ worker = [
 ]
 # Shared documentation tooling -- the markdown link validator that every
 # Juniper repo's docs CI invokes. Wave 1 of the doc-link migration plan
-# (notes/JUNIPER_DOC_TOOLS_PYPI_MIGRATION_PLAN_2026-05-18.md). Pinned
+# (notes/JUNIPER_2026-05-18_JUNIPER-ML_DOC-TOOLS-PYPI-MIGRATION-PLAN.md). Pinned
 # inside the 0.1.x range so a future 0.2.x with breaking CLI changes
 # doesn't auto-adopt before consumer repos have migrated. Kept as a
 # distinct extra for back-compat with `pip install juniper-ml[doc-tools]`
@@ -82,7 +82,7 @@ Issues = "https://github.com/pcalnon/juniper-ml/issues"
 
 # ─────────────────────────────────────────────────────────────────────
 # Tool configuration — aligned with the rest of the Juniper fleet per
-# notes/CI_PIPELINE_ALIGNMENT_PLAN_2026-04-29.md (§5.4 / §6.1 / Phase 4).
+# notes/JUNIPER_2026-04-29_JUNIPER-ECOSYSTEM_CI-PIPELINE-ALIGNMENT-PLAN.md (§5.4 / §6.1 / Phase 4).
 # Scoped to scripts/ + tests/ since juniper-ml has no importable
 # package; the hooks themselves enforce the same scope via their
 # `files:` filter in .pre-commit-config.yaml.

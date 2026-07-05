@@ -6,7 +6,7 @@ Continuation of the CFG-XX / API-XX series most recently advanced through CFG-06
 
 ## Working Document
 
-@notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md (juniper-ml) — see **§2.2 v7.0.1 → v7.0.2 status pass** for the live status table this session built and maintains.
+@notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md (juniper-ml) — see **§2.2 v7.0.1 → v7.0.2 status pass** for the live status table this session built and maintains.
 
 ## Description
 
@@ -49,7 +49,7 @@ I have been working through the v7 roadmap's Configuration (§20) and API/Protoc
 - **Design-first**: items with multiple approaches or cross-repo impact get a `notes/<TOPIC>_DESIGN_<DATE>.md` PR first. CFG-04 / CFG-16 / CFG-09 / CFG-02 are mechanical enough to skip. CFG-01 (torch dep) and CFG-07/08/API-03/04/05 likely warrant designs.
 - **Cleanup gate (mandatory)**: never delete branches/worktrees until Paul says "PR merged" AND `gh pr view <N>` confirms `state=MERGED` with non-null `mergedAt`. Two-gate rule, no exceptions.
 - **Sequential PR flow**: Paul prefers one PR open at a time. Wait for explicit "PR merged" before opening the next, even when PRs are in different repos.
-- **`juniper-config-tools` 0.1.0 is now available** on PyPI for any future env-var prefix migration. Stdlib-only — safe for cascor-worker (no Pydantic at runtime). See `notes/JUNIPER_CONFIG_TOOLS_PYPI_MIGRATION_PLAN_2026-05-22.md` and `juniper-cascor-worker/notes/CFG_06_ENV_PREFIX_CONVERGENCE_DESIGN_2026-05-22.md` for the pattern.
+- **`juniper-config-tools` 0.1.0 is now available** on PyPI for any future env-var prefix migration. Stdlib-only — safe for cascor-worker (no Pydantic at runtime). See `notes/JUNIPER_2026-05-22_JUNIPER-ML_CONFIG-TOOLS-PYPI-MIGRATION-PLAN.md` and `juniper-cascor-worker/notes/CFG_06_ENV_PREFIX_CONVERGENCE_DESIGN_2026-05-22.md` for the pattern.
 - **Worktrees**: branch from `origin/main` (not local `main`) since other Claude sessions may leave local `main` divergent — pattern is `git branch <name> origin/main && git worktree add ...`.
 - **CHANGELOG**: every PR adds an `[Unreleased]` entry; version bumps tied to runtime-affecting changes only.
 
@@ -89,7 +89,7 @@ rg -n 'torch' /home/pcalnon/Development/python/Juniper/juniper-canopy/pyproject.
 rg -n 'import torch' /home/pcalnon/Development/python/Juniper/juniper-canopy/src/backend/demo_backend.py
 
 # Read §2.2 for the current roadmap status table
-sed -n '146,190p' /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md
+sed -n '146,190p' /home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md
 ```
 
 After verification, ask which item to start with (Confirmed TODO recommended) and proceed under the design-first + sequential + cleanup-gate patterns above.

@@ -36,7 +36,7 @@ coverage-gap mapper), or ``python -m juniper_ci_tools`` (dep-docs generator).
 The CLI surfaces are in :mod:`cli`, :mod:`cli_lint_workflow_paths`,
 :mod:`cli_lint_agents_md_version`, and :mod:`cli_coverage_gap_mapper`.
 
-See ``notes/JUNIPER_CI_TOOLS_PYPI_MIGRATION_PLAN_2026-05-20.md`` in the
+See ``notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md`` in the
 juniper-ml repo for the design rationale, the incident-class motivation
 (mirroring the 2026-05-18 doc-link validator incident), and the wave plan.
 """

@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Test coverage lifted** for the `workers/`, `lifecycle/`, `routes/`, and top-level
   `juniper_service_core` sub-modules — part of work-unit **C-4** of the per-file coverage
-  rollout ([`notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md`](../notes/JUNIPER_ECOSYSTEM_PER_FILE_COVERAGE_ROLLOUT_SCOPING_2026-06-30.md)).
+  rollout ([`notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md`](../notes/JUNIPER_2026-06-30_JUNIPER-ECOSYSTEM_PER-FILE-COVERAGE-ROLLOUT-SCOPING.md)).
   Each named source file reaches ≥90% statement coverage and each of these sub-modules
   ≥95% statement-weighted pooled coverage, via **real tests only** (no source changes).
   The `websocket/` sub-module is lifted in a parallel sibling PR (C-4a); the blocking

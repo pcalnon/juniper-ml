@@ -34,7 +34,7 @@ class ReadinessResponse(BaseModel):
     status: Literal["ready", "degraded", "not_ready"]
     version: str
     service: str
-    # Build provenance (juniper-ml notes/BUILD_PROVENANCE_DESIGN_2026-06-14.md):
+    # Build provenance (juniper-ml notes/JUNIPER_2026-06-14_JUNIPER-ECOSYSTEM_BUILD-PROVENANCE-DESIGN.md):
     # the source git SHA and ISO-8601 build timestamp baked into the image
     # at build time. ``None`` when the service runs outside a provenance-
     # stamped image (local dev / pre-rollout). Surfaced here so stale-image

@@ -10,7 +10,7 @@
 
 ## Goal
 
-Continue working on Track 4 of `notes/JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md`, **Phases 4D and 4E**.
+Continue working on Track 4 of `notes/JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md`, **Phases 4D and 4E**.
 
 Track 4 covers cross-repo alignment and client-library cleanup across `juniper-data-client`, `juniper-cascor-client`, and `juniper-cascor-worker`. Phases 4A, 4B, and 4C are done (4C is in review on the listed PRs). Phases 4D and 4E remain.
 

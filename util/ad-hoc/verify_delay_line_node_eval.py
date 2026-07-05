@@ -37,8 +37,8 @@ Created: 2026-06-09
 Status: ad-hoc - investigation (P4 delay-line / shift-register ARM A vs ARM B)
 Retire when: P4 design decision (FIR vs IIR) is ratified or the arm is dropped;
              this PoC's measured numbers are folded into the design doc.
-Related: notes/JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md,
-         notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md (S8.6/S8.7),
+Related: notes/JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md,
+         notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md (S8.6/S8.7),
          util/ad-hoc/verify_delta_t_reference_code.py
 """
 

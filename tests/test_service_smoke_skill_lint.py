@@ -27,8 +27,8 @@ This unittest is the *structural* gate for the Skill surface:
 every pre-commit hook except markdownlint, so this unittest -- wired into ``ci.yml``
 -- is the gate.
 
-Design-of-record: ``notes/JUNIPER_ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS_PLAN_2026-06-27.md`` (S6.9).
-Spike record: ``notes/JUNIPER_ML_E1-SERVICE-SMOKE_STAGE0-SPIKE_2026-06-29.md``.
+Design-of-record: ``notes/JUNIPER_2026-06-27_JUNIPER-ML_CUSTOM-AGENT-SUITE-ENHANCEMENTS-PLAN.md`` (S6.9).
+Spike record: ``notes/JUNIPER_2026-06-29_JUNIPER-ML_E1-SERVICE-SMOKE-STAGE0-SPIKE.md``.
 Location-agnostic: discovers the repo root by walking up for ``.github/workflows/``.
 """
 

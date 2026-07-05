@@ -12,9 +12,9 @@ Continue the **recurrent-structure add-on** effort for juniper-recurse (how to a
 
 **Design + planning (all MERGED to juniper-ml `main`):**
 
-- **Docs split (#344):** `notes/JUNIPER_RECURSE_MODEL_DESIGN_AND_PLAN_2026-05-31.md` (model) + `notes/JUNIPER_MODEL_MIDDLEWARE_REFACTOR_DESIGN_AND_PLAN_2026-05-31.md` (refactor + cross-cutting Status Tracker / Risk Register / OQ table / Verification Log). Original path is a redirect stub.
-- **OQ-4 exploration doc (#377):** `notes/JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md` — 3 proposals (P1 self-recurrent RCC / P2 group-implementing units / P3 grown reservoir-memory blocks), 15-agent adversarial validation, Q1 + Q(a)/Q(b).
-- **Irregular-Δt handling note (#378):** `notes/JUNIPER_RECURSE_DELTA_T_HANDLING_2026-06-05.md` — the `dt`/`t`/`observed_mask`/`target_dt` 3-D NPZ contract (§6), windowing-leakage property test (§7), and the solver-free variable-Δt LMU ZOH path (§8, model §1.3.4 amendment).
+- **Docs split (#344):** `notes/JUNIPER_2026-05-31_JUNIPER-RECURRENCE_RECURSE-MODEL-DESIGN-AND-PLAN.md` (model) + `notes/JUNIPER_2026-05-31_JUNIPER-ECOSYSTEM_MODEL-MIDDLEWARE-REFACTOR-DESIGN-AND-PLAN.md` (refactor + cross-cutting Status Tracker / Risk Register / OQ table / Verification Log). Original path is a redirect stub.
+- **OQ-4 exploration doc (#377):** `notes/JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md` — 3 proposals (P1 self-recurrent RCC / P2 group-implementing units / P3 grown reservoir-memory blocks), 15-agent adversarial validation, Q1 + Q(a)/Q(b).
+- **Irregular-Δt handling note (#378):** `notes/JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md` — the `dt`/`t`/`observed_mask`/`target_dt` 3-D NPZ contract (§6), windowing-leakage property test (§7), and the solver-free variable-Δt LMU ZOH path (§8, model §1.3.4 amendment).
 - **Round-2 live-code re-verification + Part 8 migration/cutover path (#349):** refactor doc Part 7 "Round 2" (7 read-only anti-hallucination agents re-grounded every refactor claim vs live repos; doc structurally sound; drift `G1`–`G7` integrated append-only) + new **Part 8** (on-host vs docker dependency-resolution asymmetry, per-workstream two-column runbook, both-stacks-green ladder).
 - **OQ-16/17/18 folded into the Part 5 canonical OQ table (#385).**
 - **Part 5 OQ statuses reconciled to Paul's answers (#387)** + **§1.6 `Answer-N` blocks recorded (#388)** — Part 5 (status SoT) and §1.6 (discussion) now agree.
@@ -77,5 +77,5 @@ for n in 349 385 387 388; do echo -n "#$n "; gh pr view $n --json state -q .stat
 curl -s -o /dev/null -w "%{http_code}\n" https://pypi.org/pypi/juniper-cascor-core/json    # 404 until published
 gh issue view 319 -R pcalnon/juniper-cascor --json state -q .state                          # OPEN until live dual-path verified
 # OQ-4 (thread 1):
-sed -n '1,40p' notes/JUNIPER_RECURSE_OQ4_RECURRENT_CASCOR_PROPOSALS_2026-06-04.md
+sed -n '1,40p' notes/JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md
 ```

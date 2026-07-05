@@ -9,7 +9,7 @@
 ---
 
 
-> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/POST_METRICS_MON_TRACKER_2026-05-05.md` (parallel PR). This doc is preserved for historical reference; do not edit.
+> **STATUS 2026-05-05: COMPLETED — archived to `notes/legacy/`.** The METRICS-MON observability program closed 2026-05-03 (program-close note: `METRICS_MONITORING_PROGRAM_CLOSE_2026-05-03.md`, juniper-ml#192). All in-flight items this doc tracks are terminal (shipped, deferred-with-link, or formally cancelled). Residual follow-ups from program close are tracked in `notes/JUNIPER_2026-05-05_JUNIPER-ECOSYSTEM_POST-METRICS-MON-TRACKER.md` (parallel PR). This doc is preserved for historical reference; do not edit.
 
 ---
 
@@ -45,10 +45,10 @@ A repository sweep for metrics/monitoring planning artifacts produced by prompt1
 
 ```bash
 find /home/pcalnon/Development/python/Juniper/ -iname "*metric*" -o -iname "*monitor*"
-# → only pre-existing files (NORMALIZE_METRIC_CONSUMER_AUDIT_2026-04-13.md, etc.)
+# → only pre-existing files (JUNIPER_2026-04-13_JUNIPER-ECOSYSTEM_NORMALIZE-METRIC-CONSUMER-AUDIT.md, etc.)
 
 find juniper-ml/notes/ -name "*.md" -newer prompts/prompt103_2026-04-22.md
-# → only V7 roadmap and JUNIPER-ML_OTHER_DEPENDENCIES.md / PYPI-PUBLISH-PROCEDURE.md
+# → only V7 roadmap and JUNIPER_2026-04-24_JUNIPER-ML_OTHER-DEPENDENCIES.md / JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md
 ```
 
 No analysis document, planning document, or roadmap matching the prompt104 deliverables exists in any repo's `notes/` directory.
@@ -75,11 +75,11 @@ The following pre-existing files cover **fragments** of the prompt104 scope and 
 
 | File | Scope | Relation to prompt104 |
 |---|---|---|
-| `code-review/NORMALIZE_METRIC_CONSUMER_AUDIT_2026-04-13.md` | Single function (`_normalize_metric`) consumer map and regression guards | Narrow slice (canopy↔cascor metric shape contract). Does not cover the 6-app review. |
-| `code-review/CANOPY_CASCOR_INTERFACE_ANALYSIS_2026-04-08.md` | Canopy↔Cascor interface (incl. metrics relay, WS `/ws/training`) | Touches metrics flow; not metrics-specific or systematic. |
-| `code-review/WEBSOCKET_MESSAGING_ARCHITECTURE-1_2026-04-10.md` | WS messaging (carries metrics frames) | Transport-layer; does not catalog metrics catalog/coverage/gaps. |
-| `JUNIPER_OUTSTANDING_DEVELOPMENT_ITEMS_V7_IMPLEMENTATION_ROADMAP.md` | Ecosystem-wide outstanding work | Contains scattered metrics items (SEC-16, BUG-CC-02, BUG-CC-07, BUG-CC-17, BUG-JD-07, Tasks 1A/1C/1D); **not** an organized metrics review. |
-| `development/JUNIPER_ECOSYSTEM_CODE_AUDIT.md` | Ecosystem audit | General; mentions Prometheus/observability tangentially. |
+| `code-review/JUNIPER_2026-04-13_JUNIPER-ECOSYSTEM_NORMALIZE-METRIC-CONSUMER-AUDIT.md` | Single function (`_normalize_metric`) consumer map and regression guards | Narrow slice (canopy↔cascor metric shape contract). Does not cover the 6-app review. |
+| `code-review/JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CANOPY-CASCOR-INTERFACE-ANALYSIS.md` | Canopy↔Cascor interface (incl. metrics relay, WS `/ws/training`) | Touches metrics flow; not metrics-specific or systematic. |
+| `code-review/JUNIPER_2026-04-10_JUNIPER-ECOSYSTEM_WEBSOCKET-MESSAGING-ARCHITECTURE-1.md` | WS messaging (carries metrics frames) | Transport-layer; does not catalog metrics catalog/coverage/gaps. |
+| `JUNIPER_2026-05-25_JUNIPER-ECOSYSTEM_OUTSTANDING-DEVELOPMENT-ITEMS-V7-IMPLEMENTATION-ROADMAP.md` | Ecosystem-wide outstanding work | Contains scattered metrics items (SEC-16, BUG-CC-02, BUG-CC-07, BUG-CC-17, BUG-JD-07, Tasks 1A/1C/1D); **not** an organized metrics review. |
+| `development/JUNIPER_2026-04-20_JUNIPER-ECOSYSTEM_CODE-AUDIT.md` | Ecosystem audit | General; mentions Prometheus/observability tangentially. |
 
 None of these meet prompt104's deliverable contract (a *dedicated* metrics & monitoring plan + analysis + roadmap with full categorization and remediation analysis).
 
@@ -93,7 +93,7 @@ The original prompt104 task is **still open** and should be re-run in a fresh se
 2. **Decompose by application before merging findings**: spawn one Explore subagent per repo to inventory metrics surface area (Prometheus instruments, REST `/v1/metrics*`, WS `/ws/training` payloads, log-based metrics, healthchecks, dashboards), write per-app summaries to disk, then synthesize.
 3. **Reuse existing inputs verbatim**: cite (don't re-derive) `NORMALIZE_METRIC_CONSUMER_AUDIT`, V7 SEC-16, BUG-CC-02/07/17, BUG-JD-07, Tasks 1A/1C/1D.
 4. **Scope inventory first, gaps second, remediations third** — do not interleave; keep per-phase artifacts on disk so context can be released between phases.
-5. **Trigger handoff at 70% context**, per project `THREAD_HANDOFF_PROCEDURE.md`, instead of waiting for compaction or OOM.
+5. **Trigger handoff at 70% context**, per project `JUNIPER_2026-02-23_JUNIPER-ML_THREAD-HANDOFF-PROCEDURE.md`, instead of waiting for compaction or OOM.
 
 Suggested target paths for the resumed deliverables:
 
@@ -101,7 +101,7 @@ Suggested target paths for the resumed deliverables:
 - `juniper-ml/notes/code-review/METRICS_MONITORING_REVIEW_PLAN_2026-04-25.md` — plan
 - `juniper-ml/notes/code-review/METRICS_MONITORING_ROADMAP_2026-04-25.md` — roadmap
 
-(Ecosystem-wide scope ⇒ juniper-ml is the correct home, mirroring `CROSS_PROJECT_CODE_REVIEW_2026-04-08.md` and `RELEASE_DEVELOPMENT_ROADMAP_2026-04-08.md`.)
+(Ecosystem-wide scope ⇒ juniper-ml is the correct home, mirroring `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_CROSS-PROJECT-CODE-REVIEW.md` and `JUNIPER_2026-04-08_JUNIPER-ECOSYSTEM_RELEASE-DEVELOPMENT-ROADMAP.md`.)
 
 ---
 

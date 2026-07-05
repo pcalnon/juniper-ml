@@ -59,6 +59,7 @@ class ThreadHandoffArchiveTest(unittest.TestCase):
             for name, sources in sorted(references.items())
             if not (_HANDOFF_DIR / name).is_file()
         }
+
         self.assertEqual(missing, {}, "top-level note handoff references must resolve to archived prompt files")
 
 
