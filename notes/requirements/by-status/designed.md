@@ -1268,4 +1268,3 @@ All CasCor enhancement items are feature requests. Brief remediation approaches:
 **Notes**:
 
 [v3 brief repaired from cited content; was: '3.7 R5.6-THROTTLE — Cascor 25-epoch emit throttle removal']
-
