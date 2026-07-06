@@ -12,7 +12,7 @@
 Three concurrent regressions land in the same observable user surface (the canopy Dataset View tab + the dashboard's "training status" badge). Container health checks pass because each individual service's `/v1/health` endpoint is fine; the failure is at the **cross-service integration layer**.
 
 | # | Layer | Root cause | User-visible symptom | Severity |
-|---|---|---|---|---|
+| :--- | :--- | :--- | :--- | :--- |
 | **RC-1** | `juniper-cascor` server / `juniper-cascor-client` WS client | Cascor `/ws/control` fail-closes when no `Origin` header is sent. The canopy-side client (`CascorControlStream` in `juniper-cascor-client`) **does not set an Origin header** on the upgrade request. Cascor's allowlist is hard-coded (no env-var override) to `localhost:8050`. Canopy connects from the container hostname → no Origin → 403. Worker `/ws/v1/workers` deliberately *rejects* Origin (machine-to-machine) so it succeeds. | "WS in reconnect loop" (every 30s); "training/operational status error" (Control Stream Supervisor never connects → dashboard never sees realtime cascor state) | **Critical** — primary cause of the user's report |
 | **RC-2** | `juniper-canopy` adapter | `CascorServiceAdapter.get_dataset_swap_events()` calls `self._client._request("GET", "/v1/history/dataset_swaps", …)`, but `juniper-cascor-client` already prepends `/v1` (via `API_VERSION_PATH`) to every `_request` path. Effective URL becomes `/v1/v1/history/dataset_swaps` → cascor 404. | "Backend rejected dataset_swap events fetch: Not Found" log spam + missing dataset-swap event timeline in canopy UI | **Minor** — cosmetic + log noise; doesn't break primary flows |
 | **RC-3** | `juniper-deploy` secrets wiring (latent risk; currently masked) | Compose declares two parallel mounts — `juniper_cascor_api_keys` (plural, JSON-list) and `juniper_cascor_api_key` (singular, raw) — and `secrets.example/*.txt` placeholder files. The on-disk asymmetry between `secrets/` (mostly 0-byte) and `secrets.example/` (placeholder JSON list) plus the partial `.env.local` override pattern can produce a state where canopy and cascor disagree on the key format (canopy sends the placeholder, cascor's accept-list is empty → 401). In the current live stack, both ended up resolving to the same `secrets.example/` JSON-list file, so HTTP auth coincidentally works. Once Paul (or `make prepare-secrets`) populates one side without the other, RC-3 surfaces. | None in current stack; would surface as "canopy → cascor 401 on every /v1/* call" after the next partial secrets rotation. | **Latent (high risk if not addressed)** |
@@ -64,10 +64,13 @@ docker logs juniper-cascor 2>&1 | grep "/v1/v1"
 ### 3.2 Server-side evidence (juniper-cascor)
 
 - **Emit point** — `juniper-cascor/src/api/websocket/control_security.py:30`:
+
   ```python
   logger.info("Control WS: no Origin header — rejecting (fail-closed)")
   ```
+
 - **Allowlist source** — `juniper-cascor/src/api/settings.py:291-297`:
+
   ```python
   ws_control_allowed_origins: list[str] = [
       "http://localhost:8050",
@@ -76,26 +79,31 @@ docker logs juniper-cascor 2>&1 | grep "/v1/v1"
       "https://127.0.0.1:8050",
   ]
   ```
+
 - **Live-container introspection** (cross-check inside the running juniper-cascor container):
-  ```
+
+  ```python
   >>> get_settings().ws_control_allowed_origins
-  ['http://localhost:8050', 'http://127.0.0.1:8050',
-   'https://localhost:8050', 'https://127.0.0.1:8050']
+  ['http://localhost:8050', 'http://127.0.0.1:8050', 'https://localhost:8050', 'https://127.0.0.1:8050']
   ```
+
 - **No env-var hook** — the `ws_control_allowed_origins` field has no `JUNIPER_CASCOR_WS_CONTROL_ALLOWED_ORIGINS` env mapping; the list is a hard-coded default.
 - **Introducing commit**: `daacb6d1fb3f0d1161e8f262249190b34016ada6` — *feat(ws): control-path security — origin validation, rate limiting, cooldown (P8) (#129)* — 2026-04-13.
 - **Sister worker endpoint policy is the opposite** — `juniper-cascor/src/api/websocket/worker_stream.py:42-45`:
+
   ```python
   # Reject connections with Origin header (Section 12.3 — workers are M2M)
   if websocket.headers.get("origin"):
       await websocket.close(code=4003, reason="Origin header not allowed on worker endpoint")
       return
   ```
+
   This asymmetry is intentional (workers are server-to-server; the dashboard control plane was modeled as browser-originated). It explains why **workers reconnect cleanly** (`worker-1` log: "Registered as worker 88c2a286-…") while **the control supervisor 403s every 30s**.
 
 ### 3.3 Client-side evidence (juniper-cascor-client + juniper-canopy)
 
 - **Canopy supervisor** — `juniper-canopy/src/backend/cascor_service_adapter.py:126-130`:
+
   ```python
   self._stream = CascorControlStream(
       base_url=self._ws_url,
@@ -103,7 +111,9 @@ docker logs juniper-cascor 2>&1 | grep "/v1/v1"
   )
   await self._stream.connect()
   ```
+
 - **WS connect** — `juniper-cascor-client/juniper_cascor_client/ws_client.py:309-316`:
+
   ```python
   async def connect(self) -> None:
       """Connect to the /ws/control endpoint."""
@@ -114,6 +124,7 @@ docker logs juniper-cascor 2>&1 | grep "/v1/v1"
       try:
           self._ws = await websockets.connect(url, additional_headers=extra_headers)
   ```
+
   No `origin=` kwarg is set. The Python `websockets` library will **not** auto-emit an `Origin` header from a non-browser caller. Cascor receives the upgrade with `Origin: <missing>` → `control_security.py:30` → 403.
 
 ### 3.4 Why test coverage didn't catch it
@@ -139,7 +150,7 @@ Without it, the canopy dashboard backend never receives the post-action echo for
 
 ### 4.1 Failure
 
-```
+```bash
 juniper-cascor INFO:  172.20.0.3 - "GET /v1/v1/history/dataset_swaps HTTP/1.1" 404 Not Found
 juniper-canopy ERROR: get_dataset_swap_events failed: Not Found
 juniper-canopy WARNING: Backend rejected dataset_swap events fetch: Not Found
@@ -148,10 +159,13 @@ juniper-canopy WARNING: Backend rejected dataset_swap events fetch: Not Found
 ### 4.2 Code locations
 
 - **Canopy caller** — `juniper-canopy/src/backend/cascor_service_adapter.py:1069`:
+
   ```python
   result = self._client._request("GET", "/v1/history/dataset_swaps", params=params)
   ```
+
 - **Client prepends `/v1` already** — `juniper-cascor-client/juniper_cascor_client/client.py:83, 356`:
+
   ```python
   # __init__
   self.api_url = f"{self.base_url}{API_VERSION_PATH}"   # API_VERSION_PATH = "/v1"
@@ -159,6 +173,7 @@ juniper-canopy WARNING: Backend rejected dataset_swap events fetch: Not Found
   # _request
   url = f"{self.api_url}{path}"   # -> http://cascor:8200/v1 + /v1/history/dataset_swaps
   ```
+
 - **Real URL** sent on the wire: `http://juniper-cascor:8200/v1/v1/history/dataset_swaps` → cascor router has no `/v1/v1/...` mount → 404.
 
 ### 4.3 Why it didn't ship break-detection
@@ -186,11 +201,14 @@ Plus a regression test in `juniper-canopy/src/tests/unit/backend/` that monkeypa
 Both canopy and cascor mounted the *same* file content for `juniper_cascor_api_keys`: 33 bytes containing the JSON-list `["CHANGE_BEFORE_PRODUCTION_USE"]\n` (sourced from `secrets.example/juniper_cascor_api_keys.txt`). cascor's `_parse_api_keys` validator (added in PR [juniper-cascor#311](https://github.com/pcalnon/juniper-cascor/pull/311) — 2026-05-27 14:14 CDT) sees the bare string with no commas and returns `['["CHANGE_BEFORE_PRODUCTION_USE"]']` — a one-element list whose single element is the *literal* JSON-list string. Canopy sends the same literal as `X-API-Key`; it matches; cascor returns 200. HTTP auth works **by coincidence of identical placeholder rendering**.
 
 Live-container introspection inside cascor:
+
 ```
 >>> get_settings().api_keys
 ['["CHANGE_BEFORE_PRODUCTION_USE"]']
 ```
+
 Curl confirmation:
+
 ```
 curl -H 'X-API-Key: ["CHANGE_BEFORE_PRODUCTION_USE"]' http://localhost:8201/v1/dataset -> 200
 curl -H 'X-API-Key: CHANGE_BEFORE_PRODUCTION_USE'   http://localhost:8201/v1/dataset -> 401 Invalid API key
