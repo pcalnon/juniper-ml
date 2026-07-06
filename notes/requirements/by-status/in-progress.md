@@ -103,7 +103,7 @@ In-flight sister PR exists. Add unit test asserting Gauge.value == len(cache) af
 **Status**: in-progress  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 48-70)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 48-70)
 
 **Detail**:
 

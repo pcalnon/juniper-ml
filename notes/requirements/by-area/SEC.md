@@ -584,7 +584,7 @@ Immedidately, add validation check rejecting `ndim > 2` with a clear error messa
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 162-203)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 162-203)
 
 **Detail**:
 
@@ -1619,7 +1619,7 @@ Security issue in deployment pipeline.
 **Status**: in-progress  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 48-70)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 48-70)
 
 **Detail**:
 
@@ -2752,7 +2752,7 @@ CODE_REVIEW_ANALYSIS v0.4.0; path sanitization + path confinement (defense in de
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 154-162)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 154-162)
 
 **Detail**:
 

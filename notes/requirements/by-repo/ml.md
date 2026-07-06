@@ -1428,7 +1428,7 @@ Immedidately, add validation check rejecting `ndim > 2` with a clear error messa
 **Status**: proposed  **Priority**: P0  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 162-203)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 162-203)
 
 **Detail**:
 
@@ -6646,7 +6646,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 95-145)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 95-145)
 
 **Detail**:
 
@@ -6840,7 +6840,7 @@ Deploy behind JUNIPER_CASCOR_WS_METRICS_FULL feature flag initially.
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 83-129)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 83-129)
 
 **Detail**:
 
@@ -6851,7 +6851,7 @@ Deploy behind JUNIPER_CASCOR_WS_METRICS_FULL feature flag initially.
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 144-161)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 144-161)
 
 **Detail**:
 
@@ -7137,7 +7137,7 @@ cause: the pre-METRICS-MON observability scaffolding in
 **Status**: in-progress  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 48-70)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 48-70)
 
 **Detail**:
 
@@ -10198,7 +10198,7 @@ RISK-08, GAP-WS-33. Phase B (Day 9). Demo users see same UI feedback as live use
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/documentation/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md` (lines 1-50)
+- `juniper-ml/notes/legacy/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md` (lines 1-50)
 
 ### JR-ML-SEC-147 — Dual auth mechanisms — WebSocket endpoints lack middleware-level enforcement and rate limiting.
 
@@ -13697,7 +13697,7 @@ Phase 3: documentation content cleanup (Approach 2A hybrid links).
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 70-95)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 70-95)
 
 **Detail**:
 
@@ -13708,7 +13708,7 @@ Phase 3: documentation content cleanup (Approach 2A hybrid links).
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 146-154)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 146-154)
 
 **Detail**:
 
@@ -13719,7 +13719,7 @@ Phase 3: documentation content cleanup (Approach 2A hybrid links).
 **Status**: proposed  **Priority**: P2  **Category**: SEC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 154-162)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 154-162)
 
 **Detail**:
 
@@ -14482,7 +14482,7 @@ Settled position C-40 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 41-83)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 41-83)
 
 **Detail**:
 
@@ -14493,7 +14493,7 @@ Settled position C-40 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 129-144)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 129-144)
 
 **Detail**:
 
@@ -14504,7 +14504,7 @@ Settled position C-40 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 161-201)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 161-201)
 
 **Detail**:
 

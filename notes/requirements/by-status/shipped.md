@@ -659,7 +659,7 @@ RD-010 complete 2026-02-20. Standalone repo pcalnon/juniper-data-client. 41 test
 **Status**: shipped  **Priority**: P1  **Category**: TOOL  **Owner**: cas
 
 **Sources**:
-- `juniper-cascor/notes/history/PR_full_branch_spiral_gen_extract_pre_deploy.md` (lines 1-100)
+- `juniper-cascor/notes/pull_requests/PR_full_branch_spiral_gen_extract_pre_deploy.md` (lines 1-100)
 
 **Detail**:
 

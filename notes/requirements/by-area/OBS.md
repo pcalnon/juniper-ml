@@ -986,7 +986,7 @@ Deploy behind JUNIPER_CASCOR_WS_METRICS_FULL feature flag initially.
 **Status**: proposed  **Priority**: P1  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 83-129)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 83-129)
 
 **Detail**:
 
@@ -2231,7 +2231,7 @@ Three ServiceMonitor templates: `data-servicemonitor.yaml`,
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 146-154)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 146-154)
 
 **Detail**:
 
@@ -2383,7 +2383,7 @@ When CasCor adds a hidden unit via `grow_network()`, there is a brief transient 
 **Status**: proposed  **Priority**: P2  **Category**: OBS  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 161-201)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 161-201)
 
 **Detail**:
 

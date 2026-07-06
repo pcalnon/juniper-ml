@@ -2026,7 +2026,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md
     line_start: 162
     line_end: 203
 - id: JR-CAN-SEC-006
@@ -2431,7 +2431,7 @@
   merged_count: 1
   notes: "[v2 remap: CL\u2192TOOL]"
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-cascor/notes/history/PR_full_branch_spiral_gen_extract_pre_deploy.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-cascor/notes/pull_requests/PR_full_branch_spiral_gen_extract_pre_deploy.md
     line_start: 1
     line_end: 100
 - id: JR-CCL-OPS-001
@@ -10437,7 +10437,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md
     line_start: 95
     line_end: 145
 - id: JR-ML-TRAIN-047
@@ -10705,7 +10705,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md
     line_start: 83
     line_end: 129
 - id: JR-ML-API-027
@@ -10717,7 +10717,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md
     line_start: 144
     line_end: 161
 - id: JR-ML-OBS-048
@@ -11259,7 +11259,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md
     line_start: 48
     line_end: 70
 - id: JR-ML-UI-022
@@ -15447,7 +15447,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/documentation/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md
     line_start: 1
     line_end: 50
 - id: JR-ML-SEC-147
@@ -19670,7 +19670,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md
     line_start: 70
     line_end: 95
 - id: JR-ML-OBS-131
@@ -19682,7 +19682,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md
     line_start: 146
     line_end: 154
 - id: JR-ML-SEC-197
@@ -19694,7 +19694,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md
     line_start: 154
     line_end: 162
 - id: JR-ML-API-076
@@ -20610,7 +20610,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md
     line_start: 41
     line_end: 83
 - id: JR-ML-API-085
@@ -20622,7 +20622,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md
     line_start: 129
     line_end: 144
 - id: JR-ML-OBS-140
@@ -20634,7 +20634,7 @@
   merged_count: 1
   notes: null
   sources:
-  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md
+  - path: /home/pcalnon/Development/python/Juniper/juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md
     line_start: 161
     line_end: 201
 - id: JR-ML-TRAIN-101

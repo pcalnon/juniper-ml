@@ -28,7 +28,7 @@ Helper scripts (GET_OS_SCRIPT, GET_PROJECT_SCRIPT, DATE_FUNCTIONS_SCRIPT) are ov
 **Status**: shipped  **Priority**: P1  **Category**: TOOL  **Owner**: cas
 
 **Sources**:
-- `juniper-cascor/notes/history/PR_full_branch_spiral_gen_extract_pre_deploy.md` (lines 1-100)
+- `juniper-cascor/notes/pull_requests/PR_full_branch_spiral_gen_extract_pre_deploy.md` (lines 1-100)
 
 **Detail**:
 

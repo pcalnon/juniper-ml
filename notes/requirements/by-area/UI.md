@@ -1382,7 +1382,7 @@ File: src/frontend/components/metrics_panel.py
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 70-95)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 70-95)
 
 **Detail**:
 
@@ -1512,7 +1512,7 @@ The `get_dataset_data()` method (line 733) already demonstrates the correct patt
 **Status**: proposed  **Priority**: P2  **Category**: UI  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 41-83)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 41-83)
 
 **Detail**:
 
