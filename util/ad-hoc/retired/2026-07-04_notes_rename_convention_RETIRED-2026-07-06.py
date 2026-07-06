@@ -5,7 +5,7 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-07-04
-Status: ad-hoc — one-off migration
+Status: retired 2026-07-06 — migration complete (kept for provenance)
 Retire when: the notes/ naming-convention migration PR is merged and verified
 Related: notes/ naming-convention migration PR (chore/notes-naming-convention)
 
