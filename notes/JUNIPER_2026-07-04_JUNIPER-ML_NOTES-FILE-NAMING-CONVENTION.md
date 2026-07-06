@@ -54,8 +54,8 @@ The convention applies to all tracked `notes/**/*.md` **except** (owner decision
 
 - 251 files renamed in place (same directory) on branch `chore/notes-naming-convention`.
 - Full old→new mapping: [`util/ad-hoc/2026-07-04_notes_rename_map.tsv`](../util/ad-hoc/2026-07-04_notes_rename_map.tsv).
-- Generator: `util/ad-hoc/2026-07-04_notes_rename_convention.py` (classification table + mechanical phrase derivation).
-- Reference rewriter: `util/ad-hoc/2026-07-04_notes_rename_refupdate.py` (~7,000 in-repo reference updates, including the `notes/requirements/id_assignments.yaml` citations; boundary-guarded).
+- Generator: `util/ad-hoc/retired/2026-07-04_notes_rename_convention_RETIRED-2026-07-06.py` (classification table + mechanical phrase derivation).
+- Reference rewriter: `util/ad-hoc/retired/2026-07-04_notes_rename_refupdate_RETIRED-2026-07-06.py` (~7,000 in-repo reference updates, including the `notes/requirements/id_assignments.yaml` citations; boundary-guarded). All four migration scripts (generator, rewriter, context-revert, sibling-links) were retired to `util/ad-hoc/retired/` on 2026-07-06 after every migration PR merged; the mapping TSV stays in place as the durable record.
 - Tag distribution: 145 ECOSYSTEM, 36 ML, 28 CASCOR, 23 RECURRENCE, 17 CANOPY, 2 DEPLOY.
 
 ## 5. Where the convention is stated

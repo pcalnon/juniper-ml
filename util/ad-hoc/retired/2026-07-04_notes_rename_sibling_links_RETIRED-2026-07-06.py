@@ -5,7 +5,7 @@ Project: juniper-ml
 Sub-Project: ad-hoc tooling
 Author: Paul Calnon
 Created: 2026-07-04
-Status: ad-hoc — one-off migration
+Status: retired 2026-07-06 — migration complete (kept for provenance)
 Retire when: all sibling link-fix PRs from the notes/ naming migration are merged
 Related: juniper-ml#620 (rename PR); util/ad-hoc/2026-07-04_notes_rename_map.tsv
 
