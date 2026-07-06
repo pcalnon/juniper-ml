@@ -349,7 +349,7 @@ Three-mode activation: demo (CASCOR_DEMO_MODE=1), legacy (CASCOR_BACKEND_PATH), 
 **Status**: shipped  **Priority**: P1  **Category**: TOOL  **Owner**: cas
 
 **Sources**:
-- `juniper-cascor/notes/history/PR_full_branch_spiral_gen_extract_pre_deploy.md` (lines 1-100)
+- `juniper-cascor/notes/pull_requests/PR_full_branch_spiral_gen_extract_pre_deploy.md` (lines 1-100)
 
 **Detail**:
 

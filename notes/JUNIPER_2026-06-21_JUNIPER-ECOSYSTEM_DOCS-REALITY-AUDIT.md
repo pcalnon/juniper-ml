@@ -82,6 +82,7 @@ staleness is captured here rather than edited in-place:
 
 - **`notes/JUNIPER_2026-05-02_JUNIPER-CANOPY_TEMP.md`** — a stray scratch file (mis-titled "juniper-canopy", "notes file for a new run-all-tests
   script"). **Flagged for removal** (not deleted here — not authored by this session; confirm with Paul).
+  *Resolved: confirmed by Paul and deleted 2026-07-06 (notes loose-ends cleanup, follow-up to juniper-ml#620).*
 
 ## §3. Genuinely incomplete / not-started work register
 

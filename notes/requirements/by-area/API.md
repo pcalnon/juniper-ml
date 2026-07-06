@@ -1037,7 +1037,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/CONVERGENCE_UI_FIX_PLAN.md` (lines 95-145)
+- `juniper-ml/notes/legacy/CONVERGENCE_UI_FIX_PLAN.md` (lines 95-145)
 
 **Detail**:
 
@@ -1048,7 +1048,7 @@ Phase A-SDK checklist item from R3-03 §4.1 deliverables
 **Status**: proposed  **Priority**: P1  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 144-161)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 144-161)
 
 **Detail**:
 
@@ -2008,7 +2008,7 @@ Settled position C-40 from R3-03 table; cross-round consensus consolidation
 **Status**: proposed  **Priority**: P2  **Category**: API  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/development/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 129-144)
+- `juniper-ml/notes/legacy/REMAINING_ISSUES_REMEDIATION_PLAN.md` (lines 129-144)
 
 **Detail**:
 

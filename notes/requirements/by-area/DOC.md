@@ -460,7 +460,7 @@ Also in AGENTS_MD_UPDATE_ROADMAP (Task 3.3) and AGENTS_MD_UPDATE_PLAN (Step 3.3)
 **Status**: proposed  **Priority**: P2  **Category**: DOC  **Owner**: ml
 
 **Sources**:
-- `juniper-ml/notes/documentation/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md` (lines 1-50)
+- `juniper-ml/notes/legacy/DOCUMENTATION_AUDIT_AND_UPGRADE_PLAN.md` (lines 1-50)
 
 ### JR-ML-DOC-004 — Fix 17 broken markdown links in DEVELOPER_CHEATSHEET.md - 12 self-referencing and 5 missing intra-repo files.
 
