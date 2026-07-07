@@ -359,8 +359,10 @@ class TestDataHostHonorsOverride(unittest.TestCase):
     """Audit fix #7 + #9 — JUNIPER_DATA_HOST respects caller value."""
 
     def test_data_host_uses_default_expansion(self) -> None:
+        # SEC-F28: default is loopback (juniper-data has no bind guard); the
+        # ``${JUNIPER_DATA_HOST:-...}`` form still honors a caller override.
         self.assertIn(
-            'JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-0.0.0.0}"',
+            'JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-127.0.0.1}"',
             SCRIPT_TEXT,
         )
 
