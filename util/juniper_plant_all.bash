@@ -9,7 +9,7 @@
 # Environment overrides:
 #   JUNIPER_PROJECT_DIR        — Root of Juniper ecosystem (default: ~/Development/python/Juniper)
 #   JUNIPER_CONDA_DIR          — Miniforge/conda install dir (default: /opt/miniforge3)
-#   JUNIPER_DATA_HOST          — juniper-data bind host (default: 0.0.0.0)
+#   JUNIPER_DATA_HOST          — juniper-data bind host (default: 127.0.0.1)
 #   JUNIPER_DATA_PORT          — juniper-data listen port (default: 8100)
 #   JUNIPER_CASCOR_HOST        — juniper-cascor bind host (default: localhost)
 #   JUNIPER_CASCOR_PORT        — juniper-cascor listen port (default: 8201)
@@ -99,7 +99,11 @@ JUNIPER_DATA_DIR="${JUNIPER_PROJECT_DIR}/juniper-data"
 JUNIPER_DATA_LOG_DIR="${JUNIPER_DATA_DIR}/logs"
 JUNIPER_DATA_LOGNAME="juniper-data_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_DATA_LOG="${JUNIPER_DATA_LOG_DIR}/${JUNIPER_DATA_LOGNAME}"
-JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-0.0.0.0}"
+# juniper-data has no bind guard (SEC-F22 covers canopy + cascor); default the on-host
+# orchestrator to a loopback bind so a same-host stack is not published to all interfaces by
+# default. Export JUNIPER_DATA_HOST=0.0.0.0 to expose it deliberately. See juniper-ml
+# notes/JUNIPER_2026-07-06_JUNIPER-ECOSYSTEM_LAUNCH-PATH-BIND-AUDIT.md (SEC-F28).
+JUNIPER_DATA_HOST="${JUNIPER_DATA_HOST:-127.0.0.1}"
 JUNIPER_DATA_PORT="${JUNIPER_DATA_PORT:-8100}"
 JUNIPER_DATA_CONDA="JuniperData"
 
