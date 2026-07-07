@@ -142,12 +142,24 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8050"]
 
 This is **not** the image `juniper-deploy` builds — `docker-compose.yml:129`
 builds canopy from the repo-root `Dockerfile`, whose `CMD` is the safe
-`["python", "src/main.py"]` (`Dockerfile:110`). `conf/Dockerfile` is therefore a
-latent bypass: harmless unless someone builds it, but it embeds the anti-pattern
-and diverges from the production image.
+`["python", "src/main.py"]` (`Dockerfile:110`). `conf/Dockerfile` is paired with
+`conf/docker-compose.yaml`, a **legacy/superseded** local compose: it publishes
+all interfaces (`ports: 8050:8050`, not the loopback host publish the deploy
+compose uses), sets no bind attestation, and still wires a dead `cascor-backend:8000`
+service (commented out in the same file; the real backend is `juniper-cascor:8200`).
+The maintained orchestration is `juniper-deploy`. So `conf/` is a latent bypass
+inside stale infra, not a live production path.
 
-**Fix.** Align its `CMD` with the root Dockerfile
-(`CMD ["python", "src/main.py"]`), or delete `conf/Dockerfile` if it is dead.
+**Fix (owner decision — deprecate vs modernize).** Because `conf/` is superseded
+and internally inconsistent with the guard model (all-interfaces publish, no
+attestation), a bare `CMD` align would leave the container binding loopback
+*inside* the container and unreachable via its own publish. Two coherent options:
+(a) **deprecate** — remove `conf/Dockerfile` + `conf/docker-compose.yaml` and the
+existence assertion in `src/tests/regression/test_docker_demo_mode_default.py`,
+pointing demos at `juniper-deploy`; or (b) **modernize** — route the `CMD` through
+the guard (`python src/main.py`) and rewrite `conf/docker-compose.yaml` to the
+deploy posture (loopback host publish + `JUNIPER_CANOPY_SERVER__HOST=0.0.0.0` +
+`JUNIPER_CANOPY_LOOPBACK_PUBLISH_ATTESTED=true`). Deferred pending that call.
 
 ### SEC-F26 — cascor carries a stray canopy demo with `--host 0.0.0.0` (Low, latent + hygiene)
 
@@ -166,19 +178,32 @@ artifact.
 **Fix.** Remove the stray copy from cascor (repo-hygiene); the canonical demo
 lives in canopy and is addressed by SEC-F24.
 
-### SEC-F27 — cascor docstring documents the `--host 0.0.0.0` anti-pattern (Info)
+### SEC-F27 — canopy lacks the uvicorn-CLI bind-parity shim that cascor has (reclassified)
 
-`src/api/app.py:100` (docstring, not executable):
+> **Reclassified during remediation (2026-07-06).** The original reading — "cascor
+> docstring documents an anti-pattern, change it to `127.0.0.1`" — was wrong.
+> `src/api/app.py:100` documents cascor's *defense*, not a bypass. See §7.
 
-```text
-``uvicorn api.app:create_app --factory --host 0.0.0.0`` is a documented ...
-```
+`src/api/app.py:97` defines `_settings_with_uvicorn_cli_bind()`, and `create_app`
+calls it before the guard runs (`settings = _settings_with_uvicorn_cli_bind(get_settings())`,
+`app.py:577`; `enforce_bind_attestation_guard(settings)` in the lifespan,
+`app.py:314`). The shim overlays a uvicorn CLI `--host` / `--port` onto a transient
+`Settings` copy, so a launch via `uvicorn api.app:create_app --factory --host 0.0.0.0`
+makes the guard see the **real** CLI bind host, not the settings default. The
+`--host 0.0.0.0` in that docstring is the scenario the shim *defends against* — so
+cascor's factory / uvicorn-CLI path is already guard-authoritative.
 
-Not a live launcher, but it advertises a guard-bypassing invocation as a
-supported way to run the service.
+The genuine finding is the **inverse**: canopy has no equivalent shim.
+`main.lifespan` calls `enforce_loopback_bind_guard(settings.server.host, ...)`
+directly (`main.py:240`), so any `uvicorn main:app --host X` launch bypasses the
+guard — the shared root cause of SEC-F23 / SEC-F24 / SEC-F25.
 
-**Fix.** Change the documented example to `--host 127.0.0.1` (or reference
-`python src/server.py`), so the docs stop recommending the bypass.
+**Fix (recommended).** Port cascor's `_settings_with_uvicorn_cli_bind` shim to
+canopy so the guard evaluates the real CLI bind on *any* launch path — a generic
+defense covering future launchers, not just the three found here. Do **not** change
+the cascor docstring; it correctly documents the defended case. The per-launcher
+fixes (SEC-F23/F24) close the known bypasses; the shim is the defense-in-depth that
+stops the class recurring. Owner decision: port now or track separately.
 
 ### SEC-F28 — `plant_all` defaults juniper-data to `0.0.0.0` (Info, posture)
 
@@ -237,10 +262,30 @@ Suggested sequencing:
    the loopback-by-default posture.
 2. **SEC-F24** (canopy demo) — route through setting + attestation; keeps demo
    reachable, restores the attestation trail.
-3. **SEC-F25 / SEC-F26 / SEC-F27** — mechanical hygiene (align/delete alt
-   Dockerfile, remove stray cascor demo, fix docstring). Low risk, batchable.
+3. **SEC-F26** — mechanical hygiene: remove the stray cascor demo. Low risk.
+   **SEC-F25** and **SEC-F27** need owner decisions (legacy `conf/`; port the
+   canopy parity shim) — see §4 and the remediation status in §7.
 4. **SEC-F28** — posture decision for juniper-data on-host default; owner call,
    may fold into a future data-service bind-guard scope.
 
 Each fix lands as its own owner-reviewed PR (never auto-merged), consistent with
 the deployment-trust workflow.
+
+## 7. Remediation status (2026-07-06)
+
+Four findings fixed as owner-gated PRs (never auto-merged); two reclassified
+findings await an owner decision. The audit report itself is juniper-ml PR #630.
+
+| ID | Disposition | PR |
+| --- | --- | --- |
+| SEC-F23 | Fixed — systemd `ExecStart` → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 |
+| SEC-F24 | Fixed — demo launcher → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 |
+| SEC-F26 | Fixed — stray cascor canopy-demo removed | juniper-cascor #394 |
+| SEC-F28 | Fixed — `JUNIPER_DATA_HOST` default → `127.0.0.1` (consumers use `JUNIPER_DATA_URL`, unaffected) | juniper-ml #631 |
+| SEC-F25 | Pending owner decision — deprecate vs modernize legacy `conf/` (§4) | — |
+| SEC-F27 | Reclassified — canopy lacks cascor's parity shim; port it or track (§4) | — |
+
+The two fixed canopy launchers (SEC-F23/F24) close the *known* bypasses. SEC-F27
+(porting cascor's `_settings_with_uvicorn_cli_bind` shim to canopy) is the generic
+defense that would make the guard authoritative on any future `uvicorn main:app
+--host X` launch, closing the class rather than the instances.
