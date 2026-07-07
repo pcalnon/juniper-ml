@@ -159,7 +159,7 @@ existence assertion in `src/tests/regression/test_docker_demo_mode_default.py`,
 pointing demos at `juniper-deploy`; or (b) **modernize** — route the `CMD` through
 the guard (`python src/main.py`) and rewrite `conf/docker-compose.yaml` to the
 deploy posture (loopback host publish + `JUNIPER_CANOPY_SERVER__HOST=0.0.0.0` +
-`JUNIPER_CANOPY_LOOPBACK_PUBLISH_ATTESTED=true`). Deferred pending that call.
+`JUNIPER_CANOPY_LOOPBACK_PUBLISH_ATTESTED=true`). **Resolved: option (a), deprecate** — shipped in juniper-canopy #435 (merged).
 
 ### SEC-F26 — cascor carries a stray canopy demo with `--host 0.0.0.0` (Low, latent + hygiene)
 
@@ -203,7 +203,9 @@ canopy so the guard evaluates the real CLI bind on *any* launch path — a gener
 defense covering future launchers, not just the three found here. Do **not** change
 the cascor docstring; it correctly documents the defended case. The per-launcher
 fixes (SEC-F23/F24) close the known bypasses; the shim is the defense-in-depth that
-stops the class recurring. Owner decision: port now or track separately.
+stops the class recurring. **Resolved: ported now** — shipped in juniper-canopy #434
+(merged) as `security.settings_with_uvicorn_cli_bind`, applied in `main.py` after
+`get_settings()`, with 7 tests in `TestUvicornCliBindParity`.
 
 ### SEC-F28 — `plant_all` defaults juniper-data to `0.0.0.0` (Info, posture)
 
@@ -263,8 +265,8 @@ Suggested sequencing:
 2. **SEC-F24** (canopy demo) — route through setting + attestation; keeps demo
    reachable, restores the attestation trail.
 3. **SEC-F26** — mechanical hygiene: remove the stray cascor demo. Low risk.
-   **SEC-F25** and **SEC-F27** need owner decisions (legacy `conf/`; port the
-   canopy parity shim) — see §4 and the remediation status in §7.
+   **SEC-F25** and **SEC-F27** were resolved by owner decision (deprecate `conf/`;
+   port the canopy parity shim) and both shipped — see the status in §7.
 4. **SEC-F28** — posture decision for juniper-data on-host default; owner call,
    may fold into a future data-service bind-guard scope.
 
@@ -273,19 +275,20 @@ the deployment-trust workflow.
 
 ## 7. Remediation status (2026-07-06)
 
-Four findings fixed as owner-gated PRs (never auto-merged); two reclassified
-findings await an owner decision. The audit report itself is juniper-ml PR #630.
+All six findings are shipped and **merged** as owner-gated PRs (none auto-merged).
+The audit report itself is juniper-ml PR #630 (merged).
 
 | ID | Disposition | PR |
 | --- | --- | --- |
-| SEC-F23 | Fixed — systemd `ExecStart` → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 |
-| SEC-F24 | Fixed — demo launcher → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 |
-| SEC-F26 | Fixed — stray cascor canopy-demo removed | juniper-cascor #394 |
-| SEC-F28 | Fixed — `JUNIPER_DATA_HOST` default → `127.0.0.1` (consumers use `JUNIPER_DATA_URL`, unaffected) | juniper-ml #631 |
-| SEC-F25 | Pending owner decision — deprecate vs modernize legacy `conf/` (§4) | — |
-| SEC-F27 | Reclassified — canopy lacks cascor's parity shim; port it or track (§4) | — |
+| SEC-F23 | Fixed — systemd `ExecStart` → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 (merged) |
+| SEC-F24 | Fixed — demo launcher → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 (merged) |
+| SEC-F25 | Fixed — legacy `conf/Dockerfile` + `conf/docker-compose.yaml` **deprecated** (superseded by juniper-deploy); live refs repointed to the root Dockerfile / juniper-deploy | juniper-canopy #435 (merged) |
+| SEC-F26 | Fixed — stray cascor canopy-demo removed | juniper-cascor #394 (merged) |
+| SEC-F27 | Fixed — cascor's `_settings_with_uvicorn_cli_bind` parity shim **ported to canopy** (`security.settings_with_uvicorn_cli_bind`, applied in `main.py`, 7 tests) | juniper-canopy #434 (merged) |
+| SEC-F28 | Fixed — `JUNIPER_DATA_HOST` default → `127.0.0.1` (consumers use `JUNIPER_DATA_URL`, unaffected) | juniper-ml #631 (merged) |
 
-The two fixed canopy launchers (SEC-F23/F24) close the *known* bypasses. SEC-F27
-(porting cascor's `_settings_with_uvicorn_cli_bind` shim to canopy) is the generic
-defense that would make the guard authoritative on any future `uvicorn main:app
---host X` launch, closing the class rather than the instances.
+The two canopy launchers (SEC-F23/F24) close the *known* bypasses; the ported shim
+(SEC-F27) makes the guard authoritative on any future `uvicorn main:app --host X`
+launch, closing the class rather than the instances. SEC-F25's owner decision was
+to **deprecate** the legacy `conf/` files. The behavior change flagged for SEC-F23
+(on-host systemd now binds loopback by default) was approved before merge.
