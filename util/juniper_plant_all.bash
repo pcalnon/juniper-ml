@@ -18,6 +18,10 @@
 #                                 legacy 'JuniperCascor' env has a torch wheel
 #                                 layout bug under Py 3.14 that crashes server.py)
 #   JUNIPER_CANOPY_PORT        — juniper-canopy listen port (default: 8050)
+#   JUNIPER_CANOPY_CASCOR_WS_ORIGIN — Origin header canopy presents on cascor's /ws/control
+#                                 (default: http://localhost:<JUNIPER_CANOPY_PORT>; canopy's
+#                                 built-in default derives from gethostname(), which cascor's
+#                                 localhost-only allowlist rejects on host-mode dev — 403 loop)
 #   JUNIPER_CANOPY_CONDA       — Conda env for juniper-canopy (default: JuniperCanopy1
 #                                 — has LIBTORCH-strip activate hook; use 'JuniperCanopy'
 #                                 only if you know your shell does not export LIBTORCH)
@@ -142,6 +146,14 @@ JUNIPER_CANOPY_LOGNAME="juniper-canopy_${JUNIPER_LOGGING_TIMESTAMP}.log"
 JUNIPER_CANOPY_LOG="${JUNIPER_CANOPY_LOG_DIR}/${JUNIPER_CANOPY_LOGNAME}"
 JUNIPER_CANOPY_MODULE="main.py"
 JUNIPER_CANOPY_PORT="${JUNIPER_CANOPY_PORT:-8050}"
+# Origin header canopy's backend presents when connecting to cascor's /ws/control stream.
+# Canopy's built-in default derives from socket.gethostname() — correct inside docker compose
+# (service-name hostnames; juniper-deploy pre-aligns cascor's allowlist), wrong for host-mode
+# dev where cascor's JUNIPER_CASCOR_WS_CONTROL_ALLOWED_ORIGINS default admits localhost forms
+# only: every control-stream connect is rejected 403 (30s reconnect loop) and hot set_params
+# falls back to REST. This is the override canopy's own settings docstring prescribes. See
+# notes/JUNIPER_2026-07-09_JUNIPER-ECOSYSTEM_TRAINING-START-FAILURE-DIAGNOSIS-AND-FIX-PLAN.md §4.3.
+JUNIPER_CANOPY_CASCOR_WS_ORIGIN="${JUNIPER_CANOPY_CASCOR_WS_ORIGIN:-http://localhost:${JUNIPER_CANOPY_PORT}}"
 # JuniperCanopy1 has the LIBTORCH-strip activate hook
 # (/opt/miniforge3/envs/JuniperCanopy1/etc/conda/activate.d/00_isolate_from_tch_rs.sh)
 # that prevents the rust_mudgeon LIBTORCH from preempting the env's torch.
@@ -443,9 +455,10 @@ cd "${JUNIPER_CANOPY_SRC_DIR}" || exit 1
 echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] conda activate \"${JUNIPER_CANOPY_CONDA}\""
 safe_conda_activate "${JUNIPER_CANOPY_CONDA}"
 JUNIPER_DATA_URL_FOR_CANOPY="${JUNIPER_DATA_URL:-http://localhost:${JUNIPER_DATA_PORT}}"
-echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" JUNIPER_CANOPY_JUNIPER_DATA_URL=\"${JUNIPER_DATA_URL_FOR_CANOPY}\" nohup \"${JUNIPER_CANOPY_PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
+echo "[${JUNIPER_SCRIPT_NAME}:${LINENO}] JUNIPER_CANOPY_CASCOR_SERVICE_URL=\"${JUNIPER_CASCOR_URL}\" JUNIPER_CANOPY_JUNIPER_DATA_URL=\"${JUNIPER_DATA_URL_FOR_CANOPY}\" JUNIPER_CANOPY_CASCOR_WS_ORIGIN=\"${JUNIPER_CANOPY_CASCOR_WS_ORIGIN}\" nohup \"${JUNIPER_CANOPY_PYTHON}\" \"${JUNIPER_CANOPY_MODULE}\" >\"${JUNIPER_CANOPY_LOG}\" 2>&1 &"
 JUNIPER_CANOPY_CASCOR_SERVICE_URL="${JUNIPER_CASCOR_URL}" \
     JUNIPER_CANOPY_JUNIPER_DATA_URL="${JUNIPER_DATA_URL_FOR_CANOPY}" \
+    JUNIPER_CANOPY_CASCOR_WS_ORIGIN="${JUNIPER_CANOPY_CASCOR_WS_ORIGIN}" \
     nohup "${JUNIPER_CANOPY_PYTHON}" "${JUNIPER_CANOPY_MODULE}" >"${JUNIPER_CANOPY_LOG}" 2>&1 &
 JUNIPER_CANOPY_PID=$!
 STARTED_PIDS+=("${JUNIPER_CANOPY_PID}")

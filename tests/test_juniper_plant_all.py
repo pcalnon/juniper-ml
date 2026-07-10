@@ -354,6 +354,11 @@ class TestEnvOverridesDocumented(unittest.TestCase):
         # Pass 2 fix #7 + #9 — JUNIPER_DATA_HOST is a documented override.
         self.assertIn("JUNIPER_DATA_HOST", SCRIPT_TEXT)
 
+    def test_canopy_cascor_ws_origin_documented(self) -> None:
+        # 2026-07-09 training-start diagnosis §4.3 — the control-WS Origin
+        # override is a documented env var.
+        self.assertIn("JUNIPER_CANOPY_CASCOR_WS_ORIGIN", SCRIPT_TEXT)
+
 
 class TestDataHostHonorsOverride(unittest.TestCase):
     """Audit fix #7 + #9 — JUNIPER_DATA_HOST respects caller value."""
@@ -392,6 +397,32 @@ class TestCascorHostExported(unittest.TestCase):
         # The nohup line for cascor must front-load JUNIPER_CASCOR_HOST.
         self.assertIn(
             'JUNIPER_CASCOR_HOST="${JUNIPER_CASCOR_HOST}"',
+            SCRIPT_TEXT,
+        )
+
+
+class TestCanopyWsOriginExported(unittest.TestCase):
+    """2026-07-09 training-start diagnosis §4.3 — canopy must be launched with
+    a control-WS Origin cascor's localhost allowlist accepts.
+
+    Canopy's built-in default derives from socket.gethostname(), which cascor's
+    ``/ws/control`` Origin allowlist (localhost forms only by default) rejects
+    with 403 on host-mode dev — a permanent 30s reconnect loop that also kills
+    hot set_params over WS. juniper-deploy pre-aligns both ends for compose;
+    this launcher owns the host-mode alignment.
+    """
+
+    def test_ws_origin_default_is_localhost_and_overridable(self) -> None:
+        # Default tracks JUNIPER_CANOPY_PORT and honors a caller override.
+        self.assertIn(
+            'JUNIPER_CANOPY_CASCOR_WS_ORIGIN="${JUNIPER_CANOPY_CASCOR_WS_ORIGIN:-http://localhost:${JUNIPER_CANOPY_PORT}}"',
+            SCRIPT_TEXT,
+        )
+
+    def test_canopy_invocation_exports_ws_origin(self) -> None:
+        # The nohup launch line must front-load the Origin env var.
+        self.assertIn(
+            'JUNIPER_CANOPY_CASCOR_WS_ORIGIN="${JUNIPER_CANOPY_CASCOR_WS_ORIGIN}"',
             SCRIPT_TEXT,
         )
 
