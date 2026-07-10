@@ -53,14 +53,14 @@ launchers. Evidence is `file:line` on `origin/main` as of 2026-07-06.
 
 ## 3. Findings summary
 
-| ID | Path | Repo | Class | Severity |
-| --- | --- | --- | --- | --- |
-| SEC-F23 | `scripts/juniper-canopy.service:30` (systemd `ExecStart`) | juniper-canopy | BYPASS | Medium |
-| SEC-F24 | `util/juniper_canopy-demo.bash:270` (demo launcher) | juniper-canopy | BYPASS | Low–Medium |
-| SEC-F25 | `conf/Dockerfile:81` (alt image `CMD`, not deploy-built) | juniper-canopy | BYPASS (latent) | Low |
-| SEC-F26 | `util/juniper_canopy-demo.bash:160` (stray canopy-demo copy) | juniper-cascor | BYPASS (latent) + hygiene | Low |
-| SEC-F27 | `src/api/app.py:100` (docstring documents `--host 0.0.0.0`) | juniper-cascor | Doc anti-pattern | Info |
-| SEC-F28 | `util/juniper_plant_all.bash:102` (`JUNIPER_DATA_HOST` default `0.0.0.0`) | juniper-ml | Posture (unguarded service) | Info |
+| ID      | Path                                                                      | Repo           | Class                       | Severity   |
+|---------|---------------------------------------------------------------------------|----------------|-----------------------------|------------|
+| SEC-F23 | `scripts/juniper-canopy.service:30` (systemd `ExecStart`)                 | juniper-canopy | BYPASS                      | Medium     |
+| SEC-F24 | `util/juniper_canopy-demo.bash:270` (demo launcher)                       | juniper-canopy | BYPASS                      | Low–Medium |
+| SEC-F25 | `conf/Dockerfile:81` (alt image `CMD`, not deploy-built)                  | juniper-canopy | BYPASS (latent)             | Low        |
+| SEC-F26 | `util/juniper_canopy-demo.bash:160` (stray canopy-demo copy)              | juniper-cascor | BYPASS (latent) + hygiene   | Low        |
+| SEC-F27 | `src/api/app.py:100` (docstring documents `--host 0.0.0.0`)               | juniper-cascor | Doc anti-pattern            | Info       |
+| SEC-F28 | `util/juniper_plant_all.bash:102` (`JUNIPER_DATA_HOST` default `0.0.0.0`) | juniper-ml     | Posture (unguarded service) | Info       |
 
 All confirmed bypasses are **canopy-side stragglers**. cascor's launch paths are
 uniformly settings-driven (see §5). Severity ranking, highest first: SEC-F23
@@ -232,13 +232,13 @@ These launch paths route the bind host through the setting the guard inspects.
 uvicorn binds exactly the guarded value, so the guard's verdict matches the real
 socket. No action needed; recorded so the audit is exhaustive.
 
-| Path | Repo | Evidence | Host source |
-| --- | --- | --- | --- |
-| Container `CMD` (deploy-built) | juniper-canopy | `Dockerfile:110` → `main.py` | `host = settings.server.host` |
-| Container `CMD` (deploy-built) | juniper-cascor | `Dockerfile:102` → `server.py` | `uvicorn.run(host=settings.host)` (`server.py:22`) |
-| On-host `plant_all` | juniper-canopy | `juniper_plant_all.bash:139,445` → `python main.py` | settings-driven, no `--host` |
-| On-host `plant_all` | juniper-cascor | `juniper_plant_all.bash:115,424` → `python server.py` | settings-driven, no `--host` |
-| systemd unit | juniper-cascor | `scripts/juniper-cascor.service:30` → `python server.py` | settings-driven, no `--host` |
+| Path                           | Repo           | Evidence                                                 | Host source                                        |
+|--------------------------------|----------------|----------------------------------------------------------|----------------------------------------------------|
+| Container `CMD` (deploy-built) | juniper-canopy | `Dockerfile:110` → `main.py`                             | `host = settings.server.host`                      |
+| Container `CMD` (deploy-built) | juniper-cascor | `Dockerfile:102` → `server.py`                           | `uvicorn.run(host=settings.host)` (`server.py:22`) |
+| On-host `plant_all`            | juniper-canopy | `juniper_plant_all.bash:139,445` → `python main.py`      | settings-driven, no `--host`                       |
+| On-host `plant_all`            | juniper-cascor | `juniper_plant_all.bash:115,424` → `python server.py`    | settings-driven, no `--host`                       |
+| systemd unit                   | juniper-cascor | `scripts/juniper-cascor.service:30` → `python server.py` | settings-driven, no `--host`                       |
 
 The two container `CMD`s are what `juniper-deploy` actually builds
 (`docker-compose.yml:129` canopy, `:186` cascor — both `dockerfile: Dockerfile`,
@@ -278,14 +278,14 @@ the deployment-trust workflow.
 All six findings are shipped and **merged** as owner-gated PRs (none auto-merged).
 The audit report itself is juniper-ml PR #630 (merged).
 
-| ID | Disposition | PR |
-| --- | --- | --- |
-| SEC-F23 | Fixed — systemd `ExecStart` → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 (merged) |
-| SEC-F24 | Fixed — demo launcher → `python main.py`, loopback-default + attested-exposure docs | juniper-canopy #433 (merged) |
+| ID      | Disposition                                                                                                                                                              | PR                           |
+|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
+| SEC-F23 | Fixed — systemd `ExecStart` → `python main.py`, loopback-default + attested-exposure docs                                                                                | juniper-canopy #433 (merged) |
+| SEC-F24 | Fixed — demo launcher → `python main.py`, loopback-default + attested-exposure docs                                                                                      | juniper-canopy #433 (merged) |
 | SEC-F25 | Fixed — legacy `conf/Dockerfile` + `conf/docker-compose.yaml` **deprecated** (superseded by juniper-deploy); live refs repointed to the root Dockerfile / juniper-deploy | juniper-canopy #435 (merged) |
-| SEC-F26 | Fixed — stray cascor canopy-demo removed | juniper-cascor #394 (merged) |
-| SEC-F27 | Fixed — cascor's `_settings_with_uvicorn_cli_bind` parity shim **ported to canopy** (`security.settings_with_uvicorn_cli_bind`, applied in `main.py`, 7 tests) | juniper-canopy #434 (merged) |
-| SEC-F28 | Fixed — `JUNIPER_DATA_HOST` default → `127.0.0.1` (consumers use `JUNIPER_DATA_URL`, unaffected) | juniper-ml #631 (merged) |
+| SEC-F26 | Fixed — stray cascor canopy-demo removed                                                                                                                                 | juniper-cascor #394 (merged) |
+| SEC-F27 | Fixed — cascor's `_settings_with_uvicorn_cli_bind` parity shim **ported to canopy** (`security.settings_with_uvicorn_cli_bind`, applied in `main.py`, 7 tests)           | juniper-canopy #434 (merged) |
+| SEC-F28 | Fixed — `JUNIPER_DATA_HOST` default → `127.0.0.1` (consumers use `JUNIPER_DATA_URL`, unaffected)                                                                         | juniper-ml #631 (merged)     |
 
 The two canopy launchers (SEC-F23/F24) close the *known* bypasses; the ported shim
 (SEC-F27) makes the guard authoritative on any future `uvicorn main:app --host X`
