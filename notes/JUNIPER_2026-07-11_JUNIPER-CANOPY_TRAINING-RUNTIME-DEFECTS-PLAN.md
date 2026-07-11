@@ -43,20 +43,20 @@ Independent quick wins: **N4** (snapshot route-seam + headers one-liners) and **
 
 Operator report of 2026-07-11 (dashboard screenshots ~04:58–06:23), against the on-host stack launched 2026-07-10 18:15:
 
-| # | Symptom | Issue |
-| --- | --- | --- |
-| S1 | Training launches and completes successfully (context — prior round's fixes hold; 6 completed runs this session) | — |
-| S2 | Page not refreshed to reflect ongoing training progress | I-1 |
-| S3 | Numerous fields, metrics, and status indicators stale (Loss tile 0.2337 vs 0.0186 shown after refresh; Accuracy `--`) | I-1 |
-| S4 | Network Topology graph not updated in real time; goes stale as units are added | I-2 |
-| S5 | Decision Boundary plot DOES update (contrast case — driven by tab-activation/slider Inputs and an un-gated poll) | I-1/I-2 evidence |
-| S6 | Manual page refresh restores correct values (fresh tabs never receive the flag-setting frame and keep polling) | I-1 evidence |
-| S7 | Apply Parameters shows `Failed to apply (502)` though "parameter updates appear to be working" | I-4 |
-| S8 | Dataset switching "appears to work" for 2-D sets — confirmed: idle-time swaps genuinely trained (invisibly) | I-6 evidence |
-| S9 | MNIST start fails: `Start failed. HTTP 409: … juniper-data fetch failed: Request failed (500): Internal server error.` | I-5 |
-| S10 | `Stop & Restart with new dataset` fails silently — zero feedback by construction; MNIST-era failures logged but never shown | I-6 |
-| S11 | Snapshot create fails: `Failed to create snapshot: Failed to create snapshot` | I-3 |
-| S12 | Header/tile semantics oddities: `Epoch: 10000` vs `12`; Hidden Units denominator `10000`; `Iteration: 0 / 10000`; spiral params under Type=MNIST; `2-D models only` hint | I-1c, I-7 |
+| #   | Symptom                                                                                                                                                                  | Issue            |
+|-----|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| S1  | Training launches and completes successfully (context — prior round's fixes hold; 6 completed runs this session)                                                         | —                |
+| S2  | Page not refreshed to reflect ongoing training progress                                                                                                                  | I-1              |
+| S3  | Numerous fields, metrics, and status indicators stale (Loss tile 0.2337 vs 0.0186 shown after refresh; Accuracy `--`)                                                    | I-1              |
+| S4  | Network Topology graph not updated in real time; goes stale as units are added                                                                                           | I-2              |
+| S5  | Decision Boundary plot DOES update (contrast case — driven by tab-activation/slider Inputs and an un-gated poll)                                                         | I-1/I-2 evidence |
+| S6  | Manual page refresh restores correct values (fresh tabs never receive the flag-setting frame and keep polling)                                                           | I-1 evidence     |
+| S7  | Apply Parameters shows `Failed to apply (502)` though "parameter updates appear to be working"                                                                           | I-4              |
+| S8  | Dataset switching "appears to work" for 2-D sets — confirmed: idle-time swaps genuinely trained (invisibly)                                                              | I-6 evidence     |
+| S9  | MNIST start fails: `Start failed. HTTP 409: … juniper-data fetch failed: Request failed (500): Internal server error.`                                                   | I-5              |
+| S10 | `Stop & Restart with new dataset` fails silently — zero feedback by construction; MNIST-era failures logged but never shown                                              | I-6              |
+| S11 | Snapshot create fails: `Failed to create snapshot: Failed to create snapshot`                                                                                            | I-3              |
+| S12 | Header/tile semantics oddities: `Epoch: 10000` vs `12`; Hidden Units denominator `10000`; `Iteration: 0 / 10000`; spiral params under Type=MNIST; `2-D models only` hint | I-1c, I-7        |
 
 ## 3. Architecture Context
 
@@ -285,47 +285,47 @@ stop sending inapplicable params, and reword the model hint (e.g. "rank-2 (tabul
 
 ## 6. Hypothesis Disposition (from the driving prompt, updated post-validation)
 
-| Prompt hypothesis | Disposition |
-| --- | --- |
-| I-1(a) WS chain under-delivers while browser socket healthy → sticky gate starves Path A | **Confirmed, mechanism refined**: `initial_metrics` is a relay-connect broadcast (not per-mount); starvation hits long-lived tabs; fresh tabs keep polling |
-| I-1(b) tiles stale-by-design (no WS writer) | **Confirmed** by construction |
-| I-1(c) circuit-breaker fallback / cascor status frozen | **Refuted** (fresh probes) |
-| I-1(c) `apply-in-flight` interval clamp | **Reopened** as a candidate for the pre-refresh tab's total freeze (header included) — the boundary-based refutation was invalid (tab-activation Inputs fire regardless); OPEN → E-3 |
-| I-2 same starvation class + cascade_add-only pushes | **Confirmed** |
-| I-3(a) concurrent HDF5 write vs training thread | **Refuted for this incident**; latent (no lock) — hardening in C1 |
-| I-3(b) headers-in-comment → 401/429 | **Refuted as trigger** (request reached cascor; auth off); latent one-line defect — fixed in N4 |
-| I-3 actual cause | **New finding (corrected seam)**: canopy route mints `description: None` (`main.py:1997-1998` → `:2078`); cascor 422s explicit null (panel already omits blanks) |
-| I-4 path 1 verification_failed (hasattr drop) | **Not observed** this session; latent — C2a |
-| I-4 path 2 WS-applied + ack lapse | **Refuted as mechanism** (control WS dead since 18:17:03; WS leg never applied anything) |
-| I-4 actual cause | **New finding (corrected attribution)**: cascor's own `epochs_max` default (1e11) exceeds its own PATCH ceiling (1e6); canopy echoes it via `init_params_from_backend` → wholesale 422 every apply; detail hidden |
-| I-4 "params applied via start payloads" | **Unsupported** (Lens 2): start/restart carry no params; divergent live values are two engine default layers |
-| I-5 missing HF `datasets` dependency | **Confirmed** (71 ImportError tracebacks + live env import failure) |
-| I-6 silent-by-construction restart | **Confirmed**; **corrected**: idle-time restarts DID reach cascor and trained successfully (invisibly); active-run behavior untested → E-2 |
-| I-7 static panel / hint semantics | **Confirmed** (cosmetic) |
+| Prompt hypothesis                                                                        | Disposition                                                                                                                                                                                                       |
+|------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| I-1(a) WS chain under-delivers while browser socket healthy → sticky gate starves Path A | **Confirmed, mechanism refined**: `initial_metrics` is a relay-connect broadcast (not per-mount); starvation hits long-lived tabs; fresh tabs keep polling                                                        |
+| I-1(b) tiles stale-by-design (no WS writer)                                              | **Confirmed** by construction                                                                                                                                                                                     |
+| I-1(c) circuit-breaker fallback / cascor status frozen                                   | **Refuted** (fresh probes)                                                                                                                                                                                        |
+| I-1(c) `apply-in-flight` interval clamp                                                  | **Reopened** as a candidate for the pre-refresh tab's total freeze (header included) — the boundary-based refutation was invalid (tab-activation Inputs fire regardless); OPEN → E-3                              |
+| I-2 same starvation class + cascade_add-only pushes                                      | **Confirmed**                                                                                                                                                                                                     |
+| I-3(a) concurrent HDF5 write vs training thread                                          | **Refuted for this incident**; latent (no lock) — hardening in C1                                                                                                                                                 |
+| I-3(b) headers-in-comment → 401/429                                                      | **Refuted as trigger** (request reached cascor; auth off); latent one-line defect — fixed in N4                                                                                                                   |
+| I-3 actual cause                                                                         | **New finding (corrected seam)**: canopy route mints `description: None` (`main.py:1997-1998` → `:2078`); cascor 422s explicit null (panel already omits blanks)                                                  |
+| I-4 path 1 verification_failed (hasattr drop)                                            | **Not observed** this session; latent — C2a                                                                                                                                                                       |
+| I-4 path 2 WS-applied + ack lapse                                                        | **Refuted as mechanism** (control WS dead since 18:17:03; WS leg never applied anything)                                                                                                                          |
+| I-4 actual cause                                                                         | **New finding (corrected attribution)**: cascor's own `epochs_max` default (1e11) exceeds its own PATCH ceiling (1e6); canopy echoes it via `init_params_from_backend` → wholesale 422 every apply; detail hidden |
+| I-4 "params applied via start payloads"                                                  | **Unsupported** (Lens 2): start/restart carry no params; divergent live values are two engine default layers                                                                                                      |
+| I-5 missing HF `datasets` dependency                                                     | **Confirmed** (71 ImportError tracebacks + live env import failure)                                                                                                                                               |
+| I-6 silent-by-construction restart                                                       | **Confirmed**; **corrected**: idle-time restarts DID reach cascor and trained successfully (invisibly); active-run behavior untested → E-2                                                                        |
+| I-7 static panel / hint semantics                                                        | **Confirmed** (cosmetic)                                                                                                                                                                                          |
 
 ## 7. Phased Fix Roadmap
 
 PR-sized work units, dependency-ordered (upstream before consumers). Every unit lands as its own PR (owner merges); each names its verification.
 
-| Unit | Repo | Type | Summary | Depends on | Closes | Verify |
-| --- | --- | --- | --- | --- | --- | --- |
-| D1 | juniper-data | fix | Generator availability surfaced: registry/schema `available` flag; unavailable generator → 501/422 + install hint (no masked 500) | — | I-5 (gate half) | `pytest juniper_data/tests/ -v` |
-| D2 | juniper-data | feat | `[mnist]` extra ships HF `datasets`; Docker/env install; offline-cache doc; real-generation test | D1 | I-5 (ship half) | same + isolated E2E |
-| C1 | juniper-cascor | fix | Snapshot create: tolerate explicit-null `description`; propagate serializer failure detail (correct status); write-isolation hardening | — | I-3 (robustness) | `bash src/tests/scripts/run_tests.bash` |
-| C2a | juniper-cascor | fix | Apply reporting: additive per-key `applied`/`skipped(reason)`; remove silent `hasattr` drop; keep atomic 422 for bound violations | — | I-4 (contract), T3 | same |
-| C2b | juniper-cascor | fix | Bound + surface coherence: `epochs_max` default ≤ PATCH ceiling; reconcile `/v1/network` vs `/v1/training/status` params; document counter semantics | — | I-4 (root), I-1c | same |
-| C3 | juniper-cascor | fix | Control-WS heartbeat contract (tolerate pong-less clients or specify the requirement); `/ws/training` metrics-emission instrumentation (E-1) | — | I-1 (Path B), I-4 (WS leg) | same + E-1 |
-| C4 | juniper-cascor | fix | Access-log survival after training start (logging-init clobber) + start-failure logging at WARNING + regression | — | T5 | same |
-| CL1 | juniper-cascor-client | fix | WS ping/pong handling (root fix for the 40 s close); `msg_type` on unrecognized frames; half-open detection surfaced to consumers | — | I-1/I-4 (WS), T2/T5 | client suite |
-| CL2 | juniper-cascor-client + canopy | chore | Cut cascor-client GitHub Release (per convention); bump canopy floor; `FakeCascorClient` parity for new surfaces | CL1 | gates wave 2 | drift lints + canopy suite |
-| N1 | juniper-canopy | fix | Un-gate metrics + topology polls (O2) with empty-guard (`no_update` on empty/error vs non-empty store); `asyncio.to_thread` for history fetch; bound full-mode `limit`; remove dead drains; fix stale docstring | Q4 answered; CL2 (soft) | I-1 tiles/charts, I-2, T6 | `pytest` per AGENTS.md + UI harness |
-| N2 | juniper-canopy | fix | Supervisor/relay hardening: half-open detection + logged reconnect/backoff; `/api/state` live-first base fields (keep global for demo/WS); degraded-mode indicator; relay throughput counter; E-3 resolution | CL2 | I-1 state/header, T2/T5 | same |
-| N3 | juniper-canopy | fix | Restart orchestration: confirm → stop → await → start(staged); surface all outcomes (restart + apply_dataset alerts); forward `reset`; pin active-run path per E-2 | — | I-6, T1/T4, §6 follow-up (cold-swap) | same |
-| N4 | juniper-canopy | fix | Snapshot route seam: no `None` description (`main.py:1998`/`:2078`); restore `headers=internal_api_headers()`; toast carries upstream detail | — | I-3, T1 | same |
-| N5 | juniper-canopy | fix | Apply-params UX: clamp/validate backend-seeded values against PATCH bounds; toast carries rejection detail verbatim; render applied/skipped; skip WS leg when stream dead | C2a, C2b, N2 | I-4, T1/T3 | same |
-| N6 | juniper-canopy | fix | Header/tile semantics: correct Epoch/Step/Iteration/Hidden-Units mappings + denominators from the reconciled surface; document counter semantics | C2b | I-1c / S12 | same + UI snapshot |
-| N7 | juniper-canopy | feat | Dataset panel type-awareness (schema-driven params); capability gating (flag-absent → available; deploy data-floor bump); hint rewording | D1 | I-7, I-5 (UX) | same |
-| E1 | juniper-ml | chore | Isolated-stack E2E checklist additions (per closed issue) to the smoke tooling/docs | all | verification | scripted E2E |
+| Unit | Repo                           | Type  | Summary                                                                                                                                                                                                         | Depends on              | Closes                               | Verify                                  |
+|------|--------------------------------|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|--------------------------------------|-----------------------------------------|
+| D1   | juniper-data                   | fix   | Generator availability surfaced: registry/schema `available` flag; unavailable generator → 501/422 + install hint (no masked 500)                                                                               | —                       | I-5 (gate half)                      | `pytest juniper_data/tests/ -v`         |
+| D2   | juniper-data                   | feat  | `[mnist]` extra ships HF `datasets`; Docker/env install; offline-cache doc; real-generation test                                                                                                                | D1                      | I-5 (ship half)                      | same + isolated E2E                     |
+| C1   | juniper-cascor                 | fix   | Snapshot create: tolerate explicit-null `description`; propagate serializer failure detail (correct status); write-isolation hardening                                                                          | —                       | I-3 (robustness)                     | `bash src/tests/scripts/run_tests.bash` |
+| C2a  | juniper-cascor                 | fix   | Apply reporting: additive per-key `applied`/`skipped(reason)`; remove silent `hasattr` drop; keep atomic 422 for bound violations                                                                               | —                       | I-4 (contract), T3                   | same                                    |
+| C2b  | juniper-cascor                 | fix   | Bound + surface coherence: `epochs_max` default ≤ PATCH ceiling; reconcile `/v1/network` vs `/v1/training/status` params; document counter semantics                                                            | —                       | I-4 (root), I-1c                     | same                                    |
+| C3   | juniper-cascor                 | fix   | Control-WS heartbeat contract (tolerate pong-less clients or specify the requirement); `/ws/training` metrics-emission instrumentation (E-1)                                                                    | —                       | I-1 (Path B), I-4 (WS leg)           | same + E-1                              |
+| C4   | juniper-cascor                 | fix   | Access-log survival after training start (logging-init clobber) + start-failure logging at WARNING + regression                                                                                                 | —                       | T5                                   | same                                    |
+| CL1  | juniper-cascor-client          | fix   | WS ping/pong handling (root fix for the 40 s close); `msg_type` on unrecognized frames; half-open detection surfaced to consumers                                                                               | —                       | I-1/I-4 (WS), T2/T5                  | client suite                            |
+| CL2  | juniper-cascor-client + canopy | chore | Cut cascor-client GitHub Release (per convention); bump canopy floor; `FakeCascorClient` parity for new surfaces                                                                                                | CL1                     | gates wave 2                         | drift lints + canopy suite              |
+| N1   | juniper-canopy                 | fix   | Un-gate metrics + topology polls (O2) with empty-guard (`no_update` on empty/error vs non-empty store); `asyncio.to_thread` for history fetch; bound full-mode `limit`; remove dead drains; fix stale docstring | Q4 answered; CL2 (soft) | I-1 tiles/charts, I-2, T6            | `pytest` per AGENTS.md + UI harness     |
+| N2   | juniper-canopy                 | fix   | Supervisor/relay hardening: half-open detection + logged reconnect/backoff; `/api/state` live-first base fields (keep global for demo/WS); degraded-mode indicator; relay throughput counter; E-3 resolution    | CL2                     | I-1 state/header, T2/T5              | same                                    |
+| N3   | juniper-canopy                 | fix   | Restart orchestration: confirm → stop → await → start(staged); surface all outcomes (restart + apply_dataset alerts); forward `reset`; pin active-run path per E-2                                              | —                       | I-6, T1/T4, §6 follow-up (cold-swap) | same                                    |
+| N4   | juniper-canopy                 | fix   | Snapshot route seam: no `None` description (`main.py:1998`/`:2078`); restore `headers=internal_api_headers()`; toast carries upstream detail                                                                    | —                       | I-3, T1                              | same                                    |
+| N5   | juniper-canopy                 | fix   | Apply-params UX: clamp/validate backend-seeded values against PATCH bounds; toast carries rejection detail verbatim; render applied/skipped; skip WS leg when stream dead                                       | C2a, C2b, N2            | I-4, T1/T3                           | same                                    |
+| N6   | juniper-canopy                 | fix   | Header/tile semantics: correct Epoch/Step/Iteration/Hidden-Units mappings + denominators from the reconciled surface; document counter semantics                                                                | C2b                     | I-1c / S12                           | same + UI snapshot                      |
+| N7   | juniper-canopy                 | feat  | Dataset panel type-awareness (schema-driven params); capability gating (flag-absent → available; deploy data-floor bump); hint rewording                                                                        | D1                      | I-7, I-5 (UX)                        | same                                    |
+| E1   | juniper-ml                     | chore | Isolated-stack E2E checklist additions (per closed issue) to the smoke tooling/docs                                                                                                                             | all                     | verification                         | scripted E2E                            |
 
 Independent quick wins: **N4** and **D1** (no dependencies). Suggested waves: wave 1 = D1 + C1 + C2a + C2b + N4; wave 2 = CL1 + CL2 + C3 + C4 + N1 + N2 (N1 additionally gated on Q4); wave 3 = N3 + N5 + N6; wave 4 = D2 + N7 + E1.
 
@@ -356,22 +356,22 @@ Independent quick wins: **N4** and **D1** (no dependencies). Suggested waves: wa
 
 ## 10. Coverage Matrix
 
-| Item | Where addressed |
-| --- | --- |
-| S1–S12 (symptoms) | §2 table maps each to its issue; all issues covered in §4 |
-| I-1 | §4 I-1; roadmap N1/N2/N6 (+C2b/C3/CL1); E-1/E-3 |
-| I-2 | §4 I-2; roadmap N1 |
-| I-3 | §4 I-3; roadmap N4 (quick win) + C1 (robustness) |
-| I-4 | §4 I-4; roadmap C2a/C2b/N5 (+N2) |
-| I-5 | §4 I-5; roadmap D1/D2/N7 |
-| I-6 | §4 I-6; roadmap N3; E-2 |
-| I-7 | §4 I-7; roadmap N7 |
-| §6 follow-up: cold-swap error surfacing | I-6 / N3 (in scope) |
-| §6 follow-up: `unrecognized_ws_frame` warnings | I-1 evidence + CL1/C3 (in scope; ping-frame cause strongly supported; `msg_type` logging) |
-| §6 follow-up: control-stream reconnect posture | N2/C3/CL1 (in scope; extended to half-open detection + ping/pong handling — this session's failure mode) |
-| §6 follow-up: PR-D confirm-defaults modal | Partially folded in: N3 gains a lightweight confirm; the full defaults-modal remains deferred (Q3) |
-| §6 fifth bullet: cascor-side auto-create alternative (not chosen) | Design alternative revisited in I-6 chosen design; still not chosen |
-| Defect-list skeleton (`notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md`) | Q5: propose populating it from this plan's issue IDs or retiring it |
+| Item                                                                                   | Where addressed                                                                                          |
+|----------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| S1–S12 (symptoms)                                                                      | §2 table maps each to its issue; all issues covered in §4                                                |
+| I-1                                                                                    | §4 I-1; roadmap N1/N2/N6 (+C2b/C3/CL1); E-1/E-3                                                          |
+| I-2                                                                                    | §4 I-2; roadmap N1                                                                                       |
+| I-3                                                                                    | §4 I-3; roadmap N4 (quick win) + C1 (robustness)                                                         |
+| I-4                                                                                    | §4 I-4; roadmap C2a/C2b/N5 (+N2)                                                                         |
+| I-5                                                                                    | §4 I-5; roadmap D1/D2/N7                                                                                 |
+| I-6                                                                                    | §4 I-6; roadmap N3; E-2                                                                                  |
+| I-7                                                                                    | §4 I-7; roadmap N7                                                                                       |
+| §6 follow-up: cold-swap error surfacing                                                | I-6 / N3 (in scope)                                                                                      |
+| §6 follow-up: `unrecognized_ws_frame` warnings                                         | I-1 evidence + CL1/C3 (in scope; ping-frame cause strongly supported; `msg_type` logging)                |
+| §6 follow-up: control-stream reconnect posture                                         | N2/C3/CL1 (in scope; extended to half-open detection + ping/pong handling — this session's failure mode) |
+| §6 follow-up: PR-D confirm-defaults modal                                              | Partially folded in: N3 gains a lightweight confirm; the full defaults-modal remains deferred (Q3)       |
+| §6 fifth bullet: cascor-side auto-create alternative (not chosen)                      | Design alternative revisited in I-6 chosen design; still not chosen                                      |
+| Defect-list skeleton (`notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md`) | Q5: propose populating it from this plan's issue IDs or retiring it                                      |
 
 ## 11. Validation Record
 
@@ -393,6 +393,8 @@ Items that remain genuinely undecidable from this session's evidence are carried
 
 ## 12. Open Questions (owner decisions)
 
+### Questions
+
 - **Q1 (I-4)**: Bound coherence direction — lower cascor's `epochs_max` **default** to ≤1e6 (recommended; a 1e11-epoch ceiling has no physical meaning) vs raise the PATCH ceiling to admit the current default. Canopy clamps defensively either way (N5).
 - **Q2 (I-5)**: Priority of D2 (ship real MNIST behind `[mnist]`) vs D1-only gating for now. Is MNIST-on-CasCor a near-term research goal or a menu item that should be honest-but-disabled?
 - **Q3 (§6 follow-up)**: N3 folds in a lightweight confirm before stop→restart. Should the full PR-D confirm-defaults modal (model+dataset defaults preview) still ship as a separate UX increment, and when?
@@ -400,6 +402,64 @@ Items that remain genuinely undecidable from this session's evidence are carried
   If retention is desired, that is an eighth defect candidate; either way N1's empty-guard makes the un-gated poll safe.
 - **Q5**: Populate the 2026-07-04 defect-list skeleton from this plan's issue IDs (D-001 ff. ← I-1…I-7 rows) or retire it in favor of issue-tracked work?
 - **Q6 (E-1 outcome-dependent)**: if cascor genuinely emits no per-epoch metrics on `/ws/training`, decide whether it should (cascor change) or whether REST polling remains the metrics source of truth and Path B is demoted to events-only (topology/state/candidate).
+
+### Answers
+
+- **Q1 (I-4)**:
+  - Answer: the meaning and significance of the epochs_max meta parameter has evolved over the course of juniper-canopy and cascor development.
+    - initially, max epochs was a param that offered a reasonable and meaningful way to place a hard limit on the training of what, at the time, was a very simplistic model that could potentially plateau and train indefinitely.
+    - over the development process, the increasing complexity of the cascor models have motiviated the addition of several, independently tracked meta parameters including:
+      - training of individual candidate node epochs
+      - candidate pool-wide training iterations
+      - full cascor network output training epochs
+      - max cascor network output training iterations
+    - the max epochs param, while still setting an upper limit, is now a more arbitrary value that risks hiding the more granular and independently set, candidate pool and cascor network training limits.
+    - as such, the role and calculation of the max epochs meta param should be reevaluated and employ one of the following new approaches:
+      - be set to a significantly large, but fundamentally arbitrary value intended to ensure that the more granular limits are not being shadowed.
+      - be removed completely as a meta parameter, including its calculation, tracking, gating, and display code.
+      - be determined pragmatically, per training run, based on the total calculated number of epochs implied by the newer, more granular meta parameter limits.
+
+- **Q2 (I-5)**:
+  - Answer: the availability and viability of the MNIST dataset represents a near-term research goal.
+    - the ability to train a cascor network on MNIST data is part of the infastructure needed for an ongoing experiment involving:
+      - repeatedly training a single cascor model on multiple datasets of diverse types.
+
+- **Q3 (§6 follow-up)**:
+  - Answer: the idea of a light-weight confirm prior to stop->restart is a good one.
+    - based on the nature of the juniper project, however, a full confirm-defaults confirm is also desirable.
+    - as a compromise intended to preserve both the accessibility and flexibility of the canopy front-end, let's evaluate the following:
+      - using a simple confirm modal before stop-restart actions that assumes all other meta parameters, structures, and processes remain unchanged
+      - with a expandable dropdown section--itself potentailly organized using multiple, collapseable sub-sections that enable:
+        - a detailed, granular verification of all existing network params, meta-params, and components
+        - a custom modification of any number of existing values for network params, meta-params, and components.
+
+- **Q4 (N1 precondition)**:
+  - Answer: there are two, current use-cases included in this particular aspect of the design:
+    - first, continuing the training process, likely with new datasets, using the current cascor model as trained.
+      - in this use-case, it seems reasonable to default to retaining the values for total metrics and history so that continuity is provided across training processes spanning multiple datasets.
+      - at the same time, the trained model itself is the primary artifact created throughout the multi-dataset training process, and the ability to clear the metric count and history could conceivably be useful.
+      - adding a control that allows the existing model to be retailed
+        - the control should include meaningful fallback functionality as either:
+          - an "are you sure, the data will be permanently cone" confirmation
+          - a reset button that reverses the clearing of these values
+        - the fallback mechanism should be accessible at any point up until the new training process has begun.
+    - second, discarding the model and all corresponding, retained data
+      - in this use-case, the multi-dataset training process is being restarted with a new, vanilla, untrained cascor model
+      - selecting for this usecase should be functionally identical to a clean launch of the juniper stack
+        - with the exception of artifacts that have an expectation of permanence:
+          - e.g., snapshots, etc.
+      - this should arguably be the initial choice--defaulting to false--presented when confirming training with a new dataset.
+        - if a simple confirm occurs and this "start fresh" control isn't selected, then the first use-case above is selected.
+
+- **Q5**:
+  - Answer: let's retire the older defect-list skeleton and track all status and/or state changes in this document directly.
+    - as such, state/status updates should be captured in this document in a frequent and ongoing process
+    - updating the document as work is performed, modified, completed, and validated should be included as a key compenent of the default remediation workflow.
+
+- **Q6 (E-1 outcome-dependent)**:
+  - Answer: preferentially, the canopy front-end should use ws communication to the extent practicable.
+    - API only, i.e., polling, communication should be used for messages and/or updates that are not needed in real, or near-real, time.
+    - the fundamental requirement that defines the need-based distinction between ws and polling communication is the display accuracy and interaction responsiveness of the canopy web app.
 
 ---
 
