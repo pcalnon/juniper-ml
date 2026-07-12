@@ -4,7 +4,7 @@
 **Repository**: cross-repo (`ECOSYSTEM`) — authored in `pcalnon/juniper-ml`
 **Author**: planner agent (principal-engineer design author)
 **Document Type**: Design-of-record + implementation plan (`-PLAN`)
-**Status**: Draft — for owner ratification (green-light gate before Phase 0)
+**Status**: RATIFIED 2026-07-11 — all §14 owner decisions answered and ingested; Phases 0-4 green-lit (Phase 5 = deferred reevaluations)
 **Last Updated**: 2026-07-11
 
 ---
@@ -346,10 +346,12 @@ checks** so `--auto` cannot complete until it passes (auto-merge honours require
 - The **structural-guard job is a required status check** in the branch ruleset.
 - **No required human PR review** on `notes/releases/` paths that would block `--auto`. Since CODEOWNERS is
   `@pcalnon` for all files, a repo-wide required-review ruleset would hold the exempt PR for owner review —
-  degrading "auto-merge" to "owner one-click merge." **This is an owner-level ruleset decision** (Open
-  Questions Q-RULESET): either path-scope the review requirement to exclude `notes/releases/`, or accept
-  the one-click fallback (still a large toil reduction, since the structural guard has already proved the
-  diff is inert). This plan does **not** assert the current ruleset contents.
+  degrading "auto-merge" to "owner one-click merge."
+  **Decided (Q-RULESET, 2026-07-11): path-scope the required-review ruleset to exclude `notes/releases/`** —
+  true hands-free auto-merge for the guard-proven archive PR. The ruleset edit is an owner-console action,
+  landed and confirmed at Phase 3 step 3.3; until it lands, the exempt PR degrades gracefully to the
+  one-click fallback. This plan still does **not** assert the current ruleset contents — step 3.3 verifies
+  them before relying on `--auto`.
 
 ### 7.4 Why the exempt PR cannot leak into a deploy (R7 preserved)
 
@@ -420,7 +422,11 @@ etc.) need a broader identity. Two options:
 **Recommendation: GitHub App for the durable fleet-wide identity; a fine-grained PAT is an acceptable
 bootstrap for the Phase-3 pilot** — and the pilot (juniper-ml sub-packages) is **in-repo**, so its archive
 PR + Release need only the workflow's own `GITHUB_TOKEN` (contents+PR write on juniper-ml), deferring the
-PAT/App decision to the Phase-4 boundary. **Owner decision** (Open Questions Q-IDENTITY).
+PAT/App decision to the Phase-4 boundary.
+
+**Decided (Q-IDENTITY, 2026-07-11): as recommended — GitHub App** for the durable fleet-wide identity,
+set up at the Phase-4 boundary (step 4.1); the Phase-3 pilot runs on the workflow's own `GITHUB_TOKEN`
+and needs neither. A fine-grained PAT remains a documented fallback only if App setup would stall Phase 4.
 
 ### 9.3 Hard invariant on the write identity (R7)
 
@@ -451,6 +457,10 @@ tests/
 
 Mode is a **repo variable** `RELEASE_TRAIN_MODE ∈ {off, report, propose, ceremony}` (default `report`),
 plus a `workflow_dispatch` input override — this is also the **disable/rollback switch** (§11).
+
+Notifications use a repository secret **`SLACK_WEBHOOK_URL`** (owner-provisioned incoming webhook for the
+Juniper Slack channel; §11, Q-CHANNEL). It is the only secret the train adds; absence of the secret skips
+the notification step and never fails a run.
 
 ---
 
@@ -498,11 +508,19 @@ observability, cascor-protocol, canopy, cascor-worker — audit F-2) and the sta
   with the `pypi` environment URLs.
 - **Failure issues** — any HALT (§8) opens or updates a single deduplicated GitHub issue per package
   (title keyed on `pypi_name` + reason), never a flood.
+- **Slack notification (Q-CHANNEL, decided 2026-07-11)** — each run posts a compact summary to the
+  **Juniper Slack channel** via an owner-provisioned incoming-webhook secret (`SLACK_WEBHOOK_URL`, §9.4):
+  run mode, classification counts, packages newly `PENDING_PYPI_APPROVAL` (with their `pypi` env URLs),
+  and any HALTs. The step is **non-blocking** (`if: always()` + `continue-on-error: true` — a notification
+  failure or a missing secret never fails the train) and posts only the summary (no secrets, no diff
+  content). This restores a Slack signal via a self-contained webhook — it neither resurrects the removed
+  slack MCP server (2026-06-15) nor depends on the non-packaged `juniper-slacker` bridge (audit §2). The
+  step summary + dedup issues remain the canonical, auditable record; Slack is additive.
 - **Rollback / disable** — set `RELEASE_TRAIN_MODE=off` (repo variable) to pause the train instantly with
   no code change; `report` to keep detection running while pausing all writes. Because PyPI files are
   immutable and the publish steps are `skip-existing`, a partial run is safe to re-enter.
 - **Verify-before-first-cron** — mandatory: after each phase lands, trigger `release-train.yml` via
-  `gh workflow run` immediately and confirm the run behaves before trusting the Monday cron (memory:
+  `gh workflow run` immediately and confirm the run behaves before trusting the daily cron (memory:
   "verify any new scheduled workflow with an immediate manual run"; a lint-green workflow is not a
   runtime-green workflow).
 
@@ -539,7 +557,8 @@ Each numbered step is a single, independently shippable, independently verifiabl
   network, `sys.path.insert` idiom; §4.2/4.3). **Verify**: on the real fleet it reproduces the audit's **7
   UNRELEASED_CHANGES / 11 UP_TO_DATE / 0 BUMPED_NOT_RELEASED**, and the 4 notes-rename false-positives stay
   UP_TO_DATE.
-- **1.3** `.github/workflows/release-train.yml` in `report` mode only: cron `0 6 * * 1` + `workflow_dispatch` + `concurrency` + clone-all (recurrence added), runs `detect.py`, emits the manifest artifact + step summary. No PRs, no Releases. **Verify**: immediate `gh workflow run` (verify-before-first-cron); manifest matches 1.2.
+- **1.3** `.github/workflows/release-train.yml` in `report` mode only: cron `0 13 * * *` (Q-CADENCE: daily 13:00 UTC = 08:00 America/Chicago under CDT; GitHub cron is UTC-only, so winter runs land 07:00 CST — accepted drift) + `workflow_dispatch` + `concurrency` + clone-all (recurrence added), runs `detect.py`, emits the manifest artifact + step summary. No PRs, no Releases. **Verify**: immediate `gh workflow run` (verify-before-first-cron); manifest matches 1.2.
+- **1.4** Slack notification lane (Q-CHANNEL): add the non-blocking summary post (§11) to `release-train.yml`, keyed on the `SLACK_WEBHOOK_URL` secret. **Owner action**: create the incoming webhook for the Juniper Slack channel and add the repo secret. **Verify**: a manual dispatch posts the summary to the channel; with the secret absent the step skips and the run still succeeds.
 
 ### Phase 2 — Proposal-PR generation (standard-gated; delivers Gate 1 of R2/D2)
 
@@ -562,18 +581,35 @@ Each numbered step is a single, independently shippable, independently verifiabl
   invariant (§9.3). **Verify**: end-to-end on a **real low-risk juniper-ml sub-package bump** (e.g. the next
   observability/ci-tools patch): archive PR auto-merges, Release fires the unchanged publish workflow,
   TestPyPI verify passes, PyPI **waits for owner** — confirm the run halts at Gate 2.
-- **3.3** Confirm the auto-merge preconditions (§7.3) on juniper-ml; document the ruleset decision outcome.
+- **3.3** Confirm the auto-merge preconditions (§7.3) on juniper-ml and land the Q-RULESET decision: path-scope the required-review ruleset to exclude `notes/releases/` (owner console action). **Verify**: a guard-green synthetic archive PR completes `--auto` merge with no human click; document the resulting ruleset state here.
 
 ### Phase 4 — Fleet-wide + dependency ordering (delivers R2 at scale/D6)
 
-- **4.1** Cross-repo write identity (GitHub App or PAT, §9.2) + secret wiring; extend `propose.py`/
-  `ceremony.py` to open cross-repo PRs and cut cross-repo Releases. **Verify**: `propose` mode against one
-  sibling (e.g. cascor-worker) opens a PR in that repo.
+- **4.1** Cross-repo write identity (GitHub App per Q-IDENTITY, §9.2; PAT only as documented fallback) +
+  secret wiring; extend `propose.py`/`ceremony.py` to open cross-repo PRs and cut cross-repo Releases.
+  **Verify**: `propose` mode against one sibling (e.g. cascor-worker) opens a PR in that repo.
 - **4.2** Dependency-ordered scheduling (§13/D6): process shared libs → sub-libs → apps → meta; emit
   consumer ceiling-bump follow-on PRs (standard-gated, ordered upstream-first). **Verify**: a simulated
   upstream MINOR bump produces the expected downstream propagation edges.
 - **4.3** Full `off|report|propose|ceremony` switch + operator runbook (a `notes/` doc) + explicit rollback
   steps. **Verify**: `RELEASE_TRAIN_MODE=off` fully quiesces the train.
+
+### Phase 5 — Deferred reevaluations (tracking homes for Q-META / Q-NONSHIP)
+
+These are **not** green-lit work; they are dated tracking entries so the deferred decisions cannot be lost.
+
+- **5.1** **Q-META reevaluation (decided 2026-07-11: meta stays manual for now — revisit later).** After
+  Phase 4 has run stably fleet-wide (suggested threshold: ≥2 consecutive clean scheduled cycles),
+  reevaluate whether the `juniper-ml` meta-package rides the train. Inputs: the meta's bespoke
+  extras-resolution TestPyPI verify (`publish.yml:105-121`), its releases-LAST position in the §13 DAG,
+  and the observed reliability of the sub-package ceremony. **Verify / exit criterion**: a dated decision
+  is appended to this step (ride vs stay manual); if "ride", the implementation lands as a new phase step
+  with its own verification.
+- **5.2** **Q-NONSHIP hygiene-sweep toggle (decided 2026-07-11: skip remains the default — consider the
+  toggle later).** An optional (e.g. quarterly) sweep that proposes releases for packages with only
+  NON-SHIP accumulation. If adopted, it ships as a new explicit opt-in mode value — never a default, and
+  hygiene flags stay summary-only until then. **Verify / exit criterion**: a dated adopt/decline decision
+  appended to this step.
 
 ---
 
@@ -588,7 +624,7 @@ shared libs:  observability, service-core, model-core, config-tools, ci-tools, d
 sub-libs:     data-client → {cascor, canopy};  cascor-client → canopy;
               cascor-model, cascor-protocol → cascor;  recurrence-model → {recurrence, recurrence-client}
 apps:         cascor, canopy, data, recurrence
-meta:         juniper-ml  (depends on all via extras — releases LAST, or stays manual: Q-META)
+meta:         juniper-ml  (depends on all via extras — STAYS MANUAL per Q-META; reevaluation tracked as §12 step 5.1)
 ```
 
 Ordering is **soft** for the deploy itself (both gates are owner-controlled), but **hard** for
@@ -598,29 +634,47 @@ standard-gated ceiling-bump follow-on PR in that consumer — **never** part of 
 
 ---
 
-## 14. Open questions (owner decisions)
+## 14. Owner decisions (questions answered 2026-07-11 — RESOLVED)
 
-| ID         | Question                                                                                                                                    | Planner recommendation                                                                                                                                    |
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Q-CADENCE  | Cron cadence — weekly Monday `0 6 * * 1` like the other crons, or offset to avoid the 06:00 UTC pile-up with docs-full-check/security-scan? | Weekly Monday, **offset to `0 7 * * 1`** to not contend with the two existing 06:00 jobs.                                                                 |
-| Q-IDENTITY | Cross-repo write identity: fine-grained PAT vs GitHub App?                                                                                  | **GitHub App** for durability; PAT acceptable as Phase-3-pilot bootstrap (pilot is in-repo → neither needed yet).                                         |
-| Q-PILOT    | Which package family pilots the ceremony (Phase 3)?                                                                                         | **juniper-ml sub-packages** — in-repo (no cross-repo identity), low blast radius, owner already watches the repo.                                         |
-| Q-META     | Does the meta-package `juniper-ml` ride the train or stay manual?                                                                           | **Stay manual initially** — it depends on all others and its extras-resolution TestPyPI verify (`publish.yml:105-121`) is bespoke; revisit after Phase 4. |
-| Q-RULESET  | Path-scope the required-review ruleset to exclude `notes/releases/` (true auto-merge), or accept "owner one-click" fallback?                | **Path-scope exclude** for true hands-free R6; the structural guard already proves the diff inert. Owner's security-posture call.                         |
-| Q-NONSHIP  | Do NON-SHIP-only packages ever get an auto-proposed release (e.g. quarterly hygiene) or skip forever?                                       | **Skip forever** by default; surface TAG_ONLY/NOTES_MISSING hygiene in the summary, not as proposals. Optional quarterly hygiene sweep is a later toggle. |
-| Q-CHANNEL  | Notification channel for the run summary + halt issues — step summary + issues only, or also a chat ping?                                   | **Step summary + dedup issues** (self-contained, auditable); no external channel dependency (slack MCP was removed 2026-06-15).                           |
-| Q-SEVERITY | Should a security-category release ever bypass the proposal-PR gate for speed?                                                              | **No** — security releases keep both gates; only the notes archival is exempt. Speed comes from automation, not from removing review.                     |
+All eight questions were answered by the owner on 2026-07-11 (verbatim answers preserved in §14.1; the
+plan-text ingestion of each decision is mapped in §14.2). This section is the decision record; the
+sections named in §14.2 are the operative design text.
 
-### 14.1 Answers
+| ID         | Question                                                                                                                                    | Planner recommendation                                                                                                                                    | Owner decision (2026-07-11)                                                                                                                     |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| Q-CADENCE  | Cron cadence — weekly Monday `0 6 * * 1` like the other crons, or offset to avoid the 06:00 UTC pile-up with docs-full-check/security-scan? | Weekly Monday, **offset to `0 7 * * 1`** to not contend with the two existing 06:00 jobs.                                                                 | **Daily at 08:00 America/Chicago** → cron `0 13 * * *` UTC (07:00 CST winter drift accepted).                                                   |
+| Q-IDENTITY | Cross-repo write identity: fine-grained PAT vs GitHub App?                                                                                  | **GitHub App** for durability; PAT acceptable as Phase-3-pilot bootstrap (pilot is in-repo → neither needed yet).                                         | **As recommended** — GitHub App at the Phase-4 boundary; pilot uses `GITHUB_TOKEN` only.                                                        |
+| Q-PILOT    | Which package family pilots the ceremony (Phase 3)?                                                                                         | **juniper-ml sub-packages** — in-repo (no cross-repo identity), low blast radius, owner already watches the repo.                                         | **As recommended** — juniper-ml sub-packages.                                                                                                   |
+| Q-META     | Does the meta-package `juniper-ml` ride the train or stay manual?                                                                           | **Stay manual initially** — it depends on all others and its extras-resolution TestPyPI verify (`publish.yml:105-121`) is bespoke; revisit after Phase 4. | **Stays manual for now; revisit later** — reevaluation/implementation tracked as §12 step 5.1.                                                  |
+| Q-RULESET  | Path-scope the required-review ruleset to exclude `notes/releases/` (true auto-merge), or accept "owner one-click" fallback?                | **Path-scope exclude** for true hands-free R6; the structural guard already proves the diff inert. Owner's security-posture call.                         | **Path-scope exclude `notes/releases/`** — landed/confirmed at §12 step 3.3.                                                                    |
+| Q-NONSHIP  | Do NON-SHIP-only packages ever get an auto-proposed release (e.g. quarterly hygiene) or skip forever?                                       | **Skip forever** by default; surface TAG_ONLY/NOTES_MISSING hygiene in the summary, not as proposals. Optional quarterly hygiene sweep is a later toggle. | **As recommended** — skip; hygiene-sweep toggle considered later, tracked as §12 step 5.2.                                                      |
+| Q-CHANNEL  | Notification channel for the run summary + halt issues — step summary + issues only, or also a chat ping?                                   | **Step summary + dedup issues** (self-contained, auditable); no external channel dependency (slack MCP was removed 2026-06-15).                           | **Restore Slack** — webhook-based notifications to the Juniper Slack channel (§11, §9.4, step 1.4), additive to step summary + dedup issues.    |
+| Q-SEVERITY | Should a security-category release ever bypass the proposal-PR gate for speed?                                                              | **No** — security releases keep both gates; only the notes archival is exempt. Speed comes from automation, not from removing review.                     | **As recommended** — security-category releases keep the existing gates.                                                                        |
 
-**Q-CADENCE:**  cron should run daily at 8:00am CDT
-**Q-IDENTITY:** concur with recommendation
-**Q-PILOT:**    concur with using juniper-ml sub-packages
-**Q-META:**     stay manual for now and revisit later. ensure reevaluation/implementation step added to document for tracking
-**Q-RULESET:**  let's path-scope to exclude notes/releases/
-**Q-NONSHIP:**  concur with recommendation to skip & consider hygiene sweep toggle later
-**Q-CHANNEL:**  let's restore slack integration and include notifications in juniper slack channel
-**Q-SEVERITY:** security-category release should keep existing gates.
+### 14.1 Verbatim owner answers (2026-07-11)
+
+- **Q-CADENCE:** "cron should run daily at 8:00am CDT"
+- **Q-IDENTITY:** "concur with recommendation"
+- **Q-PILOT:** "concur with using juniper-ml sub-packages"
+- **Q-META:** "stay manual for now and revisit later. ensure reevaluation/implementation step added to document for tracking"
+- **Q-RULESET:** "let's path-scope to exclude notes/releases/"
+- **Q-NONSHIP:** "concur with recommendation to skip & consider hygiene sweep toggle later"
+- **Q-CHANNEL:** "let's restore slack integration and include notifications in juniper slack channel"
+- **Q-SEVERITY:** "security-category release should keep existing gates."
+
+### 14.2 Decision → plan ingestion map
+
+| Decision   | Plan text updated                                                                                                          |
+|------------|------------------------------------------------------------------------------------------------------------------------------|
+| Q-CADENCE  | §12 step 1.3 (cron `0 13 * * *` + DST note); §11 verify-before-first-cron wording ("daily cron").                          |
+| Q-IDENTITY | §9.2 (decision paragraph); §12 step 4.1.                                                                                   |
+| Q-PILOT    | Phase 3 already designed around this pilot — affirmed, no text change needed.                                              |
+| Q-META     | §13 DAG meta line; **new §12 step 5.1** (the owner-requested reevaluation/implementation tracking step).                   |
+| Q-RULESET  | §7.3 (decision + graceful-degradation wording); §12 step 3.3 (landing + verification of the path-scope exclusion).         |
+| Q-NONSHIP  | **New §12 step 5.2** (hygiene-sweep toggle tracking; skip remains default).                                                |
+| Q-CHANNEL  | §11 (new Slack-notification bullet: non-blocking webhook design); §9.4 (`SLACK_WEBHOOK_URL` secret); **new §12 step 1.4**. |
+| Q-SEVERITY | Affirms §7/§10.1 as written — no text change needed.                                                                       |
+| (all)      | Header **Status** → RATIFIED 2026-07-11.                                                                                   |
 
 ---
 
