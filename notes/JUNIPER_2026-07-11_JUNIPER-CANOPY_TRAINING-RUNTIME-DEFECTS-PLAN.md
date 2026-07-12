@@ -4,7 +4,7 @@
 **Scope**: juniper-canopy (primary), juniper-cascor, juniper-data, juniper-cascor-client, juniper-data-client
 **Author**: Paul Calnon (investigation by Claude Code)
 **Date**: 2026-07-11
-**Status**: Diagnosed against the live 2026-07-10/11 session; validated by a three-lens multi-agent pass (§11); fix roadmap proposed (owner-gated)
+**Status**: ACTIVE — remediation tracker live (§13). Diagnosed 2026-07-11 against the live session (three-lens validated, §11); owner decisions Q1–Q6 ratified and incorporated (§12); outstanding UI items U-1 – U-6 ingested (§4-U)
 **Driving prompt**: `prompts/generated/JUNIPER_CANOPY_TRAINING-RUNTIME-DEFECTS_PLAN_2026-07-11_0842.md`
 **Prior work**: `notes/JUNIPER_2026-07-09_JUNIPER-ECOSYSTEM_TRAINING-START-FAILURE-DIAGNOSIS-AND-FIX-PLAN.md` (training start now works; these defects were shadowed behind it)
 
@@ -38,6 +38,10 @@ Seven issues (I-1 – I-7) were diagnosed with code anchors, live-stack probes, 
 
 The fix roadmap (§7) is dependency-ordered (juniper-data → cascor → cascor-client → canopy) in PR-sized units.
 Independent quick wins: **N4** (snapshot route-seam + headers one-liners) and **D1** (actionable generator errors).
+
+**2026-07-11 post-merge update**: the owner answered Q1–Q6 (§12 Answers) and reported six further UI items (`notes/JUNIPER_2026-07-11_JUNIPER-CANOPY_OUTSTANDING-UI-ISSUES_.md`, ingested as U-1 – U-6 in §4-U).
+Consequences are folded in below: WS-preferred target architecture (Q6 → C6/N8, with N1 as the correctness bridge), `epochs_max` role reevaluation (Q1 → C2b), MNIST promoted to a near-term research goal (Q2 → D2 in wave 1),
+the restart confirm modal with a start-fresh toggle (Q3+Q4 → N3/C5), retention semantics (Q4 → C5), and this document is now the living status tracker (Q5 → §13; the 2026-07-04 defect-list skeleton is retired in the same change).
 
 ## 2. Reported Symptoms
 
@@ -134,6 +138,8 @@ Guard rails required by validation (§11 skeptic #1, #6): the store poll must re
 the upstream call inside `async def get_metrics_history` (`main.py:1217-1227`) must move to a thread (`asyncio.to_thread`) so a slow cascor cannot stall canopy's event loop; and full-history display modes must bound their fetch (today `limit=0` fetches up to 10k rows per tick, `:5207-5210`).
 Path-B trustworthiness is the N2/C3/CL1 workstream: supervised reconnect with logging, half-open detection (the supervisor's `is_connected` is `_ws is not None`, `cascor_service_adapter.py:99-100` — blind to dead sockets), client ping/pong handling, `/api/state` made live-first for base fields (§11 skeptic #5: it already pays a live cascor call per GET — derive status/epoch from that same fetch, keep the relay-fed global for demo mode and WS push granularity), and a degraded-mode indicator.
 Dead-end stores removed or wired when O3 lands. Header semantics fixed in N6 with C2b's surface reconciliation. E-3 resolves root cause 4 before N2 is finalized.
+**Owner decision (Q6)**: the target architecture is WS-preferred — real-time surfaces (tiles, charts, state, topology) are fed by the WS path once it demonstrably delivers, with polling reserved for data that is not needed in (near-)real time; the arbiter is display accuracy and interaction responsiveness.
+Concretely: E-1 → C6 (cascor emits per-epoch metrics on `/ws/training`) → N8 (wire `ws-metrics-buffer`/`ws-state-buffer` into tile/state Outputs — the O3 posture — and demote N1's un-gated polls to a liveness-gated fallback, the O1 posture). N1 remains the correctness bridge until C6/N8 land.
 
 **Tests.** Unit: store-poll un-gating + empty-guard (`no_update` on empty fetch with non-empty store); to_thread wrapping. UI harness (canopy `src/tests/ui/`): WS-silent scenario — tiles advance via poll within 2 s on a long-lived tab; post-completion charts persist under the 1 Hz poll; header matches a scripted cascor status.
 
@@ -200,6 +206,10 @@ canopy should defensively clamp/validate seeded values against the documented PA
 Cascor C2b: bound coherence (default `epochs_max` ≤ PATCH ceiling) + reconcile the `/v1/network` vs `/v1/training/status` parameter surfaces (single source of truth) + document counter semantics.
 Canopy N5: clamp/validate backend-seeded form values against the PATCH bounds at init and apply; surface `response.text` verbatim in the toast; skip the WS-first leg while the control stream is marked dead (consumes N2's liveness state).
 
+**Owner decision (Q1)**: `epochs_max` has outlived its original role (a hard stop for a simple, plateau-prone early model) and now risks shadowing the granular limits that superseded it (per-candidate epochs, pool-wide iterations, output-training epochs, output iterations).
+C2b therefore carries a role reevaluation with three sanctioned outcomes: (a) a deliberately-large sentinel that can never shadow the granular limits; (b) full removal of the meta-parameter (calculation, tracking, gating, and display code); or (c) a per-run derived cap computed from the granular limits.
+Provisional recommendation: (c), with (b) as the simplification fallback — to be ratified in C2b's design/PR.
+
 **Tests.** T-4a canopy unit: toast carries upstream detail; seeded out-of-bound values are clamped/flagged at init. T-4b cascor: default-vs-ceiling coherence regression; surface-consistency regression; applied/skipped shape.
 T-4c isolated-stack E2E: full-form Apply with backend-seeded values succeeds end-to-end; a genuinely out-of-range field yields a visible, specific rejection.
 
@@ -225,6 +235,8 @@ Status code for "generator unavailable": 503 invites retries/health-tooling misr
 juniper-data D2: add `datasets` behind a `[mnist]` extra; install in the Docker image and the `JuniperData` env; document the HF cache/offline posture; add a real-generation test (cache-seeded or skip-marked offline).
 Canopy N7: consume the availability flag to grey out unavailable dataset types with the reason — compat posture: flag-absent (older juniper-data) defaults to available, and the deploy-level juniper-data version floor is bumped when N7 lands (canopy reads `/v1/generators` via direct httpx, `main.py:1555-1567` — no client-library release needed).
 Cascor: no change on this path (its 409 already carries the upstream text).
+**Owner decision (Q2)**: MNIST availability is a near-term research goal — infrastructure for the multi-dataset continual-training experiment (repeatedly training a single cascor model on diverse dataset types).
+D2 is promoted into wave 1 as a fast-follow to D1, and a successful isolated-stack MNIST E2E run becomes a wave-1 exit criterion.
 
 **Tests.** D1: unavailable generator → 501/422 + hint (no 500); availability flag present. D2: real generation produces contract-compliant NPZ shapes. N7: unavailable type not selectable with reason shown; flag-absent compat. E2E: staged MNIST trains end-to-end on the isolated stack once D2 lands.
 
@@ -253,6 +265,11 @@ Canopy N3: implement the promised sequence — lightweight confirm → `stop()` 
 Interaction with cascor#396 staging semantics verified safe: `stop_training()`/`reset()` do not touch `_pending_dataset_config` (`manager.py:2104-2150`); consume-then-clear happens under `_lock` in `start_training` (`:1902-1904`), fetch-failure preserves staging — no lost/double-consumed staging in stop→await→start.
 The prior doc's fifth follow-up bullet (cascor-side auto-create/restart alternative) was revisited: still not chosen (canopy-side orchestration keeps the engine API minimal, consistent with the 2026-07-09 decision); a cascor-side atomic restart remains the documented fallback if the stop-window race proves troublesome.
 
+**Owner decisions (Q3 + Q4)**: the confirm is ratified and specified — a simple confirm modal (assuming all other meta-parameters, structures, and processes unchanged) with an expandable dropdown of collapsible sub-sections enabling granular verification AND in-place modification of network params, meta-params, and components (this supersedes the deferred PR-D defaults modal).
+The modal leads with a **start-fresh toggle (default off)**: off = continue training the current model as trained, retaining metrics/history for cross-dataset continuity (Q4 use-case 1); on = discard the model and all retained data — functionally a clean stack launch except artifacts with permanence expectations, e.g. snapshots (Q4 use-case 2; also U-1's reset-model vs reset-training distinction).
+An explicit clear-metrics control (use-case 1's optional clearing) ships with a fallback — confirm-before-clear or an undo — available at any point until the new run begins; the cascor-side semantics are unit C5.
+The granular verify/modify section intersects N5's apply contract; if its footprint grows N3 materially it splits off as N3b (noted in the roadmap).
+
 **Tests.** Unit: restart handler sequence (confirm → stop → await → start); failures produce alert payloads; `reset` reaches the adapter. UI harness: a 409 on restart renders a visible alert; success renders a visible confirmation.
 E2E (isolated): cold-swap during an active run stops, restages, restarts visibly; idle-time swap remains one click + confirm.
 
@@ -268,6 +285,21 @@ The hint text comes from `dataset_model_hint` (`model_registry.py:375-395`); MNI
 stop sending inapplicable params, and reword the model hint (e.g. "rank-2 (tabular) datasets only"). Low priority; ships after the correctness fixes.
 
 **Tests.** Unit: per-type visible-param sets; staged payload contains only applicable keys; hint text snapshot.
+
+**Owner addition (U-6)**: the left-menu `Current Dataset` sub-section is part of the same defect — it stays titled and parameterized for Spiral regardless of the selected type; N7 renames it per selected type and shows that type's relevant (read-only and/or editable) meta-parameters.
+
+### U — Outstanding UI items (owner-reported 2026-07-11)
+
+Ingested from `notes/JUNIPER_2026-07-11_JUNIPER-CANOPY_OUTSTANDING-UI-ISSUES_.md` and tracked here per Q5.
+
+| ID  | Item                                                                                                                                                                              | Disposition                                                                                                                                                                                 |
+|-----|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| U-1 | Option to reset the cascor model back to original (no hidden nodes) — reset-training vs reset-model distinction                                                                   | Folded into the Q4 retention/start-fresh design → C5 (cascor semantics) + N3 (modal toggle)                                                                                                 |
+| U-2 | Training-metric plots should show accuracy in addition to loss                                                                                                                    | N9 — an accuracy figure exists in code (`metrics_panel.py:728-829` extends loss AND accuracy), so N9 starts by diagnosing why accuracy reads as absent (layout, data, or the I-1 staleness) |
+| U-3 | Metrics plots reevaluation: overall readability, per-plot visibility/clarity, color schemes, scaling to avoid overlapping lines                                                   | N9                                                                                                                                                                                          |
+| U-4 | Candidate metric fields to consider: f1, precision, recall, ROC AUC, confusion matrix, feature importance, SHAP, permutation importance, PDP, calibration/ROC/PR/lift/gain curves | C7 (cascor-side computation/streaming, phased — scalar classification metrics first, curve/explainability artifacts later) + N9 (display)                                                   |
+| U-5 | Workers tab should display both local and remote workers                                                                                                                          | N10 — needs a discovery pass over the worker-registration surface (cascor-worker vs canopy's current view)                                                                                  |
+| U-6 | Dataset-view left menu must reflect the currently selected dataset (rename the Spiral sub-section; show that type's relevant params)                                              | N7 (see I-7)                                                                                                                                                                                |
 
 ## 5. Cross-Cutting Themes
 
@@ -307,27 +339,34 @@ stop sending inapplicable params, and reword the model hint (e.g. "rank-2 (tabul
 
 PR-sized work units, dependency-ordered (upstream before consumers). Every unit lands as its own PR (owner merges); each names its verification.
 
-| Unit | Repo                           | Type  | Summary                                                                                                                                                                                                         | Depends on              | Closes                               | Verify                                  |
-|------|--------------------------------|-------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|--------------------------------------|-----------------------------------------|
-| D1   | juniper-data                   | fix   | Generator availability surfaced: registry/schema `available` flag; unavailable generator → 501/422 + install hint (no masked 500)                                                                               | —                       | I-5 (gate half)                      | `pytest juniper_data/tests/ -v`         |
-| D2   | juniper-data                   | feat  | `[mnist]` extra ships HF `datasets`; Docker/env install; offline-cache doc; real-generation test                                                                                                                | D1                      | I-5 (ship half)                      | same + isolated E2E                     |
-| C1   | juniper-cascor                 | fix   | Snapshot create: tolerate explicit-null `description`; propagate serializer failure detail (correct status); write-isolation hardening                                                                          | —                       | I-3 (robustness)                     | `bash src/tests/scripts/run_tests.bash` |
-| C2a  | juniper-cascor                 | fix   | Apply reporting: additive per-key `applied`/`skipped(reason)`; remove silent `hasattr` drop; keep atomic 422 for bound violations                                                                               | —                       | I-4 (contract), T3                   | same                                    |
-| C2b  | juniper-cascor                 | fix   | Bound + surface coherence: `epochs_max` default ≤ PATCH ceiling; reconcile `/v1/network` vs `/v1/training/status` params; document counter semantics                                                            | —                       | I-4 (root), I-1c                     | same                                    |
-| C3   | juniper-cascor                 | fix   | Control-WS heartbeat contract (tolerate pong-less clients or specify the requirement); `/ws/training` metrics-emission instrumentation (E-1)                                                                    | —                       | I-1 (Path B), I-4 (WS leg)           | same + E-1                              |
-| C4   | juniper-cascor                 | fix   | Access-log survival after training start (logging-init clobber) + start-failure logging at WARNING + regression                                                                                                 | —                       | T5                                   | same                                    |
-| CL1  | juniper-cascor-client          | fix   | WS ping/pong handling (root fix for the 40 s close); `msg_type` on unrecognized frames; half-open detection surfaced to consumers                                                                               | —                       | I-1/I-4 (WS), T2/T5                  | client suite                            |
-| CL2  | juniper-cascor-client + canopy | chore | Cut cascor-client GitHub Release (per convention); bump canopy floor; `FakeCascorClient` parity for new surfaces                                                                                                | CL1                     | gates wave 2                         | drift lints + canopy suite              |
-| N1   | juniper-canopy                 | fix   | Un-gate metrics + topology polls (O2) with empty-guard (`no_update` on empty/error vs non-empty store); `asyncio.to_thread` for history fetch; bound full-mode `limit`; remove dead drains; fix stale docstring | Q4 answered; CL2 (soft) | I-1 tiles/charts, I-2, T6            | `pytest` per AGENTS.md + UI harness     |
-| N2   | juniper-canopy                 | fix   | Supervisor/relay hardening: half-open detection + logged reconnect/backoff; `/api/state` live-first base fields (keep global for demo/WS); degraded-mode indicator; relay throughput counter; E-3 resolution    | CL2                     | I-1 state/header, T2/T5              | same                                    |
-| N3   | juniper-canopy                 | fix   | Restart orchestration: confirm → stop → await → start(staged); surface all outcomes (restart + apply_dataset alerts); forward `reset`; pin active-run path per E-2                                              | —                       | I-6, T1/T4, §6 follow-up (cold-swap) | same                                    |
-| N4   | juniper-canopy                 | fix   | Snapshot route seam: no `None` description (`main.py:1998`/`:2078`); restore `headers=internal_api_headers()`; toast carries upstream detail                                                                    | —                       | I-3, T1                              | same                                    |
-| N5   | juniper-canopy                 | fix   | Apply-params UX: clamp/validate backend-seeded values against PATCH bounds; toast carries rejection detail verbatim; render applied/skipped; skip WS leg when stream dead                                       | C2a, C2b, N2            | I-4, T1/T3                           | same                                    |
-| N6   | juniper-canopy                 | fix   | Header/tile semantics: correct Epoch/Step/Iteration/Hidden-Units mappings + denominators from the reconciled surface; document counter semantics                                                                | C2b                     | I-1c / S12                           | same + UI snapshot                      |
-| N7   | juniper-canopy                 | feat  | Dataset panel type-awareness (schema-driven params); capability gating (flag-absent → available; deploy data-floor bump); hint rewording                                                                        | D1                      | I-7, I-5 (UX)                        | same                                    |
-| E1   | juniper-ml                     | chore | Isolated-stack E2E checklist additions (per closed issue) to the smoke tooling/docs                                                                                                                             | all                     | verification                         | scripted E2E                            |
+| Unit | Repo                           | Type  | Summary                                                                                                                                                                                                                                                          | Depends on                | Closes                                         | Verify                                  |
+|------|--------------------------------|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|------------------------------------------------|-----------------------------------------|
+| D1   | juniper-data                   | fix   | Generator availability surfaced: registry/schema `available` flag; unavailable generator → 501/422 + install hint (no masked 500)                                                                                                                                | —                         | I-5 (gate half)                                | `pytest juniper_data/tests/ -v`         |
+| D2   | juniper-data                   | feat  | `[mnist]` extra ships HF `datasets`; Docker/env install; offline-cache doc; real-generation test — **promoted to wave 1 (Q2: near-term research goal, multi-dataset continual training)**                                                                        | D1                        | I-5 (ship half), Q2                            | same + isolated E2E                     |
+| C1   | juniper-cascor                 | fix   | Snapshot create: tolerate explicit-null `description`; propagate serializer failure detail (correct status); write-isolation hardening                                                                                                                           | —                         | I-3 (robustness)                               | `bash src/tests/scripts/run_tests.bash` |
+| C2a  | juniper-cascor                 | fix   | Apply reporting: additive per-key `applied`/`skipped(reason)`; remove silent `hasattr` drop; keep atomic 422 for bound violations                                                                                                                                | —                         | I-4 (contract), T3                             | same                                    |
+| C2b  | juniper-cascor                 | fix   | Bound + surface coherence + **Q1 role reevaluation** of `epochs_max` (sentinel / removal / per-run derived cap; provisional: derived cap); reconcile `/v1/network` vs `/v1/training/status` params; document counter semantics                                   | —                         | I-4 (root), I-1c, Q1                           | same                                    |
+| C5   | juniper-cascor                 | feat  | Retention & reset semantics (Q4/U-1): retain metrics/history by default across runs; explicit clear with confirm/undo available until the next run starts; start-fresh = clean-launch reset excluding permanent artifacts (snapshots)                            | C2b (soft)                | Q4, U-1                                        | same                                    |
+| C6   | juniper-cascor                 | feat  | Per-epoch metrics emission on `/ws/training` (Q6 target architecture; design informed by E-1)                                                                                                                                                                    | E-1                       | I-1 (Path B root), Q6                          | same + E-1                              |
+| C7   | juniper-cascor                 | feat  | Expanded evaluation metrics (U-4), phased: scalar classification metrics (f1/precision/recall/ROC-AUC) first; curve/explainability artifacts (confusion matrix, SHAP, PDP, calibration/ROC/PR/lift/gain) later                                                   | —                         | U-4 (compute half)                             | same                                    |
+| C3   | juniper-cascor                 | fix   | Control-WS heartbeat contract (tolerate pong-less clients or specify the requirement); `/ws/training` metrics-emission instrumentation (E-1)                                                                                                                     | —                         | I-1 (Path B), I-4 (WS leg)                     | same + E-1                              |
+| C4   | juniper-cascor                 | fix   | Access-log survival after training start (logging-init clobber) + start-failure logging at WARNING + regression                                                                                                                                                  | —                         | T5                                             | same                                    |
+| CL1  | juniper-cascor-client          | fix   | WS ping/pong handling (root fix for the 40 s close); `msg_type` on unrecognized frames; half-open detection surfaced to consumers                                                                                                                                | —                         | I-1/I-4 (WS), T2/T5                            | client suite                            |
+| CL2  | juniper-cascor-client + canopy | chore | Cut cascor-client GitHub Release (per convention); bump canopy floor; `FakeCascorClient` parity for new surfaces                                                                                                                                                 | CL1                       | gates wave 2                                   | drift lints + canopy suite              |
+| N1   | juniper-canopy                 | fix   | Un-gate metrics + topology polls (O2) with empty-guard (`no_update` on empty/error vs non-empty store); `asyncio.to_thread` for history fetch; bound full-mode `limit`; remove dead drains; fix stale docstring — **bridge until C6/N8 (Q6)**                    | Q4 ✓ (see C5); CL2 (soft) | I-1 tiles/charts, I-2, T6                      | `pytest` per AGENTS.md + UI harness     |
+| N2   | juniper-canopy                 | fix   | Supervisor/relay hardening: half-open detection + logged reconnect/backoff; `/api/state` live-first base fields (keep global for demo/WS); degraded-mode indicator; relay throughput counter; E-3 resolution                                                     | CL2                       | I-1 state/header, T2/T5                        | same                                    |
+| N3   | juniper-canopy                 | fix   | Restart orchestration: confirm modal (start-fresh toggle default off + expandable granular verify/modify — Q3/Q4; supersedes PR-D; splits as N3b if it grows) → stop → await → start(staged); surface all outcomes; forward `reset`; pin active-run path per E-2 | C5 (soft)                 | I-6, U-1 (UI), T1/T4, §6 follow-up (cold-swap) | same                                    |
+| N4   | juniper-canopy                 | fix   | Snapshot route seam: no `None` description (`main.py:1998`/`:2078`); restore `headers=internal_api_headers()`; toast carries upstream detail                                                                                                                     | —                         | I-3, T1                                        | same                                    |
+| N5   | juniper-canopy                 | fix   | Apply-params UX: clamp/validate backend-seeded values against PATCH bounds; toast carries rejection detail verbatim; render applied/skipped; skip WS leg when stream dead                                                                                        | C2a, C2b, N2              | I-4, T1/T3                                     | same                                    |
+| N6   | juniper-canopy                 | fix   | Header/tile semantics: correct Epoch/Step/Iteration/Hidden-Units mappings + denominators from the reconciled surface; document counter semantics                                                                                                                 | C2b                       | I-1c / S12                                     | same + UI snapshot                      |
+| N7   | juniper-canopy                 | feat  | Dataset panel type-awareness (schema-driven params); capability gating (flag-absent → available; deploy data-floor bump); hint rewording; rename/populate the Current-Dataset sub-section per selected type (U-6)                                                | D1                        | I-7, U-6, I-5 (UX)                             | same                                    |
+| N8   | juniper-canopy                 | feat  | WS-primary wiring (Q6/O3): tiles + state consume `ws-metrics-buffer`/`ws-state-buffer`; N1's polls demoted to a liveness-gated fallback (O1)                                                                                                                     | C6, CL2                   | I-1 (target arch), Q6                          | same + UI harness                       |
+| N9   | juniper-canopy                 | feat  | Metrics visualization overhaul (U-2/U-3 + U-4 display): accuracy presentation, readability, color schemes, scaling/overlap; render C7's new metrics as they land                                                                                                 | C7 (for new fields)       | U-2, U-3, U-4 (display half)                   | same + UI snapshot                      |
+| N10  | juniper-canopy                 | feat  | Workers tab shows local + remote workers (U-5), after a discovery pass over the worker-registration surface                                                                                                                                                      | —                         | U-5                                            | same                                    |
+| E1   | juniper-ml                     | chore | Isolated-stack E2E checklist additions (per closed issue) to the smoke tooling/docs                                                                                                                                                                              | all                       | verification                                   | scripted E2E                            |
 
-Independent quick wins: **N4** and **D1** (no dependencies). Suggested waves: wave 1 = D1 + C1 + C2a + C2b + N4; wave 2 = CL1 + CL2 + C3 + C4 + N1 + N2 (N1 additionally gated on Q4); wave 3 = N3 + N5 + N6; wave 4 = D2 + N7 + E1.
+Independent quick wins: **N4** and **D1** (no dependencies). Suggested waves (updated for the Q1–Q6 decisions and U-items):
+wave 1 = D1 + D2 (Q2 promotion) + C1 + C2a + N4; wave 2 = C2b + C5 + CL1 + CL2 + C3 + C4 + N1 + N2 (+ experiments E-1/E-2/E-3); wave 3 = N3 + N5 + N6 + C6; wave 4 = N7 + N8 + C7 + N9 + N10 + E1.
 
 ## 8. Risks
 
@@ -369,9 +408,11 @@ Independent quick wins: **N4** and **D1** (no dependencies). Suggested waves: wa
 | §6 follow-up: cold-swap error surfacing                                                | I-6 / N3 (in scope)                                                                                      |
 | §6 follow-up: `unrecognized_ws_frame` warnings                                         | I-1 evidence + CL1/C3 (in scope; ping-frame cause strongly supported; `msg_type` logging)                |
 | §6 follow-up: control-stream reconnect posture                                         | N2/C3/CL1 (in scope; extended to half-open detection + ping/pong handling — this session's failure mode) |
-| §6 follow-up: PR-D confirm-defaults modal                                              | Partially folded in: N3 gains a lightweight confirm; the full defaults-modal remains deferred (Q3)       |
+| §6 follow-up: PR-D confirm-defaults modal                                              | Superseded (Q3): N3's confirm modal with expandable granular verify/modify absorbs PR-D's intent         |
 | §6 fifth bullet: cascor-side auto-create alternative (not chosen)                      | Design alternative revisited in I-6 chosen design; still not chosen                                      |
-| Defect-list skeleton (`notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md`) | Q5: propose populating it from this plan's issue IDs or retiring it                                      |
+| Defect-list skeleton (`notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md`) | RETIRED per Q5 (removed in the same change that added §13); this document is the living tracker          |
+| U-1 – U-6 (owner-reported 2026-07-11)                                                  | §4-U table; roadmap C5/C7/N3/N7/N9/N10                                                                   |
+| Q1–Q6 owner decisions                                                                  | §12 Answers + Decision Consequences; folded into the §4 designs and §7 roadmap                           |
 
 ## 11. Validation Record
 
@@ -391,7 +432,7 @@ Multi-agent validation per the driving prompt (directive 10), all agents on Fabl
 Round 1 (3 agents): findings raised **27** (8 + 6 + 13); resolved **27** (this revision); unresolved grounding findings: **0**.
 Items that remain genuinely undecidable from this session's evidence are carried as OPEN experiments (E-1/E-2/E-3) and owner questions (§12), not as claims.
 
-## 12. Open Questions (owner decisions)
+## 12. Owner Decisions (questions answered 2026-07-11)
 
 ### Questions
 
@@ -460,6 +501,51 @@ Items that remain genuinely undecidable from this session's evidence are carried
   - Answer: preferentially, the canopy front-end should use ws communication to the extent practicable.
     - API only, i.e., polling, communication should be used for messages and/or updates that are not needed in real, or near-real, time.
     - the fundamental requirement that defines the need-based distinction between ws and polling communication is the display accuracy and interaction responsiveness of the canopy web app.
+
+### Decision Consequences (incorporated 2026-07-11)
+
+- **Q1 → C2b**: the `epochs_max` role reevaluation (sentinel / removal / per-run derived cap; provisional recommendation: derived cap, removal as fallback) replaces the simple default-lowering fix; canopy still clamps defensively (N5).
+- **Q2 → D2**: promoted to wave 1; a successful isolated-stack MNIST E2E run becomes a wave-1 exit criterion (driver: the multi-dataset continual-training experiment).
+- **Q3 → N3**: the confirm modal is ratified — simple confirm plus an expandable dropdown of collapsible verify/modify sub-sections; supersedes the PR-D defaults modal; splits off as N3b if it grows the PR materially.
+- **Q4 → C5 + N3 + N1**: retain metrics/history by default across runs (cross-dataset continuity); explicit clear with confirm-or-undo until the next run begins; start-fresh toggle (default off) = clean-launch semantics minus permanent artifacts (snapshots); N1's retention precondition is thereby answered and its empty-guard remains defense-in-depth.
+- **Q5 → §13**: the 2026-07-04 defect-list skeleton is retired; this document is the single living tracker, and updating §13 is part of the definition of done for every remediation work session.
+- **Q6 → C6 + N8 (N1 as bridge)**: WS-preferred target architecture for real-time surfaces; polling only for non-real-time data; the arbiter is display accuracy and interaction responsiveness.
+
+## 13. Remediation Status (living — update with every work session)
+
+Per Q5, this table is the single tracker for remediation state. Workflow: whenever a unit starts, changes scope, opens/merges a PR, or is validated, update its row (status, PR, date, note) in the same work session — the §13 update is part of each unit's definition of done.
+Statuses: `planned` → `in-progress` → `pr-open` → `merged` → `verified` (E2E/live), plus `blocked(reason)` / `dropped(reason)`.
+
+| Unit             | Status  | PR | Updated    | Note                           |
+|------------------|---------|----|------------|--------------------------------|
+| D1               | planned | —  | 2026-07-11 | quick win; no deps             |
+| D2               | planned | —  | 2026-07-11 | wave 1 per Q2                  |
+| C1               | planned | —  | 2026-07-11 | —                              |
+| C2a              | planned | —  | 2026-07-11 | —                              |
+| C2b              | planned | —  | 2026-07-11 | carries the Q1 evaluation      |
+| C3               | planned | —  | 2026-07-11 | pairs with E-1                 |
+| C4               | planned | —  | 2026-07-11 | —                              |
+| C5               | planned | —  | 2026-07-11 | Q4/U-1 retention semantics     |
+| C6               | planned | —  | 2026-07-11 | gated on E-1                   |
+| C7               | planned | —  | 2026-07-11 | phased: scalar metrics first   |
+| CL1              | planned | —  | 2026-07-11 | —                              |
+| CL2              | planned | —  | 2026-07-11 | release + floor + Fake parity  |
+| N1               | planned | —  | 2026-07-11 | bridge until C6/N8             |
+| N2               | planned | —  | 2026-07-11 | includes E-3 resolution        |
+| N3               | planned | —  | 2026-07-11 | modal per Q3/Q4; may split N3b |
+| N4               | planned | —  | 2026-07-11 | quick win; no deps             |
+| N5               | planned | —  | 2026-07-11 | —                              |
+| N6               | planned | —  | 2026-07-11 | —                              |
+| N7               | planned | —  | 2026-07-11 | + U-6                          |
+| N8               | planned | —  | 2026-07-11 | Q6 target architecture         |
+| N9               | planned | —  | 2026-07-11 | U-2/U-3 + C7 display           |
+| N10              | planned | —  | 2026-07-11 | U-5                            |
+| E1               | planned | —  | 2026-07-11 | —                              |
+| E-1 (experiment) | planned | —  | 2026-07-11 | decides C6/N8 design           |
+| E-2 (experiment) | planned | —  | 2026-07-11 | pins N3 active-run path        |
+| E-3 (experiment) | planned | —  | 2026-07-11 | pins N2 freeze mechanism       |
+
+Sources ingested: `notes/JUNIPER_2026-07-11_JUNIPER-CANOPY_OUTSTANDING-UI-ISSUES_.md` (U-1 – U-6). Retired: `notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md` (Q5).
 
 ---
 
