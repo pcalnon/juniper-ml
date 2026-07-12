@@ -126,17 +126,17 @@ A new data file, `util/release_train/registry.yaml` (proposed; does not exist ye
 of truth for the 18 packages. It captures per-package the facts the audit enumerated so the detector is
 data-driven, not hardcoded. Fields per package:
 
-| Field | Meaning | Source |
-|-------|---------|--------|
-| `pypi_name` | PyPI distribution name | audit §1 |
-| `repo` | owning GitHub repo | audit §1 |
-| `path` | subdir scope (`.`, `juniper-ci-tools/`, …; cascor app = repo-minus-subpkgs) | audit §1 / §7.4 |
-| `version_source` | `static` (`[project].version`) or `dynamic` (`_version.py`) | audit §2 / §7.2 |
-| `tag_pattern` | last-release-tag glob (`v*`, `juniper-<pkg>-v*`) | audit §7.3 |
-| `archive_name` | central-archive filename template (`RELEASE_NOTES_v<ver>.md` meta; `RELEASE_NOTES_<pkg>_v<ver>.md` else) | procedure §11.3 |
-| `trigger` | `release` or `tag` (→ target `release` after Phase 0) | audit §3.1 |
-| `verify` | `strict` / `fallback` (→ target `strict` except meta) | audit §3.4 / F-5 |
-| `depends_on` | upstream packages (for D6 ordering) | parent `CLAUDE.md` graph + extras |
+| Field            | Meaning                                                                                                  | Source                            |
+|------------------|----------------------------------------------------------------------------------------------------------|-----------------------------------|
+| `pypi_name`      | PyPI distribution name                                                                                   | audit §1                          |
+| `repo`           | owning GitHub repo                                                                                       | audit §1                          |
+| `path`           | subdir scope (`.`, `juniper-ci-tools/`, …; cascor app = repo-minus-subpkgs)                              | audit §1 / §7.4                   |
+| `version_source` | `static` (`[project].version`) or `dynamic` (`_version.py`)                                              | audit §2 / §7.2                   |
+| `tag_pattern`    | last-release-tag glob (`v*`, `juniper-<pkg>-v*`)                                                         | audit §7.3                        |
+| `archive_name`   | central-archive filename template (`RELEASE_NOTES_v<ver>.md` meta; `RELEASE_NOTES_<pkg>_v<ver>.md` else) | procedure §11.3                   |
+| `trigger`        | `release` or `tag` (→ target `release` after Phase 0)                                                    | audit §3.1                        |
+| `verify`         | `strict` / `fallback` (→ target `strict` except meta)                                                    | audit §3.4 / F-5                  |
+| `depends_on`     | upstream packages (for D6 ordering)                                                                      | parent `CLAUDE.md` graph + extras |
 
 Registry drift is itself a lint (`tests/test_release_train_registry.py`, proposed): every registry entry
 must resolve to a real `pyproject.toml`, and every ecosystem `pyproject.toml` with a `[project]` table
@@ -191,7 +191,7 @@ For each registry entry, in this order (mirroring audit §7):
 The detector emits a machine-readable **release-manifest JSON** (and a human table + `--json`), one
 record per package:
 
-```
+```json
 { "pypi_name": "...", "repo": "...", "released_version": "...", "declared_version": "...",
   "diff_base_tag": "...", "classification": "UNRELEASED_CHANGES | UP_TO_DATE | BUMPED_NOT_RELEASED |
      NEVER_RELEASED | SHIP_UNCERTAIN | ANOMALY",
@@ -219,22 +219,22 @@ automating the toil.
 
 ### 5.1 States
 
-| State | Meaning | Who acts |
-|-------|---------|----------|
-| `UP_TO_DATE` | No release-worthy change since the diff-base tag. | Train: nothing. |
-| `UNRELEASED_CHANGES` | Release-worthy commits, version **not** bumped. | Train opens a **standard-gated proposal PR**; **owner** reviews/merges. |
-| `BUMPED_NOT_RELEASED` | `declared > released`; no Release cut yet. | Train runs the **automated ceremony** (exempt archive PR + Release + publish). |
-| `NEVER_RELEASED` | Not on PyPI at all (0 today). | Train ceremony **after** a trusted-publisher-config precheck; else HALT. |
-| `RELEASING` | Ceremony in flight (concurrency-guarded). | Train. |
-| `PENDING_PYPI_APPROVAL` | TestPyPI done; PyPI job waiting at the `pypi` env gate. | **Owner** approves the deploy. Terminal-healthy. |
-| `HALTED` | A precondition failed. | Train opens/updates a **GitHub issue**; no further action on this package. |
+| State                   | Meaning                                                 | Who acts                                                                       |
+|-------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------|
+| `UP_TO_DATE`            | No release-worthy change since the diff-base tag.       | Train: nothing.                                                                |
+| `UNRELEASED_CHANGES`    | Release-worthy commits, version **not** bumped.         | Train opens a **standard-gated proposal PR**; **owner** reviews/merges.        |
+| `BUMPED_NOT_RELEASED`   | `declared > released`; no Release cut yet.              | Train runs the **automated ceremony** (exempt archive PR + Release + publish). |
+| `NEVER_RELEASED`        | Not on PyPI at all (0 today).                           | Train ceremony **after** a trusted-publisher-config precheck; else HALT.       |
+| `RELEASING`             | Ceremony in flight (concurrency-guarded).               | Train.                                                                         |
+| `PENDING_PYPI_APPROVAL` | TestPyPI done; PyPI job waiting at the `pypi` env gate. | **Owner** approves the deploy. Terminal-healthy.                               |
+| `HALTED`                | A precondition failed.                                  | Train opens/updates a **GitHub issue**; no further action on this package.     |
 
 `TAG_ONLY` and `NOTES_MISSING` are **orthogonal hygiene flags**, not deploy-needing states; they feed
 Phase 0 pre-work and the observability summary, not the ceremony.
 
 ### 5.2 Transitions
 
-```
+```bash
 UP_TO_DATE ──(new substantive SHIP commit)──▶ UNRELEASED_CHANGES
 UNRELEASED_CHANGES ──(owner merges proposal PR: version bump + CHANGELOG move)──▶ BUMPED_NOT_RELEASED
 BUMPED_NOT_RELEASED ──(train: exempt archive PR auto-merges + Release cut)──▶ RELEASING
@@ -296,10 +296,10 @@ Bumps are **proposals**; the owner may override in the proposal PR. Derivation c
 `>=floor,<next-minor` (e.g. `juniper-ci-tools>=0.1.0,<0.7.0`, `juniper-model-core>=0.1.0,<0.4.0`), which
 makes **each `0.x` a compatibility boundary**. Therefore, pre-1.0:
 
-| Change class | Bump | Consumer impact |
-|--------------|------|-----------------|
+| Change class            | Bump                            | Consumer impact                                        |
+|-------------------------|---------------------------------|--------------------------------------------------------|
 | breaking **or** feature | **MINOR** (`0.x.0`→`0.(x+1).0`) | Escapes `<next-minor` ceilings ⇒ propagation PRs (D6). |
-| fix only | **PATCH** (`0.x.y`→`0.x.(y+1)`) | Within ceilings; no propagation. |
+| fix only                | **PATCH** (`0.x.y`→`0.x.(y+1)`) | Within ceilings; no propagation.                       |
 
 **Post-1.0 (stated for the future, none apply today)**: breaking ⇒ MAJOR, feature ⇒ MINOR, fix ⇒ PATCH.
 The precedent for the pre-1.0 rule is the CHANGELOG's own 0.5.0→0.6.0 "semver minor: existing callers … up
@@ -366,15 +366,15 @@ TestPyPI (ungated by design, audit §3.3) is the smoke-test stage; PyPI is alway
 Each precondition is checked **per package** before the ceremony proceeds; **any failure → HALT that
 package, open/update a GitHub issue, never proceed** (a halt on one package does not block the others):
 
-| Precondition | Check | Rationale / memory |
-|--------------|-------|--------------------|
-| **Target main CI green** | `gh run list --branch main --repo <repo>` latest = success. | Owner rule: "check main green before blaming a red PR." A red main means don't release. |
-| **No open release PR for the package** | `gh pr list` dup-guard. | Concurrent Claude sessions are a real hazard (memory). |
-| **Remote freshness** | Remote-authoritative diff only (§4.2); no local-checkout truth. | F-6: the ml worktree was stale and would under-count. |
-| **Declared ≥ released** | §4.2 step 2. | `declared < released` ⇒ yanked/rolled-back anomaly ⇒ HALT. |
-| **TestPyPI install-verify success** | The publish workflow's own verify step must pass. | **Hard gate**: the run is "healthy" only if TestPyPI verify passed before Gate 2. |
-| **Idempotent re-entry** | PyPI/TestPyPI files are immutable; publish steps already use `skip-existing: true` (`publish-service-core.yml:139,185`); the train re-computes state from PyPI truth each run. | A re-run after partial failure resumes at the correct state (a half-cut Release ⇒ package is `RELEASING`/`PENDING_PYPI_APPROVAL`, not re-proposed). |
-| **One train at a time** | Workflow `concurrency: group: release-train, cancel-in-progress: false` (the `publish-service-core.yml:48-53` pattern). | No two trains racing the same immutable index. |
+| Precondition                           | Check                                                                                                                                                                          | Rationale / memory                                                                                                                                  |
+|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Target main CI green**               | `gh run list --branch main --repo <repo>` latest = success.                                                                                                                    | Owner rule: "check main green before blaming a red PR." A red main means don't release.                                                             |
+| **No open release PR for the package** | `gh pr list` dup-guard.                                                                                                                                                        | Concurrent Claude sessions are a real hazard (memory).                                                                                              |
+| **Remote freshness**                   | Remote-authoritative diff only (§4.2); no local-checkout truth.                                                                                                                | F-6: the ml worktree was stale and would under-count.                                                                                               |
+| **Declared ≥ released**                | §4.2 step 2.                                                                                                                                                                   | `declared < released` ⇒ yanked/rolled-back anomaly ⇒ HALT.                                                                                          |
+| **TestPyPI install-verify success**    | The publish workflow's own verify step must pass.                                                                                                                              | **Hard gate**: the run is "healthy" only if TestPyPI verify passed before Gate 2.                                                                   |
+| **Idempotent re-entry**                | PyPI/TestPyPI files are immutable; publish steps already use `skip-existing: true` (`publish-service-core.yml:139,185`); the train re-computes state from PyPI truth each run. | A re-run after partial failure resumes at the correct state (a half-cut Release ⇒ package is `RELEASING`/`PENDING_PYPI_APPROVAL`, not re-proposed). |
+| **One train at a time**                | Workflow `concurrency: group: release-train, cancel-in-progress: false` (the `publish-service-core.yml:48-53` pattern).                                                        | No two trains racing the same immutable index.                                                                                                      |
 
 **Trusted-publisher precheck for `NEVER_RELEASED`** (none today, but required for a first publish): confirm
 the PyPI/TestPyPI pending-publisher config exists for the repo+workflow+environment before attempting
@@ -431,7 +431,7 @@ approvals are Paul's alone"). A guard test asserts the workflow contains no envi
 
 ### 9.4 Proposed file layout (all paths below are future — none exist yet)
 
-```
+```bash
 util/release_train/
   __init__.py
   registry.yaml            # the 18-package registry (§4.1)
@@ -539,10 +539,7 @@ Each numbered step is a single, independently shippable, independently verifiabl
   network, `sys.path.insert` idiom; §4.2/4.3). **Verify**: on the real fleet it reproduces the audit's **7
   UNRELEASED_CHANGES / 11 UP_TO_DATE / 0 BUMPED_NOT_RELEASED**, and the 4 notes-rename false-positives stay
   UP_TO_DATE.
-- **1.3** `.github/workflows/release-train.yml` in `report` mode only: cron `0 6 * * 1` + `workflow_dispatch`
-  + `concurrency` + clone-all (recurrence added), runs `detect.py`, emits the manifest artifact + step
-  summary. No PRs, no Releases. **Verify**: immediate `gh workflow run` (verify-before-first-cron); manifest
-  matches 1.2.
+- **1.3** `.github/workflows/release-train.yml` in `report` mode only: cron `0 6 * * 1` + `workflow_dispatch` + `concurrency` + clone-all (recurrence added), runs `detect.py`, emits the manifest artifact + step summary. No PRs, no Releases. **Verify**: immediate `gh workflow run` (verify-before-first-cron); manifest matches 1.2.
 
 ### Phase 2 — Proposal-PR generation (standard-gated; delivers Gate 1 of R2/D2)
 
@@ -586,7 +583,7 @@ Within one train run, packages are processed **upstream-first** so a consumer's 
 floor to a version the upstream has not at least *released* (cut). The DAG (parent `CLAUDE.md` graph +
 juniper-ml extras):
 
-```
+```bash
 shared libs:  observability, service-core, model-core, config-tools, ci-tools, doc-tools
 sub-libs:     data-client → {cascor, canopy};  cascor-client → canopy;
               cascor-model, cascor-protocol → cascor;  recurrence-model → {recurrence, recurrence-client}
@@ -603,16 +600,16 @@ standard-gated ceiling-bump follow-on PR in that consumer — **never** part of 
 
 ## 14. Open questions (owner decisions)
 
-| ID | Question | Planner recommendation |
-|----|----------|------------------------|
-| Q-CADENCE | Cron cadence — weekly Monday `0 6 * * 1` like the other crons, or offset to avoid the 06:00 UTC pile-up with docs-full-check/security-scan? | Weekly Monday, **offset to `0 7 * * 1`** to not contend with the two existing 06:00 jobs. |
-| Q-IDENTITY | Cross-repo write identity: fine-grained PAT vs GitHub App? | **GitHub App** for durability; PAT acceptable as Phase-3-pilot bootstrap (pilot is in-repo → neither needed yet). |
-| Q-PILOT | Which package family pilots the ceremony (Phase 3)? | **juniper-ml sub-packages** — in-repo (no cross-repo identity), low blast radius, owner already watches the repo. |
-| Q-META | Does the meta-package `juniper-ml` ride the train or stay manual? | **Stay manual initially** — it depends on all others and its extras-resolution TestPyPI verify (`publish.yml:105-121`) is bespoke; revisit after Phase 4. |
-| Q-RULESET | Path-scope the required-review ruleset to exclude `notes/releases/` (true auto-merge), or accept "owner one-click" fallback? | **Path-scope exclude** for true hands-free R6; the structural guard already proves the diff inert. Owner's security-posture call. |
-| Q-NONSHIP | Do NON-SHIP-only packages ever get an auto-proposed release (e.g. quarterly hygiene) or skip forever? | **Skip forever** by default; surface TAG_ONLY/NOTES_MISSING hygiene in the summary, not as proposals. Optional quarterly hygiene sweep is a later toggle. |
-| Q-CHANNEL | Notification channel for the run summary + halt issues — step summary + issues only, or also a chat ping? | **Step summary + dedup issues** (self-contained, auditable); no external channel dependency (slack MCP was removed 2026-06-15). |
-| Q-SEVERITY | Should a security-category release ever bypass the proposal-PR gate for speed? | **No** — security releases keep both gates; only the notes archival is exempt. Speed comes from automation, not from removing review. |
+| ID         | Question                                                                                                                                    | Planner recommendation                                                                                                                                    |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Q-CADENCE  | Cron cadence — weekly Monday `0 6 * * 1` like the other crons, or offset to avoid the 06:00 UTC pile-up with docs-full-check/security-scan? | Weekly Monday, **offset to `0 7 * * 1`** to not contend with the two existing 06:00 jobs.                                                                 |
+| Q-IDENTITY | Cross-repo write identity: fine-grained PAT vs GitHub App?                                                                                  | **GitHub App** for durability; PAT acceptable as Phase-3-pilot bootstrap (pilot is in-repo → neither needed yet).                                         |
+| Q-PILOT    | Which package family pilots the ceremony (Phase 3)?                                                                                         | **juniper-ml sub-packages** — in-repo (no cross-repo identity), low blast radius, owner already watches the repo.                                         |
+| Q-META     | Does the meta-package `juniper-ml` ride the train or stay manual?                                                                           | **Stay manual initially** — it depends on all others and its extras-resolution TestPyPI verify (`publish.yml:105-121`) is bespoke; revisit after Phase 4. |
+| Q-RULESET  | Path-scope the required-review ruleset to exclude `notes/releases/` (true auto-merge), or accept "owner one-click" fallback?                | **Path-scope exclude** for true hands-free R6; the structural guard already proves the diff inert. Owner's security-posture call.                         |
+| Q-NONSHIP  | Do NON-SHIP-only packages ever get an auto-proposed release (e.g. quarterly hygiene) or skip forever?                                       | **Skip forever** by default; surface TAG_ONLY/NOTES_MISSING hygiene in the summary, not as proposals. Optional quarterly hygiene sweep is a later toggle. |
+| Q-CHANNEL  | Notification channel for the run summary + halt issues — step summary + issues only, or also a chat ping?                                   | **Step summary + dedup issues** (self-contained, auditable); no external channel dependency (slack MCP was removed 2026-06-15).                           |
+| Q-SEVERITY | Should a security-category release ever bypass the proposal-PR gate for speed?                                                              | **No** — security releases keep both gates; only the notes archival is exempt. Speed comes from automation, not from removing review.                     |
 
 ---
 
@@ -652,49 +649,49 @@ standard-gated ceiling-bump follow-on PR in that consumer — **never** part of 
 
 ## Appendix A — Convention → source map (file:line)
 
-| Convention consumed | Source (verified) |
-|---------------------|-------------------|
-| Release-is-the-deploy; never a bare tag; 11.1-11.6 ceremony | procedure §11 (heading `:470`; banner `:474-479`; steps `:481`/`:489`/`:497`/`:511`/`:538`/`:547`) |
-| Central archive `notes/releases/`; `RELEASE_NOTES_v<ver>` meta / `RELEASE_NOTES_<pkg>_v<ver>` else | procedure §11.3 `:497-509` |
-| `gh release create … --notes-file …`; `--latest` meta / `--latest=false` sub-package | procedure §11.4 `:522-528` |
-| Release-notes structure + `notes/releases/` location | [`templates/TEMPLATE_RELEASE_NOTES.md`](templates/TEMPLATE_RELEASE_NOTES.md) `:7-9`, `:19-258` |
-| Security-release variant selection | [`templates/TEMPLATE_SECURITY_RELEASE_NOTES.md`](templates/TEMPLATE_SECURITY_RELEASE_NOTES.md) |
-| Keep-a-Changelog + SemVer; `[Unreleased]`→`[x.y.z] - date` shape | `CHANGELOG.md:5`, `:8`, `:27`; pre-1.0 minor note `:51-53` |
-| `notes/releases/` exempt from the naming convention | [`JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md) `:43-51` |
-| `release: published` trigger + tag-prefix `if:` guard (meta) | `.github/workflows/publish.yml:24-26`, `:45` |
-| Meta extras-resolution TestPyPI verify (the fallback exception) | `.github/workflows/publish.yml:97-121` |
-| Sub-package: single `release: published`, concurrency, tag-guard, "require a Release", strict verify, skip-existing | `.github/workflows/publish-service-core.yml:34-53`, `:65`, `:76-92`, `:139`, `:150-157`, `:185` |
-| Scheduled clone-all precedent (cron+dispatch); recurrence-omission gap | `.github/workflows/docs-full-check.yml:63-65`, `:75-83`, `:99-106` |
-| util/ driver pattern (data-driven, exit codes) + unittest-gate idiom | `util/env_floor_drift_check.py:22-43`; `tests/test_env_floor_drift_check.py` header |
-| AGENTS.md `**Version**` header lockstep lint | `tests/test_agents_md_version_drift.py` |
-| Consumer pin-ceiling drift class | `tests/test_ci_tools_drift.py` / `tests/test_doc_tools_drift.py`; ci-tools 2026-07-06 incident |
-| Ecosystem repo/env facts (recurrence-omission mirror) | `prompts/agent_templates/data/ecosystem.yaml:5-13`, `:20-23` |
-| Full current-state inventory, gates, drift F-1..F-6, §7 pipeline | [`JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-SURFACE-AUDIT.md`](JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-SURFACE-AUDIT.md) |
+| Convention consumed                                                                                                 | Source (verified)                                                                                                                          |
+|---------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| Release-is-the-deploy; never a bare tag; 11.1-11.6 ceremony                                                         | procedure §11 (heading `:470`; banner `:474-479`; steps `:481`/`:489`/`:497`/`:511`/`:538`/`:547`)                                         |
+| Central archive `notes/releases/`; `RELEASE_NOTES_v<ver>` meta / `RELEASE_NOTES_<pkg>_v<ver>` else                  | procedure §11.3 `:497-509`                                                                                                                 |
+| `gh release create … --notes-file …`; `--latest` meta / `--latest=false` sub-package                                | procedure §11.4 `:522-528`                                                                                                                 |
+| Release-notes structure + `notes/releases/` location                                                                | [`templates/TEMPLATE_RELEASE_NOTES.md`](templates/TEMPLATE_RELEASE_NOTES.md) `:7-9`, `:19-258`                                             |
+| Security-release variant selection                                                                                  | [`templates/TEMPLATE_SECURITY_RELEASE_NOTES.md`](templates/TEMPLATE_SECURITY_RELEASE_NOTES.md)                                             |
+| Keep-a-Changelog + SemVer; `[Unreleased]`→`[x.y.z] - date` shape                                                    | `CHANGELOG.md:5`, `:8`, `:27`; pre-1.0 minor note `:51-53`                                                                                 |
+| `notes/releases/` exempt from the naming convention                                                                 | [`JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md) `:43-51`  |
+| `release: published` trigger + tag-prefix `if:` guard (meta)                                                        | `.github/workflows/publish.yml:24-26`, `:45`                                                                                               |
+| Meta extras-resolution TestPyPI verify (the fallback exception)                                                     | `.github/workflows/publish.yml:97-121`                                                                                                     |
+| Sub-package: single `release: published`, concurrency, tag-guard, "require a Release", strict verify, skip-existing | `.github/workflows/publish-service-core.yml:34-53`, `:65`, `:76-92`, `:139`, `:150-157`, `:185`                                            |
+| Scheduled clone-all precedent (cron+dispatch); recurrence-omission gap                                              | `.github/workflows/docs-full-check.yml:63-65`, `:75-83`, `:99-106`                                                                         |
+| util/ driver pattern (data-driven, exit codes) + unittest-gate idiom                                                | `util/env_floor_drift_check.py:22-43`; `tests/test_env_floor_drift_check.py` header                                                        |
+| AGENTS.md `**Version**` header lockstep lint                                                                        | `tests/test_agents_md_version_drift.py`                                                                                                    |
+| Consumer pin-ceiling drift class                                                                                    | `tests/test_ci_tools_drift.py` / `tests/test_doc_tools_drift.py`; ci-tools 2026-07-06 incident                                             |
+| Ecosystem repo/env facts (recurrence-omission mirror)                                                               | `prompts/agent_templates/data/ecosystem.yaml:5-13`, `:20-23`                                                                               |
+| Full current-state inventory, gates, drift F-1..F-6, §7 pipeline                                                    | [`JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-SURFACE-AUDIT.md`](JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-SURFACE-AUDIT.md) |
 
 ## Appendix B — Per-package release-ceremony matrix (from the audit)
 
 Trigger/verify columns show `now → target` where Phase 0 normalizes them. Archive = central
 `juniper-ml/notes/releases/` filename. Sub-package Releases use `--latest=false`.
 
-| # | Package | Repo | Path | Trigger now→target | Tag pattern | Central archive file | Verify now→target |
-|---|---------|------|------|--------------------|-------------|----------------------|-------------------|
-| 1 | juniper-ml | juniper-ml | `.` | release | `v*` | `RELEASE_NOTES_v<ver>.md` | fallback (keep, documented) |
-| 2 | juniper-ci-tools | juniper-ml | `juniper-ci-tools/` | release | `juniper-ci-tools-v*` | `RELEASE_NOTES_juniper-ci-tools_v<ver>.md` | fallback→strict |
-| 3 | juniper-config-tools | juniper-ml | `juniper-config-tools/` | release | `juniper-config-tools-v*` | `RELEASE_NOTES_juniper-config-tools_v<ver>.md` | strict |
-| 4 | juniper-doc-tools | juniper-ml | `juniper-doc-tools/` | release | `juniper-doc-tools-v*` | `RELEASE_NOTES_juniper-doc-tools_v<ver>.md` | strict (F-1/F-2 backfill) |
-| 5 | juniper-model-core | juniper-ml | `juniper-model-core/` | release | `juniper-model-core-v*` | `RELEASE_NOTES_juniper-model-core_v<ver>.md` | strict |
-| 6 | juniper-observability | juniper-ml | `juniper-observability/` | release | `juniper-observability-v*` | `RELEASE_NOTES_juniper-observability_v<ver>.md` | fallback→strict (F-1/F-2 backfill) |
-| 7 | juniper-service-core | juniper-ml | `juniper-service-core/` | release | `juniper-service-core-v*` | `RELEASE_NOTES_juniper-service-core_v<ver>.md` | strict |
-| 8 | juniper-cascor | juniper-cascor | `.` minus subpkgs | release | `v*` | `RELEASE_NOTES_juniper-cascor_v<ver>.md` | fallback→strict |
-| 9 | juniper-cascor-model | juniper-cascor | `juniper-cascor-model/` | tag→release | `juniper-cascor-model-v*` | `RELEASE_NOTES_juniper-cascor-model_v<ver>.md` | strict |
-| 10 | juniper-cascor-protocol | juniper-cascor | `juniper-cascor-protocol/` | tag→release | `juniper-cascor-protocol-v*` | `RELEASE_NOTES_juniper-cascor-protocol_v<ver>.md` | fallback→strict (F-1/F-2 backfill) |
-| 11 | juniper-canopy | juniper-canopy | `.` | release | `v*` | `RELEASE_NOTES_juniper-canopy_v<ver>.md` | strict (F-2 backfill) |
-| 12 | juniper-cascor-client | juniper-cascor-client | `.` | release | `v*` | `RELEASE_NOTES_juniper-cascor-client_v<ver>.md` | fallback→strict |
-| 13 | juniper-cascor-worker | juniper-cascor-worker | `.` | release | `v*` | `RELEASE_NOTES_juniper-cascor-worker_v<ver>.md` | fallback→strict (F-2 backfill) |
-| 14 | juniper-data | juniper-data | `.` | release | `v*` | `RELEASE_NOTES_juniper-data_v<ver>.md` | fallback→strict |
-| 15 | juniper-data-client | juniper-data-client | `.` | release | `v*` | `RELEASE_NOTES_juniper-data-client_v<ver>.md` | fallback→strict |
-| 16 | juniper-recurrence | juniper-recurrence | `juniper-recurrence/` | tag→release | `juniper-recurrence-v*` | `RELEASE_NOTES_juniper-recurrence_v<ver>.md` | strict |
-| 17 | juniper-recurrence-client | juniper-recurrence | `juniper-recurrence-client/` | tag→release | `juniper-recurrence-client-v*` | `RELEASE_NOTES_juniper-recurrence-client_v<ver>.md` | strict |
-| 18 | juniper-recurrence-model | juniper-recurrence | `juniper-recurrence-model/` | tag→release | `juniper-recurrence-model-v*` | `RELEASE_NOTES_juniper-recurrence-model_v<ver>.md` | strict |
+| #  | Package                   | Repo                  | Path                         | Trigger now→target | Tag pattern                    | Central archive file                                | Verify now→target                  |
+|----|---------------------------|-----------------------|------------------------------|--------------------|--------------------------------|-----------------------------------------------------|------------------------------------|
+| 1  | juniper-ml                | juniper-ml            | `.`                          | release            | `v*`                           | `RELEASE_NOTES_v<ver>.md`                           | fallback (keep, documented)        |
+| 2  | juniper-ci-tools          | juniper-ml            | `juniper-ci-tools/`          | release            | `juniper-ci-tools-v*`          | `RELEASE_NOTES_juniper-ci-tools_v<ver>.md`          | fallback→strict                    |
+| 3  | juniper-config-tools      | juniper-ml            | `juniper-config-tools/`      | release            | `juniper-config-tools-v*`      | `RELEASE_NOTES_juniper-config-tools_v<ver>.md`      | strict                             |
+| 4  | juniper-doc-tools         | juniper-ml            | `juniper-doc-tools/`         | release            | `juniper-doc-tools-v*`         | `RELEASE_NOTES_juniper-doc-tools_v<ver>.md`         | strict (F-1/F-2 backfill)          |
+| 5  | juniper-model-core        | juniper-ml            | `juniper-model-core/`        | release            | `juniper-model-core-v*`        | `RELEASE_NOTES_juniper-model-core_v<ver>.md`        | strict                             |
+| 6  | juniper-observability     | juniper-ml            | `juniper-observability/`     | release            | `juniper-observability-v*`     | `RELEASE_NOTES_juniper-observability_v<ver>.md`     | fallback→strict (F-1/F-2 backfill) |
+| 7  | juniper-service-core      | juniper-ml            | `juniper-service-core/`      | release            | `juniper-service-core-v*`      | `RELEASE_NOTES_juniper-service-core_v<ver>.md`      | strict                             |
+| 8  | juniper-cascor            | juniper-cascor        | `.` minus subpkgs            | release            | `v*`                           | `RELEASE_NOTES_juniper-cascor_v<ver>.md`            | fallback→strict                    |
+| 9  | juniper-cascor-model      | juniper-cascor        | `juniper-cascor-model/`      | tag→release        | `juniper-cascor-model-v*`      | `RELEASE_NOTES_juniper-cascor-model_v<ver>.md`      | strict                             |
+| 10 | juniper-cascor-protocol   | juniper-cascor        | `juniper-cascor-protocol/`   | tag→release        | `juniper-cascor-protocol-v*`   | `RELEASE_NOTES_juniper-cascor-protocol_v<ver>.md`   | fallback→strict (F-1/F-2 backfill) |
+| 11 | juniper-canopy            | juniper-canopy        | `.`                          | release            | `v*`                           | `RELEASE_NOTES_juniper-canopy_v<ver>.md`            | strict (F-2 backfill)              |
+| 12 | juniper-cascor-client     | juniper-cascor-client | `.`                          | release            | `v*`                           | `RELEASE_NOTES_juniper-cascor-client_v<ver>.md`     | fallback→strict                    |
+| 13 | juniper-cascor-worker     | juniper-cascor-worker | `.`                          | release            | `v*`                           | `RELEASE_NOTES_juniper-cascor-worker_v<ver>.md`     | fallback→strict (F-2 backfill)     |
+| 14 | juniper-data              | juniper-data          | `.`                          | release            | `v*`                           | `RELEASE_NOTES_juniper-data_v<ver>.md`              | fallback→strict                    |
+| 15 | juniper-data-client       | juniper-data-client   | `.`                          | release            | `v*`                           | `RELEASE_NOTES_juniper-data-client_v<ver>.md`       | fallback→strict                    |
+| 16 | juniper-recurrence        | juniper-recurrence    | `juniper-recurrence/`        | tag→release        | `juniper-recurrence-v*`        | `RELEASE_NOTES_juniper-recurrence_v<ver>.md`        | strict                             |
+| 17 | juniper-recurrence-client | juniper-recurrence    | `juniper-recurrence-client/` | tag→release        | `juniper-recurrence-client-v*` | `RELEASE_NOTES_juniper-recurrence-client_v<ver>.md` | strict                             |
+| 18 | juniper-recurrence-model  | juniper-recurrence    | `juniper-recurrence-model/`  | tag→release        | `juniper-recurrence-model-v*`  | `RELEASE_NOTES_juniper-recurrence-model_v<ver>.md`  | strict                             |
 
 Non-packages excluded (audit §2): `juniper-deploy`, `juniper-slacker`.

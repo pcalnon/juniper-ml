@@ -46,28 +46,28 @@ Gate column is uniform for every publishing repo (see §3): `pypi` env = **5-min
 `pcalnon`**; `testpypi` env = **no protection**. Trigger: `rel` = `release: published`; `tag` = `push: tags`.
 Verify: `strict` = TestPyPI `--no-deps`, no pypi.org fallback; `fallb` = `--extra-index-url https://pypi.org/simple/`.
 
-| # | Package | Repo | Package path | pyproj | PyPI | Trig | Verify | Classification | Drift flags |
-|---|---------|------|--------------|--------|------|------|--------|----------------|-------------|
-| 1 | juniper-ml | juniper-ml | `.` (root) | 0.6.0 | 0.6.0 | rel | fallb | **UNRELEASED_CHANGES** | — |
-| 2 | juniper-ci-tools | juniper-ml | `juniper-ci-tools/` | 0.6.0 | 0.6.0 | rel | fallb | UP_TO_DATE | — |
-| 3 | juniper-config-tools | juniper-ml | `juniper-config-tools/` | 0.1.0 | 0.1.0 | rel | strict | UP_TO_DATE | — |
-| 4 | juniper-doc-tools | juniper-ml | `juniper-doc-tools/` | 0.1.1 | 0.1.1 | rel | strict | UP_TO_DATE | **TAG_ONLY**, **NOTES_MISSING** |
-| 5 | juniper-model-core | juniper-ml | `juniper-model-core/` | 0.3.0 | 0.3.0 | rel | strict | UP_TO_DATE | — |
-| 6 | juniper-observability | juniper-ml | `juniper-observability/` | 0.4.0 | 0.4.0 | rel | fallb | UP_TO_DATE | **TAG_ONLY**, **NOTES_MISSING** |
-| 7 | juniper-service-core | juniper-ml | `juniper-service-core/` | 0.4.0 | 0.4.0 | rel | strict | **UNRELEASED_CHANGES** | — |
-| 8 | juniper-cascor | juniper-cascor | `.` (minus subpkgs) | 0.5.0 | 0.5.0 | rel | fallb | **UNRELEASED_CHANGES** | — |
-| 9 | juniper-cascor-model | juniper-cascor | `juniper-cascor-model/` | 0.1.0 | 0.1.0 | tag | strict | UP_TO_DATE | — |
-| 10 | juniper-cascor-protocol | juniper-cascor | `juniper-cascor-protocol/` | 0.1.0 | 0.1.0 | tag | fallb | UP_TO_DATE | **TAG_ONLY**, **NOTES_MISSING** |
-| 11 | juniper-canopy | juniper-canopy | `.` | 0.5.0 | 0.5.0 | rel | strict | **UNRELEASED_CHANGES** | **NOTES_MISSING** |
-| 12 | juniper-cascor-client | juniper-cascor-client | `.` | 0.6.0 | 0.6.0 | rel | fallb | UP_TO_DATE | — |
-| 13 | juniper-cascor-worker | juniper-cascor-worker | `.` | 0.4.0 | 0.4.0 | rel | fallb | **UNRELEASED_CHANGES** | **NOTES_MISSING** |
-| 14 | juniper-data | juniper-data | `.` | 0.9.0 | 0.9.0 | rel | fallb | UP_TO_DATE | — |
-| 15 | juniper-data-client | juniper-data-client | `.` | 0.4.2 | 0.4.2 | rel | fallb | UP_TO_DATE | — |
-| 16 | juniper-recurrence | juniper-recurrence | `juniper-recurrence/` | 0.2.0 | 0.2.0 | tag | strict | **UNRELEASED_CHANGES** | — |
-| 17 | juniper-recurrence-client | juniper-recurrence | `juniper-recurrence-client/` | 0.2.0 | 0.2.0 | tag | strict | UP_TO_DATE | — |
-| 18 | juniper-recurrence-model | juniper-recurrence | `juniper-recurrence-model/` | 0.1.5 | 0.1.5 | tag | strict | **UNRELEASED_CHANGES** | — |
-| — | juniper-deploy | juniper-deploy | `.` | *none* | not on PyPI | — | — | **NOT_A_PACKAGE** | — |
-| — | juniper-slacker | juniper-slacker | `.` | *none* | not on PyPI | — | — | **NOT_A_PACKAGE** | — |
+| #  | Package                   | Repo                  | Package path                 | pyproj | PyPI        | Trig | Verify | Classification         | Drift flags                     |
+|----|---------------------------|-----------------------|------------------------------|--------|-------------|------|--------|------------------------|---------------------------------|
+| 1  | juniper-ml                | juniper-ml            | `.` (root)                   | 0.6.0  | 0.6.0       | rel  | fallb  | **UNRELEASED_CHANGES** | —                               |
+| 2  | juniper-ci-tools          | juniper-ml            | `juniper-ci-tools/`          | 0.6.0  | 0.6.0       | rel  | fallb  | UP_TO_DATE             | —                               |
+| 3  | juniper-config-tools      | juniper-ml            | `juniper-config-tools/`      | 0.1.0  | 0.1.0       | rel  | strict | UP_TO_DATE             | —                               |
+| 4  | juniper-doc-tools         | juniper-ml            | `juniper-doc-tools/`         | 0.1.1  | 0.1.1       | rel  | strict | UP_TO_DATE             | **TAG_ONLY**, **NOTES_MISSING** |
+| 5  | juniper-model-core        | juniper-ml            | `juniper-model-core/`        | 0.3.0  | 0.3.0       | rel  | strict | UP_TO_DATE             | —                               |
+| 6  | juniper-observability     | juniper-ml            | `juniper-observability/`     | 0.4.0  | 0.4.0       | rel  | fallb  | UP_TO_DATE             | **TAG_ONLY**, **NOTES_MISSING** |
+| 7  | juniper-service-core      | juniper-ml            | `juniper-service-core/`      | 0.4.0  | 0.4.0       | rel  | strict | **UNRELEASED_CHANGES** | —                               |
+| 8  | juniper-cascor            | juniper-cascor        | `.` (minus subpkgs)          | 0.5.0  | 0.5.0       | rel  | fallb  | **UNRELEASED_CHANGES** | —                               |
+| 9  | juniper-cascor-model      | juniper-cascor        | `juniper-cascor-model/`      | 0.1.0  | 0.1.0       | tag  | strict | UP_TO_DATE             | —                               |
+| 10 | juniper-cascor-protocol   | juniper-cascor        | `juniper-cascor-protocol/`   | 0.1.0  | 0.1.0       | tag  | fallb  | UP_TO_DATE             | **TAG_ONLY**, **NOTES_MISSING** |
+| 11 | juniper-canopy            | juniper-canopy        | `.`                          | 0.5.0  | 0.5.0       | rel  | strict | **UNRELEASED_CHANGES** | **NOTES_MISSING**               |
+| 12 | juniper-cascor-client     | juniper-cascor-client | `.`                          | 0.6.0  | 0.6.0       | rel  | fallb  | UP_TO_DATE             | —                               |
+| 13 | juniper-cascor-worker     | juniper-cascor-worker | `.`                          | 0.4.0  | 0.4.0       | rel  | fallb  | **UNRELEASED_CHANGES** | **NOTES_MISSING**               |
+| 14 | juniper-data              | juniper-data          | `.`                          | 0.9.0  | 0.9.0       | rel  | fallb  | UP_TO_DATE             | —                               |
+| 15 | juniper-data-client       | juniper-data-client   | `.`                          | 0.4.2  | 0.4.2       | rel  | fallb  | UP_TO_DATE             | —                               |
+| 16 | juniper-recurrence        | juniper-recurrence    | `juniper-recurrence/`        | 0.2.0  | 0.2.0       | tag  | strict | **UNRELEASED_CHANGES** | —                               |
+| 17 | juniper-recurrence-client | juniper-recurrence    | `juniper-recurrence-client/` | 0.2.0  | 0.2.0       | tag  | strict | UP_TO_DATE             | —                               |
+| 18 | juniper-recurrence-model  | juniper-recurrence    | `juniper-recurrence-model/`  | 0.1.5  | 0.1.5       | tag  | strict | **UNRELEASED_CHANGES** | —                               |
+| —  | juniper-deploy            | juniper-deploy        | `.`                          | *none* | not on PyPI | —    | —      | **NOT_A_PACKAGE**      | —                               |
+| —  | juniper-slacker           | juniper-slacker       | `.`                          | *none* | not on PyPI | —    | —      | **NOT_A_PACKAGE**      | —                               |
 
 **Headline**: pyproject version == PyPI latest for **all 18** packages → **zero BUMPED_NOT_RELEASED**, **zero
 NEVER_RELEASED**. Version-compare alone would report the whole fleet "up to date"; the real drift is **7 packages with
@@ -187,10 +187,7 @@ v0.4.0..origin/main -- juniper_cascor_worker/ pyproject.toml` = real source chan
 (+27), `task_executor.py`, `http_health.py`, `worker.py`, `__init__.py`, `pyproject.toml` (+12). CHANGELOG
 `[Unreleased] ### Added` = build provenance on `/v1/health`. Also NOTES_MISSING.
 
-**16 · juniper-recurrence 0.2.0** — PyPI 0.2.0 uploaded **2026-06-24**; Release `juniper-recurrence-v0.2.0`. `git log
-juniper-recurrence-v0.2.0..origin/main -- juniper-recurrence/` = **12 commits** touching shipping source: `app.py`,
-`main.py`, `settings.py`, `logging_config.py`, `metrics.py`, `provenance.py`, `routers/{crossval,predict,training}.py`
-+ `pyproject.toml`. CHANGELOG `[Unreleased] ### Added` = H1 startup logging (via service-core 0.3.0 `create_app(lifespan=)`).
+**16 · juniper-recurrence 0.2.0** — PyPI 0.2.0 uploaded **2026-06-24**; Release `juniper-recurrence-v0.2.0`. `git log juniper-recurrence-v0.2.0..origin/main -- juniper-recurrence/` = **12 commits** touching shipping source: `app.py`, `main.py`, `settings.py`, `logging_config.py`, `metrics.py`, `provenance.py`, `routers/{crossval,predict,training}.py` + `pyproject.toml`. CHANGELOG `[Unreleased] ### Added` = H1 startup logging (via service-core 0.3.0 `create_app(lifespan=)`).
 
 **18 · juniper-recurrence-model 0.1.5** — PyPI 0.1.5 uploaded **2026-06-24**; Release `juniper-recurrence-model-v0.1.5`.
 `git diff juniper-recurrence-model-v0.1.5..origin/main -- .../juniper_recurrence_model/` = **functional** source
