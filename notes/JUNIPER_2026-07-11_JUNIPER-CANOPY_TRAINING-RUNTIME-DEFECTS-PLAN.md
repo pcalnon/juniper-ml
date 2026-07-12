@@ -516,34 +516,34 @@ Items that remain genuinely undecidable from this session's evidence are carried
 Per Q5, this table is the single tracker for remediation state. Workflow: whenever a unit starts, changes scope, opens/merges a PR, or is validated, update its row (status, PR, date, note) in the same work session — the §13 update is part of each unit's definition of done.
 Statuses: `planned` → `in-progress` → `pr-open` → `merged` → `verified` (E2E/live), plus `blocked(reason)` / `dropped(reason)`.
 
-| Unit             | Status  | PR | Updated    | Note                           |
-|------------------|---------|----|------------|--------------------------------|
-| D1               | planned | —  | 2026-07-11 | quick win; no deps             |
-| D2               | planned | —  | 2026-07-11 | wave 1 per Q2                  |
-| C1               | planned | —  | 2026-07-11 | —                              |
-| C2a              | planned | —  | 2026-07-11 | —                              |
-| C2b              | planned | —  | 2026-07-11 | carries the Q1 evaluation      |
-| C3               | planned | —  | 2026-07-11 | pairs with E-1                 |
-| C4               | planned | —  | 2026-07-11 | —                              |
-| C5               | planned | —  | 2026-07-11 | Q4/U-1 retention semantics     |
-| C6               | planned | —  | 2026-07-11 | gated on E-1                   |
-| C7               | planned | —  | 2026-07-11 | phased: scalar metrics first   |
-| CL1              | planned | —  | 2026-07-11 | —                              |
-| CL2              | planned | —  | 2026-07-11 | release + floor + Fake parity  |
-| N1               | planned | —  | 2026-07-11 | bridge until C6/N8             |
-| N2               | planned | —  | 2026-07-11 | includes E-3 resolution        |
-| N3               | planned | —  | 2026-07-11 | modal per Q3/Q4; may split N3b |
-| N4               | planned | —  | 2026-07-11 | quick win; no deps             |
-| N5               | planned | —  | 2026-07-11 | —                              |
-| N6               | planned | —  | 2026-07-11 | —                              |
-| N7               | planned | —  | 2026-07-11 | + U-6                          |
-| N8               | planned | —  | 2026-07-11 | Q6 target architecture         |
-| N9               | planned | —  | 2026-07-11 | U-2/U-3 + C7 display           |
-| N10              | planned | —  | 2026-07-11 | U-5                            |
-| E1               | planned | —  | 2026-07-11 | —                              |
-| E-1 (experiment) | planned | —  | 2026-07-11 | decides C6/N8 design           |
-| E-2 (experiment) | planned | —  | 2026-07-11 | pins N3 active-run path        |
-| E-3 (experiment) | planned | —  | 2026-07-11 | pins N2 freeze mechanism       |
+| Unit             | Status  | PR                 | Updated    | Note                                                    |
+|------------------|---------|--------------------|------------|---------------------------------------------------------|
+| D1               | pr-open | juniper-data#220   | 2026-07-11 | quick win; CI green; 501+hint verified vs real env      |
+| D2               | pr-open | juniper-data#221   | 2026-07-11 | merge after D1; also fixes bare-repo-id latent bug      |
+| C1               | pr-open | juniper-cascor#397 | 2026-07-11 | typed SnapshotSaveError; isolation remainder documented |
+| C2a              | pr-open | juniper-cascor#398 | 2026-07-11 | applied/skipped partition; WS ack additive              |
+| C2b              | planned | —                  | 2026-07-11 | carries the Q1 evaluation                               |
+| C3               | planned | —                  | 2026-07-11 | pairs with E-1                                          |
+| C4               | planned | —                  | 2026-07-11 | —                                                       |
+| C5               | planned | —                  | 2026-07-11 | Q4/U-1 retention semantics                              |
+| C6               | planned | —                  | 2026-07-11 | gated on E-1                                            |
+| C7               | planned | —                  | 2026-07-11 | phased: scalar metrics first                            |
+| CL1              | planned | —                  | 2026-07-11 | —                                                       |
+| CL2              | planned | —                  | 2026-07-11 | release + floor + Fake parity                           |
+| N1               | planned | —                  | 2026-07-11 | bridge until C6/N8                                      |
+| N2               | planned | —                  | 2026-07-11 | includes E-3 resolution                                 |
+| N3               | planned | —                  | 2026-07-11 | modal per Q3/Q4; may split N3b                          |
+| N4               | pr-open | juniper-canopy#442 | 2026-07-11 | quick win; bite-checked regressions                     |
+| N5               | planned | —                  | 2026-07-11 | —                                                       |
+| N6               | planned | —                  | 2026-07-11 | —                                                       |
+| N7               | planned | —                  | 2026-07-11 | + U-6                                                   |
+| N8               | planned | —                  | 2026-07-11 | Q6 target architecture                                  |
+| N9               | planned | —                  | 2026-07-11 | U-2/U-3 + C7 display                                    |
+| N10              | planned | —                  | 2026-07-11 | U-5                                                     |
+| E1               | planned | —                  | 2026-07-11 | —                                                       |
+| E-1 (experiment) | planned | —                  | 2026-07-11 | decides C6/N8 design                                    |
+| E-2 (experiment) | planned | —                  | 2026-07-11 | pins N3 active-run path                                 |
+| E-3 (experiment) | planned | —                  | 2026-07-11 | pins N2 freeze mechanism                                |
 
 Sources ingested: `notes/JUNIPER_2026-07-11_JUNIPER-CANOPY_OUTSTANDING-UI-ISSUES_.md` (U-1 – U-6). Retired: `notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md` (Q5).
 
