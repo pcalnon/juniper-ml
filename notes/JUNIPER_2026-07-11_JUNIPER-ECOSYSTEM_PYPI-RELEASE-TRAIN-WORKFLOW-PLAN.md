@@ -611,6 +611,17 @@ standard-gated ceiling-bump follow-on PR in that consumer — **never** part of 
 | Q-CHANNEL  | Notification channel for the run summary + halt issues — step summary + issues only, or also a chat ping?                                   | **Step summary + dedup issues** (self-contained, auditable); no external channel dependency (slack MCP was removed 2026-06-15).                           |
 | Q-SEVERITY | Should a security-category release ever bypass the proposal-PR gate for speed?                                                              | **No** — security releases keep both gates; only the notes archival is exempt. Speed comes from automation, not from removing review.                     |
 
+### 14.1 Answers
+
+**Q-CADENCE:**  cron should run daily at 8:00am CDT
+**Q-IDENTITY:** concur with recommendation
+**Q-PILOT:**    concur with using juniper-ml sub-packages
+**Q-META:**     stay manual for now and revisit later. ensure reevaluation/implementation step added to document for tracking
+**Q-RULESET:**  let's path-scope to exclude notes/releases/
+**Q-NONSHIP:**  concur with recommendation to skip & consider hygiene sweep toggle later
+**Q-CHANNEL:**  let's restore slack integration and include notifications in juniper slack channel
+**Q-SEVERITY:** security-category release should keep existing gates.
+
 ---
 
 ## 15. Risks
