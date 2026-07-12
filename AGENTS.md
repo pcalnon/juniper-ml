@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-07-05
+**Last Updated**: 2026-07-11
 
 ---
 
@@ -69,6 +69,8 @@ python3 -m unittest -v tests/test_agents_md_header_schema.py
 python3 -m unittest -v tests/test_agents_md_tree_drift.py
 python3 -m unittest -v tests/test_coverage_gap_mapper_drift.py
 python3 -m unittest -v tests/test_env_drift_check_drift.py
+python3 -m unittest -v tests/test_release_train_registry.py
+python3 -m unittest -v tests/test_release_train_detect.py
 bash scripts/test_resume_file_safety.bash
 # doc-link validator regression tests live in juniper-doc-tools/tests/
 # and run under the dedicated `CI -- juniper-doc-tools` workflow.
@@ -251,6 +253,8 @@ juniper-ml/
 │   ├── test_agents_md_tree_drift.py       # Lint: every tracked top-level dir appears in the Repository-Structure tree (G-3)
 │   ├── test_coverage_gap_mapper_drift.py  # Dogfood/drift (E-4): juniper-coverage-gap-map console script registered + version/pin coherent (ci-tools)
 │   ├── test_env_drift_check_drift.py      # Dogfood/drift (§10.1): juniper-env-drift-check entry point registered + every cli*.py wired (0.5.1 #580-clobber guard)
+│   ├── test_release_train_registry.py    # Lint + drift gate: util/release_train/registry.yaml (18 packages/8 repos/enums) <-> pyproject resolution (plan §4.1)
+│   ├── test_release_train_detect.py      # Behavioural: util/release_train/detect.py detection engine (classifications, substantive-hunk, SemVer, exit codes; hermetic)
 │   └── fixtures/
 │       └── prompt_validator/             # PR 3: verdict.schema.json + verdict.sample.{pass,fail}.json (validator contract)
 │   # Doc-link validator regression tests moved to juniper-doc-tools/tests/
@@ -262,6 +266,7 @@ juniper-ml/
     ├── requirements_drift_check.py       # Drift checker for the requirements snapshot (--mode quick)
     ├── editable_install_drift_check.py   # Drift checker for juniper editable installs across conda envs
     ├── env_floor_drift_check.py          # Floor-drift checker: installed juniper-* vs target-repo pyproject floors (I-2)
+    ├── release_train/                     # PyPI release-train (Phase 1): registry.yaml (18-package registry) + detect.py (report-only "needs deploy?" engine)
     ├── prompt_discovery/                  # Custom-agent suite (PR 4): env-discovery probes -> JSON grounding bundle (path-invoked, --repo-root)
     ├── generated_prompt_index.py         # Custom-agent suite (P4): index + safety-gated prune of prompts/generated/
     ├── template_data_resolver.py         # Custom-agent suite (PR 6b): loads prompts/agent_templates/data/*.yaml (data-layer resolver)
@@ -327,6 +332,7 @@ juniper-ml/
 - `util/template_select_preview.py` -- Offline preview of the Template Agent's category selection (P2): given a task string, prints which template the Skill's `match_signals` step would pick (matched keywords + ranked runner-ups). A preview heuristic (keyword-substring scoring; `generic` fallback), not the Skill's exact judgement. `python util/template_select_preview.py "TASK" [--repo-root P] [--json] [--top N]`; exit 0 always. Tests: `tests/test_template_select_preview.py`.
 - `util/editable_install_drift_check.py` -- Drift checker for juniper editable installs in the conda environments. Reads each env's `*.dist-info/direct_url.json` directly (robust to broken envs); classifies every `juniper-*` editable as `FRESH` / `WORKTREE_PINNED` (under a `worktrees` path) / `ORPHANED` (missing). `*-DEPRECATED` skipped by default; exit 1 on ORPHANED; `--json`; `--fix` re-points orphans to their canonical repo (`--dry-run` previews).
 - `util/env_floor_drift_check.py` -- Floor-drift checker (gap I-2): reads each installed `juniper-*` version from its `*.dist-info/METADATA` and compares to the target repo's `pyproject.toml` floors -> `OK` / `BELOW_FLOOR` / `MISSING` -- the below-floor plain-wheel case the pins/editable checkers miss. Env selection is data-driven (`--site-packages`/`--env`/`ecosystem.yaml`); exit 1 on `BELOW_FLOOR` (`--strict` also `MISSING`); `--json`; structural CI gate. Tests: `tests/test_env_floor_drift_check.py`.
+- `util/release_train/` -- PyPI release-train tooling (Phase 1, report-only; release-train plan §12 / 1.1-1.2). `registry.yaml`: the data-driven 18-package / 8-repo registry (§4.1). `detect.py`: the per-package "needs a PyPI deploy?" engine (§4.2/4.3) -- PyPI truth vs declared version, tag-matched diff base, `gh compare` (`--local-git` fallback past the 300-file cap), and a substantive-hunk SHIP filter discounting the notes-rename comment/docstring/link class; report-only, exit 0/1/2.
 - `util/prompt_discovery/` -- Discovery helpers for the custom-agent suite (PR 4); path-invoked (`python util/prompt_discovery/cli.py --repo-root <path>`), emits a JSON grounding bundle (closed-world facts + provenance: `head_sha`/`dirty`/`ttl_seconds`/`per_probe_status`) from seven probes (`repo_context`, `test_status`, `file_probe`, `symbol_probe`, `dependency_facts`, `conventions`, `concurrency`). Accepts `--target-repo` (cross-repo alias of `--repo-root`). A discovery failure is a hard stop (exit 2).
 - `util/generated_prompt_index.py` -- Indexes the Template Agent's `prompts/generated/` output (P4): lists each prompt parsed by the `PROJECT_APPLICATION_SUBJECT_TASK-TYPE_YYYY-MM-DD_HHMM.md` convention, with `--older-than DAYS` + a safety-gated `--prune`/`--archive` (acts only with explicit `--yes`, never under `--dry-run`; `.gitkeep` / non-convention files never touched). The dir is read from `conventions.yaml`. Tests: `tests/test_generated_prompt_index.py`.
 - `util/install_agents.bash` -- Mirrors this repo's `.claude/{agents,skills}/*` into `~/.claude` by symlink (design D-6) so the suite is available cross-repo; the project stays source of truth (OQ-6). Idempotent, reversible (`--reverse`), `--dry-run`; `JUNIPER_ML_REPO_ROOT`/`JUNIPER_CLAUDE_HOME` overrides for tests. Never clobbers a non-symlink; `--reverse` removes only owned links. Tests: `tests/test_install_agents.py`.
@@ -376,6 +382,8 @@ juniper-ml/
 - `tests/test_env_drift_check_drift.py` -- Structural drift gate for the `juniper-env-drift-check` console script (env floor-drift guard, test-suite audit §10.1).
   - Mirrors `test_coverage_gap_mapper_drift.py`: asserts the entry point is registered (`juniper_ci_tools.cli_env_drift_check:main`), both module halves ship, version/pin coherence, **plus a class guard** that *every* `juniper_ci_tools/cli*.py` has a `[project.scripts]` entry.
   - Added in `juniper-ci-tools` 0.5.1 after #580 silently dropped the 0.5.0 entry point -- the always-on assertion the `python -m` behavioural dogfood (`tests/test_env_drift_check.py`) lacked.
+- `tests/test_release_train_registry.py` -- Structural lint + registry<->pyproject drift gate for `util/release_train/registry.yaml` (plan §4.1): always-on checks (18 packages, 8 repos incl. `juniper-recurrence`, required fields, enums, the dynamic-version set, archive-name convention, `depends_on`) plus resolution -- the 7 in-repo juniper-ml packages unconditionally (forward + reverse), the 11 cross-repo entries via the `test_doc_tools_drift.py` sibling auto-skip.
+- `tests/test_release_train_detect.py` -- Hermetic tests for `util/release_train/detect.py` (plan §4.2/4.3); no network / gh / pip (sources injected). Covers each classification, static/dynamic version reads, tag resolution, the substantive-hunk filter (discount comment/docstring/link; catch real code), path-scoping (subdir vs cascor repo-minus-subpkgs), CHANGELOG conflict surfacing, SemVer, manifest JSON shape, and exit codes 0/1/2. `util/` is not lint-gated, so this unittest is the gate.
 - `tests/test_agents_md_version_drift.py` -- Lint test pinning `AGENTS.md`'s `**Version**:` header to `pyproject.toml`'s `[project].version`. Added after juniper-ml#295 bumped pyproject 0.4.1→0.5.0 but left AGENTS.md at 0.4.0 for ~6 days (fixed in juniper-ml#304); this lint makes the drift impossible to ship. Intentionally portable: auto-locates the repo root, so the module can be dropped into any Juniper repo's `tests/` (skips loudly if AGENTS.md has no canonical header).
 - `tests/test_agents_md_header_schema.py` -- Lint pinning `AGENTS.md`'s canonical header schema. Six required fields in this relative order: `**Project**`, `**Repository**`, `**Author**`, `**License**`, `**Version**`, `**Last Updated**`. Extras (e.g. `**Python**:`) may be interleaved freely. Validates each value non-empty and `**Last Updated**` is `YYYY-MM-DD`. Currency of the date is enforced by `.github/workflows/agents-md-touch-up.yml`. Portable (self-locating).
 - `tests/test_agents_md_tree_drift.py` -- Lint (gap G-3) asserting every tracked non-hidden top-level dir (`git ls-tree`; the `ls -d */` surface) appears as a node in `AGENTS.md`'s fenced Repository-Structure tree, catching the indented-tree omission the grep-based `test_agent_suite_path_drift.py` cannot (stale `templates/`, missing `conf/`/`papers/` + 6 sub-package dirs). Portable; a synthetic negative case proves it bites.
