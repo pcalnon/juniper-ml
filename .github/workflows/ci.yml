@@ -152,6 +152,19 @@ jobs:
           # has a [project.scripts] entry. Runs in this always-on pytest job because
           # the build-smoke alone missed the 0.5.0 drop. Stdlib only.
           python3 -m unittest -v tests/test_env_drift_check_drift.py
+          # tests/test_release_train_registry.py: structural lint + registry<->pyproject
+          # drift gate for util/release_train/registry.yaml (PyPI release-train plan
+          # §4.1). Always-on structural checks (18 packages, 8 repos incl. recurrence,
+          # required fields/enums); the 7 in-repo juniper-ml packages resolve
+          # unconditionally, cross-repo entries auto-skip (doc-tools sibling semantics).
+          python3 -m unittest -v tests/test_release_train_registry.py
+          # tests/test_release_train_detect.py: hermetic tests for the release-train
+          # detection engine (util/release_train/detect.py, plan §4.2/4.3) -- every
+          # classification, static/dynamic version reads, tag resolution, the
+          # substantive-hunk filter, path-scoping, SemVer, manifest shape, exit codes.
+          # No network / no real gh / no real pip (all sources injected). util/ is not
+          # pre-commit-lint-gated, so this unittest is the gate.
+          python3 -m unittest -v tests/test_release_train_detect.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
