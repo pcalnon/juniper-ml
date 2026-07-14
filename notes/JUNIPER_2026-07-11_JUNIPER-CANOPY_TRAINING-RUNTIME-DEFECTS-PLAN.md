@@ -516,34 +516,36 @@ Items that remain genuinely undecidable from this session's evidence are carried
 Per Q5, this table is the single tracker for remediation state. Workflow: whenever a unit starts, changes scope, opens/merges a PR, or is validated, update its row (status, PR, date, note) in the same work session — the §13 update is part of each unit's definition of done.
 Statuses: `planned` → `in-progress` → `pr-open` → `merged` → `verified` (E2E/live), plus `blocked(reason)` / `dropped(reason)`.
 
-| Unit             | Status  | PR                 | Updated    | Note                                                    |
-|------------------|---------|--------------------|------------|---------------------------------------------------------|
-| D1               | pr-open | juniper-data#220   | 2026-07-11 | quick win; CI green; 501+hint verified vs real env      |
-| D2               | pr-open | juniper-data#221   | 2026-07-11 | merge after D1; also fixes bare-repo-id latent bug      |
-| C1               | pr-open | juniper-cascor#397 | 2026-07-11 | typed SnapshotSaveError; isolation remainder documented |
-| C2a              | pr-open | juniper-cascor#398 | 2026-07-11 | applied/skipped partition; WS ack additive              |
-| C2b              | planned | —                  | 2026-07-11 | carries the Q1 evaluation                               |
-| C3               | planned | —                  | 2026-07-11 | pairs with E-1                                          |
-| C4               | planned | —                  | 2026-07-11 | —                                                       |
-| C5               | planned | —                  | 2026-07-11 | Q4/U-1 retention semantics                              |
-| C6               | planned | —                  | 2026-07-11 | gated on E-1                                            |
-| C7               | planned | —                  | 2026-07-11 | phased: scalar metrics first                            |
-| CL1              | planned | —                  | 2026-07-11 | —                                                       |
-| CL2              | planned | —                  | 2026-07-11 | release + floor + Fake parity                           |
-| N1               | planned | —                  | 2026-07-11 | bridge until C6/N8                                      |
-| N2               | planned | —                  | 2026-07-11 | includes E-3 resolution                                 |
-| N3               | planned | —                  | 2026-07-11 | modal per Q3/Q4; may split N3b                          |
-| N4               | pr-open | juniper-canopy#442 | 2026-07-11 | quick win; bite-checked regressions                     |
-| N5               | planned | —                  | 2026-07-11 | —                                                       |
-| N6               | planned | —                  | 2026-07-11 | —                                                       |
-| N7               | planned | —                  | 2026-07-11 | + U-6                                                   |
-| N8               | planned | —                  | 2026-07-11 | Q6 target architecture                                  |
-| N9               | planned | —                  | 2026-07-11 | U-2/U-3 + C7 display                                    |
-| N10              | planned | —                  | 2026-07-11 | U-5                                                     |
-| E1               | planned | —                  | 2026-07-11 | —                                                       |
-| E-1 (experiment) | planned | —                  | 2026-07-11 | decides C6/N8 design                                    |
-| E-2 (experiment) | planned | —                  | 2026-07-11 | pins N3 active-run path                                 |
-| E-3 (experiment) | planned | —                  | 2026-07-11 | pins N2 freeze mechanism                                |
+| Unit             | Status  | PR                 | Updated    | Note                                                                                                       |
+|------------------|---------|--------------------|------------|------------------------------------------------------------------------------------------------------------|
+| D1               | merged  | juniper-data#220   | 2026-07-14 | merged 2026-07-12; 501+hint verified vs real env                                                           |
+| D2               | merged  | juniper-data#221   | 2026-07-14 | merged 2026-07-12 after D1; also fixes bare-repo-id latent bug                                             |
+| C1               | merged  | juniper-cascor#397 | 2026-07-14 | merged 2026-07-12; typed SnapshotSaveError; isolation remainder documented                                 |
+| C2a              | merged  | juniper-cascor#398 | 2026-07-14 | merged 2026-07-12; applied/skipped partition; WS ack additive                                              |
+| C2b              | planned | —                  | 2026-07-11 | carries the Q1 evaluation                                                                                  |
+| C3               | planned | —                  | 2026-07-11 | pairs with E-1                                                                                             |
+| C4               | planned | —                  | 2026-07-11 | —                                                                                                          |
+| C5               | planned | —                  | 2026-07-11 | Q4/U-1 retention semantics                                                                                 |
+| C6               | planned | —                  | 2026-07-11 | gated on E-1                                                                                               |
+| C7               | planned | —                  | 2026-07-11 | phased: scalar metrics first                                                                               |
+| CL1              | planned | —                  | 2026-07-14 | root fix for the 40 s close; N2's `_ws` reach-ins are documented CL1 swap seams                            |
+| CL2              | planned | —                  | 2026-07-11 | release + floor + Fake parity                                                                              |
+| N1               | merged  | juniper-canopy#443 | 2026-07-14 | impl direct-pushed 2026-07-12 (addendum); #443 formalized tests; de-flake canopy#449                       |
+| N2               | merged  | — (direct push)    | 2026-07-14 | direct-pushed 2026-07-12, no PR (addendum); retro-review 2026-07-14: plan-conformant; CHANGELOG entry owed |
+| N3               | planned | —                  | 2026-07-14 | modal per Q3/Q4; may split N3b; owns the demo-FSM start-from-COMPLETED gap (canopy#449 diagnosis)          |
+| N4               | merged  | juniper-canopy#442 | 2026-07-14 | merged 2026-07-12; bite-checked regressions                                                                |
+| N5               | planned | —                  | 2026-07-11 | —                                                                                                          |
+| N6               | planned | —                  | 2026-07-11 | —                                                                                                          |
+| N7               | planned | —                  | 2026-07-11 | + U-6                                                                                                      |
+| N8               | planned | —                  | 2026-07-11 | Q6 target architecture                                                                                     |
+| N9               | planned | —                  | 2026-07-11 | U-2/U-3 + C7 display                                                                                       |
+| N10              | planned | —                  | 2026-07-11 | U-5                                                                                                        |
+| E1               | planned | —                  | 2026-07-11 | —                                                                                                          |
+| E-1 (experiment) | planned | —                  | 2026-07-11 | decides C6/N8 design                                                                                       |
+| E-2 (experiment) | planned | —                  | 2026-07-11 | pins N3 active-run path                                                                                    |
+| E-3 (experiment) | merged  | — (with N2)        | 2026-07-14 | resolved by the N2 implementation: always-release + clientside watchdog                                    |
+
+**2026-07-14 addendum — wave-1 close-out and the N1/N2 landing anomaly.** All five wave-1 PRs merged 2026-07-12 01:10–01:28 UTC (owner-gated). Separately, the N1 implementation (canopy 46f3b44 + 87f7df6) and the complete N2 implementation (canopy c611afb: supervisor half-open detection via real socket state + keepalive probes, relay liveness windows with logged reconnect/backoff and a periodic throughput summary, `StreamHealth` + `GET /api/stream_health` + the badge's upstream degraded-mode dimension, `/api/state` live-first base fields with an honest `stale` fallback, and the E-3 fix: always-release of the apply-in-flight clamp + a clientside watchdog) were pushed DIRECTLY to canopy main 2026-07-12 02:19–02:29 UTC as back-merge states of two session branches (`fix/ungate-metrics-topology-polls`, `fix/relay-supervisor-liveness-and-state-truth`; both now fully contained in main), with no PR, interleaved with six metrics-layout timestamp-churn commits. canopy#443 (merged 2026-07-13) then formalized N1's test surface. Retroactive review 2026-07-14: plan-conformant (all §8 guard rails present — empty-guard, `asyncio.to_thread` event-loop guard, bounded full-history fetch), no blocking defects; residuals: the N2 CHANGELOG entry is missing (N1 has one), and client-side ping/pong remains CL1's root fix (the adapter's `_ws` reach-ins are documented CL1 swap seams). The same push shipped a lifecycle-fragile UI test that turned canopy main's UI leg red from 2026-07-12 02:29 (CI demo runs converge to fsm COMPLETED — no juniper-data service in CI — and START from COMPLETED is refused because `/api/train/start` defaults `reset=False` and the FSM has no COMPLETED→start branch); fixed test-side by canopy#449 (Reset → Start preconditions). Source-branch deletion pending owner ack.
 
 Sources ingested: `notes/JUNIPER_2026-07-11_JUNIPER-CANOPY_OUTSTANDING-UI-ISSUES_.md` (U-1 – U-6). Retired: `notes/JUNIPER_2026-07-04_JUNIPER-CANOPY_CANOPY-DEFECT-LIST.md` (Q5).
 
