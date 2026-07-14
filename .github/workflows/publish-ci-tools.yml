@@ -131,19 +131,25 @@ jobs:
         run: |
           set -euo pipefail
           version=$(grep '^version' juniper-ci-tools/pyproject.toml | head -1 | sed -E 's/version = "(.+)"/\1/')
+          # NOTE (security): install with --no-deps against TestPyPI only. Do NOT add a
+          # production-PyPI fallback index here — with --no-deps no deps are fetched, so a
+          # fallback only risks resolving a squatted target package. The retry loop below
+          # covers TestPyPI index lag.
           for attempt in 1 2 3 4 5; do
             if pip install \
+              --no-deps \
               --index-url https://test.pypi.org/simple/ \
-              --extra-index-url https://pypi.org/simple/ \
               "juniper-ci-tools==${version}"; then
               break
             fi
             echo "TestPyPI index lag — retrying in 10s (attempt ${attempt}/5)"
             sleep 10
           done
-          python -c "import juniper_ci_tools; print('TestPyPI install OK', juniper_ci_tools.__version__)"
-          juniper-generate-dep-docs --version
-          python -m juniper_ci_tools --version
+          # --no-deps leaves runtime deps (PyYAML, packaging) absent, so importing the package
+          # or running its console scripts (which import juniper_ci_tools.generate_dep_docs -> yaml)
+          # fails here. Read the installed version from dist-info METADATA instead (imports no
+          # package code); the full import / console-script exercise runs in the package's CI tests.
+          python -c "import importlib.metadata as m; print('TestPyPI install OK', m.version('juniper-ci-tools'))"
 
   publish-pypi:
     name: Publish to PyPI

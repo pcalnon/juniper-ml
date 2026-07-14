@@ -158,9 +158,10 @@ class WorkflowScriptPathsTest(unittest.TestCase):
         # are fetched, so the fallback serves no functional purpose and only opens a
         # supply-chain hole: on a TestPyPI index lag pip could resolve the *target*
         # package from production PyPI and execute a squatted package during a
-        # trusted-publishing run. Workflows that install WITH dependencies (e.g.
-        # publish.yml, publish-ci-tools.yml, publish-observability.yml) legitimately
-        # need --extra-index-url and are out of scope for this check.
+        # trusted-publishing run. The meta-package workflow publish.yml is the sole
+        # documented exception: it installs WITH dependencies (to verify its extras
+        # resolve real sub-packages) so it legitimately uses --extra-index-url and is
+        # out of scope for this check (it does not combine the fallback with --no-deps).
         offenders = []
         for workflow in sorted(self.workflows_dir.glob("publish*.yml")):
             text = workflow.read_text(encoding="utf-8")
