@@ -1,0 +1,242 @@
+---
+#####################################################################################################################################################################################################
+# Project:       Juniper
+# Application:   juniper-ml
+# File Name:     release-train.yml
+# Author:        Paul Calnon
+# Version:       0.1.0
+#
+# Date Created:  2026-07-14
+# Last Modified: 2026-07-14
+#
+# License:       MIT License
+# Copyright:     Copyright (c) 2024-2026 Paul Calnon
+#
+# Description:
+#    PyPI release-train orchestrator -- Phase 1 (report-only detection).
+#    Implements step 1.3 of the release-train plan: on a daily schedule
+#    (and on manual dispatch), clone every Juniper package repo and run
+#    the report-only detection engine (util/release_train/detect.py)
+#    over the 18-package registry (util/release_train/registry.yaml),
+#    then publish the results two ways:
+#      1. the release-manifest JSON as a run artifact, and
+#      2. a per-package classification table in the step summary.
+#
+#    Phase 1 NEVER writes anything: no PRs, no tags, no GitHub Releases,
+#    no PyPI interaction of any kind. Later phases (propose/ceremony)
+#    add those lanes behind the same mode switch; until they land, any
+#    unimplemented mode value degrades to 'report' with a warning.
+#
+#    Mode resolution (the rollback/disable switch, plan S9.4/S11):
+#      workflow_dispatch input 'mode' > repo variable RELEASE_TRAIN_MODE > 'report'
+#      'off' quiesces the train instantly with a green no-op run.
+#
+#    Detector exit contract: 0 = all quiet, 1 = actionable classifications
+#    exist (a NORMAL daily outcome -- packages awaiting a release must not
+#    turn the cron red), >= 2 = hard source/registry error (fails the run).
+#
+# Security Notes:
+#    - Runs on schedule/dispatch only (not on PRs or forks)
+#    - Minimal permissions (contents: read); GH_TOKEN is used only for
+#      read-only gh api calls (compare/tags/releases) by detect.py
+#    - Clones public sibling repos via HTTPS (read-only, no tokens)
+#    - Report-only: this workflow never opens PRs, never cuts Releases,
+#      and never touches TestPyPI/PyPI (plan S9.3 invariant)
+#
+# References:
+#    - notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md (S9.1, S11, S12 step 1.3)
+#    - notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-SURFACE-AUDIT.md (the 18-package surface)
+#    - util/release_train/detect.py + util/release_train/registry.yaml (Phase 1.1/1.2, juniper-ml#641)
+#####################################################################################################################################################################################################
+
+name: Release Train
+
+on:
+  schedule:
+    # Q-CADENCE (ratified 2026-07-11): daily 13:00 UTC = 08:00 America/Chicago
+    # under CDT. GitHub cron is UTC-only, so winter runs land 07:00 CST --
+    # accepted drift. Offset from the 06:00 UTC Monday pile-up
+    # (docs-full-check.yml, security-scan.yml).
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Override RELEASE_TRAIN_MODE for this run: off | report. Empty = repo variable RELEASE_TRAIN_MODE, default report. propose/ceremony are later phases and degrade to report."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+# One train run at a time; a queued run waits rather than cancelling an
+# in-flight one (a report must never be killed halfway by the next cron).
+concurrency:
+  group: release-train
+  cancel-in-progress: false
+
+env:
+  PYTHON_TEST_VERSION: "3.12"
+
+  # The 7 sibling package repos in the 18-package registry (juniper-ml is the
+  # checkout itself). juniper-deploy hosts no PyPI package and is not needed.
+  # Unlike docs-full-check.yml, this list MUST include juniper-recurrence.
+  ECOSYSTEM_REPOS: |
+    juniper-data
+    juniper-data-client
+    juniper-cascor
+    juniper-cascor-client
+    juniper-cascor-worker
+    juniper-canopy
+    juniper-recurrence
+
+jobs:
+  detect:
+    name: Release-train detection (report-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve run mode (RELEASE_TRAIN_MODE)
+        id: mode
+        env:
+          MODE_VAR: ${{ vars.RELEASE_TRAIN_MODE }}
+          MODE_INPUT: ${{ inputs.mode }}
+        run: |
+          set -euo pipefail
+          mode="${MODE_INPUT:-${MODE_VAR:-report}}"
+          case "$mode" in
+            off|report) ;;
+            propose|ceremony)
+              echo "::warning::RELEASE_TRAIN_MODE='${mode}' is not implemented in Phase 1 -- degrading to 'report' (this phase never opens PRs or cuts Releases)."
+              mode="report"
+              ;;
+            *)
+              echo "::warning::Unknown RELEASE_TRAIN_MODE='${mode}' -- defaulting to 'report'."
+              mode="report"
+              ;;
+          esac
+          echo "mode=${mode}" >> "$GITHUB_OUTPUT"
+          echo "Resolved release-train mode: ${mode}"
+
+      - name: Train quiesced (mode=off)
+        if: steps.mode.outputs.mode == 'off'
+        run: |
+          {
+            echo "# Release train"
+            echo ""
+            echo "RELEASE_TRAIN_MODE=off -- the release train is quiesced; detection skipped."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "RELEASE_TRAIN_MODE=off -- nothing to do."
+
+      - name: Checkout juniper-ml (full history + tags)
+        if: steps.mode.outputs.mode == 'report'
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          path: juniper-ml
+          # Full history + tags: when the gh compare API hits its 300-file cap,
+          # detect.py falls back to a path-scoped local-git diff (tag..main).
+          # A shallow checkout would silently degrade juniper-ml sub-package
+          # classifications to SHIP_UNCERTAIN.
+          fetch-depth: 0
+
+      - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
+        if: steps.mode.outputs.mode == 'report'
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+        # detect.py is stdlib-only (it parses registry.yaml itself) -- no pip
+        # installs needed.
+
+      - name: Clone ecosystem sibling repos (full history, read-only)
+        if: steps.mode.outputs.mode == 'report'
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          # Full clones, NOT --depth 1: the local-git compare fallback needs
+          # tags + history (see checkout note above). A missing sibling would
+          # silently degrade its packages to SHIP_UNCERTAIN, so -- unlike
+          # docs-full-check.yml -- a failed clone is a hard error here.
+          while IFS= read -r repo; do
+            [ -z "$repo" ] && continue
+            echo "Cloning ${repo}..."
+            git clone --quiet "https://github.com/${{ github.repository_owner }}/${repo}.git" "$repo"
+          done <<< "$ECOSYSTEM_REPOS"
+          echo ""
+          echo "Workspace contents:"
+          ls -1 "$GITHUB_WORKSPACE"
+
+      - name: Run release-train detector (report-only)
+        if: steps.mode.outputs.mode == 'report'
+        id: detect
+        working-directory: juniper-ml
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Exit contract (util/release_train/detect.py): 0 = all quiet,
+          # 1 = actionable classifications exist (a NORMAL report outcome),
+          # >= 2 = hard source/registry error.
+          rc=0
+          python util/release_train/detect.py \
+            --repo-root . \
+            --ecosystem-root .. \
+            --json > "${GITHUB_WORKSPACE}/release-manifest.json" || rc=$?
+          echo "exit-code=${rc}" >> "$GITHUB_OUTPUT"
+          echo "Detector exit code: ${rc} (0 = all quiet, 1 = action needed, >=2 = hard error)"
+          if [ "${rc}" -ge 2 ]; then
+            echo "::error::release-train detector failed hard (exit ${rc}) -- see log above; the manifest may be absent or partial."
+            exit "${rc}"
+          fi
+
+      - name: Upload release-manifest artifact
+        if: always() && steps.mode.outputs.mode == 'report'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-manifest
+          path: release-manifest.json
+          if-no-files-found: warn
+
+      - name: Render step summary
+        if: always() && steps.mode.outputs.mode == 'report'
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          out = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          manifest_path = Path(os.environ["GITHUB_WORKSPACE"]) / "release-manifest.json"
+          lines = ["# Release train -- report mode", ""]
+          if not manifest_path.is_file() or not manifest_path.read_text(encoding="utf-8").strip():
+              lines += ["**Detector failed hard -- no manifest was produced.** See the run log.", ""]
+              with out.open("a", encoding="utf-8") as fh:
+                  fh.write("\n".join(lines) + "\n")
+              raise SystemExit(0)
+
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          pkgs = manifest["packages"]
+          counts = manifest["summary"]["by_classification"]
+          action_states = ("UNRELEASED_CHANGES", "BUMPED_NOT_RELEASED", "SHIP_UNCERTAIN")
+          action = [p["pypi_name"] for p in pkgs if p["classification"] in action_states]
+          hyg_tag = sum(1 for p in pkgs if (p.get("hygiene") or {}).get("tag_only"))
+          hyg_notes = sum(1 for p in pkgs if (p.get("hygiene") or {}).get("notes_missing"))
+
+          lines.append(f"**{manifest['summary']['total']} packages** -- " + ", ".join(f"{k}: {v}" for k, v in sorted(counts.items())))
+          lines.append("")
+          lines.append(f"Release hygiene: TAG_ONLY={hyg_tag}, NOTES_MISSING={hyg_notes}")
+          lines.append("")
+          lines.append("| package | repo | released | declared | classification | proposed bump |")
+          lines.append("|---|---|---|---|---|---|")
+          for p in pkgs:
+              lines.append(f"| {p['pypi_name']} | {p['repo']} | {p.get('released_version') or '-'} | {p.get('declared_version') or '-'} | {p['classification']} | {p.get('proposed_bump') or '-'} |")
+
+          notes = [(p["pypi_name"], n) for p in pkgs for n in (p.get("notes") or [])]
+          if notes:
+              lines += ["", "<details><summary>detector notes</summary>", ""]
+              lines += [f"- `{name}`: {note}" for name, note in notes]
+              lines += ["", "</details>"]
+
+          lines.append("")
+          lines.append(f"_Phase 1 report-only: no PRs opened, no Releases cut, PyPI untouched. **{len(action)} package(s) currently need release action.**_")
+          with out.open("a", encoding="utf-8") as fh:
+              fh.write("\n".join(lines) + "\n")
+          PY

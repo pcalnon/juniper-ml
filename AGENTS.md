@@ -5,7 +5,7 @@
 **Author**: Paul Calnon
 **License**: MIT License
 **Version**: 0.6.0
-**Last Updated**: 2026-07-12
+**Last Updated**: 2026-07-14
 
 ---
 
@@ -164,6 +164,7 @@ juniper-ml/
 │       ├── publish.yml        # PyPI publishing (TestPyPI + PyPI, OIDC)
 │       ├── docs-full-check.yml# Weekly full documentation link validation (cross-repo)
 │       ├── security-scan.yml  # Weekly pip-audit security scanning
+│       ├── release-train.yml  # Daily PyPI release-train detection (report-only, Phase 1)
 │       └── claude.yml         # Claude Code action for issue/PR automation
 │
 ├── .serena/                   # Serena code agent integration config
@@ -396,6 +397,7 @@ juniper-ml/
 - `.github/workflows/publish.yml` -- PyPI publishing: TestPyPI with install verification, then PyPI (OIDC trusted publishing)
 - `.github/workflows/docs-full-check.yml` -- Weekly full documentation link validation including cross-repo checks
 - `.github/workflows/security-scan.yml` -- Weekly pip-audit dependency vulnerability scanning
+- `.github/workflows/release-train.yml` -- Daily (13:00 UTC) PyPI release-train orchestrator, Phase 1 report-only: clones the 7 sibling package repos, runs `util/release_train/detect.py` over the 18-package registry, uploads the release-manifest artifact, renders a step-summary classification table. Never opens PRs, cuts Releases, or touches PyPI. Rollback switch: repo variable `RELEASE_TRAIN_MODE` (`off`|`report`, default `report`) + a dispatch `mode` override; unimplemented modes degrade to `report`.
 - `.github/workflows/claude.yml` -- Claude Code action for issue/PR automation (@claude mentions)
 - `.github/workflows/agents-md-touch-up.yml` -- Auto-bumps `AGENTS.md`'s `**Last Updated**:` field to today's UTC date on every PR push that touches `AGENTS.md`. Idempotent (no-op when the date is already current); commits with `github-actions[bot]` authorship and `[skip ci]` so the bump itself does not re-trigger workflows. Companion to `tests/test_agents_md_header_schema.py`.
 
@@ -436,6 +438,12 @@ Weekly schedule (Monday 06:00 UTC) and manual dispatch. Clones all Juniper ecosy
 ### Security Scan (`security-scan.yml`)
 
 Weekly schedule (Monday 06:00 UTC) and manual dispatch. Runs `pip-audit --strict --desc on` for dependency vulnerability scanning.
+
+### Release Train (`release-train.yml`)
+
+Daily schedule (13:00 UTC = 08:00 America/Chicago CDT; Q-CADENCE) and manual dispatch. Phase 1 report-only detection for the PyPI release train ([plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) §12 step 1.3): full-history clones of the 7 sibling package repos, then `util/release_train/detect.py --json` classifies all 18 registry packages; the run publishes the release-manifest artifact plus a step-summary table.
+
+Detector exit 1 (action needed) is a normal green outcome; only exit >= 2 (hard source error) fails the run. Writes nothing: no PRs, no Releases, no (Test)PyPI interaction. The `RELEASE_TRAIN_MODE` repo variable (`off`|`report`) is the instant kill switch.
 
 ### Claude Code Action (`claude.yml`)
 
