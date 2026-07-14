@@ -136,17 +136,25 @@ jobs:
         run: |
           set -euo pipefail
           version=$(grep '^version' juniper-observability/pyproject.toml | head -1 | sed -E 's/version = "(.+)"/\1/')
+          # NOTE (security): install with --no-deps against TestPyPI only. Do NOT add a
+          # production-PyPI fallback index here — with --no-deps no deps are fetched, so a
+          # fallback only risks resolving a squatted target package. The retry loop below
+          # covers TestPyPI index lag.
           for attempt in 1 2 3 4 5; do
             if pip install \
+              --no-deps \
               --index-url https://test.pypi.org/simple/ \
-              --extra-index-url https://pypi.org/simple/ \
               "juniper-observability==${version}"; then
               break
             fi
             echo "TestPyPI index lag — retrying in 10s (attempt ${attempt}/5)"
             sleep 10
           done
-          python -c "import juniper_observability; print('TestPyPI install OK', juniper_observability.__version__)"
+          # --no-deps leaves runtime deps (pydantic, starlette) absent, so importing the package
+          # fails here (juniper_observability.__init__ -> health.models -> pydantic). Read the
+          # installed version from dist-info METADATA instead (imports no package code); the full
+          # import exercise runs in the package's CI tests.
+          python -c "import importlib.metadata as m; print('TestPyPI install OK', m.version('juniper-observability'))"
 
   publish-pypi:
     name: Publish to PyPI
