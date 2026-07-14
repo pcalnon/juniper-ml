@@ -250,3 +250,44 @@ jobs:
           with out.open("a", encoding="utf-8") as fh:
               fh.write("\n".join(lines) + "\n")
           PY
+
+      - name: Slack notification (non-blocking, Q-CHANNEL)
+        # Plan S11: compact run summary to the Juniper Slack channel via an
+        # owner-provisioned incoming webhook. Non-blocking by construction --
+        # a missing secret skips the step, and a post failure never fails the
+        # train (continue-on-error). Posts only summary counts + package
+        # names + the run URL: no secrets, no diff content.
+        if: always() && steps.mode.outputs.mode == 'report'
+        continue-on-error: true
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
+            echo "SLACK_WEBHOOK_URL secret not set -- skipping Slack notification (non-blocking by design)."
+            exit 0
+          fi
+          python - <<'PY' > slack-payload.json
+          import json
+          import os
+          from pathlib import Path
+
+          run_url = os.environ["RUN_URL"]
+          manifest_path = Path(os.environ["GITHUB_WORKSPACE"]) / "release-manifest.json"
+          if manifest_path.is_file() and manifest_path.read_text(encoding="utf-8").strip():
+              m = json.loads(manifest_path.read_text(encoding="utf-8"))
+              counts = m["summary"]["by_classification"]
+              action_states = ("UNRELEASED_CHANGES", "BUMPED_NOT_RELEASED", "SHIP_UNCERTAIN")
+              action = sorted(p["pypi_name"] for p in m["packages"] if p["classification"] in action_states)
+              lines = [f"Release train (report mode): {m['summary']['total']} packages -- " + ", ".join(f"{k}: {v}" for k, v in sorted(counts.items()))]
+              if action:
+                  lines.append("Needs release action: " + ", ".join(action))
+              lines.append(f"Run: {run_url}")
+              text = "\n".join(lines)
+          else:
+              text = f"Release train: detector FAILED HARD (no manifest produced). Run: {run_url}"
+          print(json.dumps({"text": text}))
+          PY
+          curl -fsS -X POST -H 'Content-Type: application/json' -d @slack-payload.json "$SLACK_WEBHOOK_URL" > /dev/null
+          echo "Slack notification posted."

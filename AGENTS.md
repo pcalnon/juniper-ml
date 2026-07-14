@@ -445,6 +445,8 @@ Daily schedule (13:00 UTC = 08:00 America/Chicago CDT; Q-CADENCE) and manual dis
 
 Detector exit 1 (action needed) is a normal green outcome; only exit >= 2 (hard source error) fails the run. Writes nothing: no PRs, no Releases, no (Test)PyPI interaction. The `RELEASE_TRAIN_MODE` repo variable (`off`|`report`) is the instant kill switch.
 
+With the `SLACK_WEBHOOK_URL` repo secret present (owner-provisioned incoming webhook; Q-CHANNEL), each run also posts a compact summary — classification counts, packages needing action, run URL — to the Juniper Slack channel. Strictly non-blocking: a missing secret skips the step, and a post failure never fails the run.
+
 ### Claude Code Action (`claude.yml`)
 
 Triggered by issue/PR comments and events mentioning @claude. Uses `anthropics/claude-code-action` for automated issue/PR assistance.
