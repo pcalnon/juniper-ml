@@ -165,6 +165,14 @@ jobs:
           # No network / no real gh / no real pip (all sources injected). util/ is not
           # pre-commit-lint-gated, so this unittest is the gate.
           python3 -m unittest -v tests/test_release_train_detect.py
+          # tests/test_release_train_propose.py: hermetic tests for the Phase 2.1 proposal-PR
+          # generator (util/release_train/propose.py + notes_render.py, plan §5.4/§6/§10.1) --
+          # a well-formed dry-run for a static + a dynamic package, the CHANGELOG [Unreleased]
+          # move, template-driven notes + archive-name convention, the gh-pr-list dup-guard,
+          # the changelog_conflict refusal, and that a dry-run writes nothing. No network / no
+          # real gh / no repo writes (all effects injected). util/ is not pre-commit-lint-gated,
+          # so this unittest is the gate.
+          python3 -m unittest -v tests/test_release_train_propose.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is

@@ -10,8 +10,16 @@ This package implements Phase 1 of the ratified release-train plan
     package need a PyPI deploy?" detection engine (plan S4.2/S4.3). Report-only:
     it emits a release-manifest JSON + a human table and takes no action.
 
-Later phases (propose.py / ceremony.py / release-train.yml) are out of scope for
-Phase 1 and do not exist yet.
+Phase 2.1 adds the proposal-PR generation layer (plan S5.4/S6/S10.1):
+
+  * ``notes_render.py`` -- template-driven release-notes DRAFT generation (plan S10.1).
+  * ``propose.py``      -- consumes ``detect.py``'s manifest and, for each
+    ``UNRELEASED_CHANGES`` package, builds the complete standard-gated release-proposal
+    PR content (version bump + CHANGELOG move + notes draft + co-changes +
+    propagation edges). Dry-run by default; opens nothing.
+
+The remaining ``ceremony.py`` (Phase 3, the exempt archive PR + Release cut) is still
+out of scope and does not exist yet.
 
 Project: juniper-ml
 Sub-Project: automated PyPI release-train
