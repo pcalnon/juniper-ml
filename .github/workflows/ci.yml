@@ -173,6 +173,13 @@ jobs:
           # real gh / no repo writes (all effects injected). util/ is not pre-commit-lint-gated,
           # so this unittest is the gate.
           python3 -m unittest -v tests/test_release_train_propose.py
+          # tests/test_release_train_workflow_guard.py: structural R7 privilege-boundary guard for
+          # .github/workflows/release-train.yml (plan §9.3 / §12 step 2.2). Asserts workflow-level
+          # permissions are contents:read, the propose job's are exactly {contents:write,
+          # pull-requests:write}, its `if` gates on the detect mode output (write path unreachable in
+          # report mode), and no secret other than SLACK_WEBHOOK_URL is referenced. PyYAML (installed
+          # above); the workflow YAML is not otherwise lint-gated for this property.
+          python3 -m unittest -v tests/test_release_train_workflow_guard.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is

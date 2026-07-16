@@ -448,7 +448,15 @@ Weekly schedule (Monday 06:00 UTC) and manual dispatch. Runs `pip-audit --strict
 
 Daily schedule (13:00 UTC = 08:00 America/Chicago CDT; Q-CADENCE) and manual dispatch. Phase 1 report-only detection for the PyPI release train ([plan](notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md) §12 step 1.3): full-history clones of the 7 sibling package repos, then `util/release_train/detect.py --json` classifies all 18 registry packages; the run publishes the release-manifest artifact plus a step-summary table.
 
-Detector exit 1 (action needed) is a normal green outcome; only exit >= 2 (hard source error) fails the run. Writes nothing: no PRs, no Releases, no (Test)PyPI interaction. The `RELEASE_TRAIN_MODE` repo variable (`off`|`report`) is the instant kill switch.
+Detector exit 1 (action needed) is a normal green outcome; only exit >= 2 (hard source error) fails the run. The `detect` job writes nothing: no PRs, no Releases, no (Test)PyPI interaction. The `RELEASE_TRAIN_MODE` repo variable (`off`|`report`|`propose`; `ceremony` degrades to `report`) plus the `mode` dispatch input is the instant kill switch and mode selector.
+
+**Propose mode (Phase 2.2, opt-in).** Dispatching with `mode=propose` (or setting `RELEASE_TRAIN_MODE=propose`) adds a second, **write-scoped** `propose` job — `permissions: {contents: write, pull-requests: write}`, gated `if: needs.detect.outputs.mode == 'propose'`.
+So the detect/report path stays `contents: read` and the write scope is unreachable off the propose path — the R7 privilege boundary (plan §9.3), pinned by `tests/test_release_train_workflow_guard.py`.
+It runs `util/release_train/propose.py --execute` to open **standard-gated** release-proposal PRs (owner reviews and merges; never auto-merged; touches neither TestPyPI nor PyPI). The optional `packages` dispatch input (whitespace/comma-separated pypi_names; empty = all eligible) restricts which packages are proposed.
+**In-repo pilot only:** the single-repo `GITHUB_TOKEN` opens PRs for juniper-ml packages (the meta + 6 sub-packages); sibling-repo packages (cascor\*, canopy, data\*, recurrence\*) are **skipped with a clear reason** — cross-repo PRs need Phase 4's GitHub App identity (§9.2 / §12 step 4.1).
+Commits are unsigned (`git config commit.gpgsign false` in the job, and `propose.py` also passes `-c commit.gpgsign=false`) so the headless run never trips the owner's YubiKey signing config.
+
+**Known limitation (accepted for the Phase-2/3 pilot):** a PR opened with the built-in `GITHUB_TOKEN` does **not** trigger CI workflows (GitHub's recursion guard), so a proposal PR shows **no checks** until the owner re-triggers them — close and reopen the PR, or push an empty commit. Phase 4's GitHub App token triggers runs normally and self-resolves this; the repo's `can_approve_pull_request_reviews` setting is already enabled.
 
 With the `SLACK_WEBHOOK_URL` repo secret present (owner-provisioned incoming webhook; Q-CHANNEL), each run also posts a compact summary — classification counts, packages needing action, run URL — to the Juniper Slack channel. Strictly non-blocking: a missing secret skips the step, and a post failure never fails the run.
 
