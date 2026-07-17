@@ -498,5 +498,142 @@ class CliTest(unittest.TestCase):
         self.assertEqual(before, _sha_tree(self.repo_root))
 
 
+# ── execute path: cross-repo guard + headless-commit gpgsign landmine (Phase 2.2) ────
+
+
+_TWO_PKG_REGISTRY = textwrap.dedent("""\
+    packages:
+      - pypi_name: juniper-thing
+        repo: juniper-ml
+        path: "juniper-thing/"
+        version_source: static
+        tag_pattern: "juniper-thing-v*"
+        archive_name: "RELEASE_NOTES_juniper-thing_v{version}.md"
+        trigger: {now: release, target: release}
+        verify: {now: strict, target: strict}
+        depends_on: []
+        ship_paths: ["juniper-thing/juniper_thing/"]
+        exclude_paths: []
+      - pypi_name: juniper-sibling
+        repo: juniper-sibling
+        path: "."
+        version_source: static
+        tag_pattern: "v*"
+        archive_name: "RELEASE_NOTES_juniper-sibling_v{version}.md"
+        trigger: {now: release, target: release}
+        verify: {now: strict, target: strict}
+        depends_on: []
+        ship_paths: ["juniper_sibling/"]
+        exclude_paths: ["juniper_sibling/tests/"]
+    """)
+
+
+class ExecuteCrossRepoGuardTest(unittest.TestCase):
+    """--execute opens PRs ONLY for the writable repo (juniper-ml) and SKIPS sibling-repo packages
+    with a clear reason -- the release-train workflow's GITHUB_TOKEN is single-repo (plan S9.2/S12
+    step 2.2). Also pins the headless-commit gpgsign landmine fix. Fully hermetic: every write / git
+    / pr effect is a recording spy (no real repo writes, no gh, no git)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.repo_root = self.root / "juniper-ml"
+        self.repo_root.mkdir()
+        _install_templates(self.repo_root)
+        # An in-repo (writable) package AND a cross-repo sibling, BOTH readable on disk -- so the
+        # ONLY thing that skips the sibling under --execute is the cross-repo guard, not a failed
+        # file read (proving the guard, not an incidental read failure, is the gate).
+        _write_pkg(self.repo_root, "juniper-thing/", name="juniper-thing", version="0.4.0", changelog=_CHANGELOG)
+        sibling = self.root / "juniper-sibling"
+        sibling.mkdir()
+        _write_pkg(sibling, ".", name="juniper-sibling", version="0.4.0", changelog=_CHANGELOG)
+        self.registry = self.root / "registry.yaml"
+        self.registry.write_text(_TWO_PKG_REGISTRY)
+        self.manifest = self.root / "manifest.json"
+        self.manifest.write_text(
+            json.dumps(
+                {
+                    "packages": [
+                        _manifest_pkg(pypi_name="juniper-thing", repo="juniper-ml"),
+                        _manifest_pkg(pypi_name="juniper-sibling", repo="juniper-sibling"),
+                    ]
+                }
+            )
+        )
+        self.calls = {"write": [], "git": [], "pr": []}
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _read_file(self, entry, filename):
+        base = d.base_dir_for(entry, self.repo_root, self.root)
+        try:
+            return (base / filename).read_text(encoding="utf-8")
+        except OSError:
+            return None
+
+    def _sources(self) -> pr.ProposeSources:
+        def open_pr(repo, base, head, title, body):
+            self.calls["pr"].append((repo, head))
+            return f"https://github.com/pcalnon/{repo}/pull/1"
+
+        return pr.ProposeSources(
+            read_file=self._read_file,
+            list_open_prs=lambda repo: [],
+            write_file=lambda path, content: self.calls["write"].append(path),
+            run_git=lambda args: self.calls["git"].append(list(args)),
+            open_pr=open_pr,
+        )
+
+    def _run_execute(self) -> "tuple[int, str]":
+        buf = io.StringIO()
+        argv = ["--manifest", str(self.manifest), "--repo-root", str(self.repo_root), "--ecosystem-root", str(self.root), "--registry", str(self.registry), "--release-date", "2026-07-14", "--execute"]
+        with redirect_stdout(buf):
+            code = pr.main(argv, sources=self._sources())
+        return code, buf.getvalue()
+
+    def test_cross_repo_skip_reason_pure(self):
+        self.assertIsNone(pr.cross_repo_skip_reason("juniper-ml"))
+        reason = pr.cross_repo_skip_reason("juniper-cascor")
+        self.assertIsNotNone(reason)
+        self.assertIn("cross-repo", reason)
+        self.assertIn("juniper-cascor", reason)
+        # the writable repo is overridable (env / future multi-repo identity)
+        self.assertIsNone(pr.cross_repo_skip_reason("juniper-cascor", writable_repo="juniper-cascor"))
+
+    def test_execute_opens_in_repo_and_skips_cross_repo(self):
+        code, out = self._run_execute()
+        self.assertEqual(code, 0, out)
+        # exactly one PR opened, and it is the juniper-ml package (never the sibling)
+        self.assertEqual(self.calls["pr"], [("juniper-ml", "release/juniper-thing-v0.5.0")])
+        self.assertIn("opened: juniper-thing", out)
+        self.assertIn("skip: juniper-sibling", out)
+        self.assertIn("cross-repo", out)
+        # the sibling's files were NEVER written into the juniper-ml checkout (the clobber the guard
+        # prevents: make_live_sources.write_file targets repo_root, so a sibling edit would land here)
+        for path in self.calls["write"]:
+            self.assertTrue(path.startswith("juniper-thing/"), f"unexpected write to {path!r} -- sibling clobber?")
+
+    def test_execute_commit_disables_gpg_signing(self):
+        self._run_execute()
+        commits = [args for args in self.calls["git"] if "commit" in args]
+        self.assertTrue(commits, "expected a git commit call in the --execute path")
+        for args in commits:
+            self.assertIn("commit.gpgsign=false", args)
+            # the -c flag must precede the commit subcommand for git to honour it
+            self.assertLess(args.index("commit.gpgsign=false"), args.index("commit"))
+
+    def test_execute_proposal_direct_refuses_cross_repo(self):
+        # belt-and-suspenders: even called directly (bypassing main's loop guard), execute_proposal
+        # must never write a sibling-repo proposal's edits into the checkout or open its PR.
+        prop = pr.Proposal(pypi_name="juniper-sibling", repo="juniper-sibling", from_version="0.4.0", to_version="0.5.0", bump="minor", branch="release/juniper-sibling-v0.5.0")
+        prop.edits.append(pr.FileEdit(path="pyproject.toml", old_text="a", new_text="b"))
+        url = pr.execute_proposal(prop, self._sources(), "main")
+        self.assertEqual(url, "")
+        self.assertEqual(self.calls["write"], [])
+        self.assertEqual(self.calls["git"], [])
+        self.assertEqual(self.calls["pr"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

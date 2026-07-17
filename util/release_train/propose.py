@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Juniper PyPI release-train proposal-PR generator (plan S5.4/S6/S10.1; Phase 2.1).
+"""Juniper PyPI release-train proposal-PR generator (plan S5.4/S6/S10.1; Phase 2.1 engine, wired in 2.2).
 
 Consumes the release-manifest JSON emitted by ``detect.py`` (Phase 1.2) and, for every
 package the detector classified ``UNRELEASED_CHANGES``, builds the **complete content** of a
@@ -25,10 +25,12 @@ existing open release PR for the package (concurrent Claude sessions are a real 
 refuses to duplicate it. A ``changelog_conflict`` flagged by the detector is a **refusal**:
 the train will not auto-author notes / move a CHANGELOG the detector found inconsistent.
 
-``--dry-run`` is the DEFAULT and the only mode Phase 2.1 exercises: it prints the complete,
-well-formed proposal (unified diffs + drafted notes + PR body) and **writes nothing** to the
-repo and opens nothing. ``--execute`` (opt-in, and overridden by ``--dry-run`` for safety)
-exists for the Phase 2.2 workflow wiring but is never run against the real repo in this phase.
+``--dry-run`` is the DEFAULT: it prints the complete, well-formed proposal (unified diffs +
+drafted notes + PR body) and **writes nothing** to the repo and opens nothing. ``--execute``
+(opt-in, and overridden by ``--dry-run`` for safety) applies the edits, commits, pushes, and opens
+the PR -- wired into ``release-train.yml``'s write-scoped ``propose`` job (Phase 2.2). Under
+``--execute`` a package whose registry ``repo`` is not juniper-ml is SKIPPED with a clear reason:
+the workflow's single-repo ``GITHUB_TOKEN`` can only open PRs in juniper-ml (cross-repo is Phase 4).
 
 Every external effect -- ``gh pr list`` (dup-guard), file reads, and (execute-only) file
 writes / git / ``gh pr create`` -- is injected through a ``ProposeSources`` seam so
@@ -74,6 +76,17 @@ PROPOSABLE = "UNRELEASED_CHANGES"
 
 # Keep-a-Changelog categories that make a pre-1.0 bump MINOR (escapes the consumer ceiling).
 _MINOR_BUMPS = frozenset({"minor", "major"})
+
+# The single repo whose contents an ``--execute`` run may write. The Phase-2/3 pilot runs the
+# release-train workflow inside the juniper-ml checkout under a juniper-ml-scoped ``GITHUB_TOKEN``
+# (plan S9.2), which can push a branch + open a PR only in juniper-ml -- the meta-package and its
+# six co-located sub-packages. Sibling-repo packages (cascor*, canopy, data*, recurrence*) are
+# SKIPPED in ``--execute`` with a clear reason rather than attempted: their edits would otherwise
+# land in the juniper-ml checkout (``make_live_sources.write_file`` targets ``repo_root``) and the
+# cross-repo ``gh pr create`` would fail. Phase 4's GitHub App identity lifts this (plan S9.2/S9.3,
+# S12 step 4.1). ``--dry-run`` is unaffected -- it previews every repo's proposal and writes nothing.
+# Overridable for tests / a future multi-repo identity.
+WRITABLE_REPO = os.environ.get("JUNIPER_RELEASE_TRAIN_WRITABLE_REPO", detect.META_REPO)
 
 
 # ── data model ───────────────────────────────────────────────────────────────
@@ -578,23 +591,44 @@ def build_output(proposals: list, dry_run: bool) -> dict:
     }
 
 
-# ── execute path (Phase 2.2; NOT exercised against the real repo in Phase 2.1) ─
+# ── execute path (Phase 2.2; wired into release-train.yml's write-scoped propose job) ─
+
+
+def cross_repo_skip_reason(repo: str, writable_repo: str = WRITABLE_REPO) -> "str | None":
+    """Reason to skip a proposal under ``--execute`` because its package is outside the writable repo.
+
+    ``None`` when ``repo`` is the writable repo (``--execute`` may open a PR there); otherwise a
+    clear, human-readable reason. The release-train workflow's single-repo ``GITHUB_TOKEN`` can push
+    a branch + open a PR only in ``writable_repo`` (juniper-ml), so a sibling-repo package is skipped,
+    not attempted -- executing it would write the edits into the juniper-ml checkout and the cross-repo
+    ``gh pr create`` would fail (plan S9.2/S9.3, S12 step 2.2; Phase 4's App identity lifts it)."""
+    if repo == writable_repo:
+        return None
+    return f"cross-repo: package lives in '{repo}', not the writable repo '{writable_repo}' -- the release-train workflow's single-repo GITHUB_TOKEN cannot open a PR there (Phase 2/3 in-repo pilot; Phase 4's GitHub App identity lifts this, plan S9.2 / S12 step 4.1)"
 
 
 def execute_proposal(prop: Proposal, sources: ProposeSources, base_branch: str) -> str:
     """Apply one proposal to the repo and open the PR. Requires the write/git/pr seam members.
 
-    Guarded so it can only run under an explicit ``--execute`` (never the default). Phase 2.1
-    proves the dry-run path only; this is here for the Phase 2.2 workflow wiring."""
+    Guarded so it can only run under an explicit ``--execute`` (never the default), and only for a
+    package in the writable repo (cross-repo is skipped upstream in ``main`` and here)."""
     if sources.write_file is None or sources.run_git is None or sources.open_pr is None:
         raise SourceError("execute mode needs write_file/run_git/open_pr seam members")
     if prop.skipped or not prop.branch:
+        return ""
+    # Cross-repo guard (belt-and-suspenders -- main() already skips these before calling): never
+    # write a sibling-repo package's edits into the juniper-ml checkout / open a doomed cross-repo
+    # PR under the single-repo GITHUB_TOKEN (plan S9.2 / S12 step 2.2).
+    if cross_repo_skip_reason(prop.repo) is not None:
         return ""
     sources.run_git(["switch", "-c", prop.branch, base_branch])
     for edit in prop.edits:
         sources.write_file(edit.path, edit.new_text)
         sources.run_git(["add", "--", edit.path])
-    sources.run_git(["commit", "-m", prop.commit_message or f"release: {prop.pypi_name}"])
+    # ``-c commit.gpgsign=false``: the CI runner has no GPG key, and the owner's YubiKey-resident
+    # signing config must never reach a headless commit (it would fail). The workflow's git-config
+    # step also sets this; pinning it on the commit itself makes the job immune regardless of config.
+    sources.run_git(["-c", "commit.gpgsign=false", "commit", "-m", prop.commit_message or f"release: {prop.pypi_name}"])
     sources.run_git(["push", "--set-upstream", "origin", prop.branch])
     return sources.open_pr(prop.repo, base_branch, prop.branch, prop.pr_title or "", prop.pr_body or "")
 
@@ -673,15 +707,33 @@ def main(argv: "list[str] | None" = None, sources: "ProposeSources | None" = Non
         return 2
 
     if not dry_run:
+        opened: list = []
+        skipped: list = []
         try:
             for prop in proposals:
-                if not prop.skipped:
-                    url = execute_proposal(prop, sources, "main")
-                    if url:
-                        print(f"opened: {url}")
+                # Cross-repo takes precedence over any build-time skip so the reported reason is the
+                # authoritative one (a sibling-repo package can also fail its file reads when the
+                # siblings are not checked out; the cross-repo reason is the real cause).
+                reason = cross_repo_skip_reason(prop.repo)
+                if reason is not None:
+                    skipped.append(prop)
+                    print(f"skip: {prop.pypi_name} ({prop.repo}) -- {reason}")
+                    continue
+                if prop.skipped:
+                    skipped.append(prop)
+                    print(f"skip: {prop.pypi_name} ({prop.repo}) -- {prop.skipped_reason}")
+                    continue
+                url = execute_proposal(prop, sources, "main")
+                if url:
+                    opened.append(prop)
+                    print(f"opened: {prop.pypi_name} ({prop.repo}) -- {url}")
+                else:
+                    skipped.append(prop)
+                    print(f"skip: {prop.pypi_name} ({prop.repo}) -- execute opened no PR (empty URL)")
         except SourceError as exc:
             print(f"ERROR: execute failed: {exc}", file=sys.stderr)
             return 2
+        print(f"execute summary: {len(opened)} PR(s) opened, {len(skipped)} skipped.")
         return 0
 
     if args.json:
