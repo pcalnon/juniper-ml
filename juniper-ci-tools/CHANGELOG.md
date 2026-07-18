@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Default header-template filenames for `juniper-generate-dep-docs` renamed to
+  track the 2026-07-04 notes/ naming convention: `--pip-header` now defaults to
+  `JUNIPER_2026-03-11_JUNIPER-ML_PIP-DEPENDENCY-FILE-HEADER.md` (was
+  `PIP_DEPENDENCY_FILE_HEADER.md`) and `--conda-header` to
+  `JUNIPER_2026-03-15_JUNIPER-ML_CONDA-DEPENDENCY-FILE-HEADER.md` (was
+  `CONDA_DEPENDENCY_FILE_HEADER.md`); the matching `generate_dep_docs()`
+  `pip_header_name` / `conda_header_name` parameters default to the same new
+  names. This keeps a default (no-flag) invocation resolving the header
+  template in `--notes-dir` after the notes/ files were renamed (juniper-ml's
+  own `ci.yml`, `lockfile-update.yml`, and `docs-full-check.yml` all invoke the
+  console script without the header flags); callers that pass the header
+  filenames explicitly are unaffected.
+
 ## [0.6.0] -- 2026-06-30
 
 Adds an **opt-in enforcing mode** to `juniper-coverage-gap-map` (non-breaking:
