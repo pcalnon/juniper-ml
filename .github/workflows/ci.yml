@@ -180,6 +180,14 @@ jobs:
           # report mode), and no secret other than SLACK_WEBHOOK_URL is referenced. PyYAML (installed
           # above); the workflow YAML is not otherwise lint-gated for this property.
           python3 -m unittest -v tests/test_release_train_workflow_guard.py
+          # tests/test_release_train_archive_guard.py: hermetic tests for the exempt
+          # notes-archive structural guard (util/release_train/archive_guard.py, plan
+          # §7.2 / §12 step 3.1). Drives the pure four-rule classifier with synthetic
+          # `git diff --name-status` change sets + the CLI via the --name-status-file
+          # seam against the real registry.yaml: a pure notes-add PASSES, and modify /
+          # delete / out-of-path / bad-name / mixed diffs each FAIL; exit codes 0/1/2.
+          # No network / git / gh. util/ is not pre-commit-lint-gated, so this is the gate.
+          python3 -m unittest -v tests/test_release_train_archive_guard.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
@@ -357,6 +365,52 @@ jobs:
           echo "║       juniper-ml - Bash Regression Tests                   ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           bash scripts/test_resume_file_safety.bash
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Release-Train Archive Guard: the exempt notes-archive PR structural guard lane
+  # (release-train plan §7.2 / §12 step 3.1). Computes the PR's changed-file set and passes ONLY if
+  # the diff is exactly new file(s) under notes/releases/ matching the RELEASE_NOTES_ convention
+  # (add-only, path-confined, name-valid, single-purpose). SKIPs (passes) for any PR that does NOT
+  # touch notes/releases/, so it never blocks a normal PR. A FAIL merely fails this check -- the PR
+  # then falls back to the standard owner gate (plan S7.2); the guard has no side effect. Wired here
+  # as a standalone status check so the owner can later mark it REQUIRED in the branch ruleset (step
+  # 3.3), which is what lets the exempt archive PR auto-merge behind it.
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  release-train-archive-guard:
+    name: Release-Train Archive Guard
+    runs-on: ubuntu-latest
+    # PR-only: the exempt notes-archive PR is always a pull request. On a branch push
+    # github.base_ref is empty, so the guard is a no-op and never blocks a push.
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0 # need base + head history for the merge-base (three-dot) diff
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Install guard dependencies
+        run: |
+          python -m pip install --upgrade "pip>=26.1.1"
+          # PyYAML: archive_guard.py resolves the valid pypi_names from registry.yaml
+          # (via detect.load_registry) for the rule-3 name-valid check.
+          pip install "pyyaml>=6.0"
+
+      - name: Run archive guard
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║       juniper-ml - Release-Train Archive Guard             ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          # FETCH_HEAD = the PR base branch tip; the three-dot range then yields exactly the
+          # PR's net change set (merge-base(base, HEAD)..HEAD), matching `gh pr diff`.
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          python3 util/release_train/archive_guard.py --base FETCH_HEAD --head HEAD
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Build: Build the package and validate with twine
