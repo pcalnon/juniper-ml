@@ -17,6 +17,13 @@ Covers (task acceptance list):
   * dry-run writes NOTHING to the repo (tmpdir tree byte-identical before/after)
   * version-file editors (static pyproject / dynamic _version.py / meta AGENTS.md), propagation
     edges (MINOR escapes ceilings; PATCH does not), and CLI exit codes 0 / 2
+  * in-repo meta consumer-pin co-changes (plan S5.4; closes the ml#657 RK-11 gap): an escaping MINOR
+    bump emits all three lockstep edits (root pyproject.toml + tests/test_pyproject_extras.py + the
+    AGENTS.md extras table) with correct raised ceilings; a non-escaping PATCH bump and a package
+    absent from the extras emit ZERO co-changes + the explicit "none needed" body line; the pyproject
+    edit round-trips byte-identically (only the ceiling moves); the AGENTS true-up is scoped to the
+    extras table (prose / minimum-pin mentions never move) and fixes a drifted row; the meta itself
+    yields no self-pin co-change; dry-run with a co-change scenario still writes nothing
 
 ``util/`` is not pre-commit-lint-gated, so this unittest IS the gate (the ``env_floor_drift_check``
 precedent, shared with ``detect.py``). Imported via the house ``sys.path.insert`` idiom.
@@ -30,6 +37,7 @@ Created: 2026-07-14
 
 from __future__ import annotations
 
+import difflib
 import hashlib
 import io
 import json
@@ -37,6 +45,7 @@ import shutil
 import sys
 import tempfile
 import textwrap
+import tomllib
 import unittest
 from collections import OrderedDict
 from contextlib import redirect_stdout
@@ -112,6 +121,87 @@ def _install_templates(repo_root: Path) -> None:
     dest.mkdir(parents=True, exist_ok=True)
     shutil.copy(REAL_TEMPLATE, dest / "TEMPLATE_RELEASE_NOTES.md")
     shutil.copy(REAL_SECURITY_TEMPLATE, dest / "TEMPLATE_SECURITY_RELEASE_NOTES.md")
+
+
+# The meta-package's consumer surface the in-repo pin co-change reads + edits (root pyproject.toml,
+# the tests/test_pyproject_extras.py membership contract, and the AGENTS.md "Dependency extras
+# reference" table). Exercises: a single-extra ceiling pin (service-core <0.5.0), a floorless pin
+# (observability, no ceiling), and a package in TWO extras (doc-tools in [tools] AND [doc-tools]).
+_META_PYPROJECT = textwrap.dedent("""\
+    [build-system]
+    requires = ["setuptools>=61.0", "wheel"]
+    build-backend = "setuptools.build_meta"
+
+    [project]
+    name = "juniper-ml"
+    version = "0.6.0"
+    dependencies = []
+
+    [project.optional-dependencies]
+    tools = [
+        "juniper-service-core>=0.2.0,<0.5.0",
+        "juniper-model-core>=0.1.0,<0.4.0",
+        "juniper-observability>=0.2.0",
+        "juniper-doc-tools>=0.1.0,<0.2.0",
+    ]
+    doc-tools = [
+        "juniper-doc-tools>=0.1.0,<0.2.0",
+    ]
+    all = [
+        "juniper-ml[tools,doc-tools]",
+    ]
+    """)
+
+_META_TEST_EXTRAS = textwrap.dedent('''\
+    """Lint contract mirror (exact-string membership)."""
+    EXPECTED_EXTRAS = {
+        "tools": {
+            "juniper-service-core>=0.2.0,<0.5.0",
+            "juniper-model-core>=0.1.0,<0.4.0",
+            "juniper-observability>=0.2.0",
+            "juniper-doc-tools>=0.1.0,<0.2.0",
+        },
+        "doc-tools": {
+            "juniper-doc-tools>=0.1.0,<0.2.0",
+        },
+        "all": {
+            "juniper-ml[tools,doc-tools]",
+        },
+    }
+    ''')
+
+# The AGENTS table row for `tools` plus a `doc-tools` row (doc-tools in two rows) AND a prose pin
+# OUTSIDE the table that must never move (the ml#657 scoping hazard: a `juniper-observability>=0.2.0`
+# minimum-pin note and a `juniper-service-core` bare mention live elsewhere in the real AGENTS.md).
+_META_AGENTS = textwrap.dedent("""\
+    # AGENTS
+
+    **Version**: 0.6.0
+
+    ## Shared Observability Helpers
+
+    Minimum pin: `juniper-observability>=0.2.0`. Do not move this prose mention.
+
+    ### Dependency extras reference
+
+    | Extra       | Packages                                                                                                                                              |
+    |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | `tools`     | `juniper-service-core>=0.2.0,<0.5.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`            |
+    | `doc-tools` | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                              |
+
+    ## Conventions
+
+    A prose pin that must NOT be edited: `juniper-service-core>=0.2.0,<0.5.0`.
+    """)
+
+
+def _write_meta_surface(repo_root: Path) -> None:
+    """Write the meta-package's root pyproject.toml + tests/test_pyproject_extras.py + AGENTS.md so
+    build_proposal's in-repo consumer-pin co-change (step 5b) can read + edit the real three files."""
+    (repo_root / "pyproject.toml").write_text(_META_PYPROJECT)
+    (repo_root / "tests").mkdir(parents=True, exist_ok=True)
+    (repo_root / "tests" / "test_pyproject_extras.py").write_text(_META_TEST_EXTRAS)
+    (repo_root / "AGENTS.md").write_text(_META_AGENTS)
 
 
 _CHANGELOG = textwrap.dedent("""\
@@ -401,6 +491,209 @@ class BuildProposalTest(unittest.TestCase):
         self.assertTrue(prop.skipped)
         self.assertIn("changelog conflict", prop.skipped_reason)
         self.assertEqual(prop.edits, [])
+
+
+# ── in-repo meta consumer-pin co-changes: pure helpers (plan S5.4; ml#657 RK-11 gap) ─────
+
+
+class ConsumerPinHelperTest(unittest.TestCase):
+    def test_requirement_names_package(self):
+        self.assertTrue(pr.requirement_names_package("juniper-service-core>=0.2.0,<0.5.0", "juniper-service-core"))
+        self.assertTrue(pr.requirement_names_package("juniper-observability>=0.2.0", "juniper-observability"))  # floorless still names it
+        # the [all] recursive self-ref names extras, not a versioned package
+        self.assertFalse(pr.requirement_names_package("juniper-ml[clients,worker,tools]", "juniper-ml"))
+        # a longer package name must not match its prefix
+        self.assertFalse(pr.requirement_names_package("juniper-cascor-worker>=0.4.0", "juniper-cascor"))
+
+    def test_next_minor_ceiling(self):
+        self.assertEqual(pr.next_minor_ceiling("0.5.0"), "<0.6.0")
+        self.assertEqual(pr.next_minor_ceiling("0.5.3"), "<0.6.0")  # patch of a minor still caps at the next minor
+        self.assertEqual(pr.next_minor_ceiling("0.9.0"), "<0.10.0")  # multi-digit minor
+
+    def test_raise_requirement_ceiling(self):
+        # escaping: 0.5.0 is NOT < 0.5.0 -> raise to <0.6.0
+        self.assertEqual(pr.raise_requirement_ceiling("juniper-service-core>=0.2.0,<0.5.0", "0.5.0"), "juniper-service-core>=0.2.0,<0.6.0")
+        # non-escaping patch under the ceiling -> no change
+        self.assertIsNone(pr.raise_requirement_ceiling("juniper-service-core>=0.2.0,<0.5.0", "0.4.1"))
+        # no upper bound -> any higher version still satisfies >=floor
+        self.assertIsNone(pr.raise_requirement_ceiling("juniper-ci-tools>=0.1.0", "0.9.0"))
+        # a <= ceiling: 0.5.0 <= 0.5.0 satisfies -> no change; 0.5.1 escapes -> raise
+        self.assertIsNone(pr.raise_requirement_ceiling("juniper-x>=0.2.0,<=0.5.0", "0.5.0"))
+        self.assertEqual(pr.raise_requirement_ceiling("juniper-x>=0.2.0,<=0.5.0", "0.5.1"), "juniper-x>=0.2.0,<0.6.0")
+
+    def test_compute_multi_extra_and_absent_and_meta_self(self):
+        # doc-tools is pinned in BOTH [tools] and [doc-tools] -> one co-change per extra
+        cc = pr.compute_consumer_pin_cochanges(_META_PYPROJECT, "juniper-doc-tools", "0.2.0")
+        self.assertEqual({c.extra for c in cc}, {"tools", "doc-tools"})
+        self.assertTrue(all(c.new_req == "juniper-doc-tools>=0.1.0,<0.3.0" for c in cc))
+        # a package not named in any extra -> zero
+        self.assertEqual(pr.compute_consumer_pin_cochanges(_META_PYPROJECT, "juniper-config-tools", "0.9.0"), [])
+        # the meta-package does not pin ITSELF with a version (only the [all] recursive ref) -> zero
+        self.assertEqual(pr.compute_consumer_pin_cochanges(_META_PYPROJECT, "juniper-ml", "0.7.0"), [])
+        # a floorless pin (observability) escapes no ceiling -> zero
+        self.assertEqual(pr.compute_consumer_pin_cochanges(_META_PYPROJECT, "juniper-observability", "0.9.0"), [])
+
+    def test_pyproject_edit_round_trips_byte_identical(self):
+        cc = pr.compute_consumer_pin_cochanges(_META_PYPROJECT, "juniper-service-core", "0.5.0")
+        self.assertEqual(len(cc), 1)
+        new_text = pr.apply_pin_edits_exact(_META_PYPROJECT, cc)
+        # re-parse: the target ceiling is raised, the floor is intact
+        after = tomllib.loads(new_text)["project"]["optional-dependencies"]
+        self.assertIn("juniper-service-core>=0.2.0,<0.6.0", after["tools"])
+        self.assertNotIn("juniper-service-core>=0.2.0,<0.5.0", after["tools"])
+        # every OTHER extras entry is byte-identical (floors + siblings untouched)
+        before = tomllib.loads(_META_PYPROJECT)["project"]["optional-dependencies"]
+        for extra in before:
+            unchanged_before = {r for r in before[extra] if "juniper-service-core" not in r}
+            unchanged_after = {r for r in after[extra] if "juniper-service-core" not in r}
+            self.assertEqual(unchanged_before, unchanged_after, f"[{extra}] sibling entries drifted")
+        # exactly ONE textual line differs, and single-digit-minor keeps the byte length
+        diff = [ln for ln in difflib.unified_diff(_META_PYPROJECT.splitlines(), new_text.splitlines()) if ln[:1] in "+-" and not ln.startswith(("+++", "---"))]
+        self.assertEqual(diff, ['-    "juniper-service-core>=0.2.0,<0.5.0",', '+    "juniper-service-core>=0.2.0,<0.6.0",'])
+        self.assertEqual(len(new_text), len(_META_PYPROJECT))
+
+    def test_agents_table_true_up_is_scoped(self):
+        new_req = "juniper-service-core>=0.2.0,<0.6.0"
+        out = pr.apply_pin_edits_agents_table(_META_AGENTS, "juniper-service-core", new_req)
+        # the [tools] table row is trued up ...
+        self.assertIn("`juniper-service-core>=0.2.0,<0.6.0`", out)
+        # ... but the prose pin in the ## Conventions section is NOT moved
+        self.assertIn("A prose pin that must NOT be edited: `juniper-service-core>=0.2.0,<0.5.0`.", out)
+        # the observability minimum-pin prose note is untouched too
+        self.assertIn("Minimum pin: `juniper-observability>=0.2.0`.", out)
+        # doc-tools sits in TWO table rows -> both are trued up, none outside the table
+        dt = pr.apply_pin_edits_agents_table(_META_AGENTS, "juniper-doc-tools", "juniper-doc-tools>=0.1.0,<0.3.0")
+        self.assertEqual(dt.count("`juniper-doc-tools>=0.1.0,<0.3.0`"), 2)
+        self.assertNotIn("`juniper-doc-tools>=0.1.0,<0.2.0`", dt)
+
+    def test_agents_table_true_up_fixes_a_drifted_row(self):
+        # the ml#657 class: the table row lags pyproject at <0.4.0; the name-anchored true-up corrects it
+        stale = _META_AGENTS.replace("`juniper-service-core>=0.2.0,<0.5.0`, `juniper-model-core", "`juniper-service-core>=0.2.0,<0.4.0`, `juniper-model-core")
+        fixed = pr.apply_pin_edits_agents_table(stale, "juniper-service-core", "juniper-service-core>=0.2.0,<0.6.0")
+        self.assertIn("`juniper-service-core>=0.2.0,<0.6.0`", fixed)
+        # only the table row is affected; the model-core sibling and the prose pins are intact
+        self.assertIn("`juniper-model-core>=0.1.0,<0.4.0`", fixed)
+        self.assertIn("A prose pin that must NOT be edited: `juniper-service-core>=0.2.0,<0.5.0`.", fixed)
+
+
+# ── in-repo meta consumer-pin co-changes: build_proposal integration ─────────────────────
+
+
+class BuildProposalConsumerPinTest(unittest.TestCase):
+    """The escaping / non-escaping / absent / multi-extra / meta-self cases through build_proposal,
+    against a synthetic repo carrying the real three-file meta surface. Fully offline (no writes)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.repo_root = self.root / "juniper-ml"
+        self.repo_root.mkdir()
+        _install_templates(self.repo_root)
+        _write_meta_surface(self.repo_root)
+        self.eco = self.root
+        self.fake = _FakeSources(self.repo_root, self.eco)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _subpkg_entry(self, name: str, path: str) -> "d.PackageEntry":
+        return _entry(pypi_name=name, path=path, tag_pattern=f"{name}-v*", archive_name=f"RELEASE_NOTES_{name}_v{{version}}.md", ship_paths=[f"{path}{name.replace('-', '_')}/"])
+
+    def _edit(self, prop, path):
+        return next((e for e in prop.edits if e.path == path), None)
+
+    def test_escaping_minor_bump_emits_all_three_cochanges(self):
+        _write_pkg(self.repo_root, "juniper-service-core/", name="juniper-service-core", version="0.4.0", changelog=_CHANGELOG)
+        entry = self._subpkg_entry("juniper-service-core", "juniper-service-core/")
+        pkg = _manifest_pkg(pypi_name="juniper-service-core", released_version="0.4.0", declared_version="0.4.0", proposed_version="0.5.0")
+        before = _sha_tree(self.repo_root)
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        # build_proposal itself writes NOTHING (dry-run purity)
+        self.assertEqual(before, _sha_tree(self.repo_root))
+        # the version-file edit stays edits[0] (root pyproject is an ADDITIONAL edit, not the version bump)
+        self.assertEqual(prop.edits[0].path, "juniper-service-core/pyproject.toml")
+        # co-change record + all three lockstep edits present with the raised ceiling
+        self.assertEqual([(c.extra, c.old_req, c.new_req) for c in prop.consumer_pin_cochanges], [("tools", "juniper-service-core>=0.2.0,<0.5.0", "juniper-service-core>=0.2.0,<0.6.0")])
+        root = self._edit(prop, "pyproject.toml")
+        self.assertIsNotNone(root, "root pyproject.toml pin co-change missing")
+        self.assertIn("juniper-service-core>=0.2.0,<0.6.0", root.new_text)
+        self.assertNotIn("juniper-service-core>=0.2.0,<0.5.0", tomllib.loads(root.new_text)["project"]["optional-dependencies"]["tools"])
+        test_edit = self._edit(prop, "tests/test_pyproject_extras.py")
+        self.assertIsNotNone(test_edit, "test_pyproject_extras.py lockstep edit missing")
+        self.assertIn("juniper-service-core>=0.2.0,<0.6.0", test_edit.new_text)
+        agents = self._edit(prop, "AGENTS.md")
+        self.assertIsNotNone(agents, "AGENTS.md extras-table co-change missing")
+        self.assertIn("`juniper-service-core>=0.2.0,<0.6.0`", agents.new_text)
+        # scoping: the AGENTS prose pin is NOT moved by the table true-up
+        self.assertIn("A prose pin that must NOT be edited: `juniper-service-core>=0.2.0,<0.5.0`.", agents.new_text)
+        # the PR body carries the Consumer-pin co-changes section listing the edit
+        self.assertIn("Consumer-pin co-changes", prop.pr_body or "")
+        self.assertIn("`[tools]`: `juniper-service-core>=0.2.0,<0.5.0` -> `juniper-service-core>=0.2.0,<0.6.0`", prop.pr_body or "")
+        self.assertTrue(any("In-repo meta consumer pin" in item for item in prop.co_change_checklist))
+
+    def test_doc_tools_bump_updates_both_extras(self):
+        _write_pkg(self.repo_root, "juniper-doc-tools/", name="juniper-doc-tools", version="0.1.5", changelog=_CHANGELOG)
+        entry = self._subpkg_entry("juniper-doc-tools", "juniper-doc-tools/")
+        pkg = _manifest_pkg(pypi_name="juniper-doc-tools", released_version="0.1.5", declared_version="0.1.5", proposed_version="0.2.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertEqual({c.extra for c in prop.consumer_pin_cochanges}, {"tools", "doc-tools"})
+        root = self._edit(prop, "pyproject.toml")
+        extras = tomllib.loads(root.new_text)["project"]["optional-dependencies"]
+        self.assertIn("juniper-doc-tools>=0.1.0,<0.3.0", extras["tools"])
+        self.assertIn("juniper-doc-tools>=0.1.0,<0.3.0", extras["doc-tools"])
+        agents = self._edit(prop, "AGENTS.md")
+        self.assertEqual(agents.new_text.count("`juniper-doc-tools>=0.1.0,<0.3.0`"), 2)
+
+    def test_non_escaping_patch_bump_emits_none_needed(self):
+        _write_pkg(self.repo_root, "juniper-service-core/", name="juniper-service-core", version="0.4.0", changelog=_CHANGELOG)
+        entry = self._subpkg_entry("juniper-service-core", "juniper-service-core/")
+        pkg = _manifest_pkg(pypi_name="juniper-service-core", released_version="0.4.0", declared_version="0.4.0", proposed_bump="patch", proposed_version="0.4.1")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertEqual(prop.consumer_pin_cochanges, [])
+        # NO root pyproject / test / AGENTS edits (only the sub-package version bump + its CHANGELOG)
+        self.assertEqual({e.path for e in prop.edits}, {"juniper-service-core/pyproject.toml", "juniper-service-core/CHANGELOG.md"})
+        self.assertIn("none needed -- new version within existing ceilings", prop.pr_body or "")
+
+    def test_package_absent_from_extras_emits_zero(self):
+        # juniper-config-tools is in-repo but NOT named in the fixture's extras -> zero co-changes
+        _write_pkg(self.repo_root, "juniper-config-tools/", name="juniper-config-tools", version="0.1.0", changelog=_CHANGELOG)
+        entry = self._subpkg_entry("juniper-config-tools", "juniper-config-tools/")
+        pkg = _manifest_pkg(pypi_name="juniper-config-tools", released_version="0.1.0", declared_version="0.1.0", proposed_version="0.2.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertEqual(prop.consumer_pin_cochanges, [])
+        self.assertIsNone(self._edit(prop, "pyproject.toml"))
+        self.assertIsNone(self._edit(prop, "AGENTS.md"))
+        self.assertIn("none needed", prop.pr_body or "")
+
+    def test_meta_self_bump_has_no_pin_cochange_only_version_header(self):
+        # the meta-package bumping itself: AGENTS **Version** co-change, but NO extras-table pin change.
+        # _write_meta_surface already laid down the extras pyproject + AGENTS; add the meta CHANGELOG.
+        (self.repo_root / "CHANGELOG.md").write_text(_CHANGELOG)
+        entry = _entry(pypi_name="juniper-ml", path=".", tag_pattern="v*", archive_name="RELEASE_NOTES_v{version}.md", ship_paths=[])
+        pkg = _manifest_pkg(pypi_name="juniper-ml", released_version="0.6.0", declared_version="0.6.0", proposed_version="0.7.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-17")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertEqual(prop.consumer_pin_cochanges, [])
+        agents = self._edit(prop, "AGENTS.md")
+        self.assertIsNotNone(agents)
+        self.assertIn("**Version**: 0.7.0", agents.new_text)  # the version header co-change (step 5)
+        self.assertIn("`juniper-service-core>=0.2.0,<0.5.0`", agents.new_text)  # extras table NOT touched
+        self.assertIn("none needed", prop.pr_body or "")
+
+    def test_meta_consumer_excluded_from_propagation_when_in_repo(self):
+        # a sub-package MINOR bump: the meta (in-repo) is folded into THIS PR, so it is NOT also a
+        # cross-repo propagation follow-on; a genuine sibling consumer still is.
+        mc = self._subpkg_entry("juniper-model-core", "juniper-model-core/")
+        meta = _entry(pypi_name="juniper-ml", repo="juniper-ml", path=".", depends_on=["juniper-model-core"])
+        sibling = _entry(pypi_name="juniper-recurrence", repo="juniper-recurrence", path=".", depends_on=["juniper-model-core"])
+        edges = pr.propagation_edges([mc, meta, sibling], mc, "minor")
+        consumers = {e["consumer"] for e in edges}
+        self.assertNotIn("juniper-ml", consumers)  # folded into the same PR
+        self.assertIn("juniper-recurrence", consumers)  # cross-repo follow-on remains
 
 
 # ── CLI: dry-run report / json / writes-nothing / exit codes ─────────────────

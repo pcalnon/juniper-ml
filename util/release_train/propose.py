@@ -14,6 +14,13 @@ single **standard-gated release-proposal PR** (plan S5.4):
   * the meta-package's ``AGENTS.md`` ``**Version**`` co-change (plan S5.4; kept in lockstep by
     ``tests/test_agents_md_version_drift.py``) and the S5.4 co-change checklist (lockfile regen,
     version+pin+lint atomicity);
+  * for an **in-repo** package (the meta-package or one of its six co-located sub-packages), the
+    meta-package's own **consumer-pin co-changes** (plan S5.4): a pre-1.0 MINOR bump that escapes a
+    ``[project.optional-dependencies]`` ``<next-minor`` ceiling moves that pin AND its two lockstep
+    artifacts -- the exact-string membership contract in ``tests/test_pyproject_extras.py`` and the
+    ``AGENTS.md`` extras table -- IN THE SAME PR. This is the ml#657 RK-11 failure class (a
+    service-core 0.5.0 proposal that bumped the sub-package but not the ``<0.5.0`` meta ceiling, so
+    ``tests/test_service_core_drift.py`` failed and the proposal shipped red);
   * the ``propagation_edges`` -- a pre-1.0 MINOR bump escapes a consumer's ``<next-minor``
     ceiling pin (plan S6/S13), so each reverse-dependency consumer gets a listed follow-on
     ceiling-bump PR (standard-gated, **never** folded into the exempt path -- the 2026-07-06
@@ -57,6 +64,7 @@ import os
 import re
 import subprocess  # nosec B404 - only the gh/git binaries with fixed argv (no shell)
 import sys
+import tomllib  # Python >= 3.11 (juniper-ml requires >= 3.12); parses the meta extras for pin co-changes
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -127,6 +135,7 @@ class Proposal:
     notes_draft: "str | None" = None
     propagation_edges: list = field(default_factory=list)
     co_change_checklist: list = field(default_factory=list)
+    consumer_pin_cochanges: list = field(default_factory=list)
     ship_evidence: list = field(default_factory=list)
     existing_pr: "dict | None" = None
     skipped_reason: "str | None" = None
@@ -151,6 +160,7 @@ class Proposal:
             "notes_draft": self.notes_draft,
             "propagation_edges": self.propagation_edges,
             "co_change_checklist": self.co_change_checklist,
+            "consumer_pin_cochanges": [cc.to_dict() for cc in self.consumer_pin_cochanges],
             "ship_evidence": self.ship_evidence,
             "existing_pr": self.existing_pr,
             "skipped_reason": self.skipped_reason,
@@ -282,6 +292,150 @@ def set_agents_version(text: str, new_version: str) -> tuple:
     return new_text, old
 
 
+# ── in-repo meta-package consumer-pin co-changes (plan S5.4; closes the #657 RK-11 gap) ─
+#
+# When the train proposes a version bump for an IN-REPO package (the meta-package or one of its six
+# co-located sub-packages), the meta-package's own root ``pyproject.toml`` may pin that package behind
+# a ``<next-minor`` ceiling in one or more ``[project.optional-dependencies]`` extras. A pre-1.0 MINOR
+# bump that escapes such a ceiling must move the pin -- AND the two artifacts kept in lockstep with it:
+# the exact-string membership contract in ``tests/test_pyproject_extras.py`` and the ``AGENTS.md``
+# "Dependency extras reference" table row -- IN THE SAME proposal PR, or the RK-11 lockstep gate
+# (``tests/test_service_core_drift.py`` and its per-package siblings) fails and the proposal ships red
+# (the ml#657 incident, fixed in-branch by commit 1860dbb). This is the IN-REPO case only; a
+# cross-repo consumer's pin is a separate standard-gated follow-on PR (``propagation_edges``, D6)
+# because it cannot ride a PR in a different repo. The ``juniper-ml[extra,...]`` recursive self-ref in
+# ``[all]`` names extras, not a versioned package, so it is never a pin co-change target.
+
+_VERSION_OPERATORS = "<>=!~"
+
+
+@dataclass
+class ConsumerPinCoChange:
+    """One meta-extras ceiling raise: ``[extra]`` pinned ``old_req``, now needs ``new_req``."""
+
+    extra: str
+    old_req: str
+    new_req: str
+
+    def to_dict(self) -> dict:
+        return {"extra": self.extra, "old_req": self.old_req, "new_req": self.new_req}
+
+
+def requirement_names_package(req: str, pypi_name: str) -> bool:
+    """True when requirement string ``req`` is a *versioned* pin of ``pypi_name`` (the name immediately
+    followed by a PEP 508 version operator). The ``juniper-ml[...]`` recursive extras ref (``[`` after
+    the name, no operator) and a longer package name (``juniper-x-y`` probed for ``juniper-x``) both
+    return False."""
+    req = req.strip()
+    if not req.startswith(pypi_name):
+        return False
+    rest = req[len(pypi_name):]
+    return bool(rest) and rest[0] in _VERSION_OPERATORS
+
+
+def next_minor_ceiling(version: str) -> str:
+    """The pre-1.0 next-minor ceiling for a newly released ``version`` (plan S6): ``<{major}.{minor+1}.0``.
+    ``0.5.0`` -> ``<0.6.0``; ``0.5.3`` -> ``<0.6.0`` (the whole fleet is 0.x, so major stays 0; the
+    formula generalizes to post-1.0 should a package ever cross 1.0)."""
+    head = re.split(r"[^0-9.]", version, maxsplit=1)[0]
+    parts = [int(p) for p in head.split(".") if p.isdigit()]
+    while len(parts) < 2:
+        parts.append(0)
+    return f"<{parts[0]}.{parts[1] + 1}.0"
+
+
+def raise_requirement_ceiling(req: str, new_version: str) -> "str | None":
+    """If ``new_version`` escapes ``req``'s upper bound, return ``req`` with ONLY the ceiling raised to
+    the next-minor of ``new_version`` (the floor and every other specifier preserved byte-for-byte);
+    else ``None`` (within range, or no upper bound at all -> no pin change). Floors are never touched."""
+    m = re.search(r"(<=?)\s*([0-9][0-9A-Za-z.\-+]*)", req)
+    if not m:
+        return None  # no upper bound: a higher version still satisfies '>=floor'
+    op, ceiling = m.group(1), m.group(2)
+    cmp = detect.version_cmp(new_version, ceiling)
+    escapes = cmp >= 0 if op == "<" else cmp > 0
+    if not escapes:
+        return None
+    return req[: m.start()] + next_minor_ceiling(new_version) + req[m.end():]
+
+
+def compute_consumer_pin_cochanges(pyproject_text: str, pypi_name: str, new_version: str) -> list:
+    """Every meta-extras requirement that names ``pypi_name`` and whose ceiling ``new_version`` escapes,
+    as a list of ``ConsumerPinCoChange`` (one per (extra, requirement) -- a package listed in two extras,
+    e.g. ``juniper-doc-tools`` in ``[doc-tools]`` and ``[tools]``, yields one entry each). An empty list
+    means the new version is within every existing ceiling (no pin change needed)."""
+    try:
+        data = tomllib.loads(pyproject_text)
+    except (tomllib.TOMLDecodeError, ValueError):
+        return []
+    extras = (data.get("project") or {}).get("optional-dependencies") or {}
+    cochanges: list = []
+    for extra_name, reqs in extras.items():
+        for req in reqs or []:
+            if not isinstance(req, str) or not requirement_names_package(req, pypi_name):
+                continue
+            new_req = raise_requirement_ceiling(req, new_version)
+            if new_req is not None and new_req != req:
+                cochanges.append(ConsumerPinCoChange(extra=extra_name, old_req=req, new_req=new_req))
+    return cochanges
+
+
+def _distinct_req_pairs(cochanges: list) -> list:
+    """Order-preserving de-dup of (old_req, new_req) pairs for text replacement (a package listed in
+    two extras is the same string, edited once wherever it occurs)."""
+    seen: set = set()
+    pairs: list = []
+    for cc in cochanges:
+        key = (cc.old_req, cc.new_req)
+        if key not in seen:
+            seen.add(key)
+            pairs.append(key)
+    return pairs
+
+
+def apply_pin_edits_exact(text: str, cochanges: list) -> str:
+    """Byte-surgical exact-string replacement of each ceiling-raised requirement -- for the root
+    ``pyproject.toml`` and the ``tests/test_pyproject_extras.py`` membership sets, whose requirement
+    strings are the authoritative source the co-change was parsed from (so ``old_req`` matches exactly
+    and nothing else in the file moves)."""
+    for old_req, new_req in _distinct_req_pairs(cochanges):
+        text = text.replace(old_req, new_req)
+    return text
+
+
+_AGENTS_EXTRAS_HEADING = re.compile(r"^#{2,4}\s+Dependency extras reference\s*$", re.IGNORECASE)
+
+
+def apply_pin_edits_agents_table(text: str, pypi_name: str, new_req: str) -> str:
+    """True up the ``AGENTS.md`` "Dependency extras reference" table: within THAT table only, replace
+    the affected package's backtick-wrapped, digit-led versioned requirement (whatever ceiling it
+    currently shows, in every row it appears -- ``juniper-doc-tools`` sits in both ``[tools]`` and
+    ``[doc-tools]``) with the authoritative ``new_req``.
+
+    Scoped to the table because a bare ``\\`juniper-doc-tools\\``` prose mention, a
+    ``\\`juniper-observability>=0.2.0\\``` minimum-pin note, and a ``\\`juniper-ci-tools>=0.1.0,<0.2.0\\``
+    CI-pin description all live ELSEWHERE in AGENTS.md and must not move. Name-anchored (not
+    exact-old-string) so a table row that has drifted from ``pyproject.toml`` -- the ml#657 case where
+    the service-core row was stale at ``<0.4.0`` -- is corrected to the new pin too (1860dbb fixed
+    exactly this by hand). The operator+digit anchor also skips a bare name or a ``>=X,<Y`` placeholder."""
+    pin_re = re.compile("`" + re.escape(pypi_name) + r"[<>=!~]+[0-9][^`]*`")
+    replacement = "`" + new_req + "`"
+    out: list = []
+    in_section = False
+    for line in text.splitlines(keepends=True):
+        stripped = line.strip()
+        if _AGENTS_EXTRAS_HEADING.match(stripped):
+            in_section = True
+            out.append(line)
+            continue
+        if in_section and stripped.startswith("#"):
+            in_section = False  # the next heading closes the extras-reference section
+        if in_section and stripped.startswith("|"):
+            line = pin_re.sub(replacement, line)
+        out.append(line)
+    return "".join(out)
+
+
 # ── CHANGELOG [Unreleased] -> [version] move ─────────────────────────────────
 
 
@@ -356,13 +510,21 @@ def reverse_dependents(entries: list, pypi_name: str) -> list:
 
 
 def propagation_edges(entries: list, entry: "detect.PackageEntry", bump: str) -> list:
-    """For a pre-1.0 MINOR (or MAJOR) bump, each consumer needs a ceiling-bump follow-on PR
-    (plan S6/S13). PATCH stays within ``<next-minor`` ceilings -> no propagation."""
+    """For a pre-1.0 MINOR (or MAJOR) bump, each CROSS-REPO consumer needs a ceiling-bump follow-on PR
+    (plan S6/S13). PATCH stays within ``<next-minor`` ceilings -> no propagation.
+
+    When the bumped package is IN-REPO, the meta-package's own consumer pin is co-changed in the SAME
+    proposal PR (see ``compute_consumer_pin_cochanges``; closes the ml#657 RK-11 gap), so the meta is
+    NOT also listed here as a separate follow-on edge -- that would contradict the folded-in edit. A
+    sibling-repo bump still lists the meta as a follow-on (its pin cannot ride a cross-repo PR)."""
     if bump not in _MINOR_BUMPS:
         return []
     by_name = {e.pypi_name: e for e in entries}
     edges: list = []
+    fold_meta = entry.repo == detect.META_REPO
     for consumer in reverse_dependents(entries, entry.pypi_name):
+        if fold_meta and consumer == notes_render.META_PACKAGE:
+            continue  # co-changed in this PR, not a separate follow-on edge
         cons_entry = by_name.get(consumer)
         edges.append(
             {
@@ -382,11 +544,14 @@ def _changelog_rel(entry: "detect.PackageEntry") -> str:
     return os.path.normpath(os.path.join(entry.path, "CHANGELOG.md")).replace(os.sep, "/")
 
 
-def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, agents_edited: bool) -> list:
+def _co_change_checklist(entry: "detect.PackageEntry", bump: str, edges: list, agents_edited: bool, cochanges: list) -> list:
     items: list = []
     if entry.pypi_name == notes_render.META_PACKAGE:
         state = "included in this PR" if agents_edited else "REQUIRED (edit could not be computed -- do it manually)"
         items.append(f"AGENTS.md **Version** header bump ({state}); guarded by tests/test_agents_md_version_drift.py.")
+    if cochanges:
+        extras_touched = ", ".join(sorted({f"[{cc.extra}]" for cc in cochanges}))
+        items.append(f"In-repo meta consumer pin (included in this PR): raised the {extras_touched} ceiling for {entry.pypi_name} to {cochanges[0].new_req} -- root pyproject.toml + tests/test_pyproject_extras.py membership + the AGENTS.md extras table, moved together in THIS PR (closes the ml#657 RK-11 gap; guarded by tests/test_pyproject_extras.py + the per-package RK-11 drift gate).")
     items.append("If this bump raises a runtime dependency floor, regenerate the lockfile (requirements.lock) in this PR (memory: 'regen on floor bump or gate fails').")
     items.append("Version+pin+lint atomicity: if a consumer pins this package behind a drift-lint contract (tests/test_*_drift.py), move the pin + the lint bound in the same change set (model-core precedent).")
     if edges:
@@ -422,6 +587,15 @@ def _pr_body(prop: Proposal, date: str) -> str:
         lines.append("### Ship evidence (from the detector)")
         for item in prop.ship_evidence:
             lines.append(f"- `{item.get('file', '?')}` -- {item.get('reason', '')}")
+        lines.append("")
+    if prop.repo == detect.META_REPO:
+        lines.append("### Consumer-pin co-changes (in-repo meta extras, plan S5.4)")
+        if prop.consumer_pin_cochanges:
+            lines.append("This escaping bump exceeds the meta-package's own `[project.optional-dependencies]` ceiling, so the pin + its two lockstep artifacts (`tests/test_pyproject_extras.py` membership and the `AGENTS.md` extras table) are moved IN THIS PR (closes the ml#657 RK-11 gap):")
+            for cc in prop.consumer_pin_cochanges:
+                lines.append(f"- `[{cc.extra}]`: `{cc.old_req}` -> `{cc.new_req}`")
+        else:
+            lines.append("- none needed -- new version within existing ceilings.")
         lines.append("")
     lines.append("### Propagation edges (D6)")
     if prop.propagation_edges:
@@ -503,7 +677,10 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
         prop.skipped_reason = f"could not read {clog_rel}"
         return prop
 
-    # 5. meta-package AGENTS.md **Version** co-change (plan S5.4).
+    # 5. meta-package AGENTS.md **Version** co-change (plan S5.4). Mutually exclusive with the extras
+    # co-change in step 5b: only the meta-package edits its **Version** header (and the meta does not
+    # pin itself in its own extras), and only a sub-package edits the extras table -- so AGENTS.md is
+    # touched by at most one of the two steps and never gets two conflicting FileEdits.
     agents_edited = False
     if entry.pypi_name == notes_render.META_PACKAGE:
         atext = sources.read_file(entry, "AGENTS.md")
@@ -513,13 +690,39 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
                 prop.edits.append(FileEdit(path="AGENTS.md", old_text=atext, new_text=new_atext))
                 agents_edited = True
 
+    # 5b. in-repo meta-package consumer-pin co-changes (plan S5.4; closes the ml#657 RK-11 gap).
+    # For an in-repo bump whose new version escapes a meta ``[extras]`` ``<next-minor`` ceiling, move
+    # the pin AND its two lockstep artifacts (the test_pyproject_extras membership + the AGENTS.md
+    # extras table) in THIS PR. Empty co-change list => the new version is within every ceiling (the
+    # proposal body then states "none needed"). Cross-repo consumers stay as propagation edges (D6).
+    if entry.repo == detect.META_REPO:
+        root_pyproject = sources.read_file(entry, "pyproject.toml")
+        if root_pyproject is not None:
+            cochanges = compute_consumer_pin_cochanges(root_pyproject, entry.pypi_name, to_version)
+            prop.consumer_pin_cochanges = cochanges
+            if cochanges:
+                new_root = apply_pin_edits_exact(root_pyproject, cochanges)
+                if new_root != root_pyproject:
+                    prop.edits.append(FileEdit(path="pyproject.toml", old_text=root_pyproject, new_text=new_root))
+                test_rel = "tests/test_pyproject_extras.py"
+                test_text = sources.read_file(entry, test_rel)
+                if test_text is not None:
+                    new_test = apply_pin_edits_exact(test_text, cochanges)
+                    if new_test != test_text:
+                        prop.edits.append(FileEdit(path=test_rel, old_text=test_text, new_text=new_test))
+                agents_pin_text = sources.read_file(entry, "AGENTS.md")
+                if agents_pin_text is not None:
+                    new_agents = apply_pin_edits_agents_table(agents_pin_text, entry.pypi_name, cochanges[0].new_req)
+                    if new_agents != agents_pin_text:
+                        prop.edits.append(FileEdit(path="AGENTS.md", old_text=agents_pin_text, new_text=new_agents))
+
     # 6. drafted release notes (template-driven; NOT archived here, plan S10.1/S10.2).
     prop.notes_relpath = notes_render.archive_relpath(entry.pypi_name, to_version)
     prop.notes_draft = notes_render.render_notes(entry.pypi_name, to_version, bump=bump, release_date=date, sections=sections, repo_root=repo_root)
 
     # 7. propagation edges + co-change checklist.
     prop.propagation_edges = propagation_edges(entries, entry, bump)
-    prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited)
+    prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited, prop.consumer_pin_cochanges)
 
     # 8. branch / commit / PR metadata.
     prop.branch = release_branch(entry.pypi_name, to_version)
@@ -555,6 +758,14 @@ def _print_proposal(prop: Proposal) -> None:
     for line in (prop.notes_draft or "").splitlines():
         print(f"  {line}")
     print()
+    if prop.repo == detect.META_REPO:
+        print("  --- consumer-pin co-changes (in-repo meta extras; folded into THIS PR) ---")
+        if prop.consumer_pin_cochanges:
+            for cc in prop.consumer_pin_cochanges:
+                print(f"  - [{cc.extra}] {cc.old_req} -> {cc.new_req}")
+        else:
+            print("  - none needed (new version within existing ceilings)")
+        print()
     if prop.propagation_edges:
         print("  --- propagation edges (D6, separate standard-gated PRs) ---")
         for edge in prop.propagation_edges:
