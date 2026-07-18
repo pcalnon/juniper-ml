@@ -188,6 +188,17 @@ jobs:
           # delete / out-of-path / bad-name / mixed diffs each FAIL; exit codes 0/1/2.
           # No network / git / gh. util/ is not pre-commit-lint-gated, so this is the gate.
           python3 -m unittest -v tests/test_release_train_archive_guard.py
+          # tests/test_release_train_ceremony.py: hermetic tests for the exempt-archive
+          # + Release ceremony engine (util/release_train/ceremony.py, plan §7/§8/§9.3/§10
+          # / §12 step 3.2). Drives the planner + execute over an injected CeremonySources
+          # seam: every §8 precondition HALT (main CI red / declared<released anomaly /
+          # missing CHANGELOG section / TestPyPI-verify failure), the happy-path exact
+          # action sequence, dup-guard/idempotent re-entry, and the R7 gh-surface invariant
+          # (§9.3: the live seam issues only {pr create, pr merge --auto, release create,
+          # run list/view, issue create/edit} -- nothing environment- or reviewer-mutating).
+          # No network / gh / git / repo writes; dry-run is byte-identical. util/ is not
+          # pre-commit-lint-gated, so this unittest is the gate.
+          python3 -m unittest -v tests/test_release_train_ceremony.py
           # tests/test_prompt_discovery.py: behavioural coverage for the custom-agent
           # suite's discovery helpers (util/prompt_discovery/) -- grounding-bundle schema,
           # provenance envelope, and the test_status cold_cache/empty distinction. util/ is
