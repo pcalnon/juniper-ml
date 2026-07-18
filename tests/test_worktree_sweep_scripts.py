@@ -48,6 +48,7 @@ def _init_repo(path: Path) -> None:
     _run_git(path, "init", "-q", "-b", "main")
     _run_git(path, "config", "user.email", "tests@example.invalid")
     _run_git(path, "config", "user.name", "Test User")
+    _run_git(path, "config", "commit.gpgsign", "false")
     (path / "README.md").write_text("# test\n")
     _run_git(path, "add", "README.md")
     _run_git(path, "commit", "-q", "-m", "initial")
