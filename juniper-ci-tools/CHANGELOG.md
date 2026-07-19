@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-07-19
+
 ### Changed
 
 - Default header-template filenames for `juniper-generate-dep-docs` renamed to
