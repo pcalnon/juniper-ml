@@ -276,6 +276,30 @@ git fetch --all && git checkout main && git pull --ff-only origin main
 
 ---
 
+## Phase 7: Restore the MAIN_REPO Checkout to `main` (always)
+
+Regardless of Case A/B above, finish every merged-PR cleanup by returning the
+**primary checkout** (the repo root, not a worktree) to an up-to-date `main`.
+Release and hotfix work can leave it stranded on a non-`main` branch — the F-6
+stale-checkout class; e.g. the main checkout sat on
+`release/juniper-service-core-v0.5.0` after the 2026-07-18 release — where it
+silently feeds stale state to every tool that reads the primary checkout.
+
+### Step 16: Restore and fast-forward
+
+```bash
+cd <path to root of current repo>
+git checkout main
+git pull --ff-only origin main
+```
+
+Safety gates (the script automates these): skip with a warning if the primary
+checkout's tree is dirty (never clobber uncommitted work), and treat a
+`checkout main` refusal (main checked out in another worktree) as
+warn-and-skip, never fatal.
+
+---
+
 ## Quick Reference (Copy-Paste)
 
 ```bash
@@ -308,6 +332,9 @@ pwd && git worktree list && git branch && git status
 git fetch --all && git pull --ff-only origin main
 # Case B (terminal — no session worktrees left): check out main first.
 # git fetch --all && git checkout main && git pull --ff-only origin main
+
+# --- Phase 7: Restore MAIN_REPO checkout to main (always; skip if tree dirty) ---
+cd "$MAIN_REPO" && git checkout main && git pull --ff-only origin main
 ```
 
 ---

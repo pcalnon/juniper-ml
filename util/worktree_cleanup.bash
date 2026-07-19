@@ -469,6 +469,45 @@ phase_6_sync_main() {
 }
 
 ############################################################################################################################################################
+# Phase 7: Restore MAIN_REPO Checkout to main
+############################################################################################################################################################
+
+phase_7_restore_main_checkout() {
+    log_step "Phase 7: Restore MAIN_REPO checkout to up-to-date main"
+
+    # The primary checkout can be left sitting on a stale non-main branch by
+    # release or hotfix work (the F-6 stale-checkout class; e.g. the main
+    # checkout stranded on release/juniper-service-core-v0.5.0, 2026-07-18).
+    # After every merged-PR cleanup, return it to an up-to-date main.
+    # Safety gates: never touch a dirty tree, and treat a main branch that is
+    # checked out in another worktree as a warn-and-skip, never fatal.
+    if [[ "${DRY_RUN}" == "${TRUE}" ]]; then
+        echo "[DRY-RUN] git -C ${MAIN_REPO} checkout main  (only if tree clean and not already on main)" >&2
+        echo "[DRY-RUN] git -C ${MAIN_REPO} pull --ff-only origin main" >&2
+        return 0
+    fi
+
+    local current_branch dirty
+    current_branch="$(git -C "${MAIN_REPO}" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")"
+    dirty="$(git -C "${MAIN_REPO}" status --porcelain 2>/dev/null | head -1)"
+
+    if [[ -n "${dirty}" ]]; then
+        log_warn "MAIN_REPO tree is dirty — leaving checkout on '${current_branch}' (restore to main manually)"
+        return 0
+    fi
+    if [[ "${current_branch}" != "main" ]]; then
+        log_info "MAIN_REPO is on '${current_branch}' — checking out main"
+        run_cmd git -C "${MAIN_REPO}" checkout main || {
+            log_warn "Could not check out main in MAIN_REPO (checked out in another worktree?) — skipping"
+            return 0
+        }
+    fi
+    run_cmd git -C "${MAIN_REPO}" pull --ff-only origin main || {
+        log_warn "Could not fast-forward MAIN_REPO main — skipping"
+    }
+}
+
+############################################################################################################################################################
 # Main
 ############################################################################################################################################################
 
@@ -487,6 +526,7 @@ main() {
     phase_4_cleanup
     phase_5_verify
     phase_6_sync_main
+    phase_7_restore_main_checkout
 
     # Output the new worktree path to stdout (for the caller to cd into)
     echo "${NEW_WORKTREE}"

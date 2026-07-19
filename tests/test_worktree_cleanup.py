@@ -231,6 +231,33 @@ class TestPhaseOrdering(unittest.TestCase):
             self.assertLess(phase3_pos, phase4_pos, "Phase 3 should come before Phase 4")
             self.assertLess(phase4_pos, phase5_pos, "Phase 4 should come before Phase 5")
 
+            # Phase 7 (restore MAIN_REPO checkout to main) runs last, after Phase 6.
+            phase6_pos = stderr.find("Phase 6")
+            phase7_pos = stderr.find("Phase 7")
+            self.assertGreater(phase6_pos, -1, "Phase 6 not found")
+            self.assertGreater(phase7_pos, -1, "Phase 7 not found")
+            self.assertLess(phase5_pos, phase6_pos, "Phase 5 should come before Phase 6")
+            self.assertLess(phase6_pos, phase7_pos, "Phase 6 should come before Phase 7")
+
+    def test_dry_run_phase_7_restores_main_checkout(self):
+        """Phase 7 previews the guarded main-checkout restore (F-6 stale-checkout class):
+        checkout main in MAIN_REPO plus a --ff-only pull, and never a bare pull."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = run_script(
+                "--old-worktree",
+                tmpdir,
+                "--old-branch",
+                "test-branch",
+                "--skip-pr",
+                "--dry-run",
+            )
+            stderr = result.stderr
+            phase7_pos = stderr.find("Phase 7")
+            self.assertGreater(phase7_pos, -1, "Phase 7 not found in dry-run output")
+            phase7_out = stderr[phase7_pos:]
+            self.assertIn("checkout main", phase7_out)
+            self.assertIn("pull --ff-only origin main", phase7_out)
+
     def test_new_worktree_created_before_old_removed(self):
         """The critical safety property: new worktree add happens before old worktree remove."""
         with tempfile.TemporaryDirectory() as tmpdir:
