@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import textwrap
 
 import pytest
@@ -281,8 +282,12 @@ class TestGenerateDepDocsFallbackHeaders:
         text = result.pip_file.read_text(encoding="utf-8")
         assert "# requirements_ci.txt - Generated 2026-05-20" in text
         assert "pkg==1.0" in text
-        # The notes telling us a fallback was used
-        assert any("PIP_DEPENDENCY_FILE_HEADER" in n for n in result.notes)
+        # The notes telling us a fallback was used. Assert against the function's
+        # real default filename (not a literal) so a future default rename cannot
+        # silently strand this test again (the 2026-07-05 notes-rename class:
+        # juniper-ml#620 renamed the defaults and this literal went stale).
+        pip_default = inspect.signature(generate_dep_docs).parameters["pip_header_name"].default
+        assert any(pip_default in n for n in result.notes)
 
     def test_missing_conda_header_writes_minimal_fallback(self, tmp_path, fake_pip, fake_conda, fixed_now):
         (tmp_path / "pyproject.toml").write_text('[project]\nname = "x"\nversion = "0.0.1"\n', encoding="utf-8")
@@ -293,7 +298,8 @@ class TestGenerateDepDocsFallbackHeaders:
         text = result.conda_file.read_text(encoding="utf-8")
         assert "# conda_environment_ci.yaml - Generated 2026-05-20" in text
         assert "  - python" in text
-        assert any("CONDA_DEPENDENCY_FILE_HEADER" in n for n in result.notes)
+        conda_default = inspect.signature(generate_dep_docs).parameters["conda_header_name"].default
+        assert any(conda_default in n for n in result.notes)
 
 
 class TestGenerateDepDocsCustomization:
