@@ -265,6 +265,19 @@ early `push: tags` trigger era or a `workflow_dispatch`, or a later-deleted Rele
 workflows are now `release: published`, so this is legacy residue, but cascor-protocol's workflow is *still* tag-push
 (§3.1) and can reproduce it.
 
+**RESOLVED 2026-07-20 — plan §12 step 0.4, owner decision: BACKFILL.** All three Releases created on the existing
+tags (`--verify-tag --latest=false`, notes from the §F-2/F-3 backfill archives): `juniper-doc-tools-v0.1.1`,
+`juniper-observability-v0.4.0`, `juniper-cascor-protocol-v0.1.0`. Detector hygiene now reads `TAG_ONLY=0` fleet-wide.
+Zero index effects (nothing published; production PyPI untouched). **Operational gotcha discovered**: the per-package
+publish workflows were disabled during the creates, but `release: published` workflows execute the workflow file
+**at the TAG's commit**, and the two old juniper-ml tags predate the meta guard hardening — the guard-less meta
+`publish.yml` at those refs ran and failed harmlessly on TestPyPI's immutable-index `400 File already exists`
+(`juniper_ml-0.4.1` / `-0.6.0` duplicates; the PyPI job never ran). cascor stayed silent because its workflow at the
+protocol tag's ref was still tag-push-triggered (no release listener). Lesson for any future backfill: compute the
+disable-list from the **tag-ref's** workflow surface, not HEAD's. The two red runs on juniper-ml are this residue and
+are expected. (Older observability tags `-v0.3.1`/`-v0.3.0`/`-v0.2.0` remain Release-less by design — the convention
+applies to the *latest* released version; superseded historical tags are out of scope.)
+
 ### F-2 (major) · NOTES_ARCHIVE_MISSING for the latest released version (5 packages)
 
 No `RELEASE_NOTES_*` archive for the current version of: **juniper-doc-tools 0.1.1** (no doc-tools notes anywhere),
