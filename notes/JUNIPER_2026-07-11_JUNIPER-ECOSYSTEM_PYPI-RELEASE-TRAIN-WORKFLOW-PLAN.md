@@ -352,6 +352,9 @@ checks** so `--auto` cannot complete until it passes (auto-merge honours require
   landed and confirmed at Phase 3 step 3.3; until it lands, the exempt PR degrades gracefully to the
   one-click fallback. This plan still does **not** assert the current ruleset contents — step 3.3 verifies
   them before relying on `--auto`.
+  **Verified at 3.3 (2026-07-20): the live ruleset carries no required-review rule, so the path-scope is
+  moot as configured** — no ruleset edit for reviews was needed; see the dated §12 step-3.3 entry for the
+  full landed state (auto-merge flag + guard-as-required-check).
 
 ### 7.4 Why the exempt PR cannot leak into a deploy (R7 preserved)
 
@@ -582,6 +585,7 @@ Each numbered step is a single, independently shippable, independently verifiabl
   observability/ci-tools patch): archive PR auto-merges, Release fires the unchanged publish workflow,
   TestPyPI verify passes, PyPI **waits for owner** — confirm the run halts at Gate 2.
 - **3.3** Confirm the auto-merge preconditions (§7.3) on juniper-ml and land the Q-RULESET decision: path-scope the required-review ruleset to exclude `notes/releases/` (owner console action). **Verify**: a guard-green synthetic archive PR completes `--auto` merge with no human click; document the resulting ruleset state here.
+  - **LANDED 2026-07-20 (API, owner-directed).** Resulting state of ruleset `juniper-ml-rules` (id 13805432, target main, active): (1) repo flag `allow_auto_merge=true`; (2) `Release-Train Archive Guard` appended as the 13th required status check (the ci.yml guard lane runs on every PR and passes with a SKIP verdict on non-archive diffs, so requiring it blocks nothing else); (3) **Q-RULESET path-scope is moot as configured** — inspection showed the ruleset contains NO `pull_request` required-review rule at all (only 13 required checks, `required_signatures`, deletion/non-FF/creation/update, CodeQL scanning), so there is no review requirement to path-scope and §7.3's CODEOWNERS-hold concern does not arise; (4) `required_signatures` is satisfied on the auto-merge path because GitHub signs its own squash/merge commits; (5) bypass_actors: repository admins + 3 integrations bypass `always` (pre-existing). **Live verify deliberately deferred**: a synthetic archive PR would merge a junk notes file into `notes/releases/` (and a name-valid one would pre-empt a real future archive), so the no-human-click `--auto` proof rides the next REAL archive PR — the Phase-4 cascor-client ceremony, whose exempt archive PR lands in juniper-ml. Rollback: pre-change ruleset JSON captured session-side; revert = PUT it back + `allow_auto_merge=false`.
 
 ### Phase 4 — Fleet-wide + dependency ordering (delivers R2 at scale/D6)
 
