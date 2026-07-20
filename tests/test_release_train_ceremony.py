@@ -481,7 +481,7 @@ class ExecuteTest(unittest.TestCase):
     def test_execute_happy_path_reaches_pending_pypi_approval(self):
         rec, src = self._mk(run_status=PENDING_RUN)
         plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
-        result = ce.execute_ceremony(plan, src, monitor_kwargs={"max_attempts": 1, "sleep": lambda s: None})
+        result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
         self.assertEqual(result["state"], "PENDING_PYPI_APPROVAL")
         self.assertIsNotNone(result["pr_url"])
         self.assertIsNotNone(result["release_url"])
@@ -491,7 +491,7 @@ class ExecuteTest(unittest.TestCase):
     def test_execute_auto_merge_degrades_gracefully(self):
         rec, src = self._mk(run_status=PENDING_RUN, automerge_ok=False)
         plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
-        result = ce.execute_ceremony(plan, src, monitor_kwargs={"max_attempts": 1, "sleep": lambda s: None})
+        result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
         # not a halt -- still parks at the pypi gate; a note records the owner one-click fallback.
         self.assertEqual(result["state"], "PENDING_PYPI_APPROVAL")
         self.assertFalse(result.get("auto_merge_enabled"))
@@ -500,7 +500,7 @@ class ExecuteTest(unittest.TestCase):
     def test_execute_testpypi_failure_halts_and_files_issue(self):
         rec, src = self._mk(run_status=FAILED_TESTPYPI_RUN)
         plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
-        result = ce.execute_ceremony(plan, src, monitor_kwargs={"max_attempts": 1, "sleep": lambda s: None})
+        result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
         self.assertEqual(result["state"], "HALTED")
         self.assertIn("issue_url", result)
         self.assertTrue(any(c[0] == "upsert_halt_issue" for c in rec.calls))
@@ -564,6 +564,224 @@ class CliDryRunTest(unittest.TestCase):
                 rc = ce.main(["--manifest", manifest, "--package", "juniper-nonesuch", "--registry", str(UTIL_DIR / "registry.yaml")], sources=_sources())
         self.assertEqual(rc, 2)
         self.assertIn("unknown --package", err.getvalue())
+
+
+# ── defect fix 1: open_archive_pr restores the operator's starting branch ─────
+
+
+BUILDING_RUN = {
+    "status": "in_progress",  # still building (TestPyPI not done, gate not reached) -> IN_PROGRESS
+    "conclusion": None,
+    "jobs": [
+        {"name": "Build and Validate", "status": "completed", "conclusion": "success"},
+        {"name": "Publish to TestPyPI", "status": "in_progress", "conclusion": None},
+    ],
+}
+# Real publish-workflow job names (verified against run 29707696002): the gate reached at the JOB level
+# while the run's top-level status has not yet flipped to 'waiting' -- exercises the job-level fallback.
+GATE_PARKED_JOBLEVEL_RUN = {
+    "status": "in_progress",
+    "conclusion": None,
+    "jobs": [
+        {"name": "Publish to TestPyPI", "status": "completed", "conclusion": "success"},
+        {"name": "Publish to PyPI", "status": "waiting", "conclusion": None},
+    ],
+}
+
+
+class _GitRecorder:
+    """A recording fake for the injected ``git`` runner: reports a branch/detached/dirty checkout and can
+    raise on a chosen verb to simulate a mid-ceremony failure. Drives ``make_live_sources`` hermetically
+    (mirrors ``LiveSeamSurfaceTest._rec_git`` but with restore-relevant answers)."""
+
+    def __init__(self, *, branch="main", detached=None, dirty=False, raise_on=None):
+        self.calls = []
+        self._branch = branch
+        self._detached = detached
+        self._dirty = dirty
+        self._raise_on = raise_on
+
+    def __call__(self, repo_dir, args, timeout=120, check=True):
+        self.calls.append(list(args))
+        if self._raise_on and args and args[0] == self._raise_on:
+            raise ce.SourceError(f"fake git {self._raise_on} failed")
+        if args[:1] == ["symbolic-ref"]:
+            return None if self._detached else f"{self._branch}\n"  # real _git returns None on a detached HEAD
+        if args[:1] == ["rev-parse"]:
+            return f"{self._detached or 'deadbeef'}\n"
+        if args[:1] == ["status"]:
+            return " M dirty_file\n" if self._dirty else ""
+        return ""
+
+
+class BranchRestoreUnitTest(unittest.TestCase):
+    """Unit coverage of the capture/restore helpers (defect 1: leave the checkout as we found it)."""
+
+    def test_capture_returns_branch_detached_or_none(self):
+        def on_branch(repo_dir, args, *a):
+            return "main\n" if args[0] == "symbolic-ref" else ""
+
+        self.assertEqual(ce._capture_git_ref(Path("/x"), on_branch), ("branch", "main"))
+
+        def detached(repo_dir, args, *a):
+            if args[0] == "symbolic-ref":
+                return None  # real _git returns None (non-zero, check=False) on a detached HEAD
+            return "abc1234\n" if args[0] == "rev-parse" else ""
+
+        self.assertEqual(ce._capture_git_ref(Path("/x"), detached), ("detached", "abc1234"))
+        self.assertIsNone(ce._capture_git_ref(Path("/x"), lambda *a: ""))
+
+    def test_restore_switches_back_when_clean(self):
+        calls = []
+
+        def git(repo_dir, args, *a):
+            calls.append(list(args))
+            return ""  # status --porcelain empty -> clean
+
+        self.assertTrue(ce._restore_git_ref(Path("/x"), git, ("branch", "main")))
+        self.assertIn(["switch", "main"], calls)
+
+    def test_restore_detached_uses_switch_detach(self):
+        calls = []
+
+        def git(repo_dir, args, *a):
+            calls.append(list(args))
+            return ""
+
+        self.assertTrue(ce._restore_git_ref(Path("/x"), git, ("detached", "abc1234")))
+        self.assertIn(["switch", "--detach", "abc1234"], calls)
+
+    def test_restore_skipped_and_warns_when_dirty(self):
+        calls, warns = [], []
+
+        def git(repo_dir, args, *a):
+            calls.append(list(args))
+            return " M dirty_file\n" if args[0] == "status" else ""
+
+        self.assertFalse(ce._restore_git_ref(Path("/x"), git, ("branch", "main"), warn=warns.append))
+        self.assertNotIn(["switch", "main"], calls)  # a dirty tree is NEVER clobbered
+        self.assertTrue(warns and "uncommitted" in warns[0])
+
+    def test_restore_noop_when_capture_none(self):
+        calls = []
+
+        def git(repo_dir, args, *a):
+            calls.append(list(args))
+            return ""
+
+        self.assertFalse(ce._restore_git_ref(Path("/x"), git, None))
+        self.assertEqual(calls, [])  # nothing to restore to -> no git touched
+
+
+class OpenArchivePrRestoreTest(unittest.TestCase):
+    """Integration: drive the LIVE ``open_archive_pr`` seam member with a recording git and prove the
+    starting branch is restored on success AND on a mid-ceremony failure, and skipped for a dirty tree."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(self.tmp, ignore_errors=True))
+
+    def _gh(self, args, timeout=90):
+        if (args[0], args[1]) in (("pr", "list"), ("run", "list")):
+            return "[]"
+        return "https://github.com/pcalnon/juniper-ml/pull/1"
+
+    def _open(self, git_rec):
+        src = ce.make_live_sources("pcalnon", self.tmp, self.tmp.parent, gh=self._gh, git=git_rec)
+        return src.open_archive_pr(
+            "juniper-ml",
+            "main",
+            "release-notes/juniper-service-core-v0.5.0",
+            "notes/releases/RELEASE_NOTES_juniper-service-core_v0.5.0.md",
+            "notes body\n",
+            "release-notes: juniper-service-core v0.5.0",
+            "pr body",
+        )
+
+    def test_restores_starting_branch_on_success(self):
+        rec = _GitRecorder(branch="main")
+        self._open(rec)
+        create = ["switch", "-c", "release-notes/juniper-service-core-v0.5.0", "main"]
+        restore = ["switch", "main"]
+        self.assertIn(create, rec.calls)  # created the ceremony branch
+        self.assertIn(restore, rec.calls)  # ... and restored the operator's branch
+        self.assertLess(rec.calls.index(create), rec.calls.index(restore))  # restore happens on the way OUT
+
+    def test_restores_on_mid_ceremony_failure(self):
+        rec = _GitRecorder(branch="main", raise_on="push")  # push blows up after the branch switch
+        with self.assertRaises(ce.SourceError):
+            self._open(rec)
+        self.assertIn(["switch", "main"], rec.calls)  # finally: restored despite the failure
+
+    def test_dirty_tree_left_on_ceremony_branch_with_warning(self):
+        import contextlib
+
+        rec = _GitRecorder(branch="main", dirty=True)
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            self._open(rec)
+        self.assertNotIn(["switch", "main"], rec.calls)  # never clobber uncommitted work
+        self.assertIn("WARNING", err.getvalue())
+        self.assertIn("dirty tree", err.getvalue().lower())
+
+
+# ── defect fix 2: bounded monitor -> PENDING_PYPI_APPROVAL / honest IN_PROGRESS ──
+
+
+def _monitor_sources(*statuses):
+    """A minimal seam whose ``publish_run_status`` yields ``statuses`` in order (then repeats the last);
+    ``box['polls']`` records how many times it was polled."""
+    seq = list(statuses)
+    box = {"polls": 0}
+
+    def publish_run_status(repo, tag):
+        i = box["polls"]
+        box["polls"] += 1
+        return seq[i] if i < len(seq) else seq[-1]
+
+    src = ce.CeremonySources(
+        pypi_json=lambda n: None,
+        read_file=lambda e, f: None,
+        main_ci_conclusion=lambda r: "success",
+        list_open_prs=lambda r: [],
+        release_exists=lambda r, t: False,
+        archive_on_main=lambda r: False,
+        publish_run_status=publish_run_status,
+    )
+    return src, box
+
+
+class MonitorTimeoutTest(unittest.TestCase):
+    def test_reaches_pending_on_run_level_waiting(self):
+        src, _ = _monitor_sources(PENDING_RUN)  # run.status == 'waiting'
+        self.assertEqual(ce.monitor_publish_run(src, "juniper-ml", "tag", sleep=lambda s: None), "PENDING_PYPI_APPROVAL")
+
+    def test_reaches_pending_on_job_level_gate_when_run_not_yet_waiting(self):
+        src, _ = _monitor_sources(GATE_PARKED_JOBLEVEL_RUN)  # run.status 'in_progress' but pypi job parked
+        self.assertEqual(ce.monitor_publish_run(src, "juniper-ml", "tag", sleep=lambda s: None), "PENDING_PYPI_APPROVAL")
+
+    def test_polls_through_building_until_waiting(self):
+        src, box = _monitor_sources(BUILDING_RUN, BUILDING_RUN, PENDING_RUN)
+        verdict = ce.monitor_publish_run(src, "juniper-ml", "tag", timeout_seconds=1000, poll_seconds=0, sleep=lambda s: None)
+        self.assertEqual(verdict, "PENDING_PYPI_APPROVAL")
+        self.assertEqual(box["polls"], 3)  # did not give up while the run was still building
+
+    def test_honest_in_progress_on_timeout(self):
+        src, box = _monitor_sources(BUILDING_RUN)  # never reaches the gate
+        clock = {"t": 0.0}
+
+        def monotonic():
+            v = clock["t"]
+            clock["t"] += 20.0
+            return v
+
+        verdict = ce.monitor_publish_run(src, "juniper-ml", "tag", timeout_seconds=30, poll_seconds=1, sleep=lambda s: None, monotonic=monotonic)
+        self.assertEqual(verdict, "IN_PROGRESS")  # bounded wall clock -> honest 'still building'
+        self.assertGreaterEqual(box["polls"], 2)  # ... but only after actually polling more than once
+
+    def test_monitor_timeout_flag_default_and_override(self):
+        self.assertEqual(ce.parse_args(["--manifest", "m.json"]).monitor_timeout, ce.DEFAULT_MONITOR_TIMEOUT_SECONDS)
+        self.assertEqual(ce.parse_args(["--manifest", "m.json", "--monitor-timeout", "42"]).monitor_timeout, 42)
 
 
 if __name__ == "__main__":

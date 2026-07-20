@@ -96,6 +96,15 @@ CEREMONIAL = "BUMPED_NOT_RELEASED"
 # the ``propose.py`` WRITABLE_REPO pattern; overridable for tests / a future multi-repo identity.
 WRITABLE_REPO = os.environ.get("JUNIPER_RELEASE_TRAIN_WRITABLE_REPO", detect.META_REPO)
 
+# Monitor bounds (plan S8 TestPyPI gate -> the ``pypi`` env-gate; §12 step 3.2). The publish workflow
+# builds + verifies on TestPyPI before its ``pypi``-environment deploy job parks at the owner-gated
+# approval, at which point the run's top-level GitHub status becomes ``waiting`` (verified: ``waiting`` is
+# a documented workflow-run status and ``gh run view --json status`` is a raw passthrough of that REST
+# field). The monitor polls for a BOUNDED wall clock at a short fixed interval so it actually observes
+# that ``waiting`` state (-> PENDING_PYPI_APPROVAL) instead of giving up early and reporting IN_PROGRESS.
+DEFAULT_MONITOR_TIMEOUT_SECONDS = 900  # ~15 min: headroom for build + TestPyPI publish + install-verify + reaching the gate
+MONITOR_POLL_SECONDS = 15  # short fixed poll interval (keeps gh read volume bounded)
+
 
 # ── R7 gh write-identity surface (plan S9.3) ─────────────────────────────────
 
@@ -204,6 +213,49 @@ def _git(repo_dir: Path, args: list, timeout: int = 120, check: bool = True) -> 
             raise SourceError(f"git failed ({' '.join(args[:3])}): {(proc.stderr or '').strip()[:200]}")
         return None
     return proc.stdout
+
+
+# ── branch capture / restore (leave the operator's checkout as we found it) ──
+
+
+def _warn(msg: str) -> None:
+    """Best-effort operator warning to stderr (never raises; used by the non-fatal restore path)."""
+    print(f"WARNING: {msg}", file=sys.stderr)
+
+
+def _capture_git_ref(repo_dir: Path, git: Callable) -> "tuple[str, str] | None":
+    """The ref to restore the checkout to after the ceremony's branch ops (recorded BEFORE any switch).
+
+    ``("branch", <name>)`` when HEAD is on a branch, ``("detached", <sha>)`` when HEAD is detached, or
+    ``None`` when git cannot answer (a later restore then safely no-ops). Uses the SAME injected ``git``
+    runner the branch ops use, so it is hermetic under the seam-surface test."""
+    branch = git(repo_dir, ["symbolic-ref", "--quiet", "--short", "HEAD"], 30, False)
+    if branch and branch.strip():
+        return ("branch", branch.strip())
+    sha = git(repo_dir, ["rev-parse", "HEAD"], 30, False)
+    if sha and sha.strip():
+        return ("detached", sha.strip())
+    return None
+
+
+def _restore_git_ref(repo_dir: Path, git: Callable, start_ref: "tuple[str, str] | None", warn: "Callable[[str], None] | None" = None) -> bool:
+    """Restore the checkout to ``start_ref`` after the archive-PR branch ops -- but NEVER clobber work.
+
+    Switches back only when the working tree is CLEAN (``git status --porcelain`` empty); a dirty tree is
+    left on the ceremony branch with a warning (the operator's uncommitted changes are never discarded).
+    A best-effort courtesy, not a hard ceremony step: returns True iff it switched back. Mirrors how
+    ``open_archive_pr`` does branch ops -- ``git switch`` through the injected runner."""
+    if start_ref is None:
+        return False
+    kind, ref = start_ref
+    status = git(repo_dir, ["status", "--porcelain"], 30, False)
+    if status is None:
+        return False  # cannot determine cleanliness -> do not risk a clobber
+    if status.strip():
+        (warn or _warn)(f"release-train ceremony: {repo_dir} has uncommitted changes; left the checkout on the ceremony branch (restore to {ref} skipped -- a dirty tree is never clobbered)")
+        return False
+    git(repo_dir, ["switch", "--detach", ref] if kind == "detached" else ["switch", ref], 60, False)
+    return True
 
 
 # ── small pure helpers ───────────────────────────────────────────────────────
@@ -352,6 +404,9 @@ def classify_publish_run(run: "dict | None") -> str:
 
     testpypi_ok = bool(testpypi_jobs) and all((j.get("conclusion") or "").lower() == "success" for j in testpypi_jobs)
     pypi_parked = bool(pypi_jobs) and all((j.get("status") or "").lower() in ("waiting", "queued", "pending", "") for j in pypi_jobs)
+    # The run's top-level status is 'waiting' while parked at the owner-gated `pypi` deployment env
+    # (verified: a documented workflow-run status that `gh run view --json status` passes through). The
+    # job-level (testpypi succeeded + pypi job parked) check is the belt-and-suspenders fallback.
     if run_status == "waiting" or (testpypi_ok and pypi_parked):
         return "PENDING_PYPI_APPROVAL"
     return "IN_PROGRESS"
@@ -503,16 +558,22 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, gh: 
 
     def open_archive_pr(repo: str, base: str, branch: str, relpath: str, content: str, title: str, body: str) -> str:
         rdir = _repo_dir(repo)
-        git(rdir, ["switch", "-c", branch, base])
-        target = rdir / relpath
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(content, encoding="utf-8")
-        git(rdir, ["add", "--", relpath])
-        # -c commit.gpgsign=false: the CI runner has no GPG key and the owner's YubiKey signing config
-        # must never reach a headless commit (memory: the YubiKey pinentry landmine).
-        git(rdir, ["-c", "commit.gpgsign=false", "commit", "-m", title])
-        git(rdir, ["push", "--set-upstream", "origin", branch])
-        return (_cgh(["pr", "create", "--repo", f"{owner}/{repo}", "--base", base, "--head", branch, "--title", title, "--body", body]) or "").strip()
+        start_ref = _capture_git_ref(rdir, git)  # record the operator's branch BEFORE any switch, to restore on the way out
+        try:
+            git(rdir, ["switch", "-c", branch, base])
+            target = rdir / relpath
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(content, encoding="utf-8")
+            git(rdir, ["add", "--", relpath])
+            # -c commit.gpgsign=false: the CI runner has no GPG key and the owner's YubiKey signing config
+            # must never reach a headless commit (memory: the YubiKey pinentry landmine).
+            git(rdir, ["-c", "commit.gpgsign=false", "commit", "-m", title])
+            git(rdir, ["push", "--set-upstream", "origin", branch])
+            return (_cgh(["pr", "create", "--repo", f"{owner}/{repo}", "--base", base, "--head", branch, "--title", title, "--body", body]) or "").strip()
+        finally:
+            # Return the operator to the branch they started on -- even if a step above raised
+            # (try/finally). Never clobbers a dirty tree (see _restore_git_ref).
+            _restore_git_ref(rdir, git, start_ref)
 
     def enable_automerge(repo: str, pr: str) -> bool:
         # Graceful degrade (plan S12 step 3.3 not yet landed -> allow_auto_merge may be off): a failure
@@ -656,14 +717,23 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
 # ── execute (Phase-3 wiring; NEVER run against the real repo in this change) ──
 
 
-def monitor_publish_run(sources: CeremonySources, repo: str, tag: str, *, max_attempts: int = 30, poll_seconds: int = 20, sleep: "Callable[[float], None]" = time.sleep) -> str:
-    """Poll the triggered publish run until a terminal ceremony signal (plan S8 TestPyPI gate / S5.1)."""
-    for _ in range(max(1, max_attempts)):
+def monitor_publish_run(sources: CeremonySources, repo: str, tag: str, *, timeout_seconds: int = DEFAULT_MONITOR_TIMEOUT_SECONDS, poll_seconds: int = MONITOR_POLL_SECONDS, sleep: "Callable[[float], None]" = time.sleep, monotonic: "Callable[[], float]" = time.monotonic) -> str:
+    """Poll the triggered publish run until a terminal ceremony signal or a bounded timeout (plan S8 / §12-3.2).
+
+    Polls ``publish_run_status`` at ``poll_seconds`` for up to ``timeout_seconds`` (a bounded wall clock).
+    Returns as soon as ``classify_publish_run`` reaches a terminal signal: ``PENDING_PYPI_APPROVAL`` (the
+    run parked at the owner-gated ``pypi`` env -- its GitHub status is ``waiting`` -- which is SUCCESS for
+    the train), ``RELEASED``, or a HALT. If the timeout elapses while the run is still building it returns
+    ``IN_PROGRESS`` -- now an honest 'still building' rather than a premature give-up; the ceremony is
+    idempotent, so a re-run resumes at the monitor. ``monotonic`` is injected for hermetic timeout tests."""
+    deadline = monotonic() + max(0, timeout_seconds)
+    while True:
         verdict = classify_publish_run(sources.publish_run_status(repo, tag))
         if verdict in ("PENDING_PYPI_APPROVAL", "HALT_TESTPYPI", "HALT_PUBLISH", "RELEASED"):
             return verdict
+        if monotonic() >= deadline:
+            return "IN_PROGRESS"
         sleep(poll_seconds)
-    return "IN_PROGRESS"
 
 
 def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: str = "main", *, monitor_kwargs: "dict | None" = None) -> dict:
@@ -817,6 +887,7 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--dry-run", action="store_true", help="(default) print the full ceremony script of actions; write nothing, open nothing, cut nothing. Overrides --execute.")
     p.add_argument("--execute", action="store_true", help="opt-in: perform the ceremony (archive PR + auto-merge + Release + monitor). NOT run against the real repo in Phase 3.2; --dry-run overrides it.")
     p.add_argument("--json", action="store_true", help="emit the ceremony plans as JSON instead of the human report")
+    p.add_argument("--monitor-timeout", type=int, default=DEFAULT_MONITOR_TIMEOUT_SECONDS, metavar="SECONDS", help=f"max seconds the (--execute) monitor polls the publish run for the pypi-env-gate 'waiting' state before reporting a still-building IN_PROGRESS (default: {DEFAULT_MONITOR_TIMEOUT_SECONDS} = ~15 min)")
     return p.parse_args(argv)
 
 
@@ -885,7 +956,7 @@ def main(argv: "list[str] | None" = None, sources: "CeremonySources | None" = No
         results = []
         try:
             for plan in plans:
-                results.append(execute_ceremony(plan, sources))
+                results.append(execute_ceremony(plan, sources, monitor_kwargs={"timeout_seconds": args.monitor_timeout}))
         except SourceError as exc:
             print(f"ERROR: execute failed: {exc}", file=sys.stderr)
             return 2
