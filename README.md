@@ -166,3 +166,10 @@ Within this programme, `juniper-ml` is the integration surface: a single install
 ## License
 
 MIT License — Copyright (c) 2024-2026 Paul Calnon
+
+## Support
+
+You can support continued development of the Juniper project on [`Patreon`](https://www.patreon.com/cw/JuniperML)
+The Juniper Go-Live [`announcement`](https://www.patreon.com/JuniperML/posts/juniperml-is-164484818?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=postshare_creator&utm_content=join_link0)
+
+---
