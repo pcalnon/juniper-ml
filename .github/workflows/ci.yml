@@ -369,6 +369,11 @@ jobs:
           # never wired into this list (audit finding F14) -- added here; both pass on 3.12-3.14.
           python3 -m unittest -v tests/test_juniper_plant_all.py
           python3 -m unittest -v tests/test_juniper_chop_all.py
+          # tests/test_isolated_stack_script.py: stdlib-only static + dry-run contract tests of
+          # util/isolated_stack.bash, the isolated training-runtime E2E bring-up helper (roadmap
+          # unit E1). bash -n syntax + launch-line text assertions + hermetic --dry-run behavioural
+          # checks (no services/conda/network; --dry-run creates no process and touches no files).
+          python3 -m unittest -v tests/test_isolated_stack_script.py
 
       - name: Run bash regression tests
         run: |
