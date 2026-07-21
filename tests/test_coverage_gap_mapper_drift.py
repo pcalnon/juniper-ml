@@ -82,6 +82,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 # Pin-range pattern, identical to test_ci_tools_drift.py:
 #   pip install "juniper-ci-tools>=0.1.0,<0.6.0"
 _PIN_PATTERN = re.compile(r"juniper-ci-tools\s*>=\s*([0-9]+(?:\.[0-9]+)+)\s*,\s*<\s*([0-9]+(?:\.[0-9]+)+)")
@@ -308,7 +310,7 @@ class CoverageGapMapperEnforceEndToEndTest(unittest.TestCase):
 
     def _run(self, *args: str) -> subprocess.CompletedProcess:
         """Invoke the shipped module-form entry with the ci-tools subdir on PYTHONPATH."""
-        env = dict(os.environ)
+        env = RedactedEnv(os.environ)
         existing = env.get("PYTHONPATH", "")
         env["PYTHONPATH"] = str(self.ci_tools_root) + (os.pathsep + existing if existing else "")
         cmd = [sys.executable, "-m", "juniper_ci_tools.cli_coverage_gap_mapper", *args]

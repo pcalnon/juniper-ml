@@ -36,13 +36,7 @@ def _git_init_repo(path: str, commit_epoch: "int | None" = None) -> None:
     for the D-1 freshness cases; otherwise the current time is used (the E-3 ``--target-repo`` cases
     just need a real sibling HEAD). Unifies the two helpers that PR-1 (D-1) and PR-4 (E-3) each added
     to this file independently -- both signatures are served by the optional ``commit_epoch``."""
-    env = {
-        **os.environ,
-        "GIT_AUTHOR_NAME": "t",
-        "GIT_AUTHOR_EMAIL": "t@example.invalid",
-        "GIT_COMMITTER_NAME": "t",
-        "GIT_COMMITTER_EMAIL": "t@example.invalid",
-    }
+    env = RedactedEnv(os.environ, GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@example.invalid", GIT_COMMITTER_NAME="t", GIT_COMMITTER_EMAIL="t@example.invalid")
     if commit_epoch is not None:
         env["GIT_AUTHOR_DATE"] = f"{commit_epoch} +0000"
         env["GIT_COMMITTER_DATE"] = f"{commit_epoch} +0000"
@@ -65,6 +59,8 @@ import file_probe  # noqa: E402
 import repo_context  # noqa: E402
 import symbol_probe  # noqa: E402
 import test_status  # noqa: E402
+
+from tests.redacted_env import RedactedEnv
 
 _SHA40 = r"^[0-9a-f]{40}$"
 _PROBE_KEYS = {"repo_context", "test_status", "file_probe", "symbol_probe", "dependency_facts", "conventions", "concurrency"}

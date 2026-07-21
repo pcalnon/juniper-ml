@@ -35,6 +35,8 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from tests.redacted_env import RedactedEnv
+
 
 def _ci_tools_pkg_root(juniper_ml_root: Path) -> Path | None:
     """Directory to put on PYTHONPATH so ``juniper_ci_tools`` imports (the
@@ -79,7 +81,7 @@ class EnvDriftCheckDogfoodTest(unittest.TestCase):
             self.skipTest("juniper-ci-tools/ not present in this checkout")
         if not self.have_packaging:
             self.skipTest("packaging not importable in the test interpreter")
-        env = dict(os.environ)
+        env = RedactedEnv(os.environ)
         env["PYTHONPATH"] = os.pathsep.join([str(self.pkg_root), env.get("PYTHONPATH", "")]).rstrip(os.pathsep)
         return subprocess.run(
             [sys.executable, "-m", "juniper_ci_tools.cli_env_drift_check", *args],
