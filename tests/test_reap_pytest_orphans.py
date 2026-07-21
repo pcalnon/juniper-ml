@@ -13,6 +13,8 @@ import textwrap
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "reap_pytest_orphans.bash"
 SCRIPT_TIMEOUT_SECONDS: int = 30
 
@@ -81,7 +83,7 @@ class FakeProcessFixture:
         (self.proc_root / str(pid)).mkdir()
 
     def env(self) -> dict[str, str]:
-        env = os.environ.copy()
+        env = RedactedEnv(os.environ)
         env["PATH"] = f"{self.bin_dir}{os.pathsep}{env['PATH']}"
         env["KILL_LOG"] = str(self.kill_log)
         env["JUNIPER_REAP_KILL_CMD"] = str(self.bin_dir / "fake-kill")

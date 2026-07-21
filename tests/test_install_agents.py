@@ -17,6 +17,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 
 def _find_repo_root(start: Path) -> Path:
     for parent in [start, *start.parents]:
@@ -49,7 +51,7 @@ class InstallAgentsTest(unittest.TestCase):
         self._tgt_tmp.cleanup()
 
     def _run(self, *args):
-        env = dict(os.environ, JUNIPER_ML_REPO_ROOT=str(self.src), JUNIPER_CLAUDE_HOME=str(self.tgt))
+        env = RedactedEnv(os.environ, JUNIPER_ML_REPO_ROOT=str(self.src), JUNIPER_CLAUDE_HOME=str(self.tgt))
         return subprocess.run(["bash", str(_SCRIPT), *args], capture_output=True, text=True, check=False, timeout=60, env=env)
 
     def test_script_exists_and_parses(self):

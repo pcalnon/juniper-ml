@@ -117,6 +117,11 @@ python_version = "3.12"
 ignore_missing_imports = true
 no_strict_optional = true
 files = ["scripts", "tests"]
+# tests/ is a namespace package (no __init__.py — unittest discover semantics
+# depend on that); map modules from the repo root so tests/redacted_env.py
+# resolves uniquely as tests.redacted_env instead of "found twice".
+explicit_package_bases = true
+mypy_path = "."
 
 [tool.coverage.run]
 # Coverage tracks the regression surface — the bash-launching scripts

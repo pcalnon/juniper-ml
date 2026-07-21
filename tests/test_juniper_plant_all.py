@@ -27,6 +27,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "juniper_plant_all.bash"
 SCRIPT_TEXT = SCRIPT_PATH.read_text()
 SCRIPT_TIMEOUT_SECONDS = 15
@@ -220,7 +222,7 @@ class TestPreflightFailureSmoke(unittest.TestCase):
             ):
                 self._make_env(conda_dir, env_name, with_worker_bin=with_bin)
 
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             env["JUNIPER_PROJECT_DIR"] = str(project_dir)
             env["JUNIPER_CONDA_DIR"] = str(conda_dir)
             env["JUNIPER_DATA_PORT"] = "65010"
@@ -268,7 +270,7 @@ class TestPreflightFailureSmoke(unittest.TestCase):
             for env_name in ("JuniperData", "JuniperCanopy1"):
                 self._make_env(conda_dir, env_name, with_worker_bin=False)
 
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             env["JUNIPER_PROJECT_DIR"] = str(project_dir)
             env["JUNIPER_CONDA_DIR"] = str(conda_dir)
             env["JUNIPER_DATA_PORT"] = "65020"
@@ -313,7 +315,7 @@ class TestPreflightFailureSmoke(unittest.TestCase):
             for env_name in ("JuniperData", "JuniperCascor1", "JuniperCanopy1", "CustomWorkerEnv"):
                 self._make_env(conda_dir, env_name, with_worker_bin=False)
 
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             env["JUNIPER_PROJECT_DIR"] = str(project_dir)
             env["JUNIPER_CONDA_DIR"] = str(conda_dir)
             env["JUNIPER_WORKER_CONDA"] = "CustomWorkerEnv"

@@ -10,6 +10,8 @@ import time
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / "scripts" / "wake_the_claude.bash"
 DEFAULT_INTERACTIVE_SCRIPT_PATH = REPO_ROOT / "scripts" / "default_interactive_session_claude_code.bash"
@@ -49,7 +51,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             )
             fake_uuidgen.chmod(0o755)
 
-        env = os.environ.copy()
+        env = RedactedEnv(os.environ)
         # Prevent host shell variables from contaminating test subprocess behavior
         for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
             env.pop(var, None)
@@ -753,7 +755,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             assert bash_path is not None
             os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
 
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             env["PATH"] = str(isolated_bin)
             env["HOME"] = temp_dir
             env["CLAUDE_ARGS_LOG"] = str(invocations_log)
@@ -781,7 +783,7 @@ class WakeTheClaudeResumeTests(unittest.TestCase):
             assert bash_path is not None
             os.symlink(str(Path(bash_path)), str(isolated_bin / "bash"))
 
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             env["PATH"] = str(isolated_bin)
             env["HOME"] = temp_dir
             env["CLAUDE_ARGS_LOG"] = str(invocations_log)
@@ -845,7 +847,7 @@ class WakeTheClaudeSecurityTests(unittest.TestCase):
         )
         fake_claude.chmod(0o755)
 
-        env = os.environ.copy()
+        env = RedactedEnv(os.environ)
         # Prevent host shell variables from contaminating test subprocess behavior
         for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
             env.pop(var, None)
@@ -1371,7 +1373,7 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     def test_default_launcher_omits_skip_permissions_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
                 env.pop(var, None)
             env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)
@@ -1390,7 +1392,7 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     def test_default_launcher_includes_skip_permissions_only_when_opted_in(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             for var in ("BASH_ENV", "ENV"):
                 env.pop(var, None)
             env["CLAUDE_SKIP_PERMISSIONS"] = "1"
@@ -1405,7 +1407,7 @@ class DefaultInteractiveLauncherRuntimeTests(unittest.TestCase):
     def test_default_launcher_forwards_additional_args(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             launcher_path, args_log = self._install_fake_launcher_stack(temp_dir)
-            env = os.environ.copy()
+            env = RedactedEnv(os.environ)
             for var in ("CLAUDE_SKIP_PERMISSIONS", "BASH_ENV", "ENV"):
                 env.pop(var, None)
             env["WTC_WRAPPER_ARGS_LOG"] = str(args_log)

@@ -18,6 +18,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 
 def _find_repo_root(start: Path) -> Path:
     for parent in [start, *start.parents]:
@@ -98,7 +100,7 @@ class DoctorUnitTest(unittest.TestCase):
 
 class DoctorCliTest(unittest.TestCase):
     def _run(self, *args, env_extra=None):
-        env = dict(os.environ)
+        env = RedactedEnv(os.environ)
         if env_extra:
             env.update(env_extra)
         return subprocess.run(

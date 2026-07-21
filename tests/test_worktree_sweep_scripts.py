@@ -14,6 +14,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SURVEY_SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "worktree_sweep_survey.bash"
 APPLY_SCRIPT = REPO_ROOT / "util" / "ad-hoc" / "worktree_sweep_apply.bash"
@@ -57,7 +59,7 @@ def _init_repo(path: Path) -> None:
 
 class WorktreeSweepTestCase(unittest.TestCase):
     def _env(self, worktrees_root: Path, repo_base: Path) -> dict[str, str]:
-        env = os.environ.copy()
+        env = RedactedEnv(os.environ)
         env["JUNIPER_WORKTREE_SWEEP_ROOT"] = str(worktrees_root)
         env["JUNIPER_WORKTREE_SWEEP_REPO_BASE"] = str(repo_base)
         return env
