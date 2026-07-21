@@ -169,7 +169,7 @@ MIT License — Copyright (c) 2024-2026 Paul Calnon
 
 ## Support
 
-You can support continued development of the Juniper project on [`Patreon`](https://www.patreon.com/cw/JuniperML)
+You can support continued development of the Juniper project on [`Patreon`](https://patreon.com/JuniperML?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink)
 The Juniper Go-Live [`announcement`](https://www.patreon.com/JuniperML/posts/juniperml-is-164484818?utm_medium=clipboard_copy&utm_source=copyLink&utm_campaign=postshare_creator&utm_content=join_link0)
 
 ---
