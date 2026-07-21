@@ -157,7 +157,7 @@ Within this programme, `juniper-ml` is the integration surface: a single install
 | Document | Purpose |
 |----------|---------|
 | [`docs/DOCUMENTATION_OVERVIEW.md`](docs/DOCUMENTATION_OVERVIEW.md) | Navigation index for all `juniper-ml` documentation |
-| [`docs/QUICK_START.md`](docs/QUICK_START.md) | Installation and verification guide |https://www.patreon.com/cw/JuniperML
+| [`docs/QUICK_START.md`](docs/QUICK_START.md) | Installation and verification guide |
 | [`docs/REFERENCE.md`](docs/REFERENCE.md) | Extras, compatibility matrix, environment variables, service ports, and host-mode stack utilities |
 | [`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`](docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md) | Quick-reference card for development tasks |
 | [`notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md`](notes/JUNIPER_2026-05-19_JUNIPER-ECOSYSTEM_README-NORMALIZATION-PLAN.md) | Ecosystem-wide README normalization plan (this README is its reference implementation) |
