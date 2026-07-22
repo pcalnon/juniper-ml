@@ -30,13 +30,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "isolated_stack.bash"
 SCRIPT_TEXT = SCRIPT_PATH.read_text()
 SCRIPT_TIMEOUT_SECONDS = 15
 
 
 def _run(*args: str, env_extra: "dict[str, str] | None" = None) -> subprocess.CompletedProcess:
-    env = os.environ.copy()
+    env = RedactedEnv(os.environ)
     if env_extra:
         env.update(env_extra)
     return subprocess.run(
