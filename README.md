@@ -171,6 +171,8 @@ MIT License — Copyright (c) 2024-2026 Paul Calnon
 
 You can support continued development of the Juniper project on [`Patreon`](https://www.patreon.com/cw/JuniperML)
 
-The Juniper Go-Live [`announcement`](https://www.patreon.com/JuniperML/posts/juniperml-is-164484818)
+- The Juniper Go-Live [`announcement`](https://www.patreon.com/JuniperML/posts/juniperml-is-164484818)
+
+Or just buy me a [`coffee`](https://buymeacoffee.com/overtoad)!
 
 ---
