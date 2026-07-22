@@ -260,6 +260,33 @@ class GhSurfaceInvariantTest(unittest.TestCase):
         ):
             ce._assert_gh_allowed(good)  # must not raise
 
+    # ── Phase 4.1: the --repo value bound (cross-repo expressed WITHOUT widening the verb allowlist) ──
+    def test_assert_gh_allowed_repo_value_bound(self):
+        allowed = frozenset({"pcalnon/juniper-ml", "pcalnon/juniper-cascor-client"})
+        # a --repo naming one of the allowed publishing repos passes (the surface is unchanged)
+        ce._assert_gh_allowed(["release", "create", "v0.5.0", "--repo", "pcalnon/juniper-cascor-client", "--notes-file", "x", "--latest=false"], allowed)
+        ce._assert_gh_allowed(["pr", "create", "--repo", "pcalnon/juniper-ml", "--base", "main", "--head", "b", "--title", "t", "--body", "b"], allowed)
+        # a --repo OUTSIDE the allowlist -- wrong repo or wrong owner -- is a SeamViolation
+        with self.assertRaises(ce.SeamViolation):
+            ce._assert_gh_allowed(["release", "create", "v1", "--repo", "pcalnon/juniper-evil", "--notes-file", "x"], allowed)
+        with self.assertRaises(ce.SeamViolation):
+            ce._assert_gh_allowed(["pr", "create", "--repo", "someone-else/juniper-ml", "--base", "main", "--head", "b", "--title", "t", "--body", "b"], allowed)
+        # allowed_repos=None leaves the --repo VALUE unchecked (surface + token guards still apply)
+        ce._assert_gh_allowed(["release", "create", "v1", "--repo", "pcalnon/anything", "--notes-file", "x"])  # must not raise
+        # even with the bound, a forbidden token still fails first
+        with self.assertRaises(ce.SeamViolation):
+            ce._assert_gh_allowed(["api", "repos/pcalnon/juniper-ml/environments/pypi", "--repo", "pcalnon/juniper-ml"], allowed)
+
+    def test_publishing_repo_slugs_from_registry(self):
+        entries = d.load_registry(UTIL_DIR / "registry.yaml")
+        slugs = ce.publishing_repo_slugs(entries, "pcalnon")
+        # exactly the 8 publishing repos, each owner-qualified
+        self.assertEqual(len(slugs), 8)
+        self.assertIn("pcalnon/juniper-ml", slugs)
+        self.assertIn("pcalnon/juniper-cascor-client", slugs)
+        self.assertIn("pcalnon/juniper-recurrence", slugs)
+        self.assertTrue(all(s.startswith("pcalnon/") for s in slugs))
+
 
 # ── S9.3 seam-surface invariant (LIVE seam, recording gh) ────────────────────
 
@@ -782,6 +809,160 @@ class MonitorTimeoutTest(unittest.TestCase):
     def test_monitor_timeout_flag_default_and_override(self):
         self.assertEqual(ce.parse_args(["--manifest", "m.json"]).monitor_timeout, ce.DEFAULT_MONITOR_TIMEOUT_SECONDS)
         self.assertEqual(ce.parse_args(["--manifest", "m.json", "--monitor-timeout", "42"]).monitor_timeout, 42)
+
+
+# ── Phase 4.1: cross-repo ceremony (central archive PR + owning-repo Release) ─────────────────
+
+
+def _sibling_entry(**over) -> d.PackageEntry:
+    base = {
+        "pypi_name": "juniper-cascor-client",
+        "repo": "juniper-cascor-client",
+        "path": ".",
+        "tag_pattern": "v*",
+        "archive_name": "RELEASE_NOTES_juniper-cascor-client_v{version}.md",
+    }
+    base.update(over)
+    return _entry(**base)
+
+
+class CrossRepoCeremonyTest(unittest.TestCase):
+    """A sibling package's ceremony (Phase 4.1): the exempt archive PR STILL lands in juniper-ml (central,
+    plan S10.2) while the Release is cut on the OWNING repo. Capability-gated: skipped without --cross-repo,
+    ceremoniable with it + an on-disk sibling checkout. Hermetic (synthetic ecosystem; seam-backed reads)."""
+
+    def setUp(self):
+        # A synthetic ecosystem root with the sibling checked out on disk (an empty dir is enough -- the
+        # CHANGELOG is served by the seam), so the capability check's is_dir() precondition holds offline.
+        self.eco = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(self.eco, ignore_errors=True))
+        (self.eco / "juniper-cascor-client").mkdir()
+
+    def _pkg(self):
+        return _manifest_pkg(pypi_name="juniper-cascor-client", repo="juniper-cascor-client")
+
+    def test_without_capability_sibling_is_skipped(self):
+        plan = ce.plan_ceremony(_sibling_entry(), self._pkg(), _sources(), REPO_ROOT, self.eco, "2026-07-17")  # cross_repo defaults False
+        self.assertEqual(plan.state, "SKIPPED_CROSS_REPO")
+        self.assertIn("cross-repo", plan.skipped_reason)
+        self.assertIn("single-repo GITHUB_TOKEN", plan.skipped_reason)  # degraded-path wording preserved
+
+    def test_capable_but_checkout_absent_is_skipped_with_distinct_reason(self):
+        empty_eco = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(empty_eco, ignore_errors=True))
+        plan = ce.plan_ceremony(_sibling_entry(), self._pkg(), _sources(), REPO_ROOT, empty_eco, "2026-07-17", cross_repo=True)
+        self.assertEqual(plan.state, "SKIPPED_CROSS_REPO")
+        self.assertIn("checkout is not present", plan.skipped_reason)
+
+    def test_cross_repo_plan_archive_central_release_owning(self):
+        plan = ce.plan_ceremony(_sibling_entry(), self._pkg(), _sources(), REPO_ROOT, self.eco, "2026-07-17", cross_repo=True)
+        self.assertEqual(plan.state, "CEREMONY_PLANNED")
+        self.assertEqual(plan.repo, "juniper-cascor-client")  # owning repo -> Release + monitor
+        self.assertEqual(plan.archive_repo, "juniper-ml")  # central archive PR (plan S10.2)
+        self.assertEqual(plan.tag, "v0.5.0")  # tag_pattern v* -> v<version>
+        self.assertEqual(plan.archive_relpath, "notes/releases/RELEASE_NOTES_juniper-cascor-client_v0.5.0.md")
+        self.assertEqual(plan.action_kinds, ["open_archive_pr", "enable_auto_merge", "cut_release", "monitor_publish"])
+        self.assertIn("A new capability.", plan.archive_content)  # notes sourced from the [0.5.0] CHANGELOG section
+
+    def test_cross_repo_dup_guard_checks_central_archive_repo(self):
+        # an open archive PR is deduped against juniper-ml (where the archive PR lives), NOT the owning repo.
+        existing = [{"number": 900, "headRefName": "release-notes/juniper-cascor-client-v0.5.0", "title": "x"}]
+        plan = ce.plan_ceremony(_sibling_entry(), self._pkg(), _sources(open_prs=existing), REPO_ROOT, self.eco, "2026-07-17", cross_repo=True)
+        self.assertEqual(plan.action_kinds, ["enable_auto_merge", "cut_release", "monitor_publish"])  # open skipped (reused)
+        self.assertTrue(any("reuse" in n for n in plan.notes))
+
+    def test_cross_repo_execute_archive_in_juniper_ml_release_in_owning(self):
+        rec = _Recorder()
+        src = _sources(recorder=rec, run_status=PENDING_RUN)
+        plan = ce.plan_ceremony(_sibling_entry(), self._pkg(), src, REPO_ROOT, self.eco, "2026-07-17", cross_repo=True)
+        result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
+        self.assertEqual(result["state"], "PENDING_PYPI_APPROVAL")
+        # the archive PR + auto-merge targeted juniper-ml (central); the Release targeted the OWNING repo
+        archive = next(c for c in rec.calls if c[0] == "open_archive_pr")
+        self.assertEqual(archive[1], "juniper-ml")
+        automerge = next(c for c in rec.calls if c[0] == "enable_automerge")
+        self.assertEqual(automerge[1], "juniper-ml")
+        release = next(c for c in rec.calls if c[0] == "create_release")
+        self.assertEqual(release[1], "juniper-cascor-client")
+        self.assertEqual(release[2], "v0.5.0")  # the owning-repo tag
+
+
+class CreateReleaseTempNotesTest(unittest.TestCase):
+    """The 07-19 micro-fix: the Release --notes-file is rendered to a SCRATCH temp path, never written
+    into any checkout (the stray-untracked-file bug). Drives the LIVE create_release seam member."""
+
+    def test_notes_file_is_a_scratch_temp_path_cleaned_up_and_never_in_the_checkout(self):
+        repo = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(repo, ignore_errors=True))
+        (repo / "notes" / "releases").mkdir(parents=True)
+        seen: dict = {}
+
+        def rec_gh(args, timeout=90):
+            i = args.index("--notes-file")
+            p = Path(args[i + 1])
+            seen["path"] = p
+            seen["content"] = p.read_text(encoding="utf-8")  # the temp file exists AT CALL TIME
+            seen["under_checkout"] = str(p).startswith(str(repo))
+            return "https://github.com/pcalnon/juniper-ml/releases/tag/v0.6.0"
+
+        def rec_git(repo_dir, args, timeout=120, check=True):
+            return ""
+
+        src = ce.make_live_sources("pcalnon", repo, repo.parent, gh=rec_gh, git=rec_git)
+        url = src.create_release("juniper-ml", "v0.6.0", "juniper-ml v0.6.0", "notes/releases/RELEASE_NOTES_v0.6.0.md", "the notes body\n")
+        self.assertTrue(url)
+        self.assertEqual(seen["content"], "the notes body\n")  # content rendered to the temp file
+        self.assertFalse(seen["under_checkout"], "the --notes-file must be a scratch path OUTSIDE the checkout")
+        self.assertFalse(seen["path"].exists(), "the temp notes file must be cleaned up after the release cut")
+        # the checkout was never dirtied by a stray archived notes file
+        self.assertFalse((repo / "notes" / "releases" / "RELEASE_NOTES_v0.6.0.md").exists())
+
+
+class LiveSeamRepoBoundTest(unittest.TestCase):
+    """The LIVE seam bounds every --repo to the registry-derived allowlist (Phase 4.1). Cross-repo is
+    expressed by --repo owner/<owning-of-the-8>; anything else raises before gh runs -- hermetically."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(self.tmp, ignore_errors=True))
+        self.allowed = frozenset({"pcalnon/juniper-ml", "pcalnon/juniper-cascor-client"})
+        self.calls = []
+
+    def _gh(self, args, timeout=90):
+        self.calls.append(list(args))
+        if (args[0], args[1]) in (("pr", "list"), ("run", "list")):
+            return "[]"
+        return "https://github.com/pcalnon/x/1"
+
+    def _git(self, repo_dir, args, timeout=120, check=True):
+        return ""
+
+    def _src(self):
+        return ce.make_live_sources("pcalnon", self.tmp, self.tmp.parent, allowed_repos=self.allowed, gh=self._gh, git=self._git)
+
+    def test_cross_repo_release_on_allowed_owning_repo_passes(self):
+        url = self._src().create_release("juniper-cascor-client", "v0.5.0", "juniper-cascor-client v0.5.0", "notes/releases/RELEASE_NOTES_juniper-cascor-client_v0.5.0.md", "notes\n")
+        self.assertTrue(url)
+        rel = next(a for a in self.calls if a[:2] == ["release", "create"])
+        self.assertIn("--repo", rel)
+        self.assertIn("pcalnon/juniper-cascor-client", rel)  # cross-repo --repo, no widened verb surface
+        self.assertNotIn("--verify-tag", rel)
+        self.assertIn("--latest=false", rel)
+
+    def test_release_on_repo_outside_allowlist_raises_before_gh(self):
+        with self.assertRaises(ce.SeamViolation):
+            self._src().create_release("juniper-not-a-publishing-repo", "v1", "t", "n", "c")
+        # nothing reached the recording gh (the guard raised before the call)
+        self.assertFalse(any(a[:2] == ["release", "create"] for a in self.calls))
+
+    def test_archive_pr_and_release_split_are_both_within_the_allowlist(self):
+        src = self._src()
+        src.open_archive_pr("juniper-ml", "main", "release-notes/juniper-cascor-client-v0.5.0", "notes/releases/RELEASE_NOTES_juniper-cascor-client_v0.5.0.md", "body\n", "release-notes: juniper-cascor-client v0.5.0", "pr body")
+        src.create_release("juniper-cascor-client", "v0.5.0", "t", "n", "c")
+        for args in self.calls:
+            if "--repo" in args:
+                slug = args[args.index("--repo") + 1]
+                self.assertIn(slug, self.allowed, args)
 
 
 if __name__ == "__main__":

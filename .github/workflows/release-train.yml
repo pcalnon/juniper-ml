@@ -30,20 +30,29 @@
 #                   write-scoped job ('contents: write' + 'pull-requests:
 #                   write'); it does exactly two things -- push a branch and
 #                   open a standard-gated proposal PR (never environments,
-#                   deployments, Releases, or PyPI). In-repo pilot only: the
-#                   single-repo GITHUB_TOKEN opens PRs for juniper-ml packages
-#                   and skips sibling-repo packages with a clear reason
-#                   (cross-repo is Phase 4, plan S12 step 4.1).
+#                   deployments, Releases, or PyPI). Cross-repo write identity
+#                   (Phase 4.1, plan S9.2 / S12 step 4.1): the job mints a
+#                   GitHub App installation token (actions/create-github-app-
+#                   token) scoped to the 8 publishing repos and uses it for
+#                   checkout/clone push auth + gh pr create, so a sibling
+#                   package's PR opens in ITS repo. GRACEFUL DEGRADATION: the
+#                   mint step is gated on the repo variable RELEASE_TRAIN_APP_ID
+#                   (owner-provisioned with the RELEASE_TRAIN_APP_PRIVATE_KEY
+#                   secret); when unset the job falls back to the single-repo
+#                   GITHUB_TOKEN and propose.py skips sibling packages with a
+#                   clear reason -- exactly the prior in-repo-only behaviour.
 #
 #    Mode resolution (the rollback/disable switch, plan S9.4/S11):
 #      workflow_dispatch input 'mode' > repo variable RELEASE_TRAIN_MODE > 'report'
 #      'off' quiesces the train instantly with a green no-op run; 'report' and
 #      'propose' are valid; 'ceremony' is a later phase and degrades to 'report'.
 #
-#    KNOWN LIMITATION (accepted for the Phase-2/3 pilot): a PR opened with the
-#    workflow's GITHUB_TOKEN does NOT trigger CI (GitHub's recursion guard), so
-#    a proposal PR shows no checks until the owner re-triggers (close/reopen, or
-#    push an empty commit). Phase 4's GitHub App identity resolves this.
+#    KNOWN LIMITATION (degraded no-App path ONLY): a PR opened with the built-in
+#    GITHUB_TOKEN does NOT trigger CI (GitHub's recursion guard), so on the
+#    fallback path a proposal PR shows no checks until the owner re-triggers
+#    (close/reopen, or push an empty commit). When the GitHub App token is minted
+#    (RELEASE_TRAIN_APP_ID set) the PR is opened by the App identity and CI runs
+#    normally -- so the caveat no longer applies to the primary path.
 #
 #    Detector exit contract: 0 = all quiet, 1 = actionable classifications
 #    exist (a NORMAL daily outcome -- packages awaiting a release must not
@@ -60,8 +69,13 @@
 #      plan S9.3). PyPI approval stays owner-only.
 #    - GH_TOKEN is used for read-only gh api calls (compare/tags/releases) by
 #      detect.py, and (propose job) for 'gh pr create'
-#    - Clones public sibling repos via HTTPS (read-only, no tokens)
-#    - SLACK_WEBHOOK_URL is the only repo secret consumed (non-blocking notify)
+#    - detect job clones public sibling repos via HTTPS (read-only, no tokens);
+#      the propose job clones them with the App installation token for push auth
+#      (cross-repo, Phase 4.1) and only when that token was minted
+#    - Two repo secrets are consumed: SLACK_WEBHOOK_URL (non-blocking notify,
+#      detect job) and RELEASE_TRAIN_APP_PRIVATE_KEY (referenced ONLY in the
+#      propose job's create-github-app-token mint step; pinned by the R7
+#      workflow-guard test). The App token is never a 'pypi' env reviewer.
 #
 # References:
 #    - notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md (S9.1-9.4, S11, S12 steps 1.3/2.2)
@@ -332,9 +346,10 @@ jobs:
   # propose job -- the ONLY write-scoped lane (R7 privilege boundary, plan S9.3). It runs solely
   # when the detect job resolved mode == 'propose'; in report/off it never starts, so the write
   # scope is unreachable on the report path. It opens standard-gated release-proposal PRs and does
-  # nothing else -- no environments, deployments, Releases, or (Test)PyPI. In-repo pilot only: the
-  # single-repo GITHUB_TOKEN opens PRs for juniper-ml packages; propose.py skips sibling-repo
-  # packages with a clear reason (cross-repo is Phase 4, plan S12 step 4.1).
+  # nothing else -- no environments, deployments, Releases, or (Test)PyPI. Cross-repo (Phase 4.1):
+  # it mints a GitHub App installation token (create-github-app-token) scoped to the 8 publishing
+  # repos and passes --cross-repo, so a sibling package's PR opens in ITS repo; without the token
+  # (RELEASE_TRAIN_APP_ID unset) propose.py skips sibling packages, opening juniper-ml PRs only.
   # ─────────────────────────────────────────────────────────────────────────────────────────────
   propose:
     name: Release-train proposal PRs (standard-gated)
@@ -350,12 +365,40 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      # Cross-repo write identity (Phase 4.1, plan S9.2 / S12 step 4.1). Mint a GitHub App installation
+      # token scoped to the 8 publishing repos, so this job can open PRs in the sibling repos -- and so
+      # App-opened PRs trigger CI normally (unlike a GITHUB_TOKEN-opened PR). GRACEFUL DEGRADATION: gated
+      # on the repo variable RELEASE_TRAIN_APP_ID (owner-provisioned together with the private-key
+      # secret); when unset this step is SKIPPED and the job runs on the built-in GITHUB_TOKEN (in-repo
+      # only). The App PRIVATE-KEY secret is referenced ONLY here (pinned by the R7 workflow-guard test).
+      - name: Mint GitHub App installation token (cross-repo write identity)
+        id: app-token
+        if: ${{ vars.RELEASE_TRAIN_APP_ID != '' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.RELEASE_TRAIN_APP_ID }}
+          private-key: ${{ secrets.RELEASE_TRAIN_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Least-privilege: exactly the 8 publishing repos (registry S4.1), not every installed repo.
+          repositories: |
+            juniper-ml
+            juniper-data
+            juniper-data-client
+            juniper-cascor
+            juniper-cascor-client
+            juniper-cascor-worker
+            juniper-canopy
+            juniper-recurrence
+
       - name: Checkout juniper-ml (full history + tags)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: juniper-ml
           # Same full-history checkout as the detect job: propose.py reads version files +
           # CHANGELOGs and branches from this checkout (a shallow tree loses branch context).
+          # Auth uses the minted App token when present (so the App identity pushes the juniper-ml
+          # release branch and its PR triggers CI), else the built-in GITHUB_TOKEN (degraded path).
+          token: ${{ steps.app-token.outputs.token || github.token }}
           fetch-depth: 0
 
       - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
@@ -376,6 +419,27 @@ jobs:
           name: release-manifest
           path: manifest
 
+      # Cross-repo only (Phase 4.1): clone the 7 sibling publishing repos (full history + tags) into
+      # $GITHUB_WORKSPACE so propose.py resolves each sibling checkout via --ecosystem-root, branches
+      # from its origin/main, and pushes with the App token embedded in the clone URL (masked in logs by
+      # create-github-app-token). SKIPPED on the degraded no-App path -- propose.py then skips every
+      # sibling package with a clear reason, so a missing clone is never touched.
+      - name: Clone sibling publishing repos (App-token push auth)
+        if: ${{ steps.app-token.outputs.token != '' }}
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          while IFS= read -r repo; do
+            [ -z "$repo" ] && continue
+            echo "Cloning ${repo} (full history + tags)..."
+            git clone --quiet "https://x-access-token:${APP_TOKEN}@github.com/${{ github.repository_owner }}/${repo}.git" "$repo"
+          done <<< "$ECOSYSTEM_REPOS"
+          echo ""
+          echo "Workspace contents:"
+          ls -1 "$GITHUB_WORKSPACE"
+
       - name: Configure git identity (headless, unsigned)
         working-directory: juniper-ml
         run: |
@@ -391,15 +455,19 @@ jobs:
         id: propose
         working-directory: juniper-ml
         env:
-          GH_TOKEN: ${{ github.token }}
+          # APP_TOKEN is the minted App installation token when present, else empty. GH_TOKEN is the
+          # App token when minted (cross-repo gh pr create) else the built-in GITHUB_TOKEN (in-repo).
+          # Both are step-scoped to the propose job -- the R7 workflow-guard test pins that.
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
           JUNIPER_RELEASE_TRAIN_OWNER: ${{ github.repository_owner }}
           PACKAGES_INPUT: ${{ inputs.packages }}
         run: |
           set -euo pipefail
 
           # Parse the optional 'packages' dispatch input: whitespace/comma-separated pypi_names.
-          # Empty = all eligible (no --package filter -> propose.py proposes every juniper-ml
-          # UNRELEASED_CHANGES package and skips cross-repo ones with a clear reason). Validate
+          # Empty = all eligible (no --package filter -> propose.py proposes every eligible package;
+          # sibling packages are proposed only with the App token, see --cross-repo below). Validate
           # every token against the pypi-name charset; reject garbage rather than shelling it out.
           pkg_args=()
           raw="${PACKAGES_INPUT:-}"
@@ -411,7 +479,18 @@ jobs:
             fi
             pkg_args+=(--package "$tok")
           done
-          echo "package filter: ${pkg_args[*]:-<all eligible juniper-ml packages>}"
+          echo "package filter: ${pkg_args[*]:-<all eligible packages>}"
+
+          # Cross-repo is capability-gated (Phase 4.1): pass --cross-repo ONLY when the App token was
+          # minted (the siblings were then cloned above). Without it, propose.py skips every sibling
+          # package with a clear reason (the degraded single-repo GITHUB_TOKEN path -- in-repo only).
+          cross_repo_args=()
+          if [ -n "${APP_TOKEN:-}" ]; then
+            cross_repo_args+=(--cross-repo)
+            echo "GitHub App token present -- cross-repo proposals ENABLED (Phase 4.1)."
+          else
+            echo "No App token (RELEASE_TRAIN_APP_ID unset) -- degraded GITHUB_TOKEN path: sibling packages will be SKIPPED (in-repo only)."
+          fi
 
           # Exit contract (util/release_train/propose.py): 0/1 = ran (0 clean; propose.py has no
           # distinct exit 1 today, but tolerate it to mirror the detect step), >= 2 = hard error.
@@ -419,7 +498,9 @@ jobs:
           python util/release_train/propose.py \
             --manifest "${GITHUB_WORKSPACE}/manifest/release-manifest.json" \
             --repo-root . \
+            --ecosystem-root .. \
             --execute \
+            ${cross_repo_args[@]+"${cross_repo_args[@]}"} \
             ${pkg_args[@]+"${pkg_args[@]}"} > "${GITHUB_WORKSPACE}/propose-output.txt" 2>&1 || rc=$?
           cat "${GITHUB_WORKSPACE}/propose-output.txt"
           echo "exit-code=${rc}" >> "$GITHUB_OUTPUT"
@@ -455,7 +536,7 @@ jobs:
               lines += ["### Skipped", ""]
               lines += [f"- {item}" for item in skipped]
               lines.append("")
-          lines.append("_Proposal PRs are standard-gated (plan S7): the owner reviews and merges; they touch neither TestPyPI nor PyPI. Note: a PR opened with GITHUB_TOKEN does not auto-trigger CI (GitHub's recursion guard) -- re-trigger checks by closing/reopening the PR or pushing an empty commit. Phase 4's GitHub App identity resolves this._")
+          lines.append("_Proposal PRs are standard-gated (plan S7): the owner reviews and merges; they touch neither TestPyPI nor PyPI. When the GitHub App token is minted (Phase 4.1) PRs are opened by the App identity -- CI runs normally and sibling-repo packages get PRs in their own repos. On the degraded no-App path (RELEASE_TRAIN_APP_ID unset), a PR opened with the built-in GITHUB_TOKEN does not auto-trigger CI (GitHub's recursion guard) -- re-trigger by closing/reopening the PR or pushing an empty commit, and sibling packages are skipped._")
           with out.open("a", encoding="utf-8") as fh:
               fh.write("\n".join(lines) + "\n")
           PY
