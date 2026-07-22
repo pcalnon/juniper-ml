@@ -928,12 +928,15 @@ class ExecuteCrossRepoGuardTest(unittest.TestCase):
     def test_cross_repo_opens_sibling_in_its_repo_with_correct_branch_and_base(self):
         code, out = self._run_execute("--cross-repo")
         self.assertEqual(code, 0, out)
-        # BOTH open now, each in its OWN repo; the PR --base is 'main' in both cases
+        # BOTH open now, each in its OWN repo; the PR --base is 'main' in both cases. Order is the
+        # Phase-4.2 deterministic topological sort of the registry depends_on DAG: both packages are
+        # dependency-free, so the lexicographic pypi_name tie-break puts 'juniper-sibling' before
+        # 'juniper-thing' (independent of the manifest's listing order).
         self.assertEqual(
             self.calls["pr"],
             [
-                ("juniper-ml", "main", "release/juniper-thing-v0.5.0"),
                 ("juniper-sibling", "main", "release/juniper-sibling-v0.5.0"),
+                ("juniper-ml", "main", "release/juniper-thing-v0.5.0"),
             ],
         )
         self.assertIn("opened: juniper-thing", out)
@@ -991,6 +994,316 @@ class ExecuteCrossRepoGuardTest(unittest.TestCase):
         self.assertEqual(self.calls["pr"], [("juniper-sibling", "main", "release/juniper-sibling-v0.5.0")])
         self.assertIn(("juniper-sibling", ["switch", "-c", "release/juniper-sibling-v0.5.0", "origin/main"]), self.calls["git"])
         self.assertIn(("juniper-sibling", "pyproject.toml"), self.calls["write"])
+
+
+# ── Phase 4.2: dependency-aware ordering (topological sort + cycle detection) ──
+
+
+def _reg_entry(name: str, deps=None, repo: str = "juniper-ml") -> "d.PackageEntry":
+    return _entry(pypi_name=name, repo=repo, path=f"{name}/", depends_on=list(deps or []), tag_pattern=f"{name}-v*", archive_name=f"RELEASE_NOTES_{name}_v{{version}}.md", ship_paths=[f"{name}/{name.replace('-', '_')}/"])
+
+
+class TopologicalOrderTest(unittest.TestCase):
+    def test_real_registry_is_upstream_first_and_deterministic(self):
+        # the real 18-package registry: every depends_on edge points strictly backwards, and the tier
+        # spot-checks from plan S13 / the task hold; meta last, deterministic lexicographic root first.
+        entries = d.load_registry(REPO_ROOT / "util" / "release_train" / "registry.yaml")
+        order = pr.topological_order(entries)
+        idx = {n: i for i, n in enumerate(order)}
+        by_name = {e.pypi_name: e for e in entries}
+        self.assertEqual(sorted(order), sorted(by_name), "topo order must be a permutation of every registered package")
+        for e in entries:
+            for dep in e.depends_on:
+                if dep in by_name:
+                    self.assertLess(idx[dep], idx[e.pypi_name], f"{dep} must precede its consumer {e.pypi_name}")
+        for up, down in (("juniper-observability", "juniper-canopy"), ("juniper-service-core", "juniper-canopy"), ("juniper-observability", "juniper-cascor"), ("juniper-model-core", "juniper-cascor")):
+            self.assertLess(idx[up], idx[down], f"{up} must precede {down}")
+        self.assertEqual(order[-1], "juniper-ml", "the meta depends on all -> processed last")
+        self.assertEqual(order[0], "juniper-cascor-model", "lexicographic tie-break among the dependency-free roots")
+
+    def test_synthetic_diamond_tie_break_is_lexicographic(self):
+        # a -> {b, c}; d -> {b, c}. b and c are both ready after a; the pypi_name tie-break orders b<c.
+        entries = [_reg_entry("juniper-a"), _reg_entry("juniper-b", ["juniper-a"]), _reg_entry("juniper-c", ["juniper-a"]), _reg_entry("juniper-d", ["juniper-b", "juniper-c"])]
+        self.assertEqual(pr.topological_order(entries), ["juniper-a", "juniper-b", "juniper-c", "juniper-d"])
+
+    def test_order_independent_of_registry_file_order(self):
+        forward = [_reg_entry("juniper-a"), _reg_entry("juniper-b", ["juniper-a"])]
+        reversed_ = [_reg_entry("juniper-b", ["juniper-a"]), _reg_entry("juniper-a")]
+        self.assertEqual(pr.topological_order(forward), pr.topological_order(reversed_))
+
+    def test_non_registry_dependency_is_ignored(self):
+        # a depends_on naming a package NOT in the registry does not constrain (or break) the ordering
+        entries = [_reg_entry("juniper-a", ["juniper-not-registered"]), _reg_entry("juniper-b", ["juniper-a"])]
+        self.assertEqual(pr.topological_order(entries), ["juniper-a", "juniper-b"])
+
+    def test_cycle_raises_naming_the_cycle(self):
+        entries = [_reg_entry("juniper-x", ["juniper-y"]), _reg_entry("juniper-y", ["juniper-z"]), _reg_entry("juniper-z", ["juniper-x"])]
+        with self.assertRaises(pr.CycleError) as ctx:
+            pr.topological_order(entries)
+        msg = str(ctx.exception)
+        for n in ("juniper-x", "juniper-y", "juniper-z"):
+            self.assertIn(n, msg)
+
+
+# ── Phase 4.2: consumer ceiling-bump follow-on PRs (D6) -- pure helpers ───────
+
+
+class FollowOnHelperTest(unittest.TestCase):
+    def test_requirement_names_package_tolerates_extras_marker(self):
+        self.assertTrue(pr.requirement_names_package("juniper-model-core[crossval]>=0.2.0,<0.4.0", "juniper-model-core"))
+        self.assertTrue(pr.requirement_names_package("juniper-model-core[a,b] >= 0.2.0", "juniper-model-core"))
+        self.assertTrue(pr.requirement_names_package("juniper-service-core>=0.2.0,<0.5.0", "juniper-service-core"))  # plain form still matches
+        self.assertFalse(pr.requirement_names_package("juniper-ml[tools,doc-tools]", "juniper-ml"))  # extras ref, NO version -> not a versioned pin
+        self.assertFalse(pr.requirement_names_package("juniper-cascor-worker>=0.4.0", "juniper-cascor"))  # a longer package name never matches
+
+    def test_consumer_pin_requirements_across_deps_and_extras(self):
+        text = '[project]\nname = "c"\nversion = "0.1.0"\ndependencies = ["juniper-up>=0.2.0,<0.4.0", "other>=1"]\n\n[project.optional-dependencies]\ntest = ["juniper-up[conformance]>=0.2.0,<0.4.0"]\n'
+        self.assertEqual(pr.consumer_pin_requirements(text, "juniper-up"), [("dependencies", "juniper-up>=0.2.0,<0.4.0"), ("[test]", "juniper-up[conformance]>=0.2.0,<0.4.0")])
+        self.assertEqual(pr.consumer_pin_requirements("not valid toml [[", "juniper-up"), [])  # unparseable -> empty, never raises
+
+    def test_escaped_pin_edits_raises_only_the_ceiling(self):
+        pins = [("dependencies", "juniper-up>=0.2.0,<0.4.0"), ("[t]", "juniper-up[x]>=0.2.0,<0.4.0")]
+        self.assertEqual(pr.escaped_pin_edits(pins, "0.4.0"), [("dependencies", "juniper-up>=0.2.0,<0.4.0", "juniper-up>=0.2.0,<0.5.0"), ("[t]", "juniper-up[x]>=0.2.0,<0.4.0", "juniper-up[x]>=0.2.0,<0.5.0")])
+        self.assertEqual(pr.escaped_pin_edits([("dependencies", "juniper-up>=0.2.0,<0.9.0")], "0.4.0"), [])  # within range
+        self.assertEqual(pr.escaped_pin_edits([("dependencies", "juniper-up>=0.2.0")], "0.4.0"), [])  # floor-only
+
+    def test_follow_on_branch_and_dup_guard_delimiter(self):
+        self.assertEqual(pr.follow_on_branch("juniper-model-core", "0.4.0"), "deps/juniper-model-core-ceiling-0.5.0")
+        self.assertEqual(pr.follow_on_branch("juniper-x", "0.9.0"), "deps/juniper-x-ceiling-0.10.0")
+        self.assertIsNotNone(pr.find_existing_follow_on_pr([{"number": 5, "headRefName": "deps/juniper-model-core-ceiling-0.5.0"}], "juniper-model-core"))
+        # the -ceiling- delimiter keeps a shorter upstream from matching a longer one's branch
+        self.assertIsNone(pr.find_existing_follow_on_pr([{"headRefName": "deps/juniper-cascor-model-ceiling-0.2.0"}], "juniper-cascor"))
+
+
+# ── Phase 4.2: follow-on generation through build_proposal (the S12-4.2 verify) ──
+
+
+def _write_consumer_pyproject(base_dir: Path, name: str, deps: list, opt_deps: "dict | None" = None, version: str = "0.1.0") -> None:
+    base_dir.mkdir(parents=True, exist_ok=True)
+    lines = ["[project]", f'name = "{name}"', f'version = "{version}"', "dependencies = ["]
+    lines += [f'    "{dep}",' for dep in deps]
+    lines.append("]")
+    if opt_deps:
+        lines += ["", "[project.optional-dependencies]"]
+        for extra, reqs in opt_deps.items():
+            lines.append(f"{extra} = [")
+            lines += [f'    "{r}",' for r in reqs]
+            lines.append("]")
+    (base_dir / "pyproject.toml").write_text("\n".join(lines) + "\n")
+
+
+class FollowOnBuildProposalTest(unittest.TestCase):
+    """A simulated in-repo upstream MINOR bump with four sibling consumers (escaped ceiling / within
+    range / floor-only / extras-form ceiling). Offline: consumer pyprojects live under the ecosystem
+    root; build_proposal reads them and never writes."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.repo_root = self.root / "juniper-ml"
+        self.repo_root.mkdir()
+        _install_templates(self.repo_root)
+        _write_pkg(self.repo_root, "juniper-up/", name="juniper-up", version="0.3.0", changelog=_CHANGELOG)  # upstream, in-repo
+        self.eco = self.root
+        _write_consumer_pyproject(self.eco / "juniper-cons-escaped", "juniper-cons-escaped", ["juniper-up>=0.2.0,<0.4.0"])
+        _write_consumer_pyproject(self.eco / "juniper-cons-within", "juniper-cons-within", ["juniper-up>=0.2.0,<0.9.0"])
+        _write_consumer_pyproject(self.eco / "juniper-cons-floor", "juniper-cons-floor", ["juniper-up>=0.2.0"])
+        _write_consumer_pyproject(self.eco / "juniper-cons-extras", "juniper-cons-extras", ["numpy>=1"], opt_deps={"test": ["juniper-up[conformance]>=0.2.0,<0.4.0"]})
+        self.fake = _FakeSources(self.repo_root, self.eco)
+        self.up = _entry(pypi_name="juniper-up", path="juniper-up/")
+        self.entries = [
+            self.up,
+            _entry(pypi_name="juniper-cons-escaped", repo="juniper-cons-escaped", path=".", depends_on=["juniper-up"]),
+            _entry(pypi_name="juniper-cons-within", repo="juniper-cons-within", path=".", depends_on=["juniper-up"]),
+            _entry(pypi_name="juniper-cons-floor", repo="juniper-cons-floor", path=".", depends_on=["juniper-up"]),
+            _entry(pypi_name="juniper-cons-extras", repo="juniper-cons-extras", path=".", depends_on=["juniper-up"]),
+        ]
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _pkg(self, **over):
+        base = {"pypi_name": "juniper-up", "released_version": "0.3.0", "declared_version": "0.3.0", "proposed_version": "0.4.0"}
+        base.update(over)
+        return _manifest_pkg(**base)
+
+    def _prop(self, cross_repo=True, pkg=None):
+        before = _sha_tree(self.repo_root)
+        prop = pr.build_proposal(self.up, pkg or self._pkg(), self.fake.build(), self.repo_root, self.eco, self.entries, "2026-07-22", cross_repo=cross_repo)
+        self.assertEqual(before, _sha_tree(self.repo_root), "build_proposal must write nothing (dry-run purity), even with follow-ons")
+        return prop
+
+    def test_verify_step_4_2_expected_edges_and_follow_on_content(self):
+        # PLAN S12 step 4.2 verify: a simulated upstream MINOR bump produces the expected downstream
+        # propagation edges -- plus (Phase 4.2) the ceiling-bump follow-on content per escaped consumer.
+        prop = self._prop(cross_repo=True)
+        states = {e["consumer"]: e["consumer_pin_state"] for e in prop.propagation_edges}
+        self.assertEqual(states["juniper-cons-escaped"], pr.PIN_ESCAPED_FOLLOWON)
+        self.assertEqual(states["juniper-cons-extras"], pr.PIN_ESCAPED_FOLLOWON)
+        self.assertEqual(states["juniper-cons-within"], pr.PIN_WITHIN_RANGE)
+        self.assertEqual(states["juniper-cons-floor"], pr.PIN_FLOOR_ONLY)
+        fos = {f.consumer: f for f in prop.follow_on_prs}
+        self.assertEqual(set(fos), {"juniper-cons-escaped", "juniper-cons-extras"}, "follow-ons ONLY for escaped ceilings")
+        esc = fos["juniper-cons-escaped"]
+        self.assertEqual(esc.repo, "juniper-cons-escaped")  # opens in the CONSUMER's repo
+        self.assertEqual(esc.branch, "deps/juniper-up-ceiling-0.5.0")
+        self.assertFalse(esc.skipped)
+        self.assertEqual(esc.pin_changes, [("dependencies", "juniper-up>=0.2.0,<0.4.0", "juniper-up>=0.2.0,<0.5.0")])
+        self.assertEqual([e.path for e in esc.edits], ["pyproject.toml"])
+        self.assertIn("juniper-up>=0.2.0,<0.5.0", esc.edits[0].new_text)  # ceiling raised
+        self.assertIn("juniper-up>=0.2.0", esc.edits[0].new_text)  # floor preserved
+        self.assertNotIn("<0.4.0", esc.edits[0].new_text)
+        # the extras-form pin is edited in place (floor + [extra] preserved, only ceiling raised)
+        ext = fos["juniper-cons-extras"]
+        self.assertEqual(ext.pin_changes, [("[test]", "juniper-up[conformance]>=0.2.0,<0.4.0", "juniper-up[conformance]>=0.2.0,<0.5.0")])
+        self.assertIn("juniper-up[conformance]>=0.2.0,<0.5.0", ext.edits[0].new_text)
+        # body cites S13, the triggering release proposal, and the 2026-07-06 incident precedent
+        self.assertIn("S13", esc.pr_body or "")
+        self.assertIn("release/juniper-up-v0.4.0", esc.pr_body or "")
+        self.assertIn("2026-07-06 ci-tools incident", esc.pr_body or "")
+        # title/commit name the raised ceiling + the consumer
+        self.assertIn("<0.5.0", esc.pr_title or "")
+        self.assertIn("juniper-cons-escaped", esc.pr_title or "")
+        # the proposal PR body surfaces every edge's pin state + a follow-on section
+        self.assertIn("escaped -> follow-on", prop.pr_body or "")
+        self.assertIn("deps/juniper-up-ceiling-0.5.0", prop.pr_body or "")
+
+    def test_degraded_mode_skips_siblings_with_reason_but_keeps_content(self):
+        prop = self._prop(cross_repo=False)
+        esc_edge = next(e for e in prop.propagation_edges if e["consumer"] == "juniper-cons-escaped")
+        self.assertTrue(esc_edge["consumer_pin_state"].startswith("escaped -> skipped("))
+        self.assertIn("single-repo GITHUB_TOKEN", esc_edge["consumer_pin_state"])
+        fo = next(f for f in prop.follow_on_prs if f.consumer == "juniper-cons-escaped")
+        self.assertTrue(fo.skipped)
+        self.assertTrue(fo.edits, "content is still computed for the dry-run preview even when skipped")
+        self.assertEqual(fo.pin_changes, [("dependencies", "juniper-up>=0.2.0,<0.4.0", "juniper-up>=0.2.0,<0.5.0")])
+
+    def test_dup_guard_suppresses_follow_on_per_consumer_repo(self):
+        self.fake.open_prs["juniper-cons-escaped"] = [{"number": 9, "headRefName": "deps/juniper-up-ceiling-0.5.0"}]
+        prop = self._prop(cross_repo=True)
+        esc_edge = next(e for e in prop.propagation_edges if e["consumer"] == "juniper-cons-escaped")
+        self.assertIn("dup-guard", esc_edge["consumer_pin_state"])
+        fo = next(f for f in prop.follow_on_prs if f.consumer == "juniper-cons-escaped")
+        self.assertTrue(fo.skipped)
+        self.assertIn("#9", fo.skipped_reason or "")
+        # a DIFFERENT consumer with no open dup is unaffected -> still a live follow-on
+        self.assertEqual(next(f for f in prop.follow_on_prs if f.consumer == "juniper-cons-extras").consumer_pin_state, pr.PIN_ESCAPED_FOLLOWON)
+
+    def test_patch_bump_produces_no_edges_and_no_follow_ons(self):
+        prop = self._prop(cross_repo=True, pkg=self._pkg(proposed_bump="patch", proposed_version="0.3.1"))
+        self.assertEqual(prop.propagation_edges, [])
+        self.assertEqual(prop.follow_on_prs, [])
+
+    def test_unreadable_consumer_pyproject_is_unknown_not_a_follow_on(self):
+        # a registry consumer whose checkout is absent -> honest "unknown", never a follow-on
+        entries = [self.up, _entry(pypi_name="juniper-cons-absent", repo="juniper-cons-absent", path=".", depends_on=["juniper-up"])]
+        prop = pr.build_proposal(self.up, self._pkg(), self.fake.build(), self.repo_root, self.eco, entries, "2026-07-22", cross_repo=True)
+        edge = next(e for e in prop.propagation_edges if e["consumer"] == "juniper-cons-absent")
+        self.assertIn("unknown", edge["consumer_pin_state"])
+        self.assertEqual(prop.follow_on_prs, [])
+
+    def test_meta_consumer_deferred_never_a_follow_on_on_sibling_upstream(self):
+        # a SIBLING upstream with the meta as a ceiling-pinning consumer: meta is deferred (Q-META), no PR
+        up_sib = _entry(pypi_name="juniper-sib-up", repo="juniper-sib-up", path=".")
+        _write_consumer_pyproject(self.eco / "juniper-sib-up", "juniper-sib-up", ["numpy>=1"], version="0.3.0")
+        (self.eco / "juniper-sib-up" / "CHANGELOG.md").write_text(_CHANGELOG)
+        (self.repo_root / "pyproject.toml").write_text('[project]\nname = "juniper-ml"\nversion = "0.6.0"\ndependencies = []\n\n[project.optional-dependencies]\nservers = ["juniper-sib-up>=0.2.0,<0.4.0"]\n')
+        meta = _entry(pypi_name="juniper-ml", repo="juniper-ml", path=".", depends_on=["juniper-sib-up"])
+        pkg = _manifest_pkg(pypi_name="juniper-sib-up", repo="juniper-sib-up", released_version="0.3.0", declared_version="0.3.0", proposed_version="0.4.0")
+        prop = pr.build_proposal(up_sib, pkg, self.fake.build(), self.repo_root, self.eco, [up_sib, meta], "2026-07-22", cross_repo=True)
+        meta_edge = next(e for e in prop.propagation_edges if e["consumer"] == "juniper-ml")
+        self.assertIn("deferred", meta_edge["consumer_pin_state"])
+        self.assertNotIn("juniper-ml", {f.consumer for f in prop.follow_on_prs})
+
+
+# ── Phase 4.2: execute_follow_on (hermetic spies) + CLI ordering / cycle ─────
+
+
+class ExecuteFollowOnTest(unittest.TestCase):
+    def setUp(self):
+        self.calls = {"write": [], "git": [], "pr": []}
+        self._tmp = tempfile.TemporaryDirectory()
+        self.eco = Path(self._tmp.name)
+        (self.eco / "juniper-cascor").mkdir()
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _sources(self) -> pr.ProposeSources:
+        def open_pr(repo, base, head, title, body):
+            self.calls["pr"].append((repo, base, head))
+            return f"https://github.com/pcalnon/{repo}/pull/2"
+
+        return pr.ProposeSources(read_file=lambda e, f: None, list_open_prs=lambda repo: [], write_file=lambda repo, path, content: self.calls["write"].append((repo, path)), run_git=lambda repo, args: self.calls["git"].append((repo, list(args))), open_pr=open_pr)
+
+    def _fo(self, skipped=None) -> pr.FollowOnPR:
+        fo = pr.FollowOnPR(consumer="juniper-cascor", repo="juniper-cascor", upstream="juniper-model-core", upstream_version="0.4.0", pin_file="pyproject.toml", pin_changes=[("dependencies", "juniper-model-core>=0.2.0,<0.4.0", "juniper-model-core>=0.2.0,<0.5.0")], branch="deps/juniper-model-core-ceiling-0.5.0", consumer_pin_state=pr.PIN_ESCAPED_FOLLOWON, commit_message="chore(deps): raise juniper-model-core ceiling to <0.5.0 for its v0.4.0 release", pr_title="t", pr_body="b")
+        fo.edits.append(pr.FileEdit(path="pyproject.toml", old_text="a", new_text="b"))
+        if skipped:
+            fo.skipped_reason = skipped
+        return fo
+
+    def test_opens_in_consumer_repo_from_origin_main_when_capable(self):
+        url = pr.execute_follow_on(self._fo(), self._sources(), "main", cross_repo=True, ecosystem_root=self.eco)
+        self.assertTrue(url)
+        self.assertEqual(self.calls["pr"], [("juniper-cascor", "main", "deps/juniper-model-core-ceiling-0.5.0")])
+        self.assertIn(("juniper-cascor", ["switch", "-c", "deps/juniper-model-core-ceiling-0.5.0", "origin/main"]), self.calls["git"])
+        self.assertIn(("juniper-cascor", "pyproject.toml"), self.calls["write"])
+        commit = next(args for repo, args in self.calls["git"] if "commit" in args)
+        self.assertIn("commit.gpgsign=false", commit)
+        self.assertLess(commit.index("commit.gpgsign=false"), commit.index("commit"))  # -c precedes the subcommand
+
+    def test_refuses_without_cross_repo_capability(self):
+        url = pr.execute_follow_on(self._fo(), self._sources(), "main")  # cross_repo defaults False
+        self.assertEqual(url, "")
+        self.assertEqual(self.calls, {"write": [], "git": [], "pr": []})
+
+    def test_refuses_a_skipped_follow_on(self):
+        url = pr.execute_follow_on(self._fo(skipped="dup-guard: open ceiling-bump PR"), self._sources(), "main", cross_repo=True, ecosystem_root=self.eco)
+        self.assertEqual(url, "")
+        self.assertEqual(self.calls["pr"], [])
+
+
+class CliOrderingAndCycleTest(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+        self.repo_root = self.root / "juniper-ml"
+        self.repo_root.mkdir()
+        _install_templates(self.repo_root)
+        self.fake = _FakeSources(self.repo_root, self.root)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _reg(self, name, deps):
+        deps_str = "[" + ", ".join(deps) + "]"
+        return f'  - {{pypi_name: {name}, repo: juniper-ml, path: "{name}/", version_source: static, tag_pattern: "{name}-v*", archive_name: "RELEASE_NOTES_{name}_v{{version}}.md", trigger: {{now: release, target: release}}, verify: {{now: strict, target: strict}}, depends_on: {deps_str}, ship_paths: ["{name}/{name}/"], exclude_paths: []}}'
+
+    def test_cyclic_registry_exits_two(self):
+        registry = self.root / "registry.yaml"
+        registry.write_text("packages:\n" + self._reg("juniper-x", ["juniper-y"]) + "\n" + self._reg("juniper-y", ["juniper-x"]) + "\n")
+        manifest = self.root / "manifest.json"
+        manifest.write_text(json.dumps({"packages": [_manifest_pkg(pypi_name="juniper-x")]}))
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = pr.main(["--manifest", str(manifest), "--repo-root", str(self.repo_root), "--registry", str(registry)], sources=self.fake.build())
+        self.assertEqual(code, 2)
+
+    def test_eligible_packages_processed_upstream_first(self):
+        # the manifest lists the DOWNSTREAM first; the topo sort must reorder to upstream-first.
+        registry = self.root / "registry.yaml"
+        registry.write_text("packages:\n" + self._reg("juniper-down", ["juniper-upp"]) + "\n" + self._reg("juniper-upp", []) + "\n")
+        _write_pkg(self.repo_root, "juniper-down/", name="juniper-down", version="0.4.0", changelog=_CHANGELOG)
+        _write_pkg(self.repo_root, "juniper-upp/", name="juniper-upp", version="0.4.0", changelog=_CHANGELOG)
+        manifest = self.root / "manifest.json"
+        manifest.write_text(json.dumps({"packages": [_manifest_pkg(pypi_name="juniper-down"), _manifest_pkg(pypi_name="juniper-upp")]}))
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            code = pr.main(["--manifest", str(manifest), "--repo-root", str(self.repo_root), "--ecosystem-root", str(self.root), "--registry", str(registry), "--release-date", "2026-07-22", "--json"], sources=self.fake.build())
+        self.assertEqual(code, 0, buf.getvalue())
+        order = [p["pypi_name"] for p in json.loads(buf.getvalue())["proposals"]]
+        self.assertEqual(order, ["juniper-upp", "juniper-down"], "upstream juniper-upp must be proposed before its consumer despite manifest order")
 
 
 if __name__ == "__main__":

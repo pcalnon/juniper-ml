@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Juniper PyPI release-train proposal-PR generator (plan S5.4/S6/S10.1; Phase 2.1 engine, wired in 2.2).
+"""Juniper PyPI release-train proposal-PR generator (plan S5.4/S6/S10.1/S13; Phase 2.1 engine, wired in 2.2; dependency ordering + follow-on PRs in 4.2).
 
 Consumes the release-manifest JSON emitted by ``detect.py`` (Phase 1.2) and, for every
 package the detector classified ``UNRELEASED_CHANGES``, builds the **complete content** of a
@@ -22,10 +22,23 @@ single **standard-gated release-proposal PR** (plan S5.4):
     service-core 0.5.0 proposal that bumped the sub-package but not the ``<0.5.0`` meta ceiling, so
     ``tests/test_service_core_drift.py`` failed and the proposal shipped red);
   * the ``propagation_edges`` -- a pre-1.0 MINOR bump escapes a consumer's ``<next-minor``
-    ceiling pin (plan S6/S13), so each reverse-dependency consumer gets a listed follow-on
-    ceiling-bump PR (standard-gated, **never** folded into the exempt path -- the 2026-07-06
-    ci-tools incident class);
+    ceiling pin (plan S6/S13), so each reverse-dependency consumer gets an edge annotated with a
+    ``consumer_pin_state`` (``within_range`` / ``floor_only`` / ``escaped -> follow-on`` /
+    ``escaped -> skipped(<reason>)``) read from that consumer's REAL pyproject on disk (Phase 4.2);
+  * for each escaped CROSS-REPO (non-meta) consumer, a **standard-gated ceiling-bump follow-on PR**
+    in that consumer's repo (Phase 4.2, plan S13/D6): the pin edit (ceiling raised to the upstream's
+    next-minor, floors preserved), branch ``deps/<upstream>-ceiling-<new-ceiling>``, and a body citing
+    S13 + the triggering proposal -- **never** folded into the upstream proposal or the exempt
+    notes-archive path (the 2026-07-06 ci-tools incident class; rec#85 is the hand-made model). The
+    meta (juniper-ml) is the sole exception -- its pin rides #661's folded co-change when the upstream
+    is in-repo and stays MANUAL (Q-META) otherwise; it never gets a follow-on PR;
   * the branch name, commit message, and PR title/body.
+
+When multiple packages are eligible in one run they are processed in **dependency (upstream-first)
+order** (Phase 4.2, plan S13/D6): a deterministic topological sort of the registry ``depends_on`` DAG
+(shared libs -> sub-libs -> apps -> meta) with a lexicographic ``pypi_name`` tie-break -- derived from
+the registry, NOT hardcoded tiers. A cyclic ``depends_on`` graph is a hard error (exit 2) naming the
+cycle.
 
 The proposal PR is **dup-guarded**: before proposing, the train runs ``gh pr list`` for an
 existing open release PR for the package (concurrent Claude sessions are a real hazard) and
@@ -65,6 +78,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
+import heapq
 import json
 import os
 import re
@@ -142,6 +156,7 @@ class Proposal:
     notes_relpath: "str | None" = None
     notes_draft: "str | None" = None
     propagation_edges: list = field(default_factory=list)
+    follow_on_prs: list = field(default_factory=list)
     co_change_checklist: list = field(default_factory=list)
     consumer_pin_cochanges: list = field(default_factory=list)
     ship_evidence: list = field(default_factory=list)
@@ -167,6 +182,7 @@ class Proposal:
             "notes_relpath": self.notes_relpath,
             "notes_draft": self.notes_draft,
             "propagation_edges": self.propagation_edges,
+            "follow_on_prs": [f.to_dict() for f in self.follow_on_prs],
             "co_change_checklist": self.co_change_checklist,
             "consumer_pin_cochanges": [cc.to_dict() for cc in self.consumer_pin_cochanges],
             "ship_evidence": self.ship_evidence,
@@ -324,6 +340,7 @@ def set_agents_version(text: str, new_version: str) -> tuple:
 # ``[all]`` names extras, not a versioned package, so it is never a pin co-change target.
 
 _VERSION_OPERATORS = "<>=!~"
+_EXTRAS_MARKER_RE = re.compile(r"^\[[^\]]*\]")
 
 
 @dataclass
@@ -339,14 +356,20 @@ class ConsumerPinCoChange:
 
 
 def requirement_names_package(req: str, pypi_name: str) -> bool:
-    """True when requirement string ``req`` is a *versioned* pin of ``pypi_name`` (the name immediately
-    followed by a PEP 508 version operator). The ``juniper-ml[...]`` recursive extras ref (``[`` after
-    the name, no operator) and a longer package name (``juniper-x-y`` probed for ``juniper-x``) both
-    return False."""
+    """True when requirement string ``req`` is a *versioned* pin of ``pypi_name`` -- the name, an
+    OPTIONAL PEP 508 ``[extras]`` marker, then a version operator. So both ``juniper-service-core>=0.2.0,<0.5.0``
+    (the meta-extras form) and ``juniper-model-core[crossval]>=0.2.0,<0.4.0`` (a consumer's
+    extras-carrying runtime dep, Phase 4.2) match. The ``juniper-ml[...]`` recursive extras ref (``[``
+    then NO operator) and a longer package name (``juniper-cascor-worker`` probed for ``juniper-cascor``)
+    both return False."""
     req = req.strip()
     if not req.startswith(pypi_name):
         return False
     rest = req[len(pypi_name):]
+    marker = _EXTRAS_MARKER_RE.match(rest)
+    if marker:
+        rest = rest[marker.end():]
+    rest = rest.lstrip()
     return bool(rest) and rest[0] in _VERSION_OPERATORS
 
 
@@ -397,27 +420,27 @@ def compute_consumer_pin_cochanges(pyproject_text: str, pypi_name: str, new_vers
     return cochanges
 
 
-def _distinct_req_pairs(cochanges: list) -> list:
-    """Order-preserving de-dup of (old_req, new_req) pairs for text replacement (a package listed in
-    two extras is the same string, edited once wherever it occurs)."""
+def apply_pin_pairs_exact(text: str, pairs: list) -> str:
+    """Byte-surgical exact-string replacement of each ``(old_req, new_req)`` pair (order-preserving
+    de-dup), so only the pinned requirement moves and nothing else in the file does. Shared by the
+    meta consumer-pin co-change (``apply_pin_edits_exact``) and the Phase-4.2 D6 follow-on pin edit --
+    both edit requirement strings that are the authoritative source the change was parsed from, so
+    ``old_req`` matches exactly."""
     seen: set = set()
-    pairs: list = []
-    for cc in cochanges:
-        key = (cc.old_req, cc.new_req)
-        if key not in seen:
-            seen.add(key)
-            pairs.append(key)
-    return pairs
+    for old_req, new_req in pairs:
+        key = (old_req, new_req)
+        if key in seen:
+            continue
+        seen.add(key)
+        text = text.replace(old_req, new_req)
+    return text
 
 
 def apply_pin_edits_exact(text: str, cochanges: list) -> str:
-    """Byte-surgical exact-string replacement of each ceiling-raised requirement -- for the root
-    ``pyproject.toml`` and the ``tests/test_pyproject_extras.py`` membership sets, whose requirement
-    strings are the authoritative source the co-change was parsed from (so ``old_req`` matches exactly
-    and nothing else in the file moves)."""
-    for old_req, new_req in _distinct_req_pairs(cochanges):
-        text = text.replace(old_req, new_req)
-    return text
+    """(meta path) exact-string ceiling raise for each ``ConsumerPinCoChange`` -- for the root
+    ``pyproject.toml`` and the ``tests/test_pyproject_extras.py`` membership sets. Delegates to
+    ``apply_pin_pairs_exact``."""
+    return apply_pin_pairs_exact(text, [(cc.old_req, cc.new_req) for cc in cochanges])
 
 
 _AGENTS_EXTRAS_HEADING = re.compile(r"^#{2,4}\s+Dependency extras reference\s*$", re.IGNORECASE)
@@ -502,6 +525,85 @@ def move_unreleased(changelog_text: str, version: str, date: str) -> tuple:
     return new_text, None
 
 
+# ── dependency-aware ordering (D6, plan S13) ─────────────────────────────────
+#
+# Within one train run, packages are processed UPSTREAM-FIRST so a consumer's proposal never bumps a
+# floor to a version the upstream has not at least released, and a consumer's ceiling-bump follow-on is
+# listed AFTER the upstream release proposal that triggers it (plan S13). The order is a deterministic
+# topological sort of the registry ``depends_on`` DAG with a lexicographic (``pypi_name``) tie-break,
+# so it is a single stable permutation independent of the registry's file order -- the S13 "shared libs
+# -> sub-libs -> apps -> meta" tier listing is documentation; the registry ``depends_on`` is the truth.
+
+
+class CycleError(Exception):
+    """Raised when the registry ``depends_on`` graph is not a DAG (plan S13 requires a topological
+    order). The message names one concrete cycle as an ``a -> b -> ... -> a`` chain."""
+
+
+def topological_order(entries: list) -> list:
+    """Deterministic **upstream-first** order of the registry ``depends_on`` DAG (plan S13/D6): every
+    package appears AFTER every registry package it depends on. Kahn's algorithm with a min-heap on
+    ``pypi_name`` as the tie-break among the ready set, so the result is stable and independent of the
+    registry's file order (NO hardcoded tiers). Only edges to REGISTERED packages constrain the order
+    (a ``depends_on`` naming a non-registry package is ignored). Raises :class:`CycleError` (naming the
+    cycle) when the graph is not acyclic."""
+    names = [e.pypi_name for e in entries]
+    nameset = set(names)
+    deps = {e.pypi_name: [d for d in dict.fromkeys(e.depends_on or []) if d in nameset] for e in entries}
+    indeg = dict.fromkeys(names, 0)
+    dependents: dict = {n: [] for n in names}  # NOT dict.fromkeys: that would share ONE list across all keys
+    for n in names:
+        for d in deps[n]:
+            indeg[n] += 1
+            dependents[d].append(n)
+    ready = [n for n in names if indeg[n] == 0]
+    heapq.heapify(ready)
+    order: list = []
+    while ready:
+        n = heapq.heappop(ready)
+        order.append(n)
+        for m in sorted(dependents[n]):
+            indeg[m] -= 1
+            if indeg[m] == 0:
+                heapq.heappush(ready, m)
+    if len(order) != len(names):
+        stuck = sorted(n for n in names if indeg[n] > 0)
+        raise CycleError(f"registry depends_on is not acyclic (plan S13 requires a DAG): {' -> '.join(_one_cycle(deps, stuck))}")
+    return order
+
+
+def _one_cycle(deps: dict, stuck: list) -> list:
+    """One concrete cycle (closed ``a -> ... -> a``) among the ``stuck`` nodes, for the error message."""
+    stuck_set = set(stuck)
+    onpath: list = []
+    onset: set = set()
+    seen: set = set()
+
+    def walk(u: str) -> "list | None":
+        onpath.append(u)
+        onset.add(u)
+        for v in deps.get(u, []):
+            if v not in stuck_set:
+                continue
+            if v in onset:
+                return onpath[onpath.index(v):] + [v]
+            if v not in seen:
+                got = walk(v)
+                if got:
+                    return got
+        onpath.pop()
+        onset.discard(u)
+        seen.add(u)
+        return None
+
+    for s in stuck:
+        if s not in seen:
+            got = walk(s)
+            if got:
+                return got
+    return list(stuck)
+
+
 # ── dup-guard + propagation ──────────────────────────────────────────────────
 
 
@@ -552,6 +654,249 @@ def propagation_edges(entries: list, entry: "detect.PackageEntry", bump: str) ->
             }
         )
     return edges
+
+
+# ── consumer ceiling-bump follow-on PRs (Phase 4.2, D6, plan S13) ────────────
+#
+# When a proposed upstream bump is a pre-1.0 MINOR (or MAJOR), each consumer that pins the upstream
+# behind a ``<next-minor`` ceiling the NEW version escapes needs a SEPARATE, standard-gated
+# ceiling-bump follow-on PR IN THAT CONSUMER'S REPO (plan S13/D6) -- NEVER folded into the upstream
+# proposal or the exempt notes-archive path (the 2026-07-06 ci-tools incident class; rec#85 is the
+# hand-made shape). The pin state is read from the consumer's REAL pyproject on disk (both floor-only
+# and ``<ceiling`` forms; only an escaped ceiling needs action). The meta (juniper-ml) is the sole
+# exception: its pin rides #661's folded co-change when the upstream is in-repo and stays MANUAL
+# (Q-META) otherwise -- it never gets a follow-on PR. Cross-repo capability (Phase 4.1) gates the
+# open: an escaped sibling consumer is a follow-on when this run is ``--cross-repo`` with the sibling
+# checked out, and an ``escaped -> skipped(<reason>)`` edge otherwise (the degraded single-repo path).
+
+# consumer_pin_state values (the per-run propagation picture surfaced in the step summary, plan S13):
+PIN_WITHIN_RANGE = "within_range"
+PIN_FLOOR_ONLY = "floor_only (no ceiling)"
+PIN_ESCAPED_FOLLOWON = "escaped -> follow-on"
+PIN_NO_VERSIONED = "no_versioned_pin (registry depends_on, but no versioned requirement in the consumer pyproject)"
+
+
+@dataclass
+class FollowOnPR:
+    """One standard-gated ceiling-bump follow-on PR in a CONSUMER repo (plan S13/D6). Content is built
+    whenever the pin escapes and the consumer pyproject is readable; ``consumer_pin_state`` /
+    ``skipped_reason`` record whether THIS run would open it (in-repo or cross-repo-capable) or skip it
+    (degraded cross-repo / dup-guard)."""
+
+    consumer: str
+    repo: str
+    upstream: str
+    upstream_version: str
+    pin_file: str
+    pin_changes: list  # list[(location, old_req, new_req)] -- location is "dependencies" or "[extra]"
+    branch: str
+    consumer_pin_state: str
+    edits: list = field(default_factory=list)
+    commit_message: "str | None" = None
+    pr_title: "str | None" = None
+    pr_body: "str | None" = None
+    existing_pr: "dict | None" = None
+    skipped_reason: "str | None" = None
+
+    @property
+    def skipped(self) -> bool:
+        return self.skipped_reason is not None
+
+    def to_dict(self) -> dict:
+        return {
+            "consumer": self.consumer,
+            "repo": self.repo,
+            "upstream": self.upstream,
+            "upstream_version": self.upstream_version,
+            "pin_file": self.pin_file,
+            "pin_changes": [{"location": loc, "old_req": old, "new_req": new} for loc, old, new in self.pin_changes],
+            "branch": self.branch,
+            "consumer_pin_state": self.consumer_pin_state,
+            "edits": [{"path": e.path, "is_new": e.is_new, "diff": e.unified_diff()} for e in self.edits],
+            "commit_message": self.commit_message,
+            "pr_title": self.pr_title,
+            "pr_body": self.pr_body,
+            "existing_pr": self.existing_pr,
+            "skipped_reason": self.skipped_reason,
+        }
+
+
+def consumer_pin_requirements(pyproject_text: str, upstream: str) -> list:
+    """Every ``(location, req)`` in a consumer pyproject that versions ``upstream`` -- across
+    ``[project.dependencies]`` (location ``"dependencies"``) and each ``[project.optional-dependencies]``
+    extra (location ``"[extra]"``). Tolerates the PEP 508 ``[extras]`` marker via
+    ``requirement_names_package`` (real consumer deps use e.g. ``juniper-model-core[crossval]>=...``)."""
+    try:
+        data = tomllib.loads(pyproject_text)
+    except (tomllib.TOMLDecodeError, ValueError):
+        return []
+    project = data.get("project") or {}
+    out: list = []
+    for req in project.get("dependencies") or []:
+        if isinstance(req, str) and requirement_names_package(req, upstream):
+            out.append(("dependencies", req))
+    for extra, reqs in (project.get("optional-dependencies") or {}).items():
+        for req in reqs or []:
+            if isinstance(req, str) and requirement_names_package(req, upstream):
+                out.append((f"[{extra}]", req))
+    return out
+
+
+def escaped_pin_edits(pin_reqs: list, new_version: str) -> list:
+    """The subset of ``[(location, req)]`` whose ceiling ``new_version`` escapes, as
+    ``[(location, old_req, new_req)]`` with ONLY the ceiling raised to the next-minor (floors and every
+    other specifier preserved byte-for-byte)."""
+    edits: list = []
+    for location, req in pin_reqs:
+        new_req = raise_requirement_ceiling(req, new_version)
+        if new_req is not None and new_req != req:
+            edits.append((location, req, new_req))
+    return edits
+
+
+def _pin_reqs_have_ceiling(pin_reqs: list) -> bool:
+    return any(re.search(r"<=?\s*[0-9]", req) for _loc, req in pin_reqs)
+
+
+def follow_on_branch(upstream: str, new_version: str) -> str:
+    """``deps/<upstream>-ceiling-<new-ceiling>`` where ``<new-ceiling>`` is the raised ceiling version
+    (e.g. ``juniper-model-core`` at ``0.4.0`` -> ``deps/juniper-model-core-ceiling-0.5.0``)."""
+    return f"deps/{upstream}-ceiling-{next_minor_ceiling(new_version).lstrip('<')}"
+
+
+def find_existing_follow_on_pr(open_prs: list, upstream: str) -> "dict | None":
+    """An open PR whose head branch is this upstream's ceiling-bump follow-on branch (any ceiling) -> a
+    dup. The ``-ceiling-`` delimiter keeps ``juniper-cascor`` from matching ``juniper-cascor-model``."""
+    prefix = f"deps/{upstream}-ceiling-"
+    for pr in open_prs or []:
+        if (pr or {}).get("headRefName", "").startswith(prefix):
+            return pr
+    return None
+
+
+def _follow_on_body(fo: "FollowOnPR", date: str, trigger_branch: "str | None", trigger_title: "str | None") -> str:
+    lines: list = []
+    lines.append(f"## Consumer ceiling bump: `{fo.consumer}` for `{fo.upstream}` v{fo.upstream_version}")
+    lines.append("")
+    lines.append("Generated by the Juniper release-train (`util/release_train/propose.py`) as a **D6 propagation follow-on** (plan `notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md` S13).")
+    lines.append("")
+    lines.append(f"The upstream **`{fo.upstream}`** is being released at **v{fo.upstream_version}** (a pre-1.0 MINOR bump). Under the fleet's `>=floor,<next-minor` pinning policy (plan S6) each `0.x` is a compatibility boundary, so this new version **escapes** `{fo.consumer}`'s current `<next-minor` ceiling. This PR raises ONLY that ceiling; the floor and every other specifier are preserved byte-for-byte.")
+    lines.append("")
+    if trigger_branch:
+        lines.append(f"Triggering release proposal: `{trigger_title or trigger_branch}` (branch `{trigger_branch}`).")
+        lines.append("")
+    lines.append("### Pin change(s)")
+    for loc, old, new in fo.pin_changes:
+        lines.append(f"- `{loc}`: `{old}` -> `{new}`")
+    lines.append("")
+    lines.append("### Why this is a SEPARATE, standard-gated PR (plan S13/D6)")
+    lines.append("- Upstream-first ordering is **soft** for the deploy but **hard** for propagation: the ceiling bump can only land once the upstream is actually released.")
+    lines.append("- It is **standard-gated** -- the owner reviews and merges it. It is **never** auto-merged and **never** folded into the exempt notes-archive path (that path is add-only notes files; a pin edit there would break the R5/R7 exemption).")
+    lines.append("- This is the exact failure class of the **2026-07-06 ci-tools incident** (six consumer pins `<0.5.0`->`<0.7.0` lagged a 0.6.0 release); rec#85 is the hand-made model of this PR shape.")
+    lines.append("")
+    lines.append("### Files changed")
+    for e in fo.edits:
+        lines.append(f"- `{e.path}`")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def build_follow_on(cons_entry: "detect.PackageEntry", upstream_entry: "detect.PackageEntry", to_version: str, escaped_edits: list, pyproject_text: str, date: str, trigger_branch: "str | None", trigger_title: "str | None") -> "FollowOnPR":
+    """Assemble the full follow-on PR content (pin edit + branch + title/commit/body) for one escaped
+    (consumer, upstream) pair. Disposition (open vs skip) is decided by the caller."""
+    pairs = [(old, new) for _loc, old, new in escaped_edits]
+    new_pyproject = apply_pin_pairs_exact(pyproject_text, pairs)
+    new_ceiling = next_minor_ceiling(to_version).lstrip("<")
+    fo = FollowOnPR(
+        consumer=cons_entry.pypi_name,
+        repo=cons_entry.repo,
+        upstream=upstream_entry.pypi_name,
+        upstream_version=to_version,
+        pin_file=cons_entry.pyproject_rel,
+        pin_changes=list(escaped_edits),
+        branch=follow_on_branch(upstream_entry.pypi_name, to_version),
+        consumer_pin_state=PIN_ESCAPED_FOLLOWON,
+    )
+    if new_pyproject != pyproject_text:
+        fo.edits.append(FileEdit(path=cons_entry.pyproject_rel, old_text=pyproject_text, new_text=new_pyproject))
+    fo.commit_message = f"chore(deps): raise {upstream_entry.pypi_name} ceiling to <{new_ceiling} for its v{to_version} release"
+    fo.pr_title = f"deps: raise {upstream_entry.pypi_name} ceiling to <{new_ceiling} ({cons_entry.pypi_name})"
+    fo.pr_body = _follow_on_body(fo, date, trigger_branch, trigger_title)
+    return fo
+
+
+def enrich_edges_with_pin_state(edges: list, upstream_entry: "detect.PackageEntry", to_version: str, entries: list, sources: ProposeSources, *, cross_repo: bool, ecosystem_root: Path, trigger_branch: "str | None", trigger_title: "str | None", date: str) -> list:
+    """Annotate each propagation edge with a ``consumer_pin_state`` read from the consumer's REAL
+    pyproject (plan S13 propagation picture) and, for an escaped CROSS-REPO (non-meta) consumer, build
+    the standard-gated ceiling-bump ``FollowOnPR``. Mutates ``edges`` in place (adds ``consumer_pin_state``
+    + ``follow_on_branch``); returns the list of built ``FollowOnPR`` objects. The meta never gets a
+    follow-on (Q-META). Content is computed regardless of disposition so a dry-run preview always shows
+    the edit; ``cross_repo`` + on-disk checkout decide open (``escaped -> follow-on``) vs skip
+    (``escaped -> skipped(<reason>)``)."""
+    by_name = {e.pypi_name: e for e in entries}
+    follow_ons: list = []
+    for edge in edges:
+        consumer = edge["consumer"]
+        edge["follow_on_branch"] = None
+        cons_entry = by_name.get(consumer)
+        if cons_entry is None:
+            edge["consumer_pin_state"] = "unknown (consumer not in registry)"
+            continue
+        text = sources.read_file(cons_entry, cons_entry.pyproject_rel)
+        if text is None:
+            edge["consumer_pin_state"] = f"unknown (consumer pyproject unreadable at {cons_entry.pyproject_rel})"
+            continue
+        pin_reqs = consumer_pin_requirements(text, upstream_entry.pypi_name)
+        if not pin_reqs:
+            edge["consumer_pin_state"] = PIN_NO_VERSIONED
+            continue
+        escaped = escaped_pin_edits(pin_reqs, to_version)
+        if not escaped:
+            edge["consumer_pin_state"] = PIN_WITHIN_RANGE if _pin_reqs_have_ceiling(pin_reqs) else PIN_FLOOR_ONLY
+            continue
+        if consumer == notes_render.META_PACKAGE:
+            # Escaped, but the meta never gets a follow-on: for an in-repo upstream it is folded (#661)
+            # and not even in this edge list; reaching here means a SIBLING upstream, so the meta pin is
+            # a manual Q-META item (bumped when the meta is next released).
+            edge["consumer_pin_state"] = "escaped -> deferred (juniper-ml meta stays manual per Q-META; no follow-on PR)"
+            continue
+        fo = build_follow_on(cons_entry, upstream_entry, to_version, escaped, text, date, trigger_branch, trigger_title)
+        reason = cross_repo_skip_reason(cons_entry.repo, cross_repo_capable=cross_repo, ecosystem_root=ecosystem_root)
+        if reason is not None:
+            fo.skipped_reason = reason
+            fo.consumer_pin_state = f"escaped -> skipped({reason})"
+        else:
+            existing = find_existing_follow_on_pr(sources.list_open_prs(cons_entry.repo), upstream_entry.pypi_name)
+            if existing is not None:
+                fo.existing_pr = existing
+                fo.skipped_reason = f"dup-guard: open ceiling-bump PR already exists (#{existing.get('number')} {existing.get('headRefName')})"
+                fo.consumer_pin_state = f"escaped -> skipped({fo.skipped_reason})"
+            else:
+                fo.consumer_pin_state = PIN_ESCAPED_FOLLOWON
+        edge["consumer_pin_state"] = fo.consumer_pin_state
+        edge["follow_on_branch"] = fo.branch
+        follow_ons.append(fo)
+    return follow_ons
+
+
+def execute_follow_on(fo: "FollowOnPR", sources: ProposeSources, base_branch: str = "main", *, cross_repo: bool = False, ecosystem_root: "Path | None" = None) -> str:
+    """Apply one follow-on to its consumer repo's checkout and open the PR there (Phase 4.2 execute).
+    Mirrors ``execute_proposal``: in-repo branches from ``base_branch``, a sibling from ``origin/main``;
+    the capability guard is belt-and-suspenders (the caller already skips a skipped/degraded follow-on)."""
+    if sources.write_file is None or sources.run_git is None or sources.open_pr is None:
+        raise SourceError("execute mode needs write_file/run_git/open_pr seam members")
+    if fo.skipped or not fo.branch or not fo.edits:
+        return ""
+    if cross_repo_skip_reason(fo.repo, cross_repo_capable=cross_repo, ecosystem_root=ecosystem_root) is not None:
+        return ""
+    start_point = base_branch if fo.repo == WRITABLE_REPO else "origin/main"
+    sources.run_git(fo.repo, ["switch", "-c", fo.branch, start_point])
+    for edit in fo.edits:
+        sources.write_file(fo.repo, edit.path, edit.new_text)
+        sources.run_git(fo.repo, ["add", "--", edit.path])
+    sources.run_git(fo.repo, ["-c", "commit.gpgsign=false", "commit", "-m", fo.commit_message or f"deps: raise {fo.upstream} ceiling"])
+    sources.run_git(fo.repo, ["push", "--set-upstream", "origin", fo.branch])
+    return sources.open_pr(fo.repo, base_branch, fo.branch, fo.pr_title or "", fo.pr_body or "")
 
 
 # ── proposal construction ────────────────────────────────────────────────────
@@ -617,10 +962,19 @@ def _pr_body(prop: Proposal, date: str) -> str:
     lines.append("### Propagation edges (D6)")
     if prop.propagation_edges:
         for edge in prop.propagation_edges:
-            lines.append(f"- `{edge['consumer']}` ({edge.get('repo')}): {edge['action']}")
+            lines.append(f"- `{edge['consumer']}` ({edge.get('repo')}): **{edge.get('consumer_pin_state', '?')}** -- {edge['action']}")
     else:
         lines.append("- None -- PATCH within consumer `<next-minor` ceilings (no propagation).")
     lines.append("")
+    if prop.follow_on_prs:
+        lines.append("### Ceiling-bump follow-on PRs (D6, separate & standard-gated)")
+        lines.append("Each is a **separate** owner-reviewed PR in the consumer's repo -- never folded into this proposal or the exempt notes-archive path.")
+        for fo in prop.follow_on_prs:
+            disp = f"SKIP -- {fo.skipped_reason}" if fo.skipped else "will open"
+            lines.append(f"- `{fo.consumer}` ({fo.repo}) branch `{fo.branch}` [{disp}]")
+            for loc, old, new in fo.pin_changes:
+                lines.append(f"  - `{loc}`: `{old}` -> `{new}`")
+        lines.append("")
     lines.append("### Co-change checklist (plan S5.4)")
     for item in prop.co_change_checklist:
         lines.append(f"- [ ] {item}")
@@ -641,8 +995,12 @@ def version_file_rel_for(prop: Proposal) -> str:
     return prop.edits[0].path if prop.edits else "(version file)"
 
 
-def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSources, repo_root: Path, ecosystem_root: Path, entries: list, date: str) -> Proposal:
-    """Build the full proposal for one UNRELEASED_CHANGES manifest package (or a refusal stub)."""
+def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSources, repo_root: Path, ecosystem_root: Path, entries: list, date: str, *, cross_repo: bool = False) -> Proposal:
+    """Build the full proposal for one UNRELEASED_CHANGES manifest package (or a refusal stub).
+
+    ``cross_repo`` (Phase 4.2) records whether THIS run can open cross-repo follow-on PRs, so an escaped
+    sibling consumer's edge is labelled ``escaped -> follow-on`` (capable) vs ``escaped -> skipped``
+    (degraded); the follow-on CONTENT is built either way for the dry-run preview."""
     from_version = pkg.get("released_version") or pkg.get("declared_version")
     bump = pkg.get("proposed_bump") or "none"
     to_version = pkg.get("proposed_version") or detect.bump_version(from_version or "0.0.0", bump)
@@ -737,8 +1095,20 @@ def build_proposal(entry: "detect.PackageEntry", pkg: dict, sources: ProposeSour
     prop.notes_relpath = notes_render.archive_relpath(entry.pypi_name, to_version)
     prop.notes_draft = notes_render.render_notes(entry.pypi_name, to_version, bump=bump, release_date=date, sections=sections, repo_root=repo_root)
 
-    # 7. propagation edges + co-change checklist.
+    # 7. propagation edges (annotated with the consumer pin state) + follow-on PRs + co-change checklist.
     prop.propagation_edges = propagation_edges(entries, entry, bump)
+    prop.follow_on_prs = enrich_edges_with_pin_state(
+        prop.propagation_edges,
+        entry,
+        to_version,
+        entries,
+        sources,
+        cross_repo=cross_repo,
+        ecosystem_root=ecosystem_root,
+        trigger_branch=release_branch(entry.pypi_name, to_version),
+        trigger_title=f"release: {entry.pypi_name} v{to_version} (proposal)",
+        date=date,
+    )
     prop.co_change_checklist = _co_change_checklist(entry, bump, prop.propagation_edges, agents_edited, prop.consumer_pin_cochanges)
 
     # 8. branch / commit / PR metadata.
@@ -784,9 +1154,20 @@ def _print_proposal(prop: Proposal) -> None:
             print("  - none needed (new version within existing ceilings)")
         print()
     if prop.propagation_edges:
-        print("  --- propagation edges (D6, separate standard-gated PRs) ---")
+        print("  --- propagation edges (D6): consumer pin state per reverse-dependency ---")
         for edge in prop.propagation_edges:
-            print(f"  - {edge['consumer']} ({edge.get('repo')}): {edge['action']}")
+            print(f"  - {edge['consumer']} ({edge.get('repo')}): {edge.get('consumer_pin_state', '?')}")
+        print()
+    if prop.follow_on_prs:
+        print("  --- ceiling-bump follow-on PRs (D6, separate standard-gated PRs in the consumer repos) ---")
+        for fo in prop.follow_on_prs:
+            disp = f"SKIP ({fo.skipped_reason})" if fo.skipped else "will open"
+            print(f"  - {fo.consumer} ({fo.repo})  branch: {fo.branch}  [{disp}]")
+            for loc, old, new in fo.pin_changes:
+                print(f"      {loc}: {old} -> {new}")
+            for edit in fo.edits:
+                for line in edit.unified_diff().splitlines():
+                    print(f"      {line}")
         print()
     print("  --- PR body ---")
     for line in (prop.pr_body or "").splitlines():
@@ -927,22 +1308,32 @@ def main(argv: "list[str] | None" = None, sources: "ProposeSources | None" = Non
             print(f"ERROR: unknown --package {sorted(unknown)}", file=sys.stderr)
             return 2
 
+    # Dependency-aware ordering (Phase 4.2, plan S13/D6): a deterministic upstream-first topological sort
+    # of the registry depends_on DAG (a cyclic graph is a hard invocation error naming the cycle). The
+    # eligible packages are processed in this order, so a consumer is never proposed ahead of its upstream
+    # and a ceiling-bump follow-on trails the proposal that triggers it.
+    try:
+        topo = topological_order(entries)
+    except CycleError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+    topo_index = {name: i for i, name in enumerate(topo)}
+
     if sources is None:
         sources = make_live_sources(args.owner, repo_root, ecosystem_root)
 
+    proposable = [pkg for pkg in manifest_pkgs if pkg.get("classification") == PROPOSABLE and (not wanted or pkg.get("pypi_name") in wanted)]
+    proposable.sort(key=lambda p: (topo_index.get(p.get("pypi_name"), len(topo)), p.get("pypi_name") or ""))
+
     proposals: list = []
     try:
-        for pkg in manifest_pkgs:
+        for pkg in proposable:
             name = pkg.get("pypi_name")
-            if pkg.get("classification") != PROPOSABLE:
-                continue
-            if wanted and name not in wanted:
-                continue
             entry = by_name.get(name)
             if entry is None:
                 proposals.append(Proposal(pypi_name=name or "?", repo=pkg.get("repo") or "?", from_version=pkg.get("released_version"), to_version=None, bump=pkg.get("proposed_bump") or "none", skipped_reason="package not in registry.yaml"))
                 continue
-            proposals.append(build_proposal(entry, pkg, sources, repo_root, ecosystem_root, entries, date))
+            proposals.append(build_proposal(entry, pkg, sources, repo_root, ecosystem_root, entries, date, cross_repo=args.cross_repo))
     except SourceError as exc:
         print(f"ERROR: source failure during proposal generation: {exc}", file=sys.stderr)
         return 2
@@ -972,10 +1363,29 @@ def main(argv: "list[str] | None" = None, sources: "ProposeSources | None" = Non
                 else:
                     skipped.append(prop)
                     print(f"skip: {prop.pypi_name} ({prop.repo}) -- execute opened no PR (empty URL)")
+            # D6 ceiling-bump follow-ons trail their upstream proposals (upstream-first, plan S13). Each
+            # was already dispositioned at build time with THIS run's capability; open the openable ones
+            # (execute_follow_on re-checks the capability belt-and-suspenders). Skipped/degraded ones are
+            # reported, never opened.
+            fo_opened: list = []
+            fo_skipped: list = []
+            for prop in proposals:
+                for fo in prop.follow_on_prs:
+                    if fo.skipped:
+                        fo_skipped.append(fo)
+                        print(f"skip follow-on: {fo.consumer} ({fo.repo}) -- {fo.skipped_reason}")
+                        continue
+                    url = execute_follow_on(fo, sources, "main", cross_repo=args.cross_repo, ecosystem_root=ecosystem_root)
+                    if url:
+                        fo_opened.append(fo)
+                        print(f"opened follow-on: {fo.consumer} ({fo.repo}) -- {url}")
+                    else:
+                        fo_skipped.append(fo)
+                        print(f"skip follow-on: {fo.consumer} ({fo.repo}) -- execute opened no PR (empty URL)")
         except SourceError as exc:
             print(f"ERROR: execute failed: {exc}", file=sys.stderr)
             return 2
-        print(f"execute summary: {len(opened)} PR(s) opened, {len(skipped)} skipped.")
+        print(f"execute summary: {len(opened)} proposal PR(s) opened, {len(skipped)} skipped; {len(fo_opened)} follow-on PR(s) opened, {len(fo_skipped)} skipped.")
         return 0
 
     if args.json:
