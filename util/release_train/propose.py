@@ -35,9 +35,15 @@ the train will not auto-author notes / move a CHANGELOG the detector found incon
 ``--dry-run`` is the DEFAULT: it prints the complete, well-formed proposal (unified diffs +
 drafted notes + PR body) and **writes nothing** to the repo and opens nothing. ``--execute``
 (opt-in, and overridden by ``--dry-run`` for safety) applies the edits, commits, pushes, and opens
-the PR -- wired into ``release-train.yml``'s write-scoped ``propose`` job (Phase 2.2). Under
-``--execute`` a package whose registry ``repo`` is not juniper-ml is SKIPPED with a clear reason:
-the workflow's single-repo ``GITHUB_TOKEN`` can only open PRs in juniper-ml (cross-repo is Phase 4).
+the PR -- wired into ``release-train.yml``'s write-scoped ``propose`` job. Cross-repo is
+**capability-gated** (Phase 4.1, plan S9.2 / S12 step 4.1): with ``--cross-repo`` (the workflow
+passes it ONLY when it minted the GitHub App installation token) AND the sibling repo checked out on
+disk under ``--ecosystem-root``, a sibling package's proposal branches from that repo's
+``origin/main``, edits that checkout, pushes with the App token, and opens the PR in that repo (the
+dup-guard runs per-repo). WITHOUT the capability -- the degraded single-repo ``GITHUB_TOKEN`` path --
+a non-juniper-ml package is SKIPPED with the same clear reason as before. The in-repo meta
+consumer-pin co-changes (the #657 RK-11 lockstep) apply ONLY to juniper-ml packages; a sibling
+proposal never edits the meta from a sibling checkout -- it emits the S13 propagation edge instead.
 
 Every external effect -- ``gh pr list`` (dup-guard), file reads, and (execute-only) file
 writes / git / ``gh pr create`` -- is injected through a ``ProposeSources`` seam so
@@ -85,14 +91,16 @@ PROPOSABLE = "UNRELEASED_CHANGES"
 # Keep-a-Changelog categories that make a pre-1.0 bump MINOR (escapes the consumer ceiling).
 _MINOR_BUMPS = frozenset({"minor", "major"})
 
-# The single repo whose contents an ``--execute`` run may write. The Phase-2/3 pilot runs the
-# release-train workflow inside the juniper-ml checkout under a juniper-ml-scoped ``GITHUB_TOKEN``
-# (plan S9.2), which can push a branch + open a PR only in juniper-ml -- the meta-package and its
-# six co-located sub-packages. Sibling-repo packages (cascor*, canopy, data*, recurrence*) are
-# SKIPPED in ``--execute`` with a clear reason rather than attempted: their edits would otherwise
-# land in the juniper-ml checkout (``make_live_sources.write_file`` targets ``repo_root``) and the
-# cross-repo ``gh pr create`` would fail. Phase 4's GitHub App identity lifts this (plan S9.2/S9.3,
-# S12 step 4.1). ``--dry-run`` is unaffected -- it previews every repo's proposal and writes nothing.
+# The repo an ``--execute`` run may ALWAYS write, even on the degraded single-repo ``GITHUB_TOKEN``
+# path: juniper-ml itself -- the meta-package and its six co-located sub-packages. The Phase-2/3 pilot
+# ran the release-train workflow inside the juniper-ml checkout under a juniper-ml-scoped
+# ``GITHUB_TOKEN`` (plan S9.2), which can push a branch + open a PR only in juniper-ml. Cross-repo
+# writes are now unlocked by CAPABILITY, not hardcoding: with ``--cross-repo`` (the workflow passes it
+# only when it minted the GitHub App installation token, Phase 4.1) AND the sibling checked out on disk
+# under ``--ecosystem-root``, a sibling package is branched/edited/pushed in its OWN checkout and its PR
+# opened in its OWN repo (``make_live_sources`` is repo-aware -- ``_repo_dir(repo)``). WITHOUT the
+# capability a sibling is SKIPPED with the same clear reason as before (``cross_repo_skip_reason``).
+# ``--dry-run`` is unaffected -- it previews every repo's proposal and writes nothing.
 # Overridable for tests / a future multi-repo identity.
 WRITABLE_REPO = os.environ.get("JUNIPER_RELEASE_TRAIN_WRITABLE_REPO", detect.META_REPO)
 
@@ -174,13 +182,17 @@ class Proposal:
 class ProposeSources:
     """External effects the generator needs, injected for hermetic testing.
 
-    ``read_file`` / ``list_open_prs`` are the only members the dry-run path (Phase 2.1) uses;
-    ``write_file`` / ``run_git`` / ``open_pr`` are execute-only (Phase 2.2) and may be ``None``."""
+    ``read_file`` / ``list_open_prs`` are the only members the dry-run path uses; ``write_file`` /
+    ``run_git`` / ``open_pr`` are execute-only and may be ``None``. The three execute members are
+    **repo-aware** (Phase 4.1): ``write_file(repo, rel_path, content)`` and ``run_git(repo, args)``
+    target the checkout of ``repo`` -- the juniper-ml checkout for an in-repo package, the sibling's
+    checkout for a cross-repo one -- so a sibling proposal never writes into (or is committed against)
+    the juniper-ml checkout. ``open_pr(repo, base, head, title, body)`` opens the PR in ``repo``."""
 
     read_file: Callable[["detect.PackageEntry", str], "str | None"]
     list_open_prs: Callable[[str], list]
-    write_file: "Callable[[str, str], None] | None" = None
-    run_git: "Callable[[list], None] | None" = None
+    write_file: "Callable[[str, str, str], None] | None" = None
+    run_git: "Callable[[str, list], None] | None" = None
     open_pr: "Callable[..., str] | None" = None
 
 
@@ -212,6 +224,11 @@ def _git(repo_dir: Path, args: list, timeout: int = 120) -> None:
 
 
 def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> ProposeSources:
+    def _repo_dir(repo: str) -> Path:
+        # In-repo (juniper-ml) -> the working checkout; a sibling -> its clone under the ecosystem root
+        # (Phase 4.1). Mirrors ``ceremony.make_live_sources._repo_dir`` and ``detect.base_dir_for``.
+        return repo_root if repo == detect.META_REPO else (ecosystem_root / repo)
+
     def read_file(entry: "detect.PackageEntry", filename: str) -> "str | None":
         target = detect.base_dir_for(entry, repo_root, ecosystem_root) / filename
         try:
@@ -228,13 +245,13 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path) -> Prop
         except ValueError as exc:
             raise SourceError(f"gh pr list returned non-JSON for {repo}") from exc
 
-    def write_file(rel_path: str, content: str) -> None:
-        target = repo_root / rel_path
+    def write_file(repo: str, rel_path: str, content: str) -> None:
+        target = _repo_dir(repo) / rel_path
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(content, encoding="utf-8")
 
-    def run_git(args: list) -> None:
-        _git(repo_root, args)
+    def run_git(repo: str, args: list) -> None:
+        _git(_repo_dir(repo), args)
 
     def open_pr(repo: str, base: str, head: str, title: str, body: str) -> str:
         out = _gh(["pr", "create", "--repo", f"{owner}/{repo}", "--base", base, "--head", head, "--title", title, "--body", body])
@@ -805,42 +822,54 @@ def build_output(proposals: list, dry_run: bool) -> dict:
 # ── execute path (Phase 2.2; wired into release-train.yml's write-scoped propose job) ─
 
 
-def cross_repo_skip_reason(repo: str, writable_repo: str = WRITABLE_REPO) -> "str | None":
-    """Reason to skip a proposal under ``--execute`` because its package is outside the writable repo.
+def cross_repo_skip_reason(repo: str, *, cross_repo_capable: bool = False, ecosystem_root: "Path | None" = None, writable_repo: str = WRITABLE_REPO) -> "str | None":
+    """Reason to skip a proposal under ``--execute``, or ``None`` when the run may open the PR (Phase 4.1).
 
-    ``None`` when ``repo`` is the writable repo (``--execute`` may open a PR there); otherwise a
-    clear, human-readable reason. The release-train workflow's single-repo ``GITHUB_TOKEN`` can push
-    a branch + open a PR only in ``writable_repo`` (juniper-ml), so a sibling-repo package is skipped,
-    not attempted -- executing it would write the edits into the juniper-ml checkout and the cross-repo
-    ``gh pr create`` would fail (plan S9.2/S9.3, S12 step 2.2; Phase 4's App identity lifts it)."""
+    Capability-based, not hardcoded:
+      * ``repo == writable_repo`` (juniper-ml) -> ``None``: the in-repo package is always writable, even
+        on the degraded single-repo ``GITHUB_TOKEN`` path.
+      * a sibling repo AND NOT ``cross_repo_capable`` -> the SAME clear reason as before (the degraded
+        path has no cross-repo write identity; the single-repo ``GITHUB_TOKEN`` cannot open a PR there).
+      * a sibling repo, ``cross_repo_capable``, but its checkout is absent under ``ecosystem_root`` ->
+        a distinct reason (propose.py branches/edits/pushes the sibling checkout, so it must be present).
+      * a sibling repo, capable, checkout present -> ``None``: the GitHub App identity (plan S9.2) may
+        branch from that repo's ``origin/main``, edit it, push, and open the PR there (S12 step 4.1)."""
     if repo == writable_repo:
         return None
-    return f"cross-repo: package lives in '{repo}', not the writable repo '{writable_repo}' -- the release-train workflow's single-repo GITHUB_TOKEN cannot open a PR there (Phase 2/3 in-repo pilot; Phase 4's GitHub App identity lifts this, plan S9.2 / S12 step 4.1)"
+    if not cross_repo_capable:
+        return f"cross-repo: package lives in '{repo}', not the writable repo '{writable_repo}' -- the release-train workflow's single-repo GITHUB_TOKEN cannot open a PR there (Phase 2/3 in-repo pilot; Phase 4's GitHub App identity lifts this, plan S9.2 / S12 step 4.1)"
+    checkout = (ecosystem_root / repo) if ecosystem_root is not None else None
+    if checkout is None or not checkout.is_dir():
+        return f"cross-repo: '{repo}' is release-worthy and this run is cross-repo-capable, but its checkout is not present at {checkout} -- clone it (full history + tags) under --ecosystem-root so propose.py can branch/edit/push it (plan S12 step 4.1)"
+    return None
 
 
-def execute_proposal(prop: Proposal, sources: ProposeSources, base_branch: str) -> str:
-    """Apply one proposal to the repo and open the PR. Requires the write/git/pr seam members.
+def execute_proposal(prop: Proposal, sources: ProposeSources, base_branch: str = "main", *, cross_repo: bool = False, ecosystem_root: "Path | None" = None) -> str:
+    """Apply one proposal to its OWN repo's checkout and open the PR there. Needs the write/git/pr seam.
 
     Guarded so it can only run under an explicit ``--execute`` (never the default), and only for a
-    package in the writable repo (cross-repo is skipped upstream in ``main`` and here)."""
+    package the capability check clears (in-repo always; a sibling only when ``cross_repo`` AND its
+    checkout is on disk). An in-repo package branches from ``base_branch`` (the workflow checkout is on
+    local ``main``); a sibling branches from ``origin/main`` (a fresh clone's authoritative ref). The
+    PR ``--base`` is ``base_branch`` (``main``) in both cases."""
     if sources.write_file is None or sources.run_git is None or sources.open_pr is None:
         raise SourceError("execute mode needs write_file/run_git/open_pr seam members")
     if prop.skipped or not prop.branch:
         return ""
-    # Cross-repo guard (belt-and-suspenders -- main() already skips these before calling): never
-    # write a sibling-repo package's edits into the juniper-ml checkout / open a doomed cross-repo
-    # PR under the single-repo GITHUB_TOKEN (plan S9.2 / S12 step 2.2).
-    if cross_repo_skip_reason(prop.repo) is not None:
+    # Cross-repo guard (belt-and-suspenders -- main() already skips before calling): never write a
+    # sibling's edits into the wrong checkout / open a doomed PR without the capability (plan S9.2).
+    if cross_repo_skip_reason(prop.repo, cross_repo_capable=cross_repo, ecosystem_root=ecosystem_root) is not None:
         return ""
-    sources.run_git(["switch", "-c", prop.branch, base_branch])
+    start_point = base_branch if prop.repo == WRITABLE_REPO else "origin/main"
+    sources.run_git(prop.repo, ["switch", "-c", prop.branch, start_point])
     for edit in prop.edits:
-        sources.write_file(edit.path, edit.new_text)
-        sources.run_git(["add", "--", edit.path])
+        sources.write_file(prop.repo, edit.path, edit.new_text)
+        sources.run_git(prop.repo, ["add", "--", edit.path])
     # ``-c commit.gpgsign=false``: the CI runner has no GPG key, and the owner's YubiKey-resident
     # signing config must never reach a headless commit (it would fail). The workflow's git-config
     # step also sets this; pinning it on the commit itself makes the job immune regardless of config.
-    sources.run_git(["-c", "commit.gpgsign=false", "commit", "-m", prop.commit_message or f"release: {prop.pypi_name}"])
-    sources.run_git(["push", "--set-upstream", "origin", prop.branch])
+    sources.run_git(prop.repo, ["-c", "commit.gpgsign=false", "commit", "-m", prop.commit_message or f"release: {prop.pypi_name}"])
+    sources.run_git(prop.repo, ["push", "--set-upstream", "origin", prop.branch])
     return sources.open_pr(prop.repo, base_branch, prop.branch, prop.pr_title or "", prop.pr_body or "")
 
 
@@ -858,7 +887,8 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--registry", default=None, help="path to registry.yaml (default: alongside detect.py)")
     p.add_argument("--release-date", default=None, help="release date for the CHANGELOG/notes (default: today UTC; use for deterministic output)")
     p.add_argument("--dry-run", action="store_true", help="(default behaviour) print the proposal; write nothing, open nothing. Overrides --execute.")
-    p.add_argument("--execute", action="store_true", help="Phase 2.2 opt-in: apply edits + open PRs. NOT used in Phase 2.1; --dry-run overrides it.")
+    p.add_argument("--execute", action="store_true", help="opt-in: apply edits + open PRs. --dry-run overrides it.")
+    p.add_argument("--cross-repo", action="store_true", help="Phase 4.1: this run has a cross-repo write identity (the GitHub App installation token). With it AND a sibling checkout under --ecosystem-root, a sibling package's PR is opened in ITS repo; without it, sibling packages are skipped (the degraded single-repo GITHUB_TOKEN path). No effect in --dry-run.")
     p.add_argument("--json", action="store_true", help="emit the proposals as JSON instead of the human report")
     return p.parse_args(argv)
 
@@ -922,10 +952,11 @@ def main(argv: "list[str] | None" = None, sources: "ProposeSources | None" = Non
         skipped: list = []
         try:
             for prop in proposals:
-                # Cross-repo takes precedence over any build-time skip so the reported reason is the
-                # authoritative one (a sibling-repo package can also fail its file reads when the
-                # siblings are not checked out; the cross-repo reason is the real cause).
-                reason = cross_repo_skip_reason(prop.repo)
+                # Cross-repo capability takes precedence over any build-time skip so the reported reason
+                # is the authoritative one (a sibling-repo package can also fail its file reads when the
+                # siblings are not checked out; the cross-repo reason is the real cause). Phase 4.1: a
+                # sibling is writable only when this run is --cross-repo AND its checkout is on disk.
+                reason = cross_repo_skip_reason(prop.repo, cross_repo_capable=args.cross_repo, ecosystem_root=ecosystem_root)
                 if reason is not None:
                     skipped.append(prop)
                     print(f"skip: {prop.pypi_name} ({prop.repo}) -- {reason}")
@@ -934,7 +965,7 @@ def main(argv: "list[str] | None" = None, sources: "ProposeSources | None" = Non
                     skipped.append(prop)
                     print(f"skip: {prop.pypi_name} ({prop.repo}) -- {prop.skipped_reason}")
                     continue
-                url = execute_proposal(prop, sources, "main")
+                url = execute_proposal(prop, sources, "main", cross_repo=args.cross_repo, ecosystem_root=ecosystem_root)
                 if url:
                     opened.append(prop)
                     print(f"opened: {prop.pypi_name} ({prop.repo}) -- {url}")

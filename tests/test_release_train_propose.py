@@ -822,10 +822,13 @@ _TWO_PKG_REGISTRY = textwrap.dedent("""\
 
 
 class ExecuteCrossRepoGuardTest(unittest.TestCase):
-    """--execute opens PRs ONLY for the writable repo (juniper-ml) and SKIPS sibling-repo packages
-    with a clear reason -- the release-train workflow's GITHUB_TOKEN is single-repo (plan S9.2/S12
-    step 2.2). Also pins the headless-commit gpgsign landmine fix. Fully hermetic: every write / git
-    / pr effect is a recording spy (no real repo writes, no gh, no git)."""
+    """--execute capability boundary (Phase 4.1, plan S9.2 / S12 step 4.1). The DEGRADED single-repo
+    ``GITHUB_TOKEN`` path (no --cross-repo) opens PRs ONLY for juniper-ml and SKIPS sibling-repo packages
+    with the same clear reason as before; the CROSS-REPO-capable path (--cross-repo, an on-disk sibling
+    checkout) additionally opens a sibling's PR in ITS OWN repo -- branched from that repo's origin/main,
+    written into that repo's checkout, never touching the meta from the sibling context. Also pins the
+    headless-commit gpgsign landmine fix. Fully hermetic: every repo-aware write / git / pr effect is a
+    recording spy (no real repo writes, no gh, no git)."""
 
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -866,66 +869,128 @@ class ExecuteCrossRepoGuardTest(unittest.TestCase):
             return None
 
     def _sources(self) -> pr.ProposeSources:
+        # Repo-aware recording seam (Phase 4.1): write_file/run_git carry the target repo, so the test
+        # can prove a sibling's edits/branches land in the SIBLING checkout, never the juniper-ml one.
         def open_pr(repo, base, head, title, body):
-            self.calls["pr"].append((repo, head))
+            self.calls["pr"].append((repo, base, head))
             return f"https://github.com/pcalnon/{repo}/pull/1"
 
         return pr.ProposeSources(
             read_file=self._read_file,
             list_open_prs=lambda repo: [],
-            write_file=lambda path, content: self.calls["write"].append(path),
-            run_git=lambda args: self.calls["git"].append(list(args)),
+            write_file=lambda repo, path, content: self.calls["write"].append((repo, path)),
+            run_git=lambda repo, args: self.calls["git"].append((repo, list(args))),
             open_pr=open_pr,
         )
 
-    def _run_execute(self) -> "tuple[int, str]":
+    def _run_execute(self, *extra) -> "tuple[int, str]":
         buf = io.StringIO()
-        argv = ["--manifest", str(self.manifest), "--repo-root", str(self.repo_root), "--ecosystem-root", str(self.root), "--registry", str(self.registry), "--release-date", "2026-07-14", "--execute"]
+        argv = ["--manifest", str(self.manifest), "--repo-root", str(self.repo_root), "--ecosystem-root", str(self.root), "--registry", str(self.registry), "--release-date", "2026-07-14", "--execute", *extra]
         with redirect_stdout(buf):
             code = pr.main(argv, sources=self._sources())
         return code, buf.getvalue()
 
-    def test_cross_repo_skip_reason_pure(self):
+    # ── capability helper (degraded vs cross-repo-capable) ───────────────────────────────────
+    def test_cross_repo_skip_reason_capability(self):
+        # in-repo is always writable (both paths)
         self.assertIsNone(pr.cross_repo_skip_reason("juniper-ml"))
-        reason = pr.cross_repo_skip_reason("juniper-cascor")
-        self.assertIsNotNone(reason)
-        self.assertIn("cross-repo", reason)
-        self.assertIn("juniper-cascor", reason)
-        # the writable repo is overridable (env / future multi-repo identity)
+        # sibling on the DEGRADED path (no capability) -> the SAME clear reason as before (preserved)
+        degraded = pr.cross_repo_skip_reason("juniper-cascor")
+        self.assertIsNotNone(degraded)
+        self.assertIn("cross-repo", degraded)
+        self.assertIn("juniper-cascor", degraded)
+        self.assertIn("single-repo GITHUB_TOKEN", degraded)  # today's degraded-path wording
+        # capable but the checkout is absent under the ecosystem root -> a distinct reason
+        absent = pr.cross_repo_skip_reason("juniper-cascor", cross_repo_capable=True, ecosystem_root=self.root)
+        self.assertIsNotNone(absent)
+        self.assertIn("checkout is not present", absent)
+        # capable AND the sibling checkout is on disk (setUp created self.root/juniper-sibling) -> writable
+        self.assertIsNone(pr.cross_repo_skip_reason("juniper-sibling", cross_repo_capable=True, ecosystem_root=self.root))
+        # the writable repo is still overridable (env / future multi-repo identity)
         self.assertIsNone(pr.cross_repo_skip_reason("juniper-cascor", writable_repo="juniper-cascor"))
 
-    def test_execute_opens_in_repo_and_skips_cross_repo(self):
-        code, out = self._run_execute()
+    # ── DEGRADED path (no --cross-repo): in-repo only, sibling skipped (preserved) ───────────
+    def test_degraded_path_opens_in_repo_and_skips_cross_repo(self):
+        code, out = self._run_execute()  # NO --cross-repo
         self.assertEqual(code, 0, out)
-        # exactly one PR opened, and it is the juniper-ml package (never the sibling)
-        self.assertEqual(self.calls["pr"], [("juniper-ml", "release/juniper-thing-v0.5.0")])
+        # exactly one PR opened, and it is the juniper-ml package (never the sibling); base 'main'
+        self.assertEqual(self.calls["pr"], [("juniper-ml", "main", "release/juniper-thing-v0.5.0")])
         self.assertIn("opened: juniper-thing", out)
         self.assertIn("skip: juniper-sibling", out)
         self.assertIn("cross-repo", out)
-        # the sibling's files were NEVER written into the juniper-ml checkout (the clobber the guard
-        # prevents: make_live_sources.write_file targets repo_root, so a sibling edit would land here)
-        for path in self.calls["write"]:
+        self.assertIn("single-repo GITHUB_TOKEN", out)  # the degraded-path skip reason, preserved
+        # every write targeted the juniper-ml checkout for the in-repo package; nothing for the sibling
+        for repo, path in self.calls["write"]:
+            self.assertEqual(repo, "juniper-ml")
             self.assertTrue(path.startswith("juniper-thing/"), f"unexpected write to {path!r} -- sibling clobber?")
 
+    # ── CROSS-REPO-capable path (--cross-repo): sibling opens in its OWN repo ────────────────
+    def test_cross_repo_opens_sibling_in_its_repo_with_correct_branch_and_base(self):
+        code, out = self._run_execute("--cross-repo")
+        self.assertEqual(code, 0, out)
+        # BOTH open now, each in its OWN repo; the PR --base is 'main' in both cases
+        self.assertEqual(
+            self.calls["pr"],
+            [
+                ("juniper-ml", "main", "release/juniper-thing-v0.5.0"),
+                ("juniper-sibling", "main", "release/juniper-sibling-v0.5.0"),
+            ],
+        )
+        self.assertIn("opened: juniper-thing", out)
+        self.assertIn("opened: juniper-sibling", out)
+        # the sibling branched from origin/main (fresh clone's authoritative ref); the in-repo from main
+        sib_switch = next(args for repo, args in self.calls["git"] if repo == "juniper-sibling" and "switch" in args)
+        self.assertEqual(sib_switch, ["switch", "-c", "release/juniper-sibling-v0.5.0", "origin/main"])
+        inrepo_switch = next(args for repo, args in self.calls["git"] if repo == "juniper-ml" and "switch" in args)
+        self.assertEqual(inrepo_switch, ["switch", "-c", "release/juniper-thing-v0.5.0", "main"])
+
+    def test_cross_repo_sibling_edits_target_sibling_checkout_never_the_meta(self):
+        self._run_execute("--cross-repo")
+        sib_writes = [path for repo, path in self.calls["write"] if repo == "juniper-sibling"]
+        # the sibling proposal edited only its OWN files (version bump + CHANGELOG at path '.')
+        self.assertEqual(set(sib_writes), {"pyproject.toml", "CHANGELOG.md"})
+        # NO sibling-shaped edit landed in the juniper-ml checkout (the clobber the guard prevents) ...
+        self.assertNotIn(("juniper-ml", "pyproject.toml"), self.calls["write"])
+        # ... and the sibling proposal NEVER edited the meta's consumer-pin lockstep files (#661 is
+        # in-repo only; a sibling emits the S13 propagation edge instead)
+        for repo, path in self.calls["write"]:
+            if repo == "juniper-sibling":
+                self.assertNotIn(path, {"tests/test_pyproject_extras.py", "AGENTS.md"})
+        # every juniper-ml write is for the in-repo package's own subtree
+        for repo, path in self.calls["write"]:
+            if repo == "juniper-ml":
+                self.assertTrue(path.startswith("juniper-thing/"), f"unexpected juniper-ml write {path!r}")
+
     def test_execute_commit_disables_gpg_signing(self):
-        self._run_execute()
-        commits = [args for args in self.calls["git"] if "commit" in args]
+        self._run_execute("--cross-repo")  # exercise BOTH repos' commits
+        commits = [(repo, args) for repo, args in self.calls["git"] if "commit" in args]
         self.assertTrue(commits, "expected a git commit call in the --execute path")
-        for args in commits:
+        self.assertEqual({repo for repo, _ in commits}, {"juniper-ml", "juniper-sibling"})
+        for _repo, args in commits:
             self.assertIn("commit.gpgsign=false", args)
             # the -c flag must precede the commit subcommand for git to honour it
             self.assertLess(args.index("commit.gpgsign=false"), args.index("commit"))
 
-    def test_execute_proposal_direct_refuses_cross_repo(self):
-        # belt-and-suspenders: even called directly (bypassing main's loop guard), execute_proposal
-        # must never write a sibling-repo proposal's edits into the checkout or open its PR.
+    def test_execute_proposal_direct_refuses_cross_repo_without_capability(self):
+        # belt-and-suspenders: called directly WITHOUT capability, execute_proposal must never write a
+        # sibling-repo proposal's edits into a checkout or open its PR.
         prop = pr.Proposal(pypi_name="juniper-sibling", repo="juniper-sibling", from_version="0.4.0", to_version="0.5.0", bump="minor", branch="release/juniper-sibling-v0.5.0")
         prop.edits.append(pr.FileEdit(path="pyproject.toml", old_text="a", new_text="b"))
-        url = pr.execute_proposal(prop, self._sources(), "main")
+        url = pr.execute_proposal(prop, self._sources(), "main")  # cross_repo defaults False
         self.assertEqual(url, "")
         self.assertEqual(self.calls["write"], [])
         self.assertEqual(self.calls["git"], [])
         self.assertEqual(self.calls["pr"], [])
+
+    def test_execute_proposal_direct_opens_sibling_when_capable(self):
+        # the direct path is capability-aware too: --cross-repo + an on-disk sibling checkout opens it.
+        prop = pr.Proposal(pypi_name="juniper-sibling", repo="juniper-sibling", from_version="0.4.0", to_version="0.5.0", bump="minor", branch="release/juniper-sibling-v0.5.0", pr_title="t", pr_body="b", commit_message="chore(release): juniper-sibling v0.5.0")
+        prop.edits.append(pr.FileEdit(path="pyproject.toml", old_text="a", new_text="b"))
+        url = pr.execute_proposal(prop, self._sources(), "main", cross_repo=True, ecosystem_root=self.root)
+        self.assertTrue(url)
+        self.assertEqual(self.calls["pr"], [("juniper-sibling", "main", "release/juniper-sibling-v0.5.0")])
+        self.assertIn(("juniper-sibling", ["switch", "-c", "release/juniper-sibling-v0.5.0", "origin/main"]), self.calls["git"])
+        self.assertIn(("juniper-sibling", "pyproject.toml"), self.calls["write"])
 
 
 if __name__ == "__main__":

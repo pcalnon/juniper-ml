@@ -10,8 +10,14 @@ ceremony only automates the middle: notes authoring + central archival, the exem
 Release cut, and TestPyPI verification -- **never** a version bump without approval and **never** a PyPI
 deploy without approval.
 
-Per BUMPED_NOT_RELEASED package (in-repo / juniper-ml ONLY this phase -- the ``WRITABLE_REPO`` guard,
-reused from ``propose.py``; Phase 4's GitHub App lifts it):
+Per BUMPED_NOT_RELEASED package -- in-repo (juniper-ml) always, and a **cross-repo** sibling when the
+run is ``--cross-repo``-capable (the GitHub App installation token, Phase 4.1) AND the sibling is
+checked out on disk under ``--ecosystem-root`` (plan S9.2 / S12 step 4.1). The cross-repo ceremony
+splits its two GitHub effects by repo (plan S10.2): the **exempt notes-archive PR is ALWAYS opened in
+juniper-ml** (the central, canonical ``notes/releases/`` archive -- ``plan.archive_repo`` is always
+``juniper-ml``), while the **Release is cut on the OWNING repo** (``gh release create --repo
+pcalnon/<repo>``) whose publish workflow is then monitored. For an in-repo package the two repos
+coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
 
   1. **Preconditions (plan S8)** -- any failure HALTs *that* package with a clear reason and a
      deduplicated GitHub-issue payload (title keyed on ``pypi_name`` + reason); a halt never blocks the
@@ -37,7 +43,12 @@ ceremony's write identity may touch is exactly {``pr create``, ``pr merge --auto
 deployment environment or a reviewer. Every live ``gh`` call is routed through ``_assert_gh_allowed``,
 which raises ``SeamViolation`` for any subcommand outside ``GH_ALLOWED_SURFACE`` or carrying a forbidden
 token (``api`` / ``environment`` / ``deployment`` / ``review`` / ``--admin`` / ...), a bare ``pr merge``
-without ``--auto``, or a ``release create --verify-tag``.
+without ``--auto``, or a ``release create --verify-tag``. Phase 4.1 adds a **``--repo`` value bound**:
+when a call carries ``--repo <slug>`` and the live seam was built with the registry-derived allowlist,
+the slug MUST name one of the 8 publishing repos (``owner/<repo>``); a ``--repo`` pointing anywhere else
+is a ``SeamViolation``. This is how cross-repo ``--repo pcalnon/<owning>`` is expressed WITHOUT widening
+the verb allowlist -- the surface (verb pairs + forbidden tokens) is unchanged; only the repo target set
+opens, and only to the exact 8.
 
 **Idempotent re-entry (plan S8 last row):** a re-run re-computes state from PyPI/Release truth -- if PyPI
 already serves the target version the run is a no-op; if the Release tag already exists it resumes at the
@@ -70,6 +81,7 @@ import os
 import re
 import subprocess  # nosec B404 - only the gh/git binaries with fixed argv (no shell)
 import sys
+import tempfile
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
@@ -89,11 +101,12 @@ DEFAULT_OWNER = os.environ.get("JUNIPER_RELEASE_TRAIN_OWNER", "pcalnon")
 # Only this classification enters the ceremony (plan S5.1/S5.3).
 CEREMONIAL = "BUMPED_NOT_RELEASED"
 
-# The single repo whose contents a ``--execute`` ceremony run may write. The Phase-3 pilot runs inside
-# the juniper-ml checkout under a juniper-ml-scoped ``GITHUB_TOKEN`` (plan S9.2), which can push a branch
-# + open a PR + cut a Release only in juniper-ml -- the meta-package and its six co-located sub-packages.
-# Sibling-repo packages are SKIPPED (deferred to Phase 4's GitHub App identity), never attempted. Reuses
-# the ``propose.py`` WRITABLE_REPO pattern; overridable for tests / a future multi-repo identity.
+# The repo a ``--execute`` ceremony ALWAYS may write, even on the degraded single-repo ``GITHUB_TOKEN``
+# path: juniper-ml -- the meta-package and its six co-located sub-packages, AND the central exempt
+# notes-archive PR for EVERY package (plan S10.2). A sibling's Release is cut on its OWNING repo, which
+# is unlocked by CAPABILITY (``--cross-repo`` + the GitHub App token, Phase 4.1), not by widening this
+# constant. WITHOUT the capability a sibling is SKIPPED with a clear reason (``writable_repo_skip_reason``).
+# Overridable for tests / a future multi-repo identity.
 WRITABLE_REPO = os.environ.get("JUNIPER_RELEASE_TRAIN_WRITABLE_REPO", detect.META_REPO)
 
 # Monitor bounds (plan S8 TestPyPI gate -> the ``pypi`` env-gate; §12 step 3.2). The publish workflow
@@ -160,12 +173,16 @@ GH_FORBIDDEN_TOKENS = frozenset(
 )
 
 
-def _assert_gh_allowed(args: list) -> None:
+def _assert_gh_allowed(args: list, allowed_repos: "frozenset[str] | None" = None) -> None:
     """Raise ``SeamViolation`` unless ``gh <args>`` is within the R7-permitted surface (plan S9.3).
 
     Enforces: the leading ``(subcommand, verb)`` pair is in ``GH_ALLOWED_SURFACE``; no argv token is in
-    ``GH_FORBIDDEN_TOKENS``; ``pr merge`` always carries ``--auto`` (never a bare immediate merge); and
-    ``release create`` never carries ``--verify-tag`` (the Release CREATES the tag for a sub-package)."""
+    ``GH_FORBIDDEN_TOKENS``; ``pr merge`` always carries ``--auto`` (never a bare immediate merge);
+    ``release create`` never carries ``--verify-tag`` (the Release CREATES the tag for a sub-package);
+    and -- when ``allowed_repos`` is supplied (the registry-derived ``owner/<repo>`` set, Phase 4.1) --
+    any ``--repo <slug>`` names one of the 8 publishing repos and nothing else. ``allowed_repos=None``
+    leaves the ``--repo`` VALUE unchecked (the surface + token guards still apply); the live seam always
+    supplies it, so a real run is always bounded to the 8."""
     if len(args) < 2:
         raise SeamViolation(f"gh call too short to validate: {args!r}")
     pair = (args[0], args[1])
@@ -178,6 +195,17 @@ def _assert_gh_allowed(args: list) -> None:
         raise SeamViolation("gh pr merge must carry --auto (the ceremony never immediately merges; it enables auto-merge behind the guard)")
     if pair == ("release", "create") and "--verify-tag" in args:
         raise SeamViolation("gh release create must NOT carry --verify-tag (the Release CREATES the sub-package tag; there is no pre-existing tag to verify)")
+    if allowed_repos is not None and "--repo" in args:
+        idx = args.index("--repo")
+        slug = args[idx + 1] if idx + 1 < len(args) else None
+        if slug not in allowed_repos:
+            raise SeamViolation(f"gh --repo {slug!r} is not one of the {len(allowed_repos)} publishing repos {sorted(allowed_repos)} -- R7 bounds the cross-repo write identity to exactly those repos (plan S9.3 / S12 step 4.1)")
+
+
+def publishing_repo_slugs(entries: list, owner: str) -> "frozenset[str]":
+    """The ``owner/<repo>`` allowlist for ``_assert_gh_allowed``, derived from the registry's repo set
+    (data-driven, so it can never drift from the 8 publishing repos -- plan S4.1 / the registry lint)."""
+    return frozenset(f"{owner}/{e.repo}" for e in entries)
 
 
 # ── low-level gh / git runners (fixed argv, no shell) ────────────────────────
@@ -341,15 +369,24 @@ def changelog_version_section(changelog_text: str, version: str) -> "OrderedDict
     return result
 
 
-def writable_repo_skip_reason(repo: str, writable_repo: str = WRITABLE_REPO) -> "str | None":
-    """Reason to SKIP a package because it lives outside the writable repo (Phase-3 in-repo pilot).
+def writable_repo_skip_reason(repo: str, *, cross_repo_capable: bool = False, ecosystem_root: "Path | None" = None, writable_repo: str = WRITABLE_REPO) -> "str | None":
+    """Reason to SKIP a package, or ``None`` when the ceremony may run it (capability-based, Phase 4.1).
 
-    ``None`` when ``repo`` is the writable repo; else a clear reason. The pilot workflow's single-repo
-    ``GITHUB_TOKEN`` can open a PR + cut a Release only in ``writable_repo`` (juniper-ml); a sibling-repo
-    package is deferred to Phase 4's GitHub App identity (plan S9.2 / S12 step 4.1), never attempted."""
+      * ``repo == writable_repo`` (juniper-ml) -> ``None``: in-repo is always ceremoniable.
+      * a sibling AND NOT ``cross_repo_capable`` -> the SAME clear reason as before (the degraded
+        single-repo ``GITHUB_TOKEN`` cannot cut a Release on the owning repo).
+      * a sibling, capable, but its checkout is absent under ``ecosystem_root`` -> a distinct reason
+        (the ceremony reads the owning repo's ``CHANGELOG [<version>]`` to source the notes).
+      * a sibling, capable, checkout present -> ``None``: the GitHub App identity cuts the Release on the
+        owning repo while the exempt archive PR still lands centrally in juniper-ml (plan S9.2 / S10.2)."""
     if repo == writable_repo:
         return None
-    return f"cross-repo: package lives in '{repo}', not the writable repo '{writable_repo}' -- the Phase-3 pilot's single-repo GITHUB_TOKEN cannot open a PR / cut a Release there (Phase 4's GitHub App identity lifts this, plan S9.2 / S12 step 4.1)"
+    if not cross_repo_capable:
+        return f"cross-repo: package lives in '{repo}', not the writable repo '{writable_repo}' -- the Phase-3 pilot's single-repo GITHUB_TOKEN cannot open a PR / cut a Release there (Phase 4's GitHub App identity lifts this, plan S9.2 / S12 step 4.1)"
+    checkout = (ecosystem_root / repo) if ecosystem_root is not None else None
+    if checkout is None or not checkout.is_dir():
+        return f"cross-repo: '{repo}' is BUMPED_NOT_RELEASED and this run is cross-repo-capable, but its checkout is not present at {checkout} -- clone it (full history + tags) under --ecosystem-root so the ceremony can read its CHANGELOG (plan S12 step 4.1)"
+    return None
 
 
 def find_open_archive_pr(open_prs: list, branch: str) -> "dict | None":
@@ -432,10 +469,11 @@ class CeremonyPlan:
     """The full ceremony plan for one BUMPED_NOT_RELEASED package (or a halt / skip / no-op)."""
 
     pypi_name: str
-    repo: str
+    repo: str  # the OWNING repo -- where the Release is cut + the publish run monitored (plan S10.2)
     released_version: "str | None"
     target_version: "str | None"
     tag: "str | None" = None
+    archive_repo: str = detect.META_REPO  # the exempt notes-archive PR is ALWAYS central in juniper-ml (plan S10.2)
     state: str = "CEREMONY_PLANNED"  # CEREMONY_PLANNED | RESUME_MONITOR | ALREADY_RELEASED | HALTED | SKIPPED_CROSS_REPO
     halted: bool = False
     halt_reason: "str | None" = None
@@ -455,6 +493,7 @@ class CeremonyPlan:
         return {
             "pypi_name": self.pypi_name,
             "repo": self.repo,
+            "archive_repo": self.archive_repo,
             "released_version": self.released_version,
             "target_version": self.target_version,
             "tag": self.tag,
@@ -494,16 +533,19 @@ class CeremonySources:
     upsert_halt_issue: "Callable[..., str] | None" = None
 
 
-def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, gh: "Callable | None" = None, git: "Callable | None" = None) -> CeremonySources:
+def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allowed_repos: "frozenset[str] | None" = None, gh: "Callable | None" = None, git: "Callable | None" = None) -> CeremonySources:
     """The live seam. Every ``gh`` call is routed through ``_assert_gh_allowed`` (the R7 code gate).
 
-    ``gh`` / ``git`` are injectable so the seam-surface test can drive the real argv construction with a
-    recording fake -- proving the live surface is exactly the R7-permitted set, hermetically."""
+    ``allowed_repos`` (Phase 4.1) is the registry-derived ``owner/<repo>`` allowlist bounding every
+    ``--repo`` argument to the 8 publishing repos; ``main`` always supplies it (via
+    ``publishing_repo_slugs``). ``gh`` / ``git`` are injectable so the seam-surface test can drive the
+    real argv construction with a recording fake -- proving the live surface is exactly the R7-permitted
+    set, hermetically."""
     gh = gh or _gh
     git = git or _git
 
     def _cgh(args: list, timeout: int = 90) -> "str | None":
-        _assert_gh_allowed(args)  # CODE half of the R7 invariant: a forbidden call raises before gh runs
+        _assert_gh_allowed(args, allowed_repos)  # CODE half of the R7 invariant: a forbidden call (or an out-of-allowlist --repo) raises before gh runs
         return gh(args, timeout)
 
     def _repo_dir(repo: str) -> Path:
@@ -585,15 +627,23 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, gh: 
             return False
 
     def create_release(repo: str, tag: str, title: str, notes_relpath: str, content: str) -> str:
-        rdir = _repo_dir(repo)
-        # Write the just-built central notes into the checkout so --notes-file points at the archived
-        # content (it is also what the exempt archive PR carries). --latest=false: a sub-package Release
-        # never steals the meta-package's "latest" badge (procedure S11.4). NO --verify-tag: the Release
-        # CREATES the tag.
-        target = rdir / notes_relpath
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(content, encoding="utf-8")
-        return (_cgh(["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", notes_relpath, "--latest=false"]) or "").strip()
+        # Render the notes body to a SCRATCH temp file (never into any checkout). The archived copy
+        # already rode the exempt archive PR into juniper-ml's central notes/releases/ (``notes_relpath``,
+        # kept for the record/log); writing it into the OWNING checkout here left a stray untracked file
+        # that dirtied the tree (07-19 live run). --notes-file takes the temp path. --latest=false: a
+        # sub-package Release never steals the meta-package's "latest" badge (procedure S11.4). NO
+        # --verify-tag: the Release CREATES the tag. The cross-repo Release is cut on the owning repo via
+        # --repo owner/<repo>; gh does not need a local checkout of it (the temp notes file suffices).
+        fd, tmp_path = tempfile.mkstemp(prefix="release-notes-", suffix=".md")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as fh:
+                fh.write(content)
+            return (_cgh(["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest=false"]) or "").strip()
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
 
     def upsert_halt_issue(repo: str, title: str, body: str) -> str:
         existing = _cgh(["issue", "list", "--repo", f"{owner}/{repo}", "--state", "open", "--search", f"in:title {title}", "--json", "number", "--jq", ".[0].number"])
@@ -637,13 +687,17 @@ def _monitor_action(tag: str) -> CeremonyAction:
     )
 
 
-def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str) -> CeremonyPlan:
-    """Compute the ceremony plan for one BUMPED_NOT_RELEASED manifest package (reads only; no writes)."""
+def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str, *, cross_repo: bool = False) -> CeremonyPlan:
+    """Compute the ceremony plan for one BUMPED_NOT_RELEASED manifest package (reads only; no writes).
+
+    ``plan.repo`` is the OWNING repo (Release + monitor); ``plan.archive_repo`` stays juniper-ml (the
+    central exempt archive PR, plan S10.2). ``cross_repo`` unlocks a sibling when its checkout is present."""
     target = pkg.get("declared_version")
     plan = CeremonyPlan(pypi_name=entry.pypi_name, repo=entry.repo, released_version=pkg.get("released_version"), target_version=target)
 
-    # 0. writable-repo guard (Phase-3 in-repo pilot; reuse propose's WRITABLE_REPO pattern).
-    reason = writable_repo_skip_reason(entry.repo)
+    # 0. capability guard (Phase 4.1): in-repo always; a sibling only when --cross-repo-capable AND its
+    # checkout is on disk. The exempt archive PR is ALWAYS central (plan.archive_repo == juniper-ml).
+    reason = writable_repo_skip_reason(entry.repo, cross_repo_capable=cross_repo, ecosystem_root=ecosystem_root)
     if reason is not None:
         plan.state, plan.skipped_reason = "SKIPPED_CROSS_REPO", reason
         return plan
@@ -693,7 +747,10 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
         plan.actions = [_monitor_action(plan.tag)]
         return plan
 
-    open_pr = find_open_archive_pr(sources.list_open_prs(entry.repo), plan.archive_branch)
+    # The exempt archive PR lives in the CENTRAL archive repo (juniper-ml), so its dup-guard + the
+    # on-main idempotency check both reason about juniper-ml -- NOT the owning repo (plan S10.2). For an
+    # in-repo package archive_repo == repo, so this is unchanged from Phase 3.
+    open_pr = find_open_archive_pr(sources.list_open_prs(plan.archive_repo), plan.archive_branch)
     on_main = sources.archive_on_main(plan.archive_relpath)
 
     actions: list = []
@@ -758,12 +815,15 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
         if action.kind == "open_archive_pr":
             if sources.open_archive_pr is None:
                 raise SourceError("execute needs the open_archive_pr seam member")
-            pr_ref = sources.open_archive_pr(plan.repo, base_branch, plan.archive_branch, plan.archive_relpath, plan.archive_content, action.detail.get("title") or plan.archive_branch, _archive_pr_body(plan))
+            # The exempt archive PR is ALWAYS opened in the central archive repo (juniper-ml), even for a
+            # cross-repo package whose Release is cut elsewhere (plan S10.2).
+            pr_ref = sources.open_archive_pr(plan.archive_repo, base_branch, plan.archive_branch, plan.archive_relpath, plan.archive_content, action.detail.get("title") or plan.archive_branch, _archive_pr_body(plan))
             result["pr_url"] = pr_ref
         elif action.kind == "enable_auto_merge":
             if sources.enable_automerge is None:
                 raise SourceError("execute needs the enable_automerge seam member")
-            enabled = sources.enable_automerge(plan.repo, pr_ref or plan.archive_branch)
+            # Auto-merge the central archive PR (juniper-ml), where it lives.
+            enabled = sources.enable_automerge(plan.archive_repo, pr_ref or plan.archive_branch)
             if not enabled:
                 result["notes"].append("auto-merge could not be enabled (allow_auto_merge off? -- step 3.3); owner one-click merge fallback (NOT a halt).")
             result["auto_merge_enabled"] = enabled
@@ -819,6 +879,8 @@ def _print_plan(plan: CeremonyPlan) -> None:
     print(f"{header}  {plan.pypi_name}  {plan.released_version} -> {plan.target_version}  ({plan.repo})")
     if plan.tag:
         print(f"  tag:     {plan.tag}")
+    if plan.archive_repo != plan.repo:
+        print(f"  cross-repo: Release cut on {plan.repo}; exempt archive PR in {plan.archive_repo} (central, plan S10.2)")
     if plan.archive_relpath:
         print(f"  archive: {plan.archive_relpath}")
     for note in plan.notes:
@@ -885,13 +947,14 @@ def parse_args(argv: "list[str] | None" = None) -> argparse.Namespace:
     p.add_argument("--registry", default=None, help="path to registry.yaml (default: alongside detect.py)")
     p.add_argument("--release-date", default=None, help="release date for the notes (default: today UTC; use for deterministic output)")
     p.add_argument("--dry-run", action="store_true", help="(default) print the full ceremony script of actions; write nothing, open nothing, cut nothing. Overrides --execute.")
-    p.add_argument("--execute", action="store_true", help="opt-in: perform the ceremony (archive PR + auto-merge + Release + monitor). NOT run against the real repo in Phase 3.2; --dry-run overrides it.")
+    p.add_argument("--execute", action="store_true", help="opt-in: perform the ceremony (archive PR + auto-merge + Release + monitor). --dry-run overrides it.")
+    p.add_argument("--cross-repo", action="store_true", help="Phase 4.1: this run has a cross-repo write identity (the GitHub App installation token). With it AND a sibling checkout under --ecosystem-root, a sibling's Release is cut on ITS repo (--repo owner/<repo>) while the exempt archive PR still lands centrally in juniper-ml; without it, sibling packages are skipped. No effect in --dry-run.")
     p.add_argument("--json", action="store_true", help="emit the ceremony plans as JSON instead of the human report")
     p.add_argument("--monitor-timeout", type=int, default=DEFAULT_MONITOR_TIMEOUT_SECONDS, metavar="SECONDS", help=f"max seconds the (--execute) monitor polls the publish run for the pypi-env-gate 'waiting' state before reporting a still-building IN_PROGRESS (default: {DEFAULT_MONITOR_TIMEOUT_SECONDS} = ~15 min)")
     return p.parse_args(argv)
 
 
-def _plans_for(manifest_pkgs: list, entries: list, wanted: "set | None", sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str) -> list:
+def _plans_for(manifest_pkgs: list, entries: list, wanted: "set | None", sources: CeremonySources, repo_root: Path, ecosystem_root: Path, when: str, *, cross_repo: bool = False) -> list:
     by_name = {e.pypi_name: e for e in entries}
     plans: list = []
     for pkg in manifest_pkgs:
@@ -906,7 +969,7 @@ def _plans_for(manifest_pkgs: list, entries: list, wanted: "set | None", sources
             _halt(plan, "not-in-registry", "package is BUMPED_NOT_RELEASED in the manifest but absent from registry.yaml", when)
             plans.append(plan)
             continue
-        plans.append(plan_ceremony(entry, pkg, sources, repo_root, ecosystem_root, when))
+        plans.append(plan_ceremony(entry, pkg, sources, repo_root, ecosystem_root, when, cross_repo=cross_repo))
     return plans
 
 
@@ -944,10 +1007,11 @@ def main(argv: "list[str] | None" = None, sources: "CeremonySources | None" = No
             return 2
 
     if sources is None:
-        sources = make_live_sources(args.owner, repo_root, ecosystem_root)
+        # Bound every --repo argument to the registry's 8 publishing repos (R7 --repo value guard, Phase 4.1).
+        sources = make_live_sources(args.owner, repo_root, ecosystem_root, allowed_repos=publishing_repo_slugs(entries, args.owner))
 
     try:
-        plans = _plans_for(manifest_pkgs, entries, wanted, sources, repo_root, ecosystem_root, when)
+        plans = _plans_for(manifest_pkgs, entries, wanted, sources, repo_root, ecosystem_root, when, cross_repo=args.cross_repo)
     except SourceError as exc:
         print(f"ERROR: source failure during ceremony planning: {exc}", file=sys.stderr)
         return 2
