@@ -39,7 +39,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -963,6 +963,157 @@ class LiveSeamRepoBoundTest(unittest.TestCase):
             if "--repo" in args:
                 slug = args[args.index("--repo") + 1]
                 self.assertIn(slug, self.allowed, args)
+
+
+# ── Phase 4.3: graceful HALT-issue degradation (App token may lack the Issues permission) ─────
+
+
+class FileHaltIssueDegradationTest(unittest.TestCase):
+    """Deliverable-2 unit coverage of ``_file_halt_issue``: the HALT-issue upsert degrades GRACEFULLY on a
+    gh-issue-API failure (most plausibly the cross-repo App token lacking the Issues permission, plan S11)
+    -- a LOUD log line + a step-summary-visible ``halt_issue_failed`` flag, never a crash -- while a
+    ``SeamViolation`` (an R7 *code* bug) still propagates and a missing seam member raises."""
+
+    def _issue(self):
+        return ce.halt_issue_payload("juniper-service-core", "0.5.0", "main-ci-not-green", "target main CI is red", "2026-07-17")
+
+    def _src_with_upsert(self, fn):
+        src = _sources()  # read-only base seam (upsert_halt_issue starts None)
+        src.upsert_halt_issue = fn
+        return src
+
+    def test_happy_path_records_issue_url(self):
+        src = self._src_with_upsert(lambda repo, title, body: "https://github.com/pcalnon/juniper-ml/issues/7")
+        result = {"pypi_name": "juniper-service-core", "notes": []}
+        ce._file_halt_issue(src, "juniper-ml", self._issue(), result)
+        self.assertEqual(result["issue_url"], "https://github.com/pcalnon/juniper-ml/issues/7")
+        self.assertNotIn("halt_issue_failed", result)  # no degradation flag on the happy path
+
+    def test_source_error_degrades_loudly_without_raising(self):
+        def boom(repo, title, body):
+            raise ce.SourceError("gh failed (issue create): HTTP 403: Resource not accessible by integration")
+
+        src = self._src_with_upsert(boom)
+        result = {"pypi_name": "juniper-service-core", "notes": []}
+        warns = []
+        ce._file_halt_issue(src, "juniper-ml", self._issue(), result, warn=warns.append)  # must NOT raise
+        self.assertIsNone(result["issue_url"])
+        self.assertTrue(result["halt_issue_failed"])
+        self.assertIn("403", result["halt_issue_error"])
+        self.assertTrue(warns and "could NOT file the HALT issue" in warns[0])  # the loud operator log line
+        self.assertTrue(any("Issues permission" in n for n in result["notes"]))  # the step-summary-visible note
+
+    def test_seam_violation_still_propagates(self):
+        def bug(repo, title, body):
+            raise ce.SeamViolation("R7: forbidden gh token")  # a code bug, NOT a runtime condition
+
+        src = self._src_with_upsert(bug)
+        result = {"pypi_name": "juniper-service-core", "notes": []}
+        with self.assertRaises(ce.SeamViolation):  # never swallowed by the SourceError degrade
+            ce._file_halt_issue(src, "juniper-ml", self._issue(), result)
+        self.assertNotIn("halt_issue_failed", result)
+
+    def test_missing_seam_member_raises_source_error(self):
+        src = _sources()  # upsert_halt_issue is None (a developer wiring error, raised OUTSIDE the try)
+        result = {"pypi_name": "juniper-service-core", "notes": []}
+        with self.assertRaises(ce.SourceError):
+            ce._file_halt_issue(src, "juniper-ml", self._issue(), result)
+
+
+class ExecuteHaltIssueDegradationTest(unittest.TestCase):
+    """execute_ceremony surfaces the degradation end-to-end: both a precondition HALT and a TestPyPI HALT
+    stay HALTED (never crash) when the gh-issue-API fails, flagging halt_issue_failed for the step summary."""
+
+    def _raising_src(self, exc, **over):
+        rec = _Recorder()
+        src = _sources(recorder=rec, **over)
+
+        def boom(repo, title, body):
+            rec.calls.append(("upsert_halt_issue", repo, title))
+            raise exc
+
+        src.upsert_halt_issue = boom
+        return rec, src
+
+    def test_precondition_halt_degrades(self):
+        rec, src = self._raising_src(ce.SourceError("HTTP 403: Resource not accessible by integration"), main_ci="failure")
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
+        self.assertEqual(plan.state, "HALTED")
+        result = ce.execute_ceremony(plan, src)  # must NOT raise
+        self.assertEqual(result["state"], "HALTED")
+        self.assertTrue(result["halt_issue_failed"])
+        self.assertIsNone(result["issue_url"])
+        self.assertTrue(any(c[0] == "upsert_halt_issue" for c in rec.calls))  # it DID try
+
+    def test_testpypi_halt_degrades(self):
+        rec, src = self._raising_src(ce.SourceError("HTTP 403"), run_status=FAILED_TESTPYPI_RUN)
+        plan = ce.plan_ceremony(_entry(), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
+        result = ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})  # must NOT raise
+        self.assertEqual(result["state"], "HALTED")
+        self.assertTrue(result["halt_issue_failed"])
+
+
+class ExecuteOutputFormatTest(unittest.TestCase):
+    """main(--execute) emits one stable ``ceremony-result:`` line per package (the workflow ceremony step
+    summary parses these). Covers a happy PENDING_PYPI_APPROVAL line and a DEGRADED HALT (issue_failed=1)."""
+
+    def _manifest_file(self, *pkgs):
+        fh = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8")
+        json.dump({"schema": "juniper-release-train/manifest/v1", "packages": list(pkgs)}, fh)
+        fh.close()
+        self.addCleanup(lambda: Path(fh.name).unlink(missing_ok=True))
+        return fh.name
+
+    def _fields(self, line):
+        return dict(tok.split("=", 1) for tok in line.split() if "=" in tok)
+
+    def _result_line(self, text):
+        return next(ln for ln in text.splitlines() if ln.startswith("ceremony-result:"))
+
+    def test_execute_emits_pending_result_line(self):
+        rec = _Recorder()
+        src = _sources(recorder=rec, run_status=PENDING_RUN)
+        manifest = self._manifest_file(_manifest_pkg())
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            rc = ce.main(["--manifest", manifest, "--execute", "--repo-root", str(REPO_ROOT), "--registry", str(UTIL_DIR / "registry.yaml"), "--release-date", "2026-07-17"], sources=src)
+        self.assertEqual(rc, 0)
+        f = self._fields(self._result_line(buf.getvalue()))
+        self.assertEqual(f["plan"], "CEREMONY_PLANNED")
+        self.assertEqual(f["state"], "PENDING_PYPI_APPROVAL")
+        self.assertEqual(f["pkg"], "juniper-service-core")
+        self.assertEqual(f["version"], "0.5.0")
+        self.assertEqual(f["issue_failed"], "0")
+        self.assertNotEqual(f["release"], "-")  # a Release URL was recorded
+
+    def test_execute_emits_degraded_halt_result_line(self):
+        rec = _Recorder()
+        src = _sources(recorder=rec, main_ci="failure")
+
+        def boom(repo, title, body):
+            raise ce.SourceError("HTTP 403")
+
+        src.upsert_halt_issue = boom
+        manifest = self._manifest_file(_manifest_pkg())
+        buf, err = io.StringIO(), io.StringIO()
+        with redirect_stdout(buf), redirect_stderr(err):
+            rc = ce.main(["--manifest", manifest, "--execute", "--repo-root", str(REPO_ROOT), "--registry", str(UTIL_DIR / "registry.yaml"), "--release-date", "2026-07-17"], sources=src)
+        self.assertEqual(rc, 1)  # HALTED -> exit 1 (owner attention), NOT a crash (exit 2)
+        f = self._fields(self._result_line(buf.getvalue()))
+        self.assertEqual(f["state"], "HALTED")
+        self.assertEqual(f["issue_failed"], "1")
+        self.assertIn("could NOT file the HALT issue", err.getvalue())  # the loud log line reached stderr
+
+    def test_execute_no_bumped_packages_prints_nothing_to_do(self):
+        # an UP_TO_DATE manifest package is not ceremonial -> no ceremony-result lines, a clean "nothing to do".
+        src = _sources()
+        manifest = self._manifest_file(_manifest_pkg(classification="UP_TO_DATE"))
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            rc = ce.main(["--manifest", manifest, "--execute", "--repo-root", str(REPO_ROOT), "--registry", str(UTIL_DIR / "registry.yaml"), "--release-date", "2026-07-17"], sources=src)
+        self.assertEqual(rc, 0)
+        self.assertIn("no BUMPED_NOT_RELEASED packages", buf.getvalue())
+        self.assertNotIn("ceremony-result:", buf.getvalue())
 
 
 if __name__ == "__main__":

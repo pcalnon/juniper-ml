@@ -4,48 +4,62 @@
 # Application:   juniper-ml
 # File Name:     release-train.yml
 # Author:        Paul Calnon
-# Version:       0.2.0
+# Version:       0.3.0
 #
 # Date Created:  2026-07-14
-# Last Modified: 2026-07-16
+# Last Modified: 2026-07-22
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon
 #
 # Description:
 #    PyPI release-train orchestrator -- Phase 1 (report-only detection) + Phase
-#    2.2 (opt-in propose mode). On a daily schedule (and on manual dispatch) the
+#    2.2 (opt-in propose mode) + Phase 4.3 (opt-in ceremony mode; the full
+#    off|report|propose|ceremony switch). On a daily schedule (and on manual dispatch) the
 #    detect job clones every Juniper package repo and runs the detection engine
 #    (util/release_train/detect.py) over the 18-package registry
 #    (util/release_train/registry.yaml), then publishes the results two ways:
 #      1. the release-manifest JSON as a run artifact, and
 #      2. a per-package classification table in the step summary.
 #
-#    Two-job privilege split (R7, plan S9.3):
-#      * detect  -- runs for report AND propose; inherits the workflow-level
-#                   'contents: read'. Never writes: no PRs, no tags, no
-#                   Releases, no (Test)PyPI. It only detects + reports.
-#      * propose -- runs ONLY when the resolved mode is 'propose' (the job 'if'
-#                   gates on the detect job's mode output). The single
-#                   write-scoped job ('contents: write' + 'pull-requests:
-#                   write'); it does exactly two things -- push a branch and
-#                   open a standard-gated proposal PR (never environments,
-#                   deployments, Releases, or PyPI). Cross-repo write identity
-#                   (Phase 4.1, plan S9.2 / S12 step 4.1): the job mints a
-#                   GitHub App installation token (actions/create-github-app-
-#                   token) scoped to the 8 publishing repos and uses it for
-#                   checkout/clone push auth + gh pr create, so a sibling
-#                   package's PR opens in ITS repo. GRACEFUL DEGRADATION: the
-#                   mint step is gated on the repo variable RELEASE_TRAIN_APP_ID
-#                   (owner-provisioned with the RELEASE_TRAIN_APP_PRIVATE_KEY
-#                   secret); when unset the job falls back to the single-repo
-#                   GITHUB_TOKEN and propose.py skips sibling packages with a
-#                   clear reason -- exactly the prior in-repo-only behaviour.
+#    Three-job privilege split (R7, plan S9.3):
+#      * detect   -- runs for report AND propose AND ceremony; inherits the
+#                    workflow-level 'contents: read'. Never writes: no PRs, no
+#                    tags, no Releases, no (Test)PyPI. It only detects + reports.
+#      * propose  -- runs ONLY when the resolved mode is 'propose' (the job 'if'
+#                    gates on the detect job's mode output). A write-scoped job
+#                    ('contents: write' + 'pull-requests: write'); it does exactly
+#                    two things -- push a branch and open a standard-gated
+#                    proposal PR (never environments, deployments, Releases, PyPI).
+#      * ceremony -- runs ONLY when the resolved mode is 'ceremony' (same mode
+#                    gate). The other write-scoped job (identical 'contents:
+#                    write' + 'pull-requests: write'); it runs the exempt-archive
+#                    + Release ceremony for BUMPED_NOT_RELEASED packages: open the
+#                    add-only notes-archive PR (central, in juniper-ml), enable
+#                    --auto behind the required guard, CUT THE RELEASE on the
+#                    owning repo, and monitor its publish run to PENDING_PYPI_-
+#                    APPROVAL. It never mutates an environment/deployment/reviewer
+#                    and never touches (Test)PyPI -- the PyPI deploy stays parked
+#                    at the owner-gated 'pypi' environment (Gate 2). Its gh surface
+#                    is bounded in code by ceremony.py's _assert_gh_allowed (R7).
+#      Cross-repo write identity (Phase 4.1, plan S9.2 / S12 step 4.1): the propose
+#      AND ceremony jobs EACH mint a GitHub App installation token (actions/create-
+#      github-app-token) scoped to the 8 publishing repos and use it for checkout/
+#      clone push auth + gh pr create / gh release create, so a sibling package's PR
+#      opens (and its Release is cut) in ITS repo. GRACEFUL DEGRADATION: each mint
+#      step is gated on the repo variable RELEASE_TRAIN_APP_ID (owner-provisioned
+#      with the RELEASE_TRAIN_APP_PRIVATE_KEY secret); when unset the job falls back
+#      to the single-repo GITHUB_TOKEN and propose.py/ceremony.py skip sibling
+#      packages with a clear reason -- exactly the prior in-repo-only behaviour.
 #
 #    Mode resolution (the rollback/disable switch, plan S9.4/S11):
 #      workflow_dispatch input 'mode' > repo variable RELEASE_TRAIN_MODE > 'report'
-#      'off' quiesces the train instantly with a green no-op run; 'report' and
-#      'propose' are valid; 'ceremony' is a later phase and degrades to 'report'.
+#      'off' quiesces the train instantly with a green no-op run (nothing beyond
+#      mode resolution runs -- detection is skipped and both write jobs are
+#      unreachable); 'report', 'propose', and 'ceremony' are all valid. An unknown
+#      value warns and degrades to 'report'. Operator runbook (the four modes, the
+#      two owner gates, rollback + HALT catalog): notes/JUNIPER_2026-07-22_JUNIPER-
+#      ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md.
 #
 #    KNOWN LIMITATION (degraded no-App path ONLY): a PR opened with the built-in
 #    GITHUB_TOKEN does NOT trigger CI (GitHub's recursion guard), so on the
@@ -61,26 +75,33 @@
 #
 # Security Notes:
 #    - Runs on schedule/dispatch only (not on PRs or forks)
-#    - Workflow-level permissions are 'contents: read'; only the propose job
-#      elevates (job-level 'contents: write' + 'pull-requests: write') and only
-#      when the resolved mode is 'propose'. The detect/report path never writes.
-#    - The propose job's identity opens PRs ONLY -- it is never a 'pypi'
-#      environment reviewer and never approves/mutates a deployment (R7,
-#      plan S9.3). PyPI approval stays owner-only.
+#    - Workflow-level permissions are 'contents: read'; only the propose and
+#      ceremony jobs elevate (job-level 'contents: write' + 'pull-requests:
+#      write') and only when the resolved mode is 'propose' / 'ceremony'
+#      respectively. The detect/report path never writes, and 'off' runs nothing
+#      beyond mode resolution.
+#    - The propose job's identity opens PRs ONLY; the ceremony job's identity
+#      opens PRs, enables --auto behind the required guard, and CUTS RELEASES
+#      (gh release create on the owning repo) + files dedup HALT issues -- but
+#      NEITHER is ever a 'pypi' environment reviewer and neither approves/mutates
+#      a deployment (R7, plan S9.3). PyPI approval stays owner-only.
 #    - GH_TOKEN is used for read-only gh api calls (compare/tags/releases) by
-#      detect.py, and (propose job) for 'gh pr create'
+#      detect.py, (propose job) for 'gh pr create', and (ceremony job) for
+#      'gh pr create / pr merge --auto / release create / issue create/edit'
+#      (that exact surface is bounded in code by ceremony.py's _assert_gh_allowed).
 #    - detect job clones public sibling repos via HTTPS (read-only, no tokens);
-#      the propose job clones them with the App installation token for push auth
-#      (cross-repo, Phase 4.1) and only when that token was minted
+#      the propose AND ceremony jobs clone them with the App installation token
+#      for push auth (cross-repo, Phase 4.1) and only when that token was minted
 #    - Two repo secrets are consumed: SLACK_WEBHOOK_URL (non-blocking notify,
 #      detect job) and RELEASE_TRAIN_APP_PRIVATE_KEY (referenced ONLY in the
-#      propose job's create-github-app-token mint step; pinned by the R7
-#      workflow-guard test). The App token is never a 'pypi' env reviewer.
+#      propose AND ceremony jobs' create-github-app-token mint steps; pinned by
+#      the R7 workflow-guard test). The App token is never a 'pypi' env reviewer.
 #
 # References:
-#    - notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md (S9.1-9.4, S11, S12 steps 1.3/2.2)
+#    - notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-TRAIN-WORKFLOW-PLAN.md (S8, S9.1-9.4, S11, S12 steps 1.3/2.2/4.1/4.3)
+#    - notes/JUNIPER_2026-07-22_JUNIPER-ECOSYSTEM_RELEASE-TRAIN-OPERATOR-RUNBOOK.md (the four modes, owner gates, rollback + HALT catalog)
 #    - notes/JUNIPER_2026-07-11_JUNIPER-ECOSYSTEM_PYPI-RELEASE-SURFACE-AUDIT.md (the 18-package surface)
-#    - util/release_train/detect.py + propose.py + registry.yaml (Phases 1.1/1.2/2.1, juniper-ml#641/#652)
+#    - util/release_train/detect.py + propose.py + ceremony.py + registry.yaml (Phases 1.1/1.2/2.1/3.2, juniper-ml#641/#652)
 #####################################################################################################################################################################################################
 
 name: Release Train
@@ -95,11 +116,11 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Override RELEASE_TRAIN_MODE for this run: off | report | propose. Empty = repo variable RELEASE_TRAIN_MODE, default report. 'ceremony' is a later phase and degrades to report."
+        description: "Override RELEASE_TRAIN_MODE for this run: off | report | propose | ceremony. Empty = repo variable RELEASE_TRAIN_MODE, default report. Unknown values warn and degrade to report."
         required: false
         type: string
       packages:
-        description: "propose mode only: whitespace/comma-separated pypi_names to propose (e.g. 'juniper-observability'). Empty = all eligible juniper-ml packages. Ignored in off/report."
+        description: "propose/ceremony mode only: whitespace/comma-separated pypi_names to act on (e.g. 'juniper-observability'). Empty = all eligible packages. Ignored in off/report."
         required: false
         type: string
 
@@ -144,13 +165,12 @@ jobs:
           MODE_INPUT: ${{ inputs.mode }}
         run: |
           set -euo pipefail
+          # Precedence (plan S9.4): dispatch input 'mode' > repo variable RELEASE_TRAIN_MODE > 'report'.
+          # All four modes are valid (Phase 4.3): off quiesces, report detects, propose opens PRs,
+          # ceremony cuts Releases. Unknown -> warn + report. This case is the instant rollback switch.
           mode="${MODE_INPUT:-${MODE_VAR:-report}}"
           case "$mode" in
-            off|report|propose) ;;
-            ceremony)
-              echo "::warning::RELEASE_TRAIN_MODE='ceremony' is not implemented yet -- degrading to 'report' (Phase 3 adds the ceremony lane; this run opens no PRs and cuts no Releases)."
-              mode="report"
-              ;;
+            off|report|propose|ceremony) ;;
             *)
               echo "::warning::Unknown RELEASE_TRAIN_MODE='${mode}' -- defaulting to 'report'."
               mode="report"
@@ -272,6 +292,7 @@ jobs:
           counts = manifest["summary"]["by_classification"]
           action_states = ("UNRELEASED_CHANGES", "BUMPED_NOT_RELEASED", "SHIP_UNCERTAIN")
           action = [p["pypi_name"] for p in pkgs if p["classification"] in action_states]
+          bumped = [p["pypi_name"] for p in pkgs if p["classification"] == "BUMPED_NOT_RELEASED"]  # the ceremonial class
           hyg_tag = sum(1 for p in pkgs if (p.get("hygiene") or {}).get("tag_only"))
           hyg_notes = sum(1 for p in pkgs if (p.get("hygiene") or {}).get("notes_missing"))
 
@@ -293,6 +314,8 @@ jobs:
           lines.append("")
           if mode == "propose":
               lines.append(f"_Detection complete. The **propose** job opens standard-gated proposal PRs for the {len(action)} package(s) that need release action (see the propose job summary); this detect job stays read-only -- no Releases cut, PyPI untouched._")
+          elif mode == "ceremony":
+              lines.append(f"_Detection complete. The **ceremony** job runs the exempt-archive + Release ceremony for the {len(bumped)} BUMPED_NOT_RELEASED package(s) (archive PR central in juniper-ml + Release cut on the owning repo; see the ceremony job summary); this detect job stays read-only. The PyPI deploy stays owner-gated at the `pypi` environment (Gate 2)._")
           else:
               lines.append(f"_Report-only: no PRs opened, no Releases cut, PyPI untouched. **{len(action)} package(s) currently need release action.**_")
           with out.open("a", encoding="utf-8") as fh:
@@ -539,4 +562,257 @@ jobs:
           lines.append("_Proposal PRs are standard-gated (plan S7): the owner reviews and merges; they touch neither TestPyPI nor PyPI. When the GitHub App token is minted (Phase 4.1) PRs are opened by the App identity -- CI runs normally and sibling-repo packages get PRs in their own repos. On the degraded no-App path (RELEASE_TRAIN_APP_ID unset), a PR opened with the built-in GITHUB_TOKEN does not auto-trigger CI (GitHub's recursion guard) -- re-trigger by closing/reopening the PR or pushing an empty commit, and sibling packages are skipped._")
           with out.open("a", encoding="utf-8") as fh:
               fh.write("\n".join(lines) + "\n")
+
+  # ─────────────────────────────────────────────────────────────────────────────────────────────
+  # ceremony job -- the SECOND write-scoped lane (R7 privilege boundary, plan S9.3), Phase 4.3. It runs
+  # solely when the detect job resolved mode == 'ceremony'; in off/report/propose it never starts, so the
+  # write scope is unreachable off the ceremony path. It runs the exempt-archive + Release ceremony for
+  # BUMPED_NOT_RELEASED packages (plan S5.3/S7/S8/S10): open the add-only notes-archive PR (ALWAYS central
+  # in juniper-ml), enable --auto behind the required guard, CUT THE RELEASE on the owning repo, and
+  # monitor its publish run to the terminal-healthy PENDING_PYPI_APPROVAL. It never mutates an
+  # environment/deployment/reviewer and never touches (Test)PyPI -- the PyPI deploy stays parked at the
+  # owner-gated 'pypi' environment (Gate 2); ceremony.py's _assert_gh_allowed bounds the gh surface in
+  # code. Cross-repo (Phase 4.1): it mints its OWN GitHub App installation token (like propose) scoped to
+  # the 8 publishing repos and passes --cross-repo, so a sibling's Release is cut in ITS repo while the
+  # exempt archive PR still lands centrally in juniper-ml; without the token (RELEASE_TRAIN_APP_ID unset)
+  # ceremony.py skips sibling packages, acting on juniper-ml packages only. A per-package HALT (plan S8)
+  # is surfaced in the step summary + a dedup issue + Slack; ceremony exit 1 (a HALT) is a normal green
+  # outcome (owner attention, NOT a hard run failure), mirroring the detector -- only exit >=2 fails.
+  # ─────────────────────────────────────────────────────────────────────────────────────────────
+  ceremony:
+    name: Release-train ceremony (exempt archive PR + Release cut)
+    needs: detect
+    # Privilege path is UNREACHABLE unless the resolved mode is exactly 'ceremony'. No always()/
+    # !cancelled() -- a failed or absent detection (no manifest) skips ceremony too.
+    if: needs.detect.outputs.mode == 'ceremony'
+    runs-on: ubuntu-latest
+    # Headroom for the bounded publish-run monitor (~15 min default) on top of build + TestPyPI verify.
+    timeout-minutes: 30
+    # The second job that elevates above the workflow-level 'contents: read'. Exactly enough to push a
+    # branch, open a PR, and cut a Release -- never environment/deployment scope (R7 invariant, plan S9.3).
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # Cross-repo write identity (Phase 4.1, plan S9.2 / S12 step 4.1). Mint a GitHub App installation
+      # token scoped to the 8 publishing repos, so this job can open the central archive PR AND cut the
+      # Release on the sibling's own repo. GRACEFUL DEGRADATION: gated on the repo variable
+      # RELEASE_TRAIN_APP_ID (owner-provisioned together with the private-key secret); when unset this step
+      # is SKIPPED and the job runs on the built-in GITHUB_TOKEN (in-repo only). The App PRIVATE-KEY secret
+      # is referenced ONLY in the two mint steps (this one + propose's) -- pinned by the R7 workflow-guard.
+      - name: Mint GitHub App installation token (cross-repo write identity)
+        id: app-token
+        if: ${{ vars.RELEASE_TRAIN_APP_ID != '' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.RELEASE_TRAIN_APP_ID }}
+          private-key: ${{ secrets.RELEASE_TRAIN_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          # Least-privilege: exactly the 8 publishing repos (registry S4.1), not every installed repo.
+          repositories: |
+            juniper-ml
+            juniper-data
+            juniper-data-client
+            juniper-cascor
+            juniper-cascor-client
+            juniper-cascor-worker
+            juniper-canopy
+            juniper-recurrence
+
+      - name: Checkout juniper-ml (full history + tags)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: juniper-ml
+          # ceremony.py reads version files + CHANGELOGs, branches from this checkout for the exempt
+          # archive PR, and reads origin/main to test archive-file idempotency (a shallow tree loses that).
+          # Auth uses the minted App token when present (so the App identity pushes the archive branch and
+          # cuts the Release), else the built-in GITHUB_TOKEN (degraded, in-repo only).
+          token: ${{ steps.app-token.outputs.token || github.token }}
+          fetch-depth: 0
+
+      - name: Set up Python ${{ env.PYTHON_TEST_VERSION }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Install ceremony-engine dependencies
+        run: |
+          set -euo pipefail
+          # ceremony.py imports detect.py + notes_render.py, which lazy-import PyYAML (registry.yaml) and
+          # prefer packaging.version -- the same two installs the detect/propose jobs perform.
+          python -m pip install --quiet "pyyaml>=6.0" "packaging>=22.0"
+
+      - name: Download release-manifest artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-manifest
+          path: manifest
+
+      # Cross-repo only (Phase 4.1): clone the 7 sibling publishing repos (full history + tags) into
+      # $GITHUB_WORKSPACE so ceremony.py reads each sibling's CHANGELOG via --ecosystem-root and cuts the
+      # Release on the owning repo. SKIPPED on the degraded no-App path -- ceremony.py then skips every
+      # sibling package with a clear reason, so a missing clone is never touched.
+      - name: Clone sibling publishing repos (App-token push auth)
+        if: ${{ steps.app-token.outputs.token != '' }}
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          while IFS= read -r repo; do
+            [ -z "$repo" ] && continue
+            echo "Cloning ${repo} (full history + tags)..."
+            git clone --quiet "https://x-access-token:${APP_TOKEN}@github.com/${{ github.repository_owner }}/${repo}.git" "$repo"
+          done <<< "$ECOSYSTEM_REPOS"
+          echo ""
+          echo "Workspace contents:"
+          ls -1 "$GITHUB_WORKSPACE"
+
+      - name: Configure git identity (headless, unsigned)
+        working-directory: juniper-ml
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The runner has no GPG key, and the owner's YubiKey-resident signing config must never reach a
+          # headless commit (it would fail). ceremony.py also passes -c commit.gpgsign=false on its commit;
+          # setting it here too makes the job immune regardless of inherited config.
+          git config commit.gpgsign false
+
+      - name: Run the ceremony (ceremony.py --execute)
+        id: ceremony
+        working-directory: juniper-ml
+        env:
+          # APP_TOKEN is the minted App installation token when present, else empty. GH_TOKEN is the App
+          # token when minted (cross-repo gh release create / pr create) else the built-in GITHUB_TOKEN
+          # (in-repo). Both are step-scoped to the ceremony job -- the R7 workflow-guard test pins that.
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token || github.token }}
+          JUNIPER_RELEASE_TRAIN_OWNER: ${{ github.repository_owner }}
+          PACKAGES_INPUT: ${{ inputs.packages }}
+        run: |
+          set -euo pipefail
+
+          # Parse the optional 'packages' dispatch input: whitespace/comma-separated pypi_names. Empty =
+          # all eligible (no --package filter). Validate every token against the pypi-name charset; reject
+          # garbage rather than shelling it out. (Identical to the propose job's parsing.)
+          pkg_args=()
+          raw="${PACKAGES_INPUT:-}"
+          raw="${raw//,/ }"   # treat commas and whitespace identically
+          for tok in $raw; do
+            if [[ ! "$tok" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+              echo "::error::invalid package token '${tok}' in the 'packages' input (allowed: lowercase letters, digits, hyphens; e.g. juniper-observability)."
+              exit 2
+            fi
+            pkg_args+=(--package "$tok")
+          done
+          echo "package filter: ${pkg_args[*]:-<all eligible packages>}"
+
+          # Cross-repo is capability-gated (Phase 4.1): pass --cross-repo ONLY when the App token was minted
+          # (the siblings were then cloned above). Without it, ceremony.py skips every sibling package with
+          # a clear reason (the degraded single-repo GITHUB_TOKEN path -- juniper-ml packages only).
+          cross_repo_args=()
+          if [ -n "${APP_TOKEN:-}" ]; then
+            cross_repo_args+=(--cross-repo)
+            echo "GitHub App token present -- cross-repo ceremonies ENABLED (Phase 4.1)."
+          else
+            echo "No App token (RELEASE_TRAIN_APP_ID unset) -- degraded GITHUB_TOKEN path: sibling packages will be SKIPPED (juniper-ml packages only)."
+          fi
+
+          # Exit contract (util/release_train/ceremony.py): 0 = clean (no halts), 1 = at least one package
+          # HALTED (owner attention -- surfaced in the step summary + a dedup issue + Slack; a NORMAL green
+          # outcome, NOT a hard run failure, mirroring the detector), >= 2 = invocation/source error.
+          # --monitor-timeout 900 (~15 min): the bounded wall clock the monitor polls for the pypi-env-gate
+          # 'waiting' state (-> PENDING_PYPI_APPROVAL) before reporting a still-building IN_PROGRESS.
+          rc=0
+          python util/release_train/ceremony.py \
+            --manifest "${GITHUB_WORKSPACE}/manifest/release-manifest.json" \
+            --repo-root . \
+            --ecosystem-root .. \
+            --execute \
+            --monitor-timeout 900 \
+            ${cross_repo_args[@]+"${cross_repo_args[@]}"} \
+            ${pkg_args[@]+"${pkg_args[@]}"} > "${GITHUB_WORKSPACE}/ceremony-output.txt" 2>&1 || rc=$?
+          cat "${GITHUB_WORKSPACE}/ceremony-output.txt"
+          echo "exit-code=${rc}" >> "$GITHUB_OUTPUT"
+          echo "ceremony.py exit code: ${rc} (0 = clean, 1 = HALT(s) -- owner attention, still green, >=2 = hard error)"
+          if [ "${rc}" -ge 2 ]; then
+            echo "::error::release-train ceremony.py failed hard (exit ${rc}) -- see the log above; some or no Releases may have been cut."
+            exit "${rc}"
+          fi
+
+      - name: Render ceremony step summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          out = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          src = Path(os.environ["GITHUB_WORKSPACE"]) / "ceremony-output.txt"
+          text = src.read_text(encoding="utf-8") if src.is_file() else ""
+
+          def field(line, key):
+              for tok in line.split():
+                  if tok.startswith(key + "="):
+                      return tok[len(key) + 1:]
+              return ""
+
+          # ceremony.py emits one stable `ceremony-result: plan=.. state=.. pkg=.. version=.. repo=.. pr=..
+          # release=.. issue=.. issue_failed=..` line per package (space-free values -> key=value is safe).
+          results = [
+              {k: field(ln, k) for k in ("plan", "state", "pkg", "version", "repo", "pr", "release", "issue", "issue_failed")}
+              for ln in text.splitlines()
+              if ln.startswith("ceremony-result:")
+          ]
+          ceremonies = [r for r in results if r["plan"] == "CEREMONY_PLANNED"]
+          resumes = [r for r in results if r["plan"] == "RESUME_MONITOR"]
+          pending = [r for r in results if r["state"] == "PENDING_PYPI_APPROVAL"]
+          released = [r for r in results if r["state"] == "RELEASED"]
+          already = [r for r in results if r["state"] == "ALREADY_RELEASED"]
+          skipped = [r for r in results if r["state"] == "SKIPPED_CROSS_REPO"]
+          in_progress = [r for r in results if r["state"] == "IN_PROGRESS"]
+          halts = [r for r in results if r["state"] == "HALTED"]
+          degraded = [r for r in halts if r["issue_failed"] == "1"]
+
+          lines = ["# Release train -- ceremony mode", ""]
+          if not text.strip():
+              lines += ["**ceremony.py produced no output** -- see the run log (it may have failed before printing).", ""]
+          lines.append(
+              f"**{len(results)} package(s) processed:** {len(ceremonies)} ceremony, {len(resumes)} resume-monitor, "
+              f"{len(pending)} PENDING_PYPI_APPROVAL, {len(released)} released, {len(already)} already-released, "
+              f"{len(skipped)} skipped, {len(in_progress)} still-building, {len(halts)} HALTED."
+          )
+          lines.append("")
+          if pending:
+              lines += ["### PENDING_PYPI_APPROVAL -- owner Gate 2 (approve the `pypi` environment deploy)", ""]
+              lines += [f"- `{r['pkg']}` v{r['version']} ({r['repo']}) -- release {r['release'] or '-'}" for r in pending]
+              lines.append("")
+          if halts:
+              lines += ["### HALTED -- owner attention (plan S8)", ""]
+              for r in halts:
+                  if r["issue_failed"] == "1":
+                      note = " -- **HALT issue could NOT be filed (the App token may lack the Issues permission); file it manually**"
+                  else:
+                      note = f" -- issue {r['issue'] or '-'}"
+                  lines.append(f"- `{r['pkg']}` v{r['version']} ({r['repo']}){note}")
+              lines.append("")
+          if in_progress:
+              lines += ["### Still building (re-run ceremony mode to resume the monitor -- idempotent)", ""]
+              lines += [f"- `{r['pkg']}` v{r['version']} ({r['repo']})" for r in in_progress]
+              lines.append("")
+          if degraded:
+              lines.append(
+                  f"> **{len(degraded)} HALT issue(s) could not be filed** (the cross-repo App token lacks the Issues "
+                  f"permission). The HALT is surfaced here and in Slack; file the issue(s) manually or grant the App the "
+                  f"Issues permission (plan S11)."
+              )
+              lines.append("")
+          if not results:
+              lines.append("_No BUMPED_NOT_RELEASED packages to act on -- nothing to do (the ceremony acts only on that class)._")
+              lines.append("")
+          lines.append("_The ceremony automates the middle arc only (plan S5.3): the version bump already rode the owner-approved proposal PR (Gate 1), and the PyPI deploy still waits at the owner-gated `pypi` environment (Gate 2). The exempt archive PR is add-only and auto-merges behind the required guard; no environment/deployment is mutated (R7, plan S9.3). A HALT does not turn this run red -- it is surfaced here + as a dedup issue + in Slack. When RELEASE_TRAIN_APP_ID is unset the job runs degraded (juniper-ml packages only)._")
+          with out.open("a", encoding="utf-8") as fh:
+              fh.write("\n".join(lines) + "\n")
+          PY
           PY

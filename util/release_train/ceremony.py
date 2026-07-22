@@ -23,7 +23,12 @@ coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
      deduplicated GitHub-issue payload (title keyed on ``pypi_name`` + reason); a halt never blocks the
      other packages. Checked: target ``main`` CI green; the ``declared >= released`` re-check against
      live PyPI truth; a non-empty ``CHANGELOG [<version>]`` section to source the notes; (during the
-     monitor) TestPyPI install-verify success before Gate 2.
+     monitor) TestPyPI install-verify success before Gate 2. If the ``gh issue`` API itself fails when
+     filing that dedup issue -- most plausibly the cross-repo GitHub App token lacking the **Issues**
+     permission (the owner may grant it later; plan S11 failure-issues) -- the upsert **degrades
+     gracefully**: a loud operator log line + a step-summary-visible ``halt_issue_failed`` flag, NEVER a
+     crash. The package stays HALTED and the run's step summary + Slack still surface it; the R7 ``gh``
+     surface is unchanged (the degrade wraps the same ``upsert_halt_issue`` seam member).
   2. **Final central notes** -- build the archive file (``notes_render``, from the released
      sub-package's ``CHANGELOG [<version>]`` section; ``archive_name`` from ``registry.yaml``).
   3. **Exempt archive PR** -- open the add-only, single-file PR (the thing the S7.2 archive-guard proves).
@@ -793,12 +798,45 @@ def monitor_publish_run(sources: CeremonySources, repo: str, tag: str, *, timeou
         sleep(poll_seconds)
 
 
+def _file_halt_issue(sources: CeremonySources, repo: str, issue: dict, result: dict, *, warn: "Callable[[str], None]" = _warn) -> dict:
+    """Upsert the dedup HALT issue, degrading GRACEFULLY if the ``gh issue`` API fails (plan S8/S11).
+
+    A failed ``gh issue create``/``edit`` -- most plausibly the cross-repo GitHub App token lacking the
+    **Issues** permission (owner-grantable later; plan S11 failure-issues) -- must NOT crash the ceremony
+    run: the package is STILL HALTED, so this emits a LOUD operator log line and records a step-summary-
+    visible flag (``halt_issue_failed``) + note, then continues -- the other packages still run and the
+    run's step summary + Slack still surface the HALT. Only ``SourceError`` (a runtime gh/transport/auth
+    failure) is degraded; ``SeamViolation`` (an R7 *code* bug -- a sibling ``RuntimeError``, NOT a
+    ``SourceError`` subclass) is deliberately NOT caught and still propagates. A missing seam member is a
+    developer wiring error, not a runtime condition, so it raises OUTSIDE the try (unchanged behaviour).
+    The R7 ``gh`` surface is unchanged: this wraps the SAME ``upsert_halt_issue`` seam member."""
+    if sources.upsert_halt_issue is None:
+        raise SourceError("execute needs the upsert_halt_issue seam member")
+    try:
+        result["issue_url"] = sources.upsert_halt_issue(repo, issue["title"], issue["body"])
+    except SourceError as exc:
+        result["issue_url"] = None
+        result["halt_issue_failed"] = True
+        result["halt_issue_error"] = str(exc)
+        msg = (
+            f"release-train ceremony: could NOT file the HALT issue for {result.get('pypi_name')} in {repo} ({exc}). "
+            f"The package is STILL HALTED -- file the issue manually. The cross-repo GitHub App token may lack the "
+            f"Issues permission (plan S8/S11); the run's step summary + Slack still surface this HALT."
+        )
+        warn(msg)
+        result["notes"].append(msg)
+    return result
+
+
 def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: str = "main", *, monitor_kwargs: "dict | None" = None) -> dict:
     """Perform a plan's actions in order via the seam. Opt-in (``--execute``); never the dry-run default.
 
     Returns a result dict (final state + any PR/Release URLs). A halt files/updates the dedup issue and
     stops. Auto-merge failure degrades to the owner one-click fallback (a note, not a halt)."""
-    result: dict = {"pypi_name": plan.pypi_name, "repo": plan.repo, "state": plan.state, "pr_url": None, "release_url": None, "notes": list(plan.notes)}
+    # plan_state (the classification) is kept alongside the mutable state (the final verdict) so the
+    # workflow's ceremony step summary can bucket ceremonies vs resumes vs halts; target_version feeds
+    # the same machine-parseable summary line (main's --execute output).
+    result: dict = {"pypi_name": plan.pypi_name, "repo": plan.repo, "plan_state": plan.state, "target_version": plan.target_version, "state": plan.state, "pr_url": None, "release_url": None, "notes": list(plan.notes)}
 
     if plan.state == "SKIPPED_CROSS_REPO":
         result["skipped_reason"] = plan.skipped_reason
@@ -807,9 +845,9 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
     pr_ref: "str | None" = None
     for action in plan.actions:
         if action.kind == "halt_issue":
-            if sources.upsert_halt_issue is None:
-                raise SourceError("execute needs the upsert_halt_issue seam member")
-            result["issue_url"] = sources.upsert_halt_issue(plan.repo, plan.issue["title"], plan.issue["body"])
+            # Graceful degradation: a gh-issue-API failure (e.g. the App token lacks Issues) does NOT
+            # crash the run -- the package stays HALTED, loudly logged + step-summary-flagged (plan S11).
+            _file_halt_issue(sources, plan.repo, plan.issue, result)
             result["state"] = "HALTED"
             return result
         if action.kind == "open_archive_pr":
@@ -836,7 +874,8 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
             if verdict == "HALT_TESTPYPI":
                 if sources.upsert_halt_issue is not None:
                     issue = halt_issue_payload(plan.pypi_name, plan.target_version, "testpypi-verify-failed", "the publish workflow's TestPyPI install-verify step failed before Gate 2 -- the run is not healthy", _today())
-                    result["issue_url"] = sources.upsert_halt_issue(plan.repo, issue["title"], issue["body"])
+                    # Same graceful degradation as the precondition HALT: a gh-issue-API failure never crashes the run.
+                    _file_halt_issue(sources, plan.repo, issue, result)
                 result["state"] = "HALTED"
                 return result
             if verdict == "HALT_PUBLISH":
@@ -1024,8 +1063,24 @@ def main(argv: "list[str] | None" = None, sources: "CeremonySources | None" = No
         except SourceError as exc:
             print(f"ERROR: execute failed: {exc}", file=sys.stderr)
             return 2
+        if not results:
+            print("ceremony-run: no BUMPED_NOT_RELEASED packages in the manifest -- nothing to do (execute).")
+        # Stable machine-parseable line per result (mirrors propose.py's grep-prefix convention so the
+        # release-train.yml ceremony step summary can bucket ceremonies/resumes/HALTs/PENDING_PYPI_APPROVAL
+        # deterministically). Values are space-free (pypi_name/version/repo/URLs), so key=value split is safe.
         for r in results:
-            print(f"{r['state']:<22} {r['pypi_name']:<28} pr={r.get('pr_url') or '-'} release={r.get('release_url') or '-'}")
+            print(
+                "ceremony-result:"
+                f" plan={r.get('plan_state') or '?'}"
+                f" state={r.get('state') or '?'}"
+                f" pkg={r.get('pypi_name') or '?'}"
+                f" version={r.get('target_version') or '-'}"
+                f" repo={r.get('repo') or '-'}"
+                f" pr={r.get('pr_url') or '-'}"
+                f" release={r.get('release_url') or '-'}"
+                f" issue={r.get('issue_url') or '-'}"
+                f" issue_failed={'1' if r.get('halt_issue_failed') else '0'}"
+            )
         return 1 if any(r["state"] == "HALTED" for r in results) else 0
 
     if args.json:
