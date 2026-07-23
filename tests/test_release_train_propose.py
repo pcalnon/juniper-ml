@@ -464,6 +464,48 @@ class BuildProposalTest(unittest.TestCase):
         self.assertIn("**Version**: 0.7.0", agents.new_text)
         self.assertTrue(any("AGENTS.md" in item for item in prop.co_change_checklist))
 
+    def test_sibling_primary_package_co_changes_agents_md(self):
+        # worker#140 pilot failure class: a sibling repo's AGENTS.md **Version** header tracks that
+        # repo's PRIMARY package (pypi_name == repo), and the portable version-drift lint fails the
+        # proposal PR unless the header moves in the same PR.
+        sib_root = self.eco / "juniper-worker"
+        _write_pkg(sib_root, ".", name="juniper-worker", version="0.4.0", changelog=_CHANGELOG)
+        (sib_root / "AGENTS.md").write_text("# AGENTS\n\n**Version**: 0.4.0\n**Author**: Paul\n")
+        entry = _entry(pypi_name="juniper-worker", repo="juniper-worker", path=".", tag_pattern="juniper-worker-v*", archive_name="RELEASE_NOTES_juniper-worker_v{version}.md", ship_paths=["juniper_worker/"])
+        pkg = _manifest_pkg(pypi_name="juniper-worker", released_version="0.4.0", declared_version="0.4.0", proposed_version="0.5.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-14")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        agents = next((e for e in prop.edits if e.path == "AGENTS.md"), None)
+        self.assertIsNotNone(agents, "sibling primary-package bump must co-change its AGENTS.md **Version**")
+        self.assertIn("**Version**: 0.5.0", agents.new_text)
+        self.assertTrue(any("Sibling AGENTS.md" in item and "included in this PR" in item for item in prop.co_change_checklist))
+
+    def test_sibling_subpackage_never_touches_host_agents_md(self):
+        # A sub-package hosted in a sibling repo (pypi_name != repo) must NOT edit the host repo's
+        # AGENTS.md header -- it tracks the primary package, not the sub-package.
+        sib_root = self.eco / "juniper-host"
+        _write_pkg(sib_root, "juniper-host-model/", name="juniper-host-model", version="0.1.0", changelog=_CHANGELOG)
+        (sib_root / "AGENTS.md").write_text("# AGENTS\n\n**Version**: 3.3.3\n")
+        entry = _entry(pypi_name="juniper-host-model", repo="juniper-host", path="juniper-host-model/", tag_pattern="juniper-host-model-v*", archive_name="RELEASE_NOTES_juniper-host-model_v{version}.md", ship_paths=[])
+        pkg = _manifest_pkg(pypi_name="juniper-host-model", released_version="0.1.0", declared_version="0.1.0", proposed_version="0.2.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-14")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertNotIn("AGENTS.md", {e.path for e in prop.edits})
+        self.assertFalse(any("Sibling AGENTS.md" in item for item in prop.co_change_checklist))
+
+    def test_sibling_agents_md_unexpected_header_left_untouched(self):
+        # A header NOT at the expected from-version is never clobbered; the checklist flags it
+        # REQUIRED-manual instead.
+        sib_root = self.eco / "juniper-worker"
+        _write_pkg(sib_root, ".", name="juniper-worker", version="0.4.0", changelog=_CHANGELOG)
+        (sib_root / "AGENTS.md").write_text("# AGENTS\n\n**Version**: 9.9.9\n")
+        entry = _entry(pypi_name="juniper-worker", repo="juniper-worker", path=".", tag_pattern="juniper-worker-v*", archive_name="RELEASE_NOTES_juniper-worker_v{version}.md", ship_paths=[])
+        pkg = _manifest_pkg(pypi_name="juniper-worker", released_version="0.4.0", declared_version="0.4.0", proposed_version="0.5.0")
+        prop = pr.build_proposal(entry, pkg, self.fake.build(), self.repo_root, self.eco, [entry], "2026-07-14")
+        self.assertFalse(prop.skipped, prop.skipped_reason)
+        self.assertNotIn("AGENTS.md", {e.path for e in prop.edits})
+        self.assertTrue(any("Sibling AGENTS.md" in item and "REQUIRED" in item for item in prop.co_change_checklist))
+
     def test_minor_bump_emits_propagation_checklist_item(self):
         _write_pkg(self.repo_root, "juniper-model-core/", name="juniper-model-core", version="0.3.0", changelog=_CHANGELOG, dynamic=True, import_pkg="juniper_model_core")
         mc = _entry(pypi_name="juniper-model-core", path="juniper-model-core/", version_source="dynamic")
