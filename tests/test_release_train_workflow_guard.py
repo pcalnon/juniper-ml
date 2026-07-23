@@ -60,6 +60,8 @@ from pathlib import Path
 
 import yaml
 
+from tests.redacted_env import RedactedEnv
+
 WORKFLOW_NAME = "release-train.yml"
 
 # The two write-scoped lanes (R7 privilege boundary): propose (Phase 2.2) opens PRs; ceremony (Phase 4.3)
@@ -296,7 +298,7 @@ class ModeResolutionMatrixTest(unittest.TestCase):
             script_path.write_text(self.script, encoding="utf-8")
             gh_out = Path(td) / "gh_output"
             gh_out.write_text("", encoding="utf-8")
-            env = dict(os.environ)
+            env = RedactedEnv(os.environ)
             # Mirror the workflow's env: block (values are always SET, possibly empty).
             env["MODE_INPUT"] = "" if mode_input is None else mode_input
             env["MODE_VAR"] = "" if mode_var is None else mode_var
@@ -339,7 +341,7 @@ class ModeResolutionMatrixTest(unittest.TestCase):
             script_path.write_text(self.script, encoding="utf-8")
             gh_out = Path(td) / "gh_output"
             gh_out.write_text("", encoding="utf-8")
-            env = dict(os.environ, MODE_INPUT="wat", MODE_VAR="", GITHUB_OUTPUT=str(gh_out))
+            env = RedactedEnv(os.environ, MODE_INPUT="wat", MODE_VAR="", GITHUB_OUTPUT=str(gh_out))
             proc = subprocess.run(["bash", str(script_path)], capture_output=True, text=True, env=env, check=False)  # nosec B603,B607
             self.assertIn("::warning::", proc.stdout + proc.stderr)
             self.assertIn("mode=report", gh_out.read_text(encoding="utf-8"))
@@ -398,7 +400,7 @@ class CeremonySummaryRehearsalTest(unittest.TestCase):
             (ws / "ceremony-output.txt").write_text(output_text, encoding="utf-8")
             summary = ws / "step_summary.md"
             summary.write_text("", encoding="utf-8")
-            env = dict(os.environ, GITHUB_WORKSPACE=str(ws), GITHUB_STEP_SUMMARY=str(summary))
+            env = RedactedEnv(os.environ, GITHUB_WORKSPACE=str(ws), GITHUB_STEP_SUMMARY=str(summary))
             proc = subprocess.run([sys.executable, "-c", self.py_body], capture_output=True, text=True, env=env, check=False)  # nosec B603 - the workflow's own python body
             self.assertEqual(proc.returncode, 0, f"summary renderer failed: {proc.stderr}")
             return summary.read_text(encoding="utf-8")
