@@ -436,5 +436,30 @@ class CeremonySummaryRehearsalTest(unittest.TestCase):
         self.assertIn("produced no output", md)
 
 
+class HeredocBalanceTest(unittest.TestCase):
+    """Every ``run:`` script's ``<<'PY'`` heredocs must have exactly one terminator each.
+
+    The first live ceremony run (30051952226) went red on exit 127 AFTER a fully successful
+    ceremony: the summary step's heredoc carried a duplicated ``PY`` terminator line, and bash
+    executed the second one as a command. The YAML-extraction rehearsals exercise the python
+    BETWEEN the markers, so only a raw-script structural check catches this class.
+    """
+
+    def test_py_heredocs_are_balanced_in_every_run_script(self):
+        workflow_path = _find_repo_root(Path(__file__).resolve().parent) / ".github" / "workflows" / WORKFLOW_NAME
+        wf = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+        problems = []
+        for jname, job in (wf.get("jobs") or {}).items():
+            for step in job.get("steps") or []:
+                run = step.get("run") or ""
+                if "<<'PY'" not in run:
+                    continue
+                openers = run.count("<<'PY'")
+                terminators = sum(1 for ln in run.splitlines() if ln.strip() == "PY" and "<<" not in ln)
+                if openers != terminators:
+                    problems.append(f"{jname} / {step.get('name')!r}: {openers} <<'PY' opener(s) vs {terminators} PY terminator line(s)")
+        self.assertEqual(problems, [], "unbalanced PY heredoc(s) in release-train.yml -- a stray terminator executes as a shell command (exit 127, the run-30051952226 class): " + "; ".join(problems))
+
+
 if __name__ == "__main__":
     unittest.main()
