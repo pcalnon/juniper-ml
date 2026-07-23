@@ -565,6 +565,7 @@ jobs:
           lines.append("_Proposal PRs are standard-gated (plan S7): the owner reviews and merges; they touch neither TestPyPI nor PyPI. When the GitHub App token is minted (Phase 4.1) PRs are opened by the App identity -- CI runs normally and sibling-repo packages get PRs in their own repos. On the degraded no-App path (RELEASE_TRAIN_APP_ID unset), a PR opened with the built-in GITHUB_TOKEN does not auto-trigger CI (GitHub's recursion guard) -- re-trigger by closing/reopening the PR or pushing an empty commit, and sibling packages are skipped._")
           with out.open("a", encoding="utf-8") as fh:
               fh.write("\n".join(lines) + "\n")
+          PY
 
   # ─────────────────────────────────────────────────────────────────────────────────────────────
   # ceremony job -- the SECOND write-scoped lane (R7 privilege boundary, plan S9.3), Phase 4.3. It runs
@@ -820,5 +821,4 @@ jobs:
           lines.append("_The ceremony automates the middle arc only (plan S5.3): the version bump already rode the owner-approved proposal PR (Gate 1), and the PyPI deploy still waits at the owner-gated `pypi` environment (Gate 2). The exempt archive PR is add-only and auto-merges behind the required guard; no environment/deployment is mutated (R7, plan S9.3). A HALT does not turn this run red -- it is surfaced here + as a dedup issue + in Slack. When RELEASE_TRAIN_APP_ID is unset the job runs degraded (juniper-ml packages only)._")
           with out.open("a", encoding="utf-8") as fh:
               fh.write("\n".join(lines) + "\n")
-          PY
           PY
