@@ -464,15 +464,18 @@ jobs:
           ls -1 "$GITHUB_WORKSPACE"
 
       - name: Configure git identity (headless, unsigned)
-        working-directory: juniper-ml
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # --global, NOT per-repo: cross-repo runs commit inside freshly-cloned SIBLING checkouts
+          # too, and a repo-local identity on the juniper-ml checkout alone leaves them with
+          # "Author identity unknown" (first cross-repo pilot failure, run 30040138774). The
+          # hosted runner is ephemeral, so global config is job-scoped anyway.
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # The runner has no GPG key, and the owner's YubiKey-resident signing config must never
           # reach a headless commit (it would fail). propose.py also passes -c commit.gpgsign=false
           # on its commit; setting it here too makes the job immune regardless of inherited config.
-          git config commit.gpgsign false
+          git config --global commit.gpgsign false
 
       - name: Open release-proposal PRs (propose.py --execute)
         id: propose
@@ -669,15 +672,18 @@ jobs:
           ls -1 "$GITHUB_WORKSPACE"
 
       - name: Configure git identity (headless, unsigned)
-        working-directory: juniper-ml
         run: |
           set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # --global, NOT per-repo: cross-repo runs commit inside freshly-cloned SIBLING checkouts
+          # too, and a repo-local identity on the juniper-ml checkout alone leaves them with
+          # "Author identity unknown" (first cross-repo pilot failure, run 30040138774). The
+          # hosted runner is ephemeral, so global config is job-scoped anyway.
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # The runner has no GPG key, and the owner's YubiKey-resident signing config must never reach a
           # headless commit (it would fail). ceremony.py also passes -c commit.gpgsign=false on its commit;
           # setting it here too makes the job immune regardless of inherited config.
-          git config commit.gpgsign false
+          git config --global commit.gpgsign false
 
       - name: Run the ceremony (ceremony.py --execute)
         id: ceremony
