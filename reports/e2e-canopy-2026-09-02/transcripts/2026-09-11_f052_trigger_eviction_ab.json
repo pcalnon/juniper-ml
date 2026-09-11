@@ -1,0 +1,204 @@
+{
+  "probe": "2026-09-11_f052_trigger_eviction_test.py",
+  "canopy": "http://127.0.0.1:8053",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8053",
+    "version": "0.6.0",
+    "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+  },
+  "started_at": "2026-09-11T08:25:35Z",
+  "settle_s": 30.0,
+  "runs_per_arm": 3,
+  "observations": [
+    {
+      "arm": "control",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8053",
+        "version": "0.6.0",
+        "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+      },
+      "tick_n_end": 15,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 112
+      },
+      "rendered": true,
+      "i": 0
+    },
+    {
+      "arm": "treatment",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8053",
+        "version": "0.6.0",
+        "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+      },
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30048
+      },
+      "tick_n_at_disable": 1,
+      "tick_n_end": 1,
+      "tick_disabled_end": true,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 2,
+        "carried_figure": 2,
+        "other": 105
+      },
+      "rendered": true,
+      "i": 0
+    },
+    {
+      "arm": "control",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8053",
+        "version": "0.6.0",
+        "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+      },
+      "tick_n_end": 13,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 0,
+        "carried_figure": 0,
+        "other": 114
+      },
+      "rendered": false,
+      "i": 1
+    },
+    {
+      "arm": "treatment",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8053",
+        "version": "0.6.0",
+        "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+      },
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30048
+      },
+      "tick_n_at_disable": 1,
+      "tick_n_end": 1,
+      "tick_disabled_end": true,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 105
+      },
+      "rendered": true,
+      "i": 1
+    },
+    {
+      "arm": "control",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8053",
+        "version": "0.6.0",
+        "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+      },
+      "tick_n_end": 15,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 0,
+        "carried_figure": 0,
+        "other": 114
+      },
+      "rendered": false,
+      "i": 2
+    },
+    {
+      "arm": "treatment",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8053",
+        "version": "0.6.0",
+        "git_sha": "eab7cf43c7e1b1ce85d48e55ac77e2c4b5118b18"
+      },
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30048
+      },
+      "tick_n_at_disable": 1,
+      "tick_n_end": 1,
+      "tick_disabled_end": true,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 112
+      },
+      "rendered": true,
+      "i": 2
+    }
+  ],
+  "summary": {
+    "control_rendered": "1/3",
+    "treatment_rendered": "3/3",
+    "tick_actually_stopped": true
+  },
+  "verdict": "TRIGGER-EVICTION-CONFIRMED",
+  "verdict_why": "treatment rendered 3/3 with the consumer's 1 Hz re-trigger stopped, while control rendered 1/3 with it running. The consumer is evicted by its own re-request: F-CANOPY-052 is F-CANOPY-035's mechanism, and the fix is at the trigger."
+}

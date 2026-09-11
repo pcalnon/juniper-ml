@@ -360,9 +360,12 @@ fix (juniper-canopy#613 `b792256`). Full write-up: **Phase 6 — 2026-09-10** in
   `running=` is NOT on the `callback_map` entry; it lives on the callback spec in `app._callback_list`.
 - **`2026-09-10_f035_downstream_consumer_probe.py`** answers F-CANOPY-052 (the defect the empty store was
   masking): is the candidate loss plot empty because of the DATA or the RENDER, and does the consumer fire
-  at all. **Use `--no-force`** for any render-rate observation: the forced second store change shrinks the
-  window to 40 rows and the candidate entries sit EARLY in the history, so the force can drop the very
-  rows the figure needs — this probe scored its own contamination as a defect once before the flag existed.
+  at all. **Use `--no-force`** for any render-rate observation — a forced arm is a different treatment and
+  must not be pooled with unforced ones. **The original reason given for that flag was WRONG and is
+  retracted**: it claimed the forced `window_size: 40` drops the candidate rows because they "sit EARLY",
+  but they are at **indices 53–64 of 66** and a last-40 window keeps **all twelve**. The `RENDER-STILL-DEAD`
+  run that story explained away is therefore **unexplained**, and is the only observation in the set where
+  forcing a store change failed to render.
 
 Two traps worth carrying forward. **`e2e_finding_triage.py` reads only the LAST 170 characters of a
 finding's bold header** (`tail = body[-170:]`), so a `FIXED` placed early in a long header is invisible and
