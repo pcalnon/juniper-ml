@@ -44,10 +44,30 @@ VERDICT RULE -- FIXED BEFORE THE FIRST RUN.
   ALREADY-RENDERED   the figure already carries a candidate trace. M-CANDIDATES-07
                      passes and the redrive's FAIL was a timing artifact.
 
+CORRECTION 2026-09-10, round-1 consensus validation -- THE STATED REASON FOR
+``--no-force`` WAS FALSE, AND THE RESULT IT EXPLAINED AWAY STANDS UNEXPLAINED.
+
+This module, the ledger's Phase 6 and the session handoff all claimed the forced arm
+(``window_size: 40``) "drops the very rows the figure needs, because the candidate
+entries sit EARLY in the history". Checked against the live fixture:
+
+    candidate rows are at indices 53-64 of 66 -- LATE.
+    a last-40 window keeps ALL TWELVE.
+
+So the force did **not** remove the candidate data, and ``RENDER-STILL-DEAD`` is not
+self-contamination. It is an unexplained observation, and the only one in the set where
+forcing a store change failed to produce a render. Keep ``--no-force`` for rate
+observations anyway -- a forced arm is still a different treatment and should not be
+pooled with unforced ones -- but do not repeat the old rationale, and do not treat that
+run as discounted.
+
+(The artifact records ``store_after_force: {len: 40}`` and never its phase census, so
+which 40 rows survived is unknowable from it. A re-run should record the census.)
+
 Usage:
     JUNIPER_E2E_CANOPY_URL=http://127.0.0.1:8053 \\
     LIBTORCH= LD_LIBRARY_PATH= /opt/miniforge3/envs/JuniperCanopy1/bin/python \\
-        util/ad-hoc/2026-09-10_f035_downstream_consumer_probe.py
+        util/ad-hoc/2026-09-10_f035_downstream_consumer_probe.py --no-force
 """
 
 import importlib.util
@@ -133,10 +153,9 @@ def main() -> int:
 
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--no-force", action="store_true",
-                    help="do not force a second store change. REQUIRED for a clean render-rate "
-                         "observation: the forced change shrinks the window to 40 rows, and the "
-                         "candidate-phase entries sit EARLY in the history, so the force can drop "
-                         "the very rows the figure needs and score its own contamination as a defect.")
+                    help="do not force a second store change; use this for any render-rate "
+                         "observation, so the forced arm cannot perturb the rate. NOTE the "
+                         "original rationale for this flag was WRONG -- see the module docstring.")
     args = ap.parse_args()
 
     from playwright.sync_api import sync_playwright
