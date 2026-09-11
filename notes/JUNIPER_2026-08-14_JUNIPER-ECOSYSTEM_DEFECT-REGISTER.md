@@ -140,7 +140,11 @@ been worked, not an obstacle to route around.
 > backlog. One of the four, `APD-DATA-039`, was never listed as work at all — round 37 described
 > the hazard and proposed no fix, and that same handoff's own §0.4 parks it under "do not action
 > without a ruling". And a document written 2026-09-07 cannot authorise rows filed 2026-09-09.
-> **The set of rows a session may action without asking the owner first is still empty.**)*
+> **The set of rows a session may action without asking the owner first was still empty when this
+> note was written. It is not any more** — see [§2.4](#24-owner-rulings-on-the-parked-primer-rows-2026-09-11),
+> which rules on all sixteen remaining parked rows. What that block does NOT do is weaken the rule
+> above: the rows became actionable because the owner ruled on them one at a time, which is exactly
+> what §2 requires, and not because a document asserted they were.)*
 
 **The limit of the sweep, found 2026-09-03: it is ID-keyed, so it cannot see a claim that names no
 ID.** `grep -n 'APD-<ID>'` finds every mention of an id; it finds nothing in a sentence like "three
@@ -313,6 +317,83 @@ guard registry described above keys on *named guards present or absent*, so a di
 name the guard wears is invisible to it: the shape it cannot see is **same behaviour, different
 public API**. Filing this as a row, or extending the registry to carry a per-fork symbol alias, is
 an owner call — recording it is not.
+
+### 2.4 Owner rulings on the parked primer rows (2026-09-11)
+
+All sixteen. Taken interactively, four at a time, each against evidence re-derived that day rather
+than against the primer's anchors — which is how the three corrections noted below were found. Each
+entry records the option **chosen** and the options **rejected**, because a ruling that records only
+its outcome is indistinguishable later from a drift.
+
+**These rulings end the empty set.** They do not weaken §2's rule; they satisfy it.
+
+#### juniper-data — HTTP semantics
+
+- `APD-DATA-008` — **RULED.** Return **200 on reuse, 201 only on creation**. Rejected: keeping 201
+  with an added `created` flag; doing both; leaving it. Note `CreateDatasetResponse` has no `created`
+  field today, so a caller currently cannot distinguish a cache hit at all. Breaking for anything
+  asserting 201.
+- `APD-DATA-017` + `APD-DATA-032` — **RULED.** Emit a strong **`ETag` derived from the stored
+  SHA-256**, and **move `access_count` / `last_accessed_at` out of the representation** so the
+  metadata body can carry one too. Rejected: artifacts only; a weak validator that churns on every
+  read. The two rows are one fix: the counters are precisely what blocks the metadata ETag.
+- `APD-DATA-022` — **RULED.** Declare the error surface **once as router-level defaults**, with only
+  route-specific codes inline. Rejected: per-route `responses={}` across ~30 decorators, which can
+  drift route by route. *(The only textual match for `responses=` in the routes today is a comment
+  naming this row — a grep alone will mislead.)*
+- `APD-DATA-030` + `APD-DATA-031` — **RULED.** Adopt **RFC 9457 problem+json** from all three error
+  sources, with a stable `type` and a retryability signal. Rejected: keeping `{"detail": …}` with
+  added `code` / `retryable` fields; fixing only the validation inconsistency. Breaking for anything
+  parsing `detail`. This also fixes, as a side effect, that validation errors put a LIST under the
+  same key every other source fills with a string.
+- `APD-DATA-026` — **RULED.** Make **`/filter` canonical and deprecate the bare list** in OpenAPI,
+  keeping it served. Rejected: converging the shapes now (immediately breaking); keeping both and
+  aligning only pagination. `/filter` with no filters is already a superset.
+- `APD-DATA-027` — **RULED.** Emit **RFC 8288 `Link`** (`next` / `prev` / `first`). Rejected: links
+  in the body. The cursor state already exists; only its expression is missing.
+- `APD-DATA-028` — **RULED.** Add **`/v1/datasets/named/{name}/versions` and `/named/{name}/latest`**
+  and deprecate the query form. Rejected: reading `name` as a filter and leaving it; moving without
+  an alias. The `named/` prefix is required because `/{dataset_id}` already owns that path slot.
+- `APD-DATA-029` — **RULED.** Emit **`Content-Location`** naming the canonical `/{dataset_id}` URI.
+  Rejected: a 307 redirect, which costs every caller a round trip. Composes with the ETag work above.
+
+#### Clients and ecosystem
+
+- `APD-ECO-001` — **RULED.** Build the **full `Idempotency-Key` mechanism on every mutating route**,
+  including create. Rejected: keying only the genuinely unsafe mutations (batch-delete,
+  cleanup-expired, batch-create) and documenting create's natural idempotency, which was the
+  narrower option offered. Consistency across the surface was preferred to the smaller change, so
+  this ruling accepts a key store and expiry policy on a route that is already content-addressed.
+- `APD-ECO-003` — **RULED.** **Expose a per-call timeout** on the public client methods. Rejected:
+  per-operation default tables. The transport already honours it — `_request` does
+  `kwargs.setdefault("timeout", self.timeout)` — so only the public signatures are missing.
+- `APD-ECO-004` — **RULED.** **`TypedDict` response shapes** for the 43 `Dict[str, Any]` returns.
+  Rejected: sharing the servers' Pydantic models, which would create a client-to-server dependency
+  and a version-lockstep problem across separately released packages.
+- `APD-RCLIENT-004` — **RULED.** **Use the recurrence server's own models** — deliberately different
+  from `APD-ECO-004`, and the difference is the reason: client and server ship from the SAME
+  repository at the same version, so the lockstep objection that decided `-004` does not apply here.
+
+#### Cross-cutting
+
+- `APD-CASCOR-005` — **RULED.** **Port juniper-data's explicit `matched`-flag loop** into cascor and
+  `juniper-service-core`. Rejected: accepting and documenting the residual leak. Four lines each,
+  against an existing reference implementation that already carries the rationale in a comment.
+  Candidate for a named guard in `juniper-ml/tests/test_service_fork_drift.py` (§2.3), since this is
+  exactly the copy-drift shape that registry exists to hold.
+- `APD-ML-001` — **RULED.** **State the capping rule; leave the pins.** Rejected: capping
+  consistently, which would make `juniper-ml` gate every sibling `0.y` release; removing caps
+  entirely. The register's own analysis is that the pattern is coherent — so the defect is the
+  silence, and the remedy is a note beside the pins and in the contract test's docstring.
+
+#### One consequence, ruled separately
+
+The `equities` / `equities_seq` rulings of 2026-09-09 change artifact content, so those generators
+go to **`generator_version` 4.0.0** while the others stay at `3.0.0`. Ruled with the published
+wheels in view (juniper-data 0.14.0 and six siblings released 2026-09-10/11): rejected were bumping
+every generator to keep the ecosystem single-versioned, and holding the change for a release window.
+The ecosystem data-contract note, which currently states every generator is at `3.0.0`, must be
+updated in the same change.
 
 ---
 
@@ -699,7 +780,7 @@ That is a stronger finding than a single stray hit would have been: the one pack
 | APD-DATA-027   | No `Link` header or pagination links anywhere                                                                                          | E   | `api/routes/datasets.py:276-335`                                         | 5002                  | High |
 | APD-DATA-028   | `/versions` and `/latest` smuggle identity into a mandatory query param                                                                | E   | `api/routes/datasets.py:606`, `:630`                                     | 3408                  | Low  |
 | APD-DATA-029   | Two URIs return the same representation with no `Content-Location`                                                                     | E   | `api/routes/datasets.py:628`, `:651`                                     | 3399                  | Low  |
-| APD-DATA-030   | Error bodies carry no retryability signal                                                                                              | E   | `api/app.py:152-166`                                                     | 3316                  | Low  |
+| APD-DATA-030   | Error bodies carry no retryability signal **except on the auth-throttle 429, which does send `Retry-After` (corrected 2026-09-11)** — the gap is 5xx and the absence of any machine-readable code                                                                                              | E   | `api/app.py:152-166`                                                     | 3316                  | Low  |
 | APD-DATA-031   | No RFC 9457 problem details; three independent error sources                                                                           | E   | `api/app.py`, `api/middleware.py`, routes                                | 4718                  | Low  |
 | APD-DATA-032   | Access counters live in the representation, blocking a strong metadata `ETag`                                                          | E   | `core/models.py:84-85`, `api/routes/datasets.py:672`                     | 4247                  | Low  |
 | APD-DATA-033   | **FIXED ([juniper-data#297](https://github.com/pcalnon/juniper-data/pull/297))** — Rate-limit window is the one knob of three an operator cannot set | E   | `api/app.py:123-126`, `api/settings.py:164-165`                          | 1380                  | Low  |
@@ -890,7 +971,7 @@ Four carefully chosen, individually meaningful codes collapse into one opaque st
 | APD-CASCOR-001b  | **FIXED (#540)** — CORS innermost → `SecurityMiddleware` answers preflights 401                | C   | `src/api/app.py:621`, `:641`; `src/api/middleware.py:189-198` | 9592                | High |
 | APD-CASCOR-002   | **FIXED (#516)** — `ValueError` handler reclassifies serialisation faults as `400`             | C   | `src/api/app.py:678-684`                                      | 9596                | High |
 | APD-CASCOR-003   | **FIXED — partial (cascor#593)** — 46 of 47 routes declare no `response_model`; **44 of the 46 done**, the two bare-dict health routes deferred to a cross-service wire decision | M   | `src/api/routes/` (only `health.py:130`)                      | 7761                | High |
-| APD-CASCOR-005   | Key comparison short-circuits on match in 2 of 3 copies (see §3 assessment)                    | M   | `src/api/security.py:53`                                      | 1027-1029, 9463     | Low  |
+| APD-CASCOR-005   | Key comparison short-circuits on match in 2 of 3 copies — cascor and `juniper-service-core` wrap `hmac.compare_digest` in `any(...)`; juniper-data uses an explicit non-short-circuiting loop and carries the rationale. **Corrected 2026-09-11: every copy now uses `compare_digest`, so the per-key comparison is timing-safe; only the iteration short-circuits, distinguishing key POSITIONS to a holder of a valid key** (see §3 assessment)                    | M   | `src/api/security.py:53`                                      | 1027-1029, 9463     | Low  |
 
 **`APD-CASCOR-006` detail.** `self._api_keys: set[str] = set(api_keys) if api_keys else set()` (`:32`) followed by `self._enabled = len(self._api_keys) > 0` (`:33`). A configured `[""]` therefore enables authentication and `validate("")` succeeds via `hmac.compare_digest("", "")`. `juniper-service-core/juniper_service_core/security.py:44` carries the blank filter with a comment naming exactly this failure; neither cascor nor juniper-data received it.
 Same reachability caveat as `APD-DATA-003`: the boot-time `enforce_auth_posture` check filters blanks, so triggering this needs auth-posture enforcement disabled. **FIXED** in [juniper-cascor#527](https://github.com/pcalnon/juniper-cascor/pull/527) — the `security.py` line is now byte-identical to the canonical service-core filter, and `_parse_api_keys`'s list branch filters too.
