@@ -27,7 +27,6 @@ simply carries it twice, which pytest treats as one. So partly-marked files are 
 import argparse
 import os
 import re
-import shutil
 import sys
 
 CASCOR = os.environ.get("CASCOR_ROOT", "/home/pcalnon/Development/python/Juniper/juniper-cascor")
@@ -59,9 +58,6 @@ BANNER = (
     "# the file including ones added later.\n"
     "pytestmark = pytest.mark.unit\n"
 )
-
-IMPORT_RE = re.compile(r"^\s*(?:import|from)\s+\S", re.M)
-DOCSTRING_RE = re.compile(r'^\s*(?:"""|\'\'\')')
 
 
 def insert_marker(text):
