@@ -863,7 +863,7 @@ def _training_fsm(cascor_url: str) -> str:
     data = _unwrap(payload)
     if not isinstance(data, dict):
         return ""
-    return str(((data.get("state_machine") or {}).get("status")) or "").upper()
+    return str((_mapping(data.get("state_machine")).get("status")) or "").upper()
 
 
 def preempt_training(cascor_url: str, timeout: float = PREEMPT_TIMEOUT_SECONDS, label: str = "retrying start") -> bool:
@@ -986,8 +986,12 @@ def drive_training(
                 last_data = data
             polls += 1
 
-            fsm = str(((last_data.get("state_machine") or {}).get("status")) or "").upper()
-            monitor = last_data.get("monitor") or {}
+            # `or {}` guards absence, not type: a truthy non-dict here reaches `.get` and
+            # raises mid-poll, killing a LIVE run instead of recording an outcome for it.
+            # An unreadable status leaves fsm "" -- never terminal -- so the run ends at its
+            # wall-clock budget as `timed_out`, which is a result rather than a traceback.
+            fsm = str((_mapping(last_data.get("state_machine")).get("status")) or "").upper()
+            monitor = _mapping(last_data.get("monitor"))
             epoch = monitor.get("current_epoch")
             hidden = monitor.get("current_hidden_units")
 
@@ -1380,7 +1384,7 @@ def check_g6_shape(dataset_meta: Dict[str, Any], network_info: Optional[Dict[str
     if isinstance(network_info, dict):
         actual = network_info.get("input_size")
     if actual is None:
-        actual = (status_data.get("training_state") or {}).get("input_size")
+        actual = _mapping(status_data.get("training_state")).get("input_size")
     ok = expected is not None and actual is not None and int(expected) == int(actual)
     return {
         "expected_input_size": expected,
@@ -1715,7 +1719,7 @@ def _run_cascor(args: argparse.Namespace, config: Dict[str, Any], config_path: P
             "dataset": {
                 "dataset_id": dataset_response.get("dataset_id"),
                 "generator": generator,
-                "version": generator_entry.get("version") or (dataset_response.get("meta") or {}).get("generator_version"),
+                "version": generator_entry.get("version") or _mapping(dataset_response.get("meta")).get("generator_version"),
                 "params": config["dataset"]["params"],
                 "meta": dataset_response.get("meta"),
             },
@@ -2062,7 +2066,7 @@ def _run_recurrence(args: argparse.Namespace, config: Dict[str, Any], config_pat
             "dataset": {
                 "dataset_id": dataset_response.get("dataset_id"),
                 "generator": generator,
-                "version": generator_entry.get("version") or (dataset_response.get("meta") or {}).get("generator_version"),
+                "version": generator_entry.get("version") or _mapping(dataset_response.get("meta")).get("generator_version"),
                 "params": config["dataset"]["params"],
                 "split": dataset_cfg["split"],
                 "meta": dataset_response.get("meta"),

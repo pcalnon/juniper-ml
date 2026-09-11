@@ -122,6 +122,14 @@ class _ScriptedState:
         # W-4 `install_hint` on the unavailable generator. None = the field is absent entirely,
         # which is both the numpy-only-synthetic case and every juniper-data release <= v0.11.0.
         self.generator_install_hint: "str | None" = None
+        # The registry's `version` for spiral. None omits the key, which is what makes the
+        # manifest fall through to `dataset_response["meta"]["generator_version"]` -- that
+        # second operand is otherwise never evaluated, because `or` short-circuits on a
+        # truthy version. Reaching the fallback at all requires a registry without one.
+        self.generator_version: "str | None" = "1.2.0"
+        # Replaces the whole `meta` object on the POST /v1/datasets reply. A truthy non-dict
+        # here is the falsy-guard class: `or {}` passes it through to the next `.get`.
+        self.dataset_meta_override: "object | None" = None
         self.completion_reason = "max_iterations"
         self.train_status = 200
         self.train_delay = 0.0
@@ -250,7 +258,7 @@ class _StubHandler(BaseHTTPRequestHandler):
                 200,
                 json.dumps(
                     [
-                        {"name": "spiral", "version": "1.2.0", "description": "", "available": True, "schema": {}},
+                        {"name": "spiral", "description": "", "available": True, "schema": {}, **({"version": state.generator_version} if state.generator_version is not None else {})},
                         {"name": "xor", "version": "1.0.0", "description": "", "available": True, "schema": {}},
                         {"name": "moon", "version": "1.0.0", "description": "", "available": True, "schema": {}},
                         {"name": "gaussian", "version": "1.0.0", "description": "", "available": True, "schema": {}},
@@ -386,7 +394,10 @@ class _StubHandler(BaseHTTPRequestHandler):
                 "n_train": 800,
                 "n_test": 200,
             }
-            self._send(201, json.dumps({"dataset_id": "ds-stub123", "generator": generator, "meta": meta, "artifact_url": "/v1/datasets/ds-stub123/artifact"}).encode("utf-8"))
+            # Deliberately NOT `meta = ...`: the override is any JSON value, including a
+            # truthy non-dict, which is the whole point of the arm that uses it.
+            reply_meta: object = meta if state.dataset_meta_override is None else state.dataset_meta_override
+            self._send(201, json.dumps({"dataset_id": "ds-stub123", "generator": generator, "meta": reply_meta, "artifact_url": "/v1/datasets/ds-stub123/artifact"}).encode("utf-8"))
         elif path == "/v1/training/dataset":
             self._send(200, _envelope({"staged": body}))
         elif path == "/v1/training/start":
@@ -2369,6 +2380,114 @@ class MappingGuardTest(unittest.TestCase):
         # The two helpers must not collapse into one another: config still fails closed.
         with self.assertRaises(rx.ConfigError):
             rx._require_mapping(["not", "a", "mapping"], "training block")
+
+
+class ServiceReplyGuardTest(unittest.TestCase):
+    """The other six sites of the class ``MappingGuardTest`` names -- same defect, same fix.
+
+    ``_mapping`` was introduced for two reads and the audit stopped there. Six more sites read
+    a nested block out of a SERVICE reply with the bare ``or {}``, which guards absence and not
+    type, so a truthy non-dict reaches the next ``.get`` and raises ``AttributeError``. Nothing
+    upstream constrains those nested keys: ``_unwrap`` returns ``payload["data"]`` verbatim and
+    the callers type-check only the envelope.
+
+    Each arm below fails with ``AttributeError`` against the pre-fix code, and each one names
+    what the crash costs, because they are not equally bad:
+
+    * ``_training_fsm`` documents ``""`` when unreadable and catches only ``ServiceUnreachable``
+      / ``RunFailed`` -- an ``AttributeError`` escapes the contract the docstring states;
+    * ``drive_training`` raises mid-poll, which kills a LIVE training run rather than recording
+      an outcome for it;
+    * ``check_g6_shape`` is the G-6 anti-silence assert: it dies instead of reporting.
+
+    The post-fix behaviour is deliberately NOT "the same answer anyway". An unreadable
+    ``state_machine`` yields ``fsm == ""``, which is not terminal, so the run ends at its
+    wall-clock budget as ``timed_out`` -- a recorded outcome, which is the point.
+    """
+
+    def test_training_fsm_survives_a_non_dict_state_machine(self) -> None:
+        with mock.patch.object(rx, "_http_json", return_value=(200, {"state_machine": "COMPLETED"})):
+            self.assertEqual(rx._training_fsm("http://stub"), "")
+
+    def test_training_fsm_still_reads_a_well_formed_reply(self) -> None:
+        with mock.patch.object(rx, "_http_json", return_value=(200, {"state_machine": {"status": "completed"}})):
+            self.assertEqual(rx._training_fsm("http://stub"), "COMPLETED")
+
+    def test_check_g6_shape_survives_a_non_dict_training_state(self) -> None:
+        # Fails closed rather than raising: the anti-silence assert must still report.
+        result = rx.check_g6_shape({"n_features": 2}, None, {"training_state": "IDLE"})
+        self.assertFalse(result["ok"])
+        self.assertIsNone(result["actual_input_size"])
+        self.assertEqual(result["expected_input_size"], 2)
+
+    def _drive(self, payload: dict, max_wall_seconds: float = 30.0) -> tuple:
+        tmp = Path(tempfile.mkdtemp(prefix="drive-guard-"))
+        self.addCleanup(lambda: shutil.rmtree(tmp, ignore_errors=True))
+        with mock.patch.object(rx, "_http_json", return_value=(200, payload)), mock.patch.object(rx, "_http_text", return_value=""):
+            return rx.drive_training(
+                cascor_url="http://stub",
+                series_path=tmp / "series.csv",
+                poll_interval=0.0,
+                stall_seconds=1000.0,
+                max_wall_seconds=max_wall_seconds,
+            )
+
+    def test_drive_training_survives_a_non_dict_state_machine(self) -> None:
+        # Unreadable status -> fsm "" -> never terminal -> the wall-clock budget ends it.
+        # A recorded ``timed_out`` is the outcome; an AttributeError is not.
+        outcome, last_data, stats = self._drive({"state_machine": "COMPLETED", "monitor": {}}, max_wall_seconds=0.0)
+        self.assertEqual(outcome, "timed_out")
+        self.assertEqual(last_data["state_machine"], "COMPLETED")
+        self.assertGreaterEqual(stats["polls"], 1)
+
+    def test_drive_training_survives_a_non_dict_monitor(self) -> None:
+        # A readable state_machine still terminates the loop; only the epoch is lost.
+        outcome, _last, stats = self._drive({"state_machine": {"status": "COMPLETED"}, "monitor": "none"})
+        self.assertEqual(outcome, "succeeded")
+        self.assertIsNone(stats["final_epoch"])
+
+
+class ManifestProvenanceGuardTest(_StubTestCase):
+    """The manifest's dataset ``version`` fallback, which is the costliest arm of the class.
+
+    ``version`` is ``generator_entry.get("version") or (dataset_response.get("meta") or {})
+    .get("generator_version")``. ``or`` short-circuits, so the second operand is evaluated
+    ONLY when the registry omits a version -- which is why the stub has to drop it here. Then a
+    non-dict ``meta`` raises while BUILDING THE MANIFEST of a run that already finished, which
+    is exactly the loss ``_mapping``'s docstring refuses: provenance is annotation, and losing
+    it is not worth failing a completed run over.
+
+    The same expression is in ``_run_recurrence`` at the sibling line; this arm drives the
+    cascor path.
+    """
+
+    def test_completed_run_still_writes_a_manifest_when_meta_is_not_a_mapping(self) -> None:
+        self.state.generator_version = None  # force the fallback to be evaluated
+        self.state.dataset_meta_override = "meta-as-a-string"
+        config = _write_config(self.tmp, _base_config())
+        code, stdout = _invoke(config, self.run_dir)
+
+        # EXIT_ACCEPTANCE, not EXIT_SUCCESS, and that is the correct answer: an unreadable
+        # ``meta`` carries no ``n_features``, so the G-6 shape assert fails CLOSED rather than
+        # silent-passing. What must not happen is the pre-fix AttributeError, which produced
+        # no manifest at all for a run whose training had already succeeded.
+        self.assertEqual(code, rx.EXIT_ACCEPTANCE, stdout)
+        manifest = _manifest(self.run_dir)
+        self.assertEqual(manifest["outcome"], "succeeded")
+        self.assertFalse(manifest["g6_shape_check"]["ok"])
+        # The run is recorded; only the unreadable provenance field is empty.
+        self.assertIsNone(manifest["dataset"]["version"])
+        self.assertEqual(manifest["dataset"]["dataset_id"], "ds-stub123")
+
+    def test_registry_version_still_wins_when_present(self) -> None:
+        # Negative control: the fallback must not displace a version the registry does supply.
+        # ``meta`` stays a mapping here, so this arm also pins that the fix changed nothing
+        # on the well-formed path.
+        self.state.dataset_meta_override = {"n_features": self.state.n_features, "generator_version": "9.9.9"}
+        config = _write_config(self.tmp, _base_config())
+        code, stdout = _invoke(config, self.run_dir)
+        self.assertEqual(code, rx.EXIT_SUCCESS, stdout)
+        self.assertEqual(_manifest(self.run_dir)["dataset"]["version"], "1.2.0")
 
 
 if __name__ == "__main__":
