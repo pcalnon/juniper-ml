@@ -185,7 +185,7 @@ jobs:
           # tests/test_predict_merge.py shells to end-to-end in its behavioral
           # screen arms (rollout W3; the in-repo util/sequence_safety/ copy was
           # deleted). Without it those arms would degrade to `skip`.
-          pip install "juniper-ci-tools>=0.8.0,<0.10.0"
+          pip install "juniper-ci-tools>=0.9.0,<0.10.0"
           # numpy is required by tests/test_run_experiment.py: the experiment
           # driver writes decision_boundary.npz and the tests round-trip it
           # via numpy.load (the driver itself imports numpy lazily).
@@ -1066,6 +1066,8 @@ jobs:
           python3 -m unittest -v tests/test_pf8_occupancy_probe.py
           # tests/test_pf8_burst_attribution.py: the PF-8 burst-attribution trio, which overturned a published conclusion (the probe note's "leading candidate" was NumPy's OpenBLAS pool; it is libgomp under torch). /proc/<tid>/stat split around the LAST ')'; a thread that exits mid-window is reported, never invented; py-spy folded stacks attributed by SAMPLE count, not line count; library patterns anchored to lib*.so so a bare "omp" cannot match "compiled"/"component"/"Compute"; libopenblas and libgomp told apart; every `env -u` precedes every NAME=VALUE in every arm (env(1) stops accepting options at the first assignment, and the mis-ordered arm kills the listener at startup); the port check refuses when ss is absent rather than reading every port as free.
           python3 -m unittest -v tests/test_pf8_burst_attribution.py
+          # tests/test_pf8_icv_checkpoint_probe.py: the PF-8 ICV pair, which overturned two more published conclusions (the attribution note's named suspect, candidate-pool creation, does NOT re-pin; and its §5.1 matmul reading is inverted -- the sustained matmul re-pins itself rather than being immune). Pins that the checkpoint does NOT call torch.get_num_threads() by default, because that getter re-pins the calling thread's OpenMP ICV and would end the burst it is meant to observe; that the icv-map keeps a do-nothing CONTROL arm and shouts when it re-pins, since an instrument footprint is otherwise indistinguishable from a result; that every arm runs on its own fresh thread (a re-pinned thread stays re-pinned, so a shared one lets the first arm mask the rest); that the output_pass arm does not construct its network on the measured thread; that the reducer scores "the drop ends the burst" (refuted) and "the drop is why later passes do not burst" (supported) SEPARATELY and computes both rather than hard-coding them; that growth mode reports the stages it did not wrap; and that the spiral stays at radius 10.0, since a unit-radius spiral grows zero hidden units and the growth loop under test never runs.
+          python3 -m unittest -v tests/test_pf8_icv_checkpoint_probe.py
 
       - name: Run bash regression tests
         run: |
@@ -1306,7 +1308,7 @@ jobs:
           # The console scripts juniper-symbol-loss-check / juniper-docs-additions-check
           # land on PATH once installed.
           python -m pip install --upgrade "pip>=26.1.1"
-          pip install "juniper-ci-tools>=0.8.0,<0.10.0"
+          pip install "juniper-ci-tools>=0.9.0,<0.10.0"
 
       - name: Run sequence-safety screens (symbol + docs)
         env:
@@ -1779,7 +1781,7 @@ jobs:
       - name: Install juniper-ci-tools
         run: |
           python -m pip install --upgrade "pip>=26.1.1"
-          pip install "juniper-ci-tools>=0.1.0,<0.10.0"
+          pip install "juniper-ci-tools>=0.9.0,<0.10.0"
 
       - name: Generate Dependency Documentation
         run: |

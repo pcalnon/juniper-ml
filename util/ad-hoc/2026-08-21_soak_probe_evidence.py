@@ -64,6 +64,45 @@ ANSWER_KEY = "conf/soak_probes.json"
 # The protocol document also names every fact and the whole measurement design.
 PROTOCOL_DOC = "POINTER-FOLLOW-SOAK-LEDGER"
 
+# THE LEDGER IS AN ANSWER SHEET TOO, and neither marker above covers it.
+# `reports/soak/pointer_follow_soak.jsonl` records, per observation, the probe's
+# `pointer`, its scored `outcome`, and a `note` restating the answer in prose --
+# so an unscoped `grep -rn <term> .` from the repo root can show a subject the
+# previous run's answer AND its scoring. Observed once, on
+# P18-health-interval-non-positive (2026-08-22T21:41:09Z).
+#
+# This violates the authoring rule the soak's own protocol states at
+# `notes/JUNIPER_2026-08-20_JUNIPER-ML_POINTER-FOLLOW-SOAK-LEDGER.md` --
+# "identifier-shaped facts must be stored in a form the subject's own grep
+# cannot hit" -- in the instrument's own record. (Quoted, not line-pinned: that
+# rule sat at :672 when the 09-09 handoff cited it and at :693 two days later,
+# after ml#1883 inserted above it. Grep the sentence.)
+LEDGER_FILE = "pointer_follow_soak"
+
+# CONTENT vs FILENAME, and the distinction is load-bearing rather than fussy.
+# Re-derived 2026-09-10 over all 43 valid rows: 8 runs TOUCHED the ledger and
+# exactly ONE read its contents. The other seven saw the filename in a porcelain
+# status line, a diff stat, an `ls -t reports/soak/`, or a `grep -l` list. Flagging
+# all eight would overstate the exposure 8x on the number that feeds owner decision
+# 8 -- whether the leak invalidates its runs -- which changes the DENOMINATOR of
+# every rate in the arc.
+#
+# These keys exist in a ledger RECORD and in no directory listing, so they cannot
+# be produced by seeing the filename. The filename stem is deliberately NOT among
+# them: `util/ad-hoc/2026-09-08_soak_label_to_transcript.py`'s LEDGER_MARKERS does
+# include it, which is why its `ledger=N` column cannot be read as a content count.
+LEDGER_CONTENT_KEYS = ('"obs_id"', '"scored_by"', '"discriminator_ok"', '"miss_class"')
+
+# THESE MARKERS FIRE ON ANY FILE THAT QUOTES A RECORD, NOT ONLY ON THE LEDGER, AND
+# THAT IS INTENDED. Measured 2026-09-10: `"obs_id"` also appears in
+# `notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md`,
+# which quotes a full record -- `note` (the prose answer), `obs_id`, `outcome` and
+# `pointer` -- in a fenced block. A subject that greps `notes/` and gets that chunk
+# back has seen the answer sheet exactly as if it had read the ledger, so scoring it
+# as a content read is right. The leak propagated into a second file; screening only
+# the ledger's own path would have missed it, which is the same shape as the gap this
+# whole check closes.
+
 PATH_RE = re.compile(r"[\w./-]+\.(?:md|py|bash|sh|yml|yaml|json|toml|cfg|ini)")
 
 
@@ -78,6 +117,27 @@ def find_transcript(agent_id: str) -> Path | None:
     return None
 
 
+def ledger_exposure(blob: str) -> str:
+    """Classify one payload's exposure to the soak ledger: content, filename, or none.
+
+    A payload that carries a record key has had the ledger's CONTENT returned to it
+    -- the previous run's pointer, outcome and prose answer. A payload that carries
+    only the path has seen the file exist. Those are different events and only the
+    first contaminates.
+
+    The transcript's content is itself JSON, so ``json.dumps`` escapes the record's
+    inner quotes and ``"obs_id"`` arrives as ``\"obs_id\"``. Dropping backslashes
+    before the test costs nothing and catches both forms -- the same correction
+    ``2026-09-08_soak_label_to_transcript.py`` had to make.
+    """
+    flat = blob.replace("\\", "")
+    if any(k in flat for k in LEDGER_CONTENT_KEYS):
+        return "content"
+    if LEDGER_FILE in flat:
+        return "filename"
+    return "none"
+
+
 def scan(path: Path) -> dict:
     """Walk the transcript, collecting only tool names and file paths."""
     tools: Counter = Counter()
@@ -86,6 +146,8 @@ def scan(path: Path) -> dict:
     records = 0
     contaminated = [0]
     via_output = [0]
+    ledger_content = [0]
+    ledger_filename = [0]
 
     for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
         line = line.strip()
@@ -117,6 +179,11 @@ def scan(path: Path) -> dict:
                         dest_hits += 1
                     if ANSWER_KEY in blob or PROTOCOL_DOC in blob:
                         contaminated[0] += 1
+                    exposure = ledger_exposure(blob)
+                    if exposure == "content":
+                        ledger_content[0] += 1
+                    elif exposure == "filename":
+                        ledger_filename[0] += 1
                 elif node.get("type") == "tool_result":
                     # Scanning only tool INPUTS was a false negative: a
                     # directory-wide `grep -rn <term> docs/` retrieves
@@ -129,8 +196,26 @@ def scan(path: Path) -> dict:
                     blob = json.dumps(node.get("content") or "")
                     if DEST in blob:
                         via_output[0] += 1
+                    # PROTOCOL_DOC is deliberately NOT tested here, and the
+                    # asymmetry with the tool_use branch above is REAL but is not
+                    # item F''s to close. Widening it was attempted 2026-09-10 and
+                    # reverted: `PROTOCOL_DOC` is a notes FILENAME stem, so every
+                    # occurrence is filename-shaped, and flagging it in a result
+                    # would score a `grep -l` listing as having read the protocol
+                    # document -- the exact false positive the ledger split below
+                    # exists to avoid. Doing it properly needs a content rule for
+                    # this marker (a `path:NNN:` form proves content came back; a
+                    # `Read` result does not carry one), which is unvalidated.
+                    # `tests/test_soak_probe_evidence.py`
+                    # `test_protocol_doc_in_tool_result_is_currently_invisible`
+                    # pins the current behaviour and is what caught the attempt.
                     if ANSWER_KEY in blob:
                         contaminated[0] += 1
+                    exposure = ledger_exposure(blob)
+                    if exposure == "content":
+                        ledger_content[0] += 1
+                    elif exposure == "filename":
+                        ledger_filename[0] += 1
                 stack.extend(node.values())
             elif isinstance(node, list):
                 stack.extend(node)
@@ -144,6 +229,15 @@ def scan(path: Path) -> dict:
         "retrieved": (dest_hits + via_output[0]) > 0,
         "contaminated": contaminated[0] > 0,
         "contamination_hits": contaminated[0],
+        # Reported SEPARATELY from `contaminated`, not folded into it. Whether a
+        # ledger read invalidates its run is owner decision 8 of the 09-09 handoff
+        # and is NOT settled; a screen that silently rolled it into the existing
+        # flag would decide it by implementation. The measurement is here either
+        # way, which is what the decision needs.
+        "ledger_content_hits": ledger_content[0],
+        "ledger_filename_hits": ledger_filename[0],
+        "ledger_content_read": ledger_content[0] > 0,
+        "ledger_touched": (ledger_content[0] + ledger_filename[0]) > 0,
         "files": files.most_common(12),
     }
 
@@ -173,6 +267,10 @@ def main() -> int:
             continue
         verdict = "RETRIEVED docs/REFERENCE.md" if r["retrieved"] else "did NOT open docs/REFERENCE.md"
         flag = "  *** CONTAMINATED: touched the answer key ***" if r["contaminated"] else ""
+        if r["ledger_content_read"]:
+            flag += "  *** READ THE LEDGER'S CONTENTS (prior answer + scoring) ***"
+        elif r["ledger_touched"]:
+            flag += "  [saw the ledger FILENAME only -- not a content read]"
         print(f"=== {label[:12]} ==={flag}")
         print(f"  records {r['records']}  tool_calls {r['tool_calls']}  -> {verdict} "
               f"(opened={r['dest_hits']} via-search-output={r['dest_via_output']})")

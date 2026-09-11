@@ -643,7 +643,7 @@ unit tests in `tests/unit/frontend/test_metrics_panel_handlers.py`) should go wi
 `tests/unit/frontend/test_poll_gating.py::TestDeadPollerRemoved::test_network_stats_store_still_has_no_consumer`
 fails if anyone wires a consumer without restoring a writer.
 
-**F-CANOPY-035 — the candidate loss plot reads `epochs`/`losses`/`phases` off the training-state store, keys `/api/state` never provides in any lane, so the plot is structurally empty; found during the 2026-08-24 live re-drive; canopy#524 `f20602cb` repaired the wiring and canopy#613 `b792256` repaired the store it reads; M-CANDIDATES-07 still FAIL on F-CANOPY-052 (P1, FIXED 2026-09-10).**
+**F-CANOPY-035 — the candidate loss plot reads `epochs`/`losses`/`phases` off the training-state store, keys `/api/state` never provides in any lane, so the plot is structurally empty; found during the 2026-08-24 live re-drive; canopy#524 `f20602cb` repaired the wiring, canopy#613 `b792256` repaired the store it reads, and canopy#618 repaired the consumer that reads the store — the SAME renderer eviction, one callback downstream, first mis-filed as the separate finding F-CANOPY-052 (P1, FIXED-FOR-ONE-VICTIM 2026-09-10; see the re-disposition 2026-09-11).**
 
 > **FIXED 2026-09-10 (canopy#613 `b792256`) — and the row it blocks is still FAIL, on a different
 > finding.** This entry has two halves and they were fixed eleven months apart in effort: canopy#524
@@ -6894,9 +6894,37 @@ earlier tick evicts just as well. Neither run closes it. What closes it is the d
 | 2 | 1000 ms | 1.574 s | 1.496 s — **below** | **0 fills** |
 | 2 | 2000 ms | 1.357 s | 2.028 s — **above** | **filled** |
 
-`PERIOD-CONTROLS-LANDING` twice: the **sign of (tick gap − round trip) predicts the outcome in all four
-phases**. Note the Interval does not run at its nominal rate under load — 54 ticks per 90 s, ~0.6 Hz —
-which is why the gap is read from the observed `n_intervals` transitions and not from the constant.
+`PERIOD-CONTROLS-LANDING` twice: the sign of (tick gap − round trip) matches the outcome in all four
+phases. Note the Interval does not run at its nominal rate under load — ~0.6 Hz measured — which is why
+the gap is read from the observed `n_intervals` transitions and not from the constant.
+
+> **THIS INSTRUMENT IS MUCH WEAKER THAN THE FIRST DRAFT OF THIS SECTION CLAIMED, AND IT IS NOT WHAT
+> ESTABLISHES THE MECHANISM** (round-1 validation, 2026-09-10). Two independent defects:
+>
+> 1. **The verdict was structurally forced.** The sweep runs ASCENDING and `break`s at the first phase
+>    that lands, so a failing phase can never follow a landing one and `max_fail < min_land` is a
+>    **tautology**. `NON-MONOTONIC` is unreachable by construction. Given phase 1 fails and phase 2 lands,
+>    `PERIOD-CONTROLS-LANDING` was the only possible output. That fails the "could this instrument have
+>    produced a different answer?" test this arc requires of every probe — asked of other people's
+>    instruments repeatedly, and not asked of this one.
+> 2. **Neither fill is attributable to the long period.** In run 1 the fill at t=84.414 follows an
+>    invocation started at **t=81.967**; the 2000 ms change landed at t=82.471. In run 2 the fill at
+>    t=77.625 follows one started at **t=75.577**; the change landed at t=76.353. Both deciding requests
+>    were issued under the SHORT period, and both fall **outside every scored phase** (the phase window is
+>    stamped after the `setProps` evaluate returns, leaving a ~2 s unscored gap). Of the **37 invocations
+>    actually issued under 2000 ms across both runs, not one landed anything** — they returned `no_update`,
+>    because the store was already full.
+>
+> The eviction mechanism still explains this — a request in flight when the period rises has no successor
+> `requested` entry to evict it, so it survives — but that is a **different claim** from "the 2000 ms phase
+> landed", which is what the table above reads as. Read the table as: raising the period changed the
+> outcome, twice, on one leg, by rescuing an in-flight request.
+>
+> **What the mechanism actually rests on** is the source reading (`:2698` / `:3027` / `getUniqueIdentifier`,
+> each independently re-verified in round 1, including that a sibling callback cannot enter this callback's
+> eviction group) and the **clean room** — which round-1 validation confirmed is the one genuinely unforced
+> test in the set, with all four of its branches reachable. The before/after is untouched by any of this — though it is
+> not the control this phase called it; see round 2 at the end of the phase.
 
 ### The clean room — the defect reproduced with no canopy at all, and the fix shown sufficient
 
@@ -6927,27 +6955,41 @@ silences it exactly as before, and the full-history modulus gate — a `trigger.
 that fails **silently** on a rename, making `full` mode refetch the complete history every tick — was
 updated with it. `FAST_UPDATE_INTERVAL_MS` is untouched, per this entry's own caution.
 
-**Before / after, matched instrument, same fixture, same cascor** (`2026-09-10_f035_unopposed_response_test.py`):
+**Before / after, same instrument, same fixture, same cascor — but NOT matched builds** (the two legs differ by 12 commits and 442 non-fix lines in `dashboard_manager.py`; see the round-2 block at the end of this phase) (`2026-09-10_f035_unopposed_response_test.py`):
 
 | | `eb05021d` (before) | `eab7cf43` (after) |
 |---|---|---|
 | store at observer install | **0** | **0** at t=10.6 s |
-| store during the window | **0** for the whole 90 s | **0 → 66 at t=17.9 s**, fast lane still ticking at 1 Hz |
-| store-writing responses | **53**, all HTTP 200, all 66 rows, **none applied** | fills once, then `no_update` (identity suppression) |
-| fill without intervention | never (only after the tick was force-disabled) | ~7 s after page load |
+| store during the window | **0** for the whole 90 s | **0 → 66 at t=17.9 s**, fast lane still ticking (at its DELIVERED ~0.51 Hz, not the nominal 1 Hz — see correction C5) |
+| store-writing responses | **52 pre-control**, all HTTP 200, all 66 rows, **none applied** (a 53rd began after the control fired and did land) | fills once, then `no_update` (identity suppression) |
+| fill without intervention | never in 125 s, twice (only after the tick was force-disabled) | 7.3 s and 11.9 s after observer install, in the two runs that timestamp it |
 
-**The measured cost, stated rather than buried.** Effective poll cadence goes from a nominal 1 Hz
-*delivering nothing* to **~7.3 s delivering**. Round trip is ~2.1 s of that; the remaining ~5.1 s is fixed
-overhead in re-enabling the guarded Interval and is **not** period-bound — dropping the period to 250 ms
-moved it only to ~4.3 s (`…/2026-09-10_f035_after_fix_cadence_250ms.json`), so lowering the constant buys
-very little. During live training the WS append path owns the store and this poll short-circuits on
-`ws_live` without fetching, so the slower cadence applies only to the stale-stream backstop. **Why the
-~4–5 s is there is NOT established** — the plausible reading is that the `runningOff` prop update waits on
-a renderer cycle contended by the 1 Hz fast lane, and that is a hypothesis, not a measurement.
+**The measured cost, stated rather than buried — and stated as a RANGE, because the first version of
+this paragraph cited the single slowest run** (corrected by round-1 validation). Three runs on the fixed
+leg, medians of the inter-request gap: **5.5 s, 6.1 s, 7.3 s**; round trips 1.3–2.1 s; dead time before
+the next request 4.2–5.2 s.
+
+Is the dead time period-bound? **Not established, in either direction.** The one 250 ms run gave 6.1 s
+cadence / 4.5 s dead time — which sits *inside* the range of the two 1000 ms runs, and the spread between
+those two untreated runs (1.0 s) exceeds the treated-vs-untreated difference (0.7 s). n_treated = 1, and
+**no artifact records that the 250 ms period was ever delivered** — only that `setProps` returned ok (the
+observer watches `fast-update-interval`, not the metrics interval). The like-for-like dead-time comparison
+(4.35 s at 1000 ms vs 4.33 s at 250 ms) shows no movement at all, which is *better* support for "lowering
+the constant buys little" than the 7.3 → 4.3 the first draft cited — but it is one pair, not a result.
+
+**Why the ~4–5 s is there is NOT established.** The plausible reading is that the `runningOff` prop update
+waits on a renderer cycle contended by the fast lane. Round-1 validation makes it more plausible without
+testing it: the same artifact set contains a **6.95 s wire→apply gap** on this leg (the cadence run's only
+66-row response ends at t=26.636; the store's only 0→66 transition is at t=33.583).
+
+During live training the WS append path is *designed* to own the store while this poll short-circuits on
+`ws_live` — but **that path is untested here**: every measurement is on a `COMPLETED` fixture where the WS
+appender never fired once (zero `writer: "ws-append"` invocations in 146 recorded). "The backstop is only
+the backstop" is a design claim, not a measured one.
 
 ### F-CANOPY-052 — the candidate loss plot renders intermittently once the store is full
 
-**F-CANOPY-052 — with the metrics store repaired, the candidate loss figure renders its trace in only 2 of 5 loads: the data is provably present in the client's own store every time, and the figure carries zero traces AND zero annotations when it misses (P2, canopy repo, OPEN; found 2026-09-10 by fixing F-CANOPY-035).**
+**F-CANOPY-052 — the candidate loss figure is evicted by its OWN 1 Hz re-trigger: `update_loss_plot` took the training-state store as an Input, that store is rewritten every second with a value that always differs, and dash-renderer discards the in-flight invocation. NOT a separate defect — this is F-CANOPY-035's mechanism on the next callback (P1, re-disposed from P2 on 2026-09-11 by round-2 review; canopy#618).**
 
 **The store filling did not turn M-CANDIDATES-07 green, and the reason is a second defect the empty store
 was masking** — the "a broken thing masks the next one" class, on the row this arc has owed since 08-24.
@@ -6958,24 +7000,35 @@ On the fixed leg, with the store provably good every time:
 - the **client's own** store copy: `len=66`, phase census `{'output': 54, 'candidate': 12}` — identical;
 - the real `_candidate_series_from_history` run over the **client's value**: **12 points**, every run.
 
-And the figure `candidate-metrics-panel-loss-plot` rendered its `Candidate Training` trace in **2 of 5**
-observations. When it renders it carries exactly 12 points; when it does not it has **zero traces and zero
+And the figure `candidate-metrics-panel-loss-plot` rendered its `Candidate Training` trace in **2 of 6**
+observations (corrected from 2 of 5 by round-1 validation — see the corrections block at the end of this phase). When it renders it carries exactly 12 points; when it does not it has **zero traces and zero
 annotations** — not even the `create_empty_plot("No candidate data available")` placeholder. The wire
-census on a rendering run shows `update_loss_plot` firing **exactly once**, carrying a one-trace figure,
-and applying (`…/2026-09-10_f052_downstream_consumer_wire.json`).
+census shows `update_loss_plot` firing **once in one rendering run and twice in the other**
+(`…_f052_downstream_consumer_wire.json` `loss_plot_responses: 1`; `…_f052_render_rate_run2.json`
+`loss_plot_responses: 2`) — the earlier "exactly once" generalised from a single artifact.
 
-**One instrument defect of this session's own, recorded so the artifact is not misread.** The first
-downstream run scored `RENDER-STILL-DEAD` after forcing a second store change — but that force set
-`window_size: 40`, and the 12 candidate entries sit EARLY in the history, so the forced window **dropped
-the very rows the figure needs**. The probe scored its own contamination. `--no-force` now exists and the
-2-of-5 rate is from clean runs only (`…/2026-09-10_f052_render_rate_run{1,2,3}.json`).
+**A claim this session made about its own instrument, and which round-1 validation REFUTED.** The first
+downstream run scored `RENDER-STILL-DEAD` after forcing a second store change to `window_size: 40`, and
+this entry originally explained that away: "the 12 candidate entries sit EARLY in the history, so the
+forced window dropped the very rows the figure needs." **That is false.** Against the live fixture the
+candidate rows are at **indices 53–64 of 66 — LATE — and a last-40 window keeps ALL TWELVE.** The force
+did not remove the candidate data. `RENDER-STILL-DEAD` is therefore **not** self-contamination: it is an
+unexplained observation, and the only one in the set where forcing a store change failed to render.
+Keep `--no-force` for rate observations regardless (a forced arm is a different treatment and should not
+be pooled), but the old rationale must not be repeated. The artifact records `store_after_force: {len: 40}`
+and never its phase census, so which 40 rows survived is unknowable from it.
 
 **Matrix effect: M-CANDIDATES-07 stays FAIL, with its basis re-attributed** from "blocked on an upstream
-store that never fills (F-CANOPY-035)" to **F-CANOPY-052**. Do not score it PASS on 2 of 5. What is NOT
-established: whether the miss is the same renderer eviction on the consumer (its three Inputs give it few
-triggers, and on a `COMPLETED` fixture the store changes once), a mount-order race, or something else.
-The discriminating next measurement is the wire census on a **non**-rendering run — this session only
-captured it on a rendering one.
+store that never fills (F-CANOPY-035)" to **F-CANOPY-052**. Do not score it PASS on 2 of 6.
+
+**The "discriminating next measurement" named here was ALREADY IN THE ARTIFACTS** — round-1 validation
+found it. `…_f052_render_rate_run1.json` and `…_run3.json` are **non-rendering runs carrying wire
+censuses**: `loss_plot_responses: 0` against `other_responses` 86 and 85, which proves the listener was
+live. That **excludes** the "fired, carried a figure, and the figure was not applied" branch — a carried
+figure would have appeared in the response map. What remains is "never fired" or "fired and returned
+`no_update`", which Dash's response map cannot separate (it omits `no_update` outputs). So the two
+branches needing opposite fixes are already narrowed to one side, and the open question is narrower than
+this entry first claimed.
 
 ### Instruments added this session (all under `util/ad-hoc/`, all dated `2026-09-10_`)
 
@@ -6989,8 +7042,13 @@ captured it on a rendering one.
 
 ### Still owed after this phase
 
-1. **F-CANOPY-052** — the wire census on a **non**-rendering run, which separates "never fired" from
-   "fired and was not applied". Everything else about the row is characterised.
+1. **F-CANOPY-052** — the remaining split is "never fired" vs "fired and returned `no_update`". The
+   wire census already **excludes** "fired and was not applied" (round-1 validation; see C4 below), and
+   Dash's response map omits `no_update` outputs, so the census cannot go further. The instrument that
+   can is a `store.subscribe` reader of `getState().callbacks` — which is also the only thing that would
+   test `:3027` directly, and no probe in this arc has ever read it.
+1b. **The `RENDER-STILL-DEAD` run is unexplained** now that its "contaminated fixture" explanation is
+   refuted (C3). It is the only observation where forcing a store change failed to render.
 2. **F-CASCOR-004 / F-CANOPY-049** — unchanged from Phase 5, and still the second and third items.
 3. **M-METRICS-11..16/-18 re-drive on the fixed leg.** All three replay callbacks compute
    `max_index = len(metrics_data) - 1 if metrics_data else 0` from the store this fix repairs, so the
@@ -7002,3 +7060,205 @@ captured it on a rendering one.
 5. Phase 5's items 3, 5, 6, 7 and 9 are untouched by this phase.
 
 Evidence for this phase: `reports/e2e-canopy-2026-09-02/transcripts/2026-09-10_*` (14 files).
+
+### Round-1 consensus validation — this phase FAILED it, and the corrections are above
+
+Validated per `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md` §3.
+Sizing: top-right cell (high uncertainty × high criticality) — the phase **overturns** text already in
+this document, rests on samples of n=2 and n=5 from a **single session**, uses **five new instruments**
+one of which was already wrong in-session, a **merged fix hangs on it**, and the conclusion is
+**convenient** for its author. Six of the seven escalators. Three Lane A reviewers at distinct entry
+points (the handoff's prose → artifacts; git/PR history + source, handoff read last; the raw JSON + the
+probes as code + the live legs). Every load-bearing finding below was re-derived by the reconciler before
+being accepted, per §5.2.
+
+**The headline conclusion survives**: the eviction mechanism holds, re-verified from the bundle by a
+reviewer who read `getUniqueIdentifier` independently, and the clean room is sound. **Nothing here
+warrants a revert.** What failed is the evidence this phase put in front of that conclusion, and several
+counts. (Round 2, at the end of this phase, went further: the before/after is **not** on matched builds,
+and the DISPOSITION of F-CANOPY-035/-052 was wrong. Read that block before this table.)
+
+| # | as first written | what round 1 found |
+|---|---|---|
+| C1 | `running=` re-enables "including on the error path (:1113), so a failed fetch cannot strand the poller" | **FALSE, and it is a live defect.** `:1113` is in `_handleWebsocketCallback`, a transport this callback never takes. On the HTTP path `runningOff` is dispatched only from `completeJob()`; `handleError` (`:987-998`) rejects without it. A network-level failure **strands the poll for the life of the page** — a failure mode canopy#613 introduced. Repaired in **juniper-canopy#614** |
+| C2 | the dose-response is "what closed it" | the verdict is **structurally forced** (ascending + stop-on-land ⇒ `NON-MONOTONIC` unreachable), and **neither fill is attributable to the long period** — both deciding requests were issued before the change landed, outside every scored phase; 0 of 37 long-period invocations landed anything |
+| C3 | "the 12 candidate entries sit EARLY … the force dropped the very rows the figure needs" | **FALSE.** They are at **indices 53–64 of 66**; a last-40 window keeps **all twelve**. `RENDER-STILL-DEAD` is *not* self-contamination — it is unexplained. An inconvenient result was explained away with an invented mechanism |
+| C4 | "the discriminating next measurement is the wire census on a non-rendering run — this session only captured it on a rendering one" | **already captured.** Runs 1 and 3 are non-rendering runs with wire censuses (`loss_plot_responses: 0` against 86 and 85). It **excludes** the "fired and was not applied" branch |
+| C5 | "fast lane still ticking at 1 Hz" | **0.507 Hz** measured on that very run — the exact error this phase's own trap warns against, in the document that warns against it |
+| C6 | "~7.3 s cadence … NOT period-bound, 250 ms moved it only to ~4.3 s" | one of **two** 1000 ms runs was cited; the other gives 5.5 s. The untreated spread (1.0 s) exceeds the treated-vs-untreated difference (0.7 s), n_treated = 1, and no artifact shows the 250 ms period was delivered |
+| C7 | "2 of 5" render rate | **six** comparable observations exist → **2 of 6**; the excluded one is a non-render, so the published rate was biased upward. The stated basis ("clean runs only, `run{1,2,3}`") is arithmetically impossible — those three are 1 of 3 |
+| C8 | "the consumer fired exactly once" | 1 in one rendering run, **2** in the other. Generalised from a single artifact |
+| C9 | "53 responses … none applied" | **52** pre-control; the 53rd began after the control fired and did land |
+| C10 | the corrected-boundary re-run | **also returned `SUPERSESSION-INSUFFICIENT`** (6 of 6 tick-free). This phase says so; the session handoff did not carry it forward, attributing the verdict solely to the superseded boundary |
+
+**Three further instrument defects, recorded because the artifacts stay in the tree.**
+
+- **The tick boundary is applied against the wrong Interval on all three `:8053` runs.** `INTERVAL` is
+  hard-coded to `fast-update-interval`, but post-fix the callback rides `metrics-store-interval`. The
+  cadence run's `NO-TICK-FREE` verdict describes an unrelated clock and means nothing.
+- **`LAND_WINDOW_S = 2.0` is calibrated on round-trip latency, not apply latency.** The same artifact set
+  contains a **6.95 s** wire→apply gap, so the window is several times too small; the cadence run's one
+  66-row response is scored `landed: False` while the store demonstrably filled seven seconds later.
+- **All three post-fix runs used `--no-control`**, and two print "the instrument's own control failed"
+  when no control ran. The probe's own doctrine — a failed control invalidates everything else — was
+  never applied to the runs grounding the post-fix conclusions.
+
+**And the run-2 tick-free result is refuted by its own data.** All six tick-free flights have a tick
+within **0.111–0.500 s** of `t_end`, while the renderer's check happens at *apply* time — 0.7–1.0 s later
+by the page's own heartbeat ratio, 6.95 s by the direct measurement above. Every "tick-free" flight was
+tick-crossed when it mattered. The correct predicate is the contents of `requested`/`watched` at the
+reducer pass, which **no probe in this set observes**; the instrument that would is a `store.subscribe`
+reader of `getState().callbacks`.
+
+**Two claims with NO ARTIFACT.** `2026-09-10_f035_fix_wiring_check.py` prints to stdout and nothing under
+`reports/` records its six PASSes (its substance was independently re-established live off
+`/dashboard/_dash-dependencies`, which is stronger). And **"neither half works alone" was never tested** —
+the clean room varies only `running=`, on a shared lane; no arm tested a dedicated lane without the guard.
+
+**One standing charge cleared, on evidence.** The `paths.strs` reader is not hiding duplicate components
+here: a live layout census finds every relevant id exactly once and **zero** duplicate ids anywhere.
+
+**Not yet done: Lane B, and round 2.** §2 requires analysis review to run on the reconciled measurement,
+so it follows these corrections rather than preceding them; §4 makes a second round mandatory because
+round 1 produced corrections and changed a conclusion. **The fix pass is the least trustworthy part of any
+document** — round 2 is briefed on these corrections specifically, not on the phase as a whole.
+
+### Round 2 (Lane B) — the DISPOSITION was wrong, and the corrections introduced two errors
+
+Lane B ran on the round-1-corrected text, as §2 of
+`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`
+requires (analysis review follows the reconciled measurement). Two reviewers, opposing
+briefs: one arguing the record still overstates closure, one arguing it would send a
+successor down a wrong path. **The second brief found the defect.**
+
+#### F-CANOPY-052 IS F-CANOPY-035 — re-disposed P2 → P1, fixed in canopy#618
+
+`update_loss_plot` took `{component_id}-training-state-store` as an **Input**
+(`candidate_metrics_panel.py:342`). `fetch_training_state` writes that store off the
+panel's own **1000 ms** interval (`:93`, `:223-224`) and returns
+`self._fetch_training_state()` **unconditionally on both branches** (`:259-268`) while
+the candidates tab is active. `/api/state` carries a **per-call `timestamp`** — two
+consecutive GETs on `:8053` differ in exactly that key and nothing else — so the value
+written differs every tick and the no-op-write suppression that protects other stores
+cannot bite.
+
+So the callback was re-`requested` at ~1 Hz under one `getUniqueIdentifier`, and
+`:3027` evicts the in-flight entry while `:2698` discards its response. **That is this
+phase's own mechanism, on the callback one step downstream of the store this phase
+repaired.**
+
+It also places the signature this phase recorded and could not explain. The `dcc.Graph`
+at `candidate_metrics_panel.py:189-193` is declared with **no `figure=` prop**, so
+"zero traces AND zero annotations" is reachable **only** as the mount default —
+unreachable from either of `update_loss_plot`'s two return paths, which both return a
+figure (one with a trace, one with a `create_empty_plot` annotation). The panel was not
+rendering an empty figure. **No output of that callback was ever applied.**
+
+**Measured, one variable** (`util/ad-hoc/2026-09-11_f052_trigger_eviction_test.py`,
+`setProps` on the panel interval's `disabled` and nothing else):
+
+| arm | figure rendered | loss-plot responses on the wire |
+|---|---|---|
+| tick running | **1 / 3** | **0** on every non-render |
+| tick stopped | **3 / 3** | 1–2 every run |
+
+`TRIGGER-EVICTION-CONFIRMED`. The intervention provably took (`n_intervals` held at 1,
+`disabled` true at the end of every treatment run), against 79–88 responses naming
+other outputs in the same windows. This is the unconfounded A/B the period sweep was
+not: one variable, and it is the variable the hypothesis names.
+
+**Consequences for this phase's accounting**, all of which were wrong:
+
+- **F-CANOPY-035 was not FIXED.** One victim was repaired. Header re-stated to
+  FIXED-FOR-ONE-VICTIM.
+- **F-CANOPY-052 was not a P2 second defect.** It is the same P1 class. Round 1's own
+  correction block called it "the defect the empty store was masking" — the
+  *"a broken thing masks the next one"* class — and that framing is what foreclosed the
+  right reading.
+- **"canopy has zero open P1" was an artefact of that split.** Lane B checked the
+  triage: the three open P1s were all cascor. A canopy dashboard panel was blank on two
+  thirds of loads with no canopy P1 open against it.
+- **The still-owed split named a source-impossible branch.** "never fired vs fired and
+  returned `no_update`" — `update_loss_plot` has two returns and neither is
+  `no_update`. A five-line source read kills it; the phase read the renderer bundle
+  line by line and never read the six-line callback it was theorising about.
+- **Still-owed item 1 would have sent a successor to rebuild a retired instrument.**
+  It said a `store.subscribe` reader of `getState().callbacks` had never been built.
+  `util/ad-hoc/2026-09-07_f035_callback_lifecycle_probe.py` is exactly that, 25 KB,
+  documented in this same ledger ~6,000 lines earlier — and **retired on a positive
+  control**, because it returns the same verdict for a store that provably works and
+  perturbs the page it measures.
+
+#### Two errors round 1's own fix pass introduced
+
+§4 of the consensus procedure says the fix pass is the least trustworthy part of any
+document. It was right twice:
+
+- **"the clean room varies only `running=`, on a shared lane; no arm tested a dedicated
+  lane without the guard"** — false. `2026-09-10_f035_running_guard_cleanroom.py:73-98`
+  is one `dcc.Interval` driving one callback: the lane is **dedicated**, and the
+  `plain` arm **is** a dedicated lane without the guard — which never filled
+  (`max_len: 0`). The correction discarded the one arm that supports that half of the
+  shipped fix and replaced it with a false description of the instrument.
+- **C4's "the wire census EXCLUDES 'fired and was not applied'"** — too strong. The
+  census swallows every unparseable response through `except Exception: return`
+  (`downstream_consumer_probe.py:177-199`) with **no `unparsed` counter** — one the
+  arc's *earlier* probe had and this one dropped — and its listener attaches ~5 s after
+  navigation, so the page-load window where the deciding render happens is unobserved.
+  "Found no evidence of" is the claim the instrument supports. And in the event, the
+  branch C4 excluded is the one that was happening.
+
+#### And the control this phase called untouched is confounded
+
+"Before / after, **matched legs**" appears three times. It is false: `eb05021d →
+eab7cf43` is **39 files, 3726 insertions, 12 commits**, with **442 insertions / 43
+deletions in `dashboard_manager.py` alone** — eight times the fix's own delta, in the
+file that registers every callback and poll lane, several of the intervening PRs adding
+callbacks and therefore renderer contention. Round 1 audited the *other* delta
+(`eab7cf43 → main`, comment-only) with great care and never looked at this one. **The
+phrase is struck.** The before/after remains suggestive and is no longer a control; the
+mechanism rests on the source reading, the clean room, and now the F-052 A/B, which is
+the only genuinely single-variable measurement in the set.
+
+#### The sibling sweep, done — three more consumers sit on the same knife-edge
+
+Still-owed item 3 asked for a sweep of other consumers of `candidate-metrics-panel-training-state-store`.
+Run against canopy `main` after canopy#618 merged (`ced1dd80`), by AST over the panel's decorators:
+
+| callback | Inputs | the 1 Hz store as an Input? |
+|---|---|---|
+| `update_status_display` (`:283`) | 1 | **yes — its ONLY Input** |
+| `update_epoch_progress` (`:303`) | 1 | **yes — its ONLY Input** |
+| `update_pool_info` (`:322`) | 1 | **yes — its ONLY Input** |
+| `update_loss_plot` (`:391`) | 2 | no — demoted to State by canopy#618 |
+| `fetch_training_state` (`:259`) | 2 | n/a (it is the writer) |
+
+**All three are structurally exposed to exactly the eviction that took the loss plot**, and for the same
+reason: a store rewritten every second with a value that always differs, taken as an Input, re-`requested`s
+its consumer under one `getUniqueIdentifier`.
+
+**They are not currently broken, and the reason is the one the mechanism predicts.** Eviction bites when a
+callback's round trip exceeds its re-request period. These three build a badge, a progress figure and a
+text block; `update_loss_plot` built a Plotly figure from a filtered history. This entry's own 2026-08-24
+observation records the badge, phase, pool size, progress bar and pool info all rendering live
+candidate-phase values in a session where the loss plot rendered nothing — the cheap consumers survived
+the same 1 Hz trigger the expensive one lost to.
+
+So this is a **latent risk, not an open defect**: the three survive on a margin nobody chose and nobody
+measures, and any change that slows one of them — a richer badge, a slower `/api/state`, a busier
+renderer — flips it to intermittent-blank with no error anywhere. Worth a guard (demote the Input, as
+canopy#618 did, or make the writer identity-suppressed so the store stops changing when the data does
+not), and worth measuring the three round trips before deciding. **Not filed as a finding**: nothing
+observed is broken.
+
+The writer is the better lever. `fetch_training_state` returns `self._fetch_training_state()`
+unconditionally on both branches while its sibling output (pool history) IS identity-suppressed — the
+suppression exists in that very function and was applied to one of its two stores.
+
+#### What this leaves standing
+
+The eviction mechanism itself — re-verified from the bundle by a reviewer who read
+`getUniqueIdentifier` independently, reproduced in a canopy-free clean room, and now
+demonstrated a third time by an unconfounded A/B on a second callback. Nothing was
+reverted. What was wrong was the disposition, the accounting, the named next
+measurement, and the confidence.

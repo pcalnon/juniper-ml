@@ -11,6 +11,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Perf lane — nothing "stops" the first-pass burst; the training thread is re-pinned during
+  candidate result collection, and `torch.get_num_threads()` is not a passive read**
+  (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`).
+  Both residuals left open by §7 of
+  `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md` are
+  closed, and **that note's named suspect is refuted**. libgomp's per-thread `nthreads-var` ICV is
+  readable through `ctypes` (`omp_get_max_threads()` returns the *calling thread's* width), which
+  is the quantity the whole arc had been inferring. Results: (1) §5's one **inferred** link — that
+  `omp_set_num_threads` binds the calling thread — is now **measured** (constructor thread 2,
+  training thread created afterwards **16**; importing torch pins the importing thread to 8, so
+  the 16 is libgomp's default, not torch's). (2) The question "what ends the burst" had a false
+  premise: **nothing does** — the burst ends when the initial output pass ends, ICV still 16. The
+  growth loop instead **re-pins the thread 16 → 2**, which is why *later* passes are quiet. Scored
+  separately and oppositely in both runs: "the drop ends the burst" **REFUTED** (the burst was over
+  2.90 s / 3.49 s earlier), "the drop is why later passes do not burst" **SUPPORTED** (peak 2
+  threads after). (3) **Candidate-pool creation is excluded** — `_ensure_worker_pool` returns with
+  the ICV still 16; the re-pin is localised to the `result_queue.get()` that unpickles the first
+  worker's `CandidateTrainingResult`, inside `_collect_training_results`. (4) §5.1 is **inverted**:
+  the sustained matmul is not immune to its thread, it **re-pins its own thread** and then runs at
+  that width, while `loss.backward()` (9.59 cores) and cascor's real output pass (10.14) do not
+  re-pin and burst — so the burst is the *absence* of a re-pin, not a special wide path. (5) New
+  hazard: **`torch.get_num_threads()` re-pins the calling thread** (16 → 16 without the call, 16 →
+  8 with it), so the occupancy note's §4.2 proposed discriminator would have destroyed the
+  measurement it was meant to take; that section now carries the warning. Consequence for the open
+  cascor thread-pin decision: the defect's **extent** is bounded to the initial output pass only,
+  not a whole-run 16-wide regime. No owner decision is taken or re-opened. New under `util/ad-hoc/`:
+  `2026-09-11_omp_icv_checkpoint_probe.py` (the instrument) and `2026-09-11_icv_trace_align.py`
+  (the reducer, which scores the two claims separately); new
+  `tests/test_pf8_icv_checkpoint_probe.py` (18 tests) wired into `.github/workflows/ci.yml`,
+  `AGENTS.md` (test count 164 → 165) and `docs/REFERENCE.md`. Corrections applied at source to
+  `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md` (§5,
+  §5.1, §5.3, §7, status line) and
+  `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md` (§4.2).
 - **Perf lane — the initial output pass's ~11-core burst is libgomp under torch, not NumPy's
   OpenBLAS, and cascor's parent thread pin binds only the thread that ran the constructor**
   (`notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md`). The

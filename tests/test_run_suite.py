@@ -625,6 +625,76 @@ class MainLoopTest(unittest.TestCase):
         self.assertIn("not in the expansion", out)
 
 
+class NestedBlockTypeTest(unittest.TestCase):
+    """`or {}` is a FALSY guard; a truthy non-mapping walks straight through it.
+
+    `load_suite` type-checks `doc` itself and then trusted `or {}` for every nested block, so
+    a malformed suite reached the validation arithmetic and died with an INTERNAL traceback
+    from the one function whose job is to turn malformed operator YAML into a `SuiteError`.
+    Reproduced before the fix: `suite:` written as a list gave
+    `TypeError: unhashable type: 'dict'` at the `set(suite) - SUITE_SUITE_KEYS` line.
+
+    Each case below FAILS on the pre-fix code -- verified with
+    `util/ad-hoc/2026-09-11_falsy_guard_census.py` and a direct mutation run -- so none of
+    them is a test that would have passed anyway.
+    """
+
+    def _load(self, body: str):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "base.yaml").write_text(BASE_CONFIG)
+        p = root / "suite.yaml"
+        p.write_text(body)
+        return run_suite.load_suite(p)
+
+    _VALID = "schema_version: 1\nsuite:\n  name: s\n  app: cascor\n  base_config: [base.yaml]\n"
+
+    def test_suite_block_as_a_list_is_a_clean_SuiteError(self) -> None:
+        with self.assertRaisesRegex(run_suite.SuiteError, r"suite: must be a mapping, got list"):
+            self._load("schema_version: 1\nsuite:\n  - app: cascor\n")
+
+    def test_execution_block_as_a_string_is_a_clean_SuiteError(self) -> None:
+        with self.assertRaisesRegex(run_suite.SuiteError, r"execution: must be a mapping, got str"):
+            self._load(self._VALID + "execution: notamapping\n")
+
+    def test_matrix_block_as_a_list_is_a_clean_SuiteError(self) -> None:
+        with self.assertRaisesRegex(run_suite.SuiteError, r"matrix: must be a mapping, got list"):
+            self._load(self._VALID + "matrix:\n  - a\n")
+
+    def test_outputs_block_as_a_list_is_a_clean_SuiteError(self) -> None:
+        with self.assertRaisesRegex(run_suite.SuiteError, r"outputs: must be a mapping, got list"):
+            self._load(self._VALID + "outputs:\n  - a\n")
+
+    def test_exclude_as_a_string_is_a_clean_SuiteError(self) -> None:
+        # A string ITERATES as characters, so the downstream per-entry check would otherwise
+        # report "entries must be non-empty mappings" about single letters.
+        with self.assertRaisesRegex(run_suite.SuiteError, r"exclude: must be a list, got str"):
+            self._load(self._VALID + "exclude: foo\n")
+
+    def test_include_as_a_mapping_is_a_clean_SuiteError(self) -> None:
+        with self.assertRaisesRegex(run_suite.SuiteError, r"include: must be a list, got dict"):
+            self._load(self._VALID + "include:\n  a: 1\n")
+
+    # --- the negative controls: the guard must not start rejecting valid suites ----------
+
+    def test_a_valid_suite_still_loads(self) -> None:
+        doc = self._load(self._VALID)
+        self.assertEqual(doc["suite"]["app"], "cascor")
+
+    def test_absent_optional_blocks_stay_legal(self) -> None:
+        # Every caller writes `doc.get(k) or {}`; absent and empty are valid suites and must
+        # not be caught by a check aimed at truthy non-mappings.
+        doc = self._load(self._VALID)
+        for key in ("execution", "matrix", "outputs", "include", "exclude"):
+            self.assertNotIn(key, doc)
+
+    def test_empty_optional_blocks_stay_legal(self) -> None:
+        doc = self._load(self._VALID + "matrix: {}\nexclude: []\n")
+        self.assertEqual(doc.get("matrix"), {})
+        self.assertEqual(doc.get("exclude"), [])
+
+
 if __name__ == "__main__":
     unittest.main()
 
