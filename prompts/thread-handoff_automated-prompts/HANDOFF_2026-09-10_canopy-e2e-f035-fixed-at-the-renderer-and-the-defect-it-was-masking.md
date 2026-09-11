@@ -116,17 +116,18 @@ vs **3/3 with it stopped** (§9, R1).
 **Read §9 first.** The previous ordering put the most expensive item first and it was misdirected; the
 two cheapest and highest-value items were buried behind it.
 
-1. **Re-drive M-CANDIDATES-07 against a leg serving canopy#618.** The row has never been driven against
-   the fix for its actual cause. `:8053` predates both #614 and #618, so every F-052 observation in this
-   record describes a build with the defect still in it. Launch a new leg
-   (`util/ad-hoc/2026-09-04_canopy_verify_instance.bash up <worktree>/src 8054`) and re-run
-   `util/ad-hoc/2026-09-11_f052_trigger_eviction_test.py --runs 3` — with #618 in, the CONTROL arm should
-   now render 3/3 on its own.
-2. **M-METRICS-11..16/-18 re-drive.** Cheap, unblocked, and it converts **seven** matrix rows that were
-   untestable before #613. All three replay callbacks compute
-   `max_index = len(metrics_data) - 1 if metrics_data else 0` from the store #613 repaired
-   (`metrics_panel.py:1013/1060/1088`). `util/ad-hoc/2026-09-08_replay_block_redrive.py` exists and has
-   **not** been run against a fixed leg. This was item 2 and should have been item 1.
+1. ~~Re-drive M-CANDIDATES-07 against a leg serving canopy#618.~~ **DONE 2026-09-11 — the fix holds.**
+   Leg `:8054` at `a5cbdcd1`: the control arm renders **3/3** (was 1/3 on `:8053`), `loss_plot_responses: 1`
+   every run. The row is still not scored PASS — this drive measures the figure, not the row's full
+   script. **Owed: run the matrix's own M-CANDIDATES-07 script against `:8054`.**
+2. ~~M-METRICS-11..16/-18 re-drive.~~ **DONE 2026-09-11, and it decoupled F-CANOPY-048 from
+   F-CANOPY-035.** The store filled during the run (`initial` 0 → `final` **66**) and the replay UI still
+   read `0 / 0` with `max_index 0`, while the data-independent rows (-13 play toggle, -16 speed) failed
+   too. So F-048 is the sole blocker for all seven; the index rows are no longer downstream of an empty
+   store. **Owed: (a) why `update_replay_ui` did not apply on the fill — it takes `metrics-store.data` as
+   an INPUT (`metrics_panel.py:1086`), so the fill is a trigger it received; the claimed-Input promotion
+   block is still only a hypothesis; (b) FIX THE PROBE — it reads the store ONCE before driving and scores
+   the index rows on that stale value, which on a fixed leg mis-attributes them to F-035.**
 3. **The sibling sweep is DONE — decide what to do about the three it found.** `update_status_display`
    (`:283`), `update_epoch_progress` (`:303`) and `update_pool_info` (`:322`) each take that same 1 Hz
    store as their **only** Input, so all three are structurally exposed to the identical eviction. They

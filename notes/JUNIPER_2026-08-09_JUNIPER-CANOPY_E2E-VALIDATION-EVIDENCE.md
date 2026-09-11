@@ -7123,6 +7123,89 @@ so it follows these corrections rather than preceding them; §4 makes a second r
 round 1 produced corrections and changed a conclusion. **The fix pass is the least trustworthy part of any
 document** — round 2 is briefed on these corrections specifically, not on the phase as a whole.
 
+### The two re-drives the re-ordered still-owed list put first — 2026-09-11, on a leg serving `main`
+
+Leg: **`:8054`**, launched from a clean worktree at canopy `main` **`a5cbdcd1`** — which carries #613,
+**#614** (the strand repair) and **#618** (the F-052 trigger demotion). Clean tree, so the `git_sha` stamp
+is honest. Fixture unchanged: 66 metrics rows, `output` 54 / `candidate` 12.
+
+#### Item 1 — M-CANDIDATES-07 re-driven against the fix. The fix holds.
+
+`util/ad-hoc/2026-09-11_f052_trigger_eviction_test.py --runs 3`, same probe, same fixture, same settle as
+the pre-fix run:
+
+| leg | control arm (no intervention) |
+|---|---|
+| `:8053` `eab7cf43`, pre-#618 | **1 / 3** rendered |
+| `:8054` `a5cbdcd1`, post-#618 | **3 / 3** rendered |
+
+and `loss_plot_responses: 1` on every single run — the callback fires once and applies. **The row's
+blocker is gone.**
+
+Two honest qualifications, neither of which touches the result:
+
+- **The two legs are not matched builds** — 7 commits, 11 files, 489 insertions apart. But unlike the
+  `:8052`→`:8053` comparison this phase had to strike, **the only non-comment change to the file
+  containing the callback under test is the demotion itself** (`Input` → `State` plus the signature
+  re-order). And the stronger evidence is the *same-leg* A/B that motivated the fix: stopping the trigger
+  on `:8053` took it 1/3 → 3/3 with nothing else varied.
+- **The probe returned `SETPROPS-FAILED`**, because its treatment arm could no longer stop the panel tick
+  (`disabled` read back false, `n_intervals` advanced). That is the CAN-000 gate re-arming the lane it
+  owns, racing the probe's `setProps` — an instrument race, not a product change. The verdict ladder
+  checks the intervention before the control, so a **fixed** leg plus a lost `setProps` reports
+  `SETPROPS-FAILED` and masks the informative `CONTROL-DID-NOT-REPRODUCE`. The control numbers above are
+  read directly from the observations, not from the verdict.
+
+**M-CANDIDATES-07 is not scored PASS here.** The figure now renders reliably, but this drive measures the
+figure, not the row's full script; the row is re-driven properly when the matrix's own script is run.
+
+#### Item 2 — the replay rows: the store no longer blocks them, and F-CANOPY-048 is now demonstrated INDEPENDENTLY
+
+`util/ad-hoc/2026-09-08_replay_block_redrive.py` against `:8054`. The load-bearing numbers are in the
+probe's own bracketing reads:
+
+| | value |
+|---|---|
+| `initial.metrics_store_len` | **0** |
+| `final.metrics_store_len` | **66** |
+| `final.position` | **`0 / 0`** |
+| `final.max_index` | **0** |
+| `final.slider_value` | 10 (the drag landed) |
+
+**The store filled during the run and the replay UI never noticed.** `update_replay_ui`
+(`metrics_panel.py:1086`) takes **`metrics-store.data` as an Input** — not State — so the 0 → 66 fill is
+a trigger it receives directly, and after it the position text must read `0 / 65`
+(`max_index = len(metrics_data) - 1`). It reads `0 / 0`. The callback's output never applied.
+
+That matters because it **decouples F-CANOPY-048 from F-CANOPY-035 for the first time**. Every previous
+observation of these rows was taken with the store empty, so "the controls do nothing" and "there is
+nothing to control" were not separable. Now the store is full and the controls still do nothing:
+
+- the **data-independent** rows fail too — M-METRICS-13 (play toggle: `▶` → `▶`, `replay-interval.disabled`
+  true → true, mode `stopped` → `stopped`) and M-METRICS-16 (speed: `interval_ms` 1000 → 1000 across 2x /
+  4x / 1x). Neither depends on the store at all;
+- the index rows (-11, -12, -14, -15) each report **"the click produced no replay-state write"**.
+
+**Matrix effect.** The index rows' basis moves from "BLOCKED / downstream of the empty store (F-035)" to
+**FAIL on F-CANOPY-048**, which is now the sole blocker for all seven. Verdict tokens are unchanged (six
+were already FAIL); M-METRICS-18 stays BLOCKED but its blocker is re-attributed from F-035 to F-048.
+
+**An instrument defect this exposed, recorded because it will mis-score the next run too.** The probe
+takes its `metrics_store_len` reading ONCE, before driving, and scores the index rows against it —
+`M-METRICS-18: BLOCKED-BY-F-035 (metrics store len 0 → max_index 0)`. On a fixed leg the store fills
+*during* the run, so that verdict is computed on a stale read and systematically re-attributes the rows to
+a finding that no longer blocks them. The `final` block is what carries the truth, and the probe does not
+score on it. Fix the probe before re-running: read the store immediately before each step, or wait for the
+fill before driving.
+
+**What is NOT established**: *why* `update_replay_ui` did not apply on the fill. Its two Inputs are
+`replay-state.data` and `metrics-store.data`; with the replay interval disabled, `replay-state` is not
+being rewritten, so there is no obvious periodic evictor of the kind that explained F-035 and F-052. The
+F-048 hypothesis on record is a claimed-Input promotion block — `update_replay_ui` Outputs
+`replay-slider.value`, which is an Input of `handle_replay_controls` — and that remains a hypothesis. The
+discriminating measurement is the same one F-052 needed: watch `requested`/`watched` for these two
+identities across the fill.
+
 ### Round 2 (Lane B) — the DISPOSITION was wrong, and the corrections introduced two errors
 
 Lane B ran on the round-1-corrected text, as §2 of

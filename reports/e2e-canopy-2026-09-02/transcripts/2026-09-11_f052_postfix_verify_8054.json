@@ -1,0 +1,214 @@
+{
+  "probe": "2026-09-11_f052_trigger_eviction_test.py",
+  "canopy": "http://127.0.0.1:8054",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8054",
+    "version": "0.6.0",
+    "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+  },
+  "started_at": "2026-09-11T22:51:55Z",
+  "settle_s": 30.0,
+  "runs_per_arm": 3,
+  "observations": [
+    {
+      "arm": "control",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8054",
+        "version": "0.6.0",
+        "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+      },
+      "tick_n_end": 11,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 115
+      },
+      "rendered": true,
+      "i": 0
+    },
+    {
+      "arm": "treatment",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8054",
+        "version": "0.6.0",
+        "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+      },
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30144
+      },
+      "tick_n_at_disable": 1,
+      "tick_n_end": 10,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 123
+      },
+      "rendered": true,
+      "i": 0
+    },
+    {
+      "arm": "control",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8054",
+        "version": "0.6.0",
+        "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+      },
+      "tick_n_end": 13,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 116
+      },
+      "rendered": true,
+      "i": 1
+    },
+    {
+      "arm": "treatment",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8054",
+        "version": "0.6.0",
+        "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+      },
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 6779
+      },
+      "tick_n_at_disable": 1,
+      "tick_n_end": 11,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 129
+      },
+      "rendered": true,
+      "i": 1
+    },
+    {
+      "arm": "control",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8054",
+        "version": "0.6.0",
+        "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+      },
+      "tick_n_end": 9,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 102
+      },
+      "rendered": true,
+      "i": 2
+    },
+    {
+      "arm": "treatment",
+      "serving": {
+        "ok": true,
+        "url": "http://127.0.0.1:8054",
+        "version": "0.6.0",
+        "git_sha": "a5cbdcd1371cb2526c45c1c7fb48ed6e5b7a48f0"
+      },
+      "setprops": {
+        "ok": true,
+        "via": "memoizedProps.setProps",
+        "hops": 30048
+      },
+      "tick_n_at_disable": 1,
+      "tick_n_end": 12,
+      "tick_disabled_end": false,
+      "store_len": 66,
+      "figure": {
+        "present": true,
+        "traces": [
+          {
+            "name": "Candidate Training",
+            "n": 12
+          }
+        ],
+        "annotations": []
+      },
+      "wire": {
+        "loss_plot_responses": 1,
+        "carried_figure": 1,
+        "other": 117
+      },
+      "rendered": true,
+      "i": 2
+    }
+  ],
+  "summary": {
+    "control_rendered": "3/3",
+    "treatment_rendered": "3/3",
+    "tick_actually_stopped": false
+  },
+  "verdict": "SETPROPS-FAILED",
+  "verdict_why": "the panel interval kept advancing after disabled=true; the treatment was never applied"
+}
