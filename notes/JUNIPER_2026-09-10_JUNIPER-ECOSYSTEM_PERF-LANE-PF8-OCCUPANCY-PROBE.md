@@ -394,7 +394,21 @@ first pass, or reading both pool sizes from inside the process; neither was done
 > Two further corrections to this section. **(a)** `torch.get_num_threads()` **does** read 2
 > inside the process while the burst runs — it reports the library-global setting, not the width
 > in force on the thread doing the work, so that question could not have discriminated anything
-> on its own. **(b)** The trigger is that the pass runs on a thread other than the one that
+> on its own.
+>
+> > **2026-09-11 — (a) is worse than "could not have discriminated": running it would have
+> > DESTROYED the measurement.** `torch.get_num_threads()` is not a passive read. It runs torch's
+> > per-thread lazy init and **re-pins the calling thread's OpenMP ICV** to the global — proven by
+> > two threads identical but for that one call (16 → 16 without it, 16 → **8** with it). Read
+> > inside the listener during the burst, as this section proposes, it would have ended the burst
+> > and reported a quiet, correctly-pinned thread as evidence that nothing was wrong. The safe
+> > instrument is libgomp's `omp_get_max_threads()` through `ctypes`, which returns the calling
+> > thread's own width and mutates nothing. See
+> > [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
+> > §1.1. The "why only the initial pass" question this section also lists as unidentified is
+> > answered in that note's §3.3–§3.5.
+>
+> **(b)** The trigger is that the pass runs on a thread other than the one that
 > constructed the network: cascor's parent pin is applied in the constructor
 > (`cascade_correlation.py:617` → `:1179-1180`) while the service constructs in
 > `_create_network_locked` (`api/lifecycle/manager.py:1538`) on the request thread and trains in
