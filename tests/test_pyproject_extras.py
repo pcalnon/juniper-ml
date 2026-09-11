@@ -105,16 +105,16 @@ def _pins_from_reference_extras_table(text: str) -> dict[str, set[str]]:
 # this table (or vice versa) is the failure mode this lint catches.
 EXPECTED_EXTRAS = {
     "clients": {
-        "juniper-data-client>=0.4.1",
-        "juniper-cascor-client>=0.5.0",
+        "juniper-data-client>=0.5.0",
+        "juniper-cascor-client>=0.8.0",
     },
     "worker": {
         "juniper-cascor-worker>=0.4.0",
     },
     "servers": {
-        "juniper-canopy>=0.5.0",
-        "juniper-cascor>=0.5.0",
-        "juniper-data>=0.6.0",
+        "juniper-canopy>=0.7.0",
+        "juniper-cascor>=0.11.0",
+        "juniper-data>=0.14.0",
     },
     "tools": {
         "juniper-ci-tools>=0.1.0",
@@ -128,9 +128,9 @@ EXPECTED_EXTRAS = {
         "juniper-doc-tools>=0.1.0,<0.2.0",
     },
     "recurrence": {
-        "juniper-recurrence-model>=0.1.5,<0.3.0",
-        "juniper-recurrence>=0.2.0,<0.5.0",
-        "juniper-recurrence-client>=0.2.0,<0.3.0",
+        "juniper-recurrence-model>=0.3.0,<0.4.0",
+        "juniper-recurrence>=0.5.0,<0.6.0",
+        "juniper-recurrence-client>=0.3.0,<0.4.0",
     },
     "all": {
         "juniper-ml[clients,worker,servers,tools,recurrence]",

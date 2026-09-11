@@ -3,7 +3,7 @@
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-10
-**Status**: attribution SETTLED; one residual question named in §7
+**Status**: attribution SETTLED; §7 residuals 1 and 2 CLOSED 2026-09-11 by [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md), which also discharges §5's one inferred link — read the dated blockquotes in §5, §5.1 and §5.3 before quoting those sections
 **License**: MIT License
 
 ---
@@ -177,6 +177,15 @@ Engine::thread_main → ReadyQueue::pop`.
    unaffected by the thread it runs on) or §5.3 (later passes on the same wrong thread do not
    burst). Treat steps 1 and 3–6 as measured or read from source, and step 2 as the best-supported
    reading of why they compose the way they do.
+
+   > **2026-09-11 — step 2 is now MEASURED, and this caveat is discharged.**
+   > `omp_get_max_threads()`, read through `ctypes` from the already-loaded libgomp, returns the
+   > **calling thread's** `nthreads-var`. On the real path it reads 2 on the constructor's thread
+   > and **16** on the training thread created afterwards. The chain has no inferred link left.
+   > §5.1 and §5.3 are also no longer unpredicted — both are explained by the same instrument.
+   > See [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
+   > §2. Note also that **importing torch pins the importing thread to 8**, not 16; the 16 the
+   > training thread carries is libgomp's default, not torch's.
 3. The service constructs the network in `_create_network_locked`
    (`juniper-cascor/src/api/lifecycle/manager.py:1538`; the constructor call is at `:1578`),
    which runs on the **request** thread — `POST /v1/training/start` creates the network from the
@@ -199,6 +208,18 @@ open question ("whether `torch.get_num_threads()` reads 2 inside the listener wh
 runs") could not have discriminated anything on its own. It does read 2, and the pass still runs
 16-wide.
 
+> **2026-09-11 — that is only HALF of why the getter is useless here, and the other half is
+> worse.** Calling it is **not a passive read**: it runs torch's per-thread lazy init and
+> **re-pins the calling thread's ICV** to the global it reports. Two threads identical but for
+> that one call go 16 → 16 without it and 16 → **8** with it. So a probe that reads it inside the
+> listener during the burst does not merely fail to discriminate — it **ends the burst** and then
+> reports a quiet, correctly-pinned thread. Both halves are stated together here because until
+> 2026-09-11 they lived in separate documents. The safe instrument is libgomp's
+> `omp_get_max_threads()` through `ctypes`, which returns the calling thread's own width and
+> mutates nothing:
+> [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
+> §1.1.
+
 ### 5.1 What is NOT true
 
 A plain torch matmul is **not** affected by the thread it runs on: 1.84 cores / 2 threads whether
@@ -206,6 +227,16 @@ run on the constructor's thread or a worker (`syn_torch_same.json`, `syn_torch_t
 this is not "any torch op off-thread loses the pin". It is specific to the path this workload
 takes — a tight training loop with `loss.backward()`, which the profile shows running through the
 autograd engine. Naming the precise PyTorch code path that re-widens is left open (§7).
+
+> **2026-09-11 — the mechanism is now measured, and it INVERTS this section's reading.** The
+> matmul is not *immune* to the thread it runs on: a sustained 1500² matmul **re-pins its own
+> thread** from 16 to 2 (torch's global) and then runs at the width it just set. `loss.backward()`
+> and cascor's real `train_output_layer` do **not** re-pin, keep the fresh thread's 16, and burst —
+> 9.59 and 10.14 cores respectively. So **the burst is the ABSENCE of a re-pin, not the presence
+> of a special wide path**, which is the discriminator this section left unnamed. Two cautions:
+> the one-shot 512² matmul does **not** re-pin, so the effect is op-shape dependent and "a matmul
+> re-pins" does not generalise; and nothing here re-widens anything — a thread that was never
+> pinned has nothing to widen. See the 2026-09-11 note's §3.1–§3.2.
 
 ### 5.2 It is not a warm-up effect
 
@@ -241,6 +272,26 @@ thread after construction. Candidate-pool creation is the obvious suspect and is
 The pair `--mode output_pass --on-thread --repeat 3` (bursts throughout) against
 `--mode fit --on-thread` (one block) is a two-command bisection handle for whoever takes it.
 
+> **2026-09-11 — ANSWERED, and this section's question contained a false premise.** Nothing
+> "stops" the burst: it ends because the **initial output pass ends**, with the training thread's
+> ICV still at 16. What the growth loop changes is separate — it **re-pins the thread from 16 to
+> 2**, so every *later* pass runs 2-wide. Measured twice, and the two claims score oppositely:
+> "the drop ends the burst" is **REFUTED** (the burst was over 2.90 s / 3.49 s before the drop),
+> while "the drop is why later passes do not burst" is **SUPPORTED** (peak 2 threads after it).
+>
+> **The suspect named in the paragraph above is WRONG.** Candidate-pool creation does not re-pin:
+> `_ensure_worker_pool` returns with the ICV still at **16** in both runs. The re-pin happens
+> later, inside `_collect_training_results`, between its entry and the first
+> `_validate_training_result` — i.e. in the `result_queue.get()` that **unpickles the first
+> worker's `CandidateTrainingResult`**. Full enclosing stack and the two-run evidence:
+> [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
+> §3.3–§3.5. A plain `pickle.loads` of a small tensor does **not** reproduce it, so the precise
+> rebuild path inside the payload remains open.
+>
+> **Consequence for the defect's extent**: the thread-pin defect costs the **initial output pass
+> only**. The thread is re-pinned to 2 during the first candidate collection and stays there for
+> the rest of the run — it is not a whole-run 16-wide regime.
+
 ---
 
 ## 6. What this costs, and what it changes
@@ -259,11 +310,17 @@ The pair `--mode output_pass --on-thread --repeat 3` (bursts throughout) against
 
 ## 7. Residuals — what is still open
 
-1. **What ends the burst after the initial pass** (§5.3) — measured in both the listener and a
-   single process, unexplained, and not a re-pin. This is the live question; the two-command
-   bisection handle is in §5.3.
-2. The exact PyTorch code path that runs 16-wide off the constructor thread while a plain matmul
-   does not (§5.1).
+1. ~~**What ends the burst after the initial pass** (§5.3)~~ — **CLOSED 2026-09-11.** The premise
+   was wrong: nothing ends it, the pass ends. The later passes are quiet because the thread is
+   re-pinned 16 → 2 inside `_collect_training_results`; candidate-pool creation is excluded. See
+   the §5.3 blockquote. **Successor residual**: the exact rebuild path inside the worker payload
+   that re-pins — a small-tensor `pickle.loads` does not reproduce it.
+2. ~~The exact PyTorch code path that runs 16-wide off the constructor thread while a plain matmul
+   does not (§5.1).~~ — **CLOSED 2026-09-11, question inverted.** Nothing runs "16-wide off the
+   constructor thread" as a special path: a fresh thread is 16-wide for everything, and the
+   *matmul* is the exception because it re-pins itself. See the §5.1 blockquote.
+   **Successor residual**: why the re-pin is op-shape dependent (512² one-shot does not, 1500²
+   sustained does).
 3. Magnitudes here were taken at a one-minute load of 2.9–5.8 on a 16-core host, not on a quiet
    one. The **discrimination** (which variable removes the burst; which library appears in the
    profile; 16 threads vs 2) is not load-sensitive; the **cores and ms/epoch figures are**, and

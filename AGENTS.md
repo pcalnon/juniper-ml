@@ -4,7 +4,7 @@
 **Repository**: pcalnon/juniper-ml
 **Author**: Paul Calnon
 **License**: MIT License
-**Version**: 0.7.1
+**Version**: 0.8.0
 **Last Updated**: 2026-09-11
 
 ---
@@ -66,7 +66,7 @@ pip install -e ".[tools]"      # ci-tools + doc-tools + observability
 pip install -e ".[doc-tools]"  # markdown link validator (back-compat alias)
 pip install -e ".[all]"        # everything (multi-GB; pulls torch via worker)
 
-# Run all tests -- the full ordered list of 164 `python3 -m unittest`
+# Run all tests -- the full ordered list of 165 `python3 -m unittest`
 # commands lives in docs/REFERENCE.md -- see "Running every suite" under
 # § Test Suite Reference. It is generated from ci.yml's regression step, which is
 # the authoritative list; tests/test_ci_test_wiring_drift.py gates that every suite
@@ -251,12 +251,12 @@ This repo is part of the broader Juniper ecosystem. See the parent directory's `
 
 | Extra        | Packages                                                                                                                                                                                                     |
 |--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clients`    | `juniper-data-client>=0.4.1`, `juniper-cascor-client>=0.5.0`                                                                                                                                                 |
+| `clients`    | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                                                                                                                                 |
 | `worker`     | `juniper-cascor-worker>=0.4.0`                                                                                                                                                                               |
-| `servers`    | `juniper-canopy>=0.5.0`, `juniper-cascor>=0.5.0`, `juniper-data>=0.6.0`                                                                                                                                      |
+| `servers`    | `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`                                                                                                                                      |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.2.0`, `juniper-service-core>=0.2.0,<0.8.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)                                                                                                                     |
-| `recurrence` | `juniper-recurrence-model>=0.1.5,<0.3.0`, `juniper-recurrence>=0.2.0,<0.5.0`, `juniper-recurrence-client>=0.2.0,<0.3.0`                                                                                      |
+| `recurrence` | `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
 | `all`        | All of the above                                                                                                                                                                                             |
 
 ## Conventions

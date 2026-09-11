@@ -7,8 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-11
+
 ### Added
 
+- **Perf lane — nothing "stops" the first-pass burst; the training thread is re-pinned during
+  candidate result collection, and `torch.get_num_threads()` is not a passive read**
+  (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`).
+  Both residuals left open by §7 of
+  `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md` are
+  closed, and **that note's named suspect is refuted**. libgomp's per-thread `nthreads-var` ICV is
+  readable through `ctypes` (`omp_get_max_threads()` returns the *calling thread's* width), which
+  is the quantity the whole arc had been inferring. Results: (1) §5's one **inferred** link — that
+  `omp_set_num_threads` binds the calling thread — is now **measured** (constructor thread 2,
+  training thread created afterwards **16**; importing torch pins the importing thread to 8, so
+  the 16 is libgomp's default, not torch's). (2) The question "what ends the burst" had a false
+  premise: **nothing does** — the burst ends when the initial output pass ends, ICV still 16. The
+  growth loop instead **re-pins the thread 16 → 2**, which is why *later* passes are quiet. Scored
+  separately and oppositely in both runs: "the drop ends the burst" **REFUTED** (the burst was over
+  2.90 s / 3.49 s earlier), "the drop is why later passes do not burst" **SUPPORTED** (peak 2
+  threads after). (3) **Candidate-pool creation is excluded** — `_ensure_worker_pool` returns with
+  the ICV still 16; the re-pin is localised to the `result_queue.get()` that unpickles the first
+  worker's `CandidateTrainingResult`, inside `_collect_training_results`. (4) §5.1 is **inverted**:
+  the sustained matmul is not immune to its thread, it **re-pins its own thread** and then runs at
+  that width, while `loss.backward()` (9.59 cores) and cascor's real output pass (10.14) do not
+  re-pin and burst — so the burst is the *absence* of a re-pin, not a special wide path. (5) New
+  hazard: **`torch.get_num_threads()` re-pins the calling thread** (16 → 16 without the call, 16 →
+  8 with it), so the occupancy note's §4.2 proposed discriminator would have destroyed the
+  measurement it was meant to take; that section now carries the warning. Consequence for the open
+  cascor thread-pin decision: the defect's **extent** is bounded to the initial output pass only,
+  not a whole-run 16-wide regime. No owner decision is taken or re-opened. New under `util/ad-hoc/`:
+  `2026-09-11_omp_icv_checkpoint_probe.py` (the instrument) and `2026-09-11_icv_trace_align.py`
+  (the reducer, which scores the two claims separately); new
+  `tests/test_pf8_icv_checkpoint_probe.py` (18 tests) wired into `.github/workflows/ci.yml`,
+  `AGENTS.md` (test count 164 → 165) and `docs/REFERENCE.md`. Corrections applied at source to
+  `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md` (§5,
+  §5.1, §5.3, §7, status line) and
+  `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md` (§4.2).
 - **Perf lane — the initial output pass's ~11-core burst is libgomp under torch, not NumPy's
   OpenBLAS, and cascor's parent thread pin binds only the thread that ran the constructor**
   (`notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-LIBRARY-ATTRIBUTION.md`). The
@@ -148,6 +183,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   squash and the armed-but-`BEHIND` split that exposed the config deadlock above.
 
 ### Changed
+
+- **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
+  retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
+  `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`; `[recurrence]`
+  `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`,
+  `juniper-recurrence-client>=0.3.0,<0.4.0`. Decision 11 (§9.5 of
+  `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, producer-side
+  juniper-data#369) retired the `*_full` family, and every package above shipped its half of that
+  change. Until now `pip install juniper-ml[recurrence]` could not resolve the new versions **at all**:
+  the old caps were `juniper-recurrence-model<0.3.0` and `juniper-recurrence-client<0.3.0`, which
+  actively forbid the releases that carry `derive_full_split` — the reconstruction `POST /v1/crossval`
+  depends on for a post-#369 artifact.
+
+  These are **floors on a meta-package**, so nothing here is a behaviour change in this repo; the
+  behaviour is in the pinned packages, each documented in its own changelog. The lockstep artifacts
+  move with them: `tests/test_pyproject_extras.py` (which asserts the exact strings), the four extras
+  tables in `AGENTS.md`, `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`, and a new `0.8.x`
+  row in the compatibility matrix — whose prose still said "juniper-ml 0.6.0 declares" while the
+  package was at 0.7.1.
+
+- **`juniper-cascor-client` floored at `>=0.8.0`, which is where the base-URL host guard actually
+  starts.** `docs/REFERENCE.md`'s HTTP-client note said the latest released data-client was `0.4.2` and
+  "still lacks the host guard", so `pip install juniper-ml[clients]` could resolve a wheel that
+  "silently accepts `HTTPS://host` (TLS downgrade)". Checked against the *published* wheels in a clean
+  venv: `juniper-data-client` 0.5.0 and `juniper-cascor-client` 0.8.0 both refuse a hostless `https://`
+  and both **normalise** `HTTPS://host` to `https://host`, so the TLS-downgrade reading is withdrawn.
+  What survived was narrower and was a live gap — the data-client floor guaranteed the guard, the
+  cascor-client floor did not. Each published cascor-client wheel was then probed in a throwaway venv
+  (`util/ad-hoc/2026-09-11_cascor_client_guard_boundary.py`): **0.5.0, 0.6.0 and 0.7.0 all fail both
+  halves**, and **0.8.0 is the first release carrying either**. The floor is set from that measurement
+  rather than from the changelog that introduced the fix, and the gap is closed rather than documented.
 
 - Widened the `recurrence` extra's `juniper-recurrence` ceiling to admit the released next minor:
   `juniper-recurrence>=0.2.0,<0.5.0` (0.4.0 on PyPI). Supersedes dependabot #1323, which cannot
