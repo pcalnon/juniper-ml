@@ -428,3 +428,62 @@ constant; D-1 cited content for a clause about length; the store count used a fi
 store that lives in a volume. Each time the artifact checked was *adjacent* to the one that could
 falsify the claim. Every instance was caught by re-derivation, none by re-reading — which is the
 procedure's §5.2 earning its cost.
+---
+
+## 10. Release status — decision 11 is ON PyPI (2026-09-10/11)
+
+Decision 11 shipped to `main` on 2026-09-06; that is not the same as shipping to users, and this
+section exists because the distinction cost four days once already (see the model-core row).
+
+**The eight decision-11 packages are published.** Each was cut as a GitHub Release (never a bare tag
+push), published first to TestPyPI with install verification, then to PyPI behind the `pypi`
+environment's owner-approval gate. The ninth row, `juniper-ml` itself, carries no decision-11 code —
+it is the meta-package whose floors make the other eight reachable by `pip install`.
+
+| package | version | what decision 11 required of it |
+| --- | --- | --- |
+| `juniper-data` | **0.14.0** | producer: all 16 generators to `VERSION 3.0.0`, `*_full` no longer emitted (data#369) |
+| `juniper-data-client` | **0.5.0** | `NPZ_SPLITS` drops `"full"`, gains `"val"` (dclient#187, #190) |
+| `juniper-cascor` | **0.11.0** | `required_keys` off `*_full` (cascor#625) |
+| `juniper-canopy` | **0.7.0** | validation ladder off `X_full` (canopy#589); sequence installs were train-only until canopy#604 |
+| `juniper-recurrence-model` | **0.3.0** | `derive_full_split` — the reconstruction the whole-dataset view now needs |
+| `juniper-recurrence-client` | **0.3.0** | split surfaces stop advertising `_full` (recurrence#152) |
+| `juniper-recurrence` (app) | **0.5.0** | floors on model `>=0.3.0`; `requirements.lock` re-locked (recurrence#163) |
+| `juniper-model-core` | **0.3.2** | publishes the `crossval/splits.py` docstring fix stranded on `main` since ml#1829 |
+| `juniper-ml` (meta) | **0.8.0** | floors seven of the eight above, plus `juniper-cascor-client>=0.8.0` for the base-URL guard. `juniper-model-core` is the eighth and is **admitted, not floored** — see below |
+
+**`juniper-model-core` is floored by nobody.** juniper-ml's `[tools]` extra pins it `>=0.1.0,<0.4.0`, which
+*admits* 0.3.2 but does not require it, so `pip install juniper-ml[tools]` may still resolve 0.3.1 and its
+stale docstring. Left deliberately: the difference is documentation-only, and a floor raise would be a
+consumer break for no behavioural gain. Worth knowing before treating "0.3.2 is released" as "0.3.2 is
+what consumers get".
+
+**Verified from the PUBLISHED wheels, not the checkout** (`util/ad-hoc/2026-09-10_verify_published_wheels.py`):
+
+- `juniper-data-client` 0.5.0 → `NPZ_SPLITS == ("train", "val", "test")`, no `"full"`.
+- `juniper-recurrence-model` 0.3.0 → `derive_full_split` exercised on real arrays: plain concatenation
+  order, the **entity-major restoration** for a panel artifact, and legacy `*_full` passthrough. The
+  middle case is the one that matters — a split-major concatenation yields a different row permutation,
+  and walk-forward folds slice by row index, so the naive rebuild would silently redistribute windows
+  across folds.
+- `juniper_recurrence-0.5.0-py3-none-any.whl` METADATA carries `juniper-recurrence-model<0.4.0,>=0.3.0`
+  in `dependencies`, `[torch]` and `[bench-torch]` — the floor survived merge, release and publish.
+
+**A checkout is not a deployment.** `juniper-model-core` held the corrected docstring on `main` from
+ml#1829 while the published 0.3.1 wheel still served the retired contract — repo and PyPI both reading
+`0.3.1` with different contents, because the fix landed after the release and carried no bump. Nothing
+detected it: the release train's `detect.py` scores the package `UP_TO_DATE, bump=none` (`0/0/3`, all
+*discounted*) because it discounts docs-only diffs, so the ceremony would never have proposed 0.3.2 on
+its own. It was cut by explicit owner decision on 2026-09-10.
+
+**Still open after the release** — none of these are blocked by it:
+
+- **S-1 (hf/kaggle stores)**: `juniper_data/storage/hf_store.py:110` and `kaggle_store.py:212` still cut
+  a TWO-way split (`X[:n_train]`, `X[n_train:]`), still write `X_full` / `y_full` (`:147` / `:244`), and
+  emit no `X_val`. Re-verified against `origin/main` 2026-09-11. Documented as a known gap in
+  juniper-data 0.14.0's changelog; the product decision is open.
+- **Decision 12** (`partition_provenance`): unimplemented. Zero Python hits ecosystem-wide on
+  2026-09-11 — the only matches are this document, the design, `docs/REFERENCE.md` and three handoffs.
+- **Plan §9 S-7** → juniper-canopy#559, still OPEN. Note that §9's `S-<n>` scheme numbers *design*
+  findings and is unrelated to the release-straggler `S-<n>` scheme used in the 2026-09-09 handoff;
+  the two collide completely, and that handoff's §5 renders both in one table.
