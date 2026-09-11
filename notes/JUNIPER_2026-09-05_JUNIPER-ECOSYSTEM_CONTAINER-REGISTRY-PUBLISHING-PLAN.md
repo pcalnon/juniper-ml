@@ -3,7 +3,13 @@
 **Project:** Juniper (ecosystem-wide)
 **Author:** Paul Calnon
 **Date:** 2026-09-05
-**Status:** ACCEPTED — decisions ratified by the owner 2026-09-05; Wave 1 (pilot) in flight
+**Status:** ACCEPTED — decisions ratified by the owner 2026-09-05. **Waves 1 and 2 complete**
+(all five repos carry `publish-image.yml`). **Three of five release images published**:
+`juniper-cascor:0.11.0`, `juniper-data:0.14.0`, `juniper-recurrence:0.5.0`. **Wave 3 blocked**
+on two Releases — juniper-cascor-worker v0.6.0 (proposal: worker#184) and juniper-canopy
+v0.8.0 (proposal: canopy#620); canopy has no GHCR package at all yet, so its Release is also
+item 1's first publish. **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on secrets.
+Last state refresh: 2026-09-11.
 **Scope:** publishing the five Juniper service images to container registries
 
 ---
@@ -82,6 +88,12 @@ scheme already settled, rather than a variable in the same experiment.
 Note for phase 2: cascor and cascor-worker are torch-bearing and therefore multi-GB.
 Docker Hub's storage and pull-rate posture for a personal account should be checked before
 that push is added, not after.
+
+> **Superseded in part, 2026-09-11.** "Multi-GB" was true of the CUDA images, which were
+> **bugs** — see the three-shape CUDA finding. The published CPU-only worker is **312 MB
+> compressed** (amd64; 270 MB arm64), not 2.86 GB. The size premise behind OQ-1's caution
+> no longer holds, which is why OQ-1 could be ruled rather than deferred again. The
+> pull-rate posture was checked (numbers in §6 OQ-1) and is the part that still matters.
 
 ### D-3 — Release-only trigger; tags `X.Y.Z`, `X.Y`, `latest`
 
@@ -173,7 +185,7 @@ to discover that is on a Pi.
 | 2 | juniper-data | pending |
 | 2 | juniper-recurrence | pending — build context is **nested** (`juniper-recurrence/juniper-recurrence/`) |
 | 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | pending |
-| 4 | Docker Hub as a second push target (D-2 phase 2) | pending |
+| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets (§6 OQ-1) |
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
 constraint most likely to break arm64. Proving it there de-risks the other four.
@@ -185,8 +197,33 @@ working, and local development does not require a registry round-trip.
 
 ## 6. Open questions
 
-- **OQ-1.** Does Docker Hub's personal-account posture (storage, pull limits) suit multi-GB
-  torch images? Decide before Wave 4, not during it.
+- **OQ-1 — RULED 2026-09-11: yes, proceed to Wave 4.** Owner decision. The grounding, so a
+  later reader can re-check it rather than inherit it:
+
+  | posture | value (docs.docker.com, read 2026-09-11) |
+  | --- | --- |
+  | public repositories, Personal (free) | **unlimited** (5 are needed) |
+  | private repositories, Personal | 1 — irrelevant; all five are public |
+  | pull rate, authenticated Personal | **200 per 6 hours** |
+  | pull rate, unauthenticated | **100 per 6 hours** per IPv4 address **or IPv6 /64 subnet** |
+  | how a pull is counted | **once per architecture** — a 2-arch index pulled on both arches is 2 |
+  | storage cap | none stated for public repositories |
+
+  **The size objection is gone**: the CPU-only images are 270–312 MB compressed, not the
+  multi-GB CUDA images the original caution was written against (see the D-2 note above).
+
+  **The live constraint is the anonymous rate, not storage.** 100 per 6 h is scoped to an
+  IPv4 address *or an IPv6 /64* — so every Pi node behind one household connection shares
+  one bucket, and a 2-arch image costs one pull per arch. Wave 4 should therefore log
+  **authenticated** pulls on the Pi nodes (200/6 h) rather than rely on the anonymous
+  allowance, and that is a deployment note, not a workflow change. It also bears on OQ-3,
+  which until now was framed as a RAM question only.
+
+  **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
+  `DOCKERHUB_USERNAME`) repository secret in each of the five image repos —
+  juniper-cascor, juniper-cascor-worker, juniper-canopy, juniper-data, juniper-recurrence.
+  Until those exist the second login+push cannot be added, and adding it early would fail
+  every release. Scope the token to **Read & Write**, not Admin.
 - **OQ-2.** Should a `:X.Y.Z-cuda` variant exist for cascor / cascor-worker, and if so is it
   built on release or on demand? (D-5.)
 - **OQ-3.** Do the Pi nodes have enough RAM to run a torch-bearing worker in practice? This
