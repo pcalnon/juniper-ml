@@ -694,3 +694,58 @@ treatment with nowhere to travel.
 `csv_import` (excluded). **Seven of §12.1's ten are now seeded** — five rank-3, two rank-2 — and
 nothing remains that is both validated and deliverable: each of the three that remain has a named,
 measured blocker rather than a backlog entry.
+
+### 12.8 `equities` unblocked, and §12 closes (2026-09-11)
+
+Shipped as **canopy#621** (the unblock + the seed) and **canopy#622** (the availability message
+that unblock made load-bearing). Together these close §12: **eight of §12.1's ten generators are
+seeded**, and the two that are not each have a settled, recorded reason rather than a blocker.
+
+**§12.7 named the blocker correctly and stopped one step short of the cause.** It recorded that
+`dataset_default_params` was recurrence-only and that `symbols` is an unrenderable array. The
+missing step was that this is not a property of `equities` at all — it is a property of the
+**defaults channel**, which reached one of the two model tiers while its own docstring called the
+registry "the single source of truth". Any future rank-2 seed needing any parameter would have hit
+it. Fixing the channel was therefore both smaller and more general than working around it.
+
+**Both halves were required, and that is the part worth carrying forward.**
+
+1. `_apply_dataset_handler` seeds the cascor payload from the registry and lets the form override
+   it — the same order the recurrence path already used. This is what lets an unrendered key travel.
+2. `apply_seeded_defaults` seeds the **rendered controls** from the same place. Without it, a key
+   that is both seeded and rendered is posted back at its *schema* default on the next Apply,
+   silently undoing the seed — and the operator is shown one value while a different one is sent.
+
+Doing only (1) passes a unit test of the payload and still breaks in the browser on the second
+Apply. When a defaults channel gains a consumer, ask what else re-sends that value.
+
+The change is a no-op for every cascor seed shipped today: all seven carry `default_params={}`,
+asserted rather than assumed (`test_an_unseeded_dataset_is_unchanged`).
+
+**`equities` needed a third key the rank-3 sibling never did.** Beyond `symbols` and
+`fundamentals_fill`, it needs **`normalize_features=True`**: its columns are raw market
+quantities, and unnormalised CasCor's first output pass reports a loss of **5.83e+21** against
+**0.2511**. Train top-1 is ~0.52 either way, so **accuracy alone would not have caught it** — only
+the loss magnitude shows it. As seeded: `(15799, 16)`, zero non-finite in any split, 3 units
+recruited, 0.2511 → 0.2491 in 1.2s.
+
+**A second defect surfaced because the seed made it common.** `equities` needs juniper-data's
+`equities` extra, absent from that lockfile, so it is the dataset an operator will actually find
+greyed — and canopy's greyed message said only "unavailable in this deployment". The producer had
+been publishing the remedy all along: `GeneratorInfo.install_hint` has been on `/v1/generators`
+since **W-4**, and its docstring says it exists because `available: false` otherwise "says a
+generator cannot run and nothing at all about what would fix that". canopy was re-wording that
+string for two generators and saying nothing useful for the rest, behind a comment asserting the
+field did not exist. canopy#622 derives the label from the wire and renders the producer's hint
+verbatim in the params panel — label and panel deliberately split, because a `pip install` command
+does not fit in a dropdown option.
+
+**§12 final state**, against §12.1's ten:
+
+| seeded (8) | not seeded (2) |
+|---|---|
+| `gaussian`, `checkerboard`, `equities` (rank-2) | `arc_agi` — no fixed rank; `flatten_pairs` flips it and `DatasetTypeSpec.ndim` is static |
+| `multi_sine`, `mackey_glass`, `irregular_sine`, `ar_p`, `delay_product` (rank-3) | `csv_import` — an import path, not a peer generator; `file_path` is required |
+
+Neither remaining entry is waiting on effort: `arc_agi` is waiting on a **design decision** about
+how the registry should express a variable-rank generator, and `csv_import` is a settled exclusion.
