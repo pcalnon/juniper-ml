@@ -421,3 +421,65 @@ python3 util/ad-hoc/2026-09-06_docs_residue_audit.py <report>                # t
 
 The consolidator stops on any hunk it cannot address and names the PR to resume from; the two
 that stopped this run (#1662, #1701) are the ones adjudicated in §3.
+
+---
+
+## 6. §4 adjudicated — CLOSED 2026-09-11, zero content losses
+
+§4 was carried as this arc's last open content-loss question through three handoffs, each
+restating it as "87 residue lines still unadjudicated". It is closed here, and the headline
+is that **nothing was lost**.
+
+### First, a correction to §4's own preamble
+
+§4 says "87 lines across the remaining 31 PRs". It holds **173 lines across 31 PR sections**,
+and those sections include all four PRs §3 adjudicates separately (#1736, #1701, #1671,
+#1662). The 87 is the arithmetic `173 − 86` applied to a section that in fact lists every
+ABSENT line, the four largest included. Nobody counted §4; the number was derived from §2's
+table and never checked against the section it describes.
+
+### The adjudication
+
+`util/ad-hoc/2026-09-11_residue_section4_adjudicate.py` re-asks the question against the tree
+as it stands today, with weaker keys than the original classifier (which matched only on
+backticked identifiers and anchors, and says so):
+
+| Verdict | Lines | Meaning |
+|---|---:|---|
+| STRUCTURAL | 24 | bare table rows / separators — cannot stand alone, so absence is not loss |
+| EXACT | 11 | verbatim in tracked markdown today |
+| HEADING | 6 | same section, re-cased or with `(operational)` dropped |
+| ANCHOR | 82 | every backticked identifier on the line co-occurs in one file |
+| PROSE | 8 | ≥ 0.82 similar to a line in the tree — the rewording the original key was blind to |
+| ABSENT | 42 | nothing resembling it found mechanically |
+
+**32 of the 42 belong to the four PRs §3 already adjudicated** as superseded drafts
+(#1736 ×14, #1671 ×9, #1662 ×5, #1701 ×4). The genuinely unadjudicated remainder is
+**10 lines across 7 PRs**, each checked by hand:
+
+| PR | Line | Verdict |
+|---|---|---|
+| #1657 | `## Defect-register close protocol (operational)` | Present — tree titles it `Defect Register Close Protocol` (`docs/REFERENCE.md:64`). Differs by one hyphen. |
+| #1692 | freeze-tell exit-code semantics | Present — `docs/REFERENCE.md` ×3 and the cheatsheet ×2 carry "no user-owned importer". |
+| #1641 | `Tip:` run the worktree in-use probe | Duplicate — cheatsheet rows `:124` and `:306`. The `Tip:`-duplicating-a-cheatsheet-row shape §4's own preamble predicts. |
+| #1646 | `Tip:` run `e2e_finding_triage.py` | Duplicate — `docs/DOCUMENTATION_OVERVIEW.md:44` and cheatsheet `:125`. |
+| #1615 | `matrix`/`include` read but `base_config` inheritance invisible | Present, reworded — `docs/REFERENCE.md:3393` states the same limitation with the `pf3-cascor-pool-scaling` worked example. Below the 0.82 prose threshold, which is why it scored ABSENT. |
+| #1639 | `e2e_f027_*.py` is "retained provenance" | Not a loss — the tools and their F-027 context are documented (cheatsheet `:123`, `:836`; `REFERENCE.md:1473`), and ad-hoc retention is repo-wide policy (`util/ad-hoc/README.md`), not a per-family note. |
+| #1668 ×4 | `**Status**: PLAN v3 — … Still do not implement from this document.` | **STALE, and merging it would have REVERTED the tree.** `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md:9` now reads `PLAN v3 — LARGELY DISCHARGED 2026-09-05. The third partition now exists end to end`. The branch's status is the older, now-false one. |
+
+**Zero genuine content losses.** The one line that mattered is #1668's, and it mattered in the
+opposite direction to the one the open question implied: the consolidator's refusal *protected*
+a shipped status from being overwritten by a stale draft. That is the case the whole
+refuse-and-report design exists for, and it is the reason the residue was worth keeping.
+
+### Two traps this adjudication paid for
+
+1. **The residue document is itself tracked markdown, and §4 quotes every held-back line
+   verbatim.** A corpus built from `git ls-files '*.md'` therefore matches every line against
+   ITSELF and reports 149 / 149 accounted for. The first run of the adjudicator did exactly
+   that. A self-match is not a weak signal — it measures the wrong thing entirely, and it
+   looks like a clean result.
+2. **Case and a `(operational)` suffix manufacture losses.** Six headings scored ABSENT
+   against sections that exist, because the branch wrote `## Cascor primary freeze tell
+   (operational)` and the tree writes `### Cascor Primary Freeze Tell`. A verdict of "lost"
+   from an exact-match key is a statement about the key.
