@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "juniper-ml"
-version = "0.7.1"
+version = "0.8.0"
 description = "Juniper - Cascade Correlation Neural Network Research Platform"
 readme = "README.md"
 license = "MIT"
@@ -27,8 +27,8 @@ dependencies = []
 
 [project.optional-dependencies]
 clients = [
-    "juniper-data-client>=0.4.1",
-    "juniper-cascor-client>=0.5.0",
+    "juniper-data-client>=0.5.0",
+    "juniper-cascor-client>=0.8.0",
 ]
 worker = [
     "juniper-cascor-worker>=0.4.0",
@@ -44,9 +44,9 @@ doc-tools = [
     "juniper-doc-tools>=0.1.0,<0.2.0",
 ]
 servers = [
-    "juniper-canopy>=0.5.0",
-    "juniper-cascor>=0.5.0",
-    "juniper-data>=0.6.0",
+    "juniper-canopy>=0.7.0",
+    "juniper-cascor>=0.11.0",
+    "juniper-data>=0.14.0",
 ]
 tools = [
     "juniper-ci-tools>=0.1.0",
@@ -64,9 +64,9 @@ tools = [
 # [servers] and the model/client into [tools]/[clients]) keeps those aggregates'
 # semantics intact and lets `pip install juniper-ml[recurrence]` pull the whole stack.
 recurrence = [
-    "juniper-recurrence-model>=0.1.5,<0.3.0",
-    "juniper-recurrence>=0.2.0,<0.5.0",
-    "juniper-recurrence-client>=0.2.0,<0.3.0",
+    "juniper-recurrence-model>=0.3.0,<0.4.0",
+    "juniper-recurrence>=0.5.0,<0.6.0",
+    "juniper-recurrence-client>=0.3.0,<0.4.0",
 ]
 all = [
     "juniper-ml[clients,worker,servers,tools,recurrence]",

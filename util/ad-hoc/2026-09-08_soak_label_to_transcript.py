@@ -398,8 +398,17 @@ def bind(all_obs: list[dict], transcripts: dict[str, list[dict]]) -> list[dict]:
 
     Where a probe's transcript count and its observation count disagree the
     binding is reported `ordinal` rather than `exact` and must not be relied on:
-    8 pilot runs were discarded for registry leakage (`conf/soak_probes.json`
+    pilot runs were discarded for registry leakage (`conf/soak_probes.json`
     `_README`), so a surplus of transcripts is expected.
+
+    THE COUNT IS 10, NOT 8. This docstring said 8 until 2026-09-10, when the set
+    was enumerated for the first time: 57 probe-id transcripts, 40 bound, 17
+    unbound, of which 7 carry a recorded retirement reason in the registry's
+    `retired` block and **10** do not. All 10 screen as contaminated, so the
+    discard was principled -- what was missing is a per-run record of the reason,
+    and a correct count. Enumerated by
+    `util/ad-hoc/2026-09-10_soak_stopping_rule/discarded_run_census.py`; analysed
+    in `notes/JUNIPER_2026-09-10_JUNIPER-ML_SOAK-DISCARDED-RUN-SELECTION-ANALYSIS.md`.
     """
     labelled: dict[str, list[dict]] = {}
     bound = []

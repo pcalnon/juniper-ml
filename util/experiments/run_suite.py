@@ -84,6 +84,29 @@ def _sha8(payload: str) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()[:8]
 
 
+def _require_mapping(doc: dict, key: str) -> None:
+    """`doc[key]`, if present and non-empty, must be a mapping.
+
+    Absent / None / empty stays legal -- every caller writes `doc.get(key) or {}` and an empty
+    block is a valid suite. What must not pass is a TRUTHY NON-MAPPING, which is exactly what
+    the falsy guard lets through.
+    """
+    value = doc.get(key)
+    if value and not isinstance(value, dict):
+        raise SuiteError(f"{key}: must be a mapping, got {type(value).__name__}")
+
+
+def _require_sequence(doc: dict, key: str) -> None:
+    """`doc[key]`, if present and non-empty, must be a list -- not a mapping or a string.
+
+    A string is the trap worth naming: `exclude: foo` iterates as CHARACTERS, so the
+    per-entry check downstream reports "entries must be non-empty mappings" about letters.
+    """
+    value = doc.get(key)
+    if value and not isinstance(value, list):
+        raise SuiteError(f"{key}: must be a list, got {type(value).__name__}")
+
+
 def load_suite(path: Path) -> dict:
     try:
         doc = yaml.safe_load(path.read_text())
@@ -96,6 +119,19 @@ def load_suite(path: Path) -> dict:
         raise SuiteError(f"unknown top-level suite keys: {sorted(unknown)}")
     if doc.get("schema_version") != 1:
         raise SuiteError("schema_version must be 1")
+    # `or {}` is a FALSY guard, not a TYPE guard: it fixes None and {} and passes a value that
+    # is truthy and not a mapping straight through. This function type-checks `doc` itself two
+    # lines above and then trusted `or {}` for every nested block, so a suite whose `suite:` is
+    # a LIST reached `set(suite) - SUITE_SUITE_KEYS` and died with
+    # `TypeError: unhashable type: 'dict'` -- an internal traceback from the one function whose
+    # entire job is to turn malformed operator YAML into a clean SuiteError. Reproduced before
+    # this fix on `schema_version: 1` + `suite:` as a two-item list.
+    _require_mapping(doc, "suite")
+    _require_mapping(doc, "execution")
+    _require_mapping(doc, "matrix")
+    _require_mapping(doc, "outputs")
+    _require_sequence(doc, "include")
+    _require_sequence(doc, "exclude")
     suite = doc.get("suite") or {}
     unknown = set(suite) - SUITE_SUITE_KEYS
     if unknown:

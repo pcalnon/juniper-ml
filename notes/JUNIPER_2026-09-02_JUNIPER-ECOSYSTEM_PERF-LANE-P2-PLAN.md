@@ -460,6 +460,14 @@ line numbers §12 quotes, two of which have drifted.
   `JUNIPER_CASCOR_BLAS_THREADS` from `runtime.blas_threads` would **mask** the defect rather than
   repair it, so the "implement" option in the owner decision above is not the whole fix. The
   narrower repair is a cascor change.
+  - **2026-09-11 — the defect's EXTENT is now bounded to the initial output pass**
+    ([`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)).
+    The training thread is re-pinned from 16 to 2 during the **first candidate result
+    collection** — inside `_collect_training_results`, at the `result_queue.get()` that unpickles
+    the first worker's result — and stays at 2 for the rest of the run. So this is **not** a
+    whole-run 16-wide regime: it costs the initial pass only. Candidate-pool creation, named as
+    the suspect by the 2026-09-10 note, is **excluded** — `_ensure_worker_pool` returns with the
+    ICV still 16. Neither the decision above nor row 2.2 changes.
 - **A parallel cascor suite under `suites/` turns the R-6 drift gate red in CI.** `load_suite`
   enforces the cascor version floor by reading the sibling tree; CI clones only juniper-ml, the
   check fails closed, and `test_every_suite_loads` fails while the same file passes locally. Found
