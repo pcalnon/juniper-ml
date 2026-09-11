@@ -505,10 +505,6 @@ class TerminalVerdictDoesNotGateADryRun(unittest.TestCase):
         self.assertNotIn("terminal", err.lower())
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class RetrievalChannelIgnoresAnswerText(unittest.TestCase):
     """A mention of the pointer in PROSE is not retrieval.
 
@@ -550,3 +546,61 @@ class RetrievalChannelIgnoresAnswerText(unittest.TestCase):
         }
         ch = mod.retrieval_channel(parsed, "docs/REFERENCE.md#x")
         self.assertFalse(ch["pointer_doc_referenced"])
+
+
+class WiredChannelSeesToolInputsOnly(unittest.TestCase):
+    """Which of §3.E's false-positive mechanisms can reach the WIRED channel.
+
+    Work item 4 of the 2026-09-09 soak handoff says *"two false-positive mechanisms
+    remain in `util/soak_run_probe.py` -- the path that scores real runs"*. They do
+    not. The two §3.E leaves open -- a ``grep -rln`` FILENAME LIST and the soak
+    ledger's own NOTE -- are both things that arrive in a tool RESULT, and this
+    module reads tool INPUTS only. They can reach the UNWIRED screen
+    (``util/ad-hoc/2026-08-21_soak_probe_evidence.py``, which does scan results) and
+    nothing else. Measured 2026-09-10 by
+    ``util/ad-hoc/2026-09-10_soak_stopping_rule/wired_channel_mechanism_probe.py``.
+
+    THIS CLASS IS A STANDARD PIN, NOT A BUG PIN, and it is meant to go red one day.
+    §3.D records that wiring ``tool_result`` into ``parse_events`` **changes the
+    retrieval standard** and is owner-decision territory rather than a plumbing fix.
+    If someone wires it, the two mechanism cases below start firing and this reddens
+    -- which is the point: the change becomes visible as a standard change instead of
+    arriving as a silent widening of what counts as a follow.
+    """
+
+    DOC = "docs/REFERENCE.md"
+
+    def test_a_filename_list_command_does_not_reach_this_channel(self) -> None:
+        """`grep -rln <term> .` returns paths in its OUTPUT; the command names none."""
+        self.assertFalse(mod._own_repo_occurrence(["grep -rln per_run_timeout_seconds ."], self.DOC))
+
+    def test_reading_the_ledger_does_not_reach_this_channel(self) -> None:
+        """The ledger's `note` quotes the pointer -- in the RESULT, not the command."""
+        self.assertFalse(mod._own_repo_occurrence(["cat reports/soak/pointer_follow_soak.jsonl"], self.DOC))
+
+    def test_no_soak_script_reads_tool_results(self) -> None:
+        """The structural fact the two assertions above rest on.
+
+        Asserted over the SOURCE rather than inferred from behaviour: the two cases
+        above would also pass if `_own_repo_occurrence` were simply broken, and this
+        is what distinguishes "cannot see results" from "saw nothing this time".
+        """
+        for name in ("soak_run_probe.py", "soak_next_probe.py", "soak_ledger.py"):
+            with self.subTest(script=name):
+                src = (REPO_ROOT / "util" / name).read_text(encoding="utf-8")
+                self.assertNotIn("tool_result", src)
+
+    def test_a_genuine_read_still_scores(self) -> None:
+        """Negative control. Without it, a guard that returned False for everything
+        would satisfy both mechanism assertions above."""
+        self.assertTrue(mod._own_repo_occurrence(["sed -n 145,175p docs/REFERENCE.md"], self.DOC))
+
+
+if __name__ == "__main__":
+    # LAST IN THE FILE, DELIBERATELY. It sat at :508 with a test class below it
+    # until 2026-09-11, so `python3 tests/test_soak_run_probe.py` ran 32 tests while
+    # `-m unittest` ran 35 -- the three invisible ones being
+    # `RetrievalChannelIgnoresAnswerText`, which pins the ml#1644 defect where a
+    # prose mention of the pointer scored as retrieval. CI uses the `-m unittest`
+    # form and so was never affected, which is exactly why it went unnoticed.
+    unittest.main()
