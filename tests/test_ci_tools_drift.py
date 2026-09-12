@@ -62,8 +62,11 @@ _PIN_PATTERN = re.compile(r"juniper-ci-tools\s*>=\s*([0-9]+(?:\.[0-9]+)+)\s*,\s*
 _SUPPORTED_MINORS_BACK = 2
 
 # Consumer repos that pin juniper-ci-tools in their CI. juniper-ml
-# itself does too (in ci.yml + lockfile-update.yml) -- it gets linted
-# as a special case via _ML_OWN_WORKFLOWS below.
+# itself does too -- it gets linted as a special case below.
+#
+# Every sibling that carries .github/workflows/ belongs here. The list
+# used to hold six; juniper-deploy and juniper-recurrence were absent,
+# and between them they carry 9 live pins that nothing checked.
 _CONSUMER_REPOS = (
     "juniper-canopy",
     "juniper-cascor",
@@ -71,14 +74,14 @@ _CONSUMER_REPOS = (
     "juniper-cascor-worker",
     "juniper-data",
     "juniper-data-client",
+    "juniper-deploy",
+    "juniper-recurrence",
 )
 
-# juniper-deploy is deliberately excluded: it has no "Generate
-# Dependency Documentation" CI step and does not depend on
-# juniper-ci-tools.
-
-# When linting juniper-ml itself, walk every workflow under
-# .github/workflows/ that installs juniper-ci-tools:
+# juniper-ml workflows that MUST carry at least one pin. This is the
+# "did the migration get reverted?" guard, and it is deliberately a
+# closed list -- these four are the lanes whose pin disappearing would
+# be a silent regression:
 #   - ci.yml                  -- per-PR "Generate Dependency Documentation" (dep-docs)
 #                                + the per-PR "Sequence Safety" screen job (>=0.8.0)
 #                                + the tests job (test_predict_merge shells the screens)
@@ -87,7 +90,14 @@ _CONSUMER_REPOS = (
 #                                scan the plan §W3 step 3.3 calls for)
 #   - lockfile-update.yml     -- weekly lockfile refresh
 #   - docs-full-check.yml     -- §5.2 weekly downstream integration
-_ML_OWN_WORKFLOWS = (
+#
+# Range-linting is NOT limited to this list: every pin in every workflow
+# of every repo is checked (see _pins_in_repo). The distinction matters --
+# a closed file list is the right shape for "this pin must exist" and the
+# wrong shape for "no pin may be stale", and conflating the two is what
+# let two <0.7.0 pins survive the 0.9.0 fan-out in juniper-cascor
+# (ci-cascor-model.yml, ci-protocol.yml -- neither of them named ci.yml).
+_ML_REQUIRED_PIN_WORKFLOWS = (
     ".github/workflows/ci.yml",
     ".github/workflows/main-verify.yml",
     ".github/workflows/lockfile-update.yml",
@@ -142,6 +152,40 @@ def _extract_pins_from_yaml(yaml_text: str) -> list[tuple[str, str]]:
     return [(m.group(1), m.group(2)) for m in _PIN_PATTERN.finditer(yaml_text)]
 
 
+def _pins_in_repo(repo_root: Path) -> list[tuple[str, str, str]]:
+    """Every juniper-ci-tools pin under ``repo_root/.github/workflows/``.
+
+    Returns ``(workflow_filename, lower, upper)`` triples, sorted by filename,
+    so a failure can name the exact file rather than only the repo.
+
+    Globbing the directory -- rather than reading one file per repo by name --
+    is the whole point. Three shapes of pin exist in the fleet and a
+    name-keyed or ``pip install``-keyed scan misses two of them:
+
+      * ``pip install "juniper-ci-tools>=X,<Y"``     (the common case)
+      * ``python -m pip install "..."``              (canopy ci.yml, cascor-client ci.yml)
+      * ``env: CI_TOOLS_PIN: "juniper-ci-tools>=X,<Y"`` hoisted to workflow level
+        and installed via ``"$CI_TOOLS_PIN"`` (canopy main-verify.yml + sequence-safety.yml)
+
+    The regex matches the pin string itself, so all three are covered; comment
+    lines are dropped so historical prose ("requires >=0.5.1", of which the
+    fleet carries 21 lines) is never mistaken for a live pin.
+    """
+    workflows = repo_root / ".github" / "workflows"
+    if not workflows.is_dir():
+        return []
+    out: list[tuple[str, str, str]] = []
+    for wf in sorted(workflows.glob("*.yml")):
+        try:
+            text = wf.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        live = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
+        for lower, upper in _extract_pins_from_yaml(live):
+            out.append((wf.name, lower, upper))
+    return out
+
+
 def _find_ecosystem_root(juniper_ml_root: Path) -> Path | None:
     """Walk up from ``juniper_ml_root`` looking for a directory that
     contains at least 3 known juniper-X siblings. Mirrors the heuristic
@@ -187,16 +231,11 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
             ("Could not read juniper-ci-tools version from " "juniper-ci-tools/pyproject.toml. The drift test depends " "on this file as the source of truth for 'current'."),
         )
 
-    def test_juniper_ml_own_workflows_pin_current_version(self):
-        """juniper-ml's own ci.yml + lockfile-update.yml +
-        docs-full-check.yml must accept the current juniper-ci-tools
-        version. This catches the case where a ci-tools minor bump
-        (in this same repo, in this same PR) was not accompanied by
-        a pin bump."""
-        if self.current_version is None:
-            self.skipTest("no current version available")
-        current_tuple = _parse_version(self.current_version)
-        for rel in _ML_OWN_WORKFLOWS:
+    def test_juniper_ml_required_workflows_still_pin_ci_tools(self):
+        """The four lanes in ``_ML_REQUIRED_PIN_WORKFLOWS`` must each still
+        carry at least one pin. Catches an accidental revert of the migration
+        that put them there."""
+        for rel in _ML_REQUIRED_PIN_WORKFLOWS:
             with self.subTest(workflow=rel):
                 wf = self.juniper_ml_root / rel
                 if not wf.exists():
@@ -208,27 +247,53 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
                     0,
                     f"{rel} no longer pins juniper-ci-tools; did Wave 4 " "get reverted by accident?",
                 )
-                for lower, upper in pins:
-                    lower_tuple = _parse_version(lower)
-                    upper_tuple = _parse_version(upper)
-                    self.assertLessEqual(
-                        lower_tuple,
-                        current_tuple,
-                        f"{rel} pin lower bound {lower} is ahead of current {self.current_version}",
-                    )
-                    self.assertLess(
-                        current_tuple,
-                        upper_tuple,
-                        f"{rel} pin upper bound {upper} excludes current {self.current_version} -- bump the pin",
-                    )
+
+    def test_juniper_ml_own_workflows_pin_current_version(self):
+        """EVERY juniper-ml workflow's pin must admit the current
+        juniper-ci-tools version -- not just the four required lanes.
+        This catches the case where a ci-tools minor bump (in this same
+        repo, in this same PR) was not accompanied by a pin bump.
+
+        Scope note: this used to read only the four files in
+        ``_ML_REQUIRED_PIN_WORKFLOWS``, which left the six per-sub-package
+        lanes (``ci-ci-tools.yml``, ``ci-config-tools.yml``, ``ci-doc-tools.yml``,
+        ``ci-model-core.yml``, ``ci-observability.yml``, ``ci-service-core.yml``)
+        unlinted.
+        """
+        if self.current_version is None:
+            self.skipTest("no current version available")
+        current_tuple = _parse_version(self.current_version)
+        pins = _pins_in_repo(self.juniper_ml_root)
+        self.assertGreater(len(pins), 0, "juniper-ml carries no juniper-ci-tools pin at all")
+        for wf_name, lower, upper in pins:
+            with self.subTest(workflow=wf_name, pin=f">={lower},<{upper}"):
+                self.assertLessEqual(
+                    _parse_version(lower),
+                    current_tuple,
+                    f".github/workflows/{wf_name} pin lower bound {lower} is ahead of current {self.current_version}",
+                )
+                self.assertLess(
+                    current_tuple,
+                    _parse_version(upper),
+                    f".github/workflows/{wf_name} pin upper bound {upper} excludes current {self.current_version} -- bump the pin",
+                )
 
     def test_consumer_repos_pin_current_version(self):
-        """Read each cloned consumer repo's ci.yml and assert the
+        """Read EVERY workflow in each cloned consumer repo and assert every
         juniper-ci-tools pin admits the current version. Skipped
         when siblings are not present (per-PR mode) or when running
         locally without ``JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`` (local
         sibling working trees can lag ``origin/main`` and produce
         false positives -- see this module's docstring).
+
+        Scope note: this used to read exactly one file per repo,
+        ``<repo>/.github/workflows/ci.yml``. That unit did not match the
+        thing being guarded. juniper-recurrence has no ``ci.yml`` at all
+        (it is a monorepo: ``ci-recurrence-{app,client,model}.yml``), so it
+        could never have been covered by a name-keyed read, and
+        juniper-cascor's two stale ``<0.7.0`` pins sat in
+        ``ci-cascor-model.yml`` / ``ci-protocol.yml`` -- green for three
+        minors while every other pin in the fleet moved.
         """
         if self.ecosystem_root is None:
             self.skipTest("ecosystem siblings not on disk")
@@ -240,32 +305,33 @@ class JuniperCiToolsDriftTest(unittest.TestCase):
         current_tuple = _parse_version(self.current_version)
         warnings: list[str] = []
         for repo in _CONSUMER_REPOS:
-            with self.subTest(repo=repo):
-                ci = self.ecosystem_root / repo / ".github" / "workflows" / "ci.yml"
-                if not ci.exists():
-                    print(f"WARN: {repo}/.github/workflows/ci.yml not present (clone failure?)")
-                    continue
-                pins = _extract_pins_from_yaml(ci.read_text(encoding="utf-8"))
-                if not pins:
-                    self.fail(f"{repo}/.github/workflows/ci.yml has no juniper-ci-tools pin -- " "Wave 2 did not run here (or was reverted).")
-                for lower, upper in pins:
+            repo_root = self.ecosystem_root / repo
+            if not (repo_root / ".github" / "workflows").is_dir():
+                print(f"WARN: {repo}/.github/workflows/ not present (clone failure?)")
+                continue
+            pins = _pins_in_repo(repo_root)
+            if not pins:
+                self.fail(f"{repo} has no juniper-ci-tools pin in any workflow -- " "Wave 2 did not run here (or was reverted).")
+            for wf_name, lower, upper in pins:
+                with self.subTest(repo=repo, workflow=wf_name, pin=f">={lower},<{upper}"):
+                    where = f"{repo}/.github/workflows/{wf_name}"
                     lower_tuple = _parse_version(lower)
                     upper_tuple = _parse_version(upper)
                     self.assertLessEqual(
                         lower_tuple,
                         current_tuple,
-                        f"{repo} pin lower bound {lower} is ahead of current {self.current_version}",
+                        f"{where} pin lower bound {lower} is ahead of current {self.current_version}",
                     )
                     # Soft window: warn if the pin is more than the
                     # supported number of minors behind, even though it
                     # still admits current. Plan §5.1 specifies this as
                     # a soft warning, not a hard fail.
                     if upper_tuple[0] == current_tuple[0] and upper_tuple[1] - current_tuple[1] - 1 > _SUPPORTED_MINORS_BACK:
-                        warnings.append(f"{repo}: pin {lower}..{upper} is more than " f"{_SUPPORTED_MINORS_BACK} minors behind current " f"{self.current_version}; consider widening.")
+                        warnings.append(f"{where}: pin {lower}..{upper} is more than " f"{_SUPPORTED_MINORS_BACK} minors behind current " f"{self.current_version}; consider widening.")
                     self.assertLess(
                         current_tuple,
                         upper_tuple,
-                        f"{repo} pin upper bound {upper} excludes current " f"{self.current_version} -- bump the pin in {repo}.",
+                        f"{where} pin upper bound {upper} excludes current " f"{self.current_version} -- bump the pin in {repo}.",
                     )
 
         if warnings:
@@ -303,6 +369,81 @@ class PinParsingHelperTest(unittest.TestCase):
         # Plan §5.1: "more than 2 minor versions behind current" warns.
         self.assertEqual(_SUPPORTED_MINORS_BACK, 2)
 
+    def test_extracts_env_var_pin_form(self):
+        """canopy hoists the pin into a workflow-level ``env:`` and installs
+        ``"$CI_TOOLS_PIN"``. A scan keyed on ``pip install`` misses it."""
+        yaml_text = '  CI_TOOLS_PIN: "juniper-ci-tools>=0.9.0,<0.10.0"\n'
+        self.assertEqual(_extract_pins_from_yaml(yaml_text), [("0.9.0", "0.10.0")])
+
+    def test_extracts_python_dash_m_pip_form(self):
+        yaml_text = '          python -m pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n'
+        self.assertEqual(_extract_pins_from_yaml(yaml_text), [("0.9.0", "0.10.0")])
+
+
+class RepoWidePinScanTest(unittest.TestCase):
+    """Red-then-green proof that ``_pins_in_repo`` sees what the old
+    one-file-per-repo read could not.
+
+    The two defects this encodes, both real and both live on ``main`` until
+    2026-09-11:
+
+      (a) juniper-cascor pinned ``>=0.6.0,<0.7.0`` in ``ci-cascor-model.yml``
+          and ``ci-protocol.yml`` -- three minors stale, invisible because the
+          guard read only ``ci.yml``;
+      (b) juniper-recurrence has no ``ci.yml`` whatsoever, so a name-keyed read
+          covered exactly none of its 6 pins.
+    """
+
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp(prefix="ci-tools-pin-scan-"))
+        self.addCleanup(shutil.rmtree, self.tmp, ignore_errors=True)
+        self.workflows = self.tmp / ".github" / "workflows"
+        self.workflows.mkdir(parents=True)
+
+    def _write(self, name: str, body: str) -> None:
+        (self.workflows / name).write_text(body, encoding="utf-8")
+
+    def test_repo_without_workflows_dir_yields_nothing(self):
+        self.assertEqual(_pins_in_repo(self.tmp / "nope"), [])
+
+    def test_finds_a_stale_pin_in_a_file_that_is_not_ci_yml(self):
+        """(a) The juniper-cascor shape: ci.yml is current, the stale pin is elsewhere."""
+        self._write("ci.yml", '          pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n')
+        self._write("ci-protocol.yml", '          pip install "juniper-ci-tools>=0.6.0,<0.7.0"\n')
+
+        found = _pins_in_repo(self.tmp)
+        self.assertEqual(found, [("ci-protocol.yml", "0.6.0", "0.7.0"), ("ci.yml", "0.9.0", "0.10.0")])
+
+        # The old unit -- read ci.yml alone -- is clean on this very tree.
+        ci_only = _extract_pins_from_yaml((self.workflows / "ci.yml").read_text(encoding="utf-8"))
+        self.assertEqual(ci_only, [("0.9.0", "0.10.0")], "the narrow read must be GREEN here -- that is why the defect survived")
+
+    def test_finds_pins_in_a_repo_with_no_ci_yml(self):
+        """(b) The juniper-recurrence shape: per-package workflows, no ci.yml."""
+        self._write("ci-recurrence-app.yml", '          pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n')
+        self._write("ci-recurrence-model.yml", '          pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n')
+
+        self.assertFalse((self.workflows / "ci.yml").exists())
+        self.assertEqual(len(_pins_in_repo(self.tmp)), 2)
+
+    def test_comment_lines_are_not_live_pins(self):
+        """21 lines of historical prose across the fleet name old pins ("requires
+        juniper-ci-tools>=0.5.1"). A comment must never be linted as a pin, or the
+        guard fails on documentation."""
+        self._write(
+            "ci.yml",
+            "      # script in ``juniper-ci-tools>=0.2.0,<0.3.0``; the inline copy\n" '          pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n',
+        )
+        self.assertEqual(_pins_in_repo(self.tmp), [("ci.yml", "0.9.0", "0.10.0")])
+
+    def test_env_var_pin_is_seen(self):
+        """canopy's main-verify.yml / sequence-safety.yml shape."""
+        self._write(
+            "main-verify.yml",
+            "env:\n" '  CI_TOOLS_PIN: "juniper-ci-tools>=0.9.0,<0.10.0"\n' "jobs:\n" "  x:\n" "    steps:\n" '      - run: pip install "$CI_TOOLS_PIN"\n',
+        )
+        self.assertEqual(_pins_in_repo(self.tmp), [("main-verify.yml", "0.9.0", "0.10.0")])
+
 
 class SequenceSafetyPackageMigrationTest(unittest.TestCase):
     """Anti-resurrection gate for the sequence-safety package migration (rollout W3,
@@ -320,7 +461,8 @@ class SequenceSafetyPackageMigrationTest(unittest.TestCase):
       (b) *pin admits current* -- the two new screen pins (``>=0.8.0,<0.10.0`` in ci.yml's
           sequence-safety job and in main-verify.yml) still admit the current
           juniper-ci-tools version, enforced by ``JuniperCiToolsDriftTest`` above now that
-          ``main-verify.yml`` is in ``_ML_OWN_WORKFLOWS``.
+          ``main-verify.yml`` is one of juniper-ml's own workflows, all of which
+          that test now range-lints.
     """
 
     def test_inline_sequence_safety_tree_is_gone(self):
