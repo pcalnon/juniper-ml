@@ -289,9 +289,33 @@ way §3 defines it, and the way the withdrawn guard did not.
 `ledger_exposure()` *reports* exposure, but `scan()`'s own **retrieval verdict** (`dest_hits`,
 `via_output`) is still a bare `DEST in blob` substring test, with no sibling-repo segments, no
 path-token walk-back and no filename/content gating. So the screen's `retrieved` credits
-`filename`, `foreign` **and** `ledger` occurrences alike. **The `foreign` half of that is the one
-piece of §10 that is genuinely not owner-gated** — it is document identity, already ratified on the
-wired path, simply not ported. The screen is unwired, so it costs nothing live today.
+`filename`, `foreign` **and** `ledger` occurrences alike. The screen is unwired, so it costs nothing
+live today.
+
+**And "simply not ported" is wrong — measured 2026-09-12, before writing any change.** The `foreign`
+half looked like the one piece of §10 that is not owner-gated: document identity, already ratified
+on the wired path. It is not portable, for a structural reason:
+
+| blob, as `scan()` actually receives it | wired guard says |
+|---|---|
+| `tool_use` — the real P24 command `cd …/juniper-deploy && grep -rn 3001 .` | not ours *(the path never appears)* |
+| **`tool_result` of that command — `docs/REFERENCE.md:88:…`, RELATIVE** | **OURS** |
+| `tool_result` with a **qualified** sibling path | not ours |
+| `tool_use` — genuine read of our copy | ours |
+
+**Read row 2.** That is the only form in which the real sibling content reaches the screen, and the
+guard calls it ours — because the `cd` that makes it foreign lives in a **different JSONL record**,
+which `scan()` has already discarded by the time it sees the result. `_own_repo_occurrence` uses the
+`cd` in the *same* tool input as context; `scan()` holds no per-record state at all.
+
+So a straight port would suppress a qualified sibling path in a result — a shape not shown to occur
+— and **miss the one instance in the corpus**. Catching row 2 needs cross-record state carried from
+a `tool_use` to the `tool_result` that follows it. **That is new machinery, not a port**, and it
+would be new machinery in an unwired screen for **1 sibling-naming transcript in 57**.
+
+**Not done, deliberately.** Recorded here so the next session does not spend the same day
+rediscovering it, and does not ship the port believing it closes the `foreign` row. Evidence:
+`util/ad-hoc/2026-09-12_soak_foreign_screen/`.
 
 A regression pin now guards the withdrawal:
 `tests/test_soak_run_probe.py::test_naming_the_ledger_in_metadata_does_not_suppress_a_real_read`.
