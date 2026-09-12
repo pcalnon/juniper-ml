@@ -3651,7 +3651,7 @@ juniper-ml/
     ├── worktree_activate.bash            # Bash helper for worktree activation
     ├── worktree_close.bash               # Removes a worktree, branch, and prunes
     ├── worktree_wipeout.bash             # Bulk removal by pattern
-    ├── remove_stale_worktrees.bash       # Removes all stale worktrees
+    ├── remove_stale_worktrees.bash       # DO NOT RUN -- no staleness predicate; unconditional `git worktree remove` over every path matching `grep worktrees`. Use scripts/cleanup_session_worktrees.py or util/worktree_cleanup.bash instead.
     ├── cleanup_open_worktrees.bash       # Removes all active worktrees
     ├── prune_git_branches_without_working_dirs.bash  # Branch hygiene
     ├── juniper_plant_all.bash            # Starts all Juniper ecosystem services

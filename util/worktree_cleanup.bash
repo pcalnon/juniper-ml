@@ -61,6 +61,7 @@ NEW_WORKTREE=""
 NEW_BRANCH=""
 SKIP_PR="${FALSE}"
 SKIP_REMOTE_DELETE="${FALSE}"
+FORCE_DESTRUCTIVE="${FALSE}"
 DRY_RUN="${FALSE}"
 
 ############################################################################################################################################################
@@ -104,6 +105,10 @@ Optional:
   --new-branch NAME        Branch name for the new worktree (auto-generated if omitted)
   --skip-pr                Skip PR creation
   --skip-remote-delete     Skip remote branch deletion (useful when PR is open)
+  --force-destructive      Allow 'worktree remove --force' and 'branch -D'. These defeat
+                           git's ONLY two refusals -- uncommitted/untracked work, and
+                           unmerged commits. Without it, this script REFUSES instead of
+                           escalating, and prints exactly what would have been destroyed.
   --dry-run                Print commands without executing
 
 Output:
@@ -146,6 +151,10 @@ parse_args() {
                 ;;
             --skip-remote-delete)
                 SKIP_REMOTE_DELETE="${TRUE}"
+                shift
+                ;;
+            --force-destructive)
+                FORCE_DESTRUCTIVE="${TRUE}"
                 shift
                 ;;
             --dry-run)
@@ -413,18 +422,46 @@ phase_4_cleanup() {
         fi
     fi
 
-    # Remove old worktree
+    # Remove old worktree.
+    #
+    # DO NOT ESCALATE TO --force ON FAILURE. `git worktree remove` refuses in exactly one
+    # situation: the tree holds uncommitted or untracked work. That refusal is the only
+    # protection git offers here, and an automatic `--force` converts it into deletion of
+    # the very thing it was protecting. Note also what the refusal does NOT cover: git
+    # considers a tree with only IGNORED files clean, so those are deleted with no refusal
+    # and no --force -- 330 MB of them sat across 19 live worktrees when this was measured,
+    # including a .env and 60 files of soak run evidence.
     log_info "Removing worktree: ${OLD_WORKTREE}"
     run_cmd git -C "${MAIN_REPO}" worktree remove "${OLD_WORKTREE}" || {
-        log_warn "Standard removal failed, trying --force"
-        run_cmd git -C "${MAIN_REPO}" worktree remove --force "${OLD_WORKTREE}"
+        if [[ "${FORCE_DESTRUCTIVE}" == "${TRUE}" ]]; then
+            log_warn "Removal refused; --force-destructive given, forcing"
+            run_cmd git -C "${MAIN_REPO}" worktree remove --force "${OLD_WORKTREE}"
+        else
+            log_error "git REFUSED to remove ${OLD_WORKTREE} -- it holds uncommitted or untracked work."
+            log_error "Below is what is there. Nothing has been deleted."
+            git -C "${OLD_WORKTREE}" status --porcelain --ignored=no >&2 || true
+            log_error "Commit, push, or move that work; then re-run. To delete it anyway, pass --force-destructive."
+            return 1
+        fi
     }
 
-    # Delete local branch
+    # Delete local branch.
+    #
+    # DO NOT ESCALATE TO -D ON FAILURE, for the same reason. `git branch -d` refuses in
+    # exactly one situation: the branch holds commits reachable from nowhere else. `-D`
+    # drops them, and the reflog is the only remaining anchor until it expires.
     log_info "Deleting local branch: ${OLD_BRANCH}"
     run_cmd git -C "${MAIN_REPO}" branch -d "${OLD_BRANCH}" || {
-        log_warn "Standard delete failed (branch not fully merged), trying -D"
-        run_cmd git -C "${MAIN_REPO}" branch -D "${OLD_BRANCH}"
+        if [[ "${FORCE_DESTRUCTIVE}" == "${TRUE}" ]]; then
+            log_warn "Delete refused; --force-destructive given, forcing"
+            run_cmd git -C "${MAIN_REPO}" branch -D "${OLD_BRANCH}"
+        else
+            log_error "git REFUSED to delete ${OLD_BRANCH} -- it holds commits merged nowhere."
+            log_error "These commits would be lost. Nothing has been deleted:"
+            git -C "${MAIN_REPO}" log --oneline --no-merges "${OLD_BRANCH}" --not --branches --remotes --tags >&2 || true
+            log_error "Merge or push them; then re-run. To drop them anyway, pass --force-destructive."
+            return 1
+        fi
     }
 
     # Delete remote branch (unless skipped or PR is open).
