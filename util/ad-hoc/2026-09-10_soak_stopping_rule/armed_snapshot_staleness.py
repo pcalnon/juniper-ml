@@ -50,7 +50,6 @@ import argparse
 import json
 import re
 import subprocess  # nosec B404 - fixed argv, no shell
-import sys
 
 REPO = "pcalnon/juniper-ml"
 TRAILER_RE = re.compile(
