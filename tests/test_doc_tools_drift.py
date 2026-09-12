@@ -76,11 +76,17 @@ _CONSUMER_REPOS = (
     "juniper-cascor-worker",
     "juniper-data",
     "juniper-data-client",
+    "juniper-deploy",
     "juniper-recurrence",
 )
 
-# juniper-deploy is deliberately excluded: it has no docs-link CI and
-# does not depend on juniper-doc-tools.
+# juniper-deploy was excluded here until 2026-09-11, on the comment "it has no
+# docs-link CI and does not depend on juniper-doc-tools". That is false:
+# juniper-deploy/.github/workflows/ci.yml:328 installs juniper-doc-tools. The
+# pin was never stale (all 10 in the fleet are >=0.1.0,<0.2.0), so this was a
+# LATENT coverage gap rather than a live defect -- it would have bitten on the
+# first 0.2.0. The identical stale exclusion existed in the ci-tools sibling and
+# hid two genuinely stale pins; see tests/test_ci_tools_drift.py.
 
 # When linting juniper-ml itself, walk every workflow under
 # .github/workflows/. ci.yml (per-PR docs job) and docs-full-check.yml
