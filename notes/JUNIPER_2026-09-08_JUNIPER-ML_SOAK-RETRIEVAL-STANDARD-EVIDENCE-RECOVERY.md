@@ -237,6 +237,70 @@ python3 -m unittest tests.test_soak_probe_evidence
 
 **Not changed**: `reports/soak/pointer_follow_soak.jsonl`. No probe was run.
 
+## 10a. CORRECTION 2026-09-12 — §10's follow-up is NOT a code task. It is owner decision 7.
+
+**§10 below told the next session that hardening `retrieval_channel` "belongs in its own PR".
+That was attempted on 2026-09-12 and REFUTED by consensus. §10 is wrong, and it is wrong in a
+way that reads as an invitation, so this correction sits above it.**
+
+The attempt added a guard suppressing the pointer hit whenever the ledger's path appeared in the
+same tool input. Four measured reasons it was withdrawn:
+
+1. **It decided an owner question.** §3's table defines the `ledger` class as *"the match is
+   **inside the soak ledger's own JSON**"*. In `grep -n "docs/REFERENCE.md" <ledger>` the match is
+   inside a **shell command**, so that occurrence is §3's **`filename`** class — the row this
+   document's §7 and the 09-09 handoff's §6 item 7 both list as **the owner's call**. The guard
+   took a `filename` shape, relabelled it `ledger` on the strength of what the *other* token in
+   the command was, and shipped the `filename` answer.
+2. **The selector was one hard-coded path, not a principle.** Measured: the identical shape aimed
+   at `README.md` or `docs/QUICK_START.md` still scored `follow`; only the literal ledger path was
+   suppressed. If the principle were *"a different document was read"*, all three would agree.
+3. **It destroyed the canonical positive.** `{"file_path": "docs/REFERENCE.md"}` scores a follow;
+   adding a `description` field that mentions the ledger flipped it to MISS — and **every** Claude
+   Code Bash/Read input carries a `description`. That is the same false-negative class as the
+   `cd`-ordering bug in §4 which produced the wrong 51.2% headline.
+4. **The shape it fixed does not occur.** 0 occurrences across the 49 bound transcripts. All
+   **7** real ledger sightings are **result-side**, which this channel cannot see by design
+   (`tests/test_soak_run_probe.py::WiredChannelSeesToolInputsOnly`). Re-scoring the whole corpus
+   pre- and post-guard produced **0 flips**.
+
+Also withdrawn: a `ledger_touched` boolean on `retrieval_channel`'s output. It is false on **8 of
+8** real ledger contacts for the same result-side reason, collapses the content-vs-filename
+distinction whose collapse §5's own **CORRECTED 2026-09-09** block retracted, duplicates the
+three-valued `ledger_exposure()` that already ships in the screen, and printed an always-clean
+contamination field into `scoring_packet.md` — the artifact that deliberately redacts corpus
+progress from the scorer.
+
+**The repo's own instrument settles the classification.** Run
+`util/ad-hoc/2026-08-21_soak_probe_evidence.py::ledger_exposure` against the guard's own trigger
+shape — `{"command": "grep -n docs/REFERENCE.md reports/soak/pointer_follow_soak.jsonl"}` — and it
+returns **`"filename"`**, not `"content"`. The screen already in the tree classifies that shape the
+way §3 defines it, and the way the withdrawn guard did not.
+
+**What is left, and where it goes.**
+
+| §3 row | status |
+|---|---|
+| `foreign` | **fixed on the WIRED path** (§4, ml#1855 + the re-fix). **NOT ported to the screen** — see below |
+| `ledger` | **reported, not screened.** `ledger_exposure()` is three-valued and wired into both `scan()` branches (ml#1894), and is deliberately not folded into `contaminated` |
+| `filename` | **owner decision 7.** Cannot be implemented without ruling it |
+
+**Correction to an earlier claim in this session: "the screen's half is done" is only half true.**
+`ledger_exposure()` *reports* exposure, but `scan()`'s own **retrieval verdict** (`dest_hits`,
+`via_output`) is still a bare `DEST in blob` substring test, with no sibling-repo segments, no
+path-token walk-back and no filename/content gating. So the screen's `retrieved` credits
+`filename`, `foreign` **and** `ledger` occurrences alike. **The `foreign` half of that is the one
+piece of §10 that is genuinely not owner-gated** — it is document identity, already ratified on the
+wired path, simply not ported. The screen is unwired, so it costs nothing live today.
+
+A regression pin now guards the withdrawal:
+`tests/test_soak_run_probe.py::test_naming_the_ledger_in_metadata_does_not_suppress_a_real_read`.
+It was confirmed sensitive — it fails against the withdrawn guard — unlike the guard's own
+"negative control", which passed against both builds and could never have failed.
+
+Evidence: `util/ad-hoc/2026-09-12_soak_ledger_channel/` (`retrieval_channel_shapes_probe.py`,
+`refutation_recheck.py`).
+
 ## 10. Follow-up not done here
 
 The three false-positive mechanisms in §3 are defects in
