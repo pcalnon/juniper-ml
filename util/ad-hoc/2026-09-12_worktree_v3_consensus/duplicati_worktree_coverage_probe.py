@@ -51,11 +51,11 @@ DB = pathlib.Path.home() / ".local/state/duplicati-server-db/Duplicati-server.sq
 # Concrete paths the design names as at-risk. Each must be tested against real filters.
 PROBES = [
     "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/"
-    "curious-plotting-hummingbird/.env",
+    + "curious-plotting-hummingbird/.env",
     "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/"
-    "dreamy-swinging-sunrise/.playwright-mcp/console-x.log",
+    + "dreamy-swinging-sunrise/.playwright-mcp/console-x.log",
     "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/"
-    "nifty-tinkering-wave/reports/soak/runs/run-1.json",
+    + "nifty-tinkering-wave/reports/soak/runs/run-1.json",
     "/home/pcalnon/Development/python/Juniper/Juniper/worktrees/some-tree/logs/system.log",
 ]
 
