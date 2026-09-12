@@ -358,28 +358,34 @@ class CascorParallelFloorTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._tree(root, ".".join(str(p) for p in run_suite.CASCOR_PARALLEL_FLOOR))
-            self.assertIsInstance(run_suite.load_suite(self._suite(root)), dict)
+            doc = run_suite.load_suite(self._suite(root))
+            self.assertIsInstance(doc, dict)
+            self.assertIsNone(run_suite.check_cascor_parallel_floor(doc))
 
     def test_below_floor_refuses_and_names_the_version(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._tree(root, "0.9.0")
+            doc = run_suite.load_suite(self._suite(root))
             with self.assertRaisesRegex(run_suite.SuiteError, r"0\.9\.0"):
-                run_suite.load_suite(self._suite(root))
+                run_suite.check_cascor_parallel_floor(doc)
 
     def test_unreadable_version_fails_closed(self) -> None:
         """An unknowable version must not resolve the same way as a compliant one."""
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._tree(root, None)  # no pyproject.toml -> version unknowable
+            doc = run_suite.load_suite(self._suite(root))
             with self.assertRaisesRegex(run_suite.SuiteError, "could not be read"):
-                run_suite.load_suite(self._suite(root))
+                run_suite.check_cascor_parallel_floor(doc)
 
     def test_sequential_is_never_gated(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self._tree(root, "0.9.0")  # below the floor, and irrelevant in sequential mode
-            self.assertIsInstance(run_suite.load_suite(self._suite(root, mode="sequential", par=1)), dict)
+            doc = run_suite.load_suite(self._suite(root, mode="sequential", par=1))
+            self.assertIsInstance(doc, dict)
+            self.assertIsNone(run_suite.check_cascor_parallel_floor(doc))
 
     def test_recurrence_parallel_is_never_gated(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -387,7 +393,87 @@ class CascorParallelFloorTest(unittest.TestCase):
             self._tree(root, "0.9.0")
             path = root / "rec.yaml"
             path.write_text("schema_version: 1\n" "suite: {name: s, app: recurrence, base_config: [b]}\n" "execution: {mode: parallel, max_parallel: 4}\n")
-            self.assertIsInstance(run_suite.load_suite(path), dict)
+            doc = run_suite.load_suite(path)
+            self.assertIsInstance(doc, dict)
+            self.assertIsNone(run_suite.check_cascor_parallel_floor(doc))
+
+    # ---- D5 (2026-09-11): the relocation itself, and that it did not weaken the guard --------
+
+    def test_load_suite_does_NOT_gate_when_no_cascor_tree_is_resolvable(self) -> None:
+        """THE POINT OF THE RELOCATION. This is the CI case, asserted directly.
+
+        CI clones only juniper-ml, so no cascor sibling exists and the version is unknowable.
+        Before D5 this raised from ``load_suite`` and turned the R-6 drift gate red for every
+        checked-in parallel cascor suite. Structural validation must now succeed; the launch gate
+        is a separate call, asserted to still refuse in the very next test.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._tree(root, None)  # no pyproject.toml -> version unknowable, as in CI
+            doc = run_suite.load_suite(self._suite(root))
+            self.assertIsInstance(doc, dict)
+            self.assertEqual(doc["execution"]["mode"], "parallel")
+
+    def test_the_launch_gate_still_refuses_the_same_suite(self) -> None:
+        """Paired with the test above: structural PASS and launch REFUSE on one identical doc.
+
+        Asserting only the pass would be a vacuous relocation — it would look identical to having
+        deleted the guard.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._tree(root, None)
+            doc = run_suite.load_suite(self._suite(root))
+            with self.assertRaisesRegex(run_suite.SuiteError, "could not be read"):
+                run_suite.check_cascor_parallel_floor(doc)
+
+    def _run_main(self, suite_path: Path, *extra: str) -> "tuple[int, str]":
+        """``main`` with output captured; returns (exit code, stdout+stderr).
+
+        The text matters: exit 2 alone is NOT evidence this guard fired. ``main`` exits 2 for
+        several unrelated reasons, and a mutation that deleted the call entirely still left this
+        suite exiting 2 (its base_config path does not exist). Assert on the message.
+        """
+        buf_out, buf_err = io.StringIO(), io.StringIO()
+        with redirect_stdout(buf_out), redirect_stderr(buf_err):
+            code = run_suite.main(["--suite", str(suite_path), *extra])
+        return code, buf_out.getvalue() + buf_err.getvalue()
+
+    def test_main_refuses_below_floor_before_launching(self) -> None:
+        """The guard is still pre-launch: main exits 2 naming the offending version."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._tree(root, "0.9.0")
+            code, text = self._run_main(self._suite(root))
+            self.assertEqual(code, 2)
+            self.assertIn("0.9.0", text, "exit 2 alone is not proof this guard fired")
+
+    def test_main_refuses_below_floor_under_dry_run_too(self) -> None:
+        """``--dry-run`` must report the refusal, not print a plan that could never run.
+
+        This is the half most easily lost in a relocation: move the check past the ``--dry-run``
+        early return and the operator gets a confident plan for a suite the runner would refuse.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._tree(root, "0.9.0")
+            code, text = self._run_main(self._suite(root), "--dry-run")
+            self.assertEqual(code, 2)
+            self.assertIn("0.9.0", text, "exit 2 alone is not proof this guard fired")
+            self.assertNotIn("$ ", text, "a refused suite must not also print a launch plan")
+
+    def test_main_dry_run_still_works_when_the_floor_is_met(self) -> None:
+        """Negative control for the two above — the refusal is the version, not the dry run."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._tree(root, ".".join(str(p) for p in run_suite.CASCOR_PARALLEL_FLOOR))
+            base = root / "b"
+            base.write_text(BASE_CONFIG)
+            path = root / "suite.yaml"
+            path.write_text("schema_version: 1\n" f"suite: {{name: s, app: cascor, base_config: ['{base}']}}\n" "execution: {mode: parallel, max_parallel: 4}\n")
+            code, text = self._run_main(path, "--dry-run")
+            self.assertEqual(code, 0)
+            self.assertIn("$ ", text, "a permitted dry run must actually print its plan")
 
 
 class MaterialiseTest(unittest.TestCase):
