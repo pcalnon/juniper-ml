@@ -427,4 +427,3 @@ None known at time of release.
 
 - [Full Changelog](https://github.com/pcalnon/juniper-canopy/blob/v0.8.0/CHANGELOG.md)
 - Archive target: `notes/releases/RELEASE_NOTES_juniper-canopy_v0.8.0.md`
-
