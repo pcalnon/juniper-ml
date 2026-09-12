@@ -749,3 +749,193 @@ does not fit in a dropdown option.
 
 Neither remaining entry is waiting on effort: `arc_agi` is waiting on a **design decision** about
 how the registry should express a variable-rank generator, and `csv_import` is a settled exclusion.
+
+### 12.9 The variable-rank proposal, adjudicated — and the twin `arc_agi` was excluded against (2026-09-12)
+
+§12.8 closed §12 leaving `arc_agi` "waiting on a **design decision** about how the registry should
+express a variable-rank generator". The owner put a proposal for that decision to adversarial
+consensus. This section records the verdict, and the two findings that turned out to matter more
+than the verdict did.
+
+The proposal's eight points are numbered **VR-1…VR-8** here. They are deliberately *not* numbered
+`P1`–`P8`: `JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md` already uses `P1`–`P4`
+for its proposal lanes and `F1`–`F5` for its rejected families, and a note citing both documents
+would be unreadable.
+
+| | Proposal | Verdict |
+|---|---|---|
+| **VR-1** | A clear, useful label as variable rank | **Amend** — goal sound, mechanism unavailable |
+| **VR-2** | Rank as a range, `N ≤ rank ≤ M` | **Amend** — a set, not a range |
+| **VR-3** | The same interface retrieves the range as a single rank | **Reject** at the operator; survivable at the field |
+| **VR-4** | Approve if the model handles every rank in the range | **Reject** — under both readings |
+| **VR-5** | The user and the experimental framework own compatibility | **Reject** — reverses D5 and N9 |
+| **VR-6** | The model must match the ranks *actually present* | **Confirm** as a fact; **reject** as an acceptance criterion |
+| **VR-7** | Prefer adaptable models for variable-rank datasets | **Confirm**, but it is a no-op today |
+| **VR-8** | Models determine actual rank and restructure to match | **Reject** as scoped |
+
+**VR-4 decides most of the rest, and it fails for an arithmetic reason.** There are exactly two
+`ModelSpec` entries: `cascor` with `input_ndim=frozenset({2})` (`src/model_registry.py:356`) and
+`recurrence` with `frozenset({3})` (`:367`). No model in the registry accepts more than one rank.
+So VR-4's literal reading — the model handles *every* rank in the range, i.e.
+`dataset_ranks ⊆ model.input_ndim` — makes a `{2,3}` dataset compatible with **zero** models. That
+is the same user-visible outcome as leaving `arc_agi` unseeded, bought with a new abstraction across
+four call sites and three string builders. The only reading that changes behaviour is the
+existential one (`∩ ≠ ∅`), and it reinstates exactly the hazard `UNSEEDED_GENERATORS["arc_agi"]`
+was written to record. **The proposal does not say which reading it intends, and neither is
+available.**
+
+Rank is also one conjunct of three. `compatible()` (`:545`) is
+`ndim ∧ task_type ∧ temporal_ok`, so a rank-only approval rule scores the easiest third.
+
+**VR-5 reverses a ratified allocation of correctness.**
+`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md:55` (D5) places correctness in
+{predicate, backend} and calls the greying "a best-effort affordance, **not** the correctness
+guarantee"; `src/model_registry.py:517-520` restates it in the code. VR-5 swaps the two halves.
+§2 of this document requires that the remediation add `I-cover` *without weakening* `I-safe`, and
+N9 states the rule directly: **a control that cannot be honoured is disabled at the control, not
+discovered at the backend.** `I-safe` is written over `compatible()` and machine-checked by
+`test_g1b_no_reachable_state_is_invalid`; "user responsibility" is not a term any transition
+relation can carry, so under VR-5 `I-safe` becomes unfalsifiable rather than satisfied.
+
+Compounding it: the backend refusal VR-5 delegates to is **itself unshipped on the newly-reachable
+path**. `src/backend/recurrence_backend.py:205-206` returns `ok=True` immediately after
+`thread.start()`, and `_completion_reason_label` (`src/frontend/dashboard_manager.py:6923-6929`)
+maps five cascor reasons only — which is item X10/N6 of this arc, still open. The operator would
+not see the refusal VR-5 relies on.
+
+**VR-2: a range misdescribes the domain; a set does not.** Rank is an integer and 2 and 3 are
+adjacent, so "strictly between" is uninhabitable — a range promises a density that cannot exist.
+`frozenset[int]` is the honest type and is **already** what the model side uses
+(`src/model_registry.py:109`), which yields VR-3's symmetry for free. This matters prospectively
+rather than now: `src/tests/regression/test_selection_reachability_guardrails.py:604` already
+exercises `input_ndim=frozenset({4})`, and a future generator reachable at `{2,4}` would be
+actively misdescribed by `2 ≤ rank ≤ 4`.
+
+**VR-3 fails because the operator is asymmetric and fails silently.** `:545` is `scalar in set`.
+`frozenset`, `tuple` and `range` all evaluate `False`; only `list` raises. A container `ndim` would
+therefore grey **every** variable-rank dataset against **every** model, with no exception and no CI
+red. The attribute *name* can survive a widening; the operator cannot. Two of the three
+human-facing builders share the defect — `dataset_reason` (`:572-573`) and `dataset_model_hint`
+(`:627`, `:649-650`, via a scalar-keyed `_RANK_NOUNS`) would emit literal `frozenset({2, 3})` text.
+Only `model_reason` (`:592`) already has a range-safe `" or ".join` builder. VR-1's goal is sound;
+its assumption that existing strings carry it is not.
+
+**VR-8 is out of scope by §1, and has a costed precedent.** No rank exists to read: `GeneratorInfo`
+(`juniper-data/juniper_data/core/models.py:143-162`) publishes `name / version / description /
+available / install_hint / params_schema` and no shape at all, and `TrainableModel` exposes
+`input_shape` only as a read-only *post-fit* report. The sole structural-adaptation mechanism,
+`_resize_network_for_dataset` (`juniper-cascor/src/cascade_correlation/cascade_correlation.py:880`),
+adapts feature **count**: scalar-typed, grow-only, and not on the `fit` path. §1 of this document
+already puts capability relocation out of scope as family F5. And silent self-restructuring is the
+failure class that left `config_json` stale against `arch` and made **239 of 27,908 snapshots
+unloadable** (juniper-ml#1254, repaired by cascor#560); rank has no `_sync_config_dimensions`
+equivalent. VR-7 is separately a no-op: `input_ndim` is already a set, so an adaptable model is
+declarable **today** with no design change, and none is declared.
+
+#### 12.9.1 `mnist` is `arc_agi`'s twin, and it was seeded anyway
+
+The consensus found the premise of the whole question to be false. **`arc_agi` is not the only
+generator with parameter-dependent rank — `mnist` is the second, and it is already seeded.**
+
+`juniper-data/juniper_data/generators/mnist/generator.py:125-126` is the identical two-branch
+reshape: `if params.flatten: X = X.reshape(len(X), -1)`, so `flatten=False` yields rank-3
+`(N, 28, 28)`. canopy seeds `DatasetTypeSpec(value="mnist", …, ndim=2)` at
+`src/model_registry.py:156`. `flatten` is absent from `FORM_EXCLUDED_FIELDS`
+(`src/dataset_schema.py:107`), so the schema-driven panel renders it as a checkbox, and the form
+overrides the seed (`src/frontend/dashboard_manager.py:3191-3192`). `mnist` is available in a
+correctly-installed deployment: `datasets==5.0.1` is in `juniper-data/requirements.lock` and
+`MnistGenerator.is_available()` returns `True`.
+
+So the hazard `UNSEEDED_GENERATORS["arc_agi"]` records — *"an operator could flip a dataset canopy
+statically declares `ndim=2` into rank-3 output"* — describes a generator that **already ships**.
+The exclusion was applied to one member of a two-member class.
+
+**Round 2 materially shrank the harm, and the first reading was wrong.** Round 1 reported a silent
+train-on-the-previous-dataset via `src/demo_mode.py:2185-2186`. That is **false**:
+`regenerate_dataset_from_generator` hardcodes `params={"seed": 42}` (`src/demo_mode.py:1964`), so
+`flatten` never reaches the sequence-install branch, and its only caller is gated on
+`backend_type == "demo"` while Apply posts to `/api/stage_dataset` instead. cascor also **fails
+closed**, at `juniper-cascor/src/api/lifecycle/manager.py:4034-4035`, on both fetch paths.
+
+What survives is a real but smaller defect, and its shape is the point:
+
+| | |
+|---|---|
+| **Harm class** | A blocked stage, deferred — not a 500, and not a silent mistrain |
+| **At Apply** | HTTP **200**, green "staged" banner. Nothing in canopy checks rank (`grep ndim src/main.py` → zero hits); `gated_dataset_options` gates on the *declared* `ndim` only |
+| **At Start** | HTTP **409**, or **502** with rollback on a live swap |
+| **Message** | *"3-D sequence artifacts belong to the juniper-recurrence tier"* — to an operator who selected MNIST |
+| **Recovery** | The staged config is retained (`manager.py:2344-2350`), so every retry fails identically until the box is re-ticked |
+| **Waste** | juniper-data generates and persists a full rank-3 MNIST under its own `dataset_id`, and cascor downloads it, before the refusal |
+
+**Success is reported at the moment of the mistake and failure at an unrelated one** — the same
+shape as the `ok=True`-then-fail-in-thread pattern N6 rejects, arrived at from the opposite
+direction. Existing tests ratify the behaviour rather than pin the hazard:
+`src/tests/unit/test_dataset_schema.py:100-101` asserts `flatten` renders as a checkbox, and
+`src/tests/integration/test_apply_dataset_flow.py:182-187` asserts `flatten: True` reaches the
+backend. Nothing exercises `False`.
+
+Filed as **canopy#623**. **This is the item §12 should have produced, and the variable-rank
+question is what surfaced it.**
+
+#### 12.9.2 `arc_agi`'s blocker is its `y`, not its rank
+
+The second finding retires the question rather than answering it. **Solving rank would not make
+`arc_agi` seedable**, for two independent reasons that sit upstream of the registry.
+
+1. **Its rank-3 form is refused on the task axis regardless of rank.** `arc_agi` is registered
+   `task_type="classification"` (`juniper-data/juniper_data/api/routes/generators.py:172`), and the
+   only rank-3 model is `supported_task_types=frozenset({"regression"})`
+   (`src/model_registry.py:367`). Rank-3 classification has **zero** models in this registry, so
+   `compatible()` is `False` at any rank type.
+2. **Its `y` is not a class vector.** `y_stacked` is built from the padded `output_grid`
+   (`juniper-data/juniper_data/generators/arc_agi/generator.py:265-273`) — the same shape as `X`.
+   Flattened it is `(n, 900)`: 900 cells valued in `[-1..9]`, not a 10-way one-hot. It is a
+   grid-to-grid map declared as classification. canopy's rank-2 install path takes
+   `np.argmax(y, axis=1)` (`src/demo_mode.py:1993`), which yields a "class label" in `[0, 900)`.
+
+The `task_type` declaration is wrong **at the producer**, and no model in canopy's registry consumes
+a grid-to-grid map. §12.8's table gives `arc_agi`'s reason as "no fixed rank; `flatten_pairs` flips
+it and `DatasetTypeSpec.ndim` is static". That is true but is **not the blocker**, and it is the
+same class of error §12.8 itself recorded against §12.7: naming the obstacle correctly and stopping
+one step short of the cause. The entry should name the `y`-shape and `task_type` mislabel, and the
+`task_type` question belongs upstream alongside the other `arc_agi` corrections in
+`JUNIPER_2026-09-01_JUNIPER-DATA_ASYNC-JOB-PATTERN-DECISION-ANALYSIS.md`.
+
+#### 12.9.3 What to ship
+
+**Not a registry change.** `compatible()` is untouched.
+
+1. **Exclude the shape-determining knobs from the rendered form** — `flatten` and `flatten_pairs` —
+   joining `INFRASTRUCTURE_FIELDS` and `PARTIAL_DATA_POLICY_FIELDS` in the `FORM_EXCLUDED_FIELDS`
+   union (`src/dataset_schema.py:107`). Same union, same shape, same reason class: *a field whose
+   value contradicts a declaration the registry makes elsewhere.* Key it **per generator** rather
+   than globally — this schema space already has cross-generator name collisions
+   (`normalize_features` appears in three generators, `one_hot_labels` in two), and the call site at
+   `src/frontend/dashboard_manager.py:3068` already has the generator name in hand.
+   Excluded-but-seeded keys still travel to the backend (`:3191`), so nothing is dropped.
+2. **Keep `arc_agi` unseeded, and correct its recorded reason** per §12.9.2.
+3. **Leave the registry's rank type alone.** If a grid-native model is ever added, the two-entry
+   split — `arc_agi_flat` / `arc_agi_grid`, each pinning `flatten_pairs` in `default_params` —
+   becomes correct, costs two seeds and two aliases, introduces **zero** new concepts, and uses the
+   defaults channel canopy#621 shipped. It is cheap *then* and premature *now*.
+
+**Two unrelated defects surfaced in passing**, both in the same "the panel renders every scalar the
+schema declares" class, and neither belongs to §12:
+
+- `sizing_mode`, `val_percent`, `test_percent` and `val_ratio` render as generator *content*
+  parameters on **all 16** generators. Three-partition split plumbing is leaking into the form;
+  `INFRASTRUCTURE_FIELDS` (`src/dataset_schema.py:83`) predates those four fields.
+- `sizing_mode` renders as a **free text box** — the schema emits `type: string` with no enum — so a
+  typo becomes a 422 from juniper-data.
+
+**Corrected §12 final state**, superseding §12.8's table on the `arc_agi` row only:
+
+| seeded (8) | not seeded (2) |
+|---|---|
+| `gaussian`, `checkerboard`, `equities` (rank-2) | `arc_agi` — its `y` is a 900-cell grid declared `task_type="classification"`; rank-3 classification has no model, and the variable rank is a secondary UI hazard shared with the seeded `mnist` |
+| `multi_sine`, `mackey_glass`, `irregular_sine`, `ar_p`, `delay_product` (rank-3) | `csv_import` — an import path, not a peer generator; `file_path` is required |
+
+`arc_agi` is no longer waiting on a design decision. The decision was taken here: **the registry
+expresses a single rank, and a generator whose rank the operator can flip has that knob withheld
+rather than described.**
