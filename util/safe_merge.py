@@ -386,7 +386,10 @@ def pr_state(owner: str, repo: str, pr: int) -> dict:
             "--repo",
             f"{owner}/{repo}",
             "--json",
-            "state,mergeStateStatus,mergeable,headRefOid,isDraft,title",
+            # `autoMergeRequest` costs nothing here -- one more field on a call already
+            # being made -- and it is the only way to see a net someone ELSE armed. See
+            # `stale_snapshot_refusal` for why that matters.
+            "state,mergeStateStatus,mergeable,headRefOid,isDraft,title,autoMergeRequest",
         ]
     )
     try:
@@ -549,6 +552,67 @@ def unresolved_threads(owner: str, repo: str, pr: int) -> list[str]:
 # and it was the one wait entered with no net. It is also the exact shape of the incident.
 ARMABLE_STATES = ("BLOCKED", "BEHIND", "UNKNOWN")
 
+
+def stale_snapshot_refusal(info: dict) -> "str | None":
+    """Why this PR must not be merged through a net that carries a stored body.
+
+    Returns a refusal reason, or None when the PR is safe to proceed with.
+
+    THE HAZARD IS NOT THIS TOOL. Established 2026-09-11 by independent consensus over
+    1877 PRs: ``gh pr merge --auto --<method>`` with no body flags OMITS ``commitBody``,
+    so GitHub stores ``null`` -- and a history search for ``--body-file`` in this file
+    returns no commits, in any version. This module has never supplied one. The one
+    incident (ml#1228) was armed by something else, 5m42s AFTER this tool's own disarm.
+
+    ``commitBody`` has THREE states and only one is safe:
+
+    * ``null``  -- omitted. The repo's ``squash_merge_commit_message`` (COMMIT_MESSAGES on
+      all nine repos) is resolved at MERGE time, so commits pushed after arming are still
+      included. Measured: 60 post-arm commits across 48 PRs, ZERO losses, lags to 40.7h.
+    * ``""``    -- an actual empty string, and NOT the same as null: the squash lands with
+      no body at all. Eight cases here, all bodyless at source so none lost anything --
+      but the state is real, and ``length`` cannot tell it from null. That indistinguish-
+      ability is what produced the superseded diagnosis this function replaces.
+    * non-empty -- an ARM-TIME SNAPSHOT that binds when the net fires. Of the 29 PRs where
+      a single-parent commit landed AFTER the arm, 23 lost that commit's body from the
+      squash message. ml#1228 lost an ``Allow-Symbol-Loss:`` waiver that way and
+      ``Post-Merge Main Verification`` failed on the landed SHA three seconds later;
+      ml#1877 silently lost nine commit messages.
+
+    WHY REFUSE RATHER THAN REPAIR. The obvious remedy -- disarm, then re-arm with no body
+    -- is not available to a merge GATE. ``--auto`` on a mergeable PR merges ON THE SPOT
+    (see ``arm_auto_merge``), so a repair attempt can land a PR whose required checks never
+    finished: ml#932 / ml#924, the exact failure this tool exists to prevent. That is not
+    hypothetical -- the same disarm/re-arm sequence merged three sibling PRs on the spot on
+    2026-09-11. It also cannot fail safe: if the disarm succeeds and the re-arm's
+    ``--match-head-commit`` then fails -- which happens precisely when the head has moved,
+    the common case -- the PR is left with NO net at all. So this reports and refuses; the
+    operator decides.
+
+    NOT A BLANKET BAN ON STORED BODIES. A body supplied AFTER the last commit is correct,
+    and is the only way to guarantee a waiver trailer's exact text: twelve PRs here carry a
+    deliberately curated message, and the alternative on a large PR is ml#1797's
+    26,052-character auto-concatenation. The hazard is a body stored BEFORE further commits
+    land. This therefore refuses only on the empty string, which is destructive
+    unconditionally; staleness of a non-empty snapshot depends on commits this function
+    cannot see, and is measured by
+    ``util/ad-hoc/2026-09-10_soak_stopping_rule/armed_snapshot_staleness.py``.
+    """
+    amr = info.get("autoMergeRequest")
+    if not amr:
+        return None
+    body = amr.get("commitBody")
+    if body is None:
+        return None  # the safe state: resolved at merge time
+    if body == "":
+        return (
+            "an auto-merge net is armed with an EMPTY commit body. That is NOT the same "
+            "as no body: it overrides the repository's COMMIT_MESSAGES default, so the "
+            "squash lands with no body at all -- every trailer included. Disarm it and "
+            "re-arm with no body flags, or merge deliberately."
+        )
+    return None
+
 # Module-level so the signal handler can report the net truthfully. A per-cycle local (the
 # previous shape) also silently forgot the net across a BEHIND re-sync, so a refusal on cycle
 # 2 could not have disarmed a net armed on cycle 1 even if it had tried to.
@@ -606,6 +670,25 @@ def arm_auto_merge(owner: str, repo: str, pr: int, method: str, log, head: str =
         f"  auto-merge net armed{pinned} — GitHub will complete this merge even if this run "
         "dies (net is checks-green-gated; it does not re-pin the head after arming)"
     )
+    # READ BACK. Exit 0 above proves the command did not error; it does NOT prove this run
+    # armed anything. `gh pr merge --auto` against an ALREADY-armed PR exits 0 and prints
+    # nothing, so without this the line above can announce a pinned net over someone else's
+    # net whose stored body is what will actually fire. Report what is stored, not what was
+    # asked for. Best-effort: a failed read must never fail a merge that is otherwise fine.
+    try:
+        after = pr_state(owner, repo, pr)
+    except HardError as exc:  # nosec B110 - advisory read; see the comment above
+        log(f"  (could not read the net back: {str(exc)[:80]})")
+        return True
+    amr = after.get("autoMergeRequest") or {}
+    body = amr.get("commitBody")
+    if body is None:
+        log("  net body: none stored — resolved at MERGE time, so later commits still land")
+    elif body == "":
+        log("  !! net body: EMPTY STRING — this net will land a squash with NO body at all")
+    else:
+        log(f"  !! net body: a {len(body)}-char ARM-TIME SNAPSHOT, not this run's doing. "
+            "Anything pushed from now on will be MISSING from the squash message.")
     return True
 
 
@@ -784,6 +867,14 @@ def _safe_merge_inner(
         raise Refused(f"PR #{pr} is a draft")
     if info.get("mergeStateStatus") == "DIRTY":
         raise Refused(f"PR #{pr} has merge conflicts — resolve them first")
+
+    # UNCONDITIONAL, and at ENTRY rather than at the arming site. Both the dry-run and the
+    # BEHIND paths return before arming, and a CLEAN PR is never armable, so a check down
+    # there cannot fire in the read-only mode an operator actually runs -- nor on a green
+    # PR whose foreign net is seconds from firing, which is exactly when it matters.
+    snapshot_problem = stale_snapshot_refusal(info)
+    if snapshot_problem:
+        raise Refused(f"PR #{pr}: {snapshot_problem}")
 
     for cycle in range(1, MAX_SYNC_CYCLES + 1):
         info = pr_state(owner, repo, pr)
