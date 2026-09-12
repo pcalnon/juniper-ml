@@ -424,6 +424,35 @@ before `--execute`**, not after.
 
 ---
 
+## Worktree converge precheck (operational, 2026-09-12)
+
+- **`2026-09-12_worktree_converge_precheck.py`** answers the one question that makes
+  `git reset --hard origin/main` safe in a session worktree: *does any locally modified or untracked
+  file differ from the target ref?* It buckets every such path into **SAME** (already landed
+  upstream — safe to discard), **LOCAL-NEW** (absent from the ref, so nothing to clobber) and
+  **DIVERGED** (present and different — stop), and exits 1 on the third.
+
+  A session that commits through the GitHub API never touches its own working tree, so its edits
+  show as modified/untracked indefinitely while being byte-identical to `main`. That looks exactly
+  like unlanded work. Run this, confirm `DIVERGED: 0`, check `git merge-base --is-ancestor`, and
+  only then reset.
+
+**The failure that motivated it.** The juniper-canopy v0.8.0 ceremony was run from a worktree at
+`a359dd8f`, which predates juniper-ml#1875 — the fix normalising `notes_render`'s return to
+`"\n".join(lines).rstrip("\n") + "\n"`. The stale copy emitted a trailing blank line, so the archive
+PR failed its own `end-of-file-fixer` on **one byte** (`@@ -427,4 +427,3 @@`), reddening Pre-commit
+on 3.12/3.13/3.14 and Quality Gate with them. The renderer was not at fault and neither was the
+content: `origin/main` had carried the fix for three days.
+
+**`util/` is shared tooling, and a worktree pins it to the commit the worktree was cut from.** The
+repo's own release train, sequence-safety screens and merge helpers all live there. Before invoking
+any of them from a session worktree, `git fetch` and compare — the stale copy runs happily and
+produces output that looks right. Same class as
+[[reference_stale_local_checkout_clobbers_your_own_work]] and
+[[reference_a_checkout_is_not_a_deployment]], on the tooling rather than the product.
+
+---
+
 ## What does NOT belong here
 
 - Scripts that are part of a documented build / test / release flow → `util/` proper or `scripts/`.
