@@ -452,11 +452,22 @@ it is the meta-package whose floors make the other eight reachable by `pip insta
 | `juniper-model-core` | **0.3.2** | publishes the `crossval/splits.py` docstring fix stranded on `main` since ml#1829 |
 | `juniper-ml` (meta) | **0.8.0** | floors seven of the eight above, plus `juniper-cascor-client>=0.8.0` for the base-URL guard. `juniper-model-core` is the eighth and is **admitted, not floored** — see below |
 
-**`juniper-model-core` is floored by nobody.** juniper-ml's `[tools]` extra pins it `>=0.1.0,<0.4.0`, which
-*admits* 0.3.2 but does not require it, so `pip install juniper-ml[tools]` may still resolve 0.3.1 and its
-stale docstring. Left deliberately: the difference is documentation-only, and a floor raise would be a
-consumer break for no behavioural gain. Worth knowing before treating "0.3.2 is released" as "0.3.2 is
-what consumers get".
+**`juniper-model-core` is floored by nobody — but a fresh install still gets it.** juniper-ml's `[tools]`
+extra pins it `>=0.1.0,<0.4.0`, which *admits* 0.3.2 without *requiring* it. Both halves were measured in a
+clean venv on 2026-09-11: `pip install "juniper-ml[clients,tools,recurrence]==0.8.0"` resolves
+**juniper-model-core 0.3.2** (pip takes the newest satisfying version), while
+`pip install "juniper-ml[tools]==0.8.0" "juniper-model-core==0.3.1"` also resolves, with no conflict. So the
+cap does not deliver the stale wheel by default; it merely fails to **forbid** it, and a pin, a lockfile or a
+stale index can still hold a consumer there. Left deliberately: documentation-only difference, and a floor
+raise would be a consumer break for no behavioural gain.
+
+**The release very nearly did not happen at all.** `juniper-model-core` 0.3.2 was BUMPED on `main`
+(juniper-ml#1873) and then left unreleased for the rest of the arc — no tag, no Release, PyPI still serving
+0.3.1 — because the session moved on to the next package after merging the bump. It was caught only by a
+final `curl` sweep of all nine packages against PyPI, which returned **404** for 0.3.2 while the other eight
+returned 200; a running tally kept in the session's head said "eight published" and was wrong. The lesson is
+the same one this section is about, one level up: **re-probe the registry, never trust the tally**, because
+"I merged the bump" and "it is on PyPI" are separated by a ceremony that is easy to skip.
 
 **Verified from the PUBLISHED wheels, not the checkout** (`util/ad-hoc/2026-09-10_verify_published_wheels.py`):
 
@@ -468,6 +479,13 @@ what consumers get".
   across folds.
 - `juniper_recurrence-0.5.0-py3-none-any.whl` METADATA carries `juniper-recurrence-model<0.4.0,>=0.3.0`
   in `dependencies`, `[torch]` and `[bench-torch]` — the floor survived merge, release and publish.
+- **End-to-end, from PyPI, after all nine were approved** (2026-09-11): a clean venv running
+  `pip install "juniper-ml[clients,tools,recurrence]==0.8.0"` resolves `juniper-cascor-client 0.8.0`,
+  `juniper-data-client 0.5.0`, `juniper-model-core 0.3.2`, `juniper-recurrence 0.5.0`,
+  `juniper-recurrence-client 0.3.0` and `juniper-recurrence-model 0.3.0` — every floor honoured — and the
+  behavioural checks above pass against that install. The published `juniper-model-core` 0.3.2 docstring
+  was read back directly: it names `derive_full_split` and decision 11, and no longer asserts the dead
+  contract. The gap this section is about is closed at the source.
 
 **A checkout is not a deployment.** `juniper-model-core` held the corrected docstring on `main` from
 ml#1829 while the published 0.3.1 wheel still served the retired contract — repo and PyPI both reading
