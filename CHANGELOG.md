@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Perf lane — the six open owner decisions are RULED, and the two that needed no host time are
+  executed** (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`).
+  Decisions that had accumulated across the P2 plan and four handoffs, put to the owner and ruled
+  in one sitting; the note records each ruling, the gate before it lands, and what it does **not**
+  decide. One correction reframed two of them: cascor#531's candidate-phase penalty is **1.52×**
+  (a 52% slowdown), not 1.52%, and **both of its channels shrink as the budget rises**
+  (throughput 1.26× → 1.14×, epoch count 1.21× → 1.03×) — so it is the worst case at a *tight*
+  cap, not a flat tax.
+- **D5 executed — the cascor parallel-version floor moved out of `load_suite` onto the execution
+  path** (`util/experiments/run_suite.py`). `tests/test_experiment_suite_yamls.py::test_every_suite_loads`
+  calls `load_suite` on every checked-in suite; CI clones only juniper-ml, so the floor check found
+  no cascor sibling, failed closed, and turned the R-6 drift gate **red on every CI run** for a
+  valid parallel cascor suite that passed locally. Structural validation ("is this YAML
+  well-formed?") no longer needs a sibling repo; "may this launch here and now?" still does. The
+  guard is unchanged in strength — `main` calls the new `check_cascor_parallel_floor` before any
+  cell is materialised **and before `--dry-run` prints its plan**, still fail-closed. Proven
+  end-to-end on one identical file in one identical environment: structural validation passes
+  (25 tests OK) while launch refuses with the Q-6 message and exit 2. Five new tests in
+  `tests/test_run_suite.py` (10 in the class); mutation-checked — deleting the call fails two of
+  them, and strengthening was required because one initially passed **vacuously** (exit 2 was
+  arriving from an unrelated `cannot read base config`, not from the guard).
+- **D4 specified — PF-2 is re-scoped onto three axes**
+  (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`), replacing a
+  dataset axis measured to be **inert** (`step_count` identical at 250 and 2000 points per spiral
+  at every epoch budget). New: the candidate phase (where the epoch count is genuinely emergent),
+  a wide wall-time characterisation, and spiral count. The spec records a constraint found while
+  checking the axes against the real bounds: **the two spiral generators have different limits** —
+  cascor's in-process `_generate_spiral_data` (`api/routes/training.py:363`) is **unbounded**,
+  while juniper-data enforces `n_points_per_spiral ≤ 10000` and `n_spirals` 2–10 as Pydantic field
+  constraints. The requested 250 → 500,000 range is therefore reachable only on the in-process
+  path. It also flags a **blocking** calibration: a spiral-count axis on the smoke base's
+  `max_hidden_units: 2` would measure the cap rather than the difficulty — the same failure class
+  the re-spec exists to escape. `util/ad-hoc/2026-09-12_pf2_spiral_capacity_calibration.yaml` is
+  the probe that settles it, and it reads **structural** outcomes, so it does not need a quiet host.
+
 ## [0.8.0] - 2026-09-11
 
 ### Added
