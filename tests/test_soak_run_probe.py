@@ -157,6 +157,61 @@ class RetrievalChannel(unittest.TestCase):
         self.assertFalse(ch["pointer_doc_referenced"])
         self.assertEqual(ch["suggests"], "source-recovered-or-miss")
 
+    def test_naming_the_ledger_in_metadata_does_not_suppress_a_real_read(self) -> None:
+        # REGRESSION PIN FOR A WITHDRAWN CHANGE, 2026-09-12. A guard was proposed
+        # that suppressed the pointer hit whenever the soak ledger's path appeared
+        # anywhere in the same tool input, on the theory that reading the ledger is
+        # reaching a different document. Consensus refuted it and it was withdrawn.
+        #
+        # This pins the worst of the four measured reasons: the guard destroyed the
+        # CANONICAL positive. `{"file_path": "docs/REFERENCE.md"}` is what
+        # test_pointer_hit_is_detected_from_tool_inputs pins as THE unambiguous
+        # open -- and EVERY Claude Code Bash/Read input also carries a
+        # `description`, so prose in a metadata field flipped a genuine read to
+        # MISS. That is the same false-negative class as the `cd`-ordering bug that
+        # produced the wrong 51.2% mechanism-checked headline (true figure 55.8%).
+        #
+        # The other three reasons, for anyone tempted to re-add it: the selector was
+        # one hard-coded path, so the identical shape aimed at README.md still
+        # scored `follow`; Sec 3 of
+        # notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md
+        # defines the `ledger` class as "the match is INSIDE the soak ledger's own
+        # JSON", so a match inside a shell COMMAND is Sec 3's `filename` class --
+        # owner decision 7, not a defect; and the shape has 0 occurrences in 49
+        # bound transcripts while all 7 real ledger sightings are RESULT-side, which
+        # this channel cannot see (see WiredChannelSeesToolInputsOnly).
+        parsed = {
+            "tool_inputs": [
+                json.dumps(
+                    {
+                        "file_path": "docs/REFERENCE.md",
+                        "description": "compare against "
+                        "reports/soak/pointer_follow_soak.jsonl",
+                    }
+                )
+            ],
+            "answer": "",
+        }
+        ch = mod.retrieval_channel(parsed, "docs/REFERENCE.md#x")
+        self.assertTrue(ch["pointer_doc_referenced"])
+        self.assertEqual(ch["suggests"], "follow")
+
+        # Same class, shell shape: a ledger read and a genuine unqualified read in
+        # one command. The read is real and must survive.
+        parsed = {
+            "tool_inputs": [
+                json.dumps(
+                    {
+                        "command": "cat reports/soak/pointer_follow_soak.jsonl "
+                        "&& sed -n 10,40p docs/REFERENCE.md",
+                    }
+                )
+            ],
+            "answer": "",
+        }
+        ch = mod.retrieval_channel(parsed, "docs/REFERENCE.md#x")
+        self.assertTrue(ch["pointer_doc_referenced"])
+
     def test_an_absolute_sibling_path_is_not_a_hit(self) -> None:
         parsed = {
             "tool_inputs": [

@@ -438,6 +438,23 @@ _CD_RE = re.compile(r"cd\s+(/[\w./-]+)")
 # and treating it as one lets a grep PATTERN that merely mentions our path
 # score as a read of it.
 _PATH_CHARS = re.compile(r"[\w./~-]")
+# A LEDGER GUARD WAS PROPOSED HERE ON 2026-09-12 AND WITHDRAWN BY CONSENSUS. Do not
+# re-add it without reading `notes/…SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md` Sec 3.
+# The idea was: a command that READS the ledger has reached a different document, like a
+# sibling repo's same-named file, so suppress the hit. Four measured reasons it is wrong:
+#  * Sec 3 defines the `ledger` class as "the match is INSIDE the soak ledger's own JSON".
+#    In `grep -n "docs/REFERENCE.md" <ledger>` the match is inside a SHELL COMMAND, so the
+#    occurrence is Sec 3's `filename` class -- the row that is owner decision 7.
+#  * The selector was one hard-coded path, not a principle: the identical shape aimed at
+#    README.md or docs/QUICK_START.md still scored `follow`.
+#  * It destroyed the CANONICAL positive. `{"file_path": "docs/REFERENCE.md"}` scores a
+#    follow; add a `description` field mentioning the ledger -- and every Claude Code tool
+#    input carries one -- and it scored MISS. That is the 51.2% false-negative class.
+#  * It was evaded by a relative `cd reports/soak` and over-fired on `<ledger>.bak` and on
+#    a SIBLING repo's ledger.
+# The corpus check that should have preceded it: the shape has 0 occurrences in 49 bound
+# transcripts, and all 7 real ledger sightings are RESULT-side, which this channel cannot
+# see by design (`WiredChannelSeesToolInputsOnly`).
 
 
 def _own_repo_occurrence(tool_inputs: list, doc: str) -> bool:
@@ -523,6 +540,15 @@ def retrieval_channel(parsed: dict, pointer: str) -> dict:
     # the pointer gets FOLLOWED, and a model reciting the path without reading it
     # is the strongest possible example of not following it.
     hit = bool(doc) and _own_repo_occurrence(parsed["tool_inputs"], doc)
+    # A `ledger_touched` boolean was proposed here on 2026-09-12 and WITHDRAWN. It is
+    # measurably false on every real ledger contact: all 7 sightings in 49 bound
+    # transcripts are RESULT-side, and this channel reads inputs only, so the flag can
+    # only ever be true in the non-contaminating filename case. It also collapsed the
+    # content-vs-filename distinction whose collapse this arc formally retracted on
+    # 2026-09-09, and it printed into `scoring_packet.md` -- the artifact that
+    # deliberately redacts corpus progress from the scorer -- an always-clean
+    # contamination field. Ledger exposure is reported, three-valued, by
+    # `util/ad-hoc/2026-08-21_soak_probe_evidence.py::ledger_exposure`.
     return {
         "pointer_doc": doc,
         "pointer_doc_referenced": hit,
