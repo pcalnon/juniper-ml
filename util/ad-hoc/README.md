@@ -375,6 +375,84 @@ the gap from observed `n_intervals` transitions and never from the constant.
 
 ---
 
+## F-CANOPY-052 re-disposed as F-CANOPY-035's mechanism (operational, 2026-09-11)
+
+- **`2026-09-11_f052_trigger_eviction_test.py`** is the unconfounded A/B the rest of this arc never got:
+  `setProps` on `candidate-metrics-panel-update-interval.disabled` and **nothing else**, so the only
+  variable is the one the hypothesis names. Control 1/3 renders, treatment 3/3, with **zero** loss-plot
+  responses on the wire on every non-render against 79–88 naming other outputs in the same window. It
+  checks that the intervention actually took (`n_intervals` held, `disabled` true at the end of every
+  treatment run) rather than trusting `setProps`' return — the period sweep's 250 ms arm is the
+  cautionary case, where nothing recorded that the period was ever delivered.
+
+  Contrast it with `2026-09-10_f035_downstream_consumer_probe.py`, which asks an adjacent question. That
+  probe's wire census swallows unparseable responses through a bare `except Exception: return` with **no
+  `unparsed` counter**, and attaches ~5 s after navigation, so the page-load window where the deciding
+  render happens is unobserved. "Found no evidence of" is what it supports; this one measures.
+
+---
+
+## Release-train ceremony preflight (operational, 2026-09-12)
+
+Two instruments written while cutting juniper-canopy **v0.8.0**, both for the same failure: the ceremony
+renders the published GitHub Release body **and** the archived notes file from the package CHANGELOG's
+`## [<version>]` section (`util/release_train/ceremony.py:417`), and a Release body is not re-cuttable.
+Whatever that section says at `--execute` time is what ships, permanently.
+
+- **`2026-09-12_ceremony_notes_preview.py`** prints the exact body the ceremony would publish, before it
+  runs. `ceremony.py --dry-run --json` reports the four planned actions but **not** `plan.archive_content`,
+  so the one artefact a human should read first is the one the dry run does not show.
+  **`notes_render.py` is not a substitute**: standalone it sources `[Unreleased]`, while the ceremony
+  sources the RELEASED `[<version>]` section. On a package whose proposal PR has already moved the
+  bullets, the standalone renderer prints *"no `[Unreleased]` bullets found; populate before release"*
+  while the ceremony renders the full set — opposite answers to the same question, and the reassuring one
+  is the wrong one. Note it must put `util/release_train/` on `sys.path`, not `util/`: `ceremony.py` does
+  a flat `import detect`.
+- **`2026-09-12_canopy_changelog_backfill_613_614_618.py`** is the repair that preview forced. canopy#613,
+  #614 and #618 all merged **before** the release-bump PR (canopy#620, `4006e74`) and are in the v0.8.0
+  tree, and none of the three touched `CHANGELOG.md` — so the section the notes are built from documented
+  the dataset / selection arc and said nothing about the three poll fixes. Rendered before: `Added: 6,
+  Changed: 1, **Fixed: 5**`. After: **`Fixed: 8`**. It writes to `--out` and never touches the shared
+  sibling checkout, which other sessions may be using, and refuses to run twice by looking for `(#NNN)` in
+  the target section.
+
+**The general trap.** A version bump and a CHANGELOG move are one PR; the fixes that ship in that version
+are other PRs, merged earlier, which need not have touched the CHANGELOG at all. Nothing in the release
+train checks that correspondence — `detect.py` classifies on `declared > released` and never reads which
+commits the section describes. **Diff `git log <last-tag>..HEAD` against the section's own PR references
+before `--execute`**, not after.
+
+---
+
+## Worktree converge precheck (operational, 2026-09-12)
+
+- **`2026-09-12_worktree_converge_precheck.py`** answers the one question that makes
+  `git reset --hard origin/main` safe in a session worktree: *does any locally modified or untracked
+  file differ from the target ref?* It buckets every such path into **SAME** (already landed
+  upstream — safe to discard), **LOCAL-NEW** (absent from the ref, so nothing to clobber) and
+  **DIVERGED** (present and different — stop), and exits 1 on the third.
+
+  A session that commits through the GitHub API never touches its own working tree, so its edits
+  show as modified/untracked indefinitely while being byte-identical to `main`. That looks exactly
+  like unlanded work. Run this, confirm `DIVERGED: 0`, check `git merge-base --is-ancestor`, and
+  only then reset.
+
+**The failure that motivated it.** The juniper-canopy v0.8.0 ceremony was run from a worktree at
+`a359dd8f`, which predates juniper-ml#1875 — the fix normalising `notes_render`'s return to
+`"\n".join(lines).rstrip("\n") + "\n"`. The stale copy emitted a trailing blank line, so the archive
+PR failed its own `end-of-file-fixer` on **one byte** (`@@ -427,4 +427,3 @@`), reddening Pre-commit
+on 3.12/3.13/3.14 and Quality Gate with them. The renderer was not at fault and neither was the
+content: `origin/main` had carried the fix for three days.
+
+**`util/` is shared tooling, and a worktree pins it to the commit the worktree was cut from.** The
+repo's own release train, sequence-safety screens and merge helpers all live there. Before invoking
+any of them from a session worktree, `git fetch` and compare — the stale copy runs happily and
+produces output that looks right. Same class as
+[[reference_stale_local_checkout_clobbers_your_own_work]] and
+[[reference_a_checkout_is_not_a_deployment]], on the tooling rather than the product.
+
+---
+
 ## What does NOT belong here
 
 - Scripts that are part of a documented build / test / release flow → `util/` proper or `scripts/`.
