@@ -34,8 +34,12 @@ PIN_RE = re.compile(r"juniper-ci-tools>=([0-9][0-9.]*),<([0-9][0-9.]*)")
 # pin into a workflow-level ``env: CI_TOOLS_PIN:`` and install via "$CI_TOOLS_PIN".
 # Match any non-comment line, exactly as the drift guard's own extractor does.
 
-# Mirrors tests/test_ci_tools_drift.py at the version under audit.
-GUARD_CONSUMER_REPOS = (
+# The guard's scope BEFORE juniper-ml#1909: one file per repo (``ci.yml``) over a
+# six-repo list, and a closed four-file tuple for juniper-ml itself. Kept so the
+# census can still show what that model could and could not see -- the point of the
+# tool is the DIFFERENCE between the two columns, so hard-coding only the new scope
+# would make it report a tautological zero.
+OLD_GUARD_CONSUMER_REPOS = (
     "juniper-canopy",
     "juniper-cascor",
     "juniper-cascor-client",
@@ -43,13 +47,23 @@ GUARD_CONSUMER_REPOS = (
     "juniper-data",
     "juniper-data-client",
 )
-GUARD_ML_WORKFLOWS = (
+OLD_GUARD_ML_WORKFLOWS = (
     "ci.yml",
     "main-verify.yml",
     "lockfile-update.yml",
     "docs-full-check.yml",
 )
-ALL_REPOS = GUARD_CONSUMER_REPOS + ("juniper-deploy", "juniper-recurrence")
+ALL_REPOS = OLD_GUARD_CONSUMER_REPOS + ("juniper-deploy", "juniper-recurrence")
+
+# The guard's scope AFTER #1909: every workflow, every sibling. Imported rather than
+# retyped where possible, so this cannot silently drift from the test it describes.
+try:  # pragma: no cover - convenience, not correctness
+    import sys as _sys
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+    from tests.test_ci_tools_drift import _CONSUMER_REPOS as NEW_GUARD_CONSUMER_REPOS
+except Exception:  # the test module is not importable from every checkout layout
+    NEW_GUARD_CONSUMER_REPOS = ALL_REPOS
 
 
 def live_pins(path: Path) -> list[tuple[int, str, str]]:
@@ -75,14 +89,17 @@ def main() -> int:
         for wf in sorted(wf_dir.glob("*.yml")):
             for lineno, lo, hi in live_pins(wf):
                 if repo == "juniper-ml":
-                    seen = wf.name in GUARD_ML_WORKFLOWS
+                    old_seen = wf.name in OLD_GUARD_ML_WORKFLOWS
                 else:
-                    seen = repo in GUARD_CONSUMER_REPOS and wf.name == "ci.yml"
-                rows.append((repo, wf.name, lineno, lo, hi, seen))
+                    old_seen = repo in OLD_GUARD_CONSUMER_REPOS and wf.name == "ci.yml"
+                rows.append((repo, wf.name, lineno, lo, hi, old_seen))
 
     total = len(rows)
-    seen = sum(1 for r in rows if r[5])
-    print(f"live pins: {total}   guarded: {seen}   UNGUARDED: {total - seen}")
+    old_seen = sum(1 for r in rows if r[5])
+    new_seen = sum(1 for r in rows if r[0] == "juniper-ml" or r[0] in NEW_GUARD_CONSUMER_REPOS)
+    print(f"live pins: {total}")
+    print(f"  OLD guard (one ci.yml per repo, 6 repos):  guarded {old_seen}   UNGUARDED {total - old_seen}")
+    print(f"  NEW guard (every workflow, 8 repos + ml):  guarded {new_seen}   UNGUARDED {total - new_seen}")
 
     ranges = sorted({(r[3], r[4]) for r in rows})
     print(f"distinct ranges in use: {['>=%s,<%s' % r for r in ranges]}")
@@ -94,7 +111,7 @@ def main() -> int:
     if not odd:
         print("  (none)")
 
-    print("\n--- unguarded pins, by repo ---")
+    print("\n--- pins the OLD guard could not see, by repo ---")
     for repo in ALL_REPOS + ("juniper-ml",):
         un = [r for r in rows if r[0] == repo and not r[5]]
         tot = [r for r in rows if r[0] == repo]
