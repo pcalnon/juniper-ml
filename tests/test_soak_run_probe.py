@@ -185,8 +185,7 @@ class RetrievalChannel(unittest.TestCase):
                 json.dumps(
                     {
                         "file_path": "docs/REFERENCE.md",
-                        "description": "compare against "
-                        "reports/soak/pointer_follow_soak.jsonl",
+                        "description": "compare against " "reports/soak/pointer_follow_soak.jsonl",
                     }
                 )
             ],
@@ -202,8 +201,7 @@ class RetrievalChannel(unittest.TestCase):
             "tool_inputs": [
                 json.dumps(
                     {
-                        "command": "cat reports/soak/pointer_follow_soak.jsonl "
-                        "&& sed -n 10,40p docs/REFERENCE.md",
+                        "command": "cat reports/soak/pointer_follow_soak.jsonl " "&& sed -n 10,40p docs/REFERENCE.md",
                     }
                 )
             ],
