@@ -156,38 +156,63 @@ def load_suite(path: Path) -> dict:
     max_parallel = int(execution.get("max_parallel", 1))
     if max_parallel < 1:
         raise SuiteError("execution.max_parallel must be >= 1")
-    if mode == "parallel" and max_parallel > 1 and suite.get("app") == "cascor":
-        # Wave 7.5 / Q-6: cascor's file logger targets the shared checkout logs/juniper_cascor.log
-        # (H-7); N parallel cascor instances from ONE checkout race it, and because that file is the
-        # ONLY place the parent logger writes, the race destroys run evidence rather than merely
-        # interleaving it. Recurrence suites parallelise freely.
-        #
-        # The blanket refusal is LIFTED as of cascor 0.10.0 (2026-08-30), the first release
-        # carrying the JUNIPER_CASCOR_LOG_DIR override (cascor#523) that experiment_stack.bash
-        # exports per run. What replaces it is the version floor the old comment demanded — read
-        # from the tree that will actually be LAUNCHED, not from the driver's own environment.
-        #
-        # FAILS CLOSED. An undeterminable version refuses, because "we could not read it" and
-        # "it is new enough" must not resolve the same way: the failure this guards is silent, so
-        # a guard that defaults to permissive would restore the exact race it exists to prevent.
-        version, how = _cascor_tree_version()
-        if version is None:
-            raise SuiteError(
-                f"app: cascor with max_parallel > 1 needs a verifiable cascor >= "
-                f"{'.'.join(map(str, CASCOR_PARALLEL_FLOOR))} (JUNIPER_CASCOR_LOG_DIR, cascor#523), "
-                f"and the version could not be read: {how}. Refusing rather than assuming — the "
-                f"shared-log race (Q-6 / H-7) destroys run evidence silently. Use mode: sequential."
-            )
-        if version < CASCOR_PARALLEL_FLOOR:
-            raise SuiteError(
-                f"app: cascor with max_parallel > 1 needs cascor >= "
-                f"{'.'.join(map(str, CASCOR_PARALLEL_FLOOR))}; the tree that will run is "
-                f"{'.'.join(map(str, version))} ({how}). Below that floor "
-                f"JUNIPER_CASCOR_LOG_DIR is silently ignored and parallel cells race the shared "
-                f"logs/juniper_cascor.log (Q-6 / H-7). Use mode: sequential, or point "
-                f"JUNIPER_EXP_CASCOR_SRC_DIR at a tree >= the floor."
-            )
     return doc
+
+
+def check_cascor_parallel_floor(doc: dict) -> None:
+    """Refuse a parallel cascor suite whose LAUNCH tree is below the Q-6 version floor.
+
+    Wave 7.5 / Q-6: cascor's file logger targets the shared checkout logs/juniper_cascor.log
+    (H-7); N parallel cascor instances from ONE checkout race it, and because that file is the
+    ONLY place the parent logger writes, the race destroys run evidence rather than merely
+    interleaving it. Recurrence suites parallelise freely.
+
+    The blanket refusal is LIFTED as of cascor 0.10.0 (2026-08-30), the first release carrying
+    the JUNIPER_CASCOR_LOG_DIR override (cascor#523) that experiment_stack.bash exports per run.
+    What replaces it is the version floor the old comment demanded — read from the tree that will
+    actually be LAUNCHED, not from the driver's own environment.
+
+    FAILS CLOSED. An undeterminable version refuses, because "we could not read it" and "it is
+    new enough" must not resolve the same way: the failure this guards is silent, so a guard that
+    defaults to permissive would restore the exact race it exists to prevent.
+
+    **Why this is NOT part of ``load_suite``** (owner decision D5, 2026-09-11;
+    ``notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md``).
+    ``tests/test_experiment_suite_yamls.py::test_every_suite_loads`` calls ``load_suite`` on every
+    checked-in suite. CI clones only juniper-ml, so ``_cascor_tree_version()`` finds no sibling,
+    returns ``None``, and this check fires — turning the R-6 drift gate **red on every CI run**
+    for a suite that is perfectly valid and passes locally. Structural validation ("is this YAML
+    well-formed?") must not depend on a sibling repo being present; "may this suite launch here
+    and now?" legitimately does. Splitting the two is what lets a parallel cascor suite live under
+    ``suites/perf/``.
+
+    The guard itself is unchanged in strength: ``main`` calls this before any cell is
+    materialised or launched, and before ``--dry-run`` prints its plan, so an operator sees the
+    same refusal at the same point in the workflow as when it lived in ``load_suite``.
+    """
+    suite = doc.get("suite") or {}
+    execution = doc.get("execution") or {}
+    mode = execution.get("mode", "sequential")
+    max_parallel = int(execution.get("max_parallel", 1))
+    if not (mode == "parallel" and max_parallel > 1 and suite.get("app") == "cascor"):
+        return
+    version, how = _cascor_tree_version()
+    if version is None:
+        raise SuiteError(
+            f"app: cascor with max_parallel > 1 needs a verifiable cascor >= "
+            f"{'.'.join(map(str, CASCOR_PARALLEL_FLOOR))} (JUNIPER_CASCOR_LOG_DIR, cascor#523), "
+            f"and the version could not be read: {how}. Refusing rather than assuming — the "
+            f"shared-log race (Q-6 / H-7) destroys run evidence silently. Use mode: sequential."
+        )
+    if version < CASCOR_PARALLEL_FLOOR:
+        raise SuiteError(
+            f"app: cascor with max_parallel > 1 needs cascor >= "
+            f"{'.'.join(map(str, CASCOR_PARALLEL_FLOOR))}; the tree that will run is "
+            f"{'.'.join(map(str, version))} ({how}). Below that floor "
+            f"JUNIPER_CASCOR_LOG_DIR is silently ignored and parallel cells race the shared "
+            f"logs/juniper_cascor.log (Q-6 / H-7). Use mode: sequential, or point "
+            f"JUNIPER_EXP_CASCOR_SRC_DIR at a tree >= the floor."
+        )
 
 
 #: Q-6: the first cascor release carrying JUNIPER_CASCOR_LOG_DIR (cascor#523, published
@@ -689,6 +714,11 @@ def main(argv: "list[str] | None" = None) -> int:
     try:
         doc = load_suite(args.suite)
         cells = expand_cells(doc, args.suite)
+        # D5 (2026-09-11): the Q-6 launch gate lives HERE, not in load_suite — structural
+        # validation must not need a cascor sibling, but launching must. Before --dry-run prints
+        # and before any cell is materialised, so the refusal reaches the operator at exactly the
+        # point it always did. Still fail-closed.
+        check_cascor_parallel_floor(doc)
     except SuiteError as exc:
         print(f"suite error: {exc}", file=sys.stderr)
         return 2

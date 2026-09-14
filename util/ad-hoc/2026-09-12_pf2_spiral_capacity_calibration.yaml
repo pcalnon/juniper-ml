@@ -1,0 +1,52 @@
+# PF-2 axis 3 CAPACITY CALIBRATION (owner decision D4; spec:
+# notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md §4).
+#
+# THE QUESTION THIS ANSWERS, AND WHY IT MUST RUN FIRST
+# ----------------------------------------------------
+# The spiral-count axis is a DIFFICULTY axis. It is only meaningful if the network has enough
+# capacity for difficulty to express itself. spiral-smoke.yaml sets max_hidden_units: 2 and
+# max_iterations: 2 -- with which a 10-spiral problem is unsolvable, so EVERY high-spiral cell
+# would terminate at the cap and the suite would measure the cap, not the difficulty. That is the
+# identical failure class to the inert dataset axis PF-2 is being re-specified to escape.
+#
+# So: cross a small spiral range against two capacity budgets and look for DIVERGENCE in the
+# emergent outcomes (hidden units grown, iterations completed) -- not in wall time.
+#
+# READ IT LIKE THIS
+# -----------------
+#   hidden units grown differs across n_spirals at a budget  -> that budget can express difficulty
+#   every cell pins at max_hidden_units                      -> capacity-bound; raise and re-probe
+#   no cell reaches max_hidden_units at either budget        -> the problem is being solved too
+#                                                               easily; widen the spiral range
+#
+# NOT COMMITTED UNDER suites/. This is a calibration probe, not an instrument: util/ad-hoc/ is
+# where the headroom sweep suite lives for the same reason (2026-09-02_headroom_sweep_suite.yaml).
+#
+# PATH NOTE: n_spirals here rides cascor's IN-PROCESS generator (api/routes/training.py:363),
+# which is unbounded. juniper-data would cap this axis at MAX_SPIRALS = 10. Do not exceed 10 even
+# though this path would allow it -- past 10 the two generators diverge in what they accept.
+schema_version: 1
+suite:
+  name: pf2-spiral-capacity-calibration
+  description: "D4 axis 3: does a capacity budget let 2..10 spirals differentiate at all?"
+  app: cascor
+  base_config: [../../../juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  seed_policy: fixed
+execution:
+  mode: sequential
+  # A capacity-bound cell is a RESULT here, not an error -- it is half the answer. Aborting on
+  # the first one would discard exactly the observation the probe exists to make.
+  continue_on_failure: true
+  per_run_timeout_seconds: 1800
+  max_wall_seconds: 900
+matrix:
+  # Short axis on purpose: 2 is the floor, 6 is the owner's expected practical ceiling, 10 is
+  # MAX_SPIRALS. Three points are enough to see whether the outcomes separate at all.
+  dataset.params.n_spirals: [2, 6, 10]
+  # Two budgets: the smoke default (known too small -- it is the negative control) and one with
+  # real headroom. If the outcomes differ across n_spirals at the larger budget and not at the
+  # smaller, the axis is viable and the larger budget is its floor.
+  training.params.max_hidden_units: [2, 16]
+outputs:
+  suite_dir: null
+  aggregate: [csv, markdown]

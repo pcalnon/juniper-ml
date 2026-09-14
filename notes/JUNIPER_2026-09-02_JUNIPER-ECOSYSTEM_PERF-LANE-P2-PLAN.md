@@ -468,11 +468,17 @@ line numbers §12 quotes, two of which have drifted.
     whole-run 16-wide regime: it costs the initial pass only. Candidate-pool creation, named as
     the suspect by the 2026-09-10 note, is **excluded** — `_ensure_worker_pool` returns with the
     ICV still 16. Neither the decision above nor row 2.2 changes.
-- **A parallel cascor suite under `suites/` turns the R-6 drift gate red in CI.** `load_suite`
-  enforces the cascor version floor by reading the sibling tree; CI clones only juniper-ml, the
-  check fails closed, and `test_every_suite_loads` fails while the same file passes locally. Found
-  2026-09-08 by item 4.3; §1.5 of the re-scope note
-  ([`JUNIPER_2026-09-08_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-RESCOPE-AND-MICRO-TIMING-REFERENCE.md`](JUNIPER_2026-09-08_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-RESCOPE-AND-MICRO-TIMING-REFERENCE.md)).
+- ~~**A parallel cascor suite under `suites/` turns the R-6 drift gate red in CI.**~~ **FIXED
+  2026-09-12 (owner decision D5).** `load_suite` enforced the cascor version floor by reading the
+  sibling tree; CI clones only juniper-ml, the check failed closed, and `test_every_suite_loads`
+  failed while the same file passed locally. Found 2026-09-08 by item 4.3; §1.5 of the re-scope
+  note ([`JUNIPER_2026-09-08_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-RESCOPE-AND-MICRO-TIMING-REFERENCE.md`](JUNIPER_2026-09-08_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-RESCOPE-AND-MICRO-TIMING-REFERENCE.md)).
+  The floor check now lives in `run_suite.check_cascor_parallel_floor`, called from `main` before
+  any cell is materialised and before `--dry-run` prints — option 2 of that section's three, as
+  ruled in
+  [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md).
+  **A parallel cascor suite may now be committed under `suites/perf/`**; whether PF-8 should get
+  one is the separate, still-open half of item 4.2.
 
 ---
 
