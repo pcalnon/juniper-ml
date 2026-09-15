@@ -37,6 +37,19 @@ discriminating half — a version check alone cannot separate a real CPU build f
 wheel was installed last over orphaned CUDA wheels. The worker is an **ENTRYPOINT** image, so the
 census needs `--entrypoint python` and a bare `-`.
 
+### A verified image does not mean a sound release — canopy
+
+A concurrent session found, the same day, that **every published `juniper-canopy` wheel back to
+0.5.0 omits 10 top-level `src/*.py` modules** that 13 of its own 49 shipped files import, so
+`pip install juniper-canopy` cannot import its dashboard: `packages.find` collects packages only and
+there is no `py-modules` entry. See `project_canopy_wheel_omits_toplevel_modules_2026-09-15.md`.
+
+Nothing above is wrong — canopy `0.8.0`'s **image** was verified and is fine — but the two artifacts
+of one Release have independent health, and **the container is exactly what hid this for four
+releases**: it runs from the source tree with `PYTHONPATH=/app/src`, so the missing modules resolve
+there and only there. Wave 3 pins images and is unaffected. Do not generalise "the image is
+verified" into "the release is good", in either direction.
+
 ### Settle this before touching juniper-deploy
 
 **The record disagrees with itself about whether the Pi pull gates Wave 3.**
