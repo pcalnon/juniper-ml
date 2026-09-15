@@ -4,12 +4,26 @@
 **Author:** Paul Calnon
 **Date:** 2026-09-05
 **Status:** ACCEPTED — decisions ratified by the owner 2026-09-05. **Waves 1 and 2 complete**
-(all five repos carry `publish-image.yml`). **Three of five release images published**:
-`juniper-cascor:0.11.0`, `juniper-data:0.14.0`, `juniper-recurrence:0.5.0`. **Wave 3 blocked**
-on two Releases — juniper-cascor-worker v0.6.0 (proposal: worker#184) and juniper-canopy
-v0.8.0 (proposal: canopy#620); canopy has no GHCR package at all yet, so its Release is also
-item 1's first publish. **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on secrets.
-Last state refresh: 2026-09-11.
+(all five repos carry `publish-image.yml`). **ALL FIVE release images are published** —
+`juniper-cascor:0.11.0`, `juniper-data:0.14.0`, `juniper-recurrence:0.5.0`,
+`juniper-canopy:0.8.0` (cut 2026-09-12, also item 1's first publish — package came up
+**public**, confirmed by an anonymous pull), `juniper-cascor-worker:0.6.0` (cut 2026-09-15,
+publish run 35033610624 all three jobs green; censused from the pulled image:
+`torch=2.14.0+cpu (cuda=None) distributions=24 cuda_stack=0`, *CPU-only contract holds*).
+**Wave 3 is therefore UNBLOCKED and not started**: `juniper-deploy/docker-compose.yml` still
+carries 9 Juniper `image:` lines, all `<name>:latest` with no registry prefix (L134, 197, 334,
+391, 487, 556, 620, 764, 855 — re-censused 2026-09-15, unchanged from the original survey).
+**Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
+secrets. Last state refresh: 2026-09-15.
+
+> **The worker release is worth a note before anyone reads its version number as a code change.**
+> Across `v0.5.0...main` there were 43 commits and 23 files with **zero** inside the packaged
+> source (`juniper_cascor_worker/`) and zero in `pyproject.toml`, so the 0.6.0 PyPI wheel is
+> byte-identical to 0.5.0's apart from the version string, and `util/release_train/detect.py`
+> classifies the package `UP_TO_DATE` — correctly. It was released because `release: published`
+> fires **both** `publish.yml` and `publish-image.yml`, and Wave 3 needs a released `X.Y.Z` image
+> ref. That overloading is a property of D-1 and will recur whenever an image input moves without
+> a library change; worth an OQ if it happens a third time.
 **Scope:** publishing the five Juniper service images to container registries
 
 ---
@@ -179,12 +193,12 @@ to discover that is on a Pi.
 | Wave | Repo | Status |
 | --- | --- | --- |
 | 1 (pilot) | juniper-cascor-worker | **in flight** — juniper-cascor-worker#172 |
-| — | *verify: pull and run on a Pi node* | gate before Wave 2 |
+| — | *verify: pull and run on a Pi node* | gate before Wave 2 — **target now exists**: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0`, the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
 | 2 | juniper-cascor | pending |
 | 2 | juniper-canopy | pending |
 | 2 | juniper-data | pending |
 | 2 | juniper-recurrence | pending — build context is **nested** (`juniper-recurrence/juniper-recurrence/`) |
-| 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | pending |
+| 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **unblocked 2026-09-15** (all five images exist); not started — 9 lines still `<name>:latest` |
 | 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets (§6 OQ-1) |
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
