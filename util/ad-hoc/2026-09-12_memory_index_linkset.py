@@ -23,6 +23,12 @@ Usage
     ... 2026-09-12_memory_index_linkset.py snapshot before.txt     # dump the link set
     ... 2026-09-12_memory_index_linkset.py compare before.txt      # diff live vs snapshot
     ... 2026-09-12_memory_index_linkset.py orphans                 # files on disk with no pointer
+    ... 2026-09-12_memory_index_linkset.py unreachable             # no pointer AND no inbound link
+
+Reachability has three levels, and only the third is actually lost: an index row; an
+inbound ``[[slug]]`` / ``(file.md)`` reference from another memory; or neither. The
+``orphans`` view conflates the first two, so use ``unreachable`` to pick retirement
+candidates -- on 2026-09-15 that was 36 of 89 row-less files.
 """
 
 from __future__ import annotations
@@ -68,6 +74,23 @@ def main() -> int:
             print("\nFAIL: the compaction dropped the pointers listed above.")
             return 1
         print("\nOK: no pointer was dropped (before is a subset of after).")
+        return 0
+
+    if cmd == "unreachable":
+        # A memory with no index row is still findable if another memory points at it
+        # with [[slug]] or (file.md). "Unreachable" means NEITHER -- no index row and no
+        # inbound link, so nothing can surface it. Those are the retirement candidates.
+        on_disk = {p.name for p in MEM.glob("*.md")} - {"MEMORY.md"}
+        texts = {p.name: p.read_text(encoding="utf-8", errors="ignore") for p in MEM.glob("*.md") if p.name != "MEMORY.md"}
+        rows = []
+        for name in sorted(on_disk - live):
+            slug = name[:-3]
+            inbound = sum(1 for other, t in texts.items() if other != name and (f"[[{slug}]]" in t or f"({name})" in t))
+            if inbound == 0:
+                rows.append(name)
+        for name in rows:
+            print(name)
+        print(f"\n{len(rows)} unreachable of {len(on_disk)} on disk ({len(on_disk - live)} have no index row; the rest are reachable by inbound link)", file=sys.stderr)
         return 0
 
     if cmd == "orphans":
