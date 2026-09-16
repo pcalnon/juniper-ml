@@ -15,15 +15,17 @@ unittest **is** the gate for that module.
 
 The three things a gate like this gets wrong, each pinned here:
 
-* **Red on arrival.** ``main`` carries pre-existing structural problems: **17 across 2 files**
-  after the 2026-09-10 structure repair -- both of them known SCREEN FALSE POSITIVES rather than debt (a ``text``-tagged
-  banner whose art lines begin ``##``, and a four-backtick ``jinja2`` template sample whose H2s
-  are the sample). That count is a MOVING FLOOR, not a backlog: 104/23, 102/21, 63/14, 73/15,
-  63/14, 17/2 across seven days. No test
-  here asserts it -- every fixture below is synthetic -- so re-measure before quoting it
-  elsewhere. A gate demanding zero is unmergeable from the
-  first commit, so the comparison must be per-file and per-PR: a file the PR does not touch is
-  not the PR's problem, and a file it touches must not come out worse than it went in.
+* **Red on arrival.** ``main`` measures **zero** structural problems as of 2026-09-15: the
+  2026-09-10 repair cleared the real damage, and the 2026-09-15 rule narrowing cleared the last
+  17, which were SCREEN FALSE POSITIVES rather than debt (a ``text``-tagged banner whose art
+  lines begin ``##``, and a four-backtick ``jinja2`` template sample whose H2s are the sample).
+  That count is a MOVING FLOOR, not a backlog: 104/23, 102/21, 63/14, 73/15, 63/14, 17/2, 0/0
+  across ten days. No test here asserts it -- every fixture below is synthetic -- so re-measure
+  before quoting it elsewhere. **Zero on main does not make the delta scoping redundant**: the
+  count regresses the moment damage lands, and a gate demanding zero would then be unmergeable
+  from that commit. Independently of the count, the comparison must be per-file and per-PR: a
+  file the PR does not touch is not the PR's problem, and a file it touches must not come out
+  worse than it went in.
 * **Vacuous pass.** The underlying screen silently skips anything not ending ``.md``. A bad glob,
   a wrong base ref, or a sanitised temp filename examines nothing and reports success -- a
   correct predicate over an empty site enumeration. Examining zero of N touched files must be an
