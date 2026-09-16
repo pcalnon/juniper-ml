@@ -31,6 +31,7 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 P13 = os.environ.get("P13_TREE", "/tmp/claude-1000/p13")
 CASCOR = os.environ.get("P13_CASCOR", "/home/pcalnon/Development/python/Juniper/juniper-cascor")
@@ -74,7 +75,7 @@ def run_tree(label, paths):
 
 def check_guards(path):
     """Every isEnabledFor in the file must name a symbol, not an integer."""
-    text = open(path, encoding="utf-8").read()
+    text = Path(path).read_text(encoding="utf-8")
     calls = re.findall(r"isEnabledFor\(level=([^)]+)\)", text)
     numeric = [c for c in calls if re.fullmatch(r"\s*\d+\s*", c)]
     return calls, numeric
@@ -108,8 +109,8 @@ def main():
         print(f"  [{'ok ' if good else 'FAIL'}] {label}: {len(calls)} guard sites, "
               f"{len(numeric)} still numeric  -> {sorted({c.strip() for c in calls})}")
 
-    a = open(f"{P13}/src/candidate_unit/candidate_unit.py", encoding="utf-8").read()
-    b = open(f"{P13}/model/candidate_unit/candidate_unit.py", encoding="utf-8").read()
+    a = Path(f"{P13}/src/candidate_unit/candidate_unit.py").read_text(encoding="utf-8")
+    b = Path(f"{P13}/model/candidate_unit/candidate_unit.py").read_text(encoding="utf-8")
     same = a == b
     ok = ok and same
     print(f"  [{'ok ' if same else 'FAIL'}] the two candidate_unit.py copies are byte-identical")
