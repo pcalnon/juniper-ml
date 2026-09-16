@@ -12,9 +12,26 @@
 #    `conf/requirements_ci.txt` and `conf/conda_environment_ci.yaml`.
 #    The workflow pushes the diff (if any) onto a new branch and opens a PR.
 #
-#    PRs are opened by `peter-evans/create-pull-request` using the
-#    workflow's GITHUB_TOKEN. No additional secret is required for the
-#    common case.
+#    PRs are opened by `peter-evans/create-pull-request`.
+#
+#    A PR opened with the built-in GITHUB_TOKEN does NOT trigger `pull_request`
+#    workflows -- GitHub suppresses them to prevent recursive runs. So on the
+#    GITHUB_TOKEN path this PR arrives with ZERO checks: nothing fails, nothing
+#    warns, and the absence looks like a quiet week rather than a gap. The
+#    previous wording here -- "No additional secret is required for the common
+#    case" -- is what made that read as fine, and it is why the gap survived.
+#
+#    So when the repo variable RELEASE_TRAIN_APP_ID is set, this workflow mints a
+#    GitHub App installation token and opens the PR as the App identity, which DOES
+#    trigger CI. That is the same mechanism release-train.yml already uses for the
+#    same reason. When the variable is unset the mint step is skipped and the job
+#    degrades to the old GITHUB_TOKEN behaviour, so dropping this file into a repo
+#    without the App still works -- it just keeps opening unchecked PRs.
+#
+#    Requires, per repo: the RELEASE_TRAIN_APP_ID variable and the
+#    RELEASE_TRAIN_APP_PRIVATE_KEY secret. The minted token is scoped to the
+#    CURRENT REPOSITORY ONLY (both `owner` and `repositories` omitted), not to the
+#    App's whole installation.
 #####################################################################################################################################################################################################
 
 name: Update Lockfiles
@@ -50,9 +67,25 @@ jobs:
       - name: Regenerate dependency lockfiles
         run: juniper-generate-dep-docs
 
+      # Gated on the repo VARIABLE, not the secret: `secrets` is not allowed in a step-level
+      # `if`, and a missing variable is the honest signal that this repo has no App wired up.
+      # Omitting both `owner` and `repositories` scopes the token to the current repository
+      # only -- least privilege, and portable to whichever repo this template lands in.
+      - name: Mint GitHub App token (so the PR triggers CI)
+        id: app-token
+        if: ${{ vars.RELEASE_TRAIN_APP_ID != '' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ vars.RELEASE_TRAIN_APP_ID }}
+          private-key: ${{ secrets.RELEASE_TRAIN_APP_PRIVATE_KEY }}
+
       - name: Open PR if lockfiles changed
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1  # v8.1.1
         with:
+          # App token when one was minted; otherwise the built-in token, whose PRs open
+          # without checks. The `||` fallback is what makes the mint step optional: a
+          # skipped step yields an empty output, not an error.
+          token: ${{ steps.app-token.outputs.token || secrets.GITHUB_TOKEN }}
           branch: chore/lockfile-update
           delete-branch: true
           # required_signatures (2026-08-12 normalization, juniper-ml#1099):

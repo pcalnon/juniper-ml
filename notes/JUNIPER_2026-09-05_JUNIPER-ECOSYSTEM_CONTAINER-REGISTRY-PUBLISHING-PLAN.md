@@ -10,9 +10,15 @@
 **public**, confirmed by an anonymous pull), `juniper-cascor-worker:0.6.0` (cut 2026-09-15,
 publish run 35033610624 all three jobs green; censused from the pulled image:
 `torch=2.14.0+cpu (cuda=None) distributions=24 cuda_stack=0`, *CPU-only contract holds*).
-**Wave 3 is therefore UNBLOCKED and not started**: `juniper-deploy/docker-compose.yml` still
-carries 9 Juniper `image:` lines, all `<name>:latest` with no registry prefix (L134, 197, 334,
-391, 487, 556, 620, 764, 855 — re-censused 2026-09-15, unchanged from the original survey).
+**Wave 3's compose pin SHIPPED 2026-09-15** (juniper-deploy#215): all 9 Juniper `image:` lines
+(L134, 197, 334, 391, 487, 556, 620, 764, 855) now name published `ghcr.io/pcalnon/<name>:X.Y.Z`
+refs. The **Pi-pull gate was WAIVED by the owner 2026-09-15** — see §5.1, which also settles a
+contradiction the archived chain had left open. Wave 3's two remaining items — juniper-deploy's own
+`Dockerfile.test` runner image and the D-1 pull-the-published-images integration test — are still
+owed. A sibling defect found while auditing the pin's consumers is fixed in juniper-deploy#216:
+`k8s/helm/juniper/values.yaml` rendered its four Juniper images with **no registry** (`registry: ""`
+→ `juniper-data:0.6.0`, which Kubernetes resolves against `docker.io/library`) and tags 3–8 minor
+versions stale.
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
 secrets. Last state refresh: 2026-09-15.
 
@@ -193,12 +199,12 @@ to discover that is on a Pi.
 | Wave | Repo | Status |
 | --- | --- | --- |
 | 1 (pilot) | juniper-cascor-worker | **in flight** — juniper-cascor-worker#172 |
-| — | *verify: pull and run on a Pi node* | gate before Wave 2 — **target now exists**: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0`, the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
+| — | *verify: pull and run on a Pi node* | **WAIVED as a Wave 3 gate, owner, 2026-09-15 (§5.1).** Re-filed as the gate on **first Pi deployment** and on **OQ-3**, which is what it actually tests. Target: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0`, the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
 | 2 | juniper-cascor | pending |
 | 2 | juniper-canopy | pending |
 | 2 | juniper-data | pending |
 | 2 | juniper-recurrence | pending — build context is **nested** (`juniper-recurrence/juniper-recurrence/`) |
-| 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **unblocked 2026-09-15** (all five images exist); not started — 9 lines still `<name>:latest` |
+| 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **compose pin SHIPPED 2026-09-15** (juniper-deploy#215, all 9 lines). Still owed: `Dockerfile.test` runner image, D-1 integration test. Sibling fix: helm `values.yaml` (juniper-deploy#216) |
 | 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets (§6 OQ-1) |
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
@@ -208,6 +214,64 @@ constraint most likely to break arm64. Proving it there de-risks the other four.
 registry ref and `build:` stays. `docker compose build` then tags the local build with the
 registry name, and `docker compose pull` fetches the published one — both workflows keep
 working, and local development does not require a registry round-trip.
+
+> **The kept `build:` has a silent trap, now stated in the compose file itself.** Once `image:`
+> is a release ref, `docker compose build` stamps the **dev tree** with the **release tag**, and
+> `docker compose up` then prefers that local image over the published one. Nothing in Docker
+> warns. `make doctor` / `make image-preflight` are the detectors — both read each image's
+> `org.opencontainers.image.revision` label and compare it against the source checkout's HEAD.
+> **That mitigation was verified to survive the pin, not assumed to**: run offline against the
+> before and after renders with matched provenance maps, `scripts/doctor.sh` produced identical
+> classifications (same 8 built services, `STALE ×3 / FRESH ×1 / UNKNOWN ×4`). It derives its
+> service set from `docker compose config --format json` and pairs `image:` with `build:`, so it
+> follows the pin instead of breaking on it.
+
+### 5.1 The Pi-pull gate — WAIVED for Wave 3, owner, 2026-09-15
+
+**The contradiction, and which reading governed.** The archived chain disagreed with itself about
+what the Pi pull gated, and the disagreement was inside a single document:
+
+| source | says |
+| --- | --- |
+| §5 wave table, as written 2026-09-05 | *"gate before **Wave 2**"* |
+| `HANDOFF_2026-09-07_…wave-1-complete.md` **L26** | *"Item 2 gates **Wave 3's pin**, not Wave 2. Do not pull the current 3 GB image to eight nodes only to replace it."* |
+| the same 2026-09-07 handoff, **L111** | *"OWNER GATE — pull the image on a Raspberry Pi node. **Gates Wave 2**."* |
+| `HANDOFF_2026-09-08_…wave-2-opened….md` **L194** | *"the predecessor made the Pi pull the gate for **Wave 3's pin**, and that dependency stands"* |
+
+L26 is an explicit reassignment **with a stated reason**, L111 is the superseded phrasing left in
+place, and L194 restates L26. So the reading that governed was **Wave 3, not Wave 2** — and the
+tempting "Wave 2 shipped without it, therefore the gate lapsed" argument rests on the wording L26
+had already replaced. The gate was *moved* precisely so the pull would land on a release image
+rather than a dispatch image about to be replaced; `0.6.0` satisfies that.
+
+**Why it was nonetheless waived.** Two facts postdate the gate's authors:
+
+1. **The published arm64 image has already been pulled by digest and executed on native arm64
+   hardware.** Release run `35033610624`, job `Build linux/arm64` on `ubuntu-24.04-arm`, step 9
+   *Verify pushed image is CPU-only (publish runs)* → **success**. That step pulls
+   `ghcr.io/…@<digest>` and runs `util/check_image_cpu_only.py` **inside the pushed image**. So
+   *"a release nobody has run on a Pi"* is true; *"a release nobody has run on arm64"* is false.
+2. **Wave 3's artifact has no Pi consumer.** juniper-deploy contains **zero** `arm64` / `aarch64` /
+   `raspberry` / `pi` references, `docker-compose.yml` declares no `platform:` keys, and its docs
+   target Compose plus k8s (kind / minikube / EKS / GKE / AKS). The pin cannot deliver an arm64
+   risk to a Pi, because nothing points a Pi at that file.
+
+Everything the Pi pull still buys — real Pi silicon and page size versus a cloud Neoverse runner,
+the 64-bit-OS precondition on the actual nodes, RAM and disk in practice, registry reachability and
+authentication from the Pi LAN — is a **fleet-readiness** fact, not an **image** fact. It is
+therefore re-filed against **first Pi deployment** and **OQ-3**, which are the things it tests.
+
+**This is a waiver, not a retirement.** The pull still owes before any Pi node runs a Juniper
+image, and the command is unchanged:
+
+```bash
+docker pull ghcr.io/pcalnon/juniper-cascor-worker:0.6.0
+docker run --rm --entrypoint python ghcr.io/pcalnon/juniper-cascor-worker:0.6.0 -c \
+  "import platform, torch; print(platform.machine(), torch.__version__, torch.version.cuda)"
+```
+
+Expect `aarch64 2.14.0+cpu None`, ~270 MB. **Precondition: a 64-bit Pi OS** — the index carries
+`linux/arm64` only, so a 32-bit OS cannot pull it.
 
 ## 6. Open questions
 
@@ -241,6 +305,8 @@ working, and local development does not require a registry round-trip.
 - **OQ-2.** Should a `:X.Y.Z-cuda` variant exist for cascor / cascor-worker, and if so is it
   built on release or on demand? (D-5.)
 - **OQ-3.** Do the Pi nodes have enough RAM to run a torch-bearing worker in practice? This
-  is a capacity question, not an architecture one — the image will run.
+  is a capacity question, not an architecture one — the image will run. **The Pi pull is now
+  this question's gate** (§5.1), having been waived as Wave 3's; it is also the check that
+  proves the 64-bit-OS precondition on the actual nodes, which no CI runner can answer.
 - **OQ-4.** Should juniper-deploy publish a versioned "stack manifest" (a pinned tag set)
   alongside the compose file, so a host can reproduce an exact stack from one identifier?

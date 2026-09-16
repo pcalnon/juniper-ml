@@ -11,23 +11,31 @@ is a DIFFERENT script, one word apart in the filename. That one is the screen
 against the merge-base)` CI step actually executes. This file is a standalone verifier and is
 wired into nothing.
 
-**Its blind spots are known and were measured with a mutation harness:**
+**FOUR blind spots were FIXED 2026-09-15 (owner-ruled). They had been documented and left
+for ten days, which is its own lesson: a documented defect is still a defect.**
 
-  * `git` is absent from the `CODEY` alternation
-    (`python3?|bash|gh|pip|cd|export|make|sudo|npm|curl|LD_LIBRARY_PATH=|LIBTORCH=|JUNIPER_|
-    CASCOR_`), so every `git` command line is invisible to the unfenced-command count.
-    Measured on `docs/REFERENCE.md` 2026-09-08: 14 such lines against 186 the list does
-    cover, so this is a real hole and a MODEST one -- roughly 7%, not the ~38% an earlier
-    handoff quoted. Re-measure before repeating either figure;
-  * DUPLICATION is invisible -- a re-landed section balances its own fences, keeps its
-    separators and RAISES the heading count, so every check here passes. That is exactly how
-    juniper-ml#1799's 367 duplicated lines reached `main` with a clean report. For duplication
-    use `util/ad-hoc/2026-09-07_duplicate_section_census.py`;
-  * check C2 is set-membership, so N copies of a known line pass;
-  * check C4 is a NET count, so a loss and a gain cancel;
-  * a missing path, a new file, or an unresolvable `--base` all print OK and exit 0 -- a
-    correct predicate over an empty site enumeration, which is the failure this whole family
-    of tools keeps re-introducing.
+  * the VCS command was absent from the `CODEY` alternation, so every such command line was
+    invisible to the unfenced-command count. Measured on `docs/REFERENCE.md` 2026-09-08: 14
+    lines against 186 the list did cover -- a real hole and a MODEST one, roughly 7%, not the
+    ~38% an earlier handoff quoted. Now covered, along with docker/conda/pytest/uv/npx;
+  * check C2 was set-membership, so N copies of a line the base carried once all passed.
+    Now counts MULTIPLICITY (`_newly_added`);
+  * check C3 had the identical set-membership defect one line below C2 and was NOT in the
+    documented list at all -- found only by reading the neighbour while fixing C2. Fixed the
+    same way;
+  * check C4 was a NET count, so a heading lost and another gained cancelled to "no change".
+    Now compares heading TEXTS as a multiset and names what was lost;
+  * a missing path, a new file, or an unresolvable `--base` all printed OK and exited 0 -- a
+    correct predicate over an empty site enumeration, the failure this whole family of tools
+    keeps re-introducing. Now: an unresolvable base exits 2 before any path is read, an
+    unreadable path exits 2 rather than letting its siblings certify around it, examining
+    zero paths exits 2, and a NEW file is checked ABSOLUTELY against an empty base (C1/C3
+    still apply) instead of being skipped.
+
+**Still blind, by design:** DUPLICATION. A re-landed section balances its own fences, keeps
+its separators and RAISES the heading count, so every check here passes -- that is exactly
+how juniper-ml#1799's 367 duplicated lines reached `main` with a clean report. Use
+`util/ad-hoc/2026-09-07_duplicate_section_census.py` for that; it is not this tool's job.
 
 Retained because its fence-parity reasoning below is still the clearest statement of why
 balance alone is insufficient. Do not use it as a gate.
@@ -88,10 +96,21 @@ import argparse
 import re
 import subprocess  # nosec B404 -- fixed argv git invocations, no shell
 import sys
+from collections import Counter
 
 FENCE = re.compile(r"^\s{0,3}(`{3,}|~{3,})")
+# An ALLOWLIST, and so permanently incomplete -- it can only miss commands nobody has
+# thought of yet. The VCS command was absent until 2026-09-15, measured at 14 invisible
+# lines in docs/REFERENCE.md against 186 the list covered (~7%, not the ~38% an earlier
+# handoff quoted). The names added with it are tools that do not plausibly begin an
+# English sentence; that is the bar for adding one, because `make` is already here and
+# "make sure ..." is ordinary prose.
+#
+# RE-MEASURE rather than assume: widen the alternation to `\S+` in a scratch copy and diff
+# the lines it then reports against this list to see what is still invisible.
 CODEY = re.compile(
     r"^(python3?|bash|gh|pip|cd|export|make|sudo|npm|curl|"
+    r"git|docker|conda|pytest|uv|npx|"
     r"LD_LIBRARY_PATH=|LIBTORCH=|JUNIPER_|CASCOR_)\b"
 )
 ROW = re.compile(r"^\s*\|.*\|\s*$")
@@ -118,6 +137,7 @@ def analyse(text: str) -> dict:
     lines = text.splitlines()
     inside = False
     unfenced, headless_rows, headings, fences = [], [], 0, 0
+    heading_texts: list = []
     i = 0
     while i < len(lines):
         ln = lines[i]
@@ -131,6 +151,7 @@ def analyse(text: str) -> dict:
             continue
         if HEADING.match(ln):
             headings += 1
+            heading_texts.append(" ".join(ln.split()))
         if CODEY.match(ln):
             unfenced.append(" ".join(ln.split()))
         if ROW.match(ln):
@@ -148,7 +169,43 @@ def analyse(text: str) -> dict:
         "unfenced": unfenced,
         "headless_rows": headless_rows,
         "headings": headings,
+        # The TEXTS, not just the count. C4 compares multisets so that a heading lost and
+        # an unrelated heading gained in the same PR no longer cancel to "no change".
+        "heading_texts": heading_texts,
     }
+
+
+def base_ref_exists(base: str) -> bool:
+    """Does the base ref resolve to a commit at all?
+
+    An unresolvable `--base` used to make every comparison vacuous WITHOUT saying so:
+    `base_text` returned None for each path, every path took the `[NEW ]` branch, and the
+    run printed OK and exited 0. A typo'd ref therefore certified a tree nobody examined.
+    """
+    proc = subprocess.run(["git", "rev-parse", "--verify", "--quiet", f"{base}^{{commit}}"],
+                          capture_output=True, text=True, check=False)
+    return proc.returncode == 0
+
+
+def _newly_added(head: list, base: list) -> list:
+    """Items in `head` beyond what `base` already carried, COUNTING MULTIPLICITY.
+
+    Replaces `[x for x in head if x not in base]`, which was set membership: if the base
+    carried a line once, ANY number of copies in the head passed. A duplicated block is
+    precisely what a bad consolidation produces (juniper-ml#1799 landed 367 duplicated
+    lines), so the check was blind to its own motivating damage.
+
+    Called both ways round: (head, base) gives what the PR ADDED; (base, head) gives what
+    it LOST, which is how C4 stops a loss and an unrelated gain from cancelling.
+    """
+    remaining = Counter(base)
+    out = []
+    for item in head:
+        if remaining[item] > 0:
+            remaining[item] -= 1
+        else:
+            out.append(item)
+    return out
 
 
 def main() -> int:
@@ -157,19 +214,35 @@ def main() -> int:
     ap.add_argument("paths", nargs="+")
     args = ap.parse_args()
 
+    if not base_ref_exists(args.base):
+        print(f"[ERR ] base ref {args.base!r} does not resolve to a commit.")
+        print("       Refusing to report: every comparison against it would be vacuous.")
+        return 2
+
     rc = 0
+    examined = 0
+    unreadable: list = []
     for path in args.paths:
         bt = base_text(args.base, path)
         try:
             with open(path) as f:
                 ht = f.read()
         except OSError as exc:
-            print(f"[SKIP] {path}: {exc}")
+            # NOT a silent skip. A path that cannot be read is the examined-nothing failure
+            # this screen exists to catch, applied to itself -- it used to print [SKIP] and
+            # leave the exit code untouched, so nine readable files certified the tenth.
+            unreadable.append(f"{path}: {exc}")
+            print(f"[ERR ] {path}: {exc}")
             continue
         if bt is None:
-            print(f"[NEW ] {path}: not on {args.base}; structure checks need a base")
-            continue
+            # A file the PR ADDS has no base. That is not a reason to skip it: C1 (fence
+            # parity) and C3 (headless tables) are ABSOLUTE checks and still apply. Compare
+            # against an empty base so they run, rather than reporting OK on an unexamined
+            # file -- which is how a new file with a broken table used to pass.
+            print(f"[NEW ] {path}: not on {args.base}; C1/C3 checked absolutely")
+            bt = ""
 
+        examined += 1
         b, h = analyse(bt), analyse(ht)
         fails = []
 
@@ -177,22 +250,30 @@ def main() -> int:
             fails.append(f"C1 fence parity ODD ({h['fences']}) — an unclosed fence "
                          f"unfences the rest of the file")
 
-        new_unfenced = [x for x in h["unfenced"] if x not in b["unfenced"]]
+        new_unfenced = _newly_added(h["unfenced"], b["unfenced"])
         if new_unfenced:
             fails.append(f"C2 {len(new_unfenced)} NEW command line(s) outside a fence "
                          f"(base has {len(b['unfenced'])})")
             for x in new_unfenced[:5]:
                 fails.append(f"      {x[:110]}")
 
-        new_headless = [x for x in h["headless_rows"] if x not in b["headless_rows"]]
+        # Same multiplicity fix as C2. Fixing one and leaving its neighbour would have left
+        # the identical defect one line away.
+        new_headless = _newly_added(h["headless_rows"], b["headless_rows"])
         if new_headless:
             fails.append(f"C3 {len(new_headless)} NEW table row(s) with no header above")
             for x in new_headless[:5]:
                 fails.append(f"      {x[:110]}")
 
-        if h["headings"] < b["headings"]:
-            fails.append(f"C4 heading count DROPPED {b['headings']} -> {h['headings']} "
-                         f"(the #1749 swallowed-heading signature)")
+        # NOT a net count. `h < b` reported nothing when a PR dropped two headings and added
+        # two others -- which is what a swallowed section plus new prose looks like.
+        lost_headings = _newly_added(b["heading_texts"], h["heading_texts"])
+        if lost_headings:
+            fails.append(f"C4 {len(lost_headings)} heading(s) LOST "
+                         f"(count {b['headings']} -> {h['headings']}; the #1749 "
+                         f"swallowed-heading signature, which a net count could hide)")
+            for x in lost_headings[:5]:
+                fails.append(f"      {x[:110]}")
 
         if fails:
             rc = 1
@@ -204,8 +285,18 @@ def main() -> int:
                   f"unfenced={len(h['unfenced'])} (base {len(b['unfenced'])})")
 
     print()
+    if unreadable:
+        print(f"ERROR: {len(unreadable)} path(s) could not be read; refusing to certify "
+              f"the rest around them:")
+        for u in unreadable:
+            print(f"   {u}")
+        return 2
+    if examined == 0:
+        print("ERROR: examined ZERO paths. A correct predicate over an empty site "
+              "enumeration is the failure this screen exists to catch.")
+        return 2
     print("FAIL: markdown structure regressed." if rc else
-          "OK: no structural regression against the base.")
+          f"OK: no structural regression against the base ({examined} path(s) examined).")
     return rc
 
 

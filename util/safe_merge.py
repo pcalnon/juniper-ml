@@ -292,8 +292,14 @@ REPO_TIMEOUTS = {
     # The table previously called cascor-client "ceiling-bound because its tail is queue
     # time" on a v1 max of 15,616 s. It is not queue time: v2 measures a required-context
     # max of 1511 s across 30 heads with 0 unmeasurable, and v1's 19x overstatement here has
-    # the same bot-check-run cause as everywhere else. Lowering it is a live merge-path
-    # change on a repo this arc was told not to touch, so it is left for an owner ruling.
+    # the same bot-check-run cause as everywhere else.
+    #
+    # OWNER RULED 2026-09-15: the VALUE STANDS at 3300 and the row stays excluded from the
+    # pin. Lowering it is a live merge-path change on a repo an earlier handoff fenced off,
+    # and the exclusion costs nothing while cascor-client is quiet. This is a decision, not
+    # an open question -- do not re-raise it as one. If the repo comes back into play, the
+    # pinnable window is (observed max, 4x p90]; RE-MEASURE it rather than reusing the
+    # figures above, which have a shelf life of days.
     "juniper-cascor-client": 3300,
     # p90 896, max 1725 -> window (1725, 3584]. First measured 09-08; was falling through
     # to DEFAULT_TIMEOUT at the same 2400 s, so this row records the number, not a change.
