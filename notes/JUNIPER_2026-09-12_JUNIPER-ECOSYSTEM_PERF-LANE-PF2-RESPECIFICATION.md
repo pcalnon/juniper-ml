@@ -3,7 +3,8 @@
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-12
-**Status**: SPEC. Two axes need a calibration probe before any matrix is committed; one carries a path constraint the owner must see.
+**Status**: SPEC. Axis 3's calibration is **DONE** (§4.1 — viable, but gate on accuracy and sample 2,3,4,5). Axis 2 needs an **owner decision**, not a calibration — §1's correction shows its requested range is capped by juniper-data. Axis 1 is specifiable now.
+**⚠ §1 carries a CORRECTION to a claim that shipped wrong in `juniper-ml#1927`** — read it before quoting which generator the experiment path uses.
 **License**: MIT License
 
 ---
@@ -41,12 +42,34 @@ juniper-data's bounds are Pydantic field constraints
 (`juniper_data/generators/spiral/params.py:70-82`, constants in `…/spiral/defaults.py:26-31`), so
 a request past them is a 422, not a clamp.
 
-**Consequences for this spec:**
+> ## ⚠ CORRECTION 2026-09-15 — the bullet immediately below is WRONG, and it shipped that way
+> ## in juniper-ml#1927.
+>
+> **The experiment/driver path does NOT use the in-process generator. It fetches from
+> juniper-data, so `MAX_POINTS` and `MAX_SPIRALS` DO bind.** Proven by run evidence, not by
+> reading: every cell of the 2026-09-15 calibration wrote
+> `<run>/data/spiral-3.0.0-<hash>.meta.json` carrying `"generator_version": "3.0.0"` and the
+> full juniper-data param set (`sizing_mode`, `val_percent`, `algorithm`, `radius` — none of
+> which cascor's in-process generator emits).
+>
+> **Therefore the owner's requested 250 → 500,000 range is NOT reachable on the suite path**, and
+> axis 2 must either cap at 10,000 (still a 40× range, 5× wider than the inert 8× that was
+> tested), raise `MAX_POINTS` in juniper-data as its own decision, or run outside the suite
+> harness.
+>
+> **How the error was made**, because the shape recurs: the 2026-09-10 probe note correctly
+> records that *`POST /v1/training/start` materialises the in-process spiral generator*. That is
+> true of **that route**, which the listener probes used directly. The experiment driver stages
+> its dataset differently, and `auto_start_data_service: false` was read as "no juniper-data
+> involved" when it only means the launcher does not *start* the service. A correct reading of one
+> path, generalised to another — and it stood until run evidence contradicted it.
 
-- The owner's requested **250 → 500,000** points-per-spiral range is reachable **only on the
+**Consequences for this spec (as originally written — see the correction above):**
+
+- ~~The owner's requested **250 → 500,000** points-per-spiral range is reachable **only on the
   in-process path** — it is 50× past juniper-data's cap. `spiral-smoke.yaml` sets
   `auto_start_data_service: false` and `dataset.generator: spiral`, so the perf suites already
-  take that path today.
+  take that path today.~~
 - **This makes axis 2 a characterisation of cascor's compute, not of the juniper-data pipeline.**
   The two generators are separate implementations. That is the right target for a wall-time
   question, but the resulting numbers must not be quoted as juniper-data figures.
@@ -128,15 +151,66 @@ rather than only the per-step cost.
 **Mandatory instrumentation**: hidden units grown and iterations completed per cell, alongside
 wall time. Those are the quantities difficulty should move.
 
+### 4.1 CALIBRATION RESULT, 2026-09-15 — the axis is VIABLE, but not on the observable expected
+
+Ran: `util/ad-hoc/2026-09-12_pf2_spiral_capacity_calibration.yaml`, 6 cells, all succeeded.
+Reduced by `util/ad-hoc/2026-09-15_pf2_capacity_reduce.py`. Evidence:
+`~/.local/state/juniper-experiments/suites/pf2-spiral-capacity-calibration-20260916T002823Z/`.
+
+| n_spirals | max_hidden | n_samples | hidden grown | epoch | test f1 | test roc_auc |
+|---|---|---|---|---|---|---|
+| 2 | 2 | 680 | 2 | 3 | 0.5750 | 0.7202 |
+| 6 | 2 | 2040 | 2 | 3 | 0.1556 | 0.5645 |
+| 10 | 2 | 3400 | 2 | 3 | 0.0651 | 0.5410 |
+| 2 | **16** | 680 | 16 | 17 | **0.8997** | **0.9605** |
+| 6 | 16 | 2040 | 16 | 17 | 0.1761 | 0.6130 |
+| 10 | 16 | 3400 | 16 | 17 | 0.0854 | 0.5555 |
+
+**1. The structural observables cannot discriminate — they are pinned to the budget.**
+`hidden_units` grown equals `max_hidden_units` in **all six** cells, and `epoch` is
+`max_iterations + 1` in all six. The network **saturates its capacity at every spiral count**, so
+§4's "mandatory instrumentation" above is, on its own, useless here: reading a constant column
+across the axis and reporting "no difference" measures nothing. `step_count` is worse still — it
+is 8 and 50 purely by budget, invariant across `n_spirals`, which is the *same* size-invariance
+PF-2 is being re-specified to escape (`n_spirals` changes dataset size: 680 → 2040 → 3400 rows).
+
+**2. Difficulty DOES express — in accuracy.** `test roc_auc` spread across the spiral axis is
+**0.179** at budget 2 and **0.405** at budget 16. That is a large, clean signal and it is
+monotone in the right direction. **Accuracy is the observable for this axis.**
+
+**3. The evaluatable range is NARROWER than expected, and capacity does not widen it.** Only
+`n_spirals: 2` is solved (roc_auc 0.9605). Six is 0.6130 and ten is 0.5555 — both near chance,
+**at the larger budget**. Raising capacity 2 → 16 units rescues only the 2-spiral case
+(0.720 → 0.961); at 6 it moves 0.565 → 0.613 and at 10 just 0.541 → 0.556. So the owner's
+estimate ("certainly ≤ 10 and probably ≤ 6") is directionally right but **optimistic at these
+budgets**: the interesting transition is already complete between 2 and 6.
+
+**Consequences for the axis as specified:**
+
+- **Sample densely at the low end — 2, 3, 4, 5 — not 2, 6, 10.** The transition happens there;
+  6 and 10 are both flat near chance and would spend host time confirming the same "unsolved".
+- **Gate on accuracy, report the structural columns as context.** The reverse would report an
+  inert axis.
+- **Something other than hidden-unit capacity binds at ≥ 6 spirals.** The obvious candidates are
+  the smoke base's `output_epochs: 50` and its candidate budget, neither varied here. Until that
+  is known, "6 spirals is intractable for cascor" is **not** a supported claim — only "6 spirals
+  is unsolved at this budget" is.
+
+> **The reducer's own first draft got this wrong**, and the way it did is worth keeping. It keyed
+> its verdict on `hidden_units` alone, found the column constant, and printed *"this budget does
+> NOT let spiral count express"* — the exact opposite of the truth, from a column that is
+> structurally incapable of varying. The verdict now judges accuracy and labels the structural
+> column as the non-discriminator it is.
+
 ---
 
 ## 5. What must be true before a matrix is committed
 
-| axis | calibration | blocking? |
+| axis | calibration | status |
 |---|---|---|
-| 1 — candidate phase | none beyond floor/wall | no — specifiable now |
-| 2 — wide dataset range | largest completing cell at a chosen wall | yes, for the upper end only |
-| 3 — spiral count | capacity budget that lets 2…10 differentiate | **yes — the axis is meaningless without it** |
+| 1 — candidate phase | none beyond floor/wall | specifiable now |
+| 2 — wide dataset range | largest completing cell at a chosen wall | **owner call first** — the range is capped at 10,000 by juniper-data (§1 correction), so 250 → 500,000 needs a decision, not a calibration |
+| 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10 |
 
 **Host condition.** All three are wall-clock measurements. The host has not been quiet in four
 sessions (1-minute load 9–20 across the 2026-09-11 evidence files, with a 21-hour `clamscan`
