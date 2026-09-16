@@ -453,6 +453,55 @@ produces output that looks right. Same class as
 
 ---
 
+## Published-wheel verification — juniper-canopy v0.8.0 (operational, 2026-09-15)
+
+Written after the v0.8.0 PyPI deploy completed, to answer the question a green publish run does
+not: **is the artifact PyPI serves the one the repo describes?** juniper-model-core 0.3.1 served
+a docstring the repo had already fixed, for four days, under an unchanged version — so "main is
+correct" and "the wheel is correct" are separate claims
+([[reference_a_checkout_is_not_a_deployment]]).
+
+- **`2026-09-15_verify_canopy_080_wheel.py`** checks the three v0.8.0 fixes against the wheel's
+  own members — canopy#613's dedicated guarded interval, canopy#614's strand watchdog,
+  canopy#618's Input → State demotion. **7 pass / 0 fail.** Two checks report MISSING-FILE
+  because `canopy_constants.py` is not a wheel member, which is the finding below rather than a
+  fault of the release.
+- **`2026-09-15_canopy_wheel_import_probe.py`** extracts a published wheel to an empty directory,
+  puts **only** that directory on the path, and imports in a fresh interpreter — so nothing
+  resolves through the repo checkout, which is exactly what makes the same import succeed locally
+  and fail for an installer. It classifies a `ModuleNotFoundError` by whether the missing name is
+  a **canopy** module (the finding) or a **third-party** one (the probe's own environment).
+  **Run it with `--python /opt/miniforge3/envs/JuniperCanopy1/bin/python`**: under a bare
+  interpreter `import frontend` dies on `plotly` first and the real failure never surfaces — the
+  probe reports that as SKIP rather than passing it off as a result.
+- **`2026-09-15_canopy_missing_toplevel_modules.py`** cross-references every `src/*.py` against
+  wheel membership *and* against what the shipped members actually import, so the report names
+  the whole set rather than the first module that happens to break. Stopping at the first one
+  sends the fix out short and the next module returns as a second incident.
+
+**What they found — juniper-canopy#631.** `[tool.setuptools.packages.find]` collects **packages**
+(dirs with `__init__.py`); a bare `src/<name>.py` is a top-level **module** and needs a
+`py-modules` entry, which canopy has never had. **Ten** such modules are imported by shipped wheel
+members and absent from the wheel — `canopy_constants` and `settings` by **13 of the 49 shipped
+`.py` files each** — so `pip install juniper-canopy` yields a package whose dashboard cannot be
+imported. True of every wheel back to **0.5.0**, and `juniper-ml[servers]` / `[all]` carry it.
+
+Hidden for four releases because `Dockerfile:88` copies the whole `src/` tree in and `:98` sets
+`PYTHONPATH=/app/src`, so the running service shadows site-packages entirely — the deployed
+container is healthy and only the distributed artifact is broken. The `pip check` at `:48`
+cannot see it: it validates dependency **metadata**, never importability
+([[reference_vacuous_pass_check_class]]).
+
+**Two instrument traps this cost, both worth carrying.** An f-string's **source** always contains
+its brace expression, so reading a wheel cannot distinguish a live f-string from one that lost its
+`f` prefix — the first draft "failed" canopy#614 on exactly that, and the honest test needs the
+built app's `_inline_scripts`. And a **file-scoped** grep for
+`Input(..."-training-state-store"...)` scores the three sibling callbacks that legitimately keep
+that store as an Input, reporting canopy#618's shipped fix as absent; the check has to be scoped
+to `update_loss_plot`'s own decorator ([[reference_check_unit_must_match_identity]]).
+
+---
+
 ## What does NOT belong here
 
 - Scripts that are part of a documented build / test / release flow → `util/` proper or `scripts/`.
