@@ -59,20 +59,28 @@ for name in NESTED:
         sys.exit(f"missing: {local}")
     args += ["--add", f"{local}:util/ad-hoc/2026-09-11_equities_rulings/{name}"]
 
+# Built OUTSIDE the list, deliberately. Assembling a multi-line body from adjacent string literals
+# INSIDE a list literal is indistinguishable -- to a reader and to CodeQL alike -- from a list whose
+# entries lost a comma. `py/implicit-string-concatenation-in-list` fired on exactly this and blocked
+# the merge of juniper-ml#1947. The pattern is worth restructuring away from rather than
+# suppressing: on the one occasion it really IS a missing comma, two arguments silently become one,
+# the subprocess call is wrong, and nothing about the failure points at the list.
+COMMIT_BODY = """Eighteen scripts, retained as provenance of record per the owner policy of 2026-08-25.
+
+Three are worth naming. 2026-09-15_compare_outlier_basis_designs.py is the only instrument that
+separates the three candidate outlier bases -- the real cache cannot, and
+2026-09-15_verify_lower_median_over_cache.py is the whole-cache equivalence check that proves it
+cannot. 2026-09-15_ecosystem_agents_md_generator_version_5.py is the ONLY record of a change to
+Juniper/AGENTS.md, which is not in a git repository and so carries no PR, no CI and no history of
+its own.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"""
+
 args += [
     "--message",
     "chore(ad-hoc): the round-39 register, handoff and measurement scripts",
     "--commit-body",
-    "Eighteen scripts, retained as provenance of record per the owner policy of 2026-08-25.\n"
-    "\n"
-    "Three are worth naming. 2026-09-15_compare_outlier_basis_designs.py is the only\n"
-    "instrument that separates the three candidate outlier bases -- the real cache cannot,\n"
-    "and 2026-09-15_verify_lower_median_over_cache.py is the whole-cache equivalence check\n"
-    "that proves it cannot. 2026-09-15_ecosystem_agents_md_generator_version_5.py is the\n"
-    "ONLY record of a change to Juniper/AGENTS.md, which is not in a git repository and so\n"
-    "carries no PR, no CI and no history of its own.\n"
-    "\n"
-    "Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>",
+    COMMIT_BODY,
 ]
 
 print(f"pushing {len(TOP_LEVEL) + len(NESTED)} files to {BRANCH}")
