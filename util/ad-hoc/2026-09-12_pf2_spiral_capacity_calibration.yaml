@@ -30,7 +30,12 @@ suite:
   name: pf2-spiral-capacity-calibration
   description: "D4 axis 3: does a capacity budget let 2..10 spirals differentiate at all?"
   app: cascor
-  base_config: [../../../juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  # ABSOLUTE, matching util/ad-hoc/2026-09-02_headroom_sweep_suite.yaml. base_config is resolved
+  # relative to THIS FILE, and a util/ad-hoc/ suite is run from both the primary checkout and from
+  # .claude/worktrees/<name>/ — which sit at different depths, so one relative path cannot be
+  # correct in both. The first run of this probe died on exactly that: `../../../` resolved to
+  # `.claude/worktrees/juniper-cascor/...` and every cell failed "cannot read base config".
+  base_config: [/home/pcalnon/Development/python/Juniper/juniper-cascor/conf/experiments/spiral-smoke.yaml]
   seed_policy: fixed
 execution:
   mode: sequential
@@ -47,6 +52,17 @@ matrix:
   # real headroom. If the outcomes differ across n_spirals at the larger budget and not at the
   # smaller, the axis is viable and the larger budget is its floor.
   training.params.max_hidden_units: [2, 16]
+  # MUST accompany max_hidden_units, and must be >= it. `grow_network` is
+  # `for iteration in range(max_iterations)` (cascade_correlation.py:4819) and each iteration
+  # adds AT MOST ONE hidden unit -- so max_iterations is the binding cap on growth, not
+  # max_hidden_units. The smoke base sets max_iterations: 2, which would have held BOTH arms of
+  # this probe to 2 units and made the 16-unit arm identical to the 2-unit one: a calibration
+  # probe reproducing the exact vacuity it was built to detect. Single-value list => applied to
+  # every cell, cross product unchanged at 3 x 2 = 6.
+  #
+  # ADDED 2026-09-15, AFTER juniper-ml#1927 shipped this file WITHOUT it. The version on main
+  # between #1927 and this fix would have run six cells and produced two identical arms.
+  training.params.max_iterations: [16]
 outputs:
   suite_dir: null
   aggregate: [csv, markdown]

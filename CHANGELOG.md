@@ -7,8 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The PF-2 capacity probe shipped in `juniper-ml#1927` was VACUOUS, and its base config could
+  not resolve from a worktree.** Two defects in one file, both found by running it:
+  `grow_network` is `for iteration in range(max_iterations)`
+  (`cascade_correlation.py:4819`) and each iteration adds **at most one** hidden unit, so the smoke
+  base's `max_iterations: 2` capped growth at 2 **regardless of `max_hidden_units`** — the
+  `max_hidden_units: 16` arm was identical to the `2` arm, and a calibration probe reproduced the
+  exact vacuity it was built to detect. Fixed with `training.params.max_iterations: [16]`.
+  Separately, its `base_config` was relative, and `util/ad-hoc/` suites run from both the primary
+  checkout and `.claude/worktrees/<name>/` — different depths, so no single relative path is
+  correct in both; the first run died "cannot read base config" on all six cells. Now absolute,
+  matching `util/ad-hoc/2026-09-02_headroom_sweep_suite.yaml`.
+- **A `util/ad-hoc/` suite run from a worktree needs `JUNIPER_EXP_PROJECT_DIR`.**
+  `experiment_stack.bash:98` derives the ecosystem root from the script's own location, which from
+  `.claude/worktrees/<name>/util/` resolves to `.claude/worktrees/` — so every cell failed
+  `cd: …/worktrees/juniper-cascor/src: No such file or directory`. Documented in the probe.
+
 ### Added
 
+- **PF-2 axis 3 CALIBRATED — the spiral axis is viable, but not on the observable expected**
+  (§4.1 of `notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`). Six
+  cells, all succeeded. **The structural observables cannot discriminate**: `hidden_units` grown
+  equals `max_hidden_units` in all six cells and `epoch` equals `max_iterations + 1` in all six —
+  the network saturates its capacity at every spiral count — while `step_count` is set purely by
+  budget and is invariant across `n_spirals`, which is the *same* size-invariance PF-2 is being
+  re-specified to escape. **Difficulty expresses in ACCURACY**: `test roc_auc` spread across the
+  spiral axis is 0.179 at budget 2 and **0.405** at budget 16. **The evaluatable range is narrower
+  than estimated and capacity does not widen it**: only `n_spirals: 2` is solved (roc_auc 0.9605);
+  6 is 0.6130 and 10 is 0.5555, both near chance *at the larger budget*, and raising capacity
+  2 → 16 rescues only the 2-spiral case. So sample **2, 3, 4, 5** rather than 2, 6, 10, gate on
+  accuracy, and note that something other than hidden-unit capacity binds at ≥ 6 spirals — until
+  that is identified, "6 spirals is intractable" is not supported, only "unsolved at this budget".
+  New: `util/ad-hoc/2026-09-15_pf2_capacity_reduce.py`.
+- **Environment: `JuniperCascor1` repaired after a 3.13 → 3.14 upgrade left it not
+  self-contained.** A conda minor-version upgrade creates a new `lib/pythonX.Y/site-packages` and
+  does **not** migrate the old one, deleting the old interpreter and stranding everything in it.
+  Three pytest dependencies (`pluggy`, `iniconfig`, `colorama`) were resolving from `~/.local`
+  rather than the env, so everything imported normally while
+  `python -s -c "import pytest"` failed with `ModuleNotFoundError: No module named 'pluggy'` —
+  any isolated or subprocess invocation would have hit it. Installed into the env; verified pytest,
+  torch 2.11.0+cu130, numpy 2.5.3 and a real `CascadeCorrelationNetwork` construction all work
+  under isolation. The orphaned `lib/python3.13` tree was **deliberately not deleted**: a 7-day-old
+  cascor listener is still executing the *deleted* `python3.13` binary and maps 752 regions from
+  that tree. New: `util/ad-hoc/2026-09-15_conda_env_tree_diff.py`, which separates *absent* from
+  *user-site-only* — a distinction its own first run got wrong by reporting three importable
+  packages as missing. `Juniper/AGENTS.md` records the version drift and all three traps.
 - **Perf lane — the six open owner decisions are RULED, and the two that needed no host time are
   executed** (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`).
   Decisions that had accumulated across the P2 plan and four handoffs, put to the owner and ruled
