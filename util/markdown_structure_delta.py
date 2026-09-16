@@ -16,16 +16,23 @@
 #   header has no separator row. Markdownlint and the doc-link validator see none of them -- a
 #   fence is never "missing", it silently absorbs everything after it.
 #
-#   Wiring that count directly as a gate does not work, and the measurement says so: **17
-#   problems across 2 files** on `main` after the 2026-09-10 structure repair (2026-09-10). A gate demanding zero is
-#   still red on arrival, because BOTH survivors are screen FALSE POSITIVES that no repair can
-#   clear without lying about the content: a ```text block of banner art whose lines begin
-#   `## `, and a ````jinja2 template sample whose H2s are the sample.
+#   Wiring that count directly as a gate does not work, and the measurement says so -- even
+#   now that the count is **zero across 1084 paths** (2026-09-15). It reached zero in two
+#   steps: the 2026-09-10 repair cleared the real damage, and the 2026-09-15 rule narrowing
+#   cleared the last 17, which were screen FALSE POSITIVES no repair could clear without lying
+#   about the content (a ```text block of banner art whose lines begin `## `, and a ````jinja2
+#   template sample whose H2s are the sample).
+#
+#   ZERO IS NOT A REASON TO DROP THE DELTA SCOPING. The count regresses the moment damage
+#   lands, and a gate demanding zero is red on arrival from that commit until someone repairs
+#   a file they may not have touched. The per-file/per-PR comparison is also correct on its
+#   own terms: an untouched file is not the PR's problem.
 #
 #   THE COUNT IS A MOVING FLOOR, NOT A BACKLOG, and treating it as a standing fact is how five
 #   sites in this repo went stale at once. Successive measurements: 104/23 (09-05), 102/21
 #   (09-09), 63/14 after ml#1834 repaired the live `notes/` half, 73/15 later the same day,
-#   63/14 (09-10 morning), 17/2 (09-10, the 2026-09-10 structure repair). Quote a commit and a date, or re-measure --
+#   63/14 (09-10 morning), 17/2 (09-10 structure repair), 0/0 (09-15 rule narrowing).
+#   Quote a commit and a date, or re-measure --
 #   never the bare number. ml#1881 demonstrated the other failure mode: a branch cut before
 #   ml#1880 re-introduced the stale 102/21 into two of the six sites ml#1880 had just fixed,
 #   nine hours after it merged. A figure duplicated across files does not stay corrected.

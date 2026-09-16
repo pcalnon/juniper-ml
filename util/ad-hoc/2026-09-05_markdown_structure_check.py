@@ -28,8 +28,11 @@ tool like `util/soak_ledger.py verify-probes` fails on a pointer.
 WHAT IT CHECKS
 
   * fence balance per file, naming the opening line of any unclosed fence;
-  * H2 headings that sit INSIDE a fenced block (the actual symptom -- a file can have an
-    even fence count and still swallow headings if two closes were lost);
+  * H2 headings that sit INSIDE an UNCLOSED fence, or inside a BARE ``` fence (the actual
+    symptom -- a file can have an even fence count and still swallow headings if two closes
+    were lost). A CLOSED fence carrying an explicit info string (```text, ````jinja2,
+    ```python) is taken at its word and is NOT checked: see `_can_swallow_headings`, which
+    records the two live false positives that narrowing removed;
   * markdown tables whose header row lost its `| --- | --- |` separator, which renders the
     table as plain text and is likewise invisible to a substring check. A delimiter cell is
     valid with ONE hyphen (`| - |`, `|:-:|`), so those are tables, not findings.
@@ -103,6 +106,53 @@ def _is_markdown_example(opener_line: str) -> bool:
 _FENCE = re.compile(r"^ {0,3}(?P<run>`{3,}|~{3,})(?P<info>.*)$")
 
 
+def _info_string(opener_line: str) -> str:
+    """The fence opener's info string, stripped. Empty for a BARE ``` fence."""
+    m = _FENCE.match(opener_line)
+    return m.group("info").strip() if m else ""
+
+
+def _can_swallow_headings(opener_line: str, is_unclosed: bool) -> bool:
+    """May an H2 inside THIS fence be reported as swallowed?
+
+    Only when the fence is UNCLOSED, or carries NO info string.
+
+    NARROWED 2026-09-15, after the previous rule -- "anything but ```markdown has no
+    business containing an H2" -- was refuted by two legitimate counterexamples on `main`,
+    which together were 17 of the 17 problems the whole-tree census then reported:
+
+      * a ```text block holding an ASCII banner whose border is `#`
+        (`##  HEADLESS SIGNING PREFLIGHT: BLOCKED`) -- 13 findings;
+      * a ````jinja2 block holding a template that EMITS markdown, so `## Overview` is
+        template OUTPUT, not document structure -- 4 findings. ml#1886 had already widened
+        that fence to four backticks CORRECTLY, and this screen went on flagging it.
+
+    This is not cosmetic. `util/markdown_structure_delta.py` grades a file the PR ADDS
+    against a baseline of ZERO (:165-168), and the step runs in the `docs` job whose name,
+    `Documentation Links`, is a REQUIRED status check. So an eleven-line new note with an
+    ordinary ```text banner failed a required check for a defect that was not in the PR --
+    the SAME failure this file's SEPARATOR comment records from the `-{2,}` regex, repeating
+    in the adjacent rule.
+
+    What is NOT lost: an unclosed fence is still reported in its own right by the UNCLOSED
+    check, so no genuinely swallowed heading escapes -- it is reported under the defect that
+    caused it. A BARE fence is still checked, which keeps the balanced-but-wrong (two closes
+    lost) heuristic that motivated the rule: the fence that swallowed 36 headings in
+    juniper-ml#1746 was bare.
+
+    An explicit info string is the author asserting "this block is code or data of type X".
+    Taking that assertion at face value is what removes the false positives.
+    """
+    if is_unclosed:
+        return True
+    if _is_markdown_example(opener_line):
+        # Subsumed by the info-string test below (```markdown is never bare), but kept
+        # explicit: it names the original motivating case, juniper-canopy's AGENTS.md
+        # sample document, whose four permanent findings made this screen unwireable.
+        return False
+    return not _info_string(opener_line)
+
+
 def _fence_spans(lines: list) -> tuple:
     """Walk fences the way CommonMark does, returning (in_fence_flags, openers, unclosed).
 
@@ -173,7 +223,8 @@ def check(path: Path) -> list:
         opener = spans[i - 1]
         if opener is None or _FENCE.match(line):
             continue
-        if line.startswith("## ") and not _is_markdown_example(opener[1]):
+        is_unclosed = unclosed is not None and opener[0] == unclosed[0]
+        if line.startswith("## ") and _can_swallow_headings(opener[1], is_unclosed):
             problems.append(
                 f"H2 swallowed by the fence opened at line {opener[0]} "
                 f"({opener[1].strip()[:20]!r}): line {i}: {line.strip()[:60]}"

@@ -75,7 +75,7 @@
 - [Version History](#version-history)
 - [Build and Release](#build-and-release)
 - [Flood-Remediation CI Gates](#flood-remediation-ci-gates)
-- [Markdown Structure Screen — the Accepted Findings](#markdown-structure-screen--the-accepted-findings)
+- [Markdown Structure Screen — the Two False Positives That Narrowed the Rule](#markdown-structure-screen--the-two-false-positives-that-narrowed-the-rule)
 - [YubiKey GPG Provisioning](#yubikey-gpg-provisioning)
 - [Open-PR Budget Alarm](#open-pr-budget-alarm)
 - [Memory File Size Budget](#memory-file-size-budget)
@@ -2889,6 +2889,7 @@ python3 -m unittest -v tests/test_soak_handoff_consensus_checks.py
 python3 -m unittest -v tests/test_x7_offload_census.py
 python3 -m unittest -v tests/test_markdown_structure_delta.py
 python3 -m unittest -v tests/test_markdown_structure_screen.py
+python3 -m unittest -v tests/test_md_structure_check.py
 python3 -m unittest -v tests/test_pf8_occupancy_probe.py
 python3 -m unittest -v tests/test_pf8_burst_attribution.py
 python3 -m unittest -v tests/test_pf8_icv_checkpoint_probe.py
@@ -3109,7 +3110,7 @@ Review catch on [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/161
 - `tests/test_e2e_finding_triage.py` -- The E2E finding-triage dispositions, which shipped with zero tests: `accepted` is a THIRD state and not a synonym for fixed or open, the first heading wins so a later `fixed` cannot close an earlier `open`, and `--open-only` hides rows without changing the totals.
 - `tests/test_e2e_finding_triage_nested_bold.py` -- Header truncation in `util/ad-hoc/e2e_finding_triage.py`: a nested-bold heading must not be cut at the inner marker, which would split one finding's identity into two and double-count it.
 - `tests/test_e2e_finding_triage_priority.py` -- `pri_of` first-token severity, lifted out of a nested function so it can be imported: the FIRST severity token anywhere in the bolded header body wins, so a header naming another severity in prose before the parenthetical triages as that severity (F-CANOPY-037 / F-E2E-007).
-- `tests/test_markdown_structure_delta.py` -- Hermetic gate for `util/markdown_structure_delta.py`, the CI step that fails a PR which BREAKS markdown structure. Pins the three ways such a gate goes wrong: **red on arrival** (`main` carries pre-existing structural problems -- **17 across 2 files** after the 2026-09-10 structure repair -- both under live `notes/`, and both known SCREEN FALSE POSITIVES rather than debt: a ` ```text ` banner whose art lines begin `## `, and a ` ````jinja2 ` template sample whose H2s are the sample. Each of the 17 is enumerated and adjudicated in [Markdown Structure Screen — the Accepted Findings](#markdown-structure-screen--the-accepted-findings), which is a RECORD and not a waiver -- the delta gate still fails a new problem in either file. `docs/`, `notes/code-review/`, `notes/legacy/` and `prompts/` are all at **zero**, which is a real result rather than an empty enumeration -- the 2026-09-10 structure repair repaired `notes/legacy/` and `prompts/` rather than delta-scoping around them. The count is a moving floor rather than a backlog, having gone 104/23 -> 102/21 -> 63/14 -> 73/15 -> 63/14 -> 17/2 in seven days, so re-measure rather than quote -- so the comparison is per-file and per-PR -- an untouched file is not the PR's problem, a touched one must not come out worse, an ADDED one has no before and so starts at zero); **vacuous pass** (the underlying screen silently skips anything not ending `.md`, so examining zero of N touched files is an error rather than a success, and the temp materialisation keeps the original basename); and an unresolvable base ref exiting 2 rather than comparing nothing.
+- `tests/test_markdown_structure_delta.py` -- Hermetic gate for `util/markdown_structure_delta.py`, the CI step that fails a PR which BREAKS markdown structure. Pins the three ways such a gate goes wrong: **red on arrival** (`main` measured **zero** structural problems from 2026-09-15, after the 2026-09-10 structure repair cleared the real damage and the 2026-09-15 rule narrowing cleared the last 17, which were SCREEN FALSE POSITIVES rather than debt: a ` ```text ` banner whose art lines begin `## `, and a ` ````jinja2 ` template sample whose H2s are the sample. Both are analysed in [Markdown Structure Screen — the Two False Positives That Narrowed the Rule](#markdown-structure-screen--the-two-false-positives-that-narrowed-the-rule), which is the evidence for the narrowing and not a waiver -- no file is allowlisted and the delta gate still fails a new problem in either file. The count is a moving floor rather than a backlog, having gone 104/23 -> 102/21 -> 63/14 -> 73/15 -> 63/14 -> 17/2 -> 0/0 in ten days, so re-measure rather than quote. **Zero on `main` does not make the delta scoping redundant**: an untouched file is still not the PR's problem, and the count can regress the moment damage lands -- so the comparison is per-file and per-PR -- an untouched file is not the PR's problem, a touched one must not come out worse, an ADDED one has no before and so starts at zero); **vacuous pass** (the underlying screen silently skips anything not ending `.md`, so examining zero of N touched files is an error rather than a success, and the temp materialisation keeps the original basename); and an unresolvable base ref exiting 2 rather than comparing nothing.
 - `tests/test_require_context_safely.py` -- Hermetic gate for `util/ad-hoc/2026-08-20_require_context_safely.py` (`util/` is outside every pre-commit Python hook). `gh_json` is monkeypatched; nothing talks to GitHub.
   - Pins `find_ruleset` reporting a failed per-ruleset GET as an error (never an absence — ml#1429), genuine absence / ambiguity as the negative controls, and `TARGETS` lockstep with the census `ROSTER` in `util/ad-hoc/2026-08-26_p5_fleet_state.py` (a missing repo is a silent incomplete `--status`).
   - As of [juniper-ml#1612](https://github.com/pcalnon/juniper-ml/pull/1612) also pins `observed_context_apps` (amend pre-flight): publisher from PR heads, `main` fallback, exact-name negative control, and `57789` (Bandit) must not count as a publisher of `Memory Budget`. Operator surface: [Required-Context Ruleset Writer](#required-context-ruleset-writer).
@@ -7138,26 +7139,43 @@ Gate: `tests/test_ci_fleet_pr_lint.py` (the G4 pre-commit split and the label ha
 | Rapid main merges “lost” a CI run | `ci.yml` push group must be per-SHA with cancel disabled; `main-verify` is always per-SHA / no-cancel |
 | `pass_filenames: false` hook still red on a tiny PR | Expected under G4 — those hooks run globally even with `--from-ref` |
 
-## Markdown Structure Screen — the Accepted Findings
+## Markdown Structure Screen — the Two False Positives That Narrowed the Rule
 
-`main` carries **17 structural findings across 2 files**, and **both are screen false
-positives that no repair can clear without making the documents wrong**. This section is the
-standing record of *which* 17 and *why each is not a defect*, so that a future reader meets a
-judgement rather than a number.
+`main` carries **zero structural findings** as of 2026-09-15. It carried 17 across 2 files for
+four days, and **both were screen false positives that no repair could clear without making
+the documents wrong** — so on 2026-09-15 the owner ruled the *rule* wrong rather than the
+documents, and it was narrowed. This section keeps the analysis, because it is the evidence
+the narrowing rests on.
 
-Measured at `9515b827` (2026-09-11) over 1082 tracked markdown files with
+Measured over 1084 tracked markdown files with
 `util/ad-hoc/2026-09-05_markdown_structure_check.py`. The whole-tree count is a **moving
-floor** — 104/23 → 102/21 → 63/14 → 73/15 → 63/14 → 17/2 across seven days — so re-measure
-rather than quote it. What is stable is the *shape* of the two survivors.
+floor** — 104/23 → 102/21 → 63/14 → 73/15 → 63/14 → 17/2 → **0/0** across ten days — so
+re-measure rather than quote it. What is stable is the *shape* of the two survivors.
 
-### What the screen actually flags
+### What the screen flagged, and what it flags now
 
-An `## ` heading inside a fenced block whose info string is not `markdown` / `md`. That is the
-juniper-ml#1746 damage signature: a dropped closing fence swallows every heading after it. The
-check cannot distinguish *a heading that was swallowed* from *an `## ` that is legitimately
-part of the content*, and both survivors are the second thing.
+**Before 2026-09-15:** an `## ` heading inside any fenced block whose info string was not
+`markdown` / `md`. The premise — "anything else has no business containing an H2" — is too
+strong, and the check could not distinguish *a heading that was swallowed* from *an `## ` that
+is legitimately part of the content*. Both survivors were the second thing.
 
-### The two accepted blocks
+**Now:** an `## ` inside a fence is reported only when that fence is **UNCLOSED**, or carries
+**no info string** (a bare ```` ``` ````). An explicit info string is the author asserting
+"this block is code or data of type X", and the screen now takes that assertion at face value.
+
+**Nothing real escapes.** The juniper-ml#1746 damage signature is still caught twice over: a
+dropped closer leaves the fence UNCLOSED, which is reported in its own right by the
+fence-balance check *and* makes every `## ` inside it reportable again. The bare-fence arm
+keeps the balanced-but-wrong (two closes lost) heuristic — #1746's own fence was bare.
+
+This was not cosmetic. `util/markdown_structure_delta.py` grades a file the PR **adds**
+against a baseline of zero, and its step runs in the `docs` job whose name,
+`Documentation Links`, is a **required** status check. An eleven-line new note containing an
+ordinary ` ```text ` banner therefore failed a required check for a defect that was not in the
+PR — the same failure this screen's `SEPARATOR` comment records from the `-{2,}` regex,
+repeating in the adjacent rule.
+
+### The two blocks that drove it
 
 | File | Fence | Findings | Why it is not a defect |
 |---|---|---:|---|
@@ -7168,7 +7186,9 @@ Both were re-derived against a real CommonMark parser
 (`util/ad-hoc/2026-09-10_fence_render_probe.py`), not inferred from the screen that reports
 them: every flagged line renders **inside** its code block, which is exactly where it belongs.
 
-### Why neither is "fixed"
+### Why neither document was edited
+
+Both of these still stand, and they are why the **rule** had to move instead:
 
 * **The jinja2 sample must not be retagged `markdown`.** Its content is a Jinja template, not
   markdown; the info string would then be a lie about the block, and the wrapper was widened
@@ -7178,41 +7198,54 @@ them: every flagged line renders **inside** its code block, which is exactly whe
 * **The banner must not be edited to avoid `## `.** It is a specimen of a banner a specified
   script would print. Changing it to satisfy a screen would misreport what the tool emits —
   and this block already has a ruling: it is a hand-authored specimen, **not** a captured
-  transcript (`util/headless_signing_preflight.bash` has never existed in git, and the block
-  carries the literal placeholder `<the C4 command, run interactively>`).
+  transcript (`util/headless_signing_preflight.bash` has never existed in the repo, and the
+  block carries the literal placeholder `<the C4 command, run interactively>`).
 
-### This is a record, not a suppression
+When every available repair makes a document *less* true, the instrument is what is wrong.
+Accepting the findings as permanent — the 2026-09-11 disposition — was the reasonable reading
+while the cost looked like two rows in a table; it stopped being reasonable once the same rule
+was shown to fail a **required** check on files that do not exist yet.
 
-Nothing is exempted and no waiver is wired. The CI gate is
-`util/markdown_structure_delta.py`, which compares **per file, per PR** against the merge
-base, so:
+### Narrowing is not suppression
 
-* a **new** structural problem in either file still fails, because that file comes out worse
-  than it went in;
+Nothing is exempted, no waiver is wired, and no file is allowlisted. The rule is narrower for
+*every* file equally, and the CI gate is still `util/markdown_structure_delta.py`, comparing
+**per file, per PR** against the merge base, so:
+
+* an **unclosed** fence still fails, in either file or any other;
+* an `## ` inside a **bare** fence still fails;
 * a problem in **any other** file still fails;
-* a file the PR **adds** is graded against zero.
+* a file the PR **adds** is still graded against zero.
 
-So the accepted set cannot silently absorb new damage — which is the failure mode a bare
-"17 are accepted" note would invite. **The count is not the record; the two shapes are.** If
-the number moves, read the findings rather than assuming the delta is more of the same.
+The regression suite `tests/test_markdown_structure_screen.py` pins both directions: the two
+shapes above must produce **no** findings, and an unclosed fence, a bare fence, a tilde fence
+and a missing table separator must **still** produce them. Every fix there carries a negative
+control, so "the check no longer fires" cannot pass for "the check was removed".
 
 ### Falsification
 
-This section stops being true if either block's fence is retagged, rewritten, or loses its
-closer. Check with:
+This section stops being true if either block loses its closer, or if the whole-tree count
+stops being zero. Check with:
 
 ```bash
 python3 util/ad-hoc/2026-09-05_markdown_structure_check.py \
   notes/JUNIPER_2026-03-12_JUNIPER-ML_PROMPT-ANALYSIS-AND-AUTOMATION-PLAN.md \
   notes/JUNIPER_2026-08-09_JUNIPER-ECOSYSTEM_STANDING-ITEMS-CLOSEOUT-AND-HARNESS-REMEDIATION-PLAN.md
-# expect exactly 4 + 13, every one an "H2 swallowed by" line
+# expect ZERO findings; before 2026-09-15 this printed exactly 4 + 13
+
+git ls-files -z '*.md' | xargs -0 python3 util/ad-hoc/2026-09-05_markdown_structure_check.py
+# expect "structural problems: 0". NOTE the -z/-0 pairing: two tracked paths contain
+# spaces, and the bare xargs form invents fragments and inflates the unreadable count.
+# The PIPELINE exits 123 on any finding, not 2 -- xargs maps a child's 1-125 to 123 --
+# so test for NON-ZERO rather than for a particular code.
 
 python3 util/ad-hoc/2026-09-10_fence_render_probe.py <file> --range <first>,<last>
-# every flagged line must report CODE(@<fence> …), never prose
+# every line in either block must report CODE(@<fence> …), never prose
 ```
 
-A flagged line that reports **prose** is a real rendering defect and this section no longer
-covers it.
+A line in either block that reports **prose** is a real rendering defect, and a non-zero
+whole-tree count is either new damage or a rule that has drifted back — read the findings
+rather than assuming which.
 
 ## YubiKey GPG Provisioning
 

@@ -266,12 +266,25 @@ class FenceWalkerFollowsCommonMarkTest(unittest.TestCase):
         # all -- it ignored ~~~ entirely -- so the pairing below is what gives it meaning.
         self.assertEqual(self._findings("# T\n\n~~~markdown\n## Sample heading\n~~~\n"), [])
 
-    def test_a_TILDE_non_markdown_fence_still_swallows(self):
+    def test_a_TILDE_bare_fence_still_swallows(self):
         # The paired positive control. Without it, the exemption above is indistinguishable
         # from the screen simply not modelling tilde fences -- which is exactly what the
         # code it replaced did, and why that assertion alone proves nothing.
-        found = self._findings("# T\n\n~~~bash\n## Swallowed\n~~~\n")
+        #
+        # FIXTURE CHANGED 2026-09-15, purpose unchanged. This was `~~~bash`, which the
+        # H2-in-fence narrowing now exempts along with every other CLOSED, explicitly-typed
+        # fence. A BARE `~~~` keeps the control sharp and in fact tightens it: both fences
+        # here are CLOSED tilde fences and differ only in their info string, so a screen
+        # that did not model tilde fences at all would report neither.
+        found = self._findings("# T\n\n~~~\n## Swallowed\n~~~\n")
         self.assertTrue(any("H2 swallowed" in f for f in found), found)
+
+    def test_a_TILDE_unclosed_fence_still_swallows(self):
+        # The other half of the tilde walk: an unclosed tilde fence is reportable whatever
+        # it claims to contain, which is what keeps real damage visible after the narrowing.
+        found = self._findings("# T\n\n~~~bash\n## Swallowed\n")
+        self.assertTrue(any("H2 swallowed" in f for f in found), found)
+        self.assertTrue(any("UNCLOSED" in f for f in found), found)
 
 
 class SymlinkAliasIsCountedNotSilentlySkippedTest(unittest.TestCase):
@@ -328,6 +341,63 @@ class SymlinkAliasIsCountedNotSilentlySkippedTest(unittest.TestCase):
             code, _out, err = run([str(link)])
         self.assertEqual(code, 2)
         self.assertIn("refusing to report on a partial examination", err)
+
+
+class H2InFenceIsNarrowedToUnclosedOrBareTest(unittest.TestCase):
+    """An H2 inside a CLOSED, explicitly-typed fence is not a finding (narrowed 2026-09-15).
+
+    The previous rule -- "anything but ```markdown has no business containing an H2" --
+    produced 17 of the 17 problems the whole-tree census reported on `main`, and every one
+    was a false positive: a ```text ASCII banner whose border is `#`, and a ````jinja2
+    template whose `## Overview` is template OUTPUT.
+
+    Same REQUIRED-GATE shape as `SeparatorAcceptsValidGfmDelimitersTest` above: the delta
+    gate grades an ADDED file against a baseline of zero, and its step runs in the `docs`
+    job whose name, `Documentation Links`, is a required status context. An eleven-line new
+    note with an ordinary ```text banner failed a required check for a defect that was not
+    in the PR.
+    """
+
+    def _findings(self, body):
+        with TemporaryDirectory() as td:
+            p = Path(td, "t.md")
+            p.write_text(body)
+            return screen.check(p)
+
+    def test_text_fence_holding_an_ascii_banner_is_not_a_finding(self):
+        body = "# N\n\n```text\n######\n##  BUILD FAILED\n##  reason: missing key\n######\n```\n\ntail\n"
+        self.assertEqual(self._findings(body), [])
+
+    def test_jinja2_fence_holding_a_template_is_not_a_finding(self):
+        # Four backticks so the block can quote a three-backtick one, as on `main`.
+        body = "# N\n\n````jinja2\n{% block body %}\n## Overview\n\n{{ overview }}\n{% endblock %}\n````\n\ntail\n"
+        self.assertEqual(self._findings(body), [])
+
+    def test_python_fence_with_a_comment_heading_is_not_a_finding(self):
+        body = "# N\n\n```python\n## step two\nx = 1\n```\n\ntail\n"
+        self.assertEqual(self._findings(body), [])
+
+    def test_an_UNCLOSED_fence_swallowing_an_h2_is_STILL_reported(self):
+        # Negative control 1. Narrowing must not blind the check to real damage.
+        found = self._findings("# N\n\n```bash\necho hi\n\n## Swallowed\n\nmore\n")
+        self.assertTrue(any("H2 swallowed" in f for f in found), found)
+        self.assertTrue(any("UNCLOSED" in f for f in found), found)
+
+    def test_a_BARE_closed_fence_containing_an_h2_is_STILL_reported(self):
+        # Negative control 2: the juniper-ml#1746 shape, which was a bare fence.
+        found = self._findings("# N\n\n```\n## Swallowed By Bare Fence\n```\n\ntail\n")
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("H2 swallowed", found[0])
+
+    def test_a_markdown_sample_fence_stays_exempt(self):
+        self.assertEqual(self._findings("# N\n\n```markdown\n## Sample\n```\n\ntail\n"), [])
+
+    def test_predicate_unclosed_beats_an_explicit_info_string(self):
+        # An unclosed fence is reportable whatever it claims to contain.
+        self.assertTrue(screen._can_swallow_headings("```text", is_unclosed=True))
+        self.assertFalse(screen._can_swallow_headings("```text", is_unclosed=False))
+        self.assertTrue(screen._can_swallow_headings("```", is_unclosed=False))
+        self.assertFalse(screen._can_swallow_headings("```markdown", is_unclosed=False))
 
 
 if __name__ == "__main__":
