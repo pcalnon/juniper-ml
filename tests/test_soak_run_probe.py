@@ -649,6 +649,60 @@ class WiredChannelSeesToolInputsOnly(unittest.TestCase):
         self.assertTrue(mod._own_repo_occurrence(["sed -n 145,175p docs/REFERENCE.md"], self.DOC))
 
 
+class ContaminationScreenIsWiredReportOnly(unittest.TestCase):
+    """Item F, owner ruling 2026-09-15: the screen runs on every scored run, and REPORTS.
+
+    `conf/soak_probes.json`'s _README has said since the pilot that scoring MUST run
+    the contamination screen. Nothing referenced it until this change.
+    """
+
+    def _transcript(self, *records: dict) -> Path:
+        d = Path(tempfile.mkdtemp())
+        p = d / "t.jsonl"
+        p.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+        return p
+
+    def _tool_result(self, text: str) -> dict:
+        return {"type": "user", "message": {"content": [{"type": "tool_result", "content": text}]}}
+
+    def test_a_ledger_content_read_is_reported(self) -> None:
+        # LEDGER_CONTENT_KEYS are fields that only appear if a ledger RECORD came
+        # back, which is what separates reading the answer sheet from seeing its name.
+        p = self._transcript(self._tool_result('{"obs_id": "x", "scored_by": "y"}'))
+        r = mod.contamination_screen(p)
+        self.assertTrue(r["available"])
+        self.assertTrue(r["ledger_content_read"])
+
+    def test_a_clean_run_reports_clean(self) -> None:
+        # Negative control: without it, a screen that returned True for everything
+        # would satisfy the assertion above.
+        p = self._transcript({"type": "assistant", "message": {"content": [{"type": "tool_use", "name": "Bash", "input": {"command": "sed -n 1,5p docs/REFERENCE.md"}}]}})
+        r = mod.contamination_screen(p)
+        self.assertTrue(r["available"])
+        self.assertFalse(r["ledger_content_read"])
+        self.assertFalse(r["contaminated"])
+
+    def test_a_screen_that_cannot_run_reports_unavailable_and_does_not_raise(self) -> None:
+        # A CHECK THAT COULD NOT RUN IS NOT A PASS. Absent keys would read as clean;
+        # report-only means it may not gate the run, INCLUDING by crashing it.
+        r = mod.contamination_screen(Path(tempfile.mkdtemp()) / "does-not-exist.jsonl")
+        self.assertFalse(r["available"])
+        self.assertIsNotNone(r["reason"])
+
+    def test_the_screen_never_reaches_the_scoring_packet(self) -> None:
+        # THE LOAD-BEARING PIN. `scoring_packet.md` already redacts corpus progress
+        # because the scorer has no stake in it; a contamination field in front of the
+        # scorer is the same leak, and shipping one is the specific defect that sank
+        # the 2026-09-12 `ledger_touched` attempt. The screen's output belongs to the
+        # OPERATOR -- status.json and stdout -- and must not appear in the packet.
+        src = Path(mod.__file__).read_text(encoding="utf-8")
+        packet = src.split('"scoring_packet.md"', 1)[1].split("encoding=", 1)[0]
+        for forbidden in ("contamination_screen", "ledger_content_read", "contaminated"):
+            self.assertNotIn(forbidden, packet, f"{forbidden!r} leaked into scoring_packet.md")
+        # ...and it IS carried on the operator's record.
+        self.assertIn('status["contamination_screen"]', src)
+
+
 if __name__ == "__main__":
     # LAST IN THE FILE, DELIBERATELY. It sat at :508 with a test class below it
     # until 2026-09-11, so `python3 tests/test_soak_run_probe.py` ran 32 tests while
