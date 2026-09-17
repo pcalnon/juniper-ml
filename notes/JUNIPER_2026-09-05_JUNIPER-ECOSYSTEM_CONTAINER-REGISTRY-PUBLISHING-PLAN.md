@@ -10,15 +10,46 @@
 **public**, confirmed by an anonymous pull), `juniper-cascor-worker:0.6.0` (cut 2026-09-15,
 publish run 35033610624 all three jobs green; censused from the pulled image:
 `torch=2.14.0+cpu (cuda=None) distributions=24 cuda_stack=0`, *CPU-only contract holds*).
-**Wave 3's compose pin SHIPPED 2026-09-15** (juniper-deploy#215): all 9 Juniper `image:` lines
-(L134, 197, 334, 391, 487, 556, 620, 764, 855) now name published `ghcr.io/pcalnon/<name>:X.Y.Z`
-refs. The **Pi-pull gate was WAIVED by the owner 2026-09-15** — see §5.1, which also settles a
-contradiction the archived chain had left open. Wave 3's two remaining items — juniper-deploy's own
-`Dockerfile.test` runner image and the D-1 pull-the-published-images integration test — are still
-owed. A sibling defect found while auditing the pin's consumers is fixed in juniper-deploy#216:
+**WAVE 3 IS COMPLETE (2026-09-17).** All three of its items shipped, and
+`juniper-deploy/docker-compose.yml` now carries **ten** Juniper `image:` lines, every one a
+published registry ref and none a local build-output tag:
+
+| item | PR | what |
+| --- | --- | --- |
+| the pin | juniper-deploy#215 | all 9 sites → `ghcr.io/pcalnon/<name>:X.Y.Z` |
+| D-1 integration check | juniper-deploy#217 | `Published Image Refs` CI job + `scripts/verify_published_images.py`, 6 negative controls |
+| `Dockerfile.test` runner | juniper-deploy#219, #220, #221 | `ghcr.io/pcalnon/juniper-deploy-test:0.3.0`, published by Release `v0.3.0` |
+
+The **Pi-pull gate was WAIVED by the owner 2026-09-15** — see §5.1, which also settles a
+contradiction the archived chain had left open.
+
+**Two defects were found by RUNNING the artifacts, not reading them**, and neither would have
+surfaced from the pin alone:
+
+- **The containerized test runner had run ZERO tests since 2026-03-13.** Commit `65def44`
+  (*"fix: resolve conftest import errors in test suite"*) added `tests/conftest.py`'s
+  `from constants import ...` **and** `pyproject.toml`'s `pythonpath = ["tests"]` together;
+  `Dockerfile.test` never copied `pyproject.toml`, so the container died at conftest import every
+  time while the host path was fine. Six months, unnoticed, because nothing asserted the suite was
+  runnable — which is why the publish path now asserts exactly that (juniper-deploy#219).
+- **juniper-deploy's build context holds `secrets/` with eight live credential files, and there was
+  no `.dockerignore`.** Docker does not honour `.gitignore`. Nothing had leaked, but the context
+  was about to be published publicly. Fixed with an explicit COPY allowlist *and* a `.dockerignore`,
+  with CI asserting no `secrets/` or `.git` reaches the image.
+
+A sibling defect found while auditing the pin's consumers is fixed in juniper-deploy#216:
 `k8s/helm/juniper/values.yaml` rendered its four Juniper images with **no registry** (`registry: ""`
 → `juniper-data:0.6.0`, which Kubernetes resolves against `docker.io/library`) and tags 3–8 minor
-versions stale.
+versions stale. Fixed **per block**, not via `global.imageRegistry` — that key is a Bitnami
+convention the bundled redis subchart also honours, and setting it rewrites redis to
+`ghcr.io/pcalnon/bitnami/redis:...`, which does not exist and makes `helm template` fail outright.
+
+> **juniper-deploy's release notes are NOT in `notes/releases/`, deliberately.** They live on the
+> GitHub Release (`v0.3.0`). The archive convention is scoped to *"Every PyPI deploy"*, and
+> juniper-deploy publishes no PyPI package — `util/release_train/registry.yaml` holds only the 18
+> publishable packages, so `util/release_train/archive_guard.py` (a **REQUIRED** status check)
+> rejects `RELEASE_NOTES_juniper-deploy_v0.3.0.md` as naming an unregistered package. The guard is
+> right; do not register a non-PyPI repo to work around it.
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
 secrets. Last state refresh: 2026-09-15.
 
@@ -204,7 +235,7 @@ to discover that is on a Pi.
 | 2 | juniper-canopy | pending |
 | 2 | juniper-data | pending |
 | 2 | juniper-recurrence | pending — build context is **nested** (`juniper-recurrence/juniper-recurrence/`) |
-| 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **compose pin SHIPPED 2026-09-15** (juniper-deploy#215, all 9 lines). Still owed: `Dockerfile.test` runner image, D-1 integration test. Sibling fix: helm `values.yaml` (juniper-deploy#216) |
+| 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **COMPLETE 2026-09-17.** Pin (#215, 9 lines) + D-1 check (#217) + `Dockerfile.test` runner published as `ghcr.io/pcalnon/juniper-deploy-test:0.3.0` (#219 / #220 / #221, Release `v0.3.0`) = **10** pinned lines. Sibling fix: helm `values.yaml` (#216) |
 | 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets (§6 OQ-1) |
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
