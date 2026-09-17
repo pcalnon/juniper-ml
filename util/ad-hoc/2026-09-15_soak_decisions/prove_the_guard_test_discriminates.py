@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 import subprocess  # nosec B404 - fixed argv, no shell
 import sys
 import tempfile
