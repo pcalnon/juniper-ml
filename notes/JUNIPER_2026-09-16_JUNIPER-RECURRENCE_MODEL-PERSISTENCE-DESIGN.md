@@ -3,7 +3,7 @@
 - **Project**: Juniper — juniper-recurrence (with juniper-canopy, juniper-deploy)
 - **Author**: Paul Calnon
 - **Date**: 2026-09-16
-- **Status**: Design for owner ruling — §4, §5 and §6 each need a decision before implementation
+- **Status**: **RULED 2026-09-16** — §4 bind mount (correcting this document's original recommendation), §5 inherit no-deletion, §6 a third `restored` status. See §11.
 - **Closes**: Y2 of the canopy selection-reachability arc (`JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`, item 4 of the residue in `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-12_canopy-selection-section-12-closed-residue-remains.md`)
 
 ---
@@ -13,8 +13,12 @@
 Whether and how the juniper-recurrence service persists a trained LMU, so that canopy's snapshot
 affordance stops reporting success over a model it never saved.
 
-Three questions need an owner ruling — §4 (where the bytes live), §5 (retention), §6 (what a
+Three questions needed an owner ruling — §4 (where the bytes live), §5 (retention), §6 (what a
 restored model reports). §7–§8 are the mechanical consequence of those answers and need no ruling.
+
+**All three were ruled on 2026-09-16; the answers are in §11.** §4–§6 are left as written, so the
+reasoning that was put to the owner stays readable next to what was decided — including §4's
+recommendation, which the ruling **corrects**.
 
 ---
 
@@ -233,3 +237,96 @@ Notes that are consequences, not choices:
 Implementation is two repos (juniper-recurrence, juniper-canopy) plus one compose stanza in
 juniper-deploy, and is best split: the service half and its tests first, the canopy wiring second,
 so the endpoints can be exercised before anything depends on them.
+
+---
+
+## 11. Rulings (2026-09-16)
+
+All three questions are answered. One ruling **corrects this document's own recommendation**; one
+**departs from it**. Both are recorded here rather than by rewriting §4–§6, so the reasoning that
+was put to the owner stays legible next to what was decided.
+
+| § | Question | Ruling | vs. §4–§6's recommendation |
+|---|---|---|---|
+| **4** | Where do the bytes live? | **Bind mount**, mirroring cascor | **Corrects it.** §4 said "named volume" |
+| **5** | Retention | **Inherit §6.4 no-deletion** | As recommended |
+| **6** | What does a restored model report? | **A third `restored` status value** | **Departs.** §6 recommended `trained` + `result: null` |
+
+### 11.1 §4 — bind mount, not a named volume. §4's recommendation was wrong.
+
+§4 recommended "a `snapshots_dir` setting + a named volume in juniper-deploy". **That is the
+approach this ecosystem already tried and retired**, and `juniper-deploy/docker-compose.yml`
+carries the tombstone in its `volumes:` block:
+
+> `juniper-cascor-snapshots: RETIRED.` It mounted at `/app/data`, which neither cascor tier ever
+> wrote, so it **held nothing while real snapshots died with the container.**
+
+What replaced it is a **bind mount of the host's canonical snapshot store**, and the compose file
+states three properties a named volume did not have:
+
+1. **It survives `docker compose down -v`.** A named volume does not, and `-v` is a routine dev
+   reflex. Snapshots are protected project assets.
+2. **It is the same directory the host's direct-CLI and systemd tiers use**, so a model saved by a
+   container run is restored and resumed by a host run and vice versa. *"Stack-origin agnosticism
+   is designed behaviour, not a side effect."*
+3. **It sits inside the Juniper tree**, so the whole-tree offline backup captures it and restore
+   stays copy-and-extract.
+
+The shipped form is `${JUNIPER_CASCOR_SNAPSHOTS_HOST_DIR:-../juniper-cascor/cascor-snapshots}:/app/cascor-snapshots`,
+at three mount points (service, demo, and the third profile).
+
+**Ruled:** recurrence mirrors it —
+`${JUNIPER_RECURRENCE_SNAPSHOTS_HOST_DIR:-../juniper-recurrence/recurrence-snapshots}` bound into
+the container, with a matching `snapshots_dir` setting pointing at the in-container path. The three
+properties transfer unchanged.
+
+**Why §4 got it wrong, recorded so the next reader does not repeat it:** the note reasoned from
+"cascor stores snapshots server-side" without reading how. The *ownership* precedent was right; the
+*mechanism* was the one that had already failed. Reading the `volumes:` block, not the service
+block, is what surfaced it.
+
+### 11.2 §5 — inherit no-deletion
+
+As recommended. §6.4 of `JUNIPER_2026-08-16_JUNIPER-ECOSYSTEM_SNAPSHOT-LIFECYCLE-MANAGEMENT-DESIGN.md`
+was ratified no-deletion on 2026-08-23 (ml#1296) and says *do not build deletion tooling*.
+
+Recorded as **inherited, not assumed** — that is the whole point of listing it. Recurrence does not
+have its own retention policy; it has the ecosystem's. A future cap amends §6.4 rather than forking
+it per service.
+
+### 11.3 §6 — a third `restored` status, and its measured cost
+
+§6 recommended `trained` with `result: null`, on the grounds that it adds no fiction and needs no
+type change. **The ruling takes option C instead: a distinct `restored` state.** It is strictly more
+precise — `idle`, `trained` and `restored` are genuinely three different things, and collapsing the
+last two loses the fact that this process never ran the fit.
+
+§6 costed option C as *"every consumer branching on the two-value status must learn a third"*. That
+was asserted, not measured. **Measured, the blast radius is small:**
+
+| Site | What changes |
+|---|---|
+| `juniper-recurrence/juniper_recurrence/state.py` — `status()` | 3 lines in one method: the docstring, the `idle` return, the `trained` return, plus the new `restored` arm |
+| `juniper-recurrence/juniper_recurrence/schemas.py` | `state: str  # "idle" \| "trained"` — a **comment**, not a `Literal`, so there is no type constraint to widen |
+| juniper-canopy | **Nothing directly.** `RecurrenceBackend` keeps its own local state vocabulary (`_PHASE_BY_STATE`: `idle` / `training` / `trained` / `failed`) and does not read the service's string for status. When canopy gains a restore action it adds its own local `restored` state and a phase mapping. |
+| `juniper-recurrence/build/lib/**` | Build artifacts, not source. Ignore. |
+
+So C costs roughly one extra branch plus a comment, not a migration. **The `state: str`-with-a-comment
+shape is what makes it cheap — and is itself worth noting**: a `Literal` would have been safer for
+consumers and would have made this a real contract change. Adding the third value is a good moment
+to consider promoting it, but that is not ruled here.
+
+**One requirement carries over from §6A regardless of which option won:** the restore response and
+`/v1/training/status` must name the **snapshot id**. `restored` says *that* the model came from
+disk; only the id says *which* model. Without it the status is precise about the wrong thing.
+
+### 11.4 Implementation order
+
+1. **juniper-recurrence** — `snapshots_dir` setting, `AppState.set_restored` + the `restored` status
+   arm, schemas, `routers/snapshots.py`, tests.
+2. **juniper-deploy** — the bind mount, at every profile the recurrence service appears in.
+3. **juniper-canopy** — adapter methods, `BackendProtocol` declaration (Y1's lesson: declare it,
+   do not leave a de-facto contract), backend wiring, and widening the two
+   `backend_type == "service"` gates in `main.py`.
+
+The service half ships first so the endpoints can be exercised before anything depends on them.
