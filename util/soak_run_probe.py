@@ -101,6 +101,7 @@ but a misuse is still a failure, and the exit code has to be able to say both.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -114,6 +115,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DISPATCH = ROOT / "util" / "soak_next_probe.py"
 LEDGER_TOOL = ROOT / "util" / "soak_ledger.py"
+# The contamination screen. `conf/soak_probes.json`'s _README has said since the pilot
+# that scoring MUST run it; nothing referenced it until 2026-09-15, when the owner ruled
+# item F as REPORT-ONLY. See `contamination_screen` for why report-only and not a gate.
+SCREEN_TOOL = ROOT / "util" / "ad-hoc" / "2026-08-21_soak_probe_evidence.py"
 RUNS = ROOT / "reports" / "soak" / "runs"
 DEFAULT_TIMEOUT = 900
 TERMINAL_VERDICTS = ("BET-FAILING", "HOLDS-AT-")
@@ -520,6 +525,77 @@ def _own_repo_occurrence(tool_inputs: list, doc: str) -> bool:
     return False
 
 
+def contamination_screen(log: Path) -> dict:
+    """Run the contamination screen over a transcript. REPORT-ONLY, never a gate.
+
+    Owner ruling 2026-09-15 on item F. `conf/soak_probes.json`'s _README says scoring
+    MUST run this screen; nothing did, since the pilot.
+
+    WHY REPORT-ONLY RATHER THAN A GATE. The screen's own retrieval verdict
+    (`dest_hits` / `dest_via_output`) is a bare `DEST in blob` substring test, so it
+    credits three things a follow is not: a `grep -rln` FILENAME sighting, a SIBLING
+    repo's same-named file, and a match inside the ledger's own JSON. Gating on it
+    would invalidate genuine runs today. So this reports and refuses nothing, and the
+    fields it surfaces are deliberately the CONTAMINATION ones only -- retrieval is
+    `retrieval_channel`'s job and duplicating it here would put two disagreeing
+    answers in one artifact.
+
+    WHERE THE OUTPUT GOES. `status.json` and the operator's stdout -- NEVER
+    `scoring_packet.md`. The packet already redacts corpus progress because "the
+    scorer has no stake in how the corpus is progressing"; a contamination field in
+    front of the scorer is the same category of leak, and shipping one was the
+    specific defect that sank the 2026-09-12 `ledger_touched` attempt.
+
+    FAILURE IS REPORTED, NOT SWALLOWED. A screen that cannot run yields
+    `available: False` with the reason, rather than absent keys that read as clean.
+    A check that could not run is not a pass.
+    """
+    out: dict = {"available": False, "reason": None, "tool": str(SCREEN_TOOL)}
+    if not SCREEN_TOOL.exists():
+        out["reason"] = f"screen not found at {SCREEN_TOOL}"
+        return out
+    try:
+        spec = importlib.util.spec_from_file_location("_soak_screen", SCREEN_TOOL)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["_soak_screen"] = mod          # dataclasses/annotations need this
+        spec.loader.exec_module(mod)
+        r = mod.scan(log)
+    except BaseException as exc:                    # noqa: BLE001 -- report, never raise
+        # BaseException, NOT Exception, and the distinction is load-bearing. The screen
+        # lives under util/ad-hoc/, which ci.yml notes is not pre-commit-lint-gated, and
+        # `exec_module` runs its module body. One import-time `sys.exit` there raises
+        # SystemExit -- which `except Exception` does NOT catch -- and this call sits
+        # ahead of status.json, answer.md and scoring_packet.md, so a 900-second billed
+        # run would lose its entire artifact set to a stray line in an ad-hoc file.
+        out["reason"] = f"{type(exc).__name__}: {exc}"
+        return out
+    out.update(
+        available=True,
+        contaminated=r.get("contaminated"),
+        contamination_hits=r.get("contamination_hits"),
+        ledger_content_read=r.get("ledger_content_read"),
+        ledger_content_hits=r.get("ledger_content_hits"),
+        ledger_filename_hits=r.get("ledger_filename_hits"),
+        # The screen's NAIVE retrieval verdict, carried on the OPERATOR's record only.
+        # It is a bare `DEST in blob` substring test, so it credits a filename-only
+        # sighting, a sibling repo's same-named file, and a match inside the ledger's
+        # own JSON. That is exactly why it is useful HERE: disagreement between it and
+        # `status["retrieval"]` is the cheapest available flag for "this row needs a
+        # mechanism check", and comparing those two is how P21 and P24 were found at
+        # all. It must never reach scoring_packet.md -- that is the leak argument, and
+        # it applies to the SCORER's artifact, not to the operator's.
+        naive_dest_hits=r.get("dest_hits"),
+        naive_dest_via_output=r.get("dest_via_output"),
+        note=(
+            "REPORT-ONLY (owner ruling 2026-09-15, item F). Nothing here gates the run "
+            "or changes its exit code. `contaminated` keys on ANSWER_KEY and PROTOCOL_DOC; "
+            "ledger exposure is three-valued and separate because a filename sighting is "
+            "not a content read -- 7 of the 8 recorded ledger contacts were filename-only."
+        ),
+    )
+    return out
+
+
 def retrieval_channel(parsed: dict, pointer: str) -> dict:
     """Mechanical: did the run touch the pointer document, or only source?
 
@@ -744,6 +820,10 @@ def main() -> int:
         "retrieval": channel,
         "stderr_tail": (err or "")[-400:],
     }
+    # Item F, owner ruling 2026-09-15: the screen runs on every scored run and REPORTS.
+    # It gates nothing, and it is deliberately absent from scoring_packet.md below --
+    # see contamination_screen's docstring.
+    status["contamination_screen"] = contamination_screen(log)
     (run_dir / "status.json").write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
     (run_dir / "answer.md").write_text(parsed["answer"] + "\n", encoding="utf-8")
     (run_dir / "scoring_packet.md").write_text(
@@ -768,6 +848,17 @@ def main() -> int:
     print(f"{status['state']}  {probe_id}  session={session_id}")
     print(f"  pointer doc referenced : {channel['pointer_doc_referenced']}  ({channel['suggests']})")
     print(f"  tool calls             : {len(parsed['tool_calls'])}")
+    scr = status["contamination_screen"]
+    if not scr.get("available"):
+        # A check that could not run is not a pass -- say so on the operator's line.
+        print(f"  contamination screen   : UNAVAILABLE -- {scr.get('reason')}")
+    else:
+        flag = "CONTAMINATED" if scr.get("contaminated") else "clean"
+        if scr.get("ledger_content_read"):
+            flag += "  *** READ THE LEDGER'S CONTENTS (prior answer + scoring) ***"
+        elif scr.get("ledger_filename_hits"):
+            flag += f" (ledger filename seen x{scr['ledger_filename_hits']}, not read)"
+        print(f"  contamination screen   : {flag}  [report-only, gates nothing]")
     print(f"  scoring packet         : {run_dir / 'scoring_packet.md'}")
     return 0 if ok else 1
 
