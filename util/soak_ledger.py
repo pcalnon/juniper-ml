@@ -546,7 +546,23 @@ def cmd_resolve(args: argparse.Namespace) -> int:
 
 
 def cmd_invalidate(args: argparse.Namespace) -> int:
-    """Retire an observation whose PROBE was defective.
+    """Retire an observation that should never have counted.
+
+    A defective PROBE is the common case, not the only one: of the invalidations in
+    the shipped ledger, ``dd1e25ba`` retires a CONTAMINATED run (it touched the answer
+    key), ``6fc75bb0`` retires a MIS-SCORED one, and ``e504a64c`` (2026-09-15) retires
+    a run that read the ledger's own contents. In all three the probe was sound and the
+    RUN is not data. An earlier version of this docstring said "whose PROBE was
+    defective" and was already false when written.
+
+    CAUTION -- THIS VERB IS NOT MONOTONE, unlike ``rescore``. Invalidating drops the
+    row from ``in_scope``, so it shrinks BOTH the denominator and ``probes_run``. In
+    ``analyse`` the ``IN-PROGRESS`` branch is tested ABOVE ``BET-FAILING``, so dropping
+    ``len(probes_run)`` below ``MIN_DISTINCT_PROBES`` flips a terminal verdict to
+    IN-PROGRESS -- at which point ``refuses_terminal_verdict`` returns False and the
+    spend control stops refusing. Live margin as of 2026-09-15: distinct probes is
+    exactly ``MIN_DISTINCT_PROBES`` (15), and P18 is down to a single live run, so ONE
+    further invalidation of that row opens the gate. Check the margin before invalidating.
 
     Distinct from ``resolve``: resolve discharges an escalation that was real and
     has been fixed; invalidate says the observation should never have counted.
@@ -568,10 +584,44 @@ def cmd_invalidate(args: argparse.Namespace) -> int:
         "reason": args.reason.strip(),
         "note": args.note,
     }
+
+    # SPEND-CONTROL GUARD (owner ruling 2026-09-16). `analyse` tests the IN-PROGRESS
+    # branch ABOVE the terminal ones, so an invalidate that drops distinct live probes
+    # below MIN_DISTINCT_PROBES silently converts a TERMINAL verdict into IN-PROGRESS --
+    # at which point `refuses_terminal_verdict` returns False and billed runs stop being
+    # refused. That makes `invalidate` the non-monotone verb, unlike `rescore`.
+    #
+    # The check runs `analyse` on the prospective ledger rather than re-deriving the
+    # scoping rules here. Duplicating `in_scope`/`arm` filtering would create a second
+    # instrument that can disagree with the first, which is the failure class this arc
+    # has spent itself on.
+    if not getattr(args, "force", False):
+        before = analyse(rows)
+        after = analyse(rows + [row])
+        # Test the TRANSITION, not membership of a terminal set. The terminal set
+        # lives in util/soak_run_probe.py and copying it down here would be a second
+        # definition that can drift from the first; the transition into IN-PROGRESS is
+        # exactly the condition that reopens spending, and it needs no such copy.
+        if before["verdict"] != "IN-PROGRESS" and after["verdict"] == "IN-PROGRESS":
+            return _reject(
+                f"REFUSING: this invalidate takes the verdict {before['verdict']!r} -> "
+                f"'IN-PROGRESS' ({after.get('note')}), which stops the spend control "
+                "refusing billed runs. Re-run the probe to restore the floor, or pass "
+                "--force if reopening the study is what you intend."
+            )
     return _write(ledger, row, args.dry_run)
 
 
 RESCORE_OUTCOMES = ("source-recovered",)
+# Which outcomes a row may be re-scored FROM. `source-recovered` is absent and must
+# stay absent: it is the only permitted TARGET, so admitting it here would allow a
+# row to be re-scored onto itself, and more importantly it is the column a row lands
+# in -- never one it should leave.
+#
+# `follow` was added 2026-09-15 by owner ruling on handoff section 6 item 7 (which
+# retrieval standard binds -> MECHANISM-CHECKED). See cmd_rescore's docstring for why
+# this widening is direction-safe and does not reopen the 2026-08-31 anti-gaming guard.
+RESCORABLE_FROM = ("miss", "follow")
 
 
 def cmd_rescore(args: argparse.Namespace) -> int:
@@ -582,14 +632,58 @@ def cmd_rescore(args: argparse.Namespace) -> int:
     fixed; ``rescore`` says the run happened and counts, but was filed under the
     wrong outcome.
 
-    Only ``source-recovered`` is accepted, deliberately. An open-ended re-score
-    verb is a way to move any inconvenient row to any convenient column, and the
-    whole reason this exists is that 9 of 11 architectural misses were CORRECT
-    answers reached from source. Widening it needs the same scrutiny this did.
+    Only ``source-recovered`` is accepted as a TARGET, deliberately. An open-ended
+    re-score verb is a way to move any inconvenient row to any convenient column,
+    and the whole reason this exists is that 9 of 11 architectural misses were
+    CORRECT answers reached from source. Widening it needs the same scrutiny this did.
 
     It does NOT remove the run from the follow-rate denominator -- see the
     ``rescored`` note in ``analyse``. If it did, this command would convert the
     standing INCONCLUSIVE verdict into a pass by redefinition.
+
+    SOURCE WIDENED 2026-09-15: ``follow`` may now be re-scored, not only ``miss``.
+    Owner ruling on handoff section 6 item 7 -- the binding retrieval standard is
+    MECHANISM-CHECKED: apply the protocol's own section 4 definition (inputs union
+    results), then discard hits that are not the destination document at all.
+    Expressing that requires moving a ``follow`` DOWN, which the previous
+    ``!= "miss"`` guard forbade outright.
+
+    WHAT IS ACTUALLY GUARANTEED -- and it is NARROWER than "monotone in the safe
+    direction", which an earlier draft of this docstring claimed and which is FALSE.
+    Because ``RESCORE_OUTCOMES`` remains ``("source-recovered",)``:
+
+      * no re-score can ever produce a ``follow`` -- pinned by
+        ``tests/test_soak_handoff_consensus_checks.py::test_rescore_does_not_invent_a_follow``;
+      * so no re-score can raise ``rate``, and none can turn a failing verdict into
+        ``HOLDS-AT-``.
+
+    THREE CONSEQUENCES THAT RUN THE OTHER WAY. State them; do not let the guarantee
+    above stand in for them.
+
+    1. **It desensitises the rung-3 area detector.** ``pooled_miss = 1 - rate`` is the
+       null for the Bonferroni area test, so LOWERING ``rate`` RAISES the null and
+       makes ``binom_sf(...) <= AREA_ALPHA / n_areas`` LESS likely to fire. Measured on
+       the real corpus, area ``worktrees`` (2/4) moved p 0.51675 -> 0.61290 across the
+       2026-09-15 re-scores. Latent only because 2 < ``AREA_MIN_MISSES``; that is an
+       accident of this corpus, not a property of the verb.
+    2. **It entrenches a terminal verdict.** Consecutive follows needed to lift the
+       Wilson upper back over the boundary went 3 -> 10 across the same two re-scores,
+       with no new data -- and ``util/soak_run_probe.py`` refuses to generate that data
+       on a terminal verdict without ``--force``. A wider margin keeping a billed study
+       closed IS a convenient column under the 2026-08-31 guard's actual wording.
+    3. **``retention`` cannot fall.** ``follow -> source-recovered`` leaves it exactly
+       unchanged (f-1, sr+1, n same), so under the widened verb retention only rises or
+       holds while ``rate`` can be driven arbitrarily low. Nothing gates on retention,
+       so this is a REPORTING hazard, not a control hazard -- but the reportable pair
+       converges on "pointer failed / relocation safe" by re-interpretation alone.
+
+    The two moves expressible are ``miss -> source-recovered`` (raises retention;
+    owner-approved 2026-08-31) and ``follow -> source-recovered`` (lowers ``rate``;
+    owner-approved 2026-09-15). Neither can rescue a failing bet; both can make one
+    harder to reopen.
+
+    ``source-recovered`` is deliberately NOT rescorable: it is the only target, so
+    admitting it would permit a self-move, and a row already there has nowhere to go.
     """
     root = args.repo_root or repo_root(Path.cwd())
     ledger = args.ledger or (root / DEFAULT_LEDGER)
@@ -601,9 +695,10 @@ def cmd_rescore(args: argparse.Namespace) -> int:
         return _reject(f"obs_id {args.obs_id!r} is a {target.get('kind')!r} row, not an observation")
     if args.to not in RESCORE_OUTCOMES:
         return _reject(f"--to must be one of {RESCORE_OUTCOMES}, got {args.to!r}")
-    if target.get("outcome") != "miss":
+    if target.get("outcome") not in RESCORABLE_FROM:
         return _reject(
-            f"only a miss can be re-scored; obs_id {args.obs_id!r} is {target.get('outcome')!r}"
+            f"only {' or '.join(RESCORABLE_FROM)} can be re-scored; "
+            f"obs_id {args.obs_id!r} is {target.get('outcome')!r}"
         )
     if any(r.get("kind") == "rescore" and r.get("rescores") == args.obs_id for r in rows):
         return _reject(f"obs_id {args.obs_id!r} has already been re-scored")
@@ -854,6 +949,11 @@ def main() -> int:
     inv.add_argument("--reason", required=True)
     inv.add_argument("--note", default=None)
     inv.add_argument("--dry-run", action="store_true")
+    inv.add_argument(
+        "--force", action="store_true",
+        help="invalidate even when doing so drops the verdict to IN-PROGRESS and "
+             "stops the spend control refusing billed runs",
+    )
     inv.set_defaults(func=cmd_invalidate)
 
     rsc = sub.add_parser("rescore",

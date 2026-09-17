@@ -803,6 +803,135 @@ class RescoreSourceRecovered(unittest.TestCase):
         st = sl.analyse(self._rows(10, 4, 4))["seeded"]
         self.assertEqual(st["runs"], 14)
 
+    def test_a_follow_can_be_rescored_down_and_it_lowers_the_rate(self) -> None:
+        # OWNER RULING 2026-09-15, handoff section 6 item 7: the binding retrieval
+        # standard is MECHANISM-CHECKED -- apply the protocol's own section 4
+        # definition (inputs union results), then discard hits that are not the
+        # destination document at all. Expressing that needs a `follow` to move
+        # DOWN, which the previous `!= "miss"` guard forbade outright, so the
+        # standard was unimplementable and the note of record said so.
+        #
+        # Applied to the real ledger this moved two rows -- one filename-only
+        # (grep -rln, nothing read) and one that read a SIBLING repo's
+        # same-named file -- taking the rate 59.5% -> 54.8% and the margin to
+        # the 0.75 boundary 0.0204 -> 0.0622.
+        rows = self._rows(3, 1, 0)
+        follow_id = next(r["obs_id"] for r in rows if r.get("outcome") == "follow")
+        before = sl.analyse(rows)["seeded"]
+        rows.append(
+            {
+                "obs_id": "rs-down",
+                "kind": "rescore",
+                "rescores": follow_id,
+                "from_outcome": "follow",
+                "to_outcome": "source-recovered",
+                "reason": "mechanism check: hit was a sibling repo's copy",
+            }
+        )
+        after = sl.analyse(rows)["seeded"]
+        self.assertEqual(after["denom"], before["denom"])  # denominator unmoved
+        self.assertEqual(after["follows"], before["follows"] - 1)
+        self.assertLess(after["rate"], before["rate"])
+
+    def test_no_rescore_can_ever_produce_a_follow(self) -> None:
+        # THE INVARIANT THAT MAKES THE 2026-09-15 WIDENING SAFE, pinned here
+        # rather than argued in a docstring. The 2026-08-31 guard exists to stop
+        # rows moving to a CONVENIENT column, and convenient means
+        # verdict-rescuing. Because RESCORE_OUTCOMES stays ("source-recovered",),
+        # admitting `follow` as a SOURCE is monotone in the safe direction: every
+        # expressible move either lowers the follow count or leaves it alone.
+        self.assertEqual(sl.RESCORE_OUTCOMES, ("source-recovered",))
+        self.assertNotIn("follow", sl.RESCORE_OUTCOMES)
+        # and `source-recovered` is not rescorable FROM: it is the only target, so
+        # admitting it would permit a self-move and a row there has nowhere to go.
+        self.assertEqual(sl.RESCORABLE_FROM, ("miss", "follow"))
+        self.assertNotIn("source-recovered", sl.RESCORABLE_FROM)
+
+        # Exhaustive over the expressible moves: none raises the follow count.
+        for src in sl.RESCORABLE_FROM:
+            for dst in sl.RESCORE_OUTCOMES:
+                rows = self._rows(2, 2, 0)
+                victim = next(r["obs_id"] for r in rows if r.get("outcome") == src)
+                base = sl.analyse(rows)["seeded"]["follows"]
+                rows.append({"obs_id": f"rs-{src}", "kind": "rescore", "rescores": victim, "from_outcome": src, "to_outcome": dst, "reason": "x"})
+                with self.subTest(src=src, dst=dst):
+                    self.assertLessEqual(sl.analyse(rows)["seeded"]["follows"], base)
+
+    def test_the_shipped_ledger_is_not_one_invalidate_from_reopening_spending(self) -> None:
+        # A FAIL-OPEN CLIFF, measured 2026-09-15 and pinned so it cannot erode silently.
+        #
+        # `analyse` tests the IN-PROGRESS branch ABOVE the BET-FAILING one, and
+        # `probes_run` is built from in-scope rows only -- so dropping distinct live
+        # probes below MIN_DISTINCT_PROBES converts a TERMINAL verdict into IN-PROGRESS.
+        # At that point `refuses_terminal_verdict` returns False and `cmd_status` exits
+        # 0, i.e. the spend control stops refusing billed runs.
+        #
+        # `invalidate` is therefore NOT monotone the way `rescore` is, and the live
+        # margin is ZERO: distinct probes == MIN_DISTINCT_PROBES exactly, and P18 holds
+        # a single live run after the 2026-09-15 ledger-leak invalidation. One more
+        # invalidation of that row opens the gate. This test does not prevent that --
+        # it makes it a deliberate, visible test break rather than a silent reopening.
+        ledger = Path(__file__).resolve().parents[1] / "reports" / "soak" / "pointer_follow_soak.jsonl"
+        if not ledger.exists():  # pragma: no cover - not in a checkout
+            self.skipTest("shipped ledger not present")
+        rows = [json.loads(ln) for ln in ledger.read_text(encoding="utf-8").splitlines() if ln.strip()]
+        invalidated = {r.get("invalidates") for r in rows if r.get("kind") == "invalidate"}
+        live = [r for r in rows if r.get("kind") in (None, "observation") and r.get("obs_id") not in invalidated]
+        distinct = {r.get("probe_id") for r in live}
+        self.assertGreaterEqual(
+            len(distinct),
+            sl.MIN_DISTINCT_PROBES,
+            f"distinct live probes {len(distinct)} < MIN_DISTINCT_PROBES " f"{sl.MIN_DISTINCT_PROBES}: the verdict has fallen back to IN-PROGRESS and " "the spend control no longer refuses terminal runs",
+        )
+
+    def test_an_invalidate_that_would_reopen_spending_is_refused(self) -> None:
+        # OWNER RULING 2026-09-16. `analyse` tests IN-PROGRESS ABOVE the terminal
+        # branches, so an invalidate that drops distinct live probes below
+        # MIN_DISTINCT_PROBES converts a terminal verdict to IN-PROGRESS -- and
+        # `refuses_terminal_verdict` then returns False, so billed runs stop being
+        # refused. `invalidate` is the non-monotone verb; `rescore` cannot do this.
+        #
+        # Built from a synthetic ledger sitting exactly at the floor, so the test
+        # does not depend on the live corpus's margin.
+        rows = []
+        for i in range(sl.MIN_DISTINCT_PROBES):
+            rows.append(obs(session=f"s{i}", outcome="follow", probe_id=f"P{i:02d}-x"))
+        for i in range(sl.TARGET_PROBE_RUNS):
+            rows.append(obs(session=f"pad{i}", outcome="follow", probe_id="P00-x"))
+        self.assertNotEqual(sl.analyse(rows)["verdict"], "IN-PROGRESS")
+
+        # Invalidating the only run of a probe removes that probe entirely.
+        lone = next(r for r in rows if r["probe_id"] == f"P{sl.MIN_DISTINCT_PROBES - 1:02d}-x")
+        killer = {"obs_id": "inv-1", "kind": "invalidate", "invalidates": lone["obs_id"], "reason": "x"}
+        self.assertEqual(sl.analyse(rows + [killer])["verdict"], "IN-PROGRESS")
+
+        # ...which is precisely what the guard must refuse without --force.
+        with TemporaryDirectory() as t:
+            p = write(Path(t), rows)
+            r = cli("--ledger", str(p), "invalidate", "--obs-id", lone["obs_id"], "--reason", "test", "--dry-run")
+            self.assertNotEqual(r.returncode, 0, f"guard did not refuse: {r.stdout}{r.stderr}")
+            self.assertIn("IN-PROGRESS", r.stdout + r.stderr)
+
+            forced = cli("--ledger", str(p), "invalidate", "--obs-id", lone["obs_id"], "--reason", "test", "--dry-run", "--force")
+            self.assertEqual(forced.returncode, 0, f"--force did not override: {forced.stdout}{forced.stderr}")
+
+    def test_an_ordinary_invalidate_is_not_blocked_by_the_spend_guard(self) -> None:
+        # NEGATIVE CONTROL. Without it, a guard that refused EVERY invalidate would
+        # satisfy the test above -- and would break the six invalidations already in
+        # the shipped ledger. Removing one of a probe's TWO runs keeps the probe, so
+        # the floor holds and the guard must stay silent.
+        rows = []
+        for i in range(sl.MIN_DISTINCT_PROBES):
+            rows.append(obs(session=f"s{i}", outcome="follow", probe_id=f"P{i:02d}-x"))
+        doomed = obs(session="dup", outcome="miss", miss_class="discoverability", probe_id="P00-x")
+        rows.append(doomed)
+        for i in range(sl.TARGET_PROBE_RUNS):
+            rows.append(obs(session=f"pad{i}", outcome="follow", probe_id="P00-x"))
+        with TemporaryDirectory() as t:
+            p = write(Path(t), rows)
+            r = cli("--ledger", str(p), "invalidate", "--obs-id", doomed["obs_id"], "--reason", "test", "--dry-run")
+            self.assertEqual(r.returncode, 0, f"guard fired on a safe invalidate: {r.stdout}{r.stderr}")
+
     def test_an_all_rescored_ledger_does_not_read_as_a_pass(self) -> None:
         # The degenerate case the denominator rule exists to prevent. If every
         # miss were re-scored AND re-scoring removed rows, this would be 0/0 or a
