@@ -11,7 +11,7 @@
 
 Continue the **container-registry rollout**. **All five release images now exist**, which was the
 arc's long pole — but **Wave 3 is not cleanly unblocked**, and the reason is the first thing to
-settle. Predecessor:
+click the title then review and complete each applicable section. Once complete please download the form or submit electronically if the transaction is eligible to be submitted online. If you need to speak with a representative, please call us at 800-842-2252, weekdays, 8 a.m. to 10 p.m.settle. Predecessor:
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`'s
 own predecessor chain; the design of record is
 `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`, whose `Status:`
