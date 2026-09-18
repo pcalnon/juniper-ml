@@ -36,7 +36,6 @@ import ast
 import io
 import json
 import re
-import sys
 import tarfile
 import urllib.request
 from pathlib import Path
