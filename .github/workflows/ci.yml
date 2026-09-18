@@ -1605,6 +1605,101 @@ jobs:
           python3 util/markdown_structure_delta.py --base "$base"
 
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  # Markdown structure C1-C4 -- ADVISORY SOAK. NEVER BLOCKING, and NOT in any ruleset.
+  #
+  # Covers two damage classes nothing else gates. The required `Markdown structure (delta)` step in
+  # the `docs` job walks fences, swallowed H2s and table separators; it CANNOT see:
+  #
+  #   * C2 -- a removed ```bash fence PAIR. Parity stays even and no heading is swallowed, so every
+  #     other check passes while 17 lines of shell silently become prose. That is the exact damage
+  #     that motivated util/ad-hoc/2026-09-05_md_structure_check.py, and it is otherwise ungated.
+  #   * C4 -- a heading DELETED rather than swallowed.
+  #
+  # WHY ADVISORY AND NOT REQUIRED, given a clean backtest. Measured 2026-09-16 over the 33 markdown
+  # files changed in 40 commits: ZERO false positives, ONE true positive (an orphaned table row in
+  # a design note that the required gate cannot see). Encouraging, not proof -- 33 files is a small
+  # sample, and C2's CODEY list is an allowlist that could fire on prose opening with `make` or
+  # `cd`. Making a screen required on that evidence is precisely what cost juniper-ml a live defect
+  # in ml#1944, where the adjacent H2-in-fence rule failed ADDED files for problems they did not
+  # contain. So: soak first.
+  #
+  # PROMOTION PATH (owner-ratified, flood analysis §4 decision 8): soak advisory, then promote IN
+  # THE RULESET -- never via the Quality Gate's `needs:`, which gates nothing. Promote by dropping
+  # the `|| true` below and adding this job's NAME as a required context. Until then this job is
+  # green by construction and reports through annotations and the job summary.
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
+  markdown-structure-advisory:
+    name: Markdown Structure (advisory soak)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # C1-C4 are all base-relative; depth 1 has no base to read.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_TEST_VERSION }}
+
+      - name: Structure checks C1-C4 against the merge base (advisory)
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║   juniper-ml - Markdown Structure C1-C4 (ADVISORY SOAK)    ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          base="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$base" ]; then
+            base="$(git rev-parse HEAD^1 2>/dev/null || git rev-parse HEAD)"
+            echo "no PR base sha (not a pull_request event) -> falling back to ${base}"
+          fi
+
+          # -z / -0 throughout: two tracked paths contain spaces, and the bare form invents
+          # fragments. `--diff-filter=d` drops deletions -- a deleted file has nothing to check
+          # and would otherwise be an unreadable path, which this screen exits 2 on by design.
+          if ! git diff -z --name-only --diff-filter=d "$base" HEAD -- '*.md' > changed.z; then
+            echo "::warning title=Markdown structure (advisory)::could not diff against ${base}; nothing examined"
+            exit 0
+          fi
+          if [ ! -s changed.z ]; then
+            echo "no markdown changed against ${base} -- nothing to examine."
+            exit 0
+          fi
+
+          # mapfile, NOT xargs. xargs maps any child exit of 1-125 to 123, so the screen's own
+          # 1-vs-2 distinction -- findings vs refused-to-report -- would be destroyed before it
+          # reached the summary below. Passing the argv directly keeps the real exit code.
+          mapfile -d '' -t files < changed.z
+          echo "examining ${#files[@]} changed markdown file(s) against ${base}"
+          set +e
+          python3 util/ad-hoc/2026-09-05_md_structure_check.py --base "$base" "${files[@]}" \
+            > advisory.txt 2>&1
+          rc=$?
+          set -e
+          cat advisory.txt
+
+          {
+            echo "## Markdown structure C1-C4 (advisory soak)"
+            echo ""
+            echo "Base: \`${base}\`  ·  exit \`${rc}\` (0 clean / 1 findings / 2 refused to report)"
+            echo ""
+            echo '```text'
+            cat advisory.txt
+            echo '```'
+            echo ""
+            echo "_Advisory during soak: this job never fails. Promotion is a ruleset change, not a \`needs:\` edit._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$rc" -ne 0 ]; then
+            # An annotation, not a failure -- the soak is worthless if nobody sees the findings,
+            # and worse than worthless if it blocks a PR before the evidence justifies it.
+            echo "::warning title=Markdown structure C1-C4 (advisory, exit ${rc})::findings against ${base}; see the job summary. Not blocking during the soak."
+          fi
+          exit 0
+
+  # ═══════════════════════════════════════════════════════════════════════════════════════════════
   # Security: pip-audit for dependency vulnerabilities
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   security:
