@@ -239,8 +239,7 @@ class PureHelperTest(unittest.TestCase):
         Measured on juniper-canopy 0.8.1: three Fixed bullets rendered as one, which would have
         dropped the packaging fix (canopy#634) and the mount-500 fix (canopy#633).
         """
-        doubled = textwrap.dedent(
-            """\
+        doubled = textwrap.dedent("""\
             # Changelog
 
             ## [Unreleased]
@@ -261,8 +260,7 @@ class PureHelperTest(unittest.TestCase):
             - The bug a concurrent PR added.
 
             ## [0.4.0] - 2026-06-01
-            """
-        )
+            """)
         sections = ce.changelog_version_section(doubled, "0.5.0")
         # One key, every bullet, in first-seen order.
         self.assertEqual(list(sections.keys()), ["Added", "Fixed"])
@@ -276,8 +274,7 @@ class PureHelperTest(unittest.TestCase):
     def test_parse_unreleased_merges_a_repeated_category(self):
         """``notes_render.parse_unreleased`` carries the same rule -- the draft path is
         exposed to the identical merge shape as the ceremony's released path."""
-        doubled = textwrap.dedent(
-            """\
+        doubled = textwrap.dedent("""\
             # Changelog
 
             ## [Unreleased]
@@ -291,8 +288,7 @@ class PureHelperTest(unittest.TestCase):
             - The bug a concurrent PR added.
 
             ## [0.4.0] - 2026-06-01
-            """
-        )
+            """)
         sections = notes_render.parse_unreleased(doubled)
         self.assertEqual(list(sections.keys()), ["Fixed"])
         self.assertEqual(sections["Fixed"], ["The first bug.", "The bug a concurrent PR added."])
