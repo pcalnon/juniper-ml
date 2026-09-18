@@ -869,7 +869,14 @@ def cmd_status(args: argparse.Namespace) -> int:
         # what the verdict actually calls for. Ascending order, and the two are
         # visually separated, so neither can be mistaken for the other's outcome.
         if st["verdict"] == "BET-FAILING":
-            print("  -> the relocation bet is failing; revisit owner decision 7. "
+            # Decision 7 WAS revisited, on 2026-09-17, and closed. Keeping the
+            # old "revisit owner decision 7" wording would send every future
+            # operator to redo completed work -- which is the friction that left
+            # the instruction unactioned for ten days in the first place. The
+            # second half is unconditional and survives the ruling.
+            print("  -> the relocation bet is failing. Owner decision 7 was RULED "
+                  "2026-09-17: closed, no skills probe -- see "
+                  "notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md. "
                   "NEVER re-inline.")
         elif st["verdict"] == "INCONCLUSIVE":
             print("  -> rung 1: add index rows for the missed facts, then keep soaking. "

@@ -651,9 +651,27 @@ that was always the load-bearing half.
 | 4 | `MEMORY.md` forward-only cap value      | **120 bytes** on new entries; no rewriting of existing rows                                                 |
 | 5 | Run the P1 canary before P3?            | **Yes** — it is 15 minutes and it determines migration ordering                                             |
 | 6 | Waiver: loan or pass?                   | **Loan**, tracked centrally — the 23-worktree finding means implicit "next author" accounting will not work |
-| 7 | Keep A's skills as a later probe?       | **Optional, deferred** — revisit only if the P3 soak shows a real pointer-follow problem                    |
+| 7 | Keep A's skills as a later probe?       | **CLOSED 2026-09-17 — no skills probe.** The trigger fired and was answered; see the note below            |
 | 8 | Address the parent `Juniper/AGENTS.md`? | **Yes, separately** — 11,016 additive bytes × 9 repos with no VCS, no CI, no gate                           |
 | 9 | Fix the worktree settings asymmetry?    | **Yes, separately** — worktree sessions run without the local settings main-checkout sessions get           |
+
+> **Decision 7 — ruled 2026-09-17, and the reasoning matters more than the verdict.**
+> Its condition fired: the soak turned `BET-FAILING` on 2026-09-07, which is a real
+> pointer-follow problem. **That licensed revisiting #7; it did not answer it**, and the
+> two are easy to run together. The soak measured retrieval from `docs/REFERENCE.md`;
+> option A's **skills carrier has never been probed**, so *"the pointer bet failed,
+> therefore skills"* was never an inference this evidence supports. All three reasons A
+> lost — worst-case context, compaction, and `in_docs_scope` returning False for every
+> `.claude/` destination — are untouched by a failed pointer bet.
+>
+> And the harm #7 hedged against did not materialise: **40 of 42 answers correct**, both
+> failures on `P15`, a probe the ledger files under *"the discriminator is stricter than
+> the source rule"*. The failure mode is **source-recovery, not loss** — a different
+> problem from the one #7 reserved a carrier against.
+>
+> Closed: no skills probe. Brief:
+> `notes/JUNIPER_2026-09-11_JUNIPER-ML_SOAK-OWNER-DECISION-7-BRIEF.md`. Ruling, with the
+> other nine: `notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md`.
 
 ---
 
