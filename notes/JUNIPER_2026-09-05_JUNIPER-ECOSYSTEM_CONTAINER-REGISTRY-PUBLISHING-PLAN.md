@@ -61,6 +61,34 @@ secrets. Last state refresh: 2026-09-15.
 > fires **both** `publish.yml` and `publish-image.yml`, and Wave 3 needs a released `X.Y.Z` image
 > ref. That overloading is a property of D-1 and will recur whenever an image input moves without
 > a library change; worth an OQ if it happens a third time.
+>
+> **The wheel SHIPPED 2026-09-17, and the claim above now holds against the published bytes**
+> rather than the git diff that predicted it — which matters, because a checkout is not a
+> deployment (juniper-model-core 0.3.1 shipped stale under an unchanged version while the repo
+> was already correct). PyPI serves `juniper-cascor-worker` **0.6.0**; run `35033610592` is
+> `completed/success`. Both wheels were downloaded and compared member-by-member by SHA-256
+> (`util/ad-hoc/2026-09-17_verify_worker_060_wheel.py`): **all 10 packaged module files are
+> byte-identical**, 16 members each, and only `METADATA` / `WHEEL` / `RECORD` differ. The check
+> fails if the metadata is *also* identical, since that would mean the two downloads are the
+> same artifact and the comparison proved nothing.
+>
+> **The wheel was also screened for the canopy packaging-omission class and is clean**
+> (`util/ad-hoc/2026-09-17_wheel_import_completeness.py`). Three flags were raised and all three
+> run to ground: `candidate_unit.candidate_unit` and `utils.activation` are provided by the
+> declared `juniper-cascor-model` dependency (whose import names are not its PyPI name — the
+> screen's known false-positive class), and `cascade_correlation.cascade_correlation` is
+> **deliberately optional**, imported inside `try/except ImportError` at `worker.py:746` and
+> `:774` and re-raised as *"CasCor codebase not found. Ensure the JuniperCascor src directory is
+> on sys.path"*. That is consistent with the ecosystem map's "architectural only — no code import
+> dependency": it is a deployment-time path, not a packaging one.
+>
+> **The screen is calibrated, not assumed.** Its first version keyed only on imports prefixed
+> with the distribution's own package name and found **1** of canopy 0.8.0's ten known omissions,
+> because a module a wheel forgot to ship cannot appear in that wheel's own name set. The current
+> version resolves bare imports against `Requires-Dist` and finds **11** genuine canopy omissions
+> (`canopy_constants`, `settings`, `model_registry`, …) alongside ~6 third-party false positives.
+> It is a **screen, not a proof**, and it over-reports by design; run its canopy positive control
+> (`--expect-missing`) before believing a clean verdict from it.
 **Scope:** publishing the five Juniper service images to container registries
 
 ---
