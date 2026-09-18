@@ -72,10 +72,19 @@ WHY FENCE BALANCE IS NOT ENOUGH -- both halves of the lesson
   removing ONE fence        -> count goes ODD, but says nothing about where (batch 2)
 
 So parity is necessary and not sufficient. The load-bearing check is C2:
-command-looking lines OUTSIDE any fence, COMPARED TO THE BASE -- because the base
-may legitimately have some (juniper-ml's REFERENCE.md carries 6 in a
-pre-existing `memory_index_check` block), an absolute threshold would either
-fail always or never.
+command-looking lines OUTSIDE any fence, COMPARED TO THE BASE. The comparison is
+base-relative because a file may legitimately carry such a line in prose, and an
+absolute threshold would then fail always or never.
+
+RATIFICATION WITHDRAWN 2026-09-16. This paragraph used to justify the base-relative
+form by pointing at "6 in a pre-existing `memory_index_check` block" in
+`docs/REFERENCE.md`. Those six were NOT pre-existing: they were juniper-ml#1746's
+residue -- an unfenced `### Usage` block whose six commands rendered as prose -- and
+the flood-2 handoff said explicitly to fence them rather than ratify them. They were
+fenced on 2026-09-16, and `docs/REFERENCE.md` now measures ZERO unfenced command
+lines, so C2's base for it is 0 and the check is strictly sharper there. Calling
+damage "pre-existing" is how a base-relative check quietly grandfathers the thing it
+was built to find.
 
 CHECKS
 
