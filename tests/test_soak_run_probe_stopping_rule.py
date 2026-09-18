@@ -182,9 +182,17 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
         self.assertIn("HOLDS-AT-0.75", err)
 
     def test_force_reaches_dispatch_under_a_terminal_verdict(self) -> None:
+        """``--probe-id`` and ``--reason`` are now part of the override (D3).
+
+        This test read ``["--force"]`` alone until 2026-09-17. That was the
+        contract then and is not the contract now: owner decision D3 admits the
+        override only for a NAMED probe with the reason recorded. The scoped form
+        must still reach dispatch, or D3 has repealed ``--force`` instead of
+        narrowing it -- which is the failure this case now pins.
+        """
         with self.assertRaises(_ReachedDispatch):
             self._invoke(
-                ["soak_run_probe.py", "--force"],
+                ["soak_run_probe.py", "--force", "--probe-id", "P23", "--reason", "re-baseline"],
                 "BET-FAILING  seeded=43/35 rate=60.5%\n",
                 ledger_rc=1,
                 dispatch=_reached_dispatch,
@@ -273,7 +281,7 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
         """The override has to work on the new refusal too, or it is a dead end."""
         with self.assertRaises(_ReachedDispatch):
             self._invoke(
-                ["soak_run_probe.py", "--force"],
+                ["soak_run_probe.py", "--force", "--probe-id", "P23", "--reason", "ledger repair"],
                 "NO-DATA  seeded=0/35 rate=n/a\n",
                 ledger_rc=2,
                 dispatch=_reached_dispatch,
@@ -321,6 +329,109 @@ class RealRunIsGatedThroughMain(unittest.TestCase):
                 "NOTE: BET-FAILING  seeded=43/35 rate=60.5%\n",
                 dispatch=_reached_dispatch,
             )
+
+
+class ForceIsNarrowedToANamedProbe(unittest.TestCase):
+    """Owner decisions D1/D3, ruled 2026-09-17, enforced rather than written down.
+
+    ``notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md``:
+    D1 authorises a named probe on request and declines the campaign; D3 admits
+    ``--force`` only for that named probe, one run, reason recorded.
+
+    The gap being closed is specific. Every path refuses today only because the
+    verdict is terminal, so ``--force`` is the sole way any run happens -- and a
+    bare ``--force`` dispatched ``dispatch(None)``, the least-covered-first
+    campaign D1 declined. The override that was meant to authorise ONE run
+    re-opened the default one.
+    """
+
+    def test_a_scoped_force_is_in_scope(self) -> None:
+        self.assertIsNone(mod.force_scope_refusal("P23", "re-baseline after rung 1", force=True, dry_run=False))
+
+    def test_force_without_a_probe_id_is_refused(self) -> None:
+        why = mod.force_scope_refusal(None, "a reason", force=True, dry_run=False)
+        self.assertIsNotNone(why)
+        self.assertIn("--probe-id", why)
+
+    def test_force_without_a_reason_is_refused(self) -> None:
+        why = mod.force_scope_refusal("P23", None, force=True, dry_run=False)
+        self.assertIsNotNone(why)
+        self.assertIn("--reason", why)
+
+    def test_a_whitespace_reason_is_not_a_reason(self) -> None:
+        """``--reason ' '`` satisfies ``is not None`` and records nothing."""
+        self.assertIsNotNone(mod.force_scope_refusal("P23", "   ", force=True, dry_run=False))
+
+    def test_an_unforced_run_is_not_this_predicate_s_business(self) -> None:
+        """Without ``--force`` the verdict governs. Returning a refusal here would
+        make every ordinary run demand a ``--reason`` it has no use for."""
+        self.assertIsNone(mod.force_scope_refusal(None, None, force=False, dry_run=False))
+
+    def test_a_dry_run_is_exempt_like_the_two_spend_controls(self) -> None:
+        self.assertIsNone(mod.force_scope_refusal(None, None, force=True, dry_run=True))
+
+    def test_the_refusal_names_which_half_is_missing(self) -> None:
+        """One message for two faults sends the operator to the source to find out
+        which one they hit. The predicate returns the string for that reason."""
+        self.assertNotEqual(
+            mod.force_scope_refusal(None, "r", force=True, dry_run=False),
+            mod.force_scope_refusal("P23", None, force=True, dry_run=False),
+        )
+
+
+class ForceScopeRefusalIsReachedBeforeTheSpendControls(unittest.TestCase):
+    """Ordering, and it is the whole point: ``--force`` DISARMS the two controls.
+
+    Checked after them, an unscoped override sails through both -- they return
+    ``False`` on ``force`` -- and the campaign D1 declined runs anyway. The
+    refusal must land before dispatch AND before a session is spent.
+    """
+
+    def _invoke(self, argv: list[str], verdict_line: str, *, ledger_rc: int = 1) -> tuple[int, str]:
+        out, err = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(mod, "_py", _ledger_py(verdict_line, ledger_rc)),
+            mock.patch.object(mod, "dispatch", mock.Mock(side_effect=AssertionError("dispatch must not run"))),
+            mock.patch.object(sys, "argv", argv),
+            contextlib.redirect_stdout(out),
+            contextlib.redirect_stderr(err),
+        ):
+            rc = mod.main()
+        return rc, err.getvalue()
+
+    def test_bare_force_under_a_terminal_verdict_refuses(self) -> None:
+        rc, err = self._invoke(
+            ["soak_run_probe.py", "--force"],
+            "BET-FAILING  seeded=42/35 rate=59.5%\n",
+        )
+        self.assertEqual(rc, mod.RC_REFUSED)
+        self.assertIn("REFUSING", err)
+        self.assertIn("--probe-id", err)
+
+    def test_the_refusal_cites_the_ruling(self) -> None:
+        """An operator hitting this is being told a decision was made, not that a
+        flag is malformed. The message has to say where to read it."""
+        _, err = self._invoke(["soak_run_probe.py", "--force"], "BET-FAILING  seeded=42/35\n")
+        self.assertIn("SOAK-TEN-OWNER-DECISIONS-RULED", err)
+
+    def test_named_but_unexplained_force_refuses_too(self) -> None:
+        rc, err = self._invoke(
+            ["soak_run_probe.py", "--force", "--probe-id", "P23"],
+            "BET-FAILING  seeded=42/35 rate=59.5%\n",
+        )
+        self.assertEqual(rc, mod.RC_REFUSED)
+        self.assertIn("--reason", err)
+
+    def test_the_refusal_is_the_reserved_code_not_a_hard_error(self) -> None:
+        """``RC_REFUSED`` is whitelisted by ``SuccessExitStatus=3`` in the unit.
+
+        Returning 1 or 2 here would make a by-design refusal fire
+        ``OnFailure=`` and append a strike to ``logs/soak_probe_failures.log``
+        -- the exact confusion #1884 built the code to prevent.
+        """
+        rc, _ = self._invoke(["soak_run_probe.py", "--force"], "BET-FAILING  seeded=42/35\n")
+        self.assertEqual(rc, mod.RC_REFUSED)
+        self.assertNotIn(rc, (1, 2))
 
 
 class LedgerVerdictsAreAllClassified(unittest.TestCase):
