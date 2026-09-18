@@ -925,6 +925,10 @@ The pointer-follow soak asks whether a **fresh, unprimed** local `claude -p` ses
 
 Subagents, cloud routines, and CronCreate cannot see the intervention (ledger §§17, 19). The wrappers exist so the only remaining human step is the judgement the protocol reserves: correctness against the frozen `discriminator`.
 
+**The bet failed, and relocation continues anyway — owner decision D10, ruled 2026-09-17.** That is not a contradiction, and the reason has to travel with the policy or the next reader reverses it: **facts are recovered from code, not because pointers are followed.** The pointer-follow rate is 59.5% with a Wilson upper below the 0.75 boundary, while **40 of 42 answers are still correct** and both failures are the same probe (`P15`), which the ledger itself files under *"the discriminator is stricter than the source rule"*. So the measured failure mode is source-recovery, not loss. **"Never re-inline" stands**, unchanged and unconditional — it is the half of the ledger's escalation instruction that no verdict can retire. Full record: [`notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md`](../notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md).
+
+**What is NOT settled is which facts need which carrier.** Two strata exist — heterogeneity far beyond binomial noise — but all three candidate predictors were refuted in [`notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md`](../notes/JUNIPER_2026-09-09_JUNIPER-ML_SOAK-STRATUM-PREDICTOR-ANALYSIS.md), at a sample size where a perfect split would have been found. Nothing predicts which stratum a new fact lands in, so D10's policy cannot be narrowed per-fact and "use a different carrier for the facts that need one" is not currently expressible.
+
 ### Pieces
 
 | Piece | Role |
@@ -942,16 +946,19 @@ Probe ids are **full slugs**. `--probe-id P19` exits `2` (`no such probe: P19`).
 
 ### Operator loop
 
-> **On current `main` the second line refuses.** The verdict is `BET-FAILING`, so every
-> **real** run exits 2 with `REFUSING` unless `--force` — and `--force` is an open owner
-> decision (§10.5 of the design conversation), not something a session grants itself. The
-> `--dry-run` preview still works. See [Verdicts](#verdicts-seeded-arm) for the live state.
+> **On current `main` the second and third lines refuse.** The verdict is `BET-FAILING`, so
+> every **real** run exits **3** with `REFUSING` unless `--force`. `--force` was an open
+> owner decision until 2026-09-17; it is now **ruled and narrowed** (D3) — a named
+> `--probe-id`, one run per invocation, and a `--reason` that is recorded. It is still not
+> something a session grants itself. The `--dry-run` preview works throughout. See
+> [Verdicts](#verdicts-seeded-arm) for the live state.
 
 ```bash
 python3 util/soak_run_probe.py --dry-run                    # no claude binary required
 python3 util/soak_run_probe.py                              # least-covered probe (REFUSES today, exit 3)
-python3 util/soak_run_probe.py --probe-id P23-reaper-over-protection-bias
-python3 util/soak_run_probe.py --probe-id P23-reaper-over-protection-bias --force
+python3 util/soak_run_probe.py --probe-id P23-reaper-over-protection-bias   # REFUSES today, exit 3
+python3 util/soak_run_probe.py --probe-id P23-reaper-over-protection-bias \
+    --force --reason "characterise P23 for a specific relocation decision"
 python3 util/soak_next_probe.py --reveal --probe-id P23-reaper-over-protection-bias
 python3 util/soak_ledger.py probe-run --probe-id P23-reaper-over-protection-bias \
     --outcome follow --session <uuid> --scored-by <who>
@@ -976,6 +983,7 @@ The second arm was added 2026-09-10; before it, **`DEGRADED` / `NO-DATA` / `NO-S
 | `--dry-run` | exit **0**; preview; `NOTE: … terminal. This dry run proceeds (it spends no session); a real run would refuse without --force.` | exit **0**; preview; same NOTE reading `not a readable state` | exit **0**; preview; no NOTE |
 | real run | exit **3**; `REFUSING: … terminal. Further runs cannot change it` unless `--force` | exit **3**; `REFUSING: … the ledger's state cannot be read` unless `--force` | proceeds |
 | real run `--force` | proceeds (re-baseline / characterisation) | proceeds | proceeds |
+| real run `--force`, no `--probe-id` **or** no `--reason` | exit **3**; `REFUSING: --force requires …` — checked **before** both arms, since `--force` is what disarms them | same | same |
 
 **Exit `3`, not `2`, and the systemd unit is the reason.** `juniper-soak-probe.service` is `Type=oneshot` with `OnFailure=juniper-soak-probe-failed.service`, so any non-success exit appends a strike to `logs/soak_probe_failures.log`. With the verdict terminal today, an installed timer would write one every ~6h forever for a guard working exactly as designed — and a real failure would be indistinguishable from it in the one file built to surface real failures. The unit therefore carries `SuccessExitStatus=3`. It must **not** be `SuccessExitStatus=2`: argparse also exits 2, so whitelisting that would make a typo in `ExecStart=` read as success forever on the unattended path. `tests/test_soak_run_probe_stopping_rule.py` — `UnitFileWhitelistsTheRefusalCode` — parses the unit and pins both halves; before it, **no test in the repo read a unit file at all**.
 
@@ -989,7 +997,9 @@ The second arm was added 2026-09-10; before it, **`DEGRADED` / `NO-DATA` / `NO-S
 
 `--force` overrides a **real** run only. Design-conversation §8.3 leaves the pooled-verdict guard in place so unattended spend cannot run away; under decision support a terminal pooled verdict does not answer the next relocation. Do not pass `--force` to preview (that is `--dry-run`) or to keep a timer spending after the pooled question is done (disable the timer).
 
-Wrapper exit codes: `0` usable answer + scoring packet (or a successful dry-run preview); `1` timeout / empty / error result; `2` misuse, harness failure before the probe started, or a real-run terminal refuse.
+**And `--force` alone is no longer enough (D3).** It must name a probe and carry a reason, both enforced by `force_scope_refusal()` *before* the two spend-control arms — the ordering is load-bearing, because both return `False` on `force`, so a check placed after them is unreachable. `tests/test_soak_run_probe_stopping_rule.py` — `ForceIsNarrowedToANamedProbe` and `ForceScopeRefusalIsReachedBeforeTheSpendControls` — pin the scope and the ordering.
+
+Wrapper exit codes: `0` usable answer + scoring packet (or a successful dry-run preview); `1` timeout / empty / error result; `2` misuse or harness failure before the probe started; **`3`** refused by design (terminal verdict, unreadable ledger, or an out-of-scope `--force`). The `2` here read "…or a real-run terminal refuse" until 2026-09-17, contradicting the `RC_REFUSED = 3` paragraph four lines above it and the unit's `SuccessExitStatus=3`.
 
 Ledger exits (`util/soak_ledger.py` docstring): `probe-run` / `record` / `resolve` → `0` written / `2` rejected (`_reject`); `report` always `0`; `status` → `0` for `IN-PROGRESS` / `HOLDS-AT-*` / `INCONCLUSIVE` with no escalations, **`1` on `BET-FAILING` or an open escalation**, `2` for `NO-DATA` / `DEGRADED` / `NO-SEEDED-DATA`; `verify-probes` → `0` sound / `1` defective.
 
@@ -1001,6 +1011,8 @@ Not automated: correctness against the frozen `discriminator`. The wrapper write
 
 Outcomes (`OUTCOMES` in `util/soak_ledger.py`): `follow`, `miss`, `source-recovered`. **Seeded** arm decides; **organic** describes (an upper bound, never a verdict). `source-recovered` stays in the follow-rate denominator — dropping it would convert INCONCLUSIVE into a pass by redefinition.
 
+**Three outcomes, and that is now ruled (owner decision D6, 2026-09-17): no `index-recovered` fourth.** A run that reached the fact through `MEMORY.md`'s index rather than the pointer is recorded with `--note`, not with a new outcome. A fourth value would partition the existing corpus retroactively — every historical row would have to be re-adjudicated to say which of two things it was — and the ledger is append-only, so the re-adjudication is unfalsifiable after the transcripts age out.
+
 Default `soak_next_probe.py` / `soak_run_probe.py` pick **least-covered, then registry order**. That evens the **pooled** estimate. Characterisation of a named probe uses `--probe-id`. `--reveal` is scoring-only and must not run before the session.
 
 ### Least-covered vs characterisation
@@ -1009,23 +1021,29 @@ For a relocation decision the pooled rate is a **mixture**. Characterisation run
 
 - Heterogeneity test (15 probes, 40 seeded runs, 26 follows, 20,000 draws): statistic 30.84, **p = 0.0017**. The probes do not share one rate. Use the stratum, not the pooled rate, for a specific section.
   **The `0.0017` is labelled with the wrong test.** §6 of [`notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md`](../notes/JUNIPER_2026-09-04_JUNIPER-ML_SOAK-HANDOFF-CONSENSUS-VALIDATION.md) records that it came from a **parametric bootstrap** — resampling from `Binomial(n, pooled)` — not the label shuffle "permutation test" names. The conclusion survives and a true shuffle is far more extreme; the figure is kept here only because it is what the design conversation reports.
-- **Per-probe membership is mostly unresolved at n=2–4.** P23 left the "never-follow" group on its third run (0/2 → follow → 1/3). Do not treat "P14 never follows" as a property from 0/3 — `wilson(0,3)` is `[0.000, 0.561]`. **Two probes are the exception**: `P15` and `P19` are 0/4, upper bound `0.490`, which does exclude 50%. (Corrected 2026-09-09; this line previously said no probe's interval excludes 50%, and that was false for both.) **Three** probes exclude the pooled 0.605 — `P14` (0/3, upper 0.561) as well as `P15` and `P19`. The old sentence asserted no probe excluded 50% *or the pooled rate*; both halves were false.
+- **Per-probe membership is mostly unresolved at n=2–4.** P23 left the "never-follow" group on its third run (0/2 → follow → 1/3). Do not treat "P14 never follows" as a property from 0/3 — `wilson(0,3)` is `[0.000, 0.561]`. **Two probes are the exception**: `P15` and `P19` are 0/4, upper bound `0.490`, which does exclude 50%. (Corrected 2026-09-09; this line previously said no probe's interval excludes 50%, and that was false for both.) **Three** probes exclude the pooled rate (0.595 since the D5 invalidation; 0.605 before it, and the conclusion is the same at either) — `P14` (0/3, upper 0.561) as well as `P15` and `P19`. The old sentence asserted no probe excluded 50% *or the pooled rate*; both halves were false.
 
 `analyse()` has **no era filter**. Ledger §15.4 says not to pool post-intervention runs with the pre-`2026-08-31` ones. Split on this tree with the ledger's own `wilson()` after `analyse()`'s invalidate/rescore/`in_scope` filters:
 
-| era | follows/n | Wilson 95% | terminal? |
-|-----|-----------|------------|-----------|
-| pre-intervention (`ts < 2026-08-31`) | 24/35 = 68.6% | [0.520, 0.814] | no |
-| post-intervention | 2/8 = 25.0% | [0.071, 0.591] | **yes** (`BET-FAILING`) |
-| pooled (what `report` prints) | 26/43 = 60.5% | [0.456, 0.736] | **yes** (`BET-FAILING`) |
+| era | follows/n | Wilson 95% | `analyse()` verdict | clears the boundary test? |
+|-----|-----------|------------|---------------------|---------------------------|
+| pre-intervention (`ts < 2026-08-31`) | 23/34 = 67.6% | [0.508, 0.809] | `IN-PROGRESS` (34/35 runs) | no — spans 0.75 |
+| post-intervention | 2/8 = 25.0% | [0.071, 0.591] | `IN-PROGRESS` (8/35 runs, 7/15 probes) | yes — upper < 0.75 |
+| pooled (what `report` prints) | 25/42 = 59.5% | [0.445, 0.730] | **`BET-FAILING`** | yes — upper < 0.75 |
 
-**Neither corpus is a clean read, and the post-only slice is not the safe alternative it looks like.** §15.4 of the ledger forbids pooling across the intervention boundary *and* says "the four probes are the only ones this intervention touches" — but 4 of the 8 post-intervention runs are on probes rung 1 never touched (P02, P06, P15, P19 are treated; P14, P21×2, P23 are not). Wiring the stopper to the post-only corpus is **not** a plumbing fix: `IN-PROGRESS` there is purely the `runs < TARGET_PROBE_RUNS` n-gate firing before any test, and keying on it would stop the spend control refusing — ~27 further billed runs with no `--force`. That choice is an owner decision.
+**The two columns are separate, and running them together is the trap.** Until 2026-09-17 this table had one "terminal?" column reading **yes (`BET-FAILING`)** for the post-only row — while the paragraph directly below it said the same slice reads `IN-PROGRESS`. Both were describing something real: the interval clears the boundary, *and* `analyse()` never gets to the boundary test because an n-gate fires first. A single column cannot say both, and the one that governs spend is the verdict.
+
+**Neither corpus is a clean read, and the post-only slice is not the safe alternative it looks like.** §15.4 of the ledger forbids pooling across the intervention boundary *and* says "the four probes are the only ones this intervention touches" — but 4 of the 8 post-intervention runs are on probes rung 1 never touched (P02, P06, P15, P19 are treated; P14, P21×2, P23 are not). Wiring the stopper to the post-only corpus is **not** a plumbing fix: `IN-PROGRESS` there is an **OR of two n-gates** — `runs < TARGET_PROBE_RUNS` **and** `distinct probes < MIN_DISTINCT_PROBES` both fire at 8 runs over 7 probes — firing before any test, so keying on it would stop the spend control refusing: ~27 further billed runs with no `--force`.
+
+**Ruled 2026-09-17 (owner decision D4): keep pooled.** No change was needed — the stopper already reads the pooled verdict, and `grep -c post_intervention util/soak_run_probe.py` returns 0. Record: [`notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md`](../notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md).
 
 Per-probe (effective outcome after rescores; Wilson on follows/n): `P14` 0/3 → [0.000, 0.561]; `P15` / `P19` 0/4 → [0.000, 0.490]; `P21` 1/4 → [0.046, 0.699]; `P23` 1/3 → [0.061, 0.792]; `P02` 3/4 → [0.301, 0.954].
 
 **`P15` and `P19` DO exclude 50%** — 0/4 gives an upper bound of `0.490`. It takes n≥4 with zero follows: `wilson(0,3)` is `[0.000, 0.561]`, which does not. Every other probe's interval spans 0.5, so per-probe membership is unresolved *for the rest*; the blanket "none excludes 50%" that stood here until 2026-09-09 was false for two probes and is withdrawn.
 
-**Do not drive the ambiguous probes to n≈8–10.** Design-conversation §9.4 recommended that band; it cannot resolve stratum membership at the observed 1/3 rate. Re-derived with this repo's `wilson()`: 3/8 [0.137, 0.694], 3/10 [0.108, 0.603], 9/26 [0.194, 0.538] — none excludes 50%. First exclude is **10/31** [0.186, 0.499]. `--probe-id` still picks a named probe if an owner later authorises one; the default / timer path will not.
+**Do not drive the ambiguous probes to n≈8–10.** Design-conversation §9.4 recommended that band; it cannot resolve stratum membership at the observed 1/3 rate. Re-derived with this repo's `wilson()`: 3/8 [0.137, 0.694], 3/10 [0.108, 0.603], 9/26 [0.194, 0.538] — none excludes 50%. First exclude is **10/31** [0.186, 0.499].
+
+**Ruled 2026-09-17 (owner decision D1): a named probe runs on request; the default and timer paths do not.** `--probe-id` is the only authorised entry point, and because the verdict is terminal it needs `--force` — which D3 narrowed in the same pass (below).
 
 ### Verdicts (seeded arm)
 
@@ -1041,9 +1059,13 @@ Wilson 95% interval vs one reachable boundary (`DECISION_BOUNDARY = 0.75`, `util
 
 Escalations (hazard rung 2, area-systematic rung 3, pointer-defect rung 0) print **alongside** the verdict, never instead of it. `status` exits `1` when they are open or the verdict is `BET-FAILING` — that is the design. `resolve` appends to an append-only ledger; there is no un-resolve. Do not discharge to make the exit code 0.
 
-Verified against `origin/main` 2026-09-09 (`python3 util/soak_ledger.py status` / `report`): **`BET-FAILING`**, seeded 43/35, rate **60.5%**, Wilson 95% CI **[0.456, 0.736]**, escalations 0, **`status` exit 1**. The bet has failed: the upper bound is below the 0.75 boundary, so `soak_run_probe.py` refuses every real run without `--force`, and every `status` prints `revisit owner decision 7. NEVER re-inline.`
+Verified against this tree 2026-09-17 (`python3 util/soak_ledger.py status` / `report`): **`BET-FAILING`**, seeded **42**/35, 15/15 distinct probes, rate **59.5%**, Wilson 95% CI **[0.445, 0.730]**, escalations 0, **`status` exit 1**. The bet has failed: the upper bound is below the 0.75 boundary, so `soak_run_probe.py` refuses every real run without `--force`.
 
-**Retention is 95.3% and that figure must not be quoted bare.** `RESCORE_OUTCOMES = ("source-recovered",)` (`util/soak_ledger.py`) can only move rows in the retention-**raising** direction, and the corpus was **74.4%** as originally recorded. 95.3% is the number that turns a failed bet into "relocation is safe", so it carries its provenance or it is not used. Re-derive both with `util/ad-hoc/2026-09-04_soak_handoff_consensus_checks.py`.
+**The corpus moved 43 → 42 on 2026-09-16 (owner decision D5, ml#1952)**: the one run that demonstrably read the ledger's *contents* was invalidated (`P18-health-interval-non-positive`, 2026-08-22, recorded **follow**). It removed a follow, so the verdict is reinforced rather than destabilised. The 43-row figures — 60.5%, [0.456, 0.736] — are what every document written before that date quotes; they are superseded, not wrong-at-the-time.
+
+**`--force` is narrow, not a repeal (owner decision D3, ruled 2026-09-17).** It requires `--probe-id` **and** `--reason`, one run per invocation, and the reason lands in the run dir's `meta.json` as `force_reason` (`forced` is written unconditionally, so "not forced" and "reason lost" are not the same absent key). A bare `--force` is refused with `RC_REFUSED`. That is what makes D1 enforceable: without the `--probe-id` requirement, `--force` alone re-opened `dispatch(None)` — the least-covered-first campaign D1 declined to authorise.
+
+**Retention is 95.2% and that figure must not be quoted bare.** `RESCORE_OUTCOMES = ("source-recovered",)` (`util/soak_ledger.py`) can only move rows in the retention-**raising** direction, and the corpus was **73.8%** (31/42) as originally recorded. 95.2% is the number that turns a failed bet into "relocation is safe", so it carries its provenance or it is not used. It is also **not independent of correctness**: retention is the fraction that did not miss, and in practice a miss is a wrong answer — 40/42 = 95.2% is the same number, not a second one corroborating it. Re-derive with `util/ad-hoc/2026-09-17_soak_post_ruling_recount.py`.
 
 ### Retrieval channel
 
@@ -1056,9 +1078,10 @@ Verified against `origin/main` 2026-09-09 (`python3 util/soak_ledger.py status` 
 Two known limits remain, both open:
 
 - **Half of what §4 calls a FOLLOW is invisible.** §4 of the ledger defines it as "opened the destination, **grepped it**, or otherwise read it", and scores from the session's tool log — inputs *and* results. `grep -rn tool_result` across the three soak scripts returns **0**, so a directory-scoped grep that returns this document's content without naming it is protocol-conformant retrieval scored as a non-follow.
-- **A filename-only result is not reading it.** A `grep -rln` returns the path with no content. Whether that counts is the retrieval-standard question, unratified — see [`notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md`](../notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md), which re-audits all 43 rows by mechanism and puts the rate at **24/43 = 55.8%** [0.411, 0.696] against the recorded 60.5%.
+- **A filename-only result is not reading it.** A `grep -rln` returns the path with no content. **Ruled 2026-09-17 (owner decision D2): the mechanism-checked standard binds** — a filename-only hit is not a follow. See [`notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md`](../notes/JUNIPER_2026-09-08_JUNIPER-ML_SOAK-RETRIEVAL-STANDARD-EVIDENCE-RECOVERY.md), which re-audited all 43 rows by mechanism at **24/43 = 55.8%** [0.411, 0.696] against the then-recorded 60.5%; after D5 that is **23/42 = 54.8%** [0.399, 0.688].
+  **It binds PROSPECTIVELY.** ml#1952 shipped it as a schema change — `RESCORABLE_FROM = ("miss", "follow")` — and reverted the data edits made on its authority, correctly: §7 of the re-audit lists *"which standard binds"* and *"whether the §4 rows are re-scored"* as **separate** owner questions, and only the first was ruled. The historical corpus is untouched, which is why `report` still prints 59.5%. A future ruling on the second must weigh that a downward re-score **desensitises** the rung-3 area detector — `pooled_miss = 1 - rate` is the Bonferroni null, so lowering the rate raises it (measured on area `worktrees`: p 0.51675 → 0.61290) and the consecutive follows needed to reopen went 3 → 10 with no new data.
 
-P06's task contains `--dest docs/REFERENCE.md`, so the path appears whether or not the doc was read — that over-inclusiveness is deliberately pinned, not fixed. The channel only `suggests`; a human supplies `--outcome`.
+P06's task contains `--dest docs/REFERENCE.md`, so the path appears whether or not the doc was read — that over-inclusiveness is deliberately pinned, not fixed. **Ruled 2026-09-17 (owner decision D7): leave it, flagged.** The registry is frozen, so "fixing" P06 means retiring it and minting a new id, which discards its runs; and the channel only `suggests` — a human supplies `--outcome`, and the flag is what tells that human not to read P06's channel output as evidence.
 
 Keep `stream.jsonl` if parse crashes: some events carry `message` as a bare string; `parse_events` type-guards `isinstance(msg, dict)` (juniper-ml#1616).
 
@@ -1084,32 +1107,38 @@ Enable the **timer** or **path** unit, not the service. An `[Install]` block on 
 - `TimeoutStartSec=1500` must exceed dispatch (120s) + claude (900s) + `--reveal` (120s) = 1140s. If systemd wins the race it cgroup-kills the wrapper **before** `status.json` is written ("crash, not timeout").
 - `SuccessExitStatus=3` — a by-design refusal is not a failed unit. Without it, `Type=oneshot` + `OnFailure=` writes a strike to `logs/soak_probe_failures.log` on every firing for as long as the verdict stands (terminal today, so: every ~6h, indefinitely), and a real failure becomes indistinguishable from the guard working. **Never `SuccessExitStatus=2`** — argparse exits 2, so that would make an `ExecStart=` typo read as success forever. Pinned by `tests/test_soak_run_probe_stopping_rule.py::UnitFileWhitelistsTheRefusalCode`.
 - Timer: `OnCalendar=*-*-* 03,09,15,21:23:00`, `Persistent=false` (a laptop resuming after two days must not stampede missed intervals).
-- `Type=oneshot` with no `SuccessExitStatus=`. A real-run terminal refuse is exit 2, so once the verdict is terminal every timer firing marks `failed`. The units are additive; they are not installed by a repo hook. #1690 does not cause this but makes it reachable.
+- The units are additive; they are not installed by a repo hook. (This bullet read *"`Type=oneshot` with no `SuccessExitStatus=`. A real-run terminal refuse is exit 2, so once the verdict is terminal every timer firing marks `failed`"* until 2026-09-17 — the pre-#1884 state, sitting two bullets below the one that says `SuccessExitStatus=3` **is** set. Both cannot be true; the unit carries it.)
 - No `[Install]` on the service — enable the `.timer` / `.path`, never the service itself (an extra uncoordinated probe at every login).
 - Both the unit and the wrapper unset `ANTHROPIC_API_KEY` — a stale key fails with `Credit balance is too low` before the probe starts.
 - The wrapper resolves `claude` itself (`resolve_claude`); the unit still prepends `%h/.local/bin` because the user-manager `PATH` does not include it.
 
 ### Known-not-fixed (do not "simplify")
 
-The guard **fails open**. `st.returncode` is never checked. An absent or unreadable ledger yields `NO-DATA` (rc=2 from `status`), not `verdict=""` — empty verdict requires the ledger *tool* itself to fail to run. `DEGRADED` and `NO-SEEDED-DATA` pass the spend control too. Closing this is a fail-closed semantics change (how much an unattended timer may spend when it cannot read a verdict) and is out of scope for #1690.
+**`st.returncode` is still never checked, and that remains deliberate** — re-measured 2026-09-10, `status` exits 1 for a real crash *and* for a runnable `INCONCLUSIVE` with an open escalation, and 2 for `NO-DATA` *and* for argparse misuse. The exit code cannot separate those; the verdict token can.
+
+**But the fail-open it used to describe is CLOSED.** This section said *"`DEGRADED` and `NO-SEEDED-DATA` pass the spend control too… out of scope for #1690"* until 2026-09-17. The second arm (`refuses_unusable_verdict`, 2026-09-10) refuses all four unreadable states, and the section two above describes it — the two contradicted each other for a week. What survives as a genuine residual: **a verdict token outside every list still fails open**, i.e. a name added to `soak_ledger.py` and not classified. `LedgerVerdictsAreAllClassified` reads the ledger's AST and goes red the moment that happens, so the drift costs a test rather than a session.
+
+**One fail-open is genuinely open**, and it is a different one: `analyse()` tests `IN-PROGRESS` *above* the terminal branches, so dropping distinct live probes below `MIN_DISTINCT_PROBES` turns a terminal verdict into `IN-PROGRESS` and the spend control stops refusing — no `--force` needed. Live margin is **zero** (15/15 probes, and P18 is down to one live run). `cmd_invalidate` refuses an invalidate that would cross that line without `--force` (ml#1952), which guards the known route in; it does not make the ordering fail-closed.
 
 ### Operator pitfalls
 
 | Symptom | Check / Fix |
 |---------|-------------|
 | Primed follow | `--reveal` or echoing the task **before** the run. Dry-run stdout is scored later; a leak cannot be un-primed. |
-| Registry leak | `conf/soak_probes.json` is inside the repo and carries every `fact` / `discriminator`. Scoring must run `util/ad-hoc/2026-08-21_soak_probe_evidence.py`; contaminated runs are discarded. |
+| Registry leak | `conf/soak_probes.json` is inside the repo and carries every `fact` / `discriminator`. Scoring must run `util/ad-hoc/2026-08-21_soak_probe_evidence.py`; contaminated runs are discarded. Since ml#1952 the wrapper also runs it automatically, **report-only** — `status["contamination_screen"]` and operator stdout. It gates nothing, and the scorer must still look. |
 | `--dry-run` exits 2, empty stdout | Pre-#1690 refuse-before-dry-run. After #1690 a terminal verdict still previews (NOTE on stderr). Do not pass `--force` just to see the preview. |
-| Real run exits 2 with `REFUSING` | Ledger is terminal. `--force` overrides a real run only; disable the timer if the pooled question is done. Characterisation also needs `--probe-id`. |
+| Real run exits **3** with `REFUSING` | Ledger is terminal (or unreadable). `--force` overrides a real run only; disable the timer if the pooled question is done. Since 2026-09-17 `--force` also **requires** `--probe-id` and `--reason` (D3). This row said "exits 2" until then; 2 is argparse misuse, and the unit whitelists 3. |
+| `--force` exits 3 with `REFUSING: --force requires …` | D3's narrowing. Name the probe (full slug) and give a reason; both land in the run dir's `meta.json`. It is not a malformed flag — it is a decision. |
+| Invalidating a row flips the verdict to `IN-PROGRESS` | **The fail-open cliff** (ml#1952). `analyse()` tests `IN-PROGRESS` *above* the terminal branches, so dropping distinct live probes below `MIN_DISTINCT_PROBES` un-refuses the spend control — with no `--force` involved. Live margin is **zero** (15/15). `cmd_invalidate` refuses such an invalidate without `--force`; that guard, not the `--force` scope check, is what covers this. |
 | `--probe-id P19` → `no such probe` | Bare ids do not resolve. Use the full slug (`P19-port-check-fail-opens`). |
 | `probe-run --outcome miss` rejected | Missing `--class`. Required: `discoverability` / `hazard` / `pointer-defect`. |
 | `--status` numbers look like a follow table | They are **post-intervention run counts**, a different quantity. |
 | Driving P21/P23 to n≈8–10 "to resolve membership" | Wilson at 1/3 does not exclude 50% inside that band (first exclude is 10/31). |
 | Three more non-follows redden `main` | **Happened.** 26/40 → 26/43, Wilson upper 0.736, verdict `BET-FAILING`. #1690 is why `DryRunDoesNotLeakTheTask` still passes on 3.12/3.13/3.14. |
 | Channel says follow, maybe not | Match is `pointer_doc` in the **tool inputs** (not the answer — #1644; not a sibling repo's copy — #1855). P06's `--dest docs/REFERENCE.md` remains a false-positive risk. The instrument still does not see `tool_result`, so a directory-scoped grep that returns this file's content scores as a non-follow. |
-| A hit that is not a read | `grep -rln` returns the path with no content; the ledger's own `.jsonl` quotes the pointer, outcome and answer in prose. **8 of 43 runs TOUCHED the ledger; exactly ONE read its contents** (`P18-health-interval-non-positive`, 2026-08-22T21:41:09Z) — the other seven saw the filename in a status line, a diff stat or a `grep -l` list. Re-derived 2026-09-10 by `util/ad-hoc/2026-09-10_soak_stopping_rule/ledger_exposure_probe.py`; this row said "8 … read the ledger" until then, which overstates the exposure 8×. The contamination screen now matches the ledger and splits content from filename; it still does **not** run as part of scoring. |
+| A hit that is not a read | `grep -rln` returns the path with no content; the ledger's own `.jsonl` quotes the pointer, outcome and answer in prose. **8 of 43 runs TOUCHED the ledger; exactly ONE read its contents** (`P18-health-interval-non-positive`, 2026-08-22T21:41:09Z) — the other seven saw the filename in a status line, a diff stat or a `grep -l` list. Re-derived 2026-09-10 by `util/ad-hoc/2026-09-10_soak_stopping_rule/ledger_exposure_probe.py`; this row said "8 … read the ledger" until then, which overstates the exposure 8×. **That one row is now invalidated** (D5). The contamination screen splits content from filename and, since ml#1952, **runs report-only** — its output reaches `status.json` and operator stdout and never `scoring_packet.md`, because a contamination field in front of the scorer is itself the leak. |
 | Discriminator under-specifies | Enumerating acceptable answers (P06: "scope **or** refuse") mis-scores a better third path. Score the **property**; record tension in `--note`. Registry-author item. |
-| `report` looks terminal after a channel change | `analyse()` pools pre- and post-intervention. Split as §15.4 requires before treating a pooled upper bound as a stop. |
+| `report` looks terminal after a channel change | `analyse()` pools pre- and post-intervention, and **D4 ruled that it keeps doing so**. Split as §15.4 requires when *reading* the eras apart; do not wire the stopper to the post-only slice — an n-gate makes it read `IN-PROGRESS`, which un-refuses the spend control. |
 | Retention jumped with no new follows | `rescore` is one-way to `source-recovered`. Re-read the original `outcome` column. |
 | Dry-run stdout contains the task | Bug — priming leak. `tests/test_soak_run_probe.py` `DryRunDoesNotLeakTheTask` is the gate. |
 | Timer keeps spending after a terminal verdict | Disable the timer; `--force` is not the stop. |
