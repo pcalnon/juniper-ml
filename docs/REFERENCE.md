@@ -2534,12 +2534,14 @@ CI **cannot** see the real file. `ci.yml` runs `tests/test_memory_index_check.py
 
 ### Usage
 
+```bash
 python3 util/memory_index_check.py                     # check (exit 0/1/2)
 python3 util/memory_index_check.py --json
 python3 util/memory_index_check.py --advisory          # report, always exit 0
 python3 util/memory_index_check.py --accept            # grandfather current slugs + one growth sample
 python3 util/memory_index_check.py --skip-if-absent    # CI / hosts with no ~/.claude index
 python3 util/memory_index_check.py --memory-file PATH --baseline PATH
+```
 
 Exit **0** pass, advisory, skipped, or `--accept` / **1** over the hard cap or a new oversize hook / **2** missing file (unless skipped), unreadable text, or malformed baseline.
 
