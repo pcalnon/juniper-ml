@@ -39,7 +39,6 @@ import os
 import random
 import statistics
 import subprocess
-import sys
 import time
 from pathlib import Path
 
