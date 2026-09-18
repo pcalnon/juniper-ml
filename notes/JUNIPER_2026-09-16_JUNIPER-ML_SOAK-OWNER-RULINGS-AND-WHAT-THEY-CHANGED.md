@@ -15,15 +15,20 @@ Evidence the rulings were taken against:
 
 ## 0. Net effect on the instrument
 
-| | before | after |
-|---|---|---|
-| `soak_ledger.py status` | `BET-FAILING seeded=43/35 rate=60.5% ci=[0.456, 0.736]` | `BET-FAILING seeded=42/35 rate=59.5% ci=[0.445, 0.730]` |
-| valid observations | 43 | **42** |
-| margin to the 0.75 boundary | 0.0137 | **0.0204** |
-| ledger rows appended | — | **exactly one** (an `invalidate`) |
+| | before | after 09-16 | **after 09-17 (item 2 ruled)** |
+|---|---|---|---|
+| `soak_ledger.py status` | `43/35 rate=60.5% ci=[0.456, 0.736]` | `42/35 rate=59.5% ci=[0.445, 0.730]` | **`42/35 rate=54.8% ci=[0.399, 0.688]`** |
+| valid observations | 43 | 42 | **42** |
+| margin to the 0.75 boundary | 0.0137 | 0.0204 | **0.0622** |
+| ledger rows appended | — | one (`invalidate`) | **three** (+2 `rescore`) |
+| retention | 0.9524 | 0.9524 | **0.9524** |
 
 **The verdict did not move, and no ruling could have moved it**: every candidate standard's Wilson
 upper bound is below 0.75 (0.736 / 0.730 / 0.696 / 0.688 / 0.567).
+
+**Retention is identical under every option**, because `follow → source-recovered` moves a row
+between two columns that both count as retained. The only published number these rulings move is
+the **follow rate**.
 
 ---
 
@@ -44,12 +49,50 @@ Mechanism-checked is not a third standard: it applies the protocol's own §4 def
 DOWN, and `cmd_rescore` rejected anything whose outcome was not `miss`. `RESCORABLE_FROM =
 ("miss", "follow")` now permits it; `RESCORE_OUTCOMES` stays `("source-recovered",)`.
 
-**What did NOT ship, and why.** §7 of the recovery note lists item 1 (which standard binds) and
-item 2 (**whether the §4 rows are re-scored**) as *separate* owner questions. Only item 1 was
-ruled. Two re-scores were made on item 1's authority and **reverted 2026-09-16** on the owner's
-ruling — *keep the widening, revert the edits*. The standard is therefore **expressible and
-prospectively binding**; the historical corpus is untouched pending an item-2 ruling. Revert
-script: `util/ad-hoc/2026-09-15_soak_decisions/revert_unauthorised_rescores.py`.
+**The data edit took three steps, and the sequence is the point.** §7 of the recovery note lists
+item 1 (which standard binds) and item 2 (**whether the §4 rows are re-scored**) as *separate*
+owner questions.
+
+1. **2026-09-15** — item 1 ruled. Two re-scores were made on that authority alone. They were not
+   authorised: item 2 had not been put to the owner.
+2. **2026-09-16** — owner ruled *keep the widening, revert the edits*. Both reverted
+   (`util/ad-hoc/2026-09-15_soak_decisions/revert_unauthorised_rescores.py`); the standard stayed
+   expressible and prospectively binding, the historical corpus untouched.
+3. **2026-09-17** — **item 2 ruled: option A, re-score both.** Re-applied, this time citing item 2.
+
+Item 2's stated blocker — *"not currently expressible … that is a schema change, not a data edit"*
+— was discharged by step 1's widening, so by step 3 the only open question was authority.
+
+### 1.2 A KNOWN divergence was ruled INTO existence — do not "fix" it
+
+The two rows are not the same kind of claim, and the running instrument treats them differently.
+Measured 2026-09-17 by scoring each row's exact shape through the current `retrieval_channel`:
+
+| row | evidence | the wired scorer says TODAY | effect of the re-score |
+|---|---|---|---|
+| **P24** `eb3d9320` | `foreign=2` — read juniper-deploy's own copy | **False** | **removes** a divergence: the ledger now agrees with the instrument |
+| **P21** `b57a72bb` | `filename=1` — `grep -rln`, nothing read | **True** | **creates** one: this row is now scored more strictly than any new run would be |
+
+P24 is **document identity**, already ratified on the wired path (ml#1855 + re-fix) and enforced
+by `_own_repo_occurrence`. P21 is the **retrieval standard**, which `retrieval_channel` does not
+implement — `tests/test_soak_run_probe.py::test_pointer_path_in_a_command_arg_currently_counts_as_a_hit`
+still pins the over-inclusive behaviour, deliberately, so that narrowing it is a visible test break.
+
+The owner was shown this consequence and chose **A** over **E** (which would also have narrowed the
+scorer). **The divergence is therefore deliberate.** A later reader must not reconcile it by
+reverting the P21 row; the open follow-up is narrowing the scorer, and that is its own decision.
+
+### 1.3 Costs of option A, stated because they are real
+
+- **Entrenchment.** Consecutive further follows needed to lift the Wilson upper back over 0.75:
+  **4 → 10**. `util/soak_run_probe.py` refuses to generate them on a terminal verdict without
+  `--force`, so this is the practical cost of reopening a study these rulings also declared closed.
+- **Rung-3 desensitisation.** `pooled_miss = 1 - rate` is the Bonferroni null, so it moved
+  0.40476 → 0.45238, making a systematic-area escalation *less* likely to fire. Latent only
+  because the corpus has 2 area misses against `AREA_MIN_MISSES = 3`.
+
+Both were measured before the ruling, by
+`util/ad-hoc/2026-09-17_item2_options/score_the_item2_options.py`, and shown to the owner.
 
 ### 1.1 The widening is NOT "monotone in the safe direction" — three consequences
 
@@ -176,8 +219,13 @@ survive `must_be_absent_from_source`.
 
 ## 5. What is still the owner's
 
-- **§7 item 2** — whether the two §4 rows are re-scored. The standard binds prospectively; the
-  historical corpus is unchanged until this is ruled.
+- ~~**§7 item 2**~~ — **RULED 2026-09-17** (option A, re-score both). See §1 and §1.2.
+- **NEW, opened by that ruling: whether `retrieval_channel` is narrowed to implement the
+  filename half of the mechanism-checked standard.** Option E offered this and the owner chose A,
+  so the divergence in §1.2 is deliberate and current. Narrowing means deliberately breaking
+  `test_pointer_path_in_a_command_arg_currently_counts_as_a_hit`, which exists to make that a
+  visible test break rather than a silent flip. Consensus has refuted two changes to this exact
+  code path in this arc; it should not be attempted without one.
 - Handoff §6 items 1–6, unchanged.
 - Whether to re-run P18 to restore the distinct-probe margin (costs a billed session and needs
   `--force` past a terminal verdict, which is §6 item 5).

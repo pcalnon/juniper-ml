@@ -207,10 +207,17 @@ Unchanged, and this document deliberately decides none of them:
 
 1. **Which retrieval standard binds.** The three rows in §6 are the menu; §7.2 of the
    09-04 review is where the choice lands.
-2. Whether the four §4 rows are **re-scored**. A `rescore` verb exists but
-   `RESCORE_OUTCOMES = ("source-recovered",)` can only move rows in the
-   retention-raising direction, so re-scoring a follow *downward* is not currently
-   expressible in the ledger — that is a schema change, not a data edit.
+2. ~~Whether the four §4 rows are **re-scored**.~~ **RULED 2026-09-17: re-score both.**
+   *(The count "four" was stale from the moment §4 was corrected on 2026-09-09 — that table
+   has **two** rows, P21 `b57a72bb` and P24 `eb3d9320`.)* The stated blocker —
+   `RESCORE_OUTCOMES = ("source-recovered",)` can only move rows in the retention-raising
+   direction, so re-scoring a follow *downward* is not expressible; that is a schema change,
+   not a data edit — was discharged by ml#1952, which widened `RESCORABLE_FROM` to
+   `("miss", "follow")` while leaving `RESCORE_OUTCOMES` untouched. Both rows are now
+   `source-recovered`; the rate is **23/42 = 54.8%, CI [0.3995, 0.6878]**. Note the ruling
+   knowingly leaves the P21 row scored more strictly than the wired scorer would score a new
+   run of the same shape — see §1.2 of
+   [`JUNIPER_2026-09-16_JUNIPER-ML_SOAK-OWNER-RULINGS-AND-WHAT-THEY-CHANGED.md`](JUNIPER_2026-09-16_JUNIPER-ML_SOAK-OWNER-RULINGS-AND-WHAT-THEY-CHANGED.md).
 3. Whether the ledger leak (§5) invalidates its 8 runs, as the pilot's 8 registry-leak
    runs were once discarded. This is owner decision §7.1's neighbourhood.
 
