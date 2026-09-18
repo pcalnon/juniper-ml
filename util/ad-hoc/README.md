@@ -502,6 +502,58 @@ to `update_loss_plot`'s own decorator ([[reference_check_unit_must_match_identit
 
 ---
 
+## juniper-canopy 0.8.1 — the packaging fix and how it was chosen (operational, 2026-09-15/17)
+
+The instruments behind canopy#634 (`a1a0f13c`) and canopy#636, closing canopy#631. The headline
+result is that **the obvious fix was wrong and failed silently**, and only building candidates and
+opening their wheels showed it.
+
+- **`2026-09-15_canopy_packaging_decision_inputs.py`** measures the three things the open decisions
+  turned on: sdist coverage (**0 of 20** top-level modules, and it ships `pyproject.toml`, so
+  `--no-binary` was never a workaround); the **transitive** closure of top-level imports by AST
+  (12 from the shipped packages, 15 from `main`, union 19, only `adapter_validation` unreachable);
+  and the re-parenting cost (711 import statements over 212 files — but **612 across 180 are
+  tests**, and only 97 across 30 are library code). The one-hop list in the issue was **two short**:
+  `csrf` and `ws_security` are reachable only through other modules, so a wheel built from it would
+  still have failed. Use the AST, not a regex — this repo names its modules in prose constantly.
+- **`2026-09-15_canopy_py_modules_build_trial.py`** builds each candidate `pyproject.toml` in its own
+  copy of the tree and opens the resulting wheel. **`py-modules` alone builds successfully and ships
+  0 of 19 modules** — exit 0, no warning — because it resolves against `package-dir`, which canopy
+  never set. Adding `package-dir {"" = "src"}` then *fails outright* (`package directory
+  'src/juniper_canopy' does not exist`) because `juniper_canopy/` sits at the repo root. Only the
+  config with **both** an empty-string root and an explicit `juniper_canopy` entry ships 19/19 and
+  keeps all five packages. Without build isolation config A errors instead of silently emptying the
+  wheel, so **trial with isolation** — that is what CI does.
+- **`2026-09-15_canopy_clean_install_import_matrix.py`** is what the publish guard's module list was
+  drawn from: a real venv, `pip install` the wheel, `cd` out of the tree, import each candidate in a
+  separate interpreter. Two lessons are baked into it. Classify a `ModuleNotFoundError` by whether
+  the missing name belongs to an **optional extra** — the first draft called `demo_mode` (torch) and
+  `backend.service_backend` (juniper_cascor_client) packaging defects. And run from a **writable**
+  cwd, not `/`: canopy's logger creates its log directory relative to cwd at import, so `/` turns an
+  ordinary side effect into a `PermissionError` and makes two importable modules look broken.
+- **`2026-09-15_canopy_081_apply.py`** applies the whole 0.8.1 change to a sandbox so the set can be
+  reviewed and built before anything is pushed, and **moves `[Unreleased]` into `[0.8.1]`** rather
+  than inserting beside it — the ceremony renders the Release body from the `[<version>]` section
+  alone, so anything left behind ships unmentioned.
+- **`2026-09-17_canopy_changelog_merge_duplicate_categories.py`** repairs the shape that produced
+  canopy#636, and refuses if the bullet count changes.
+
+**The duplicate-category trap, which is now fixed in the train itself.** canopy#634 moved
+`[Unreleased]` into `[0.8.1]` while canopy#633 and #635 were adding entries to `[Unreleased]`. Both
+edit the top of the file; git resolved them cleanly; the section ended up with **`### Fixed`
+twice**. It renders correctly on GitHub, so nothing flagged it — but
+`ceremony.changelog_version_section` assigned rather than extended, so the **last** block won:
+a section with three Fixed bullets rendered as **one**, and the published notes would have dropped
+the packaging fix and the mount-500 fix. Both parsers now merge repeated headings
+(`result.setdefault(cat, []).extend(...)`), pinned by two tests and mutation-checked per parser with
+**`2026-09-17_mutate_duplicate_category_merge.py`**.
+
+**Preview before `--execute`, every time.** `2026-09-12_ceremony_notes_preview.py` reported
+`Fixed: 1` for a section that visibly contained three bullets. Nothing else in the pipeline would
+have said a word, and a Release body cannot be re-cut.
+
+---
+
 ## What does NOT belong here
 
 - Scripts that are part of a documented build / test / release flow → `util/` proper or `scripts/`.
