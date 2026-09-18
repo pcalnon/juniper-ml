@@ -244,6 +244,46 @@ def refuses_unusable_verdict(verdict: str, *, force: bool, dry_run: bool) -> boo
     return verdict_is_unusable(verdict)
 
 
+def force_scope_refusal(probe_id: str | None, reason: str | None, *, force: bool, dry_run: bool) -> str | None:
+    """Why is this ``--force`` out of scope? ``None`` when it is in scope.
+
+    OWNER DECISION D3, ruled 2026-09-17
+    (``notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md``):
+    ``--force`` may run past a terminal verdict, but only **narrowly** -- an
+    explicitly named probe, one run per invocation, and the reason recorded.
+
+    THE GAP THIS CLOSES, and it is the whole reason this is code rather than
+    prose. D1 rules that the per-probe campaign does not run by default: only a
+    named probe, on request. Today that holds solely because the verdict is
+    terminal and every path refuses without ``--force``. But ``--force`` alone
+    re-opened the DEFAULT path -- ``dispatch(None)`` picks the least-covered
+    probe -- so a single ``--force`` with no ``--probe-id`` resumed exactly the
+    campaign D1 declined to authorise, through the override meant to authorise
+    one specific run. D1 is unenforceable while that is true.
+
+    "One run per invocation" needs no check: the wrapper has always dispatched
+    exactly one probe per call.
+
+    Returns the REASON as a string rather than a bool so the caller can say which
+    half is missing. One message covering two faults sends the operator to the
+    source to work out which one they hit, and both are one flag away from fixed.
+
+    ``dry_run`` is exempt for the reason the two spend controls above are: it
+    spends no session. ``force=False`` is not this predicate's business at all --
+    an unforced run is already governed by the verdict.
+    """
+    if not force or dry_run:
+        return None
+    if not probe_id:
+        return ("--force requires --probe-id. Owner decision D1 authorises a NAMED probe "
+                "on request, not a campaign; without an id this would resume the default "
+                "least-covered dispatch that D1 declined")
+    if not (reason or "").strip():
+        return ("--force requires --reason. Owner decision D3 admits the override only "
+                "with the reason recorded, so the run dir says why the session was spent")
+    return None
+
+
 def claude_search_paths(home: Path | None = None) -> tuple[Path, ...]:
     """Fallbacks when PATH does not contain `claude` (systemd --user / cron)."""
     h = Path.home() if home is None else home
@@ -645,10 +685,25 @@ def main() -> int:
     ap.add_argument("--background", action="store_true", help="detach; poll the run dir")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force", action="store_true",
-                    help="run even when the soak verdict is terminal or unreadable")
+                    help="run even when the soak verdict is terminal or unreadable; "
+                         "requires --probe-id and --reason (owner decisions D1/D3)")
+    ap.add_argument("--reason", default=None,
+                    help="why this --force run is being spent; recorded in the run dir's meta.json")
     ap.add_argument("--notify-cmd", default=None,
                     help="shell-free command run on completion; the run dir is appended as argv")
     args = ap.parse_args()
+
+    # D3's narrowing, BEFORE the two spend controls below -- because --force is
+    # what disarms them. Checking it afterwards would let an unscoped override
+    # sail through both and only fail once a session had already been dispatched.
+    out_of_scope = force_scope_refusal(
+        args.probe_id, args.reason, force=args.force, dry_run=args.dry_run
+    )
+    if out_of_scope is not None:
+        print(f"REFUSING: {out_of_scope}.\nSee "
+              f"notes/JUNIPER_2026-09-17_JUNIPER-ML_SOAK-TEN-OWNER-DECISIONS-RULED.md.",
+              file=sys.stderr)
+        return RC_REFUSED
 
     # STOPPING RULE. Nothing else in the dispatch path consults the verdict, so
     # without this an enabled timer keeps spending real Claude sessions forever --
@@ -722,9 +777,15 @@ def main() -> int:
 
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "task.txt").write_text(task + "\n", encoding="utf-8")
+    # `forced` is written UNCONDITIONALLY, as a bool. Recording the reason only on
+    # forced runs would make "not forced" and "forced, key lost" the same absent
+    # key to every later reader -- and D3's whole point is that a spent override
+    # is attributable afterwards.
     (run_dir / "meta.json").write_text(json.dumps({
         "probe_id": probe_id, "session_id": session_id, "started_at": _now(),
         "timeout_s": args.timeout, "cwd": str(ROOT),
+        "forced": bool(args.force),
+        "force_reason": (args.reason or None) if args.force else None,
     }, indent=2) + "\n", encoding="utf-8")
 
     log = run_dir / "stream.jsonl"
