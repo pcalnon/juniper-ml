@@ -7,7 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Thread-width sweep — D1 and D2's gating measurement**
+  (`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`, new;
+  `util/ad-hoc/2026-09-16_thread_width_{arm,sweep}.py`, new). 6 widths × 2 mechanisms × 3 repeats
+  plus a control, order reshuffled every repeat from a recorded seed so ambient drift spreads
+  across arms instead of accumulating in one.
+  **D1**: only width **16** is distinguishable (5–7× worse, both runs). The rank order of 2/4/6/8
+  **completely reverses** between two valid runs and their spreads overlap, so the 8–19% gaps sit
+  inside this host's 13–20.5% drift band and are not measurable. Keep 2 — because nothing beats it
+  measurably, **not** because it is demonstrably optimal.
+  **D2**: the gate **passes**. The environment route *does* set the initial pass's width (per-stage
+  ICV equals the requested width in every arm); capping at 2 takes the initial pass from
+  **4.060 s → 2.705 s (−33%)**; and **cascor#531's 1.52× candidate penalty does not reproduce** —
+  across an 8× cap range the candidate phase spans 2.945–3.492 s with fully overlapping spreads.
+  Likely because the candidate workers pin themselves from `worker_thread_count`
+  (`cascade_correlation.py:4153`), so the inherited environment never governs them. Not a
+  refutation of cascor#531, which measured a different tree.
+  Also measured: `thread` w16 and `env` w16 run at the same OpenMP width yet differ **3.3×**
+  (12.295 s vs 3.777 s), because only `thread` also moves torch's *global* — so two widths are in
+  play and the mechanisms are not interchangeable.
+
 ### Fixed
+
+- **The first thread-width sweep was INVALID and its conclusions are withdrawn.** Its arm called
+  `torch.get_num_threads()` on the training thread before training — the getter this lane itself
+  established is **not a passive read** (it runs torch's per-thread lazy init and re-pins the
+  caller to the global, `JUNIPER_2026-09-11_..._ICV-INSTRUMENT.md` §1.1). It re-pinned every `env`
+  and `none` arm to the constructor's 2 **before any training ran**, and the withdrawn conclusion
+  ("the environment route binds nothing") was measuring the instrument. **It corrupted only SOME
+  arms, which is why it survived review**: in the `thread` arms `set_num_threads(W)` had already
+  made the global `W`, so the getter re-pinned to the wanted value and left no trace. Proof, one
+  line apart: the `none` arm reads `icv_in` 2 / initial pass 2.67–2.83 s with the getter, and
+  `icv_in` **16** / **4.31 s** without it.
+- **Closed the 2026-09-16 residual, which was misattributed.** That draft blamed the disagreement
+  between this sweep and the 2026-09-11 ICV work on the BLAS variables being set versus unset.
+  Both halves were wrong: the `none` control has them *unset* and was corrupted identically, and
+  re-running the 09-11 instrument unchanged on the current environment reproduces the burst
+  exactly. Nothing about the 3.13 → 3.14 upgrade changed the burst.
 
 - **The PF-2 capacity probe shipped in `juniper-ml#1927` was VACUOUS, and its base config could
   not resolve from a worktree.** Two defects in one file, both found by running it:
