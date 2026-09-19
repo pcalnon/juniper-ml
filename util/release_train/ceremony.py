@@ -419,7 +419,16 @@ def changelog_version_section(changelog_text: str, version: str) -> "OrderedDict
 
     This is the section the proposal PR created when it moved ``[Unreleased] -> [<version>]`` (plan
     S5.4); the ceremony sources the FINAL notes from it. Mirrors ``notes_render.parse_unreleased`` but
-    anchored on the concrete version heading, and reuses its bullet grouping."""
+    anchored on the concrete version heading, and reuses its bullet grouping.
+
+    A category heading may appear **more than once** in one section and its blocks are MERGED, not
+    replaced. That shape is an ordinary 3-way merge result, not a mistake: a version-move PR
+    (``[Unreleased] -> [X.Y.Z]``) and any PR adding an entry to ``[Unreleased]`` both edit the top of
+    the file, git resolves them cleanly, and the section ends up with ``### Fixed`` twice. It renders
+    correctly on GitHub, so nothing flags it. This function used to assign rather than extend, so the
+    LAST block won and everything above it vanished from a Release body that cannot be re-cut --
+    measured on juniper-canopy 0.8.1, where a section with three Fixed bullets rendered as one and
+    would have dropped the packaging fix (canopy#634) and the mount-500 fix (canopy#633)."""
     result: "OrderedDict[str, list]" = OrderedDict()
     if not changelog_text:
         return result
@@ -442,7 +451,7 @@ def changelog_version_section(changelog_text: str, version: str) -> "OrderedDict
             if current_cat is not None:
                 bullets = notes_render._split_bullets(body)
                 if bullets:
-                    result[current_cat] = bullets
+                    result.setdefault(current_cat, []).extend(bullets)
             current_cat = hm.group(1)
             body = []
             continue
@@ -451,7 +460,7 @@ def changelog_version_section(changelog_text: str, version: str) -> "OrderedDict
     if current_cat is not None:
         bullets = notes_render._split_bullets(body)
         if bullets:
-            result[current_cat] = bullets
+            result.setdefault(current_cat, []).extend(bullets)
     return result
 
 
