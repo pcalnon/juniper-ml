@@ -62,18 +62,26 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--package", default="juniper-canopy")
     ap.add_argument("--version", default="0.8.0")
+    ap.add_argument("--wheel", default=None,
+                    help="a LOCAL .whl to probe instead of downloading from PyPI -- this is the "
+                         "pre-publish form: it tests the artifact about to ship, not the last one that did")
     ap.add_argument("--python", default=sys.executable)
     args = ap.parse_args()
 
-    with urllib.request.urlopen(PYPI.format(pkg=args.package, ver=args.version), timeout=60) as r:  # noqa: S310
-        meta = json.load(r)
-    url = next(u["url"] for u in meta["urls"] if u["packagetype"] == "bdist_wheel")
-    with urllib.request.urlopen(url, timeout=180) as r:  # noqa: S310
-        blob = r.read()
+    if args.wheel:
+        blob = Path(args.wheel).read_bytes()
+        label = Path(args.wheel).name
+    else:
+        with urllib.request.urlopen(PYPI.format(pkg=args.package, ver=args.version), timeout=60) as r:  # noqa: S310
+            meta = json.load(r)
+        url = next(u["url"] for u in meta["urls"] if u["packagetype"] == "bdist_wheel")
+        with urllib.request.urlopen(url, timeout=180) as r:  # noqa: S310
+            blob = r.read()
+        label = f"{args.package} {args.version}"
 
-    root = Path(tempfile.mkdtemp(prefix=f"{args.package}-{args.version}-"))
+    root = Path(tempfile.mkdtemp(prefix="wheelprobe-"))
     zipfile.ZipFile(io.BytesIO(blob)).extractall(root)
-    print(f"{args.package} {args.version} extracted to {root}")
+    print(f"{label} extracted to {root}")
 
     env = {"PATH": "/usr/bin:/bin", "PYTHONPATH": str(root), "HOME": str(Path.home())}
     verdicts = []
