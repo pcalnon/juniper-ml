@@ -850,6 +850,9 @@ instrument at all. Four candidate instruments disagree by up to 20 trees:
 deepest-file-mtime instrument over n=118 (it is the one that actually answers *"has anyone written
 here"*). **Consequence: the veto, not G1, is the binding constraint** — the sweepable set after it is
 roughly 118 − 38 ≈ **80 trees**, and the 11 locked are a subset of the recent.
+
+| cost dimension | measurement |
+|---|---|
 | inode pressure | 4,124,846 / 245,178,368 = **2%** — not a cost |
 
 **Revision 1's sole stated cost was a category error.** It claimed *"the real documented cost is the
