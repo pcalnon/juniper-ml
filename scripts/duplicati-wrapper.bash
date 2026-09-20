@@ -29,6 +29,9 @@
 #     3. Duplicati Server Local Environment File: /home/duplicati/.config/Duplicati/.env
 #     4. Duplicati Wrapper Script Constants: /home/duplicati/bin/duplicati-wrapper.bash
 #
+#   Duplicati Server Global Environment Variables:
+#     DAEMON_OPTS="--webservice-port=8300"
+#
 #############################################################################################################################################################################################
 # References:
 #
@@ -37,7 +40,7 @@
 #     [Unit]
 #     Description=Duplicati web-server
 #     After=network.target
-#     
+#
 #     [Service]
 #     Nice=19
 #     User=duplicati
@@ -49,7 +52,7 @@
 #     IOSchedulingClass=idle
 #     IOSchedulingPriority=7
 #     Restart=always
-#     
+#
 #     [Install]
 #     WantedBy=multi-user.target
 #############################################################################################################################################################################################
@@ -69,22 +72,22 @@ echo "DUPLICATI_ENV_LOCAL: \"${DUPLICATI_ENV_LOCAL}\""
 
 #############################################################################################################################################################################################
 # Define Default Duplicati Server Options:
-DUPLICATI_PORT_DEFAULT="--webservice-port=8300"
-echo "DUPLICATI_PORT_DEFAULT: \"${DUPLICATI_PORT_DEFAULT}\""
+DUPLICATI_PORT_LABEL="--webservice-port"
+echo "DUPLICATI_PORT_LABEL: \"${DUPLICATI_PORT_LABEL}\""
 
-DUPLICATI_INPUT_PARAMS=""
-DUPLICATI_ENV_VARS_GLOBAL=""
-DUPLICATI_ENV_VARS_LOCAL=""
+DUPLICATI_PORT_DEFAULT="8300"
+echo "DUPLICATI_PORT_DEFAULT: \"${DUPLICATI_PORT_DEFAULT}\""
 
 DUPLICATI_ENCRYPTION_KEY_LABEL="SETTINGS_ENCRYPTION_KEY"
 echo "DUPLICATI_ENCRYPTION_KEY_LABEL: \"${DUPLICATI_ENCRYPTION_KEY_LABEL}\""
 
-DUPLICATI_ENCRYPTION_KEY=""
-echo "DUPLICATI_ENCRYPTION_KEY: \"${DUPLICATI_ENCRYPTION_KEY}\""
 
+#############################################################################################################################################################################################
+# Initialize Duplicati Wrapper Script Variables:
+DUPLICATI_INPUT_PARAMS=""
+DUPLICATI_ENV_VARS_GLOBAL=""
+DUPLICATI_ENV_VARS_LOCAL=""
 DUPLICATI_OPTS=""
-echo "DUPLICATI_OPTS: \"${DUPLICATI_OPTS}\""
-# DAEMON_OPTS="--webservice-port=8300"
 
 
 #############################################################################################################################################################################################
@@ -112,13 +115,12 @@ if [[ ( "${DUPLICATI_ENV_LOCAL}" != "" ) && ( -f "${DUPLICATI_ENV_LOCAL}" ) ]]; 
             continue
         fi
         echo "Parsed Environment Variable: \"${line}\""
-        # handle key=value pairs with missing value (e.g. --blalba)
         ENV_FILE_VAR_VALUE=""
         # Remove the export prefix if it exists
         if [[ "$(echo "${line}" | grep -e "^ *export ")" != "" ]]; then
-            # line="$(echo "${line}" | sed -e "s/^ *export //")"
             line="${line//export /}"
         fi
+        # handle key=value pairs with missing value (e.g. --blalba)
         if [[ "$(echo "${line}" | grep "=")" != "" ]]; then
             ENV_FILE_VAR_KEY=$(echo "${line}" | cut -d '=' -f 1)
             echo "ENV_FILE_VAR_KEY: ${ENV_FILE_VAR_KEY}"
@@ -136,15 +138,13 @@ if [[ ( "${DUPLICATI_ENV_LOCAL}" != "" ) && ( -f "${DUPLICATI_ENV_LOCAL}" ) ]]; 
                 echo "Environment Variable \"${ENV_FILE_VAR_KEY}\" is already defined"
             else
                 echo "Exporting Environment Variable ${ENV_FILE_VAR_KEY}=${ENV_FILE_VAR_VALUE}"
-                #export ${ENV_FILE_VAR_KEY}=$(echo "${ENV_FILE_VAR_VALUE}")
-                # export SETTINGS_ENCRYPTION_KEY="$(echo "${ENV_FILE_VAR_VALUE}")"
                 EXPORT_CMD="export ${ENV_FILE_VAR_KEY}=${ENV_FILE_VAR_VALUE}"
                 echo "EXPORT_CMD: ${EXPORT_CMD}"
                 eval "${EXPORT_CMD}"
                 echo "Environment Variable: $(env | grep "${ENV_FILE_VAR_KEY}")"
             fi
         else
-            # add the Duplicati server option to the local environment variables
+            # Add the Duplicati server option to the local environment variables
             echo "Duplicati Server Option \"${ENV_FILE_VAR_KEY}\" is not an environment variable"
             LOCAL_VAR_VALUE="${ENV_FILE_VAR_KEY}"
             if [[ "${ENV_FILE_VAR_VALUE}" != "" ]]; then
@@ -196,6 +196,11 @@ for PARAM in "${DUPLICATI_ENV_VARS_LOCAL[@]}"; do
     fi
 done
 
+# Add the default port to the Duplicati server command line options if it is not already set
+if [[ "$(echo "${DUPLICATI_OPTS}" | grep -- "${DUPLICATI_PORT_LABEL}")" == "" ]]; then
+    DUPLICATI_OPTS="${DUPLICATI_OPTS}${DUPLICATI_PORT_LABEL}=${DUPLICATI_PORT_DEFAULT} "
+fi
+
 
 #############################################################################################################################################################################################
 echo "Final Duplicati Server Command Line Options: \"${DUPLICATI_OPTS}\""
@@ -203,4 +208,3 @@ echo "Settings Encryption Key: $(env | grep "${DUPLICATI_ENCRYPTION_KEY_LABEL}")
 echo "Executing Duplicati Server: \"${DUPLICATI_SERVER} ${DUPLICATI_OPTS}\""
 
 exec "${DUPLICATI_SERVER}" "${DUPLICATI_OPTS}"
-
