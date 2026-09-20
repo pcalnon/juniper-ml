@@ -57,33 +57,37 @@
 #     WantedBy=multi-user.target
 #############################################################################################################################################################################################
 
+
+#############################################################################################################################################################################################
+# Define Global Script Constants:
+
+TRUE=0
+FALSE=1
+
+# DEBUG_MODE=${TRUE}
+DEBUG_MODE=${FALSE}
+
+
 #############################################################################################################################################################################################
 # Define Script Environment Variables:
+
 # DUPLICATI_SERVER="/usr/bin/duplicati-server"
-DUPLICATI_SERVER="/usr/lib/duplicati/duplicati-server"
-echo "DUPLICATI_SERVER: \"${DUPLICATI_SERVER}\""
-
-DUPLICATI_ENV_GLOBAL="/etc/default/duplicati"
-echo "DUPLICATI_ENV_GLOBAL: \"${DUPLICATI_ENV_GLOBAL}\""
-
-DUPLICATI_ENV_LOCAL="/home/duplicati/.config/Duplicati/.env"
-echo "DUPLICATI_ENV_LOCAL: \"${DUPLICATI_ENV_LOCAL}\""
+DUPLICATI_SERVER="/usr/lib/duplicati/duplicati-server";        [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_SERVER: \"${DUPLICATI_SERVER}\""
+DUPLICATI_ENV_GLOBAL="/etc/default/duplicati";                 [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_GLOBAL: \"${DUPLICATI_ENV_GLOBAL}\""
+DUPLICATI_ENV_LOCAL="/home/duplicati/.config/Duplicati/.env";  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_LOCAL: \"${DUPLICATI_ENV_LOCAL}\""
 
 
 #############################################################################################################################################################################################
 # Define Default Duplicati Server Options:
-DUPLICATI_PORT_LABEL="--webservice-port"
-echo "DUPLICATI_PORT_LABEL: \"${DUPLICATI_PORT_LABEL}\""
 
-DUPLICATI_PORT_DEFAULT="8300"
-echo "DUPLICATI_PORT_DEFAULT: \"${DUPLICATI_PORT_DEFAULT}\""
-
-DUPLICATI_ENCRYPTION_KEY_LABEL="SETTINGS_ENCRYPTION_KEY"
-echo "DUPLICATI_ENCRYPTION_KEY_LABEL: \"${DUPLICATI_ENCRYPTION_KEY_LABEL}\""
+DUPLICATI_PORT_LABEL="--webservice-port";                      [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_PORT_LABEL: \"${DUPLICATI_PORT_LABEL}\""
+DUPLICATI_PORT_DEFAULT="8300";                                 [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_PORT_DEFAULT: \"${DUPLICATI_PORT_DEFAULT}\""
+DUPLICATI_ENCRYPTION_KEY_LABEL="SETTINGS_ENCRYPTION_KEY";      [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENCRYPTION_KEY_LABEL: \"${DUPLICATI_ENCRYPTION_KEY_LABEL}\""
 
 
 #############################################################################################################################################################################################
 # Initialize Duplicati Wrapper Script Variables:
+
 DUPLICATI_INPUT_PARAMS=""
 DUPLICATI_ENV_VARS_GLOBAL=""
 DUPLICATI_ENV_VARS_LOCAL=""
@@ -92,66 +96,53 @@ DUPLICATI_OPTS=""
 
 #############################################################################################################################################################################################
 # Parse and validate Script Input Parameters:
-echo "Wrapper Script Input Parameters: \"${*}\""
+
+[[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Wrapper Script Input Parameters: \"${*}\""
 if [[ "${*}" != "" ]]; then
-    DUPLICATI_INPUT_PARAMS=("${*}")
-    echo "DUPLICATI_INPUT_PARAMS: \"${DUPLICATI_INPUT_PARAMS[*]}\""
+    DUPLICATI_INPUT_PARAMS=("${*}");               [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_INPUT_PARAMS: \"${DUPLICATI_INPUT_PARAMS[*]}\""
 fi
-
 if [[ "${DAEMON_OPTS}" != "" ]]; then
-    DUPLICATI_ENV_VARS_GLOBAL=("${DAEMON_OPTS}")
-    echo "DUPLICATI_ENV_VARS_GLOBAL: \"${DUPLICATI_ENV_VARS_GLOBAL[*]}\""
+    DUPLICATI_ENV_VARS_GLOBAL=("${DAEMON_OPTS}");  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_VARS_GLOBAL: \"${DUPLICATI_ENV_VARS_GLOBAL[*]}\""
 fi
-
-# Parse the Duplicati environment file
-echo "Parsing Duplicati environment file: \"${DUPLICATI_ENV_LOCAL}\""
+[[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Parsing Duplicati environment file: \"${DUPLICATI_ENV_LOCAL}\""
 DUPLICATI_ENV_VARS_LOCAL=()
-if [[ ( "${DUPLICATI_ENV_LOCAL}" != "" ) && ( -f "${DUPLICATI_ENV_LOCAL}" ) ]]; then
-    echo "Duplicati environment file found: \"${DUPLICATI_ENV_LOCAL}\""
-    while read -r line; do
-        echo "LINE: \"${line}\""
-        # Skip comments and empty lines
-        if [[ (${line} == "" ) || ( $(echo "${line}" | grep -e "^#") != "" ) || ( $(echo "${line}" | grep -e "^ *$") != "" ) ]]; then
+if [[ ( "${DUPLICATI_ENV_LOCAL}" != "" ) && ( -f "${DUPLICATI_ENV_LOCAL}" ) ]]; then  # Check if the Duplicati environment file exists
+    [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Duplicati environment file found: \"${DUPLICATI_ENV_LOCAL}\""
+    while read -r line; do  # Parse the Duplicati environment file
+        [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "LINE: \"${line}\""
+        if [[ (${line} == "" ) || ( $(echo "${line}" | grep -e "^#") != "" ) || ( $(echo "${line}" | grep -e "^ *$") != "" ) ]]; then  # Skip comments and empty lines
             continue
         fi
-        echo "Parsed Environment Variable: \"${line}\""
+        [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Parsed Environment Variable: \"${line}\""
         ENV_FILE_VAR_VALUE=""
-        # Remove the export prefix if it exists
-        if [[ "$(echo "${line}" | grep -e "^ *export ")" != "" ]]; then
+        if [[ "$(echo "${line}" | grep -e "^ *export ")" != "" ]]; then  # Remove the export prefix if it exists
             line="${line//export /}"
         fi
-        # handle key=value pairs with missing value (e.g. --blalba)
-        if [[ "$(echo "${line}" | grep "=")" != "" ]]; then
+        if [[ "$(echo "${line}" | grep "=")" != "" ]]; then  # handle key=value pairs with missing value (e.g. --blalba)
             ENV_FILE_VAR_KEY=$(echo "${line}" | cut -d '=' -f 1)
-            echo "ENV_FILE_VAR_KEY: ${ENV_FILE_VAR_KEY}"
+            [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "ENV_FILE_VAR_KEY: ${ENV_FILE_VAR_KEY}"
             ENV_FILE_VAR_VALUE=$(echo "${line}" | cut -d '=' -f 2)
-            echo "ENV_FILE_VAR_VALUE: ${ENV_FILE_VAR_VALUE}"
+            [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "ENV_FILE_VAR_VALUE: ${ENV_FILE_VAR_VALUE}"
         else
             ENV_FILE_VAR_KEY="${line}"
-            echo "ENV_FILE_VAR_KEY: \"${ENV_FILE_VAR_KEY}\""
+            [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "ENV_FILE_VAR_KEY: \"${ENV_FILE_VAR_KEY}\""
         fi
-        # Check if the duplicati env file setting is an environment variable or a Duplicati server option
-        if [[ "$(echo "${ENV_FILE_VAR_KEY}" | grep "^-")" == "" ]]; then
-            # check if the environment variable is already defined
-            DEFINED_ENV_VAR="$(env | grep "${ENV_FILE_VAR_KEY}")"
-            if [[ "${DEFINED_ENV_VAR}" != "" ]]; then
-                echo "Environment Variable \"${ENV_FILE_VAR_KEY}\" is already defined"
+        if [[ "$(echo "${ENV_FILE_VAR_KEY}" | grep "^-")" == "" ]]; then  # Check if the duplicati env file setting is an environment variable or a Duplicati server option
+            DEFINED_ENV_VAR="$(env | grep "${ENV_FILE_VAR_KEY}")"         #  Check if the environment variable is already defined
+            if [[ "${DEFINED_ENV_VAR}" == "" ]]; then
+                [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Exporting Environment Variable ${ENV_FILE_VAR_KEY}=${ENV_FILE_VAR_VALUE}"
+                EXPORT_CMD="export ${ENV_FILE_VAR_KEY}=${ENV_FILE_VAR_VALUE}";  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "EXPORT_CMD: ${EXPORT_CMD}"
+                eval "${EXPORT_CMD}";  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Environment Variable: $(env | grep "${ENV_FILE_VAR_KEY}")"
             else
-                echo "Exporting Environment Variable ${ENV_FILE_VAR_KEY}=${ENV_FILE_VAR_VALUE}"
-                EXPORT_CMD="export ${ENV_FILE_VAR_KEY}=${ENV_FILE_VAR_VALUE}"
-                echo "EXPORT_CMD: ${EXPORT_CMD}"
-                eval "${EXPORT_CMD}"
-                echo "Environment Variable: $(env | grep "${ENV_FILE_VAR_KEY}")"
+                [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Environment Variable \"${ENV_FILE_VAR_KEY}\" is already defined"
             fi
-        else
-            # Add the Duplicati server option to the local environment variables
-            echo "Duplicati Server Option \"${ENV_FILE_VAR_KEY}\" is not an environment variable"
+        else  # Add the Duplicati server option to the local environment variables
+            [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Duplicati Server Option \"${ENV_FILE_VAR_KEY}\" is not an environment variable"
             LOCAL_VAR_VALUE="${ENV_FILE_VAR_KEY}"
             if [[ "${ENV_FILE_VAR_VALUE}" != "" ]]; then
                 LOCAL_VAR_VALUE="${LOCAL_VAR_VALUE}=${ENV_FILE_VAR_VALUE}"
             fi
-            DUPLICATI_ENV_VARS_LOCAL+=("${LOCAL_VAR_VALUE}")
-            echo "DUPLICATI_ENV_VARS_LOCAL: \"${DUPLICATI_ENV_VARS_LOCAL[*]}\""
+            DUPLICATI_ENV_VARS_LOCAL+=("${LOCAL_VAR_VALUE}");  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_VARS_LOCAL: \"${DUPLICATI_ENV_VARS_LOCAL[*]}\""
         fi
     done < "${DUPLICATI_ENV_LOCAL}"
 fi
@@ -160,9 +151,8 @@ fi
 #############################################################################################################################################################################################
 # Build Duplicati Server Command Line Options:
 
-# Add wrapper script input parameters to the Duplicati server command line options
-for PARAM in "${DUPLICATI_INPUT_PARAMS[@]}"; do
-    echo "Wrapper Script Input Parameter: \"${PARAM}\""
+for PARAM in "${DUPLICATI_INPUT_PARAMS[@]}"; do   # Add wrapper script input parameters to the Duplicati server command line options
+    [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Wrapper Script Input Parameter: \"${PARAM}\""
     DUPLICATI_OPTS_VAR_KEY="${PARAM}"
     if [[ "$(echo "${DUPLICATI_OPTS_VAR_KEY}" | grep "=")" != "" ]]; then
         DUPLICATI_OPTS_VAR_KEY=$(echo "${DUPLICATI_OPTS_VAR_KEY}" | cut -d '=' -f 1)
@@ -172,9 +162,8 @@ for PARAM in "${DUPLICATI_INPUT_PARAMS[@]}"; do
     fi
 done
 
-# Add global environment variables, ${DAEMON_OPTS}, to the Duplicati server command line options
-for PARAM in "${DUPLICATI_ENV_VARS_GLOBAL[@]}"; do
-    echo "Global Environment Variable: \"${PARAM}\""
+for PARAM in "${DUPLICATI_ENV_VARS_GLOBAL[@]}"; do  # Add global environment variables, ${DAEMON_OPTS}, to the Duplicati server command line options
+    [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Global Environment Variable: \"${PARAM}\""
     DUPLICATI_OPTS_VAR_KEY="${PARAM}"
     if [[ "$(echo "${DUPLICATI_OPTS_VAR_KEY}" | grep "=")" != "" ]]; then
         DUPLICATI_OPTS_VAR_KEY=$(echo "${DUPLICATI_OPTS_VAR_KEY}" | cut -d '=' -f 1)
@@ -184,9 +173,8 @@ for PARAM in "${DUPLICATI_ENV_VARS_GLOBAL[@]}"; do
     fi
 done
 
-# Add local environment variables, from .env file, to the Duplicati server command line options
-for PARAM in "${DUPLICATI_ENV_VARS_LOCAL[@]}"; do
-    echo "Local Environment Variable: \"${PARAM}\""
+for PARAM in "${DUPLICATI_ENV_VARS_LOCAL[@]}"; do  # Add local environment variables, from .env file, to the Duplicati server command line options
+    [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Local Environment Variable: \"${PARAM}\""
     DUPLICATI_OPTS_VAR_KEY="${PARAM}"
     if [[ "$(echo "${DUPLICATI_OPTS_VAR_KEY}" | grep "=")" != "" ]]; then
         DUPLICATI_OPTS_VAR_KEY=$(echo "${DUPLICATI_OPTS_VAR_KEY}" | cut -d '=' -f 1)
@@ -196,15 +184,16 @@ for PARAM in "${DUPLICATI_ENV_VARS_LOCAL[@]}"; do
     fi
 done
 
-# Add the default port to the Duplicati server command line options if it is not already set
-if [[ "$(echo "${DUPLICATI_OPTS}" | grep -- "${DUPLICATI_PORT_LABEL}")" == "" ]]; then
+if [[ "$(echo "${DUPLICATI_OPTS}" | grep -- "${DUPLICATI_PORT_LABEL}")" == "" ]]; then  # Add the default port to the Duplicati server command line options if it is not already set
     DUPLICATI_OPTS="${DUPLICATI_OPTS}${DUPLICATI_PORT_LABEL}=${DUPLICATI_PORT_DEFAULT} "
 fi
 
 
 #############################################################################################################################################################################################
-echo "Final Duplicati Server Command Line Options: \"${DUPLICATI_OPTS}\""
-echo "Settings Encryption Key: $(env | grep "${DUPLICATI_ENCRYPTION_KEY_LABEL}")"
+# Execute the Duplicati Server:
+
+[[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Final Duplicati Server Command Line Options: \"${DUPLICATI_OPTS}\""
+[[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Settings Encryption Key: $(env | grep "${DUPLICATI_ENCRYPTION_KEY_LABEL}")"
 echo "Executing Duplicati Server: \"${DUPLICATI_SERVER} ${DUPLICATI_OPTS}\""
 
 exec "${DUPLICATI_SERVER}" "${DUPLICATI_OPTS}"
