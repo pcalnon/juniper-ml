@@ -124,7 +124,10 @@ def parse_unreleased(changelog_text: str) -> "OrderedDict[str, list]":
     """Parse the ``## [Unreleased]`` block into ``{Category: [bullets]}`` preserving the
     template's Keep-a-Changelog order and the original category casing (``Added`` / ``Fixed``).
 
-    Categories with no bullets are omitted (matching ``detect.read_changelog_unreleased``)."""
+    Categories with no bullets are omitted (matching ``detect.read_changelog_unreleased``).
+
+    A repeated category heading MERGES rather than replaces -- see
+    ``ceremony.changelog_version_section`` for why that shape occurs and what assigning cost."""
     result: "OrderedDict[str, list]" = OrderedDict()
     if not changelog_text:
         return result
@@ -146,7 +149,7 @@ def parse_unreleased(changelog_text: str) -> "OrderedDict[str, list]":
             if current_cat is not None:
                 bullets = _split_bullets(body)
                 if bullets:
-                    result[current_cat] = bullets
+                    result.setdefault(current_cat, []).extend(bullets)
             current_cat = hm.group(1)
             body = []
             continue
@@ -155,7 +158,7 @@ def parse_unreleased(changelog_text: str) -> "OrderedDict[str, list]":
     if current_cat is not None:
         bullets = _split_bullets(body)
         if bullets:
-            result[current_cat] = bullets
+            result.setdefault(current_cat, []).extend(bullets)
     return result
 
 

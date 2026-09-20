@@ -61,6 +61,7 @@ sys.path.insert(0, str(UTIL_DIR))
 
 import ceremony as ce  # noqa: E402
 import detect as d  # noqa: E402
+import notes_render  # noqa: E402
 
 REAL_TEMPLATE = REPO_ROOT / "notes" / "templates" / "TEMPLATE_RELEASE_NOTES.md"
 
@@ -225,6 +226,72 @@ class PureHelperTest(unittest.TestCase):
         self.assertEqual(sections["Fixed"], ["A real bug."])
         # a version with no section -> empty (drives the HALT).
         self.assertEqual(ce.changelog_version_section(CHANGELOG_050, "9.9.9"), {})
+
+    def test_changelog_version_section_merges_a_repeated_category(self):
+        """A repeated ``### Fixed`` MERGES; it used to overwrite, and the last block won.
+
+        This is an ordinary 3-way merge result, not a malformed file: a version-move PR
+        (``[Unreleased] -> [X.Y.Z]``) and a PR adding an ``[Unreleased]`` entry both edit the
+        top of the file, git resolves them cleanly, and the section gets the heading twice. It
+        renders correctly on GitHub, so nothing flags it -- and the ceremony would publish a
+        Release body, which cannot be re-cut, carrying only the final block.
+
+        Measured on juniper-canopy 0.8.1: three Fixed bullets rendered as one, which would have
+        dropped the packaging fix (canopy#634) and the mount-500 fix (canopy#633).
+        """
+        doubled = textwrap.dedent("""\
+            # Changelog
+
+            ## [Unreleased]
+
+            ## [0.5.0] - 2026-07-17
+
+            ### Added
+
+            - A new capability.
+
+            ### Fixed
+
+            - The first bug.
+            - The second bug.
+
+            ### Fixed
+
+            - The bug a concurrent PR added.
+
+            ## [0.4.0] - 2026-06-01
+            """)
+        sections = ce.changelog_version_section(doubled, "0.5.0")
+        # One key, every bullet, in first-seen order.
+        self.assertEqual(list(sections.keys()), ["Added", "Fixed"])
+        self.assertEqual(
+            sections["Fixed"],
+            ["The first bug.", "The second bug.", "The bug a concurrent PR added."],
+        )
+        # And the next version's section is still the boundary.
+        self.assertEqual(sections["Added"], ["A new capability."])
+
+    def test_parse_unreleased_merges_a_repeated_category(self):
+        """``notes_render.parse_unreleased`` carries the same rule -- the draft path is
+        exposed to the identical merge shape as the ceremony's released path."""
+        doubled = textwrap.dedent("""\
+            # Changelog
+
+            ## [Unreleased]
+
+            ### Fixed
+
+            - The first bug.
+
+            ### Fixed
+
+            - The bug a concurrent PR added.
+
+            ## [0.4.0] - 2026-06-01
+            """)
+        sections = notes_render.parse_unreleased(doubled)
+        self.assertEqual(list(sections.keys()), ["Fixed"])
+        self.assertEqual(sections["Fixed"], ["The first bug.", "The bug a concurrent PR added."])
 
     def test_writable_repo_skip_reason(self):
         self.assertIsNone(ce.writable_repo_skip_reason("juniper-ml"))
