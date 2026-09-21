@@ -30,11 +30,11 @@ Published components — `juniper-canopy`, `juniper-cascor`, `juniper-data`, `ju
 ## Ecosystem Compatibility
 
 This meta-package is part of the [Juniper](https://github.com/pcalnon/juniper-ml) ecosystem.
-The pyproject pins matching `juniper-ml` 0.8.0:
+The pyproject pins matching `juniper-ml` 0.9.0:
 
 | Package                     | Pin              |
 |-----------------------------|------------------|
-| `juniper-canopy`            | `>=0.7.0`        |
+| `juniper-canopy`            | `>=0.8.1`        |
 | `juniper-cascor`            | `>=0.11.0`       |
 | `juniper-cascor-client`     | `>=0.8.0`        |
 | `juniper-cascor-worker`     | `>=0.4.0`        |
@@ -89,7 +89,7 @@ juniper-ml ──hosts independent package workflows──> juniper-observabilit
 |--------------|--------------------------------------------------------------------------------------------------|
 | `clients`    | `juniper-data-client>=0.5.0`, `juniper-cascor-client>=0.8.0`                                     |
 | `worker`     | `juniper-cascor-worker>=0.4.0`                                                                   |
-| `servers`    | `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`                          |
+| `servers`    | `juniper-canopy>=0.8.1`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`                          |
 | `tools`      | `juniper-ci-tools>=0.1.0`, `juniper-config-tools>=0.1.0,<0.2.0`, `juniper-doc-tools>=0.1.0,<0.2.0`, `juniper-model-core>=0.1.0,<0.4.0`, `juniper-observability>=0.2.0`, `juniper-service-core>=0.2.0,<0.8.0` |
 | `doc-tools`  | `juniper-doc-tools>=0.1.0,<0.2.0` (back-compat alias for the doc-tools entry in `tools`)         |
 | `recurrence` | `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`, `juniper-recurrence-client>=0.3.0,<0.4.0`                                                                                      |
