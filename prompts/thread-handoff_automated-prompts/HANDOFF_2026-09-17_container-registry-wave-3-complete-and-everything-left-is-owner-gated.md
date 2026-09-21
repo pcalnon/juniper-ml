@@ -9,14 +9,18 @@
 > - **Wave 3's status holds.** Every status claim in the table there was re-probed against the live
 >   ecosystem and survived. Three items moved; all are corrected **in place** below, so they travel
 >   with the pasted prompt.
-> - **Actionable work remains and is not deferrable.** Five repos owe build-context hardening, and
->   **canopy shipped `v0.8.1` on 2026-09-18 without it**. **Nine** open PRs touch `publish-image.yml`.
+> - **The build-context hardening is SHIPPED — all five image repos, merged 2026-09-21.**
+>   cascor#661 `7b108fe8`, canopy#642 `ef3ad591`, data#408 `963092c7`, worker#191 `52bc365d`,
+>   recurrence#176 `9a8085a1`. Each carries all three layers. It was urgent, not deferrable:
+>   **canopy had already shipped `v0.8.1` on 2026-09-18 from an unhardened context.**
 > - **The *"Check the other repos"* instruction named TWO defect classes; BOTH are now swept.**
->   Class 1 (secrets in the context): the class does not repeat, but the root-anchoring gap it
->   exposed is real and **juniper-cascor#661** / **juniper-canopy#642** are open against it.
+>   Class 1 (secrets in the context): the class does not repeat, but it exposed a real
+>   root-anchoring gap — `cascor_snapshots/` never matched `src/cascor_snapshots/`, 766 files all
+>   carrying a plaintext authkey, under a shipping `COPY src/`. Fixed.
 >   Class 2 (*"an image can build, start and still be useless"*): **does not repeat** — all five
 >   published images import and all four HTTP services serve 200, measured by running them. One
->   defect found: `juniper-cascor-worker:0.6.0` reports `__version__ == "0.4.0"`.
+>   defect found and fixed in **worker#192**: `juniper-cascor-worker:0.6.0` reported
+>   `__version__ == "0.4.0"`.
 >   *An earlier version of this banner said class 2 "was never swept and appears to repeat". The
 >   first half was true when written; the second was a prediction, and running the images refuted
 >   it.*
@@ -535,21 +539,39 @@ closures die with this worktree; `git worktree remove` deletes untracked files s
 - `util/ad-hoc/2026-09-21_harden_dockerignore.py` — **new**, generates the `.dockerignore` patches
   and refuses to auto-twin runtime-writable directory names.
 
-**PRs opened elsewhere — all five image repos, none merged at time of writing:**
+**PRs elsewhere — all five image repos, ALL MERGED 2026-09-21.** Each carries all three
+layers: the `.dockerignore` fix, `util/check_image_no_secrets.py`, and that checker wired into
+both the smoke and the publish steps of `publish-image.yml`.
 
-| PR | what |
-| --- | --- |
-| juniper-cascor**#661** | `**/cascor_snapshots/` — the 766-file root-anchoring gap, plus the credentials block; fix and negative control both proven by real `docker build` |
-| juniper-canopy**#642** | credentials block; deliberately does NOT twin `logs/`, because `src/logs` is a symlink the published image carries |
-| juniper-data**#408** | credentials block |
-| juniper-cascor-worker**#191** | credentials block |
-| juniper-recurrence**#176** | credentials block, at `juniper-recurrence/.dockerignore` (the context root, not the repo root) |
+| PR | merge commit | what |
+| --- | --- | --- |
+| juniper-cascor**#661** | `7b108fe8` | `**/cascor_snapshots/` — the 766-file root-anchoring gap, plus the credentials block; fix and negative control both proven by real `docker build`. Rebased onto #660, which a concurrent session merged mid-flight having reached the same root-anchoring conclusion independently |
+| juniper-canopy**#642** | `ef3ad591` | credentials block; deliberately does **not** twin `logs/`, because `src/logs` is a symlink the published image carries pointing at `/app/logs` |
+| juniper-data**#408** | `963092c7` | credentials block; also corrects #405's "22 test files" to the measured 87 `test_*.py` / 95 `.py` / 190 total |
+| juniper-cascor-worker**#191** | `52bc365d` | credentials block |
+| juniper-recurrence**#176** | `9a8085a1` | credentials block, at the **repo-root** `util/` — an earlier commit put the checker under the nested app dir, where `publish-image.yml`'s `run:` steps would never have found it |
 
-**Still owed on this thread** — the third layer. Only juniper-deploy's `publish-image.yml`
-asserts post-build that no `secrets`/`.git`/`.env` reached the image; the other five have no such
-step, and the class-2 sweep should be wired into the release path for the same reason (today it
-runs nowhere). Also unfixed: the worker's `__version__` 0.4.0/0.6.0 mismatch, and the plan's §5
-Wave 2 rows.
+**The third layer is now shipped, not owed.** `check_image_no_secrets.py` walks `/app` *and* every
+installed `juniper*` package, because `/app` holds only a runtime directory on three of the five
+images and a top-level listing would pass **vacuously**; it exits 2 if it finds no root or walks
+zero files. Negative controls, all executed: a planted `secrets/` dir, `.env` and `.pem` each exit
+1; a rootless image exits 2; all five published images exit 0, scanning 56–258 files each.
+
+**The class-2 CI gap is closed too.** The import smoke was gated
+`if: github.event_name != 'release' && !inputs.push`, so the path that SHIPS asserted only the
+torch posture and never that the application loads. All five now assert the import on the publish
+path.
+
+**Still owed:**
+
+- **juniper-cascor-worker#192** (open) — `__version__` has read `0.4.0` since before 0.5.0 while
+  the wheel shipped `0.6.0`, and it is in `__all__`. Fixed by deriving from installed metadata
+  with the literal demoted to a source-checkout fallback, matching `juniper_data` and
+  `juniper_canopy`; bumping the literal alone would recur at 0.7.0. Verified inside the published
+  image.
+- The plan's §5 **Wave 2 rows**, still marked `pending` while its own header says all five images
+  are published.
+- **MEMORY.md** compaction, 23.7 KB against a 20 KB target.
 
 **Correction to § Checkpoint above**, which is the 2026-09-17 session's list: it credits the plan
 document only to juniper-ml#1943 and #1951. juniper-ml**#1957** also modified it (+28 lines) and
