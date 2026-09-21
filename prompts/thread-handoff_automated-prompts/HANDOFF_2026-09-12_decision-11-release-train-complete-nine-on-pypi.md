@@ -191,7 +191,7 @@ but four untracked decision-11 defects have surfaced, one of them a live consume
 | item | verdict 2026-09-21 |
 | --- | --- |
 | Nine packages on PyPI at §1's versions | **HOLDS** — all nine HTTP 200 |
-| S-1 hf/kaggle stores two-way | **UNCHANGED** — `hf_store.py:110` / `kaggle_store.py:212` still cut two-way; `_full` written at `:147` / `:244`; no `X_val` |
+| S-1 hf/kaggle stores two-way | **UNCHANGED in the repo — but §3's row UNDERSTATES it. See N-5.** |
 | Decision 12 `partition_provenance` | **UNCHANGED** — zero hits in any non-markdown file ecosystem-wide; 7 `.md` files |
 | Plan §9 S-7 → juniper-canopy#559 | **STILL OPEN**, untouched since 2026-09-01 |
 | `juniper-model-core` floor `>=0.1.0,<0.4.0` | **UNCHANGED**, still deliberate |
@@ -284,24 +284,93 @@ version in its own lead-in — with five stale pins and five packages missing. `
 says "matching `juniper-ml` 0.6.0" at line 82 and lists the correct `[servers]` floors at line
 136, in one document.
 
-### 8.5 Consensus record (procedure §7)
+**N-5 — S-1 is not just a split shape: the PUBLISHED wheel ships it, stamps it BELOW the floor,
+persists it, and a shipped test PINS it.** §3's S-1 row records the two-way cut and calls the
+product decision open. Four facts it does not record, all read from the published
+`juniper_data-0.14.0-py3-none-any.whl`, not the checkout:
+
+1. `juniper_data/storage/hf_store.py:121` stamps `generator_version="1.0.0"` — **below decision
+   11's 3.0.0 floor**, on a path `pkgutil.iter_modules` never reaches because it is not under
+   `juniper_data.generators`, so `test_val_emission_guards.py` cannot see it.
+2. `:142-149` emits `X_train`/`y_train`/`X_test`/`y_test`/`X_full`/`y_full` — the retired family,
+   and **no `X_val`**.
+3. `:151` `self._cache_store.save(...)` **persists** those keys into an artifact.
+4. The wheel's own `juniper_data/tests/unit/test_hf_store.py:149` is `assert "X_full" in arrays`,
+   and it **passes** — the defect is pinned by a green test, so any fix breaks it. (Fixture
+   encodes the defect.)
+
+**Bounding it, because two reviewers overstated this.** `_cache_store` defaults to a per-instance
+`InMemoryDatasetStore` (`:50`), **not** the shared on-disk cache the generators serve from — a
+caller must inject that. And the only references to `get_hf_store` / `get_kaggle_store` anywhere
+in the wheel are export plumbing in `storage/__init__.py`: **no route and no service path calls
+them**. So this is a non-conforming *public API surface*, reachable by an external caller, not a
+live production emission. The `1.0.0` stamp also means the `dataset_id` hash keeps these from
+ever being served against a 3.0.0-contract request — the floor protects by accident.
+
+**N-6 (minor, cascor)** — `juniper_cascor.__version__` is the string `"0.6.0"` while the
+distribution is **0.11.0**: a hardcoded literal drifting from `pyproject.toml`. canopy fixed this
+class by reading `importlib.metadata`.
+
+### 8.5 §7 L-1 is now substantially CLOSED
+
+§7 conceded "the behavioural verification covers two packages, not nine". A Lane A pass entering
+from the published wheels closed most of that gap:
+`util/ad-hoc/2026-09-21_decision11_wheel_contract_probe.py` (new) runs **37 import-guarded checks**
+against wheels installed into clean venvs — **19 PASS / 0 FAIL** in a
+`juniper-ml[clients,tools,recurrence]==0.8.0` venv and **24 PASS / 0 FAIL** in a servers venv
+(the split is required: `[servers]` is not in the meta-package install). Skips are labelled and
+counted, never silently passed. The wheel's own shipped suites were also run: 155 passed across
+`test_val_emission_guards` / `test_partition_sizing` / `test_meta_dispatch` / `test_split` /
+`test_normaliser_fit_scope`, plus 25 in `test_hf_store`.
+
+**Now verified BEHAVIOURALLY (7 of 9)**: juniper-ml, juniper-model-core, juniper-data,
+juniper-data-client, juniper-cascor, juniper-recurrence, juniper-recurrence-model. Highlights:
+cascor's `_resolve_validation_split` exercised on all three §6.1 rules — rule 3 refuses **even
+with `JUNIPER_CASCOR_ALLOW_MISSING_VALIDATION_SPLIT=true`**; `data_provider` tolerates a legacy
+`_full`, requires it never, and forbids it never; juniper-data's full `POST /v1/datasets` →
+`GET /artifact` roundtrip through the real ASGI app served exactly six keys at
+`generator_version=3.0.0`, validated by data-client 0.5.0.
+**Still NOT behaviourally verified (2 of 9)**: `juniper-canopy` **0.7.0** — its wheel is
+unimportable (N-3), so only inspection was possible, and 0.8.1 was exercised instead; and
+`juniper-recurrence-client` 0.3.0 — import and signature only, since a request needs a live
+service. Also unverified: the **producer** side of the equities entity-major exception (those
+generators need network / raise `InputTooLargeError` at default params), so only the consumer
+side (`derive_full_split`) is proven.
+
+### 8.6 Consensus record (procedure §7)
 
 `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
 **Lanes**: 2 Lane A (live-system re-probe; document-chain omission hunt) + 1 Lane B
 (adversarial conclusion attack) + 1 Lane A from a distinct entry point (published wheels).
-**Iterations**: 1 complete; §8.3's three corrections all came from round 1 and each was
+**Iterations**: 1 complete (4 lanes, all reported); §8.3 and the dissent list below are its output, each
 re-derived by the reconciler before being written here.
-**Convergence**: N-3 was found independently by the reconciler and by the omission hunt from
-different entry points; N-2 likewise.
-**Dissent not resolved in the reporters' favour, recorded per §5.3**: the omission hunt called
-`test_val_emission_guards.py`'s `>= 3` assert "subsumed and dead" and its allow-list a defect —
-re-derivation shows the floor assert fires first with its own message, and the allow-list is
-deliberate (the test's own text: "a generator that moves on its own needs its reason recorded
-here"). It also attributed bench's invisibility to `pytest.importorskip`; the real cause is the
-job-level path filter, since the `[bench]` extra does install juniper-data. Symptom right,
-mechanism wrong — the documented pattern.
-**What this evidence cannot support**: N-2's severity rests on nothing running *now*; it says
-nothing about artifacts minted while a 4.0.0 deployment was live. N-1 was proven for
-`irregular_sine` end-to-end and for the other six by shared call site, not by running each. No
-claim here re-measures the decision-11 contract itself — §7's limits still stand, and §7 L-1
-("two packages verified behaviourally, not nine") remains open.
+**Convergence — the signal a finding is real, per §2**: **N-3** was reached independently three
+times, from three entry points (reconciler via wheel download; omission hunt via the doc chain;
+wheel lane via `import backend.service_backend` failing). **N-2** twice. **N-5** twice (omission
+hunt from the enforcement surface, wheel lane from executing the store).
+**Dissent not resolved in the reporters' favour, recorded per §5.3** — every one re-derived by
+the reconciler before being written or rejected:
+
+- The omission hunt called `test_val_emission_guards.py`'s `>= 3` assert "subsumed and dead" and
+  its allow-list a defect. **Rejected**: the floor assert fires first with its own message, and
+  the allow-list is deliberate — the test's own text is "a generator that moves on its own needs
+  its reason recorded here". The parent `AGENTS.md` describes both halves accurately.
+- The same lane attributed N-1's invisibility to `pytest.importorskip`. **Corrected**: the
+  `[bench]` extra *does* install juniper-data, so it would not skip; the real cause is the
+  job-level path filter. Symptom right, mechanism wrong — the documented pattern.
+- Both the omission hunt and the wheel lane placed N-5's writes in "the same cache the generators
+  serve from". **Bounded**: `_cache_store` defaults to a per-instance `InMemoryDatasetStore`, and
+  no route calls these stores at all.
+- The adversarial lane cited a live `pytest` process in `JuniperData` as evidence another session
+  was mid-run. **It was this session's own** `test_val_emission_guards.py` run. Its conclusion
+  stands on its other grounds; that evidence does not support it.
+- The reconciler's own first `NPZ_SPLITS` probe read the top-level package namespace, where the
+  symbol is absent **at 0.5.0 too** — non-discriminating. Re-probed against `constants`.
+
+**What this evidence cannot support**: N-2's severity rests on nothing running *now* — it says
+nothing about artifacts minted while a 4.0.0 deployment was live. N-1 was proven end-to-end for
+`irregular_sine` and for the other six by shared call site, not by running each. The **producer**
+side of the equities entity-major exception is still unverified (network / `InputTooLargeError`),
+so only `derive_full_split`'s consumer side is proven. `juniper-canopy` 0.7.0 and
+`juniper-recurrence-client` 0.3.0 remain un-exercised (§8.5). Nothing here re-measures the
+decision-11 contract itself; §7's L-2 and L-3 stand unchanged.
