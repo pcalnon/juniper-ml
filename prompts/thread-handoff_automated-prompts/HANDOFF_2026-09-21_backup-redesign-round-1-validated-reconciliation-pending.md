@@ -44,7 +44,7 @@ as the last restore point, the six validator reports.
 | The 09-18 key | **Unrecorded anywhere the design looked.** The committed 36-char literal (11 shell-mangling variants) and the backup passphrase are excluded by `util/ad-hoc/2026-09-21_duplicati_settings_key_hash_probe.py` on copies of the snapshot and the pcalnon `.backup` (B1 finding 1: content hashes verify 4/4 and 6/6 on the fields the probe selects). Last untested places: root's shell history and editor backups of the unit for 09-18 20:42–21:03 |
 | Key-hash cross-check (this handoff's Lane A) | 9/9 and 11/11 `enc-v1:` values verify on the snapshot and the `.backup`; one key hash per database, and three different hashes across snapshot, `.backup` and the live 0777 database — the live one is under today's `.env` key (= the backup passphrase), so the passphrase is excluded without any candidate test |
 | Watchdog | `yamaguchi-watchdog.timer` (user, 12:00) alerts `UNREACHABLE` 09-19/09-20 and `login failed (401)` 09-21 02:52 and 12:00 |
-| Design PR | To be merged as PR_NUMBER_PLACEHOLDER (the number is filled in by a fixup commit on the PR branch; the owner approved the merge in-session: "handoff should be validated by consensus, archived, merged, and PR'd"). Until that merge the design, the three record files, this handoff and the six `util/ad-hoc/2026-09-21_*.py` instruments exist only on the never-pushed worktree branch `worktree-atomic-sauteeing-truffle`; §3's first checks assume the merge has happened |
+| Design PR | To be merged as #1989 (the number is filled in by a fixup commit on the PR branch; the owner approved the merge in-session: "handoff should be validated by consensus, archived, merged, and PR'd"). Until that merge the design, the three record files, this handoff and the six `util/ad-hoc/2026-09-21_*.py` instruments exist only on the never-pushed worktree branch `worktree-atomic-sauteeing-truffle`; §3's first checks assume the merge has happened |
 | Root cause | **The three legs of §5 SURVIVED all six lanes** (Leg A wrong source, Leg B aborted per-job Recreate stub with local schema 19, Leg C real DB encrypted 09-18 between 21:03:27 and 21:08:06 under a key no later start reproduced). What Lane B1 rewrites is around them: §5.3's actor (unidentified; F5), §5.4's discriminator (the port-8200 test; F6), §5.6 row C's refuter (F6) and the 21:03:34 folder-mtime marker (it is the `-wal`/`-shm` creation; F7) |
 
 ---
@@ -321,7 +321,7 @@ checkout carrying the branch.
 Branch `docs/backup-infrastructure-integrated-design` will be opened by GitHub-signed API commit
 (`util/open_signed_pr.py`) from `origin/main` and, with the owner's in-session approval of
 2026-09-21 ("handoff should be validated by consensus, archived, merged, and PR'd"), merged as
-PR_NUMBER_PLACEHOLDER. Derive both ends yourself: `git rev-parse --short origin/main`;
+#1989. Derive both ends yourself: `git rev-parse --short origin/main`;
 `gh pr view <N> --json state,mergedAt,mergeCommit`; `gh pr list --state merged --search 'head:docs/backup-infrastructure-integrated-design'` (this repo merges several PRs a day; `--limit 5` will not find it).
 
 **Changed by that PR** (all new): `notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md`,
