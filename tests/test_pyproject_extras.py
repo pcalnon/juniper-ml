@@ -17,6 +17,36 @@ docs/QUICK_START.md / docs/REFERENCE.md) to the same pin strings — the
 drift class that left README / QUICK_START ``tools`` ceilings stale while
 pyproject moved (juniper-ml#905 follow-up), and that forces Dependabot-only
 pin bumps to fail until a human co-updates both the contract and the docs.
+
+Which pins carry a ``<`` ceiling, and why (APD-ML-001)
+------------------------------------------------------
+This test asserts the pin strings but says nothing about their *shape*, so the
+rule they follow is recorded here and beside the pins themselves in
+``pyproject.toml``. Every first-party pin is pre-1.0, so ``>=X.Y.0`` alone
+admits the next breaking minor; the ceiling is applied selectively:
+
+* **Ceiling** — shared libraries a consumer imports and must migrate to:
+  ``juniper-config-tools``, ``juniper-doc-tools``, ``juniper-model-core``,
+  ``juniper-service-core`` and the three ``juniper-recurrence`` packages.
+* **No ceiling** — the standalone applications and their clients:
+  ``juniper-canopy``, ``juniper-cascor``, ``juniper-data``,
+  ``juniper-data-client``, ``juniper-cascor-client``,
+  ``juniper-cascor-worker``. Capping these would make juniper-ml gate every
+  sibling ``0.y`` release, which the APD-ML-001 ruling weighed and rejected.
+
+**Two pins do not fit, and a reader comparing them to the rule should know it
+is not an oversight in this docstring.** ``juniper-ci-tools`` is a shared
+library that the rule says should be capped: it *was* capped ``<0.2.0`` when
+its extra was added (#293) and lost the ceiling in #295, in the same diff that
+folded ``ci-tools`` into ``[tools]`` — while ``doc-tools`` kept its ceiling in
+that same PR. ``juniper-observability`` has never carried one.
+
+**Deliberately NOT enforced as an assertion.** Encoding the rule as a test
+would turn both exceptions red and force either a dependency change or a
+waiver, and the ruling is explicit that the pins stay as they are — the defect
+was the silence, not the pins. If the exceptions are ever resolved, an
+assertion becomes the right instrument; until then it would fail for a reason
+nobody intends to fix.
 """
 
 from __future__ import annotations
