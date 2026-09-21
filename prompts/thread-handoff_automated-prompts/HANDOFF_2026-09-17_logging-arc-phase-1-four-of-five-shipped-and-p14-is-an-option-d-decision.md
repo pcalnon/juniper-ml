@@ -7,6 +7,14 @@ Successor to
 **Validate this document with independent agents before trusting it** (memory
 `feedback_validate_handoff_prompts_independently`).
 
+> **UPDATED 2026-09-21 — READ §0.0 FIRST.** This document was validated against both repos on
+> 2026-09-21 by one independent agent plus a five-agent consensus review (Lane A ×3 distinct entry
+> points, Lane B ×2 opposing briefs) per
+> [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md).
+> Its state claims all hold. **Five of its factual claims do not**, one whole remaining-work item
+> (§0.5) is moot, and the measurement §0.1 step 2 asked for has been taken — and it **reframes the
+> P1.4 decision**. §0.0 carries all of it. Where §0.0 and a later section disagree, §0.0 is current.
+
 **A bare "§N" means a section OF this document.** Every reference to another file names it. This
 document is
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md`.
@@ -15,7 +23,9 @@ All dates UTC.
 **The arc**: [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573), still OPEN.
 Roadmap of record: `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`.
 Design of record for P4: `notes/JUNIPER_2026-09-09_JUNIPER-CASCOR_LOGGING-PER-LOGGER-LEVELS-DESIGN.md`.
-Recon: `notes/JUNIPER_2026-09-01_JUNIPER-CASCOR_LOGGING-RECON.md`.
+Recon: ~~`notes/JUNIPER_2026-09-01_JUNIPER-CASCOR_LOGGING-RECON.md`~~ — **no such file; corrected
+2026-09-21 to `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md`**
+(§0.0.2 correction 2).
 
 **The one thing to hold in mind.** The predecessor handed over an arc blocked on six owner
 decisions with no phase started. All six are now ruled and recorded in §13.1 of
@@ -28,6 +38,254 @@ queued P7 writer "**must not be adopted independently**". See §2. Do not treat 
 
 ---
 
+## 0.0 Update 2026-09-21 — verified, five corrections, and the measurement that reframes P1.4
+
+Nothing in this arc moved between 2026-09-17 and 2026-09-21. No P1.4 PR was opened; the three
+open `juniper-cascor` PRs are that morning's dependabot bumps (#655–#657).
+
+### 0.0.1 Verified and still TRUE
+
+Re-probed against both repos, not re-read from this document:
+
+- All six PRs MERGED: #644, #647, #648, #652, #653, #654.
+- `juniper-cascor` `main` working tree clean **except** `.serena/project.yml`, as §6 says.
+- `wip/logging-p14-adopt-logging-utils` at `1b918e6`, pushed, **no PR open**, commit **unsigned**,
+  touching exactly the three files §6 names.
+- **47 passed, exit 0**, re-run 2026-09-21. Confirmed non-vacuous (47 tests actually collected).
+- [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) still OPEN — and it carries
+  **zero comments**. See correction 3.
+- **Every line number in §0.1 step 3 is exact**: `_display_training_progress` at `:728`, `debug` at
+  `:730`/`:731`, the rare-branch `debug` pair at `:734`/`:735`, the frequency-gated `info` at
+  `:740`, `verbose` at `:742`, `_tensor_brief` at `:702`. `self.logger = Logger` at `:187` — though
+  there is a **second identical binding at `:296`** this document does not mention.
+- `src/profiling/logging_utils.py` has **zero** production importers. `src/profiling/__init__.py`
+  exports only `deterministic` and `memory`. It is dead code, exactly as §0.1 assumes.
+- The `~872` figure reproduces **to the digit** at the census commit, by the method published in
+  `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md`.
+- §0.3 (P6.4) and §0.4 (P0.1/P0.2) are both still unstarted — no artifacts exist for either.
+- Trap §5.4, §5.5 and §5.6 all reproduced in the course of writing the benchmark below. §5.5's
+  guard fired on its own first draft.
+
+### 0.0.2 Five claims that are now FALSE or STALE
+
+1. **§5.1 and §0.5 are obsolete — `JuniperCascor1` is REPAIRED.** torch **2.11.0+cu130** now
+   imports cleanly under `lib/python3.14/site-packages`, **with or without** `env -u LD_LIBRARY_PATH
+   -u LIBTORCH`. The two P1.4 suites run **47 passed, exit 0** under
+   `/opt/miniforge3/envs/JuniperCascor1/bin/python`. The repair landed 2026-09-15 and is recorded in
+   `Juniper/AGENTS.md` § Conda Environments. **§0.5 is therefore MOOT — do not ask the owner a
+   fourth time; there is nothing left to rule.** The `/tmp/claude-1000/cascorenv` venv still works
+   and is still what the benchmark below was run under, but it is no longer *required*, which
+   removes this arc's dependency on a tmpfs path that a reboot would reap.
+2. **The recon file named in the front matter does not exist.** There is no
+   `notes/JUNIPER_2026-09-01_JUNIPER-CASCOR_LOGGING-RECON.md` anywhere in the repo, and the only
+   reference to that name in the entire tree is this handoff. The evidence base is
+   **`notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md`**, which §15
+   of `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` names as such.
+3. **§4's "All are recorded canonically in §13.1" is FALSE for two of its four items.** §13.1 of
+   `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` carries seven rulings.
+   Decisions 5 and 6 there are §4's items 2 and 3. But **neither the P1.4 option-C ruling nor the
+   blanket merge approval appears in §13.1, or anywhere else in that file** — grep for `P1.4`,
+   `option C` and `merge approval` returns only the unrelated phase table at `:229`. Combined with
+   cascor#573 having zero comments, **the P1.4 ruling this entire document turns on exists in no
+   durable record.** Writing it down is now a remaining-work item (§0.0.6).
+4. **§6's "up to date with origin" has drifted.** `juniper-cascor` `main` is one commit behind
+   `origin/main`: `c6c848f` (#658) landed after this handoff was written.
+5. **`~872` is 874 at current `main`** — +2 drift over 38 commits. The `~` keeps the phrasing
+   defensible; do not restate `872` as a current number. Re-derived twice, independently, with
+   `util/ad-hoc/2026-09-21_p14_suppressed_site_census.bash`: **872** at census commit `70edfc4`
+   (reproducing every intermediate row published in
+   `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md`) and **874** at
+   `main`. **Re-derivation trap**: `git grep` walks the *tracked* tree; `src/backups/check.py` is
+   **untracked** and carries ~68 more `debug` sites, and the dead tree is
+   `src/cascade_correlation/backups/`, **not** `src/backups/`. A plain `grep -r` over the working
+   tree lands near 1,144 and reads as though the roadmap were wrong.
+
+### 0.0.3 The WIP branch's own commit message is wrong where this document is right
+
+`1b918e6`'s body says the target holds *"three UNGUARDED f-string log calls (two debug at
+`:731-732`, one verbose at `:743`)"*. Both halves are wrong, and this handoff is right:
+
+- **Off by one on every line**: the truth is `debug` at `:730`/`:731` and `verbose` at `:742`.
+- **Not three f-strings — two.** `:730` is a **constant** string
+  (`"CandidateUnit: _display_training_progress: Checking if training progress should be displayed"`).
+  It costs a call, not an interpolation. The perf case for adoption rests on interpolation cost, and
+  there is two-thirds as much of it as the commit message claims.
+
+If a successor reconciles the two, **trust this document and re-derive from source; the commit
+message is the stale artifact.**
+
+### 0.0.4 The measurement §0.1 step 2 asked for — taken, and it inverts the question
+
+Instrument: `util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py` (named for the day it was written, not
+the `2026-09-17` the step proposed). Independently re-created from scratch by a second agent as
+`util/ad-hoc/2026-09-21_p14_independent_remeasure.py`. Both drive the **real** cascor `Logger`, bound
+as a **class**, at a disabled configured level, with the real `:742` message.
+
+Reconciled across three independent entry points — source-analytic, two separate instruments — in
+ns per call, at the **disabled** level:
+
+| idiom | ns/call | note |
+| --- | --- | --- |
+| hoisted boolean local | **~10–60** | the floor |
+| `Logger.isEnabledFor()` alone | **~1,000–1,300** | **not memoised** |
+| the f-string alone | **~1,017** | tensor `.shape` + `.dtype` |
+| suppressed `verbose(CONST)` | **~1,353** | emit path, no interpolation |
+| suppressed `verbose(f"…")` | **~2,300–2,700** | **today's code at this site** |
+| `log_if_enabled(…, lambda: …)` | **~1,200–1,400** | Option D |
+| closure allocation alone | **~80–240** | the cost §11 warned about |
+
+**The closure allocation §11 of `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`
+warns about is real but small — ~80–240 ns. It is not what matters here.** Two much larger things
+were found instead, both verified directly at source:
+
+- **`isEnabledFor` costs more than the interpolation it exists to prevent** (~1,000–1,300 ns vs
+  ~1,017 ns). `logger.py:1098` is `cls.getLevelNumber(cls.get_level())` — five classmethod frames,
+  three `.upper()` allocations and two linear scans to re-derive `"INFO" → 20`, **on every call,
+  forever**. The `_level_number_cache` memo at `logger.py:235` is wired **only** into the emit
+  filter `_filter_by_level`, never into the guard. Guarding a constant-string suppressed call
+  therefore saves about **7 %**.
+- **A suppressed call pays a frame capture and a `datetime.now()` unconditionally.**
+  `logger.py:620` is
+  `cls._log_at_level(frame=cls._frm(), tsp=cls._tsp(), level=…, message=message, args=…)` — and
+  `_frm`/`_tsp` (`logger.py:130-131`) are evaluated **as arguments**, before `_log_at_level` reaches
+  its level test. `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-CURRENT-STATE-RECONCILIATION.md`
+  already records this as **NOT DONE**.
+
+**The ladder at this site, per suppressed call** — this is what the decision is actually choosing
+between:
+
+| # | idiom | ns/call | note |
+| --- | --- | --- | --- |
+| 1 | unguarded f-string — **today** | **~2,300–2,700** | |
+| 2 | unguarded, `%`-args | **~1,353** | interpolation deferred **inside** the filter |
+| 3 | `log_if_enabled` + lambda — **Option D** | **~1,200–1,400** | |
+| 4 | hoisted guard — **already used in this very file** | **~10–60** | |
+
+Verified at source for row 2: `logger.py:578` is `message = message % args`, sitting **inside** the
+`if cls._filter_by_level(...)` block opened at `:575`. So `%`-args genuinely defer interpolation for
+a discarded record, exactly as §13.1 decision 6 of
+`notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` found (at line numbers now
+drifted ~+55).
+
+**Option D buys ~10 % over simply writing `%`-args, and costs ~25× the idiom the same file already
+ships.** `train_detailed` hoists `_log_debug`/`_log_trace` at `candidate_unit.py:595-596`, *outside*
+the epoch loop at `:601`, and its guarded sites at `:598`, `:604` and `:629` use `%`-args, not
+f-strings. **`_display_training_progress` is an unconverted island inside a caller that already
+demonstrates the target idiom.** The pattern to copy is local, and it is not `logging_utils`.
+
+**A correction this measurement forces on the record.** §13.1 decision 5 of
+`notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` reports "1,079 bound sites
+55–77 ns and 109 class sites 74–89 ns against today's 95–110". Those figures came from
+`util/ad-hoc/2026-09-10_p41_a2_delegation_bench.py`, which times **five hand-written stub classes**
+and **never imports juniper-cascor at all**; it also times `debug`, never `isEnabledFor`. The
+script and `notes/JUNIPER_2026-09-09_JUNIPER-CASCOR_LOGGING-PER-LOGGER-LEVELS-DESIGN.md` are honest
+— both say "real **signature**" — but the word *signature* drops out in the roadmap's rendering, and
+a signature match reads as a claim about what cascor costs. **The A2-bind ruling still stands**: all
+five stubs share one body, so the *deltas* (A2-bind −21 ns, delegator +146 ns) survive intact. What
+does not survive is the absolute framing — against a real ~1,000–2,700 ns per-call cost, a 21–40 ns
+dispatch saving is 1–3 %, not the proportion "faster than the status quo on every call site"
+implies. Decision 5's line citations have also drifted ~+55 lines (`isEnabledFor` is at `:1085`,
+not `:1026`).
+
+### 0.0.5 Two findings that change the decision — both verified at source
+
+**(a) `log_if_enabled` is NOT §11's Option D. This document's central premise is overstated.**
+
+§2 says "**That lambda is Option D**". Read against the definition, it is not. §4 of
+`notes/JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md` defines Option D
+as *"Extend **the logger** to accept a zero-arg callable and invoke it only after the level check"*,
+illustrated as `self.logger.trace(lambda: f"…")` — the callable **crosses the logger API boundary**.
+That is what can later meet a queue.
+
+`src/profiling/logging_utils.py:229-230` is a different shape:
+
+```python
+if logger.isEnabledFor(level):
+    _emit(logger, level, msg_func())
+```
+
+`msg_func()` is evaluated **as an argument**, in the caller's frame, before `_emit` is entered. What
+reaches `Logger.verbose` is a plain immutable `str`. **The closure never escapes**, so there is
+nothing for a deferred writer to re-render differently. The same §4 says so in terms: *"For a
+post-filter-but-immediate invocation this is safe; it becomes unsafe the moment anyone defers the
+message further (e.g. into a queue…)."*
+
+**Consequence: wiring `log_if_enabled` does not foreclose P7, and §0.2's "record the P7 Option D
+foreclosure" is asking for a ruling on a conflict this change does not create.** The foreclosure
+question arises only if someone later moves the callable into `Logger`'s own signature — a separate,
+separately-reviewable change. §11's hazard is real; it just does not bind here.
+
+**(b) The chosen adoption target is the one place this import cannot go.**
+
+`src/candidate_unit/candidate_unit.py` is **byte-gated** into the published `juniper-cascor-model`
+package, and `profiling/` is **not** an extracted tree:
+
+- `juniper-cascor-model/tests/test_drift.py:27` —
+  `_EXTRACTED_DIRS = ("candidate_unit", "utils", "log_config", "cascor_constants")`
+- `juniper-cascor-model/profiling/` **does not exist**
+- `juniper-cascor-model/pyproject.toml:59-65` includes only `juniper_cascor_model*`,
+  `candidate_unit*`, `utils*`, `log_config*`, `cascor_constants*`
+
+So adding `from profiling.logging_utils import log_if_enabled` to `candidate_unit.py` forces the
+byte-gate to mirror that import into a package with no `profiling/` — **`ImportError` on importing
+`candidate_unit`, in a package live on PyPI**, while `src/` stays green. This is precisely the §5.2
+trap ("the byte-gate mirrors the CALLER; nothing mirrors the CALLEE") that nearly shipped in P1.3.
+**If `log_if_enabled` is wired at all, the first site must be outside the four byte-gated trees.**
+
+**(c) P1.3 and P1.5 do not cover this site, so the defect class here is absence, not mis-naming.**
+The 8 guard sites P1.3 fixed are `:596,597,764,765,766,833,834,1046` — none in
+`_display_training_progress`. `src/tests/unit/test_logger_per_level_exercise.py:109-110` drives only
+`_multi_output_correlation` and `_get_correlations`. So §2's correctness argument (the level stated
+twice, once wrong) is **not** the live argument at `:728`; "there is no guard, and nothing tests that
+there isn't" is.
+
+**(d) The highest-value line in this whole review, and it belongs to no option.** `isEnabledFor`
+should route through the memo the emit path already uses. `logger.py:1098` calls
+`getLevelNumber(get_level())` → `_is_valid_level_name` → `_get_level_number`, doing `.upper()` twice
+and scanning an 8-entry dict twice, per call. `_filter_by_level` instead calls `_resolve_level_number`
+(`logger.py:526-543`) — two dict lookups. **#598 memoised the emit path and left the guard behind, so
+the guard is now slower than the filter it exists to skip.** Routing it through the same helper is a
+one-line change that collapses ~1,000–1,300 ns to roughly the cost of two dict lookups — and it makes
+*every* guarded site in the codebase cheaper, whichever idiom P1.4 picks.
+
+### 0.0.6 Lane B verdict — two opposing briefs, and they converge
+
+Run per
+[`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+§2 Lane B: one agent briefed to argue **for** wiring, one **against**, each required to name the
+fact that most weakens its own case. **They agree on every operative point**, which is the strongest
+signal this review produced:
+
+| both sides agree | |
+| --- | --- |
+| the un-memoised `isEnabledFor` is the **highest-value fix**, belongs to **no option**, and is ~one line | verified: `logger.py:1098` vs `_filter_by_level`'s `_resolve_level_number` at `:551-552` |
+| the eager `_frm()`/`_tsp()` is a second logger-internal defect dominating the suppressed floor | verified at `logger.py:620`, `:130-131` |
+| the byte-gate makes `_display_training_progress` the **wrong first site** | verified; see §0.0.5(b) |
+| the cheapest correct fix here is hoisting `_log_verbose` beside the existing hoists at `candidate_unit.py:595-596` | the PRO brief named this as its own biggest weakness |
+| the P1.4 ruling's absence from the record limits how much interpretive weight it can bear | §0.0.2 correction 3 |
+
+**Where they part, and who is right.** The PRO brief's framing correction (§0.0.5(a)) stands: §11's
+P7 hazard does **not** bind, because the closure never escapes. But the CON brief found a **different
+foreclosure the PRO brief missed, and it is real**: `log_if_enabled` takes **no `*args`** — verified,
+`logging_utils.py:215`, and `_emit` passes a single rendered string — so a site converted to it
+**cannot carry `%`-args**. §13.1 decision 6 of
+`notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` holds **P6.4 open**, and P6.4's
+target population is exactly the `{name}` f-string sites at `:731`/`:742`. **Wiring Option D there
+pre-empts an open owner decision — just not the one §11 names.**
+
+**The altitude arithmetic**, which neither brief disputes: the wiring decision governs **3 call
+sites**; the `isEnabledFor` memo governs **17 guard sites plus every guard P6.2/P6.3 will add**; the
+eager frame/timestamp governs **~874**. Roughly **1 : 6 : 290** — and the two larger ones are
+single-file fixes that are not started.
+
+**Synthesis.** Almost all of Option D's measured ~1,200–1,400 ns **is** the un-memoised guard. Fix
+`logger.py:1098` and every row of §0.0.4's ladder moves, so a ruling taken on today's numbers
+over-attributes to *idiom choice* what belongs to a one-line logger defect — memory
+`reference_instrument_answers_an_adjacent_question`. **Do the logger fix first, then re-measure, then
+rule.**
+
+---
+
 ## 0. Remaining work
 
 ### 0.1 P1.4 second half — wire `log_if_enabled`, or rule that it is not wired (BLOCKING Phase 1)
@@ -36,7 +294,39 @@ State: the **fix** half is complete, tested and checkpointed on branch
 `wip/logging-p14-adopt-logging-utils` in `juniper-cascor` (§6). No PR is open. The **wire** half
 is not started, and §2 argues it needs an owner ruling first.
 
-Steps, in order:
+> **REVISED 2026-09-21 — read §0.0.4–§0.0.6 first.** Step 2 is **DONE**, and its result plus a
+> five-agent consensus review changed what steps 1, 3 and 4 should be. The original steps are kept
+> below the revision for the record.
+
+**Revised steps, in order:**
+
+1. **Ship the `isEnabledFor` memo fix first — it belongs to no option and unblocks a clean ruling.**
+   `logger.py:1098` re-derives the configured level on every guard call while `_filter_by_level`
+   (`:551-552`) uses the memoised `_resolve_level_number` (`:526-543`). Route the guard through the
+   same helper, preserving the `NOTSET` fallback. Both Lane B briefs independently named this the
+   highest-value change available. **It moves every row of §0.0.4's ladder**, so ruling on today's
+   numbers would attribute to idiom choice what belongs to this defect. Needs its own PR and its own
+   mutation check; do not fold it into P1.4.
+2. ~~Measure before wiring.~~ **DONE 2026-09-21** — `util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py`,
+   independently re-created as `util/ad-hoc/2026-09-21_p14_independent_remeasure.py`. Results and
+   reconciliation in §0.0.4. The prior recorded there ("(c) loses to (b) on speed, wins on
+   correctness") was **right in direction and wrong in magnitude**: the gap is ~25×, not marginal,
+   and the cause is the guard, not the closure.
+3. **Re-measure after step 1, then put the reframed question to the owner.** Not "Option D yes/no"
+   — §0.0.5(a) shows that framing is wrong — but: *given that `log_if_enabled` cannot carry `%`-args
+   and therefore pre-empts the still-open P6.4, and given the byte-gate cost at the only located
+   target, is P1.4 discharged by wiring a non-lazy helper somewhere coarse, or should the module be
+   deleted?* Both branches are the roadmap's own text (`…ROADMAP.md:229`, "Adopt … **or delete**").
+4. **Do not wire at `_display_training_progress`.** §0.0.5(b): the import breaks the published
+   `juniper-cascor-model`, and §0.0.5(c): that site is P6.2's reserved work, scheduled after P2.
+   Converting it to the hoisted-guard + `%`-args idiom its own caller already uses
+   (`candidate_unit.py:595-596`, `:598`, `:604`, `:629`) is the right change **in the wrong phase**.
+5. Lint with the **pinned** tools (§5.3), open the PR, **and ask before merging** — §4's merge
+   approval was given to the 2026-09-11 session and does not carry forward (see §13.1 decision 9 of
+   `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`).
+
+<details>
+<summary>Original steps as written 2026-09-17 (superseded; kept for the record)</summary>
 
 1. Read §2 and decide whether to put the Option D question to the owner. Recommended: yes, as a
    short interactive question with the measurement in hand — the same shape the owner accepted for
@@ -59,14 +349,34 @@ Steps, in order:
 4. Then: lint with the **pinned** tools (§5.3), open the PR from the existing branch, merge.
    Merge approval is granted for this arc (§4).
 
+</details>
+
+**On step 3's "~33 % of candidate-worker self time"**: that figure
+(`notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_GATED-MEASUREMENTS-RESULTS.md`) was measured at an
+**ENABLED** level on **emitted** records — 2,262 attributed calls from the `info` at `:740`, not the
+suppressed `verbose` at `:742` — and it is a cumulative-over-self-time ratio. The same document says
+*"No amount of call-site guarding, lazy `%`-args or lazy callables recovers it, because the record is
+emitted."* **It is not evidence for guarding the suppressed sites**, and `_tensor_brief` already
+shipped in cascor#598.
+
 ### 0.2 Close out P1.4's bookkeeping
 
 - Commit the P1.4 probes to `juniper-ml` under `util/ad-hoc/` (the pattern followed after P1.1,
   P1.2 and P1.3 — the latter two landed as juniper-ml#1948). At handoff time **no P1.4 probe
   exists yet**; the benchmark in 0.1 step 2 will be the first. P1.5 needed none.
-- Record the **P7 Option D foreclosure** as a decision in §13.1 of
-  `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`, whichever way it goes.
-  §11 of that file names the conflict but nothing records a ruling on it.
+- ~~Record the **P7 Option D foreclosure** as a decision in §13.1~~ — **PARTLY DONE 2026-09-21, and
+  the framing changed.** §13.1 of
+  `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` now carries three new
+  entries: **decision 8** (the P1.4 option-C ruling, transcribed with its thin provenance stated and
+  flagged for owner confirmation), **decision 9** (the blanket merge approval, marked expired for new
+  sessions), and **decision 10** (the disposition question, left **OPEN** with the measurement
+  attached). Per §0.0.5(a) there is **no P7 foreclosure to record** — the closure never escapes. The
+  live foreclosure is **P6.4's**, per §0.0.6.
+
+**Status of the probe commits (2026-09-21):** three now exist in `juniper-ml` —
+`util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py`,
+`util/ad-hoc/2026-09-21_p14_independent_remeasure.py` (independent Lane A re-creation) and
+`util/ad-hoc/2026-09-21_p14_suppressed_site_census.bash` (re-derives 872/874).
 
 ### 0.3 P6.4 — still open, owner has seen the evidence and not ruled
 
@@ -83,9 +393,13 @@ threshold — below it P2 is cancelled and recorded as cancelled. Nothing can me
 until the corpus is re-baselined after the four merged Phase 1 PRs. §3.1 of that file carries the
 standing caveat that P0.2 must not promise the construction cost of discarded records.
 
-### 0.5 `JuniperCascor1` environment repair — owner has not ruled, asked 3+ times
+### 0.5 ~~`JuniperCascor1` environment repair~~ — **MOOT, CLOSED 2026-09-21**
 
-See §5.1. Do not re-ask a fourth time unprompted; state the workaround and move on.
+**Do not ask. There is nothing to rule.** The environment was repaired 2026-09-15: torch
+**2.11.0+cu130** imports under `lib/python3.14/site-packages`, with or without
+`env -u LD_LIBRARY_PATH -u LIBTORCH`, and the two P1.4 suites run **47 passed, exit 0** under
+`/opt/miniforge3/envs/JuniperCascor1/bin/python`. §0.0.2 correction 1 carries the evidence; §5.1 is
+obsolete.
 
 ---
 
@@ -106,19 +420,38 @@ git worktree add \
   ../worktrees/juniper-cascor--wip--logging-p14--$(date +%Y%m%d-%H%M)--$(git rev-parse --short=8 HEAD) \
   wip/logging-p14-adopt-logging-utils
 
-# run the P1.4 suites (see §5.1 for why the private venv and the env -u)
-env -u LD_LIBRARY_PATH -u LIBTORCH JUNIPER_CASCOR_LOG_DIR=/tmp/claude-1000/p14logs \
-  /tmp/claude-1000/cascorenv/bin/python -m pytest \
+# run the P1.4 suites -- as of 2026-09-21 the CONDA ENV WORKS, so prefer it (§0.0.2 correction 1)
+JUNIPER_CASCOR_LOG_DIR=/tmp/claude-1000/p14logs \
+  /opt/miniforge3/envs/JuniperCascor1/bin/python -m pytest \
   src/tests/unit/test_logging_utils_extended.py src/tests/unit/test_profiling_module.py \
-  -p no:cacheprovider --timeout=120        # expect 47 passed
+  -p no:cacheprovider --timeout=120        # expect 47 passed -- verified 2026-09-21, exit 0
 ```
 
-If `/tmp/claude-1000/cascorenv` is gone — `/tmp` is tmpfs and a reboot reaps it (memory
-`reference_tmp_is_tmpfs_reboot_kills_the_isolated_stack`) — rebuild it per §5.1.
+**Check the count, not just the exit code** — pytest exits 0 on zero collected tests, and a
+vacuous pass here would look identical (memory `reference_vacuous_pass_check_class`).
+
+The old `/tmp/claude-1000/cascorenv` route still works if you prefer it —
+`env -u LD_LIBRARY_PATH -u LIBTORCH /tmp/claude-1000/cascorenv/bin/python` — but it is no longer
+required, and `/tmp` is tmpfs so a reboot reaps it (memory
+`reference_tmp_is_tmpfs_reboot_kills_the_isolated_stack`). It survived as of 2026-09-21 (13 days'
+uptime).
+
+A worktree for the branch already exists as of 2026-09-21, so `git worktree add` above will fail
+with "already exists" — use it rather than making a second one:
+`/home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--wip--logging-p14--20260921-0340--1b918e61`
 
 ---
 
 ## 2. The P1.4 decision the next session must not skip
+
+> **CORRECTED 2026-09-21 — this section's central claim is overstated.** "**That lambda is Option
+> D**" does not survive checking: §4 of
+> `notes/JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md` defines Option D
+> as extending **the logger** to accept a callable, whereas `log_if_enabled` invokes it in the
+> caller's frame and hands `Logger` a plain `str` — which that same §4 explicitly calls safe. See
+> §0.0.5(a). The three options below are still the right menu, but **option 2 is not viable as
+> written** (`SampledLogger` takes an *eager* string and never checks the level — §0.0.6), and the
+> foreclosure that is actually live is **P6.4's, not P7's**.
 
 The owner ruled P1.4 as **C — Adopt: fix the levels and wire it to a real call site**. The obvious
 wiring is:
@@ -195,8 +528,14 @@ handoff adds
 
 ## 4. Owner rulings taken this session
 
-All are recorded canonically in §13.1 of
+~~All are recorded canonically in §13.1 of~~
 `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`. Do not re-litigate them.
+
+> **CORRECTED 2026-09-21.** Items 2 and 3 below were in §13.1 (as decisions 5 and 6). **Items 1 and
+> 4 were not, anywhere** — and [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573)
+> carries zero comments, so they had no primary source at all. Both are now transcribed as §13.1
+> **decisions 8 and 9**, with their thin provenance stated and flagged for owner confirmation. See
+> §0.0.2 correction 3. Item 1's merge approval is recorded as **expired for new sessions**.
 
 1. **Merge approval granted for all PRs this session and this work arc.** I still showed each PR
    before merging; keep doing that.
@@ -213,7 +552,13 @@ All are recorded canonically in §13.1 of
 
 ## 5. Traps
 
-### 5.1 `JuniperCascor1` is broken and the owner has not ruled
+### 5.1 ~~`JuniperCascor1` is broken~~ — **OBSOLETE as of 2026-09-21, the env is REPAIRED**
+
+> **This trap no longer applies.** torch 2.11.0+cu130 now imports under
+> `lib/python3.14/site-packages`, with **and** without the `env -u` workaround, and the P1.4 suites
+> pass 47/47 under `/opt/miniforge3/envs/JuniperCascor1/bin/python`. The `/tmp/claude-1000/cascorenv`
+> venv below still works and is what the §0.0.4 benchmark was run under, but it is optional now. The
+> paragraph is kept for the record of what was true 2026-09-11 → 2026-09-15.
 
 The env moved Python 3.13.13 → **3.14.7**; torch 2.11.0 exists only under
 `lib/python3.13/site-packages` and the 3.13 binary is gone. Separately
@@ -303,6 +648,15 @@ GitHub's **secondary** rate limit rejects mutations while `gh api rate_limit` st
 ---
 
 ## 6. Git status
+
+> **As of 2026-09-21** — `juniper-cascor` `main` is **one commit behind `origin/main`** (`c6c848f`,
+> #658, landed after this was written); the working tree is still clean except
+> `.serena/project.yml`. `wip/logging-p14-adopt-logging-utils` is unchanged at `1b918e6`, still
+> unsigned, still with **no PR**. A worktree for it now exists at
+> `Juniper/worktrees/juniper-cascor--wip--logging-p14--20260921-0340--1b918e61`. The `juniper-ml`
+> work has moved from the `luminous-shimmying-crab` worktree to **`cached-greeting-mochi`**. The
+> `/tmp/claude-1000/` scratch below **survived** (13 days' uptime) but is no longer needed — §0.0.2
+> correction 1.
 
 **juniper-cascor** — `/home/pcalnon/Development/python/Juniper/juniper-cascor`
 
