@@ -325,6 +325,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`[servers]` now floors `juniper-canopy>=0.8.1`, because every canopy wheel from 0.5.0
+  through 0.8.0 cannot import its own dashboard.** Those wheels publish **zero** top-level
+  modules -- `juniper_canopy/` contains only `__init__.py`, and the 19 modules canopy's own
+  shipped code imports are absent, so `import backend.service_backend` dies at
+  `No module named 'validation_gate'`. 0.8.1 ships all of them (juniper-canopy#631, closed
+  2026-09-17). Read from the published wheels, not a checkout; 0.8.0 was checked too, so the
+  boundary is exactly 0.8.0 -> 0.8.1. A default resolve already took 0.8.1 because pip prefers
+  the newest, so the old floor *admitted* the broken wheels rather than delivering them -- the
+  same shape as the `juniper-model-core>=0.1.0,<0.4.0` cap that
+  `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` §10 left alone
+  as "a consumer break for no behavioural gain". The reasoning inverts here: there the admitted
+  version differed only in a docstring, here it does not load. Pre-flighted against real PyPI
+  before the change -- `juniper-canopy>=0.8.1` + `juniper-cascor>=0.11.0` + `juniper-data>=0.14.0`
+  resolves in 60 packages with `juniper-service-core` 0.7.0 and `juniper-model-core` 0.3.2, both
+  inside the existing caps. **Version bumped 0.8.0 -> 0.9.0 with it**, and not cosmetically:
+  `docs/REFERENCE.md`'s compatibility matrix labels each row by the juniper-ml version carrying
+  that floor set, so a new floor set needs a version to label it and the `0.8.x` row is *added
+  to* rather than rewritten -- rewriting it would make it a false statement about the published
+  0.8.0. Minor per the pre-1.0 convention at `util/release_train/detect.py:827`, since forbidding
+  a previously-admitted version is breaking. Applied by
+  `util/ad-hoc/2026-09-21_raise_canopy_floor_0_8_1.py`, which asserts each of the ten sites'
+  exact text and requires exactly one match apiece.
+
 - **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
   retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
   `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`; `[recurrence]`
