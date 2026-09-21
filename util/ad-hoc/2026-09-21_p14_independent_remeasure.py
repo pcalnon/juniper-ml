@@ -84,6 +84,10 @@ def captured_fds():
             sys.stdout.flush()
             sys.stderr.flush()
         except Exception:
+            # Deliberately swallowed. This runs in the `finally` that restores fds 1 and 2, and a
+            # flush failure here (closed stream, full pipe) must NOT skip the dup2 calls below --
+            # leaving the process with its stdout still pointing at the capture file would silence
+            # every later measurement, which is exactly the failure this capture exists to detect.
             pass
         os.dup2(saved_out, 1)
         os.dup2(saved_err, 2)
@@ -126,7 +130,8 @@ def pick_number(stmt: str, setup: str, ns: dict) -> int:
     """Choose a rep count so one round lands near TARGET_ROUND_SECONDS."""
     t = timeit.Timer(stmt=stmt, setup=setup, globals=ns)
     n = 1
-    dt = 0.0
+    # No `dt = 0.0` pre-initialisation: `while True` always runs at least one iteration, so the
+    # assignment below always happens before the `if dt <= 0` guard reads it.
     while True:
         dt = t.timeit(number=n)
         if dt >= 0.01 or n >= MAX_NUMBER:
