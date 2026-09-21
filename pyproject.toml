@@ -25,6 +25,43 @@ classifiers = [
 ]
 dependencies = []
 
+# ─────────────────────────────────────────────────────────────────────
+# THE CEILING RULE FOR FIRST-PARTY PINS  (APD-ML-001)
+#
+# Every pin below is a pre-1.0 Juniper package, so `>=X.Y.0` alone admits the
+# next breaking minor. Some carry a `<` ceiling and some do not, and the
+# difference is deliberate:
+#
+#   CEILING  — shared LIBRARIES whose API or CLI a consumer imports and must
+#              migrate to: juniper-config-tools, juniper-doc-tools,
+#              juniper-model-core, juniper-service-core, and the three
+#              juniper-recurrence packages. A breaking 0.(Y+1) here breaks
+#              consumers at import time, so it must not be auto-adopted.
+#
+#   NO CEILING — the standalone APPLICATIONS and their clients:
+#              juniper-canopy, juniper-cascor, juniper-data,
+#              juniper-data-client, juniper-cascor-client,
+#              juniper-cascor-worker. Capping these would make juniper-ml gate
+#              every sibling 0.y release — a meta-package that must be edited
+#              and re-released before any service can ship a minor. That cost
+#              was weighed and rejected; see the APD-ML-001 ruling in
+#              notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md.
+#
+# TWO PINS DO NOT FIT THE RULE, and both are shared libraries that the rule
+# says should be capped. They are recorded rather than "corrected", because the
+# same ruling says explicitly: state the rule, leave the pins.
+#
+#   * juniper-ci-tools — capped `<0.2.0` when its extra was added (#293) and
+#     UNCAPPED by #295, in the same diff that folded `ci-tools` into `[tools]`.
+#     `juniper-doc-tools` kept its ceiling in that same PR, which is why this
+#     looks like a casualty of the restructure rather than a decision. Not
+#     re-capped here: raising a ceiling is a dependency change, not a comment.
+#   * juniper-observability — has never carried a ceiling in any revision.
+#
+# Changing any pin string below also requires updating AGENTS.md, README.md,
+# docs/QUICK_START.md and docs/REFERENCE.md in the same PR —
+# tests/test_pyproject_extras.py asserts all five agree, by design.
+# ─────────────────────────────────────────────────────────────────────
 [project.optional-dependencies]
 clients = [
     "juniper-data-client>=0.5.0",
