@@ -691,7 +691,10 @@ which were not recovered.
       *(Corrected 2026-09-21: this line read "and stale again at 5.0.0 (§5.8)". It contradicted
       §5.9 of this same document, and `Juniper/AGENTS.md` now reads `5.0.0`. The cross-reference
       was wrong too — §5.8 is the `open_signed_pr.py` branch-without-commit trap.)*
-- [ ] D-A … D-G, C-A … C-C, X-A, X-B, M-A (§0) — **still outstanding, re-verified 2026-09-21**
+- [ ] D-A … D-G, C-A … C-C, X-A, X-B (§0) — **still outstanding, re-verified 2026-09-21**
+- [x] **M-A** (`APD-ML-001`) — **SHIPPED and CLOSED 2026-09-21**: the capping rule stated in
+      `pyproject.toml` and `tests/test_pyproject_extras.py`'s docstring, no pin changed.
+      Writing it down found the pattern is coherent **with two exceptions**. §9.9
 - [x] **X-C** (`APD-CASCOR-005`) — **SHIPPED and CLOSED 2026-09-21**: juniper-cascor#659 +
       juniper-ml#1974 merged and verified by content on `main`; row closed (five touches);
       register `119 | 96 fixed | 23 open`. **Bounded** — canopy's fourth copy is NOT fixed. §9.8
@@ -794,8 +797,10 @@ repo content — `reference_a_checkout_is_not_a_deployment` again.
 ### 9.5 Git status
 
 juniper-ml worktree `eager-seeking-milner`
-(`juniper-ml/.claude/worktrees/eager-seeking-milner`), branch `main`, which was one commit
-behind `origin/main` at session start (`52571621` vs `d721fc78`). **§6's git status is
+(`juniper-ml/.claude/worktrees/eager-seeking-milner`), branch **`worktree-eager-seeking-milner`**
+(*corrected 2026-09-21: this said `main`. A worktree cannot share a branch with the primary
+checkout; the session-start snapshot describing `main` was the primary repo, not here*), one
+commit behind `origin/main` at session start (`52571621` vs `d721fc78`). **§6's git status is
 superseded** — it describes `pure-toasting-token` at `44de51c5`. The register and this document
 were both byte-identical to `origin/main` before editing, checked with
 `git diff --stat origin/main -- <path>`; §6's standing instruction to diff against `origin/main`
@@ -907,8 +912,8 @@ first one's documents.
 ### 9.8 `APD-CASCOR-005` closed — X-C is complete, and the sweep earned its keep
 
 Both halves merged and were verified **by content on `origin/main`**, not by a badge:
-juniper-cascor#659 (squash `435d6069`) → `src/api/security.py:68,72`; juniper-ml#1974 (squash
-`968b9e9e`) → `juniper-service-core/juniper_service_core/security.py:73,77` and the guard row at
+juniper-cascor#659 (squash `b47bd262`) → `src/api/security.py:68,72`; juniper-ml#1974 (squash
+`ea24a19a`) → `juniper-service-core/juniper_service_core/security.py:73,77` and the guard row at
 `tests/test_service_fork_drift.py:155`. juniper-ml#1973 (squash `2dec7631`) carried §9.1–§9.7 and
 the `APD-DATA-047` close.
 
@@ -948,3 +953,58 @@ Both repaired by `util/ad-hoc/2026-09-21_register_cascor005_sweep_followups.py`.
 
 **Still open from §0**, unchanged: D-A…D-G, C-A…C-C, X-A, X-B, M-A, plus §0.4's two no-row items
 and canopy's fourth copy. **X-C is done.**
+
+### 9.9 M-A (`APD-ML-001`) — the rule is stated, and stating it found two exceptions
+
+**The ruling presupposed something that was not true.** "State the capping rule" reads as
+transcription, but **the rule was written down nowhere** — `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`
+records only the primer's claim that "the pattern is coherent even if **never stated as
+policy**". So the work was to *derive* it from the pins and check the derivation, not to copy it.
+
+**The rule, now stated** in `pyproject.toml` (a block immediately above
+`[project.optional-dependencies]`) and in the docstring of `tests/test_pyproject_extras.py`:
+
+- **ceiling** → shared libraries a consumer imports and must migrate to: `config-tools`,
+  `doc-tools`, `model-core`, `service-core`, and the three `recurrence` packages;
+- **no ceiling** → the standalone applications and their clients: `canopy`, `cascor`, `data`,
+  `data-client`, `cascor-client`, `cascor-worker` — because capping those would make juniper-ml
+  gate every sibling `0.y` release, which is the cost the ruling weighed and rejected.
+
+**Two pins do not fit, and both are shared libraries the rule says should be capped.** This
+qualifies the primer's "coherent" rather than contradicting the ruling:
+
+- **`juniper-ci-tools`** was capped `<0.2.0` when its extra was added (ml#293) and **lost the
+  ceiling in ml#295, in the same diff that folded `ci-tools` into `[tools]`** — while
+  `doc-tools` kept its ceiling in that same PR. Traced with
+  `git log -S'juniper-ci-tools' -- pyproject.toml` and the ml#295 diff, not inferred.
+- **`juniper-observability`** has never carried a ceiling in any revision
+  (`git log -S'juniper-observability>=0.2.0,<'` returns nothing).
+
+Recorded, not corrected: re-capping is a dependency change and the ruling says the pins stay.
+
+**No pin changed, and that is verified rather than asserted.** `tests/test_pyproject_extras.py`
+pins the exact strings across `pyproject.toml`, `AGENTS.md`, `README.md`, `docs/QUICK_START.md`
+and `docs/REFERENCE.md`; it passes unmodified (7 tests). Had a pin moved, it would have failed
+in five places.
+
+**The stated rule was measured.** `util/ad-hoc/2026-09-21_verify_pin_ceiling_rule.py` classifies
+every pin: **7 capped, 8 uncapped**, uncapped = the six applications + exactly the two
+exceptions. The **8 independently corroborates** the count
+`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` re-derived for this row. It
+carries a **`--self-test` negative control** — three perturbations, each required to flip the
+verdict to failure, plus an unperturbed baseline — because a checker that has only ever printed
+"matches" is indistinguishable from one whose comparison is broken.
+
+**Deliberately NOT a test.** Encoding the rule as an assertion would fail on both exceptions,
+forcing a dependency change or a waiver the ruling forbids. A gate that fails for a reason
+nobody intends to fix trains people to ignore it. If the exceptions are ever resolved, an
+assertion becomes the right instrument; the docstring says so.
+
+**Closed with four touches** (no §3 entry), bundled with the fix in one commit — unlike
+`APD-CASCOR-005`, whose fix lived in another repo and had to wait. Register:
+**`119 rows | 97 fixed | 22 open`**, crosscheck **`97 / 97 / 97, AGREE`**. `APD-ML` has left the
+open set, so §2's "groupings with no open row" moved **four → five** and now names `juniper-ml`
+— a sentence no ID-keyed sweep can reach, which is the failure mode that section's own
+2026-09-03 correction note was written about.
+
+50 tests OK; `juniper-check-doc-links` passes.
