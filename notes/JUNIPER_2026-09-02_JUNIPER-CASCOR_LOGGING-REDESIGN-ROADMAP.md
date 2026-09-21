@@ -677,6 +677,34 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
    interpolation for the 91 % discarded.
 7. i concur. let's run the investigation as written.
 
+8. **P1.4 → option C, "Adopt: fix the levels and wire it to a real call site."** Ruled
+   **2026-09-11**; **transcribed here 2026-09-21**. **Provenance, stated because it is thin**: the
+   only record of this ruling is §4 of
+   [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md).
+   That document asserts the ruling is "recorded canonically in §13.1" — it was not, until this
+   entry. [cascor#573](https://github.com/pcalnon/juniper-cascor/issues/573) carries **zero
+   comments**, so there is no primary source. **Owner: please confirm or correct this entry.**
+   - The **fix** half shipped to branch `wip/logging-p14-adopt-logging-utils` (`1b918e6`, unsigned
+     WIP, no PR): `src/profiling/logging_utils.py` emits via a level-name dispatcher, 47 tests pass.
+   - The **wire** half is **OPEN**, and §11's Option-D conflict is why — see decision 10.
+
+9. **Blanket merge approval for this arc's PRs.** Same provenance and same caveat as decision 8:
+   asserted by §4 of that handoff, recorded nowhere else. Each PR was still shown before merging.
+   **Treat as expired for any new session** — approval in one session does not carry to the next.
+
+10. **P7 Option D foreclosure — STILL OPEN. The owner's call.** §11 holds that lazy message
+    callables and a queued/deferred P7 writer "must not be adopted independently". Wiring
+    `log_if_enabled` at a real call site **takes that decision**. The measurement §11 asked for was
+    taken 2026-09-21 (`util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py`, independently re-created as
+    `util/ad-hoc/2026-09-21_p14_independent_remeasure.py`), and it **reframes the question**: the
+    per-call closure cost §11 warned about is real but small (~80–240 ns), while `isEnabledFor`
+    itself costs ~1,000–1,300 ns because it is **not memoised** — `logger.py:1098` re-derives
+    `"INFO" → 20` on every call, while the `_level_number_cache` at `logger.py:235` serves only the
+    emit filter. Per suppressed call at the candidate loop: today's unguarded f-string
+    ~2,300–2,700 ns; `%`-args ~1,353 ns; Option D ~1,200–1,400 ns; a **hoisted guard ~10–60 ns**.
+    **Option D buys ~10 % over `%`-args and costs ~25× the idiom `candidate_unit.py:595-596`
+    already ships.** Full write-up: §0.0.4 of the handoff named in decision 8.
+
 ---
 
 ## 14. Consensus record

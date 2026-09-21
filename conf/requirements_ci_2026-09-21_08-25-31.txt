@@ -4,12 +4,12 @@
 # Purpose:       Juniper ML Meta-Package
 #
 # Author:        Paul Calnon
-# Version:       0.7.1
+# Version:       0.8.0
 # File Name:     requirements_ci.txt
 # File Path:     Juniper/juniper/conf/
 #
 # Date:          2025-12-06
-# Last Modified: 2026-09-07
+# Last Modified: 2026-09-14
 #
 # License:       MIT License
 # Copyright:     Copyright (c) 2024-2026 Paul Calnon

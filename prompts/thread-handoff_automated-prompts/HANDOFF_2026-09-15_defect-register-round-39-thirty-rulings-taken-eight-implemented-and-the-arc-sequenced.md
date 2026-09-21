@@ -18,6 +18,51 @@ dates and times UTC.
 **Register** (`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`): **119 rows, 94
 fixed, 25 open** — 17 primer + 8 post-primer.
 
+> ## REVALIDATED 2026-09-21 — still current, with five corrections
+>
+> A later session re-ran §1's verification block in full and swept all nine repos. **Every item
+> in §0 was still outstanding six days on**, and the register was byte-identical to the state
+> described above: `119 rows | 94 fixed | 25 open`, crosscheck `94 / 94 / 94 AGREE`, 33 tests OK,
+> archive test OK, and the open-id set identical to the set §0 sequences. No PR merged in any of
+> the nine repos between 2026-09-15 and 2026-09-21 touches D-A…D-G, C-A…C-C, X-A…X-C or M-A, and
+> no open PR does either. The intervening days went to other arcs (the logging arc's P1.3/P1.5,
+> container-registry Wave 3, the soak arc, the perf lane, duplicati/backup, the CI budget alarm,
+> and releases).
+>
+> **The sections below are corrected in place where they had drifted. The historical record —
+> §2's changed-file list, §3, §4, §5, §7 — is left exactly as that session wrote it**, because
+> those sections are an archive of what was done and when, not a statement about today. The
+> corrections are:
+>
+> 1. **§0.3's X-C names three copies of the API-key check. There are four.**
+>    `juniper-canopy/src/security.py:74` carries the identical short-circuiting
+>    `any(hmac.compare_digest(...))` and is named in neither §0.3 nor the `APD-CASCOR-005` row —
+>    whose §3 heading in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` likewise
+>    reads *"in two of three copies"*. It is **three of four**. See §0.3 and §9.
+> 2. **§1's verification block greps for a `kept_values` loop that does not exist.** The shipped
+>    identifiers are `prior_values` / `keep`. Corrected in §1 — the old text made a successor
+>    conclude they were on a pre-#404 commit when they were not.
+> 3. **§2's last table row — "juniper-ml (this PR)" — merged.** It is **juniper-ml#1947**,
+>    2026-09-16T03:17:15Z. Recorded in §2 as a completion of that row, not a rewrite of it.
+> 4. **§8's ecosystem-note line was stale and mis-cited.** It claimed `Juniper/AGENTS.md` was
+>    "stale again at 5.0.0" and pointed at §5.8. §5.9 of this document records the 5.0.0 update
+>    landing 2026-09-16, and `Juniper/AGENTS.md` now reads `5.0.0`. Both fixed in §8.
+> 5. **§6's git status describes a worktree that is no longer the working one.** Superseded by §9.
+>
+> **`APD-DATA-047` is RULED.** §0.6's outstanding owner decision was put to the owner on
+> 2026-09-21 and **ratified at `1e11`**. §0.6 and §8 updated. That leaves **no owner decision
+> owed anywhere in the register**.
+>
+> **The register therefore no longer reads as the line above this banner says.** The `119 rows,
+> 94 fixed, 25 open` at the top of this document was verified true on 2026-09-21 and was then
+> changed by that close, in the same session: it now reads **`119 rows | 95 fixed | 24 open`**,
+> crosscheck **`95 / 95 / 95, AGREE`**. The pre-close figures are left standing above because
+> they are what §1's block was checked against; §9.6 carries the close. Re-derive with
+> `util/ad-hoc/register_open_set.py` rather than reading either figure — that is the register's
+> own standing instruction, for exactly this reason.
+>
+> New work started under this revalidation is §9.
+
 **What changed about this arc, and it is the only thing you need to hold in mind:** for two years
 of register rounds the blocking constraint was that nothing could be actioned without an owner
 ruling, and the set of actionable rows was empty. On 2026-09-09 and 2026-09-11 the owner ruled on
@@ -174,6 +219,34 @@ document said they were independent.
   named guard in `juniper-ml/tests/test_service_fork_drift.py`. Note
   `juniper-ml/juniper-service-core/` is a published sub-package, so this is a release, not just
   a commit.
+  > **CORRECTION 2026-09-21 — there is a FOURTH copy, and it is three of four, not two of
+  > three.** `juniper-canopy/src/security.py:74` carries the identical short-circuiting line in
+  > an identical `APIKeyAuth.validate`. Neither this section, nor the `APD-CASCOR-005` row, nor
+  > that row's §3 heading in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`
+  > (*"in two of three copies"*) names it. The reason nobody saw it is structural and worth more
+  > than the fix: **`juniper-ml/tests/test_service_fork_drift.py` cannot express canopy.** Its
+  > `_FORK_REPOS` is `("juniper-data", "juniper-cascor")`, and
+  > `test_every_guard_is_well_formed` asserts `site.repo in _FORK_REPOS` — so a canopy row is
+  > rejected by the registry's own structural check. The gate that exists to catch copy drift is
+  > **blind to a quarter of the copies**, and no count it produces can say so.
+  >
+  > Canopy diverges a **second** way, and this one is not cosmetic:
+  > `src/security.py:53` is `set(api_keys) if api_keys else set()` — it has **no blank-key
+  > filter**, where all three siblings carry
+  > `{k for k in (api_keys or []) if isinstance(k, str) and k.strip()}`. That is the
+  > `blank-api-key-filter` guard (`APD-DATA-003` / `APD-CASCOR-006`), ENFORCED in both forks the
+  > gate does watch.
+  >
+  > **State the impact accurately — it is NOT the bypass the guard's own summary describes.**
+  > Canopy's only caller is `get_api_key_auth()` (`src/security.py:262-267`), which does
+  > `api_keys = [api_key] if api_key else None`; a truthiness test, so `""` becomes `None` and
+  > auth is simply **disabled**, not enabled-and-accepting-empty. The residual case is a
+  > whitespace-only key, reachable **only** through the env var — `get_secret` strips a secret
+  > *file* but returns `os.environ.get(env_var)` raw (`src/secrets_util.py:62`, `:64`) — and it
+  > fails **CLOSED** (auth enabled with a key no HTTP client can present), with
+  > `enforce_auth_posture` (`src/main.py:341`) additionally failing the boot when
+  > `require_auth` is set. So: a real divergence and a real blind spot in the gate,
+  > **not** a live vulnerability. Do not let a future summary promote it to one.
 
 ### 0.4 Two open items that belong to no register row
 Neither is in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` and neither is in §0.1–§0.3. They are
@@ -202,9 +275,23 @@ recorded here because the alternative is that they are recorded nowhere.
   pattern is coherent.
   The defect is the silence.
 
-### 0.6 Owner decisions still owed
+### 0.6 Owner decisions still owed — NONE, as of 2026-09-21
 
-Only one: **`APD-DATA-047`**, whether the absolute share-count ceiling stays, and at what
+> **RULED 2026-09-21: `APD-DATA-047` is RATIFIED at `1e11`.** The owner was given the three
+> options — ratify at `1e11`, remove the ceiling, ratify at some other value — together with the
+> siting evidence below and the overlap argument that makes any absolute bound a compromise, and
+> **ratified `_SHARES_ABSOLUTE_CEILING = 1.0e11` as sited by juniper-data#404**. The deciding
+> consideration, stated back at the time of the ruling: it is the **only** instrument that
+> reaches a typo in a series' *first* filing — `APD-DATA-050`'s EOG case, at position 0, which no
+> relative test can see — so removing it re-opens that hole outright.
+>
+> **With this, no row in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` is
+> awaiting an owner decision.** Every open row is now implementation work.
+>
+> The analysis below is left standing unedited: it is what the ruling was taken against, and a
+> ratification whose evidence has been deleted is not reviewable.
+
+Only one **was** owed: **`APD-DATA-047`**, whether the absolute share-count ceiling stays, and at what
 value.
 Everything else in `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` is ruled.
 
@@ -260,12 +347,21 @@ target is computed at runtime (§5.13):
 
 ```bash
 git -C /home/pcalnon/Development/python/Juniper/juniper-data fetch origin
-git -C /home/pcalnon/Development/python/Juniper/juniper-data show origin/main:juniper_data/generators/equities/generator.py | grep -E '^VERSION|_SHARES_ABSOLUTE_CEILING = |kept_values'
+git -C /home/pcalnon/Development/python/Juniper/juniper-data show origin/main:juniper_data/generators/equities/generator.py | grep -E '^VERSION|_SHARES_ABSOLUTE_CEILING = |prior_values|expanding\('
 ```
 
-Expected: `VERSION = "5.0.0"`, `_SHARES_ABSOLUTE_CEILING = 1.0e11`, and the `kept_values` loop —
-**not** an `expanding()` one-liner. If you see `expanding(min_periods=3)` you are on a commit before
-juniper-data#404 and the delivered share counts are wrong for at least two tickers (§4).
+Expected: `VERSION = "5.0.0"`, `_SHARES_ABSOLUTE_CEILING = 1.0e11`, and a `prior_values` loop —
+**not** an `expanding()` one-liner. If you see `expanding(min_periods=3)` in *code* you are on a
+commit before juniper-data#404 and the delivered share counts are wrong for at least two tickers
+(§4). Note the word `expanding` legitimately appears in the **comment** that explains why the
+expanding median was wrong, so match on the call, not the word.
+
+> **CORRECTED 2026-09-21.** This block used to grep for `kept_values` and expect "the
+> `kept_values` loop". **No such identifier exists** — the shipped loop uses `prior_values` and
+> `keep` (`juniper_data/generators/equities/generator.py:1185-1197` on `origin/main`). The grep
+> returned nothing while the code was entirely correct, which pushes a successor toward exactly
+> the wrong conclusion: that they are on a pre-#404 commit. Re-verified 2026-09-21 — `VERSION`
+> and `_SHARES_ABSOLUTE_CEILING` both match as stated.
 
 ---
 
@@ -306,7 +402,7 @@ Memory: `project_partial_data_contract_arc_2026-09-05.md`, `MEMORY.md`.
 | **juniper-ml#1898** | MERGED | All sixteen parked PRIMER rows ruled, in a new §2.4; three rows corrected by re-derivation |
 | **juniper-data#395** | MERGED `b6ab7c1` | The six equities data-quality rulings + `generator_version` 4.0.0 |
 | **juniper-data#404** | MERGED 2026-09-16T02:08:43Z, squash `1bbb6976` | The regression #395 shipped: a first- or second-filing scale typo survived the causal median. `generator_version` 5.0.0. **Amended twice before merge, both times by validation** — see §4 and §5.2 |
-| **juniper-ml (this PR)** | — | Eight closes, five new rows (`APD-DATA-047` … `-052`), and this document |
+| **juniper-ml#1947** | MERGED 2026-09-16T03:17:15Z | Eight closes, five new rows (`APD-DATA-047` … `-052`), and this document. *(Recorded 2026-09-21: this row read "juniper-ml (this PR) | — |" when the session ended. It carried `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`, this document, the three §7 lane reports under `reports/2026-09-15_round-39-consensus/`, and the ad-hoc scripts §2 lists.)* |
 
 ## 3. Owner rulings — thirty, and where they live
 
@@ -590,8 +686,325 @@ which were not recovered.
       2026-09-16, squash `1bbb6976`, verified by content on `main` and not by the badge (§4)
 - [x] `Juniper/AGENTS.md` moved to `5.0.0` after that merge (§5.9)
 - [x] Eight register rows closed; five new rows filed (`APD-DATA-047` … `APD-DATA-052`)
-- [x] Ecosystem data-contract note updated for the 4.0.0 bump — **and stale again at 5.0.0** (§5.8)
-- [ ] D-A … D-G, C-A … C-C, X-A … X-C, M-A (§0)
-- [ ] `APD-DATA-047` — owner decision owed, now at `1e11` (§0.5)
+- [x] Ecosystem data-contract note updated for the 4.0.0 bump — **and again for 5.0.0 on
+      2026-09-16** by `util/ad-hoc/2026-09-15_ecosystem_agents_md_generator_version_5.py` (§5.9).
+      *(Corrected 2026-09-21: this line read "and stale again at 5.0.0 (§5.8)". It contradicted
+      §5.9 of this same document, and `Juniper/AGENTS.md` now reads `5.0.0`. The cross-reference
+      was wrong too — §5.8 is the `open_signed_pr.py` branch-without-commit trap.)*
+- [ ] D-A … D-G, C-A … C-C, X-A, X-B (§0) — **still outstanding, re-verified 2026-09-21**
+- [x] **M-A** (`APD-ML-001`) — **SHIPPED and CLOSED 2026-09-21**: the capping rule stated in
+      `pyproject.toml` and `tests/test_pyproject_extras.py`'s docstring, no pin changed.
+      Writing it down found the pattern is coherent **with two exceptions**. §9.9
+- [x] **X-C** (`APD-CASCOR-005`) — **SHIPPED and CLOSED 2026-09-21**: juniper-cascor#659 +
+      juniper-ml#1974 merged and verified by content on `main`; row closed (five touches);
+      register `119 | 96 fixed | 23 open`. **Bounded** — canopy's fourth copy is NOT fixed. §9.8
+- [x] `APD-DATA-047` — **RATIFIED at `1e11` by the owner, 2026-09-21** (§0.6). No owner decision
+      is owed anywhere in the register now.
 - [x] This document validated — two rounds, three lanes each, both recorded in §7; neither
       passed on the first pass and both changed shipped code
+
+---
+
+## 9. Revalidation session, 2026-09-21 — X-C implemented
+
+Appended by the session that ran the REVALIDATED banner at the top. **§0–§8 above are that
+banner's subject; this section is new work.**
+
+### 9.1 What was verified, and with what
+
+§1's block was run unaltered and **every expectation held**: FIXED rows `94`;
+`119 rows | 94 fixed | 25 open`; crosscheck `94 / 94 / 94, AGREE`; 33 tests OK; the archive test
+OK. The open-id set was compared element-by-element against the set §0 sequences and is
+**identical** — 17 `APD-DATA`, 3 `APD-CASCOR`, 3 `APD-ECO`, 1 `APD-ML`, 1 `APD-RCLIENT`.
+
+Nine repos were swept for merged PRs since `2026-09-15T00:00:00Z` and for open PRs. **None
+implements any §0 item.** juniper-data merged #399, #400, #402, #403, #404; juniper-cascor #652,
+#653, #654, #658; juniper-ml #1936-#1969; data-client #203-#205; cascor-client #166, #167;
+recurrence #171, #172. The one PR that touches this arc at all is **juniper-ml#1947**, which is
+§2's own last row landing (see §2).
+
+Also re-checked, both **unchanged**: §0.4's recurrence item (`grep -rn data_quality
+--include='*.py'` over `/home/pcalnon/Development/python/Juniper/juniper-recurrence` still
+returns **0**), and §0.4's canopy item (`val_ratio` is still in `INFRASTRUCTURE_FIELDS`, at
+`juniper-canopy/src/dataset_schema.py:115` — §0.4 says `:114`, off by one, and the claim itself
+stands).
+
+### 9.2 X-C — implemented, not merged
+
+`APD-CASCOR-005`. juniper-data's `matched`-flag loop ported into both copies the ruling names.
+Applied by `util/ad-hoc/2026-09-21_port_nonshortcircuit_key_compare.py`, which matches the old
+`validate()` body **verbatim** and REFUSES rather than pattern-patching a near-miss — it reports
+juniper-data as `ALREADY-PORTED`, which is the cheapest available proof that the instrument
+distinguishes the two states.
+
+**Changed, by filename:**
+
+- `juniper-ml/juniper-service-core/juniper_service_core/security.py` — the loop
+- `juniper-ml/juniper-service-core/CHANGELOG.md` — `[Unreleased] / Fixed`
+- `juniper-ml/tests/test_service_fork_drift.py` — new `nonshortcircuit-key-compare` guard
+- `juniper-ml/util/ad-hoc/2026-09-21_port_nonshortcircuit_key_compare.py` — the instrument
+- `juniper-cascor/src/api/security.py` — the loop (worktree
+  `juniper-cascor--fix--nonshortcircuit-key-compare--20260921-0846--c6c848f2`, branch
+  `fix/nonshortcircuit-key-compare`)
+- this document
+
+**`src/api/security.py` is NOT byte-mirrored.** X-A's mirror trap does not apply here:
+`juniper-cascor-model/tests/test_drift.py` covers `_EXTRACTED_DIRS = ("candidate_unit", "utils",
+"log_config", "cascor_constants")`, and a `find` for `security.py` under `juniper-cascor-model/`
+returns nothing. Verified rather than assumed.
+
+### 9.3 Two things about X-C that a successor must not re-derive the hard way
+
+**No behavioural test can pin this, and one written to try would be vacuous.** `any(...)` and
+the flag loop return the same value for every input. That is not a gap in the testing — it is
+the reason the guard is a **source marker** in `juniper-ml/tests/test_service_fork_drift.py`.
+§5.3's trap ("a new test that passes on the first run is not yet evidence") has a sharper form
+here: a behavioural test would pass against **both** implementations, for ever.
+
+**The guard was verified to be non-vacuous before it was committed**, which is the check §5.3
+actually asks for. Run against the local siblings it FAILS on juniper-cascor (absent markers
+`['matched = False', 'return matched']`) and PASSES on juniper-data:
+
+```bash
+JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 python3 -m unittest tests/test_service_fork_drift.py
+```
+
+**That failure is also the merge-order constraint.** The guard is `status=ENFORCED` with a
+juniper-cascor site, so **juniper-cascor's PR must merge before juniper-ml's**, or the weekly
+`docs-full-check` cross-repo job goes red. Locally the cross-repo assertions skip unless
+`JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` is set, so the ordering will not fail a normal PR run — it
+fails the weekly job, quietly, later.
+
+### 9.4 Test results, stated as what they do and do not show
+
+| Suite | Result | What it shows |
+|---|---|---|
+| `juniper-service-core/tests/` (full, run from `juniper-service-core/`) | all pass | No regression. **Not** evidence of the fix — see §9.3. |
+| `juniper-cascor src/tests/unit/api/test_api_security.py` | 48 passed | Same. |
+| `tests/test_service_fork_drift.py` structural | 8 tests, OK (3 cross-repo skipped) | The registry row is well-formed. |
+| `tests/test_service_fork_drift.py` with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` | **1 failure, on juniper-cascor** | The marker is non-vacuous. This is the intended result pre-merge. |
+| `tests/test_register_*.py`, `tests/test_thread_handoff_archive.py` | 35 tests, OK | The register edits did not break the protocol checks. |
+
+**A pre-existing failure a successor will hit and should not chase.**
+`juniper-service-core/tests/test_smoke.py::test_top_level_import_does_not_require_fastapi_or_pydantic_settings`
+fails when the suite is run **from the repo root**, and it fails identically against the
+unmodified source (checked by §5.3's copy-aside-and-revert method). Cause: the test spawns
+`sys.executable`, `python3` resolves to `JuniperCascor1`, and that environment has
+`juniper_service_core` **0.4.0** installed in site-packages, which shadows the 0.7.0 worktree
+source. **Run the suite from `juniper-service-core/`** and it passes. Environment state, not
+repo content — `reference_a_checkout_is_not_a_deployment` again.
+
+### 9.5 Git status
+
+juniper-ml worktree `eager-seeking-milner`
+(`juniper-ml/.claude/worktrees/eager-seeking-milner`), branch **`worktree-eager-seeking-milner`**
+(*corrected 2026-09-21: this said `main`. A worktree cannot share a branch with the primary
+checkout; the session-start snapshot describing `main` was the primary repo, not here*), one
+commit behind `origin/main` at session start (`52571621` vs `d721fc78`). **§6's git status is
+superseded** — it describes `pure-toasting-token` at `44de51c5`. The register and this document
+were both byte-identical to `origin/main` before editing, checked with
+`git diff --stat origin/main -- <path>`; §6's standing instruction to diff against `origin/main`
+rather than `HEAD` still applies and is why that check was run.
+
+New worktree created and **not** removed (cleanup needs the owner's explicit signal, and
+`git worktree remove` deletes ignored files):
+`juniper-cascor--fix--nonshortcircuit-key-compare--20260921-0846--c6c848f2`.
+
+### 9.6 `APD-DATA-047` closed as RATIFIED — the register's last owner decision
+
+Applied by `util/ad-hoc/2026-09-21_register_close_data047_ratified.py`, which asserts each anchor
+appears **exactly once** and refuses rather than patching a near-miss.
+
+**Four touches, not five** — the protocol ("Closing a row — the five touches") is explicit that a
+row with no §3 detail entry takes four, and `APD-DATA-047` has none. §4 table row, §5.1
+verification row, §2 status paragraph (the enumeration *and* both counts), header date. A fifth
+edit was made that is **not** a touch: §4.9's rulings bullet still read "owner decision owed", and
+the protocol's whole-file `grep -n 'APD-<ID>'` sweep requires every hit be read and reconciled.
+
+**Result, and it is the check that matters** (§5.14 — the crosscheck is what catches a partial
+close, and the other four touches will not reveal one):
+
+```
+119 rows | 95 fixed | 24 open        §4 tables: 119 rows, 95 marked **FIXED
+                                     §2 prose list: 95 ids enumerated
+                                     §5.1 verified: 95 verification rows      AGREE
+```
+
+43 tests OK across `tests/test_register_status_crosscheck.py`,
+`tests/test_register_open_set.py`, `tests/test_register_close_protocol.py`,
+`tests/test_thread_handoff_archive.py` and `tests/test_service_fork_drift.py`.
+
+**What the close does and does not assert.** It records that a number nobody had chosen now has
+an owner. It does **not** assert `1e11` is optimal — the owner was shown that the two populations
+overlap across any absolute bound, so this is a judgement, not a calculation — and it does not
+extend past the 486-payload cache the bound was sited against. A future symbol with a genuine
+count above `1e11`, or a typo below it, reopens the question. Both rejected options and the
+reasoning are recorded at the row and in its §5.1 row, per §3's standing requirement that a
+reader be able to tell a decision from a drift.
+
+**`APD-CASCOR-005` was deliberately NOT closed in this PR**, although §9.2 implements it. "Status
+is verified, not inherited" — at the time this was written the fix was on two branches, merged
+nowhere. It closed only once both PRs were on `main` and the content was verified there, not when
+the badge said MERGED (§5.6). That happened the same day; see §9.8.
+
+### 9.7 Validation of §9 — PARTIAL, and it did not pass
+
+Procedure: `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
+**Read this before treating anything in §9 as validated.** §7 records that round 39 ran two full
+rounds and that *neither passed on the first pass* and *both changed shipped code*. This section
+is not that. It is one lane out of five.
+
+**Sized** at 3 Lane A (distinct entry points) + 2 Lane B (opposing lenses), per §3's escalators:
+the census claim carries a universal quantifier, it **overturns** a document of record (§0.3's
+"three copies" and the `APD-CASCOR-005` §3 heading's "two of three"), a fix hangs on it, and the
+finding is *convenient* — it confirms what the author already suspected.
+
+**Delivered: one lane.** Lane A1 (register entry point), Lane A2 (git/PR-history entry point),
+Lane B1 (refute the canopy impact assessment) and Lane B2 (refute the change and the close) all
+terminated on API rate limits — one on a per-request 429, three on a session limit. They produced
+no findings at all. Only **Lane A3 (raw source-tree census)** completed.
+
+**What Lane A3 independently confirmed**, from an entry point that was given no number to
+reproduce and was forbidden the handoff and the register:
+
+- **Four distinct copies**, named: `juniper-canopy/src/security.py`,
+  `juniper-cascor/src/api/security.py`, `juniper-data/juniper_data/api/security.py`,
+  `juniper-ml/juniper-service-core/juniper_service_core/security.py`. It reached **four**
+  without being told a count.
+- **canopy is the only one of the four with no blank-key filter** — `set(api_keys) if api_keys
+  else set()` at `:53`. Reached independently.
+- **`_FORK_REPOS = ("juniper-data", "juniper-cascor")` at `:59`, and canopy is not among them**,
+  with the sharper phrasing that `test_every_guard_is_well_formed` asserts membership so **"no
+  guard can reference canopy even in principle."**
+- juniper-data holds a **`list`** (order-preserving de-dup via `dict.fromkeys`) where the other
+  three hold a `set` — the deliberate divergence the drift gate's own docstring describes.
+
+**What Lane A3 added that this session did not have:**
+
+- **juniper-recurrence is a CONSUMER, not a fifth copy.** It imports `build_api_key_auth` from
+  `juniper_service_core` (`juniper-recurrence/juniper-recurrence/juniper_recurrence/app.py:26-30`,
+  called at `:134`). This is the natural experiment §2.3 describes, still running: recurrence gets
+  the fix for free and the two forks do not.
+- The clients and the worker hold a caller-side key value only and never validate against a
+  collection, so they are correctly out of scope.
+
+**What Lane A3 could NOT rule out, in its own words:** a validator whose names avoid both `key`
+and `api_key` and which does not call `compare_digest`; `juniper-legacy/`, excluded by
+instruction, which does contain matching content; and **130 sibling worktrees** under
+`juniper-ml/.claude/worktrees/` that it did not inspect.
+
+**What has NOT been validated by anyone, and must not be read as though it had:**
+
+| Claim | Lane that would have attacked it | Status |
+|---|---|---|
+| The canopy divergence fails CLOSED and is not an auth bypass | B1 | **UNVALIDATED** — this is a mechanism claim, the class the ecosystem note `E2E finding mechanisms are unreliable` says is most often wrong |
+| The `APD-DATA-047` close satisfies the protocol; the §2 prose counts are coherent | B2 | **UNVALIDATED** — instruments agree (`95/95/95`), but no independent party re-derived them |
+| The guard's two markers cannot be present in a still-short-circuiting file | B2 | **UNVALIDATED** — the guard may be defeatable |
+| No PR since 2026-09-15 implements a §0 item | A2 | **UNVALIDATED by a second party** — swept once, by the author |
+| `matched`-loop and `any()` are behaviourally identical for every input | B2 | **UNVALIDATED** — reasoned, not fuzzed |
+
+**Per §4 of the procedure this is not a completed review, and per §6 it must not be written up as
+one.** A successor should re-run the four failed lanes rather than inherit this section's
+comfort. The one thing that *is* now multiply-sourced is the four-copy census and the gate's
+blindness to canopy — two independent entry points, agreeing, with the second one forbidden the
+first one's documents.
+
+### 9.8 `APD-CASCOR-005` closed — X-C is complete, and the sweep earned its keep
+
+Both halves merged and were verified **by content on `origin/main`**, not by a badge:
+juniper-cascor#659 (squash `b47bd262`) → `src/api/security.py:68,72`; juniper-ml#1974 (squash
+`ea24a19a`) → `juniper-service-core/juniper_service_core/security.py:73,77` and the guard row at
+`tests/test_service_fork_drift.py:155`. juniper-ml#1973 (squash `2dec7631`) carried §9.1–§9.7 and
+the `APD-DATA-047` close.
+
+**Five touches this time, not four** — this row *has* a §3 detail entry, which is the distinction
+the protocol draws and the reason §9.6's close took four. Applied by
+`util/ad-hoc/2026-09-21_register_close_cascor005.py`. Result: **`119 rows | 96 fixed | 23 open`**,
+crosscheck **`96 / 96 / 96, AGREE`**, `APD-CASCOR` down to **2** open. 43 tests OK. The doc-link
+validator passes across 960 files, which is the check that matters here because the close
+**renamed a §3 heading** ("two of three copies" → "three of four") and therefore its anchor;
+the ecosystem was swept first and that anchor had exactly one referrer, line 23 of the register
+itself.
+
+**The close is BOUNDED and says so in the row.** It closes the two copies the ruling named.
+`juniper-canopy/src/security.py:74` is a third short-circuiting copy and is **not fixed** — and
+cannot simply be added to the guard, because `_FORK_REPOS` excludes it by construction (§0.3).
+Closing on canopy's behalf would be precisely the inheritance "status is verified, not inherited"
+forbids.
+
+**Two stale sentences were caught by READING the sweep, and one of them was mine.** The protocol
+requires a whole-file `grep -n 'APD-<ID>'` *and reading every hit*; it is explicit that grepping
+alone is not the requirement. Both hits below make a status claim while the row's own marker says
+FIXED — the "register disagrees with itself while every count-based check still passes" failure —
+and **neither is reachable by any instrument in the repo**:
+
+- **§4.3's routing note, broken by the closing script itself.** The marker was anchored on a
+  phrase in the MIDDLE of the paragraph, so the note still *opened* with "This row is an **owner
+  decision, not a task**" as present fact, and the marker then read "The routing below was
+  correct" while pointing at text *above* it. A reader scanning for status would have stopped at
+  the stale first sentence. **Writing the correction is not the same as placing it where the
+  reader meets it.**
+- **§6's Confidence note** still listed `APD-CASCOR-005` bare among entries "to triage before
+  being actioned", in a sentence that already marks closed ones
+  ``~~`APD-DATA-033`~~ (fixed, data#297)``. Following the convention already present beat
+  inventing a second one.
+
+Both repaired by `util/ad-hoc/2026-09-21_register_cascor005_sweep_followups.py`.
+
+**Still open from §0**, unchanged: D-A…D-G, C-A…C-C, X-A, X-B, M-A, plus §0.4's two no-row items
+and canopy's fourth copy. **X-C is done.**
+
+### 9.9 M-A (`APD-ML-001`) — the rule is stated, and stating it found two exceptions
+
+**The ruling presupposed something that was not true.** "State the capping rule" reads as
+transcription, but **the rule was written down nowhere** — `notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md`
+records only the primer's claim that "the pattern is coherent even if **never stated as
+policy**". So the work was to *derive* it from the pins and check the derivation, not to copy it.
+
+**The rule, now stated** in `pyproject.toml` (a block immediately above
+`[project.optional-dependencies]`) and in the docstring of `tests/test_pyproject_extras.py`:
+
+- **ceiling** → shared libraries a consumer imports and must migrate to: `config-tools`,
+  `doc-tools`, `model-core`, `service-core`, and the three `recurrence` packages;
+- **no ceiling** → the standalone applications and their clients: `canopy`, `cascor`, `data`,
+  `data-client`, `cascor-client`, `cascor-worker` — because capping those would make juniper-ml
+  gate every sibling `0.y` release, which is the cost the ruling weighed and rejected.
+
+**Two pins do not fit, and both are shared libraries the rule says should be capped.** This
+qualifies the primer's "coherent" rather than contradicting the ruling:
+
+- **`juniper-ci-tools`** was capped `<0.2.0` when its extra was added (ml#293) and **lost the
+  ceiling in ml#295, in the same diff that folded `ci-tools` into `[tools]`** — while
+  `doc-tools` kept its ceiling in that same PR. Traced with
+  `git log -S'juniper-ci-tools' -- pyproject.toml` and the ml#295 diff, not inferred.
+- **`juniper-observability`** has never carried a ceiling in any revision
+  (`git log -S'juniper-observability>=0.2.0,<'` returns nothing).
+
+Recorded, not corrected: re-capping is a dependency change and the ruling says the pins stay.
+
+**No pin changed, and that is verified rather than asserted.** `tests/test_pyproject_extras.py`
+pins the exact strings across `pyproject.toml`, `AGENTS.md`, `README.md`, `docs/QUICK_START.md`
+and `docs/REFERENCE.md`; it passes unmodified (7 tests). Had a pin moved, it would have failed
+in five places.
+
+**The stated rule was measured.** `util/ad-hoc/2026-09-21_verify_pin_ceiling_rule.py` classifies
+every pin: **7 capped, 8 uncapped**, uncapped = the six applications + exactly the two
+exceptions. The **8 independently corroborates** the count
+`notes/JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_DEFECT-REGISTER.md` re-derived for this row. It
+carries a **`--self-test` negative control** — three perturbations, each required to flip the
+verdict to failure, plus an unperturbed baseline — because a checker that has only ever printed
+"matches" is indistinguishable from one whose comparison is broken.
+
+**Deliberately NOT a test.** Encoding the rule as an assertion would fail on both exceptions,
+forcing a dependency change or a waiver the ruling forbids. A gate that fails for a reason
+nobody intends to fix trains people to ignore it. If the exceptions are ever resolved, an
+assertion becomes the right instrument; the docstring says so.
+
+**Closed with four touches** (no §3 entry), bundled with the fix in one commit — unlike
+`APD-CASCOR-005`, whose fix lived in another repo and had to wait. Register:
+**`119 rows | 97 fixed | 22 open`**, crosscheck **`97 / 97 / 97, AGREE`**. `APD-ML` has left the
+open set, so §2's "groupings with no open row" moved **four → five** and now names `juniper-ml`
+— a sentence no ID-keyed sweep can reach, which is the failure mode that section's own
+2026-09-03 correction note was written about.
+
+50 tests OK; `juniper-check-doc-links` passes.
