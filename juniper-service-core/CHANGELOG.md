@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`APIKeyAuth.validate` no longer short-circuits its walk over the configured keys**
+  (`APD-CASCOR-005`). It accumulated into `any(hmac.compare_digest(api_key, k) for k in
+  self._api_keys)`, which stops at the first match, so the NUMBER of comparisons performed
+  depended on where the matching key fell in the iteration. `compare_digest` already makes each
+  individual comparison constant-time in the key's *content*; the iteration is the part that was
+  not. Now mirrors juniper-data's reference implementation
+  (`juniper_data/api/security.py`), which has never short-circuited.
+
+  **Scope, stated honestly:** this is defence-in-depth and a convergence of four near-identical
+  copies, not the repair of a live vulnerability. What `any()` leaked is the *position* of the
+  matching key within the iteration, not the key; and `self._api_keys` is a `set` here, whose
+  iteration order is hash-derived rather than configuration order. The reason to do it is that
+  divergence between forked copies of security code is the shape that has produced five separate
+  register findings (register §2.3, "Copy drift").
+
+  **No behavioural test pins this, and none can:** the two forms return the same value for every
+  input. The guard is therefore a source marker in juniper-ml's
+  `tests/test_service_fork_drift.py` (`nonshortcircuit-key-compare`), which was verified to FAIL
+  against the unported forks before being committed.
+
 ## [0.7.0] - 2026-08-30
 
 ### Added
