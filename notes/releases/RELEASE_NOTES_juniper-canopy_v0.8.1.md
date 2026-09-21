@@ -45,6 +45,69 @@
 
 ### Fixed
 
+- **The published wheel omitted ten top-level modules that thirteen of its own shipped
+  files import, so `pip install juniper-canopy` produced a package whose dashboard could
+  not be imported.** Every release from **0.5.0** onward:
+
+  ```
+  $ python -c "import frontend.dashboard_manager"     # only the wheel on the path
+  ModuleNotFoundError: No module named 'canopy_constants'
+  ```
+
+  `[tool.setuptools.packages.find]` collects **packages** — directories carrying
+  `__init__.py`. Each bare `src/<name>.py` is a top-level **module**, which that mechanism
+  never collects and which needs a `py-modules` entry; there was none. `canopy_constants`
+  and `settings` are each imported by **13 of the 49 shipped `.py` files**. The sdist was
+  no better: it carried **zero** of the twenty, and shipped `pyproject.toml` alongside
+  them, so rebuilding from source reproduced the same wheel.
+
+  **`py-modules` alone does not fix it, and fails silently.** It resolves against
+  `package-dir`, which this project never set, so a build with `py-modules` and nothing
+  else succeeds and emits a wheel containing **none** of the nineteen. `package-dir` now
+  points the empty-string root at `src`, with an explicit entry for `juniper_canopy`
+  because it lives at the repository root rather than under `src/` — without that entry
+  the build fails outright on `package directory 'src/juniper_canopy' does not exist`.
+  Measured across four candidate configurations against real builds; this is the only one
+  that ships 19/19 modules and keeps all five packages.
+
+  Nineteen modules ship: the twelve reachable from the shipped packages, plus the seven
+  `main` pulls in. `adapter_validation` is excluded because nothing imports it.
+
+  **Nothing in the pipeline could have caught this.** `twine check` reads metadata and the
+  README, never code. `pip check` reads the dependency graph, never importability — it
+  passes on a wheel that cannot import itself. And the TestPyPI verification step's
+  `from juniper_canopy import __version__` passes on **all four** broken wheels, because
+  that one module always shipped. The container never noticed either: `Dockerfile` copies
+  `src/` in and sets `PYTHONPATH=/app/src`, so the running service resolves these from
+  source and shadows site-packages. The deployed image was healthy throughout; only the
+  artifact on PyPI was broken.
+- **Y1 — every page mount under the recurrence backend returned a 500.**
+  `GET /api/admin/experimental_functions` calls `backend.get_experimental_functions()`
+  unconditionally, and the Dash layer reads that gate on **every mount**. `RecurrenceBackend`
+  implemented neither it nor `set_experimental_functions`, so the attribute lookup raised
+  `AttributeError`, the route's `except Exception` caught it, and the operator got
+  `{"error": "Internal server error", "error_id": ...}` with a 500 — on a healthy backend, for a
+  question whose honest answer is simply "no".
+
+  The root cause is that **`BackendProtocol` never declared either method.** The requirement was a
+  de-facto contract that `ServiceBackend`, `DemoBackend` and `demo_mode` happened to satisfy and
+  the fourth backend did not, so nothing checked it. Both are now declared on the protocol, and a
+  regression test asserts **every** backend implements the surface — the next backend added cannot
+  reintroduce this class of gap silently.
+
+  `RecurrenceBackend` now answers, and the read and the write answer **differently on purpose**:
+
+  - **read → `{"enabled": False}`.** Not an error. The gate is a cascade-correlation concept and is
+    genuinely closed here, which is exactly the F2.10 safe default the route's own docstring
+    describes ("no Live Switch affordance until we can confirm"). Returning `ok: False` would trade
+    a 500 for a 502 on every mount — a quieter lie, not a fix.
+  - **write → `{"ok": False, "error": ...}`.** A toggle that cannot be honoured must not report
+    success. The route maps this to a 502 carrying the reason, and the Dash layer reconciles to the
+    returned state (N6: fail closed and *say so*; N9: a control that cannot be honoured is refused
+    at the control, not discovered later).
+
+  The route itself is deliberately unchanged. Adding a `getattr` fallback there would paper over
+  the next missing implementation instead of failing the new protocol test.
 - **The three-partition split plumbing rendered as generator *content* parameters, on 13 of the 14
   selectable dataset types.** `INFRASTRUCTURE_FIELDS` excluded `train_ratio` / `test_ratio` /
   `shuffle` / `seed` / `use_cache` — the split plumbing of a **two**-partition world. The
