@@ -495,10 +495,18 @@ from a release-tagged image:**
 4. ~~**The design of record contradicts itself.**~~ **CLOSED by a concurrent session
    2026-09-21 16:25 UTC.** Kept here because the *reasoning* still applies to the next such
    split, and because this item was live for most of this session:
-   `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`
-   says "Waves 1 and 2 complete / ALL FIVE release images are published" at `:6-7` while its §5
-   table at `:262-265` still marks all four Wave 2 rows **`pending`**. Same shape as the Pi-gate
-   contradiction §5.1 was written to end. Fix the table.
+   `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` **used to say**
+   "Waves 1 and 2 complete / ALL FIVE release images are published" at `:6-7` while its §5 table
+   **marked all four Wave 2 rows `pending`** — the same shape as the Pi-gate contradiction §5.1
+   was written to end. All four rows now read **COMPLETE**. **Nothing to fix here; do not
+   re-open it.**
+
+   > This paragraph is itself an instance of the class it describes. When the item was closed,
+   > the heading above was rewritten and these four lines were not, so the body went on asserting
+   > a live contradiction and ending with *"Fix the table"* — and that shipped to `main` in
+   > juniper-ml#1980 before a post-merge `grep` caught it. **Correcting where you happen to be
+   > reading leaves the rest of the claim standing**; the fix is to grep the whole document for
+   > the assertion, not to edit the sentence you are looking at.
 5. **This sweep's findings live only here.** They are not in the plan, and
    `reference_juniper_deploy_image_publish_traps.md` still instructs a reader to run the sweep that
    has now been run. Both need updating or the item dies with this handoff.
