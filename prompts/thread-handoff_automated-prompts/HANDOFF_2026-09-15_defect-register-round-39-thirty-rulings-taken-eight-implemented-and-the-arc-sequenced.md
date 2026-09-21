@@ -797,8 +797,10 @@ repo content — `reference_a_checkout_is_not_a_deployment` again.
 ### 9.5 Git status
 
 juniper-ml worktree `eager-seeking-milner`
-(`juniper-ml/.claude/worktrees/eager-seeking-milner`), branch `main`, which was one commit
-behind `origin/main` at session start (`52571621` vs `d721fc78`). **§6's git status is
+(`juniper-ml/.claude/worktrees/eager-seeking-milner`), branch **`worktree-eager-seeking-milner`**
+(*corrected 2026-09-21: this said `main`. A worktree cannot share a branch with the primary
+checkout; the session-start snapshot describing `main` was the primary repo, not here*), one
+commit behind `origin/main` at session start (`52571621` vs `d721fc78`). **§6's git status is
 superseded** — it describes `pure-toasting-token` at `44de51c5`. The register and this document
 were both byte-identical to `origin/main` before editing, checked with
 `git diff --stat origin/main -- <path>`; §6's standing instruction to diff against `origin/main`
@@ -910,8 +912,8 @@ first one's documents.
 ### 9.8 `APD-CASCOR-005` closed — X-C is complete, and the sweep earned its keep
 
 Both halves merged and were verified **by content on `origin/main`**, not by a badge:
-juniper-cascor#659 (squash `435d6069`) → `src/api/security.py:68,72`; juniper-ml#1974 (squash
-`968b9e9e`) → `juniper-service-core/juniper_service_core/security.py:73,77` and the guard row at
+juniper-cascor#659 (squash `b47bd262`) → `src/api/security.py:68,72`; juniper-ml#1974 (squash
+`ea24a19a`) → `juniper-service-core/juniper_service_core/security.py:73,77` and the guard row at
 `tests/test_service_fork_drift.py:155`. juniper-ml#1973 (squash `2dec7631`) carried §9.1–§9.7 and
 the `APD-DATA-047` close.
 
