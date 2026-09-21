@@ -71,10 +71,27 @@ This document is still this arc's live handoff — nothing after 2026-09-12 supe
   dropped it while declaring §12 closed.
 - **N3 — X10/N6's other half.** Beyond `initialize()` returning `True` unconditionally
   (`recurrence_backend.py:422-425`) and `selection_is_live` being health-blind
-  (`model_registry.py:491`), `_completion_reason_label` (`dashboard_manager.py:6920-6935`) maps five
-  **cascor** reasons and returns `None` for everything else — so a **failed** recurrence run's
-  reason is written by `recurrence_backend.py:274-279` and then silently discarded. §12.9's
-  rejection of VR-5 rests on exactly this being broken.
+  (`model_registry.py:491`), a recurrence run's `completion_reason` never reaches the operator.
+  **Corrected 2026-09-21 — this is TWO mechanisms, not one, and the first is not a mapping
+  miss.** `completion_reason` has exactly one consumer, `dashboard_manager.py:7118-7121`, and it
+  is gated on `status == "Completed"`; there is **no `status == "Failed"` branch anywhere in the
+  file**. So:
+  - **A failed run's reason is never read at all.** `recurrence_backend.py:274` writes the raw
+    error into `completion_reason` on `state == "failed"`, and the consumer block does not run.
+    The gate matches cascor's semantics — its five reasons are all *completion* outcomes — so
+    this is an overload: the same field carries a completion outcome in cascor and a **failure
+    error** in recurrence, and only the cascor reading is implemented.
+  - **A successful run's reason is dropped by the mapper.** `_completion_reason_label`
+    (`:6921-6936`) maps five cascor tokens and `.get()` returns `None` for anything else, so
+    recurrence's `stopped_reason` (`:277-279`) renders nothing. That reason is an **open
+    vocabulary** — `recurrence_service_adapter.py:161` types it `Optional[str]`, passed straight
+    through from the service's JSON — so the fix needs a rendering rule for unmapped values, not
+    a bigger table.
+
+  The earlier wording here attributed both halves to the mapper. It is right that the reason is
+  discarded and right that §12.9's rejection of VR-5 rests on this being broken; it is wrong
+  about why the failure case is lost, which matters because the fix is a missing branch rather
+  than a missing table entry.
 - **N4 — the equities seed's recorded evidence is stale against two breaking bumps.**
   `model_registry.py:201` records `(15799, 16)`, measured 2026-09-11 at generator `3.0.0`. The
   generator is now **`5.0.0`** (`juniper-data/.../equities/generator.py:58`), and 4.0.0 made the
@@ -116,6 +133,18 @@ This document is still this arc's live handoff — nothing after 2026-09-12 supe
 backend that reports healthy while its service is down, 500s every five seconds, and writes
 snapshots that report success while persisting zero model state is silent and corrupts results.
 N0 was done first only because it was cheap and already proven — not because it ranks highest.
+
+### Progress, later on 2026-09-21
+
+| item | state |
+|---|---|
+| **N0** | **MERGED — canopy#641.** Verified on `main` by a `workflow_dispatch` run rather than assumed: all three legs green, the first success after the 63-run streak. **The recovery was ~4× the estimate** — measured `413 → 506 passed`, `4 → 0 errors`, `103 → 81 skipped`. The PR predicted ~25 tests; other modules were `importorskip`-ing on the same missing client *without erroring*, including the 510-line stream-liveness suite `ci.yml:169-172` already warned about for its own lane. A skip is not a failure, so nothing counted them — the loud defect was masking a quiet one four times its size. |
+| **N1** | **PR open — canopy#643.** All four methods, plus `cancel_pending_dataset` (unguarded at `main.py:4324`, undeclared, implemented everywhere today — latent, not live). Guard reads the requirement from the **caller**: a plain conformance test passes vacuously, because on `main` the protocol declared 22 methods and all three backends implemented all 22 while the four broken ones sat undeclared. |
+| **N6** | **PR open — canopy#644.** Confirmed a **live** defect, not merely an untested claim: the mutation check shows a fabricated/stale `flatten: False` control genuinely overrides the seed and stages mnist rank-3. |
+| **N3** | Diagnosis corrected above. Not started — its fix needs a rendering rule for an open vocabulary, which is a UI judgement rather than a mechanical repair. |
+
+Still unstarted: **N2** (needs the real stack — a different kind of work from the rest), **N4**,
+**N5**, **N7**–**N10**, and original items 1, 2, 3, 5, 6, 7, 9, 11.
 
 ### Verification commands (2026-09-21 — supersede the block below)
 
