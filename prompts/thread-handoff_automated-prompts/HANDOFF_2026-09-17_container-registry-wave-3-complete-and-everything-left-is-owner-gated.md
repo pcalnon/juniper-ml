@@ -40,12 +40,18 @@ Continue the **container-registry rollout**. **Wave 3 is COMPLETE.** Design of r
 > **CORRECTED 2026-09-21 — this paragraph used to say "every remaining item is owner-gated" and
 > that the plan's `Status:` line and §5 wave table "are accurate". Both are false.**
 >
-> - **Actionable, NOT owner-gated work remains**, and it is not deferrable: five repos owe the
->   `.dockerignore` + post-build-assert hardening, and **canopy already published `v0.8.1` on
->   2026-09-18 without it**. See § Re-evaluation 2026-09-21 → *What remains outstanding*.
-> - **The plan's §5 wave table still marks all four Wave 2 rows `pending`** while the plan's own
->   header says all five images are published. The table was **not** refreshed. Do not read it as
->   authoritative; the header and §5.1 are.
+> - **Actionable, NOT owner-gated work existed — and it is now SHIPPED.** All five image repos
+>   took the `.dockerignore` + post-build-assert hardening on 2026-09-21 (cascor#661, canopy#642,
+>   data#408, worker#191, recurrence#176). It was not deferrable: **canopy had already published
+>   `v0.8.1` on 2026-09-18 without it.** What is still open is listed in
+>   § Re-evaluation 2026-09-21 → *What remains outstanding*; the short version is
+>   **worker#192** (the `__version__` drift) and MEMORY.md compaction.
+> - ~~The plan's §5 wave table still marks all four Wave 2 rows `pending`.~~ **FIXED by a
+>   concurrent session 2026-09-21 16:25 UTC** (*"docs(plan): refresh the stale wave table"*). All
+>   four Wave 2 rows now read **COMPLETE** with their PR and publish dates, and the table
+>   independently records that juniper-recurrence's `.dockerignore` sits in its nested build
+>   context so **"a repo-root sweep false-positives here"** — the same finding this section
+>   reaches below. The table is authoritative again.
 > - Also stale below, corrected in § Re-evaluation 2026-09-21: **`yamaguchi` is this workstation,
 >   not a Pi**; the juniper-deploy primary checkout is **no longer behind**; the worker-run
 >   verification command's `# waiting` comment is wrong (it completed successfully).
@@ -486,7 +492,10 @@ from a release-tagged image:**
    > Worth noting how this was learned: a validation lane re-probed `commits/main` and found it had
    > moved *during the audit*. At least seven sessions run concurrently here. **Re-probe a repo's
    > HEAD before acting on any claim about it**, including one written an hour ago.
-4. **The design of record contradicts itself.** `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`
+4. ~~**The design of record contradicts itself.**~~ **CLOSED by a concurrent session
+   2026-09-21 16:25 UTC.** Kept here because the *reasoning* still applies to the next such
+   split, and because this item was live for most of this session:
+   `JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`
    says "Waves 1 and 2 complete / ALL FIVE release images are published" at `:6-7` while its §5
    table at `:262-265` still marks all four Wave 2 rows **`pending`**. Same shape as the Pi-gate
    contradiction §5.1 was written to end. Fix the table.
@@ -569,8 +578,9 @@ path.
   with the literal demoted to a source-checkout fallback, matching `juniper_data` and
   `juniper_canopy`; bumping the literal alone would recur at 0.7.0. Verified inside the published
   image.
-- The plan's §5 **Wave 2 rows**, still marked `pending` while its own header says all five images
-  are published.
+- ~~The plan's §5 **Wave 2 rows**.~~ **CLOSED 2026-09-21 by a concurrent session** — all four
+  now read COMPLETE. Re-probed against `main` before this document merged, rather than inherited
+  from when the item was written four hours earlier.
 - **MEMORY.md** compaction, 23.7 KB against a 20 KB target.
 
 **Correction to § Checkpoint above**, which is the 2026-09-17 session's list: it credits the plan
