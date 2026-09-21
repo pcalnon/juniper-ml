@@ -30,7 +30,7 @@ This document is still this arc's live handoff — nothing after 2026-09-12 supe
 | 7 | Record OQ-6 answered | **OPEN — and items 6 and 7 are ONE item.** `dashboard_manager.py:2909` asserts the snap is "(dataset-primary conflict policy, D5)". D5 does not say that. `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md:55` defines D5 as *"Conflict rule is a swappable policy… The default policy (dataset-primary vs model-primary) is **chosen after the A1 spike / first real use**"*, and `:305` files that choice as **OQ-6**. So the code cites D5 for a decision D5 explicitly defers, the implementation has since made that choice in fact (dataset-primary), and both design records still say it is open. Ratifying dataset-primary is an owner call; recording that the implementation already took it is not. Either way the code's citation should point at OQ-6's resolution rather than at D5. |
 | 8 | `arc_agi` is a DECISION | **CLOSED.** §12.9 of the design doc adjudicated VR-1…VR-8 (juniper-ml#1923); canopy#623 → **canopy#625** shipped it. The registry expresses a single rank; a rank-flipping knob is withheld, not described. |
 | 9 | "the signed-commit helper has FOUR copies" | **MISSTATED — do not action as written.** A canonical helper *is* already promoted: `util/open_signed_pr.py:117` `create_signed_commit`, with a hermetic test at `tests/test_open_signed_pr.py`. All four ad-hoc files **reuse** it (`import open_signed_pr as osp`, or an `importlib` path-load) rather than duplicating it, and one self-declares as a promotion candidate. The fourth path is `util/ad-hoc/push_signed_commit.py`, **not** `util/push_signed_commit.py`. What remains is consolidating four thin *drivers* — a much smaller job than "promote one, retire three". |
-| 10 | canopy timing flakes | **SUPERSEDED.** The real defect was not flakiness — see **N0**, fixed in **canopy#641**. |
+| 10 | canopy timing flakes | **CORRECTED 2026-09-21 — NOT superseded; I was wrong.** I recorded this as displaced by N0's scheduled-lane defect. They are two independent defects that surfaced together. The flake is real: `test_x7_loop_responsiveness` failed twice in one afternoon on GitHub runners — 0.757s (#643, Python 3.12) and 0.935s (#648, Python 3.13), the second on a **comment-only** diff to `model_registry.py` that cannot affect HTTP latency. Fixed in **canopy#649**. |
 | 11 | upstream question to juniper-data | **HALF CLOSED.** The `arc_agi` `task_type` half was filed as **juniper-data#401** and fixed by **juniper-data#402** (merged 2026-09-15): `arc_agi` now declares a *third* task-type value, `TASK_TYPE_STRUCTURED`. The **equities-defaults half remains unfiled** — juniper-data has exactly one open issue (#179, June). |
 
 ### Corrections to my own first pass (kept, because each is a trap)
@@ -97,12 +97,24 @@ This document is still this arc's live handoff — nothing after 2026-09-12 supe
   generator is now **`5.0.0`** (`juniper-data/.../equities/generator.py:58`), and 4.0.0 made the
   default feature matrix **15 columns, not 16**. #404 exists because #395 shipped values wrong by
   400–1000×. Nothing has re-validated the seed.
-- **N5 — `_fetch_generators` fails OPEN, and §12 made that eight times worse.**
-  `dashboard_manager.py:3006-3013`: any error yields an empty list, and the availability helpers then
-  treat **every** generator as available. Three seeds are now availability-gated, and
-  `_gate_dataset_options_handler` snaps to the first compatible-and-available entry — so with
-  juniper-data down the operator is landed on a dataset that cannot generate, Apply returns 200, and
-  Start fails. Carried by the 09-07 and 09-08 handoffs; dropped here without closure.
+- **N5 — `_fetch_generators` fails OPEN. CORRECTED 2026-09-21: a DESIGN TRADE-OFF, not a defect,
+  and the mechanism I described does not occur.** The fact stands — `dashboard_manager.py:3006-3013`
+  yields an empty list on any error and the availability helpers then treat every generator as
+  available. But it is **deliberate and documented**: `dataset_schema.py:377-383` states it outright —
+  *"treated as available so a transient/older data service never strands a dataset type (fail-open
+  UI; the create call still fails closed with the 501 install hint if the extra is truly missing)"*.
+  Two tiers, and it is D5's own allocation: the UI is a best-effort affordance, correctness lives at
+  the backend.
+  My description of the harm was wrong in its mechanism. With fail-open, **nothing is disabled, so
+  `_gate_dataset_options_handler` does not snap at all** — its snap is conditional on the current
+  selection having *become* disabled. The operator is not "landed on" anything; they keep what they
+  had. And the first cascor-compatible entry is `spirals`, whose generator is `spiral` — canopy
+  generates it locally, so even a snap would land somewhere that works.
+  What survives: with juniper-data down the operator gets **no warning**, and the failure surfaces
+  later at create as a 501 rather than at selection. That is the stated trade-off. §12 raised its
+  cost by seeding three availability-gated datasets, which is a reason to **revisit the trade-off**
+  — an owner decision, like N3 — not a defect to fix. Carried by the 09-07 and 09-08 handoffs and
+  dropped from the 09-12 list without closure; that part of the finding was correct.
 - **N6 — canopy#625 shipped the render half, not the forward half.** `dataset_schema.py:134-136`
   states the contract as "neither render **nor forward**". Only rendering is filtered
   (`dashboard_manager.py:3073`); `_collect_generator_params` still drops only `None`/`""` and the
@@ -140,7 +152,7 @@ N0 was done first only because it was cheap and already proven — not because i
 |---|---|
 | **N0** | **MERGED — canopy#641.** Verified on `main` by a `workflow_dispatch` run rather than assumed: all three legs green, the first success after the 63-run streak. **The recovery was ~4× the estimate** — measured `413 → 506 passed`, `4 → 0 errors`, `103 → 81 skipped`. The PR predicted ~25 tests; other modules were `importorskip`-ing on the same missing client *without erroring*, including the 510-line stream-liveness suite `ci.yml:169-172` already warned about for its own lane. A skip is not a failure, so nothing counted them — the loud defect was masking a quiet one four times its size. |
 | **N1** | **MERGED — canopy#643.** All four methods, plus `cancel_pending_dataset` (unguarded at `main.py:4324`, undeclared, implemented everywhere today — latent, not live). Verified on merged `main`: protocol declares **27**, all three backends implement all 27, `get_dataset_swap_events()` returns `{'ok': True, 'events': []}` and `swap_dataset_live()` returns `ok=False`. The five-second 500 is closed. Guard reads the requirement from the **caller**: a plain conformance test passes vacuously, because on `main` the protocol declared 22 methods and all three backends implemented all 22 while the four broken ones sat undeclared. |
-| **N6** | **PR open — canopy#644.** Confirmed a **live** defect, not merely an untested claim: the mutation check shows a fabricated/stale `flatten: False` control genuinely overrides the seed and stages mnist rank-3. Needed an `Allow-Symbol-Loss:` trailer — the test split is a same-file rename, which the sequence-safety screen reads as deletion, correctly. |
+| **N6** | **MERGED — canopy#644.** Verified on merged `main`. Confirmed a **live** defect, not merely an untested claim: the mutation check shows a fabricated/stale `flatten: False` control genuinely overrides the seed and stages mnist rank-3. Needed an `Allow-Symbol-Loss:` trailer — the test split is a same-file rename, which the sequence-safety screen reads as deletion, correctly. |
 | **N8** | **PR open — canopy#647.** The floor admitted `juniper-data-client>=0.4.1` while decision 11's contract shipped in 0.5.0; the lock already sat at 0.5.0, so the gap was between what the lock tests and what published metadata lets a consumer install. Verified from the published wheel. Also retires a comment in `demo_mode.py` whose justification ("absent from the pinned / published client (0.4.x)") is now false in both halves — canopy#559's first half. |
 | **N4 / N9** | **PR open — canopy#648.** Both are stale claims the registry makes about juniper-data, not functional defects. The equities evidence was measured at generator `3.0.0`; it is now `5.0.0` and the default matrix is **15 columns, not 16**. The `task_type` vocabulary has been three values since juniper-data#402 added `structured`. |
 | **11** | **CLOSED as asked — juniper-data#409.** The equities-defaults question is filed upstream with the defaults read from source today (`fundamentals_fill="nan"`, `normalize_features=False`, `regression_target="next_close"`, the last non-stationary by its own field description) and the two consumer measurements cited to their origin rather than re-measured. Awaiting an owner ruling; no change proposed, because a silent default change is the class that produced the 4.0.0 → 5.0.0 bump. |
@@ -149,6 +161,11 @@ N0 was done first only because it was cheap and already proven — not because i
 
 Still unstarted: **N2** (needs the real stack — a different kind of work from the rest), **N5**,
 **N10**, and original items 1, 2, 3, 5, 9, plus the single remaining half of 6/7.
+**N5 and N3 are owner decisions rather than unstarted work** — see their entries above.
+**Item 10 was NOT superseded**: the X7 timing flake is real and independent of N0, proved by
+two failures in one afternoon on two Python legs, the second on a comment-only diff. Fixed in
+**canopy#649**, which also machine-checks that the deadline can never be raised past the
+floor the companion control test asserts for a genuinely blocked loop.
 
 ### Verification commands (2026-09-21 — supersede the block below)
 
