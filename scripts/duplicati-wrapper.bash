@@ -72,25 +72,32 @@ DEBUG_MODE=${FALSE}
 # Define Script Environment Variables:
 
 # DUPLICATI_SERVER="/usr/bin/duplicati-server"
-DUPLICATI_SERVER="/usr/lib/duplicati/duplicati-server";        [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_SERVER: \"${DUPLICATI_SERVER}\""
-DUPLICATI_ENV_GLOBAL="/etc/default/duplicati";                 [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_GLOBAL: \"${DUPLICATI_ENV_GLOBAL}\""
-DUPLICATI_ENV_LOCAL="/home/duplicati/.config/Duplicati/.env";  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_LOCAL: \"${DUPLICATI_ENV_LOCAL}\""
+DUPLICATI_SERVER="/usr/lib/duplicati/duplicati-server";                  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_SERVER: \"${DUPLICATI_SERVER}\""
+DUPLICATI_ENV_GLOBAL="/etc/default/duplicati";                           [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_GLOBAL: \"${DUPLICATI_ENV_GLOBAL}\""
+DUPLICATI_ENV_LOCAL="/home/duplicati/.config/Duplicati/.env";            [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_LOCAL: \"${DUPLICATI_ENV_LOCAL}\""
 
 
 #############################################################################################################################################################################################
 # Define Default Duplicati Server Options:
 
-DUPLICATI_PORT_LABEL="--webservice-port";                      [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_PORT_LABEL: \"${DUPLICATI_PORT_LABEL}\""
-DUPLICATI_PORT_DEFAULT="8300";                                 [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_PORT_DEFAULT: \"${DUPLICATI_PORT_DEFAULT}\""
-DUPLICATI_ENCRYPTION_KEY_LABEL="SETTINGS_ENCRYPTION_KEY";      [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENCRYPTION_KEY_LABEL: \"${DUPLICATI_ENCRYPTION_KEY_LABEL}\""
+DUPLICATI_PORT_LABEL="--webservice-port";                                [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_PORT_LABEL: \"${DUPLICATI_PORT_LABEL}\""
+DUPLICATI_PORT_DEFAULT="8300";                                           [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_PORT_DEFAULT: \"${DUPLICATI_PORT_DEFAULT}\""
+
+DUPLICATI_ENCRYPTION_KEY_LABEL="SETTINGS_ENCRYPTION_KEY";                [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENCRYPTION_KEY_LABEL: \"${DUPLICATI_ENCRYPTION_KEY_LABEL}\""
 
 
 #############################################################################################################################################################################################
 # Initialize Duplicati Wrapper Script Variables:
 
-DUPLICATI_INPUT_PARAMS=""
-DUPLICATI_ENV_VARS_GLOBAL=""
-DUPLICATI_ENV_VARS_LOCAL=""
+DAEMON_OPTS_DEFAULT="${DUPLICATI_PORT_LABEL}=${DUPLICATI_PORT_DEFAULT}"; [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DAEMON_OPTS_DEFAULT: \"${DAEMON_OPTS_DEFAULT}\""
+
+DAEMON_OPTS_SWITCH="--daemon-opts"
+DAEMON_OPTS_VALUE=""
+
+DUPLICATI_INPUT_PARAMS=()
+DUPLICATI_ENV_VARS_GLOBAL=()
+DUPLICATI_ENV_VARS_LOCAL=()
+
 DUPLICATI_OPTS=""
 
 
@@ -99,11 +106,23 @@ DUPLICATI_OPTS=""
 
 [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Wrapper Script Input Parameters: \"${*}\""
 if [[ "${*}" != "" ]]; then
-    DUPLICATI_INPUT_PARAMS=("${*}");               [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_INPUT_PARAMS: \"${DUPLICATI_INPUT_PARAMS[*]}\""
+    DUPLICATI_INPUT_PARAMS=("${*}");                                               [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_INPUT_PARAMS: \"${DUPLICATI_INPUT_PARAMS[*]}\""
+    if [[ "$(echo "${DUPLICATI_INPUT_PARAMS[@]}" | grep -- "${DAEMON_OPTS_SWITCH}")" != "" ]]; then
+        for PARAM in "${DUPLICATI_INPUT_PARAMS[@]}"; do  # Find the Duplicati server option --daemon-opts=value
+            if [[ "$(echo "${PARAM}" | grep -- "${DAEMON_OPTS_SWITCH}")" != "" ]]; then  # Check if the parameter is the Duplicati server option --daemon-opts=value
+                DAEMON_OPTS_VALUE=$(echo "${PARAM}" | cut -d '=' -f 2);            [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DAEMON_OPTS_VALUE: \"${DAEMON_OPTS_VALUE}\""
+                DUPLICATI_INPUT_PARAMS=( "${DUPLICATI_INPUT_PARAMS[@]/$PARAM}" );  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_INPUT_PARAMS: \"${DUPLICATI_INPUT_PARAMS[*]}\""
+                break
+            else  # Skip other parameters
+                continue
+            fi
+        done
+        DUPLICATI_ENV_VARS_GLOBAL=("${DAEMON_OPTS_VALUE}");  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_VARS_GLOBAL: \"${DUPLICATI_ENV_VARS_GLOBAL[*]}\""
+    else
+        DUPLICATI_ENV_VARS_GLOBAL=("${DAEMON_OPTS_DEFAULT}");  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_VARS_GLOBAL: \"${DUPLICATI_ENV_VARS_GLOBAL[*]}\""
+    fi
 fi
-if [[ "${DAEMON_OPTS}" != "" ]]; then
-    DUPLICATI_ENV_VARS_GLOBAL=("${DAEMON_OPTS}");  [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "DUPLICATI_ENV_VARS_GLOBAL: \"${DUPLICATI_ENV_VARS_GLOBAL[*]}\""
-fi
+
 [[ "${DEBUG_MODE}" == "${TRUE}" ]] && echo "Parsing Duplicati environment file: \"${DUPLICATI_ENV_LOCAL}\""
 DUPLICATI_ENV_VARS_LOCAL=()
 if [[ ( "${DUPLICATI_ENV_LOCAL}" != "" ) && ( -f "${DUPLICATI_ENV_LOCAL}" ) ]]; then  # Check if the Duplicati environment file exists
