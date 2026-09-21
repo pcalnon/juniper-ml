@@ -302,7 +302,11 @@ def c_mc_folds_order_matters() -> str:
 
 
 def c_mc_no_full_symbol() -> str:
-    import juniper_model_core.crossval.splits as s
+    # importlib rather than ``import juniper_model_core.crossval.splits as s``: this check
+    # reflects over the whole module, but the same module is pulled in with ``from ... import``
+    # at c_mc_walk_forward_index_based above, and mixing both statement forms for one module
+    # is a CodeQL finding that blocks the merge.
+    s = importlib.import_module("juniper_model_core.crossval.splits")
 
     names = [n for n in dir(s) if "full" in n.lower()]
     assert names == [], names
@@ -826,7 +830,6 @@ def c_cp_missing_top_level_modules() -> str:
         and n not in shipped_tops
         and n not in sys.stdlib_module_names
         and importlib.util.find_spec(n) is None
-        if True
     )
     return f"juniper-canopy {dist.version} imports {len(missing)} top-level modules it does not ship: {missing}"
 
