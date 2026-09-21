@@ -152,6 +152,28 @@ GUARDS: tuple[Guard, ...] = (
         ),
     ),
     Guard(
+        guard_id="nonshortcircuit-key-compare",
+        summary=("The API-key check walks EVERY configured key and accumulates into a flag, instead of `any(...)`, which stops at the first match. `compare_digest` already makes each individual comparison constant-time in the key's CONTENT; what `any()` leaks is the POSITION of the matching key within the iteration. juniper-data has never short-circuited; both forks did, and so did the shared package they were de-cascored from."),
+        register_ids=("APD-CASCOR-005",),
+        status=ENFORCED,
+        canonical="juniper-data/juniper_data/api/security.py (juniper-service-core carries it too; the release train assigns its version)",
+        sites=(
+            # Two markers, for the same reason blank-api-key-filter needs two.
+            # ``matched = False`` alone would go green on any unrelated boolean
+            # accumulator later added to this module; pairing it with ``return
+            # matched`` ties the marker to THIS loop's shape -- accumulate, walk to
+            # the end, then return -- which is the guard itself.
+            #
+            # A source marker is not a second-best instrument here, it is the ONLY
+            # possible one: `any(...)` and the flag loop return the same value for
+            # every input, so no behavioural test can tell them apart, and one
+            # written to try would pass against both and be vacuous (the round-39
+            # §5.3 trap).
+            ForkSite("juniper-data", _DATA_SECURITY, ("matched = False", "return matched")),
+            ForkSite("juniper-cascor", _CASCOR_SECURITY, ("matched = False", "return matched")),
+        ),
+    ),
+    Guard(
         guard_id="pre-auth-throttle",
         summary=("juniper-ml#1082 added FailedAuthThrottle to the shared package so the 401 path consumes budget. This was the natural experiment above -- the fix reached recurrence automatically and neither fork at all -- until it was ported into both (juniper-data#266, juniper-cascor#524)."),
         register_ids=("APD-DATA-001", "APD-CASCOR-004"),
