@@ -51,7 +51,9 @@ convention the bundled redis subchart also honours, and setting it rewrites redi
 > rejects `RELEASE_NOTES_juniper-deploy_v0.3.0.md` as naming an unregistered package. The guard is
 > right; do not register a non-PyPI repo to work around it.
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
-secrets. Last state refresh: 2026-09-15.
+secrets. Last state refresh: **2026-09-21** — the §5 wave table's Wave 1 and Wave 2 rows had
+gone stale against this Status line and are now correct, and canopy's pin has already drifted
+(see the note under §5).
 
 > **The worker release is worth a note before anyone reads its version number as a code change.**
 > Across `v0.5.0...main` there were 43 commits and 23 files with **zero** inside the packaged
@@ -257,14 +259,30 @@ to discover that is on a Pi.
 
 | Wave | Repo | Status |
 | --- | --- | --- |
-| 1 (pilot) | juniper-cascor-worker | **in flight** — juniper-cascor-worker#172 |
+| 1 (pilot) | juniper-cascor-worker | **COMPLETE.** `publish-image.yml` landed as worker#172; the CUDA-contamination fix as worker#175. Image `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0` published 2026-09-15 (run `35033610624`, three jobs green), censused CPU-only from the pulled artifact |
 | — | *verify: pull and run on a Pi node* | **WAIVED as a Wave 3 gate, owner, 2026-09-15 (§5.1).** Re-filed as the gate on **first Pi deployment** and on **OQ-3**, which is what it actually tests. Target: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0`, the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
-| 2 | juniper-cascor | pending |
-| 2 | juniper-canopy | pending |
-| 2 | juniper-data | pending |
-| 2 | juniper-recurrence | pending — build context is **nested** (`juniper-recurrence/juniper-recurrence/`) |
+| 2 | juniper-cascor | **COMPLETE** — cascor#634; `juniper-cascor:0.11.0` published 2026-09-09 |
+| 2 | juniper-canopy | **COMPLETE** — canopy#603; `juniper-canopy:0.8.0` published 2026-09-12, item 1's first publish (package came up **public**, proven by an anonymous pull). **Superseded by `0.8.1`** 2026-09-18 — see the pin-drift note below |
+| 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
+| 2 | juniper-recurrence | **COMPLETE** — recurrence#153; `juniper-recurrence:0.5.0` published 2026-09-10. Build context is **nested** (`juniper-recurrence/juniper-recurrence/`, via `APP_DIR`), which also means its `.dockerignore` lives in that subdirectory and **not** at the repo root — a repo-root sweep false-positives here |
 | 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **COMPLETE 2026-09-17.** Pin (#215, 9 lines) + D-1 check (#217) + `Dockerfile.test` runner published as `ghcr.io/pcalnon/juniper-deploy-test:0.3.0` (#219 / #220 / #221, Release `v0.3.0`) = **10** pinned lines. Sibling fix: helm `values.yaml` (#216) |
 | 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets (§6 OQ-1) |
+
+> **Wave 3's pin DRIFTED the day after it was declared complete, and no gate can see it.**
+> juniper-canopy cut **`v0.8.1` on 2026-09-18** — the fix for canopy#631, this arc's own
+> side-finding, where every published canopy wheel back to 0.5.0 omitted ten top-level
+> `src/*.py` modules that thirteen of its own shipped files import. Wave 3 had pinned `0.8.0`
+> on 09-17. Proposed fix: juniper-deploy#225, moving all four sites
+> (`docker-compose.yml:656,800,891` + `k8s/helm/juniper/values.yaml:220`) to `0.8.1`.
+>
+> **The D-1 gate cannot catch this class.** `Published Image Refs` asserts that a pinned ref
+> **resolves**; it does not assert the ref is the **newest release**. Those are different
+> properties and only the first is checked — so the stack pinned a superseded canopy for three
+> days with every required check green and nothing naming it. A **resolution** gate is not a
+> **currency** gate. Comparing `gh release list` against the pins is a separate check that does
+> not exist; it is deliberately not added here, because a currency gate goes red on every
+> upstream release including ones this repo has not yet chosen to adopt. Until someone decides
+> that trade-off, **re-probe the pins against `gh release list` whenever this plan is opened**.
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
 constraint most likely to break arm64. Proving it there de-risks the other four.
@@ -310,10 +328,18 @@ rather than a dispatch image about to be replaced; `0.6.0` satisfies that.
    *Verify pushed image is CPU-only (publish runs)* → **success**. That step pulls
    `ghcr.io/…@<digest>` and runs `util/check_image_cpu_only.py` **inside the pushed image**. So
    *"a release nobody has run on a Pi"* is true; *"a release nobody has run on arm64"* is false.
-2. **Wave 3's artifact has no Pi consumer.** juniper-deploy contains **zero** `arm64` / `aarch64` /
-   `raspberry` / `pi` references, `docker-compose.yml` declares no `platform:` keys, and its docs
-   target Compose plus k8s (kind / minikube / EKS / GKE / AKS). The pin cannot deliver an arm64
-   risk to a Pi, because nothing points a Pi at that file.
+2. **Wave 3's artifact has no Pi consumer.** `docker-compose.yml` declares no `platform:` keys
+   and its docs target Compose plus k8s (kind / minikube / EKS / GKE / AKS), so the pin cannot
+   deliver an arm64 risk to a Pi — nothing points a Pi at that file.
+
+   > **Stated precisely, 2026-09-21.** This bullet previously read *"juniper-deploy contains
+   > **zero** `arm64` / `aarch64` / `raspberry` / `pi` references"*. That is **false as written**:
+   > `docker-compose.yml:39,46` carry the words in explanatory comments, and
+   > `.github/workflows/publish-image.yml:110` names `ubuntu-24.04-arm` — juniper-deploy's own
+   > arm64 build for `juniper-deploy-test`, which did not exist when the sentence was written.
+   > **None of the three is a Pi consumer**, so the waiver's reasoning is unaffected and the
+   > decision stands. Corrected because an arc that insists on *"measured, not assumed"* should
+   > not rest a ruling on a claim that fails its own grep.
 
 Everything the Pi pull still buys — real Pi silicon and page size versus a cloud Neoverse runner,
 the 64-bit-OS precondition on the actual nodes, RAM and disk in practice, registry reachability and
