@@ -14,7 +14,14 @@ shipped. It is retained as the arc's record, not as live work. The successor is
 `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`;
 the design of record is
 `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`, whose
-`Status:` line and §5 wave table were refreshed 2026-09-17 and are accurate.
+`Status:` line was refreshed 2026-09-17 — but see the §5-table caveat under *Residuals* below.
+
+**This banner was adversarially validated** by three independent lenses on 2026-09-21 (factual
+re-probe; attack-the-conclusion; amputation / unsupported-closure). It is published **after**
+their corrections, not before: the first draft asserted a stale juniper-deploy checkout, an
+unverifiable control count, and an over-broad mechanism for the build-context sweep. All three
+are corrected below and each correction was re-derived in source by this author, not accepted
+from the agent that reported it — one agent claim was itself wrong and is recorded as such.
 
 ### What this document asked for, and where each ask landed
 
@@ -22,61 +29,120 @@ the design of record is
 | --- | --- |
 | Settle the Pi-gate contradiction without picking the convenient reading | **CLOSED** — owner **WAIVED** it for Wave 3 on 2026-09-15; recorded with the full L26-vs-L111 adjudication as §5.1 of the plan (juniper-ml#1943). Re-filed against first Pi deployment and OQ-3 |
 | Fix the plan so the next reader is not handed the same contradiction | **CLOSED** — §5.1 of the plan document names all four conflicting sources and which governed |
-| Wave 3 — pin `docker-compose.yml`'s 9 `image:` lines | **CLOSED** — juniper-deploy#215. `juniper-deploy/docker-compose.yml` now carries **10** `ghcr.io/pcalnon/…:X.Y.Z` refs (L164, 227, 364, 421, 517, 592, 656, 800, 891, 1109), zero `:latest`, zero local build-output tags |
+| Wave 3 — pin `docker-compose.yml`'s 9 `image:` lines | **CLOSED** — juniper-deploy#215. `juniper-deploy/docker-compose.yml` now carries **10** `ghcr.io/pcalnon/…:X.Y.Z` refs (L164, 227, 364, 421, 517, 592, 656, 800, 891, 1109), zero `:latest`. Re-counted 2026-09-21: 17 `image:` occurrences = these 10 + 4 third-party (prometheus, alertmanager, grafana, redis) + 3 in comments |
 | `demo-seed` (then L487) needs an explicit call, having no `build:` | **CLOSED** — it is now L517 and carries a six-line comment stating the reuse, the bump-together rule, and why `make doctor` skips it by design |
 | State the "keep `build:`" stale-image hazard | **CLOSED** — stated in the compose file itself; `make doctor` / `make image-preflight` are the detectors, verified to survive the pin |
 | `Dockerfile.test` runner image | **CLOSED** — `ghcr.io/pcalnon/juniper-deploy-test:0.3.0`, Release `v0.3.0` (juniper-deploy#219 / #220 / #221) |
-| D-1 pull-the-published-images integration test | **CLOSED** — `Published Image Refs` CI job + `scripts/verify_published_images.py`, 6 negative controls (juniper-deploy#217) |
+| D-1 pull-the-published-images integration test | **CLOSED** — `Published Image Refs` CI job + `scripts/verify_published_images.py` (juniper-deploy#217). **Caveat**: the "6 negative controls" figure repeated in the plan, the CHANGELOG and both prior handoffs is **not re-derivable from the committed code** — `tests/test_published_image_refs.py` defines **5** test functions and no `parametrize`. The gate itself works (re-run live 2026-09-21; all 6 refs resolve amd64+arm64); only the count is unsourced |
 | The worker's PyPI publish (owner-gated when written) | **CLOSED 2026-09-17** — PyPI serves `juniper-cascor-worker` **0.6.0**; run `35033610592` is `completed/success`. Re-confirmed 2026-09-21 against the index, not the Release |
-| The canopy wheel omission flagged as a side-finding | **CLOSED** — juniper-canopy#631, closed 2026-09-17 |
+| The canopy wheel omission flagged as a side-finding | **CLOSED** — juniper-canopy#631, closed 2026-09-17, and **shipped as `v0.8.1` on 2026-09-18** (see *Residuals*) |
 
-### What remains — all of it owner-gated, none of it startable here
+### What remains owner-gated
 
 - **Wave 4 (Docker Hub, D-2 phase 2)** — committed, OQ-1 ruled 2026-09-11. Blocked on the owner
   registering `DOCKERHUB_TOKEN` + `DOCKERHUB_USERNAME`, **Read & Write**, in all five image repos.
   **Re-verified 2026-09-21**: `gh secret list` on juniper-cascor, juniper-cascor-worker,
   juniper-data, juniper-canopy and juniper-recurrence returns **no `DOCKERHUB_*` secret in any of
   the five** — they hold only `CROSS_REPO_DISPATCH_TOKEN` / `SOPS_AGE_KEY`, and juniper-recurrence
-  holds none at all. Adding the second login+push before they exist would fail every release.
+  holds none at all (confirmed as genuine zero, not an access failure).
+  > **"Owner-gated" is narrower than it looks, and the next reader should know it.** No Docker Hub
+  > scaffolding exists in any of the five `publish-image.yml` files. A second login+push guarded by
+  > `if: ${{ secrets.DOCKERHUB_TOKEN != '' }}` is a provable no-op while the secrets are absent, so
+  > it *could* be written and merged before they exist — which would reduce the owner's eventual
+  > action from "register five secrets, then wait for a five-repo PR cycle" to "register five
+  > secrets". **Not done here**, because the successor handoff says explicitly not to open
+  > speculative work against owner-gated items. Recorded as an option, not a recommendation.
 - **OQ-2 / OQ-3 / OQ-4** remain open. **OQ-3's gate — the Pi pull — is still un-runnable from this
   workstation**, re-probed 2026-09-21: `turing` does not answer ICMP, and **`yamaguchi` is this
-  workstation itself** (`hostname` = `yamaguchi`, `uname -m` = `x86_64`, resolving to
-  192.168.50.192), so its refusing SSH on :22 is a local sshd fact and not a second candidate host.
-  No arm64 `binfmt_misc` handler is registered here either, so the image cannot even be emulated.
-- **The juniper-deploy PRIMARY checkout is behind** (`9c6a316`) — `pull --ff-only` there is an
-  owner action.
+  workstation itself** (`hostname` = `yamaguchi`, `uname -m` = `x86_64`, and 192.168.50.192 is one
+  of this box's own addresses), so its refusing SSH on :22 is a local sshd fact and not a second
+  candidate host. No arm64 `binfmt_misc` handler is registered here, so the image cannot be
+  emulated either. OQ-2 and OQ-4 are pure design questions needing neither a Pi nor a credential;
+  no analysis exists for either anywhere in `notes/`.
 
-### One item closed on 2026-09-21 by execution, with a negative result
+### Residuals found on 2026-09-21 that nothing else records
+
+1. **The compose pin has already drifted, one day after Wave 3 was declared complete.**
+   juniper-canopy released **`v0.8.1` on 2026-09-18** — the fix for this arc's own side-finding
+   (canopy#631) — and its GHCR image is published and multi-arch (`linux/amd64` + `linux/arm64`
+   + 2 attestation manifests). `juniper-deploy/docker-compose.yml` still pins
+   `ghcr.io/pcalnon/juniper-canopy:0.8.0` at **L656, L800, L891**. **The D-1 gate cannot catch
+   this**: it asserts that a pinned ref *resolves*, not that it is *current*, so nothing will
+   surface the drift until someone looks. The three sites must move together — `test_shared_images_are_pinned_to_one_version`
+   enforces exactly that.
+2. **The plan's §5 wave table contradicts its own `Status:` line.** Rows for Wave 1 (*"in flight —
+   juniper-cascor-worker#172"*) and all four Wave 2 rows (*"pending"*) were never updated, while
+   the Pi-verify, Wave 3 and Wave 4 rows in the same table were. The prose banner and the live
+   registry govern — all five images are published and resolve today. Low consequence, but it is
+   the same self-contradicting shape §5.1 exists to prevent.
+3. **The waiver's supporting claim fails a literal grep.** The plan (§5.1) and the 09-17 handoff
+   both state juniper-deploy contains *"zero `arm64`/`aarch64`/`raspberry`/`pi` references"*.
+   `docker-compose.yml:39,46` (comments) and `.github/workflows/publish-image.yml:110`
+   (`ubuntu-24.04-arm`, juniper-deploy's own arm64 build) all match. **None is a Pi consumer**, so
+   the waiver's reasoning survives intact; the prose is imprecise, the decision is not.
+4. **`juniper-cascor-worker/docs/REFERENCE.md:504,626` and `docs/DEVELOPER_CHEATSHEET.md:231,233`
+   still document `juniper-ci-tools>=0.6.0,<0.7.0`** while the live workflow pin is
+   `>=0.9.0,<0.10.0`. Flagged in the 2026-09-11 handoff as *"reported, not fixed"* and never
+   mentioned again. Outside this arc, but genuinely forgotten.
+
+### The build-context sweep — executed, with the mechanism corrected
 
 `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md`
 left one non-owner-gated action open: *"The build context holds `secrets/` with eight live
 credential files, and there was no `.dockerignore` … **Check the other repos before their next
-image change.**"* That sweep has now been run across all five service image repos.
+image change.**"* That sweep has been run across all five service image repos.
 
-**The juniper-deploy defect does not reproduce in any of them.** Four independent axes, each
-measured rather than reasoned:
+**No credential reaches any published image.** That conclusion holds. But the mechanism first
+written for it — *"all five use an explicit COPY allowlist"* — **is wrong**, and the real one
+matters more:
 
-1. **Every context has a `.dockerignore` at the context root.** The check unit matters: four repos
-   build with `context: .` and carry it at the repo root, but **juniper-recurrence builds from the
-   nested `juniper-recurrence/juniper-recurrence/`** (`APP_DIR`, `publish-image.yml:147`), and
-   Docker reads `.dockerignore` from the **context** root, not the repo root. Its repo root has
-   none — the nested context does. A repo-root sweep reports a false positive here.
-2. **All five exclude the VCS metadata directory.**
-3. **All five Dockerfiles use an explicit COPY allowlist — none does `COPY . .`.** This is the
-   discriminating axis: juniper-deploy's exposure needed a wholesale context copy, and no service
-   image has one. Verified at `juniper-cascor/Dockerfile:41-48`, `juniper-data/Dockerfile:25-30`,
-   `juniper-canopy/Dockerfile:39-47`, `juniper-cascor-worker/Dockerfile:53-60`,
-   `juniper-recurrence/juniper-recurrence/Dockerfile:35-41`.
-4. **No live credential file sits in any context.** The only candidates found were
-   `juniper-canopy/.env.prod` and `.env.dev`; both are **tracked, non-secret configuration**
-   (hosts, ports, log levels, service URLs, rate-limit toggles — no credential of any kind).
+**The load-bearing mechanism is the clean checkout, not the allowlist.** A CI publish builds from
+a fresh checkout, so **only committed files can reach a published image**. That, not the COPY
+list, is what makes the juniper-deploy class non-reproducible here — juniper-deploy's exposure
+was possible because its `secrets/` files sat in a *working tree* the build context swept up.
 
-**One latent nit, deliberately not filed as a defect**: canopy's `.dockerignore:86` is `.env`,
-which in Docker's ignore syntax matches that exact path only — it does **not** match `.env.prod` or
-`.env.dev`. Harmless today because the Dockerfile's allowlist never copies them and their contents
-are not sensitive; it would become live only if someone added a `COPY . .`. Recorded here so the
-next reader does not re-derive it and so it is not mistaken for the juniper-deploy class.
+What that re-framing costs, measured **inside the published artifacts** rather than reasoned:
 
+| published image | committed test files shipped | how |
+| --- | --- | --- |
+| `juniper-cascor:0.11.0` | **268** | `COPY src/ ./src/` (`Dockerfile:48`, `:86`); `.dockerignore` has no `tests/` rule |
+| `juniper-data:0.14.0` | **22** | `COPY juniper_data/ ./juniper_data/` (`Dockerfile:30`); bare `reports/` matches the context root only |
+| `juniper-canopy:0.8.0` | **0** — `/app/src/tests` absent | `.dockerignore:39` is `src/tests/`, correctly multi-segment |
+
+So **cascor's and data's allowlists are directory-grained, not file-grained**: they copy a
+directory whose `.dockerignore` does not exclude the nested test subtree. canopy is the negative
+control that proves the check discriminates. worker and recurrence do not share the gap — their
+packaged directories contain no nested `tests/`.
+
+**A credential committed anywhere under `juniper-cascor/src/tests/` or
+`juniper-data/juniper_data/tests/` would ship into a published production image**, and no
+Docker-level control would stop it. Today none exists — scanned for credential-shaped filenames
+*and* live value patterns (AWS, GitHub, Slack, PEM, `sk-`), zero hits. The only backstops are
+CI-level gitleaks (present for cascor / data / canopy / worker, **absent from juniper-recurrence's
+workflows**) and a pre-commit hook whose `files` regex `^\.env(\.secrets)?$` is anchored to the
+repo root and would not fire on a nested fixture. **Latent, not live** — and worth a `**/tests/`
+rule in those two `.dockerignore` files.
+
+**One agent claim in this validation was itself wrong, and is recorded so it is not re-inherited.**
+The attack-the-conclusion lens reported that cascor's 119 local coverage-report files under
+`src/tests/reports/` "ship into both stages". They do not: `.gitignore:236` is `**/reports/`,
+`git ls-files src/tests/reports/` returns **0**, and the published image has no `reports` subtree.
+They are local-only artifacts and can reach a **local** `docker compose build` — never a CI
+publish. Re-probe before acting on an agent verdict.
+
+Two smaller facts, recorded so they are not re-derived:
+
+- **The check unit matters.** Four repos build with `context: .`; **juniper-recurrence builds from
+  the nested `juniper-recurrence/juniper-recurrence/`** (`APP_DIR`, `publish-image.yml:77,147`),
+  and Docker reads `.dockerignore` from the **context** root. Its repo root has none — its context
+  does. A repo-root sweep reports a false positive here.
+- **canopy's `.dockerignore:86` is `.env`**, which matches that exact path only and does **not**
+  match the tracked `.env.prod` / `.env.dev` beside it. Moot under the current allowlist, and both
+  files are non-secret configuration (hosts, ports, log levels, URLs, rate-limit toggles).
+- **`ci.yml` in cascor / data / canopy and `ci-recurrence-app.yml` in recurrence also run
+  `docker build`** — a second build site the "one Dockerfile per repo" framing does not name. All
+  four use the same context and default Dockerfile, and none pushes; the images are smoke-tested
+  and discarded. Not a wider surface, but the count of build sites is six, not five.
 ---
 
 ## Handoff goal (paste everything between the rules as the new thread's first prompt)
