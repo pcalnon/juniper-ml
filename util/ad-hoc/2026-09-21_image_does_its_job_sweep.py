@@ -59,7 +59,6 @@ writes nothing outside stdout. Requires `docker`. Exits 0 always -- a report, no
 
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
 import sys
