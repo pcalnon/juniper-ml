@@ -176,7 +176,7 @@ def main() -> int:
         with open(out, "w", encoding="utf-8") as fh:
             fh.write(body)
         if out.endswith((".bash", ".sh", ".py")):
-            os.chmod(out, 0o755)  # nosec B103 -- extracted scripts must be executable for bash -n / shellcheck; scratch dir only
+            os.chmod(out, 0o700)  # owner-only: systemd-analyze verify wants Exec targets executable; the scratch tree is private
         written.append((rel, lang, line, body, out))
     # Phase 2: lint.
     for rel, lang, line, body, out in written:
