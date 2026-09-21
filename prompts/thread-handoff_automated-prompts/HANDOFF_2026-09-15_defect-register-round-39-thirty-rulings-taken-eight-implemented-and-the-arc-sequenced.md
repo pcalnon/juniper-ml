@@ -692,7 +692,9 @@ which were not recovered.
       §5.9 of this same document, and `Juniper/AGENTS.md` now reads `5.0.0`. The cross-reference
       was wrong too — §5.8 is the `open_signed_pr.py` branch-without-commit trap.)*
 - [ ] D-A … D-G, C-A … C-C, X-A, X-B, M-A (§0) — **still outstanding, re-verified 2026-09-21**
-- [x] **X-C** (`APD-CASCOR-005`) — implemented 2026-09-21, PRs open, not yet merged; §9
+- [x] **X-C** (`APD-CASCOR-005`) — **SHIPPED and CLOSED 2026-09-21**: juniper-cascor#659 +
+      juniper-ml#1974 merged and verified by content on `main`; row closed (five touches);
+      register `119 | 96 fixed | 23 open`. **Bounded** — canopy's fourth copy is NOT fixed. §9.8
 - [x] `APD-DATA-047` — **RATIFIED at `1e11` by the owner, 2026-09-21** (§0.6). No owner decision
       is owed anywhere in the register now.
 - [x] This document validated — two rounds, three lanes each, both recorded in §7; neither
@@ -835,9 +837,10 @@ count above `1e11`, or a typo below it, reopens the question. Both rejected opti
 reasoning are recorded at the row and in its §5.1 row, per §3's standing requirement that a
 reader be able to tell a decision from a drift.
 
-**`APD-CASCOR-005` is deliberately NOT closed**, although §9.2 implements it. "Status is verified,
-not inherited" — the fix is on two branches, merged nowhere. It closes when both PRs are on
-`main` and the content is verified there, not when the badge says MERGED (§5.6).
+**`APD-CASCOR-005` was deliberately NOT closed in this PR**, although §9.2 implements it. "Status
+is verified, not inherited" — at the time this was written the fix was on two branches, merged
+nowhere. It closed only once both PRs were on `main` and the content was verified there, not when
+the badge said MERGED (§5.6). That happened the same day; see §9.8.
 
 ### 9.7 Validation of §9 — PARTIAL, and it did not pass
 
@@ -900,3 +903,48 @@ one.** A successor should re-run the four failed lanes rather than inherit this 
 comfort. The one thing that *is* now multiply-sourced is the four-copy census and the gate's
 blindness to canopy — two independent entry points, agreeing, with the second one forbidden the
 first one's documents.
+
+### 9.8 `APD-CASCOR-005` closed — X-C is complete, and the sweep earned its keep
+
+Both halves merged and were verified **by content on `origin/main`**, not by a badge:
+juniper-cascor#659 (squash `435d6069`) → `src/api/security.py:68,72`; juniper-ml#1974 (squash
+`968b9e9e`) → `juniper-service-core/juniper_service_core/security.py:73,77` and the guard row at
+`tests/test_service_fork_drift.py:155`. juniper-ml#1973 (squash `2dec7631`) carried §9.1–§9.7 and
+the `APD-DATA-047` close.
+
+**Five touches this time, not four** — this row *has* a §3 detail entry, which is the distinction
+the protocol draws and the reason §9.6's close took four. Applied by
+`util/ad-hoc/2026-09-21_register_close_cascor005.py`. Result: **`119 rows | 96 fixed | 23 open`**,
+crosscheck **`96 / 96 / 96, AGREE`**, `APD-CASCOR` down to **2** open. 43 tests OK. The doc-link
+validator passes across 960 files, which is the check that matters here because the close
+**renamed a §3 heading** ("two of three copies" → "three of four") and therefore its anchor;
+the ecosystem was swept first and that anchor had exactly one referrer, line 23 of the register
+itself.
+
+**The close is BOUNDED and says so in the row.** It closes the two copies the ruling named.
+`juniper-canopy/src/security.py:74` is a third short-circuiting copy and is **not fixed** — and
+cannot simply be added to the guard, because `_FORK_REPOS` excludes it by construction (§0.3).
+Closing on canopy's behalf would be precisely the inheritance "status is verified, not inherited"
+forbids.
+
+**Two stale sentences were caught by READING the sweep, and one of them was mine.** The protocol
+requires a whole-file `grep -n 'APD-<ID>'` *and reading every hit*; it is explicit that grepping
+alone is not the requirement. Both hits below make a status claim while the row's own marker says
+FIXED — the "register disagrees with itself while every count-based check still passes" failure —
+and **neither is reachable by any instrument in the repo**:
+
+- **§4.3's routing note, broken by the closing script itself.** The marker was anchored on a
+  phrase in the MIDDLE of the paragraph, so the note still *opened* with "This row is an **owner
+  decision, not a task**" as present fact, and the marker then read "The routing below was
+  correct" while pointing at text *above* it. A reader scanning for status would have stopped at
+  the stale first sentence. **Writing the correction is not the same as placing it where the
+  reader meets it.**
+- **§6's Confidence note** still listed `APD-CASCOR-005` bare among entries "to triage before
+  being actioned", in a sentence that already marks closed ones
+  ``~~`APD-DATA-033`~~ (fixed, data#297)``. Following the convention already present beat
+  inventing a second one.
+
+Both repaired by `util/ad-hoc/2026-09-21_register_cascor005_sweep_followups.py`.
+
+**Still open from §0**, unchanged: D-A…D-G, C-A…C-C, X-A, X-B, M-A, plus §0.4's two no-row items
+and canopy's fourth copy. **X-C is done.**
