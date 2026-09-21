@@ -838,3 +838,65 @@ reader be able to tell a decision from a drift.
 **`APD-CASCOR-005` is deliberately NOT closed**, although §9.2 implements it. "Status is verified,
 not inherited" — the fix is on two branches, merged nowhere. It closes when both PRs are on
 `main` and the content is verified there, not when the badge says MERGED (§5.6).
+
+### 9.7 Validation of §9 — PARTIAL, and it did not pass
+
+Procedure: `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
+**Read this before treating anything in §9 as validated.** §7 records that round 39 ran two full
+rounds and that *neither passed on the first pass* and *both changed shipped code*. This section
+is not that. It is one lane out of five.
+
+**Sized** at 3 Lane A (distinct entry points) + 2 Lane B (opposing lenses), per §3's escalators:
+the census claim carries a universal quantifier, it **overturns** a document of record (§0.3's
+"three copies" and the `APD-CASCOR-005` §3 heading's "two of three"), a fix hangs on it, and the
+finding is *convenient* — it confirms what the author already suspected.
+
+**Delivered: one lane.** Lane A1 (register entry point), Lane A2 (git/PR-history entry point),
+Lane B1 (refute the canopy impact assessment) and Lane B2 (refute the change and the close) all
+terminated on API rate limits — one on a per-request 429, three on a session limit. They produced
+no findings at all. Only **Lane A3 (raw source-tree census)** completed.
+
+**What Lane A3 independently confirmed**, from an entry point that was given no number to
+reproduce and was forbidden the handoff and the register:
+
+- **Four distinct copies**, named: `juniper-canopy/src/security.py`,
+  `juniper-cascor/src/api/security.py`, `juniper-data/juniper_data/api/security.py`,
+  `juniper-ml/juniper-service-core/juniper_service_core/security.py`. It reached **four**
+  without being told a count.
+- **canopy is the only one of the four with no blank-key filter** — `set(api_keys) if api_keys
+  else set()` at `:53`. Reached independently.
+- **`_FORK_REPOS = ("juniper-data", "juniper-cascor")` at `:59`, and canopy is not among them**,
+  with the sharper phrasing that `test_every_guard_is_well_formed` asserts membership so **"no
+  guard can reference canopy even in principle."**
+- juniper-data holds a **`list`** (order-preserving de-dup via `dict.fromkeys`) where the other
+  three hold a `set` — the deliberate divergence the drift gate's own docstring describes.
+
+**What Lane A3 added that this session did not have:**
+
+- **juniper-recurrence is a CONSUMER, not a fifth copy.** It imports `build_api_key_auth` from
+  `juniper_service_core` (`juniper-recurrence/juniper-recurrence/juniper_recurrence/app.py:26-30`,
+  called at `:134`). This is the natural experiment §2.3 describes, still running: recurrence gets
+  the fix for free and the two forks do not.
+- The clients and the worker hold a caller-side key value only and never validate against a
+  collection, so they are correctly out of scope.
+
+**What Lane A3 could NOT rule out, in its own words:** a validator whose names avoid both `key`
+and `api_key` and which does not call `compare_digest`; `juniper-legacy/`, excluded by
+instruction, which does contain matching content; and **130 sibling worktrees** under
+`juniper-ml/.claude/worktrees/` that it did not inspect.
+
+**What has NOT been validated by anyone, and must not be read as though it had:**
+
+| Claim | Lane that would have attacked it | Status |
+|---|---|---|
+| The canopy divergence fails CLOSED and is not an auth bypass | B1 | **UNVALIDATED** — this is a mechanism claim, the class the ecosystem note `E2E finding mechanisms are unreliable` says is most often wrong |
+| The `APD-DATA-047` close satisfies the protocol; the §2 prose counts are coherent | B2 | **UNVALIDATED** — instruments agree (`95/95/95`), but no independent party re-derived them |
+| The guard's two markers cannot be present in a still-short-circuiting file | B2 | **UNVALIDATED** — the guard may be defeatable |
+| No PR since 2026-09-15 implements a §0 item | A2 | **UNVALIDATED by a second party** — swept once, by the author |
+| `matched`-loop and `any()` are behaviourally identical for every input | B2 | **UNVALIDATED** — reasoned, not fuzzed |
+
+**Per §4 of the procedure this is not a completed review, and per §6 it must not be written up as
+one.** A successor should re-run the four failed lanes rather than inherit this section's
+comfort. The one thing that *is* now multiply-sourced is the four-copy census and the gate's
+blindness to canopy — two independent entry points, agreeing, with the second one forbidden the
+first one's documents.
