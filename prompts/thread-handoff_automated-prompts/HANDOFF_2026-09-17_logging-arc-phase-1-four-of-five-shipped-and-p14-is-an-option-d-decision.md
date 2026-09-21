@@ -300,13 +300,28 @@ is not started, and §2 argues it needs an owner ruling first.
 
 **Revised steps, in order:**
 
-1. **Ship the `isEnabledFor` memo fix first — it belongs to no option and unblocks a clean ruling.**
+1. ~~Ship the `isEnabledFor` memo fix first~~ — **DONE 2026-09-21,
+   [cascor#667](https://github.com/pcalnon/juniper-cascor/pull/667)**. Measured **1,270 → 341 ns,
+   3.73×**, with all **132 cells** of the (configured level × probe level) behaviour table identical
+   across an unfixed and a fixed checkout driven in separate subprocesses
+   (`util/ad-hoc/2026-09-21_p14_isenabledfor_memo_verify.py`). Three regression tests added to
+   `src/tests/unit/test_logger_level_state_reconciliation.py`, pinning the **mechanism** rather than
+   a wall-clock time; the mutation check fails exactly those two mechanism tests and **nothing else
+   across four logger suites**. **Re-measure §0.0.4's ladder against this before ruling on P1.4** —
+   almost all of Option D's ~1,200–1,400 ns was this defect.
+
+   <details><summary>original step 1 text</summary>
+
+   **Ship the `isEnabledFor` memo fix first — it belongs to no option and unblocks a clean ruling.**
    `logger.py:1098` re-derives the configured level on every guard call while `_filter_by_level`
    (`:551-552`) uses the memoised `_resolve_level_number` (`:526-543`). Route the guard through the
    same helper, preserving the `NOTSET` fallback. Both Lane B briefs independently named this the
    highest-value change available. **It moves every row of §0.0.4's ladder**, so ruling on today's
    numbers would attribute to idiom choice what belongs to this defect. Needs its own PR and its own
    mutation check; do not fold it into P1.4.
+
+   </details>
+
 2. ~~Measure before wiring.~~ **DONE 2026-09-21** — `util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py`,
    independently re-created as `util/ad-hoc/2026-09-21_p14_independent_remeasure.py`. Results and
    reconciliation in §0.0.4. The prior recorded there ("(c) loses to (b) on speed, wins on
