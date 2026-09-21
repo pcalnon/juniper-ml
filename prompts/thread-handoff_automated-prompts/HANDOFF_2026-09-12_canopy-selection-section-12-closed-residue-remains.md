@@ -5,6 +5,178 @@
 - **Session**: `resilient-strolling-bachman`
 - **Predecessor**: [`HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md`](HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md) — its item 1 is **closed** here; items 2–8 are carried forward, each **re-verified against `main` today** rather than inherited
 - **Design of record**: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md) — **§12 now closes at §12.8**; §12.6 and §12.7 carry this arc's corrections
+- **Status addendum**: [§ Status as of 2026-09-21](#status-as-of-2026-09-21) — read that FIRST. Three of the eleven items below are closed, two are materially misstated, and the residue is larger than this document records. The body below is preserved unedited as the 09-12 record.
+
+---
+
+## Status as of 2026-09-21
+
+Session `velvety-pondering-frost`. Every item re-probed against `main` in both repos, then put through three independent adversarial
+agents (factual re-probe / conclusion attack / omission hunt) per
+`feedback_multi_agent_adversarial_validation_sop`. **Four of my own claims were refuted and are
+corrected here**; the agents' findings were themselves re-derived in source before being recorded.
+This document is still this arc's live handoff — nothing after 2026-09-12 supersedes it.
+
+### Disposition of the eleven items below
+
+| # | Item | Status |
+|---|---|---|
+| 1 | §4.10 hydration + G7 | **OPEN.** `_init_params_from_backend_handler` has moved to `src/frontend/dashboard_manager.py:8715` (was `:8679`); `NUM_OUTPUTS = 29`, still zero dataset-axis outputs. |
+| 2 | `⊥`-at-mount (OQ-N2) | **OPEN**, unchanged. `value=DEFAULT_DATASET_TYPE` at `:1400` and `:5991`; `params-init-interval` ×11. |
+| 3 | X10 / X11 | **OPEN and WIDER** — see new item **N3**. |
+| 4 | Y1 / Y2 | **Y1 CLOSED** (canopy#633; `recurrence_backend.py:408`). **Y2 OPEN**, and four *more* methods are missing — see **N1**. |
+| 5 | ∥ packaging | **OPEN, mechanism corrected.** `yfinance` is absent from `juniper-data/requirements.lock` because the lock is compiled `--extra api --extra observability --extra mnist` (its header line 2) and `yfinance` lives in the `equities` extra (`juniper-data/pyproject.toml:51`). Not a forgotten pin — a lock-scope decision. |
+| 6 | §4.3 residue | **OPEN**, unchanged. D5 label at `dashboard_manager.py:2909`; `aria-describedby` 0 occurrences. |
+| 7 | Record OQ-6 answered | **OPEN.** Design doc line 81 still reads "OQ-6 remains open". |
+| 8 | `arc_agi` is a DECISION | **CLOSED.** §12.9 of the design doc adjudicated VR-1…VR-8 (juniper-ml#1923); canopy#623 → **canopy#625** shipped it. The registry expresses a single rank; a rank-flipping knob is withheld, not described. |
+| 9 | "the signed-commit helper has FOUR copies" | **MISSTATED — do not action as written.** A canonical helper *is* already promoted: `util/open_signed_pr.py:117` `create_signed_commit`, with a hermetic test at `tests/test_open_signed_pr.py`. All four ad-hoc files **reuse** it (`import open_signed_pr as osp`, or an `importlib` path-load) rather than duplicating it, and one self-declares as a promotion candidate. The fourth path is `util/ad-hoc/push_signed_commit.py`, **not** `util/push_signed_commit.py`. What remains is consolidating four thin *drivers* — a much smaller job than "promote one, retire three". |
+| 10 | canopy timing flakes | **SUPERSEDED.** The real defect was not flakiness — see **N0**, fixed in **canopy#641**. |
+| 11 | upstream question to juniper-data | **HALF CLOSED.** The `arc_agi` `task_type` half was filed as **juniper-data#401** and fixed by **juniper-data#402** (merged 2026-09-15): `arc_agi` now declares a *third* task-type value, `TASK_TYPE_STRUCTURED`. The **equities-defaults half remains unfiled** — juniper-data has exactly one open issue (#179, June). |
+
+### Corrections to my own first pass (kept, because each is a trap)
+
+- **"60/60 failures since 2026-07-24" was an instrument artifact** — I read my own `--limit 60` as the
+  retention horizon. Retention holds **145 runs back to 2026-05-01, with 58 successes**. The true
+  shape is better evidence: last green **2026-07-20**, unbroken failure streak of **63** from
+  2026-07-21 — and canopy#459 added the offending import at 17:57 on 2026-07-20.
+- **"ci.yml documented this hazard and it was never propagated"** is right about the *integration*
+  lane (its N3 comment names `.constants`) and wrong about the *unit* lane: that comment describes a
+  silent `importorskip`, and landed 2h48m **before** the `.constants` import existed.
+- **My own regression guard passed vacuously on first draft** — it searched the run-step text for
+  `[juniper-cascor]`, which the explanatory comment I had just written satisfies. Mutation-checking
+  caught it; the check now strips comments and matches a real `pip install`.
+
+### New items, highest-value first
+
+- **N0 — `Scheduled Tests` red for 63 consecutive runs. FIXED, PR open: canopy#641.**
+  `scheduled-tests.yml` installed `pip install -e .` with no extra, so `src/tests/conftest.py`'s
+  stub (top-level + `.exceptions` + `.client` only) could not satisfy
+  `cascor_service_adapter.py:45`'s `from juniper_cascor_client.constants import …`. Four modules
+  died at **collection**. Also fixed: `src/tests/contract/` and `src/tests/performance/` were named
+  by **no lane at all** — 3 and 4 live tests that had never run in CI.
+- **N1 — four more `RecurrenceBackend` methods are missing and called unguarded.** Y1 was one of
+  five. `swap_dataset_live`, `cancel_swap_dataset_live`, `get_dataset_swap_events` and
+  `get_snapshot_dataset_swaps` exist on `demo_backend.py` and `service_backend.py`, and are **0** in
+  `recurrence_backend.py`; called with no `hasattr` guard at `main.py:4429`, `:4455`, `:4492`,
+  `:4521`, inside a bare `except Exception` that returns a 500 + `error_id`. **`get_dataset_swap_events`
+  is worse than Y1 ever was**: `_setup_dataset_swap_observers_callbacks` polls
+  `/api/history/dataset_swaps` on every `slow-update-interval` tick —
+  `SLOW_UPDATE_INTERVAL_MS = 5000` (`canopy_constants.py:371`) — so under recurrence that is a fresh
+  500 every five seconds for the life of the page, invisible to the client.
+- **N2 — §12.4's own acceptance criterion was never met.** §12.4 requires generate → **stage** →
+  train → **render**, per seed. §12.6/§12.7 record direct library calls only (`LMURegressor.fit`
+  in-process; generate → NPZ → `CascadeCorrelationNetwork.fit`). **No seed has ever travelled
+  canopy's `_apply_dataset_handler` → `/api/stage_dataset` → Start path, and none has been rendered.**
+  The 09-08 predecessor carried this caveat ("No training run has ever been started"); this document
+  dropped it while declaring §12 closed.
+- **N3 — X10/N6's other half.** Beyond `initialize()` returning `True` unconditionally
+  (`recurrence_backend.py:422-425`) and `selection_is_live` being health-blind
+  (`model_registry.py:491`), a recurrence run's `completion_reason` never reaches the operator.
+  **Corrected 2026-09-21 — this is TWO mechanisms, not one, and the first is not a mapping
+  miss.** `completion_reason` has exactly one consumer, `dashboard_manager.py:7118-7121`, and it
+  is gated on `status == "Completed"`; there is **no `status == "Failed"` branch anywhere in the
+  file**. So:
+  - **A failed run's reason is never read at all.** `recurrence_backend.py:274` writes the raw
+    error into `completion_reason` on `state == "failed"`, and the consumer block does not run.
+    The gate matches cascor's semantics — its five reasons are all *completion* outcomes — so
+    this is an overload: the same field carries a completion outcome in cascor and a **failure
+    error** in recurrence, and only the cascor reading is implemented.
+  - **A successful run's reason is dropped by the mapper.** `_completion_reason_label`
+    (`:6921-6936`) maps five cascor tokens and `.get()` returns `None` for anything else, so
+    recurrence's `stopped_reason` (`:277-279`) renders nothing. That reason is an **open
+    vocabulary** — `recurrence_service_adapter.py:161` types it `Optional[str]`, passed straight
+    through from the service's JSON — so the fix needs a rendering rule for unmapped values, not
+    a bigger table.
+
+  The earlier wording here attributed both halves to the mapper. It is right that the reason is
+  discarded and right that §12.9's rejection of VR-5 rests on this being broken; it is wrong
+  about why the failure case is lost, which matters because the fix is a missing branch rather
+  than a missing table entry.
+- **N4 — the equities seed's recorded evidence is stale against two breaking bumps.**
+  `model_registry.py:201` records `(15799, 16)`, measured 2026-09-11 at generator `3.0.0`. The
+  generator is now **`5.0.0`** (`juniper-data/.../equities/generator.py:58`), and 4.0.0 made the
+  default feature matrix **15 columns, not 16**. #404 exists because #395 shipped values wrong by
+  400–1000×. Nothing has re-validated the seed.
+- **N5 — `_fetch_generators` fails OPEN, and §12 made that eight times worse.**
+  `dashboard_manager.py:3006-3013`: any error yields an empty list, and the availability helpers then
+  treat **every** generator as available. Three seeds are now availability-gated, and
+  `_gate_dataset_options_handler` snaps to the first compatible-and-available entry — so with
+  juniper-data down the operator is landed on a dataset that cannot generate, Apply returns 200, and
+  Start fails. Carried by the 09-07 and 09-08 handoffs; dropped here without closure.
+- **N6 — canopy#625 shipped the render half, not the forward half.** `dataset_schema.py:134-136`
+  states the contract as "neither render **nor forward**". Only rendering is filtered
+  (`dashboard_manager.py:3073`); `_collect_generator_params` still drops only `None`/`""` and the
+  form overrides the seed. And `test_a_seeded_generator_with_a_withheld_knob_cannot_be_overridden_by_the_form`
+  never constructs a control id — **its name over-claims a guarantee its body does not test**.
+- **N7 — no drift test against juniper-data (Y6), and its stated justification is false.**
+  `test_dataset_generator_contract.py:227-231` says upstream *adding* a generator is not caught;
+  `:285-288` justifies being hermetic by claiming the env has juniper-data `0.6.0`. It has
+  **`0.14.0`**. N4 is precisely the drift this would have caught.
+- **N8 — canopy's `juniper-data-client` floor predates decision 11.** `pyproject.toml:148` pins
+  `>=0.4.1,<0.6.0`; the env runs **0.4.1**, with **no `validate_npz_contract`**. The three-partition
+  contract every §12 seed depends on arrived in 0.5.0, so it is never exercised locally. This is the
+  unchanged local half of canopy#559.
+- **N9 — canopy documents a two-value `task_type` vocabulary that is now three.**
+  `model_registry.py:36-38` and `:91` both say `"classification" | "regression"`; juniper-data#402
+  added `structured`. Nothing breaks today (`task_type` is an unconstrained `str` and `arc_agi` is
+  unseeded), but no `ModelSpec.supported_task_types` contains it, so a future `structured` generator
+  is silently compatible with nothing.
+- **N10 — canopy#368 is this arc's parent issue and has never been updated.** Open since
+  2026-06-17 while most of its A0/A1 shipped. Two clauses are outstanding: the mandatory `nn_model`
+  backend mirror on `SetParamsRequest` and `StageDatasetRequest`, and the accessibility clause
+  (= Y7, item 6 above, tracked there without its issue). **canopy#371**'s stated promotion trigger
+  ("promote when A1 lands") has also fired, untouched.
+
+### Recommended order
+
+**N1 before N0's remainder.** A permanently-red CI lane is loud, bounded and costs attention; a
+backend that reports healthy while its service is down, 500s every five seconds, and writes
+snapshots that report success while persisting zero model state is silent and corrupts results.
+N0 was done first only because it was cheap and already proven — not because it ranks highest.
+
+### Progress, later on 2026-09-21
+
+| item | state |
+|---|---|
+| **N0** | **MERGED — canopy#641.** Verified on `main` by a `workflow_dispatch` run rather than assumed: all three legs green, the first success after the 63-run streak. **The recovery was ~4× the estimate** — measured `413 → 506 passed`, `4 → 0 errors`, `103 → 81 skipped`. The PR predicted ~25 tests; other modules were `importorskip`-ing on the same missing client *without erroring*, including the 510-line stream-liveness suite `ci.yml:169-172` already warned about for its own lane. A skip is not a failure, so nothing counted them — the loud defect was masking a quiet one four times its size. |
+| **N1** | **PR open — canopy#643.** All four methods, plus `cancel_pending_dataset` (unguarded at `main.py:4324`, undeclared, implemented everywhere today — latent, not live). Guard reads the requirement from the **caller**: a plain conformance test passes vacuously, because on `main` the protocol declared 22 methods and all three backends implemented all 22 while the four broken ones sat undeclared. |
+| **N6** | **PR open — canopy#644.** Confirmed a **live** defect, not merely an untested claim: the mutation check shows a fabricated/stale `flatten: False` control genuinely overrides the seed and stages mnist rank-3. |
+| **N3** | Diagnosis corrected above. Not started — its fix needs a rendering rule for an open vocabulary, which is a UI judgement rather than a mechanical repair. |
+
+Still unstarted: **N2** (needs the real stack — a different kind of work from the rest), **N4**,
+**N5**, **N7**–**N10**, and original items 1, 2, 3, 5, 6, 7, 9, 11.
+
+### Verification commands (2026-09-21 — supersede the block below)
+
+```bash
+# Both repos are current as of this writing; canopy main = 034925ae, juniper-ml main = d721fc78.
+cd /home/pcalnon/Development/python/Juniper/juniper-canopy && git pull --ff-only origin main
+
+# §12 still closed: 14 seeds / cascor 8 / recurrence 6 / unseeded arc_agi + csv_import
+cd src && conda run -n JuniperCanopy1 python -c "
+import sys; sys.path.insert(0,'.')
+from model_registry import DATASET_TYPES, MODELS, compatible_datasets, UNSEEDED_GENERATORS
+print(len(DATASET_TYPES), sorted(UNSEEDED_GENERATORS))"
+
+# N1: four methods present on demo/service, absent on recurrence
+for m in swap_dataset_live cancel_swap_dataset_live get_dataset_swap_events get_snapshot_dataset_swaps; do
+  echo "$m recurrence=$(grep -c "def $m" backend/recurrence_backend.py) service=$(grep -c "def $m" backend/service_backend.py)"
+done   # expect 0 / 1 each
+
+# N0 reproduced without a clean venv (juniper-ml worktree)
+python util/ad-hoc/2026-09-21_canopy_scheduled_lane_repro.py   # expect 4 collection errors
+```
+
+**Changed this session**: `.github/workflows/ci.yml`, `.github/workflows/scheduled-tests.yml`,
+`src/tests/regression/test_ci_lane_wiring.py` (all juniper-canopy, in **canopy#641**);
+`util/ad-hoc/2026-09-21_canopy_scheduled_lane_repro.py` and this file,
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-12_canopy-selection-section-12-closed-residue-remains.md`
+(both juniper-ml).
+
+**Git status**: juniper-canopy `main` at `034925ae`, clean; branch `fix/scheduled-lane-cascor-extra`
+pushed, **canopy#641 open, NOT merged** — the 09-12 merge approval covered that arc's PRs and does
+not extend here. juniper-ml worktree `velvety-pondering-frost` on
+`docs/canopy-selection-handoff-status-2026-09-21`.
 
 ---
 
