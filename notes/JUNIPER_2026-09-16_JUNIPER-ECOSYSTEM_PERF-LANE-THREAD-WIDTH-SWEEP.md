@@ -83,6 +83,54 @@ right — nobody had validated 2 — but the validation returns "indistinguishab
 
 ## 2. D2 — the environment route WORKS, and cascor#531's penalty does not reproduce
 
+> ## ⚠ CORRECTION 2026-09-22 — the column headed "initial pass" IS NOT THE INITIAL PASS
+>
+> `util/ad-hoc/2026-09-16_thread_width_arm.py:229-231` computes
+> `initial = [s for s in stages if s["stage"] == "train_output_layer"]` and sums **all** of
+> them. cascor emits that stage name **once per output pass, not once per run** — every
+> evidence file carries **five** of them — so `initial_pass_seconds` is
+> *first pass + every later pass*, i.e. total output-training time. Verified on the raw
+> records, where it reconciles to four decimal places:
+>
+> | arm | reported "initial pass" | TRUE first pass | reported `later_passes_seconds` | first + later |
+> |---|---|---|---|---|
+> | `none` (control) | 8.2453 | **6.3594** | 1.8864 | 8.2458 |
+> | `env w2` | 3.2333 | **1.1833** | 2.0505 | 3.2338 |
+> | `env w16` | 3.6470 | **2.0404** | 1.6070 | 3.6474 |
+> | `thread w16` | 11.9759 | **2.1772** | 9.7991 | 11.9763 |
+>
+> **What survives.** `later_passes_seconds` and `candidate_seconds` filter on different stage
+> names and are **clean**, so §1 (D1's width comparison) and §2's point 3 (cascor#531's penalty
+> does not reproduce) are unaffected. So is point 1 — `icv_in` is read per stage and is not a
+> duration at all. **The route still works, and capping still helps.**
+>
+> **What changes.**
+> - **Point 2's "−33%" is measured on the wrong quantity, and it UNDERSTATES the effect.**
+>   Capping is a bigger win on the true initial pass than the note claims, not a smaller one.
+>   The medians behind the −33% are totals; do not re-quote the percentage until it is
+>   recomputed from first-pass figures.
+> - **§2.1's "3.3× gap at identical OpenMP width" does not evidence what it is used for.**
+>   `thread w16`'s 12.295 s is dominated by its own 9.799 s of later passes. On the **true
+>   first pass** the two arms are 2.1772 (`thread w16`) and 2.0404 (`env w16`) — within noise.
+>   The mechanism claim itself (only `thread` also moves torch's *global*) is **not** refuted,
+>   and `thread w16` really is far slower overall — but the slowness lives in the **later
+>   passes**, not the initial one, and §2.1 attributes it to the initial one.
+>
+> This is the *instrument answers an adjacent question* class: the metric was correctly
+> computed and incorrectly named, and every reader inherited the name. Found while re-probing
+> this note for
+> [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md).
+>
+> **A second, independent gap in the same instrument**: D1's gate demanded *"epoch count and
+> total wall time"* and D2's item 4 demanded *"epoch counts per phase"*. The arm emits
+> `later_pass_count` and `candidate_phase_count`, which count **stages**, and the string
+> `epoch` appears in **none of the 40 evidence files** — though the arm's own docstring
+> (`:54`) claims it reports *"epochs completed and the final accuracy"*. Point 3's
+> "does not reproduce" therefore rests on candidate-phase **wall time** alone, which cannot
+> separate *no effect* from *two effects cancelling* — and §1 of
+> [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md)
+> records exactly two channels moving in opposite directions.
+
 Corrected run. `init_icv_in` is the OpenMP width **actually in force during the initial pass**,
 read per stage:
 

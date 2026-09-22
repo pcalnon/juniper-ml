@@ -420,6 +420,152 @@ def thread_budget_env(app: str, max_parallel: int) -> "dict[str, str]":
     return {"OMP_NUM_THREADS": str(split), "MKL_NUM_THREADS": str(split), "OPENBLAS_NUM_THREADS": str(split)}
 
 
+#: ``runtime:`` key -> the process environment variables it sets. D2 (below) chose the
+#: environment route, so every entry here is a variable name, never a Python-level setter.
+#: ``blas_threads`` fans out to all three BLAS families because which one binds depends on the
+#: BLAS the environment resolved -- ``JuniperCascor1`` ships MKL and OpenBLAS both, and pinning
+#: only one leaves the other at its default of "every core".
+RUNTIME_BLAS_VARS: "tuple[str, ...]" = ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")
+
+#: `runtime:` sub-key -> the variables it sets. Used to decide which of a cell's runtime values
+#: were asked for BY THE SUITE (matrix / include) rather than inherited from a base config.
+RUNTIME_KEY_VARS: "dict[str, tuple[str, ...]]" = {
+    "blas_threads": RUNTIME_BLAS_VARS,
+    "num_processes": ("CASCOR_NUM_PROCESSES",),
+    "eval_metrics_enabled": ("JUNIPER_CASCOR_EVAL_METRICS_ENABLED",),
+}
+
+#: The variables the H-11 parallel budget also sets, and therefore the only ones whose
+#: precedence is contested. Everything else in a `runtime:` block applies unconditionally.
+_H11_CONTESTED_VARS: frozenset = frozenset(RUNTIME_BLAS_VARS) | {"CASCOR_NUM_PROCESSES"}
+
+
+def _explicit_runtime_vars(overrides: dict) -> "set[str]":
+    """The env vars this cell's own overrides name, via dotted `runtime.<key>` paths."""
+    named: "set[str]" = set()
+    for path in overrides or {}:
+        if isinstance(path, str) and path.startswith("runtime."):
+            named.update(RUNTIME_KEY_VARS.get(path.split(".", 1)[1], ()))
+    return named
+
+
+def runtime_block_env(doc: dict, app: str = "cascor") -> "dict[str, str]":
+    """Map a cell's ``runtime:`` block onto the environment the launcher exports to the service.
+
+    **Owner decision D2**
+    (``notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md``):
+    implement ``runtime:`` as *the launcher exporting the variables at cascor bring-up* -- the
+    process-tree-wide route -- and not as ``torch.set_num_threads`` on the training thread. The
+    alternative was put to the owner and declined: cascor's two width mechanisms are independent,
+    and only the environment one reaches the candidate workers, which inherit the ancestor's pool
+    through ``forkserver``.
+
+    **The gate on that ruling is PARTLY discharged, and the remaining part is named here so this
+    docstring does not become the place the gap goes to die.**
+    ``notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`` §2 establishes
+    the two things that justify wiring the route up at all: ``icv_in`` equals the requested width
+    in every arm (so the route *binds*), and capping at 2 measurably reduces output-pass time.
+    Do NOT re-quote that note's "-33%" -- its §2 correction of 2026-09-22 shows the column it was
+    computed from sums every output pass rather than the first, so the figure is real but
+    mislabelled, and it UNDERSTATES the true initial-pass benefit.
+    What the note does NOT establish is the gate's item 4, *"epoch counts per phase"*:
+    ``util/ad-hoc/2026-09-16_thread_width_arm.py`` emits ``later_pass_count`` and
+    ``candidate_phase_count``, which are counts of STAGES, not of epochs -- the string "epoch"
+    does not occur anywhere in the 40 evidence files, though the arm's own docstring claims it
+    reports "epochs completed". So the note's headline that cascor#531's 1.52x penalty "does not
+    reproduce" rests on candidate-phase WALL TIME alone. Wall time is epochs x time-per-epoch, so
+    a flat wall is consistent with no effect **and** with two effects cancelling -- and cancelling
+    is the live possibility, because the ruling's §1 records exactly two channels moving in
+    opposite directions (throughput 1.26x -> 1.14x, epoch count 1.21x -> 1.03x). The epoch-count
+    channel is numerics-driven (thread count changes BLAS reduction order, hence where a
+    patience-based loop stops), so it bears on result IDENTITY, not merely speed.
+
+    None of that blocks this function: a ``runtime:`` key that is accepted and discarded is a
+    defect whichever way the penalty question resolves. It does mean **no one should cite this
+    code as evidence that the penalty question is closed.**
+
+    **Until this function existed the whole block was accepted and discarded.**
+    ``run_experiment.py`` validates all three keys (``RUNTIME_KEYS``, :171) and rejects unknown
+    ones, and nothing anywhere read a value. Three consequences, in increasing order of harm:
+
+    1. A suite that wrote ``runtime: {blas_threads: 2}`` ran 16-wide anyway -- i.e. paid the full
+       burst the cap was written to avoid.
+    2. A **matrix** that varied the key measured one configuration N times. That is the inert-axis
+       failure PF-2 was re-specified to escape, and it is exactly what D3's ruling tells the next
+       session to dry-run-check for before committing PF-3's ~6.7 h matrix ("verify that the
+       cell's ``thread_env`` is non-null"). That check is only meaningful once something binds.
+    3. ``eval_metrics_enabled`` was the worst of the three, because the schema *herds* authors
+       into it: putting it in ``service:`` raises *"eval_metrics_enabled belongs in runtime:
+       (process env), not service:"* (``run_experiment.py:604``). The error message routed people
+       to a key that did nothing.
+
+    Values are validated here rather than coerced. A ``blas_threads: 0`` that silently became
+    "unset" would reproduce the original defect one layer down -- a key that looks applied and
+    is not -- so a bad value raises ``SuiteError`` and the suite refuses to start.
+
+    Returns ``{}`` for a cell with no ``runtime:`` block, which leaves the launcher's inherited
+    environment exactly as it is today.
+    """
+    # `doc` itself is type-checked before `.get` for the same reason its `runtime` block is
+    # below: a materialised cell is always a mapping TODAY, but a hand-edited or truncated one
+    # would reach here as a list or a string and raise AttributeError -- an internal traceback
+    # from a function whose entire job is to turn malformed YAML into a clean SuiteError. That
+    # is exactly the failure `load_suite` already documents against itself.
+    if not isinstance(doc, dict):
+        raise SuiteError(f"cell YAML must be a mapping, got {type(doc).__name__}")
+    raw = doc.get("runtime")
+    if raw is None:
+        return {}
+    # `or {}` guards ABSENCE, not TYPE: `runtime: []` is truthy-empty and would sail through it
+    # into `.get`, which lists do not have. Type-check instead.
+    if not isinstance(raw, dict):
+        raise SuiteError(f"runtime block must be a mapping, got {type(raw).__name__}")
+
+    env: "dict[str, str]" = {}
+
+    def _present(key: str) -> bool:
+        """Present AND non-null.
+
+        ``null`` means CLEAR, not "error". This repo's dotted-override mechanism cannot delete a
+        key -- ``_set_dotted`` WRITES ``None`` -- so ``runtime.blas_threads: null`` in a matrix
+        is the only way an author can say "this cell runs unpinned", and
+        ``suites/p4/e-e-recurrence-readout-spectrum.yaml`` already uses exactly that idiom on
+        ``train.rff_features``. Treating ``None`` as a validation error would mean that the very
+        change which made ``blas_threads`` matter also removed the only way to turn it off --
+        and it would do so by refusing the whole suite with exit 2.
+        """
+        return key in raw and raw[key] is not None
+
+    def _positive_int(key: str) -> int:
+        value = raw[key]
+        # bool is an int subclass and `runtime: {blas_threads: true}` would otherwise become 1.
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            raise SuiteError(f"runtime.{key} must be a positive integer, got {value!r}")
+        return value
+
+    if _present("blas_threads"):
+        width = str(_positive_int("blas_threads"))
+        env.update({var: width for var in RUNTIME_BLAS_VARS})
+    if _present("num_processes"):
+        # Withheld for recurrence for the same reason `thread_budget_env` withholds it: it is a
+        # cascor knob (`cascade_correlation.py` reads the bare `CASCOR_NUM_PROCESSES`), and
+        # exporting it into a recurrence run would put a meaningless variable into that run's
+        # manifest `thread_env` and its baseline `HOST.json.thread_budget` -- where it becomes a
+        # host-identity field and can refuse a comparison over a knob nothing read.
+        if app == "cascor":
+            env["CASCOR_NUM_PROCESSES"] = str(_positive_int("num_processes"))
+        else:
+            _positive_int("num_processes")  # still validated, so a typo is not silently ignored
+    if _present("eval_metrics_enabled"):
+        flag = raw["eval_metrics_enabled"]
+        if not isinstance(flag, bool):
+            raise SuiteError(f"runtime.eval_metrics_enabled must be a boolean, got {flag!r}")
+        # cascor's `_env_flag` (manager.py:45, called at :1212) reads 1/0, true/false, yes/no, on/off and treats
+        # BLANK as the default -- so emitting "" for false would enable it. Emit the word.
+        env["JUNIPER_CASCOR_EVAL_METRICS_ENABLED"] = "true" if flag else "false"
+    return env
+
+
 def _read_registry(suite_dir: Path) -> "dict[str, dict]":
     registry = suite_dir / "registry.jsonl"
     rows: "dict[str, dict]" = {}
@@ -449,7 +595,7 @@ def _headline_metrics(run_dir: Path) -> dict:
     return out
 
 
-def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher: Path, driver: Path, python_bin: str, extra_env: "dict[str, str] | None" = None, stall_seconds: "float | None" = None, max_wall_seconds: "float | None" = None, suite_name: "str | None" = None) -> dict:
+def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher: Path, driver: Path, python_bin: str, extra_env: "dict[str, str] | None" = None, stall_seconds: "float | None" = None, max_wall_seconds: "float | None" = None, suite_name: "str | None" = None, runtime_env: "dict[str, str] | None" = None) -> dict:
     """--up → driver → --down for one cell; never raises for a cell-level failure.
 
     ``stall_seconds`` forwards ``execution.stall_seconds`` to the driver's Q-2 stall
@@ -459,6 +605,20 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
     is therefore marked ``stalled`` while perfectly healthy, and the suite has no way to
     say otherwise. Observed on the P4 E-A grid: every ``candidate_pool_size >= 16`` cell
     stalled at ~130 s, then completed normally in 513–1258 s once the window was raised.
+
+    ``runtime_env`` is the cell's ``runtime:`` block resolved by ``runtime_block_env`` (D2).
+    It is applied AFTER ``extra_env``, so a per-cell value **overrides** the H-11 parallel
+    budget split. That precedence is not a preference, it is what makes PF-3 expressible:
+    PF-3's second axis IS per-cell thread width, so if the H-11 split won, every cell of that
+    matrix would run at the same width and the axis would be inert -- the identical defect that
+    wasted PF-2's dataset axis and that D3's ruling now demands a one-cell run to rule out.
+
+    ``main`` narrows that override to the keys the SUITE NAMES before calling this, so a width
+    merely inherited from a base config still loses to H-11 and cannot silently oversubscribe a
+    parallel run. Both values are recorded on the registry row (``thread_budget`` and
+    ``runtime_env``) so the contest is legible **in ``registry.jsonl``** -- note that
+    ``aggregate()`` writes neither to ``aggregate.csv`` nor to ``REPORT.md``, so a reader who
+    only opens the report will not see it.
 
     ``max_wall_seconds`` forwards ``execution.max_wall_seconds`` to the driver's Q-2
     wall-clock budget, and is the same class of defect one field over. A suite could
@@ -482,7 +642,7 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
     provenance_env = {"JUNIPER_CASCOR_CELL_ID": cell["cell_id"]}
     if suite_name:
         provenance_env["JUNIPER_CASCOR_EXPERIMENT"] = suite_name
-    env = {**os.environ, **provenance_env, **(extra_env or {})}
+    env = {**os.environ, **provenance_env, **(extra_env or {}), **(runtime_env or {})}
 
     # Grafana bridge: OPT-IN via environment, deliberately NOT a suite key.
     #
@@ -498,7 +658,7 @@ def execute_cell(cell: dict, cell_yaml: Path, app: str, timeout: float, launcher
     if bridge:
         up_args.append("--grafana-bridge")
 
-    row = {"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "config_sha256": hashlib.sha256(cell_yaml.read_bytes()).hexdigest(), "run_id": None, "outcome": "failed", "exit_code": None, "error": None, "thread_budget": dict(extra_env) if extra_env else None, "grafana_bridge": bridge}
+    row = {"cell_id": cell["cell_id"], "name": cell["name"], "overrides": cell["overrides"], "config_sha256": hashlib.sha256(cell_yaml.read_bytes()).hexdigest(), "run_id": None, "outcome": "failed", "exit_code": None, "error": None, "thread_budget": dict(extra_env) if extra_env else None, "runtime_env": dict(runtime_env) if runtime_env else None, "grafana_bridge": bridge}
     up = subprocess.run(up_args, capture_output=True, text=True, timeout=max(timeout, 300), env=env)
     match = RUN_ID_BANNER.search(up.stdout + up.stderr)
     if up.returncode != 0 or not match:
@@ -782,8 +942,33 @@ def main(argv: "list[str] | None" = None) -> int:
         runnable.append(cell)
     try:
         materialised = {cell["cell_id"]: materialise_cell(cell, suite, suite_dir, validate) for cell in runnable}
+        # D2: resolve every cell's `runtime:` block BEFORE the first `--up`. A bad value must
+        # refuse the suite rather than one cell, for the same reason D5 moved the cascor floor
+        # check onto the execution path: a guard that fires after N cells have run has already
+        # let N runs of unusable evidence onto disk. `execute_cell` deliberately never raises,
+        # so this cannot live there.
+        runtime_envs = {cell_id: runtime_block_env(yaml.safe_load(path.read_text()) or {}, suite["app"]) for cell_id, path in materialised.items()}
+        # ...then, under a parallel budget, keep only the thread keys this SUITE actually asked
+        # for. The override exists to make PF-3's per-cell width axis expressible, and that
+        # argument reaches exactly as far as keys the suite names in its matrix/include. A value
+        # merely INHERITED from a base config carries no such intent: `spiral-baseline.yaml` sets
+        # `num_processes: 4`, so without this filter any parallel cascor suite built on it would
+        # silently beat the H-11 split -- 4 cells x 4 processes on a 16-core host, 2x
+        # oversubscribed, and invisible because `REPORT.md` prints neither budget.
+        # `eval_metrics_enabled` is exempt: it is not a thread budget and H-11 has no opinion.
+        if budget:
+            for cell in runnable:
+                named = _explicit_runtime_vars(cell["overrides"])
+                runtime_envs[cell["cell_id"]] = {var: value for var, value in runtime_envs[cell["cell_id"]].items() if var not in _H11_CONTESTED_VARS or var in named}
     except SuiteError as exc:
         print(f"suite error: {exc}", file=sys.stderr)
+        return 2
+    except (OSError, yaml.YAMLError) as exc:
+        # OSError is the realistic one -- the YAMLError branch is near-unreachable because
+        # `materialise_cell` wrote these files with `yaml.safe_dump` moments ago, while an
+        # unreadable path (permissions, a full or unmounted suite dir) is an ordinary failure
+        # that would otherwise escape as a traceback from the suite's own validation phase.
+        print(f"suite error: cannot read a materialised cell YAML: {exc}", file=sys.stderr)
         return 2
 
     def _record(cell: dict, row: dict) -> None:
@@ -804,7 +989,7 @@ def main(argv: "list[str] | None" = None) -> int:
                 if stop.is_set():
                     break
                 print(f"[suite] {cell['cell_id']}: submitted ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
-                futures[pool.submit(execute_cell, cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"])] = cell
+                futures[pool.submit(execute_cell, cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]])] = cell
             for future in as_completed(futures):
                 cell = futures[future]
                 row = future.result()
@@ -816,7 +1001,7 @@ def main(argv: "list[str] | None" = None) -> int:
     else:
         for cell in runnable:
             print(f"[suite] {cell['cell_id']}: running ({json.dumps(cell['overrides'], sort_keys=True)})", flush=True)
-            row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"])
+            row = execute_cell(cell, materialised[cell["cell_id"]], suite["app"], timeout, launcher, driver, python_bin, budget, stall_seconds, max_wall_seconds, suite["name"], runtime_envs[cell["cell_id"]])
             _record(cell, row)
             if row["outcome"] != "succeeded":
                 any_failed = True

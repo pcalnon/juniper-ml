@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **D2 implemented — the experiment `runtime:` block BINDS, where all three of its keys were
+  previously accepted and discarded** (`util/experiments/run_suite.py` `runtime_block_env`,
+  `util/experiment_stack.bash` `cascor_up`). `run_experiment` validated `blas_threads`,
+  `num_processes` and `eval_metrics_enabled` and **nothing read any of them**, so a suite that
+  capped threads ran 16-wide and a matrix that *varied* the key measured one configuration N
+  times. `eval_metrics_enabled` was the worst of the three because the schema *herds* authors
+  into it: `service:` rejects it with *"belongs in `runtime:` (process env)"*. Implemented via
+  the environment route the owner ruled for, resolved **before the first `--up`** so a bad
+  value refuses the suite rather than one cell. A width the **suite names** beats the H-11
+  parallel budget (this is what makes PF-3's axis expressible); a width merely **inherited**
+  from a base config does not, so no parallel run can silently oversubscribe itself.
+  **PF-3's inert-axis blocker is discharged** — it is still gated on D3's one-cell check, on
+  cascor's `min(process_count, pool)` worker clamp making two of its twelve cells duplicates,
+  and on a quiet host.
+  > **Two consequences an operator must know.** (1) `spiral-smoke.yaml` carries
+  > `runtime: {blas_threads: 2}`, so a new PF-1 run now records a non-null `thread_budget`
+  > while baselines `pf1-2026-09-04` and `pf1-2026-09-04b` recorded all-null. `thread_budget`
+  > is a `HOST_IDENTITY_FIELDS` member, so `compare_baseline` will **REFUSE** (exit 2) against
+  > both. That refusal is *correct* — the condition genuinely changed — but **both baselines
+  > need re-cutting** and until then a REFUSED verdict is expected, not a tooling fault.
+  > (2) Eighteen committed cascor suites inherit a now-binding block; the nine built on
+  > `util/ad-hoc/2026-08-16_h2h_wide_nrot3.yaml` set `eval_metrics_enabled: false`, which now
+  > genuinely disables the service's F1/precision/recall/ROC-AUC pass. Re-runs of those are no
+  > longer comparable to their archived evidence.
+- **D6's gate discharged — `epochs_completed` has ZERO spread, and D6's premise is refuted**
+  (`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`, new;
+  `util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py`, new). 5 thread widths × 4 epoch budgets
+  × 5 repeats = **100 observations, max within-cell spread `0`**, every budget resolving to a
+  single value ({10, 50, 68, 68}) at **1-minute load 32.26** — the most loaded host any
+  measurement in this lane has used. D6 was gated on the story that *ambient load moves the
+  count*; load does not move it, and neither does thread width, which is the mechanism by which
+  load would have had to act. The axis was verified live (`omp_get_max_threads()` tracks the
+  request w1→1 … w16→16), so this is a real invariance and not an inert axis. **The historical
+  `52` is therefore an observation of unknown provenance, not evidence of instability** — the
+  leading suspect is a different tree, which this measurement cannot separate.
+  Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
+  be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
+  reference is tree-sensitive by construction.
+- **The measurement existed already and was unrecoverable.** A complete 09-17 sweep sat at
+  `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json` with **no
+  committed instrument and no note reporting it** — a correct answer to an owner-gated question,
+  uncitable for five days. Re-taken from a committed instrument; the 09-17 file is now reported
+  only as corroboration, which is all an orphaned artifact can honestly be.
 - **Thread-width sweep — D1 and D2's gating measurement**
   (`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`, new;
   `util/ad-hoc/2026-09-16_thread_width_{arm,sweep}.py`, new). 6 widths × 2 mechanisms × 3 repeats
@@ -31,27 +74,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **README.md's `Ecosystem Compatibility` pin table shipped to PyPI advertising the 0.6.0 floors.** The file carries TWO
-  pin tables and only one was guarded. `tests/test_pyproject_extras.py` pinned the
-  "Available Extras" table to `pyproject.toml`, so that one tracked the decision-11 bump
-  correctly; the flat `| Package | Pin |` table forty lines above it was not covered by any
-  test and was last touched at 0.6.0. It named that version in its own lead-in sentence
-  ("The pyproject pins matching `juniper-ml` 0.6.0"), carried five stale floors
-  (`juniper-canopy>=0.5.0` for `>=0.7.0`, `juniper-cascor>=0.5.0` for `>=0.11.0`,
-  `juniper-data>=0.6.0` for `>=0.14.0`, `juniper-data-client>=0.4.1` for `>=0.5.0`,
-  `juniper-cascor-client>=0.5.0` for `>=0.8.0`) and omitted five packages outright
-  (`juniper-model-core`, `juniper-service-core`, and the whole `[recurrence]` trio).
-  **`README.md` is the `long_description`**, so those rows are what
-  pypi.org/project/juniper-ml served for 0.8.0 -- verified from the published wheel's
-  `METADATA`, not the checkout, where line 82 reads "matching `juniper-ml` 0.6.0" while
-  line 136 of the same document lists the correct `[servers]` floors. Two tables in one
-  published page, disagreeing. Table regenerated from `pyproject.toml` by
-  `util/ad-hoc/2026-09-21_sync_readme_compat_table.py` (15 packages, version 0.8.0), and
-  `ReadmeCompatTableTest` added to the existing `tests/test_pyproject_extras.py` -- the
-  existing suite, deliberately, because juniper-ml's CI regression list is hand-maintained
-  and a new `tests/test_*.py` would never be invoked. Three mutations confirm the guard is
-  not vacuous: a reverted pin, a stale lead-in version, and a deleted row each fail it.
-
+- **The thread-width sweep's "initial pass" column is NOT the initial pass** — correction added
+  to `notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md` §2.
+  `util/ad-hoc/2026-09-16_thread_width_arm.py` sums **every** `train_output_layer` stage, and
+  cascor emits that name once per output pass — five per run — so `initial_pass_seconds` is
+  *first pass + all later passes*. Reconciles to four decimals (`thread w16`: 2.1772 first +
+  9.7991 later = 11.9759 reported). **`later_passes_seconds` and `candidate_seconds` are clean**,
+  so D1's width comparison and cascor#531's non-reproduction stand. What changes: the **−33%**
+  capping figure is computed on totals and **understates** the true benefit, and §2.1's "3.3×
+  gap at identical OpenMP width" is an artifact — on true first passes `thread w16` and
+  `env w16` are 2.1772 vs 2.0404, within noise. The mechanism claim survives; its attribution
+  to the initial pass does not. Separately, both D1's and D2's gates demanded **epoch counts**
+  and the arm emits **stage** counts — the string `epoch` appears in none of the 40 evidence
+  files, though the arm's docstring claims otherwise — so "the penalty does not reproduce"
+  rests on wall time alone and cannot separate *no effect* from *two effects cancelling*.
 - **The first thread-width sweep was INVALID and its conclusions are withdrawn.** Its arm called
   `torch.get_num_threads()` on the training thread before training — the getter this lane itself
   established is **not a passive read** (it runs torch's per-thread lazy init and re-pins the
@@ -324,29 +360,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   squash and the armed-but-`BEHIND` split that exposed the config deadlock above.
 
 ### Changed
-
-- **`[servers]` now floors `juniper-canopy>=0.8.1`, because every canopy wheel from 0.5.0
-  through 0.8.0 cannot import its own dashboard.** Those wheels publish **zero** top-level
-  modules -- `juniper_canopy/` contains only `__init__.py`, and the 19 modules canopy's own
-  shipped code imports are absent, so `import backend.service_backend` dies at
-  `No module named 'validation_gate'`. 0.8.1 ships all of them (juniper-canopy#631, closed
-  2026-09-17). Read from the published wheels, not a checkout; 0.8.0 was checked too, so the
-  boundary is exactly 0.8.0 -> 0.8.1. A default resolve already took 0.8.1 because pip prefers
-  the newest, so the old floor *admitted* the broken wheels rather than delivering them -- the
-  same shape as the `juniper-model-core>=0.1.0,<0.4.0` cap that
-  `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` §10 left alone
-  as "a consumer break for no behavioural gain". The reasoning inverts here: there the admitted
-  version differed only in a docstring, here it does not load. Pre-flighted against real PyPI
-  before the change -- `juniper-canopy>=0.8.1` + `juniper-cascor>=0.11.0` + `juniper-data>=0.14.0`
-  resolves in 60 packages with `juniper-service-core` 0.7.0 and `juniper-model-core` 0.3.2, both
-  inside the existing caps. **Version bumped 0.8.0 -> 0.9.0 with it**, and not cosmetically:
-  `docs/REFERENCE.md`'s compatibility matrix labels each row by the juniper-ml version carrying
-  that floor set, so a new floor set needs a version to label it and the `0.8.x` row is *added
-  to* rather than rewritten -- rewriting it would make it a false statement about the published
-  0.8.0. Minor per the pre-1.0 convention at `util/release_train/detect.py:827`, since forbidding
-  a previously-admitted version is breaking. Applied by
-  `util/ad-hoc/2026-09-21_raise_canopy_floor_0_8_1.py`, which asserts each of the ten sites'
-  exact text and requires exactly one match apiece.
 
 - **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
   retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
