@@ -60,11 +60,23 @@ less obvious lesson:
 > handoff records that `optimized-giggling-koala` is **locked and must not be removed**; that
 > lock is now the only thing standing between this work and its loss.
 
-**And the search that missed it is worth recording too.** This session grepped
-`d6-epochs-spread` and `epochs_spread` — patterns drawn from the *evidence directory's* name.
-The instrument is called `epochs_completed_spread`, of which neither is a substring. A sweep
-whose pattern is derived from the artifact you already found will not find the artifact you did
-not. Search the space of plausible names, not the name you happen to hold.
+**And the searches that missed it are worth recording too — there were two failure modes, not
+one.**
+
+1. **The pattern came from the wrong artifact.** This session grepped `d6-epochs-spread` and
+   `epochs_spread`, both drawn from the *evidence directory's* name. The instrument is
+   `epochs_completed_spread`, of which neither is a substring. A sweep whose pattern is derived
+   from the artifact you already found will not find the artifact you did not.
+2. **The tree was skipped.** An independent reviewer swept every `.py`/`.bash`/`.md` file under
+   `/home/pcalnon` for the literal string `d6-epochs-spread` and reported **zero hits** — yet
+   `grep -c d6-epochs-spread` against the 09-17 note returns **1**. The note was there the whole
+   time. The difference is that it lives under `.claude/worktrees/…`, and a dotfile-prefixed
+   directory is skipped by default in enough sweep idioms that "I searched everywhere" quietly
+   meant "everywhere visible". **A sibling worktree is inside a hidden directory; a census that
+   does not say so has not covered the repo.**
+
+Together these are why three separate searches agreed the work did not exist. Agreement between
+sweeps that share a blind spot is not evidence of absence.
 
 **ACTION FOR THE OWNER**: those two files should be committed from
 `optimized-giggling-koala`, or deliberately retired in favour of this document's instrument.

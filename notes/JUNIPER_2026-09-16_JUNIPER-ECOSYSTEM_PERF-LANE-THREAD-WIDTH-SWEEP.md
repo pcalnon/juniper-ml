@@ -106,9 +106,18 @@ right — nobody had validated 2 — but the validation returns "indistinguishab
 >
 > **What changes.**
 > - **Point 2's "−33%" is measured on the wrong quantity, and it UNDERSTATES the effect.**
->   Capping is a bigger win on the true initial pass than the note claims, not a smaller one.
->   The medians behind the −33% are totals; do not re-quote the percentage until it is
->   recomputed from first-pass figures.
+>   Recomputed from the first `train_output_layer` stage only, median of 3:
+>
+>   | | reported (total) | TRUE first pass |
+>   |---|---|---|
+>   | `none` (control, unpinned) | 4.0601 | **2.2838** |
+>   | `env w2` (capped) | 2.7053 | **1.1593** |
+>   | reduction | −33.4% | **−49.2%** |
+>
+>   So capping the initial output pass is worth roughly **half its time**, not a third.
+>   **Quote −49.2%, not −33%.** Both figures are medians of n=3 on a contended host, so the
+>   magnitude carries the usual caveat (§4); the *direction and rough size* of the correction
+>   do not depend on that.
 > - **§2.1's "3.3× gap at identical OpenMP width" does not evidence what it is used for.**
 >   `thread w16`'s 12.295 s is dominated by its own 9.799 s of later passes. On the **true
 >   first pass** the two arms are 2.1772 (`thread w16`) and 2.0404 (`env w16`) — within noise.

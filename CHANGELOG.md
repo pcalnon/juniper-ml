@@ -90,7 +90,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   *first pass + all later passes*. Reconciles to four decimals (`thread w16`: 2.1772 first +
   9.7991 later = 11.9759 reported). **`later_passes_seconds` and `candidate_seconds` are clean**,
   so D1's width comparison and cascor#531's non-reproduction stand. What changes: the **−33%**
-  capping figure is computed on totals and **understates** the true benefit, and §2.1's "3.3×
+  capping figure is computed on totals and **understates** the true benefit — recomputed from
+  first-pass figures it is **−49.2%** (2.2838 s → 1.1593 s, medians of 3) — and §2.1's "3.3×
   gap at identical OpenMP width" is an artifact — on true first passes `thread w16` and
   `env w16` are 2.1772 vs 2.0404, within noise. The mechanism claim survives; its attribution
   to the initial pass does not. Separately, both D1's and D2's gates demanded **epoch counts**

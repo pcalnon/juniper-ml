@@ -67,7 +67,8 @@ Successor to
 > **3. The sweep's "initial pass" column is not the initial pass**, and its §2.1 3.3× gap is an
 > artifact of that. Full correction, with the reconciling arithmetic, is now in
 > [`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md) §2.
-> The −33% **understates** the real capping benefit; D1's conclusion and the cascor#531
+> The −33% **understates** the real capping benefit — recomputed from first-pass figures it is
+> **−49.2%** (2.2838 s -> 1.1593 s, medians of 3). D1's conclusion and the cascor#531
 > non-reproduction are unaffected.
 >
 > ## ⚠ The D1/D2 gates were reported as met, and the instrument never emitted what they asked for
