@@ -44,8 +44,9 @@ Continue the **container-registry rollout**. **Wave 3 is COMPLETE.** Design of r
 >   took the `.dockerignore` + post-build-assert hardening on 2026-09-21 (cascor#661, canopy#642,
 >   data#408, worker#191, recurrence#176). It was not deferrable: **canopy had already published
 >   `v0.8.1` on 2026-09-18 without it.** What is still open is listed in
->   § Re-evaluation 2026-09-21 → *What remains outstanding*; the short version is
->   **worker#192** (the `__version__` drift) and MEMORY.md compaction.
+>   § Re-evaluation 2026-09-21 → *What remains outstanding*. **Both of those closed overnight:**
+>   worker#192 merged `c5e15e33`, and a concurrent session compacted MEMORY.md to 21.7 KB.
+>   **Nothing in this document is owner-actionable except Wave 4 and the Pi pull.**
 > - ~~The plan's §5 wave table still marks all four Wave 2 rows `pending`.~~ **FIXED by a
 >   concurrent session 2026-09-21 16:25 UTC** (*"docs(plan): refresh the stale wave table"*). All
 >   four Wave 2 rows now read **COMPLETE** with their PR and publish dates, and the table
@@ -313,10 +314,14 @@ five repos' PR queues were not checked in the first draft and they change the pi
 
 1. **The juniper-deploy PRIMARY checkout is no longer behind** — now `deeaee1b`, byte-equal to
    remote `main`. Corrected in § Git state above. **That item is done.**
-2. **MEMORY.md is now 23,726 B (23.2 KB)** against the 20 KB target — and it moved *during this
-   session*: it was 23,553 B / mtime 2026-09-18 01:21 UTC when first measured, and a concurrent
-   session rewrote it at **2026-09-21 08:57 UTC** (`03:57 -0500`), adding the canopy-0.8.1 pin-drift
-   finding independently. The compaction is still owed, by RETIRING entries, not stripping hooks.
+2. **MEMORY.md moved three times in two days, by three different sessions.** 23,553 B (mtime
+   2026-09-18 01:21 UTC) when first measured; 23,726 B after a concurrent session rewrote it at
+   **2026-09-21 08:57 UTC**, adding the canopy-0.8.1 pin-drift finding independently; and
+   **22,202 B (21.7 KB) at 2026-09-22 07:11 UTC**, when another session compacted it. Still above
+   the 20 KB target, so not closed — but it is shrinking, and compaction must RETIRE entries
+   rather than strip hooks.
+   > Re-probed 2026-09-22. The figure in this paragraph was stale within hours of being written,
+   > twice. **Do not quote a size from this document; run `stat`.**
 
 ### One factual correction — `yamaguchi` is not a Pi
 
@@ -435,17 +440,25 @@ from a release-tagged image:**
 
 **NOT owner-gated, and NOT deferrable:**
 
-1. **The five-repo `.dockerignore` + post-build-assert hardening.** The first draft called this
-   "not urgent — no image change is in flight". **That was wrong in both tenses:**
+1. ~~**The five-repo `.dockerignore` + post-build-assert hardening.**~~ **SHIPPED 2026-09-21** —
+   cascor#661 `7b108fe8`, canopy#642 `ef3ad591`, data#408 `963092c7`, worker#191 `52bc365d`,
+   recurrence#176 `9a8085a1`. Re-verified on each `main` 2026-09-22: the checker is present, it
+   is referenced 3× per workflow (paths filter + smoke + publish), and the import assert is
+   there. Kept below because the *reason it was urgent* is the durable lesson. The first draft
+   called it "not urgent — no image change is in flight". **That was wrong in both tenses:**
    - **canopy published `v0.8.1` on 2026-09-18** (run `35292020794`, `event: release`) — three days
      *before* this sweep ran, from a context with neither layer. The "next image change" had
      already happened.
-   - **NINE open PRs touch `.github/workflows/publish-image.yml`** — cascor #656/#657,
-     canopy #639, worker #189/#190, recurrence #174/#175, deploy #223/#224. Each was verified
-     OPEN with that path in its file list. That path sits in each workflow's own
-     `pull_request: paths:`, so each rebuilds both arches; #223/#224 bump the build-and-push
-     actions themselves. *Note these are a DIFFERENT five repos than the hardening set: this
-     list includes juniper-deploy and excludes juniper-data.*
+   - **NINE open PRs touched `.github/workflows/publish-image.yml`** — cascor #656/#657,
+     canopy #639, worker #189/#190, recurrence #174/#175, deploy #223/#224. That path sits in
+     each workflow's own `pull_request: paths:`, so each rebuilds both arches; #223/#224 bump
+     the build-and-push actions themselves. *Note these are a DIFFERENT five repos than the
+     hardening set: it includes juniper-deploy and excludes juniper-data.*
+     > **All nine have since MERGED (re-probed 2026-09-22, 0 of 9 still open) — and the
+     > hardening landed FIRST.** That ordering is the whole point: nine workflow-rebuilding
+     > merges went through a `publish-image.yml` that already carried the asserts. The asserts
+     > were then **re-verified intact on all five `main`s afterwards**, because a merge into a
+     > file you just changed is exactly how a shipped contract gets silently reverted.
 
    Required content, beyond the first draft's scope: patterns must be **`**/`-prefixed** or they
    will miss `src/`-nested targets — most importantly `**/cascor_snapshots/`, the 766 keyed files
@@ -475,6 +488,15 @@ from a release-tagged image:**
    (0.5.0, 0.6.0) shipped a stale in-package version. Anything reading `__version__` — provenance
    stamps, logs, telemetry — reports 0.4.0. Note the handoff above says 0.6.0 is "byte-identical to
    0.5.0 apart from the version string"; the METADATA string changed, `__version__` did not.
+
+   > **FIXED ON `main` 2026-09-21 — worker#192 `c5e15e33`** — by deriving from installed metadata
+   > with the literal demoted to a source-checkout fallback, matching `juniper_data` and
+   > `juniper_canopy`. Bumping the literal alone would have recurred at 0.7.0.
+   >
+   > **The PUBLISHED IMAGE IS STILL WRONG, and will be until the next release.** Re-probed
+   > 2026-09-22: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0` still answers
+   > `__version__ 0.4.0 | metadata 0.6.0`. A merge to `main` is not a delivery — anything reading
+   > that attribute from the deployed worker keeps seeing 0.4.0 until `0.6.1`/`0.7.0` ships.
 
    Two instrument corrections worth carrying: the first run scored cascor **FAIL** by probing
    `/v1/health/ready`, which correctly answers 503 `{"status":"not_ready"}` for a container with no
@@ -581,15 +603,15 @@ path.
 
 **Still owed:**
 
-- **juniper-cascor-worker#192** (open) — `__version__` has read `0.4.0` since before 0.5.0 while
-  the wheel shipped `0.6.0`, and it is in `__all__`. Fixed by deriving from installed metadata
-  with the literal demoted to a source-checkout fallback, matching `juniper_data` and
-  `juniper_canopy`; bumping the literal alone would recur at 0.7.0. Verified inside the published
-  image.
+- ~~**juniper-cascor-worker#192**~~ **MERGED `c5e15e33`.** The source is fixed; **the published
+  image is not** — see the block under the class-2 table. The residual item is a worker release,
+  which is owner-gated.
 - ~~The plan's §5 **Wave 2 rows**.~~ **CLOSED 2026-09-21 by a concurrent session** — all four
   now read COMPLETE. Re-probed against `main` before this document merged, rather than inherited
   from when the item was written four hours earlier.
-- **MEMORY.md** compaction, 23.7 KB against a 20 KB target.
+- ~~**MEMORY.md** compaction, 23.7 KB against a 20 KB target.~~ **DONE by a concurrent session**
+  — 22,202 B (21.7 KB) at 2026-09-22 02:11. Still above the 20 KB target, so not closed, but no
+  longer growing.
 
 **Correction to § Checkpoint above**, which is the 2026-09-17 session's list: it credits the plan
 document only to juniper-ml#1943 and #1951. juniper-ml**#1957** also modified it (+28 lines) and
