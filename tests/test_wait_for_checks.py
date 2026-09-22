@@ -30,6 +30,10 @@ fails if the implementation regresses to the naive form.
   downgrade to the observed rollup; ``--anchor observed`` is the explicit opt-in.
 - **Read-only.** The stub records argv and the suite asserts no mutating verb
   (``merge``, ``update-branch``, ``create``, ``comment``, ``edit``) is ever issued.
+- **The default wait is the repo's MEASURED budget**, read from util/safe_merge.py at
+  call time -- not a second copy of it, and not the old 1800 s, which sat below eight
+  of the nine budgets. ``TimeoutResolutionTest`` pins every row, the fallback when the
+  table cannot be read, and that the budget and its source are said out loud.
 
 Run: python3 -m unittest -v tests/test_wait_for_checks.py
 
@@ -599,6 +603,112 @@ class CliTest(unittest.TestCase):
             rc, _out, err = _cli(h, ["--interval", "0"])
         self.assertEqual(rc, 3)
         self.assertIn("--interval", err)
+
+
+def _load_safe_merge():
+    spec = importlib.util.spec_from_file_location("safe_merge_for_wait_tests", _REPO_ROOT / "util" / "safe_merge.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _cli_bare(harness: _Harness, extra, module_path: Path = _MODULE_PATH) -> tuple:
+    """Like ``_cli`` but WITHOUT the injected ``--timeout``, so the default path runs."""
+    argv = [sys.executable, str(module_path), "--pr", "1", "--interval", "1", *extra]
+    proc = subprocess.run(  # nosec B603 - fixed argv, hermetic PATH stub
+        argv,
+        capture_output=True,
+        text=True,
+        env=harness.env(),
+        cwd=str(_REPO_ROOT),
+        check=False,
+    )
+    return proc.returncode, proc.stdout, proc.stderr
+
+
+class TimeoutResolutionTest(unittest.TestCase):
+    """The default wait is the repo's measured budget, not a flat 1800 s.
+
+    Found open 2026-09-22, re-evaluating the 2026-09-09 CI-budget handoff (its section 3
+    item 10): ``DEFAULT_TIMEOUT = 1800`` sat below eight of the nine budgets in
+    util/safe_merge.py, so a direct invocation on a healthy canopy / cascor / ml PR could
+    exit 2 while every required context was still legitimately running.
+    """
+
+    SM = _load_safe_merge()
+
+    def test_explicit_timeout_always_wins(self):
+        self.assertEqual(MOD.resolve_timeout("juniper-canopy", 5), (5, "--timeout"))
+        self.assertEqual(MOD.resolve_timeout("juniper-canopy", 0), (0, "--timeout"))
+
+    def test_omitted_timeout_is_each_repos_measured_budget(self):
+        for repo in self.SM.REPO_TIMEOUTS:
+            with self.subTest(repo=repo):
+                seconds, source = MOD.resolve_timeout(repo)
+                self.assertEqual(seconds, self.SM.timeout_for(repo))
+                self.assertIn("measured budget", source)
+
+    def test_the_fix_is_discriminating(self):
+        """Negative control: the old flat default really did undercut measured budgets.
+
+        If every budget were <= 1800 the row test above could not tell the fix from the
+        old behaviour. It can while at least one budget sits above the fallback.
+        """
+        undercut = [r for r, s in self.SM.REPO_TIMEOUTS.items() if s > MOD.DEFAULT_TIMEOUT]
+        self.assertTrue(undercut, "no budget exceeds the fallback -- the row test is no longer discriminating")
+
+    def test_unmeasured_repo_takes_safe_merges_own_fallback_not_1800(self):
+        seconds, _ = MOD.resolve_timeout("juniper-not-a-measured-repo")
+        self.assertEqual(seconds, self.SM.DEFAULT_TIMEOUT)
+
+    def test_unreadable_table_falls_back_and_says_so(self):
+        with tempfile.TemporaryDirectory() as td:
+            seconds, source = MOD.resolve_timeout("juniper-canopy", budgets_path=Path(td) / "safe_merge.py")
+        self.assertEqual(seconds, MOD.DEFAULT_TIMEOUT)
+        self.assertIn("FALLBACK", source)
+
+    def test_broken_table_falls_back_and_says_so(self):
+        with tempfile.TemporaryDirectory() as td:
+            broken = Path(td) / "safe_merge.py"
+            broken.write_text("def timeout_for(repo):\n    raise RuntimeError('broken table')\n", encoding="utf-8")
+            seconds, source = MOD.resolve_timeout("juniper-canopy", budgets_path=broken)
+        self.assertEqual(seconds, MOD.DEFAULT_TIMEOUT)
+        self.assertIn("FALLBACK", source)
+        self.assertIn("broken table", source)
+
+    def test_cli_default_waits_the_measured_budget_and_says_so(self):
+        expected = self.SM.timeout_for("juniper-canopy")
+        with tempfile.TemporaryDirectory() as td:
+            h = _Harness(Path(td), rollups=[[_run(c, conclusion="SUCCESS") for c in REQUIRED]])
+            rc, out, err = _cli_bare(h, ["--repo", "juniper-canopy", "--json"])
+        self.assertEqual(rc, 0, f"out={out} err={err}")
+        payload = json.loads(out)
+        self.assertEqual(payload["timeout"], expected)
+        self.assertIn("measured budget for juniper-canopy", payload["timeout_source"])
+        self.assertIn(f"wait budget: {expected}s", err)
+
+    def test_cli_explicit_timeout_is_reported_and_not_announced(self):
+        with tempfile.TemporaryDirectory() as td:
+            h = _Harness(Path(td), rollups=[[_run(c, conclusion="SUCCESS") for c in REQUIRED]])
+            rc, out, err = _cli(h, ["--json"])
+        self.assertEqual(rc, 0, f"out={out} err={err}")
+        payload = json.loads(out)
+        self.assertEqual((payload["timeout"], payload["timeout_source"]), (3, "--timeout"))
+        self.assertNotIn("wait budget:", err)
+
+    def test_cli_copied_without_its_sibling_falls_back_loudly(self):
+        """The file run from somewhere safe_merge.py is not -- the realistic fallback case."""
+        with tempfile.TemporaryDirectory() as td:
+            lone = Path(td) / "lone"
+            lone.mkdir()
+            copy = lone / "wait_for_checks.py"
+            copy.write_text(_MODULE_PATH.read_text(encoding="utf-8"), encoding="utf-8")
+            h = _Harness(Path(td), rollups=[[_run(c, conclusion="SUCCESS") for c in REQUIRED]])
+            rc, out, err = _cli_bare(h, ["--json"], module_path=copy)
+        self.assertEqual(rc, 0, f"out={out} err={err}")
+        payload = json.loads(out)
+        self.assertEqual(payload["timeout"], MOD.DEFAULT_TIMEOUT)
+        self.assertIn("FALLBACK", err)
 
 
 if __name__ == "__main__":

@@ -14,12 +14,15 @@
 #
 #    PRs are opened by `peter-evans/create-pull-request`.
 #
-#    A PR opened with the built-in GITHUB_TOKEN does NOT trigger `pull_request`
-#    workflows -- GitHub suppresses them to prevent recursive runs. So on the
-#    GITHUB_TOKEN path this PR arrives with ZERO checks: nothing fails, nothing
-#    warns, and the absence looks like a quiet week rather than a gap. The
-#    previous wording here -- "No additional secret is required for the common
-#    case" -- is what made that read as fine, and it is why the gap survived.
+#    A PR opened with the built-in GITHUB_TOKEN gets NO executed checks. On this
+#    repo the `pull_request` runs are CREATED but parked at `action_required`
+#    with ZERO jobs until a maintainer releases them -- 4 of 4 such PRs,
+#    juniper-ml#1304/#1517/#1806/#1932 (re-probed 2026-09-22). No check fails and
+#    none reports, so the absence looks like a quiet week rather than a gap. The
+#    parked runs are the cheap manual release (#1932's ran as a second attempt
+#    started by the owner; #1806 was closed and reopened instead). The previous
+#    wording here -- "No additional secret is required for the common case" --
+#    is what made that read as fine, and it is why the gap survived.
 #
 #    So when the repo variable RELEASE_TRAIN_APP_ID is set, this workflow mints a
 #    GitHub App installation token and opens the PR as the App identity, which DOES

@@ -79,6 +79,14 @@ empty, and proving that took two probes.
 checks every week. The header's *"No additional secret is required for the common case"* is what
 made that read as fine.
 
+> **Mechanism corrected 2026-09-22** (the re-evaluation in
+> [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)).
+> The runs were not *suppressed*. On all four `GITHUB_TOKEN` PRs — #1304, #1517, #1806, #1932 —
+> the `pull_request` runs were **created** and parked at `action_required` with **zero jobs**. The
+> effect above is right, the mechanism is not, and the workflow header now says so. The fix is
+> verified by effect: #1970 (2026-09-21), the first weekly PR after it, ran **5 of 5** runs on
+> attempt 1 under `juniper-release-train[bot]`. That is one week, `n = 1`.
+
 **No new secret was needed.** `release-train.yml` already mints a `create-github-app-token`
 (`RELEASE_TRAIN_APP_ID` = 4362741) for exactly this reason. The same pattern now gates on that
 variable, with `GITHUB_TOKEN` fallback when unset, and the token is scoped to the **current

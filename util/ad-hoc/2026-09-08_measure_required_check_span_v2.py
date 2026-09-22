@@ -86,6 +86,22 @@ WHAT THIS TOOL DOES DIFFERENTLY
 It also prints v1's unfiltered span alongside, so the correction is auditable rather than
 asserted.
 
+KNOWN DEFECT -- RE-RUN TAILS (found 2026-09-22; this tool is NOT corrected in place)
+------------------------------------------------------------------------------------
+`head_rows` reads check-runs with the API's default `filter=latest`, so a RE-RUN replaces the
+first attempt of that context and the span runs from the ORIGINAL start to the re-run's finish:
+
+    juniper-canopy#653       first pass FAILED 10:08Z; one job re-run at 19:01Z    33,299 s
+    juniper-recurrence#175   a ~743 s pass; pre-commit ran on the head 2.5 h later  9,886 s
+
+`safe_merge` reports a failure when it happens, and a later invocation starts a fresh wait,
+so a re-run tail is never spent against a budget -- and both figures exceed 4x p90, so the
+sizing rule cannot be satisfied over them at all. The raw max this tool prints is therefore
+an upper bound on the healthy worst case, not the healthy worst case. Size budgets from
+`util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py rerun-split`, which computes this tool's
+own span over `filter=all` and sets aside every head carrying a sequential same-name re-run.
+Setting heads aside can only LOWER a max, so the two tools agree wherever no re-run occurred.
+
 Usage
 -----
     python3 util/ad-hoc/2026-09-08_measure_required_check_span_v2.py --repo juniper-cascor -n 30
