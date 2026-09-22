@@ -1171,7 +1171,23 @@ outputs:
         old = run_suite.DEFAULT_RUN_ROOT
         run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
         self.addCleanup(lambda: setattr(run_suite, "DEFAULT_RUN_ROOT", old))
-        env = {"JUNIPER_SUITE_LAUNCHER": str(launcher), "JUNIPER_SUITE_DRIVER": str(driver), "JUNIPER_SUITE_PYTHON": sys.executable}
+        # Pin a fake cascor tree at the parallel floor, as the D5 tests above do.
+        #
+        # Without it these cases are HOST-DEPENDENT and pass only by accident: `app: cascor`
+        # with `max_parallel > 1` is gated by `check_cascor_parallel_floor`, which probes for a
+        # juniper-cascor sibling ABOVE the repo. A developer checkout has one, so the parallel
+        # cases went green locally; a CI runner does not, so the guard refused the suite (exit
+        # 2) and the assertions failed on `rc`, not on the thing under test. Building the tree
+        # makes the outcome a property of the code rather than of where it was cloned.
+        cascor_tree = root / "juniper-cascor"
+        (cascor_tree / "src").mkdir(parents=True, exist_ok=True)
+        (cascor_tree / "pyproject.toml").write_text('[project]\nname = "juniper-cascor"\nversion = "' + ".".join(str(p) for p in run_suite.CASCOR_PARALLEL_FLOOR) + '"\n')
+        env = {
+            "JUNIPER_SUITE_LAUNCHER": str(launcher),
+            "JUNIPER_SUITE_DRIVER": str(driver),
+            "JUNIPER_SUITE_PYTHON": sys.executable,
+            "JUNIPER_EXP_CASCOR_SRC_DIR": str(cascor_tree / "src"),
+        }
         old_environ = RedactedEnv(os.environ)
         os.environ.update(env)
         self.addCleanup(_restore_environ, old_environ)
