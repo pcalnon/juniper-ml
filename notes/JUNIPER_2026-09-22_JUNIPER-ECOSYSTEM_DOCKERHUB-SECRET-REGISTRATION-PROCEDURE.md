@@ -3,7 +3,8 @@
 **Project:** Juniper (ecosystem-wide)
 **Author:** Paul Calnon
 **Date:** 2026-09-22
-**Status:** READY TO EXECUTE — owner action. One decision (§3) must be made first.
+**Status:** READY TO EXECUTE — owner action. **§3 RULED 2026-09-22: Option B**, a dedicated
+`dockerhub` environment, so §5.2B is the path and §5.2A is not used.
 **Unblocks:** Wave 4 of
 [`JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`](JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md)
 §6 OQ-1, ruled 2026-09-11.
@@ -18,6 +19,9 @@ own words on sequencing:
 > **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
 > `DOCKERHUB_USERNAME`) repository secret in each of the five image repos […] **Until those
 > exist the second login+push cannot be added, and adding it early would fail every release.**
+
+The quote's *"repository secret"* is **superseded**. §3 ruled on 2026-09-22 that the credential is
+an **environment** secret, and the plan was amended to match. The sequencing point stands.
 
 **This document covers the credential registration only.** It does **not** change any workflow.
 That ordering is not fussiness: the publish workflows are `release`-triggered, so a login step
@@ -49,10 +53,21 @@ integration at all** — the only `docker.io` hit is buildx error text quoted in
 
 ---
 
-## 3. DECISION REQUIRED — repository secret, or environment secret?
+## 3. RULED 2026-09-22 — Option B: environment secrets in a dedicated `dockerhub` environment
 
-The plan says *"repository secret"*. **I recommend against that**, and the owner should rule
-before step 5.2. Both options are written out; pick one.
+> **Owner ruling, 2026-09-22: Option B.** The credential lives in a `dockerhub` environment in
+> each of the five repositories, restricted to release tags, with no reviewer and no wait timer.
+> Register it with §5.2B; §5.2A is not used. This supersedes the plan's *"repository secret"*
+> (plan §6 OQ-1, amended the same day).
+>
+> **One statement below was wrong when the ruling was made**, and is corrected in place: Option B's
+> cost was given as two extra lines per repository. Taken literally, those two lines would reject
+> every pull-request and dispatch run of `publish-image.yml` in all five repositories. The ruling
+> still holds, because the correction changes **where** Wave 4 names the environment, not what
+> the environment protects. See *Cost — corrected 2026-09-22* under Option B.
+
+The plan said *"repository secret"*. This procedure recommended against that, and the owner
+agreed. Both options stay written out below as the record of what was weighed.
 
 ### The problem with a repository secret
 
@@ -79,12 +94,12 @@ when the ref satisfies that environment's branch policy.
 > was true on 2026-08-17 and is **false now** for `pypi` / `testpypi`, which carry custom tag
 > policies. Re-probe before relying on either statement.
 
-### Option A — repository secret (the plan's wording)
+### Option A — repository secret (the plan's wording) — NOT CHOSEN
 
 **Do this if** you want the least moving parts and accept the blast radius.
 No workflow change beyond the eventual login step. Registration: §5.2A.
 
-### Option B — a dedicated `dockerhub` environment (recommended)
+### Option B — a dedicated `dockerhub` environment — CHOSEN 2026-09-22
 
 **Do this if** you want the credential scoped to the path that uses it.
 
@@ -93,9 +108,49 @@ Create an environment named `dockerhub` with a **branch policy of tags only** (`
 Release is already an owner action, so a second manual gate on every image publish buys nothing
 and delays every publish by 5 minutes.
 
-**Cost, stated plainly:** the Wave 4 workflow change must then add `environment: dockerhub` to
-**both** jobs in `publish-image.yml` (see §7). That is two extra lines per repo and is the whole
-of the extra work.
+**Cost — corrected 2026-09-22.** This paragraph first said the Wave 4 change would add
+`environment: dockerhub` to **both** jobs in `publish-image.yml`: "two extra lines per repo and
+… the whole of the extra work". **Taken literally, that breaks CI in all five repositories.**
+GitHub matches an environment's branch and tag rules "against the `GITHUB_REF` of the workflow
+run". The same page says it is adding a `refs/pull/*/merge` rule that "would also allow workflows
+triggered by `pull_request` events" to use the environment. So without such a rule, a
+pull-request run cannot use it. The branch policy is itself a protection rule: the API lists
+`branch_policy` among the protection rules of juniper-cascor's `pypi` environment, next to
+`required_reviewers` and `wait_timer`. And "the job won't start until all of the environment's
+protection rules pass". (GitHub Docs, *Deployments and environments* and *Control deployments*,
+read 2026-09-22.) **This ecosystem has already seen it happen.** After the `testpypi`
+environments got tag-only rules, `gh workflow run publish.yml --ref main` was run as a negative
+control. The TestPyPI job failed with **zero steps** and the annotation *Branch "main" is not
+allowed to deploy to testpypi due to environment protection rules*. That is recorded in
+juniper-ml#1151, 2026-08-17. Neither job runs only on release tags. In
+`juniper-cascor/.github/workflows/publish-image.yml`:
+
+| job | triggers | refs it runs on | a tags-only `dockerhub` environment |
+| --- | --- | --- | --- |
+| `build` | `release` (`:45`), `pull_request` (`:50`), `workflow_dispatch` (`:59`) | `refs/tags/v*`, `refs/pull/N/merge`, the dispatched branch | admits the release run only; **rejects every image-touching PR and every dispatch** |
+| `merge` | `release`, or a dispatch with `push=true` (`:269`) | `refs/tags/v*`, the dispatched branch | **rejects every `push=true` dispatch**, the path that published the `dispatch-*` images |
+
+So Wave 4 must name the environment **only on release runs**. There are two ways to do that, and
+choosing between them belongs to the Wave 4 change (§7), not to this procedure:
+
+1. **A separate release-only job that names `environment: dockerhub` unconditionally.** For
+   example, a third job with `needs: [merge]`, gated to release runs, that copies the GHCR manifest
+   list the in-image checks already passed to Docker Hub by digest
+   (`docker buildx imagetools create`). The environment is then only ever checked against a
+   release tag. The credential sits in one job that runs no build step. Docker Hub receives the
+   same digest that was verified on GHCR, and §7's "two credential points" become one. **This is
+   an outline, not a tested design.** Two things are unproven here: whether provenance
+   attestations are copied across, and how to re-run a Docker Hub failure after GHCR has already
+   published.
+2. **A conditional environment name on the existing jobs**, for example
+   `environment: ${{ github.event_name == 'release' && 'dockerhub' || '' }}`. **Unverified:**
+   GitHub's documentation does not say what an empty environment name does. Test it in a
+   throwaway repository first. If GitHub rejects it, or treats `''` as a real name, every PR run
+   breaks as the table shows.
+
+**The reason for the ruling survives the correction.** Option A exposes the credential to every
+workflow on every ref. Option B exposes it only to a job that names the environment, and only on
+a release tag. Both shapes keep that; they differ only in where the environment is named.
 
 **Do NOT simply reuse `pypi`.** Its `required_reviewers` + 5-minute `wait_timer` would gate every
 container publish behind manual approval — a behaviour change to a path that currently runs
@@ -147,7 +202,11 @@ juniper-recurrence
 > image. Whether that belongs on Docker Hub is an open question, not an oversight — recorded in
 > §10.
 
-### 5.2A Repository secrets (Option A)
+### 5.2A Repository secrets (Option A) — NOT CHOSEN; do not run
+
+> Kept as the record of what Option A would have needed. Running it would create the repo-wide
+> exposure that §3 ruled against. Go to §5.2B. The warning below about `--body` applies there
+> too.
 
 `gh secret set` reads the value from stdin, so the token never appears in your shell history or
 in `ps` output. Run one command per repo, pasting the token at the prompt:
@@ -165,7 +224,7 @@ gh secret set DOCKERHUB_USERNAME --repo pcalnon/juniper-cascor
 > `memory/reference_ps_cmdline_leaks_aescrypt_passphrase.md` records that exact leak in this
 > ecosystem.
 
-### 5.2B Environment secrets (Option B, recommended)
+### 5.2B Environment secrets (Option B) — THE PATH, ruled 2026-09-22
 
 Create the environment first, then set the secrets against it:
 
@@ -202,22 +261,30 @@ exactly what you want to check: that the name is spelled correctly and that it e
 repos.
 
 ```bash
-# Option A — repository scope. Expect DOCKERHUB_TOKEN and DOCKERHUB_USERNAME in each.
+# Repository scope. Option B was ruled (§3), so this must show NO DOCKERHUB_* name. A
+# `gh secret set` that dropped `--env dockerhub` puts the secret here, readable by the whole
+# repo -- the exposure §3 ruled out. If one appears, delete it (§8) before going on.
 for r in juniper-cascor juniper-cascor-worker juniper-canopy juniper-data juniper-recurrence; do
   printf '%-24s ' "$r"
   gh api "repos/pcalnon/$r/actions/secrets" --jq '[.secrets[].name] | join(",")'
 done
 
-# Option B — environment scope.
+# Environment scope (Option B, the ruled path). Expect DOCKERHUB_TOKEN and DOCKERHUB_USERNAME in each.
 for r in juniper-cascor juniper-cascor-worker juniper-canopy juniper-data juniper-recurrence; do
   printf '%-24s ' "$r"
   gh api "repos/pcalnon/$r/environments/dockerhub/secrets" --jq '[.secrets[].name] | join(",")' 2>/dev/null \
     || echo "NO dockerhub ENVIRONMENT"
 done
 
-# Option B only — prove the branch policy is tags-only and non-empty.
-gh api repos/pcalnon/juniper-cascor/environments/dockerhub/deployment-branch-policies \
-  --jq '[.branch_policies[] | .type + ":" + .name]'
+# Prove the environment is tag-restricted and its policy list NON-EMPTY -- in each repo.
+# Expect, per repo: {"custom_branch_policies":true,"protected_branches":false}  tag:juniper-*-v*,tag:v*
+# A null policy admits EVERY ref; custom=true with an empty list admits NONE (§5.2B's note).
+for r in juniper-cascor juniper-cascor-worker juniper-canopy juniper-data juniper-recurrence; do
+  printf '%-24s ' "$r"
+  printf '%s  ' "$(gh api "repos/pcalnon/$r/environments/dockerhub" --jq '.deployment_branch_policy' 2>/dev/null || echo 'NO dockerhub ENVIRONMENT')"
+  gh api "repos/pcalnon/$r/environments/dockerhub/deployment-branch-policies" \
+    --jq '[.branch_policies[] | .type + ":" + .name] | join(",")' 2>/dev/null || echo "-"
+done
 ```
 
 **Baseline before you start** (verified 2026-09-22): all five repos hold exactly
@@ -243,8 +310,22 @@ docker logout docker.io
 
 ## 7. What happens next (NOT part of this procedure)
 
-Recorded so the registration is not mistaken for completion. The Wave 4 workflow change must add,
-to **each** of the five `publish-image.yml` files:
+This section is recorded so the registration is not mistaken for completion. **Option B was
+ruled, so the Wave 4 change starts by deciding where to name the environment**, using one of the
+two shapes in §3. **Never name it unconditionally on the existing `build` or `merge` job.** That
+rejects every PR and dispatch run of `publish-image.yml` (§3, *Cost — corrected*).
+
+**Shape 1: a release-only Docker Hub job.** The `build` and `merge` jobs stay as they are. Add
+one job to **each** of the five `publish-image.yml` files. The job:
+
+1. names `environment: dockerhub`, runs after `merge`, and runs on release runs only;
+2. logs in to Docker Hub, which is the **only** credential point (GHCR is read from, and its
+   packages are public);
+3. copies the manifest list that the `merge` job verified, by digest, applying the Docker Hub refs
+   in the same `X.Y.Z` / `X.Y` / `latest` scheme (plan D-3).
+
+**Shape 2: Docker Hub added to the existing jobs**, with the environment named conditionally,
+once the empty-name behaviour is proven. Add to **each** file:
 
 1. A second login in the **build** job (currently `Log in to GHCR`, `:131` in juniper-cascor).
 2. A second login in the **merge** job (`:287`) — **this is the one that gets forgotten.**
@@ -252,7 +333,7 @@ to **each** of the five `publish-image.yml` files:
    digest** and only the merge job applies tags and creates the manifest list. A change that adds
    Docker Hub to the build job alone produces arch blobs on Docker Hub with **no manifest tying
    them together** — an image that appears to exist and cannot be pulled by tag.
-3. `environment: dockerhub` on both jobs, **if** Option B was chosen.
+3. The conditional `environment:` on both jobs. **Never use the bare name** (§3).
 4. The Docker Hub refs in the `metadata-action` tag computation, so both registries receive the
    same `X.Y.Z` / `X.Y` / `latest` scheme (plan D-3).
 
@@ -265,8 +346,10 @@ None of this should be written before §6 passes.
 **To roll back before any workflow uses the secret** — nothing depends on it, so simply delete it:
 
 ```bash
-gh secret delete DOCKERHUB_TOKEN    --repo pcalnon/<repo>            # Option A
-gh secret delete DOCKERHUB_TOKEN    --repo pcalnon/<repo> --env dockerhub   # Option B
+gh secret delete DOCKERHUB_TOKEN    --repo pcalnon/<repo> --env dockerhub   # Option B (ruled)
+gh secret delete DOCKERHUB_USERNAME --repo pcalnon/<repo> --env dockerhub
+gh api -X DELETE repos/pcalnon/<repo>/environments/dockerhub   # the whole environment, secrets included
+gh secret delete DOCKERHUB_TOKEN    --repo pcalnon/<repo>            # Option A -- only to remove a mis-scoped copy (§6)
 ```
 
 **If the token is ever exposed** — in a log, a screenshot, a paste — revoke it at the Docker Hub
@@ -306,7 +389,8 @@ procedure's five repos. It also bears on **OQ-3**.
 
 | item | needs |
 | --- | --- |
-| Option A vs Option B (§3) | owner ruling before §5.2 |
+| ~~Option A vs Option B (§3)~~ | **RULED 2026-09-22: Option B** |
+| Where Wave 4 names the environment (§3, §7) | Wave 4 design: a release-only job (shape 1), or a conditional name once proven (shape 2) |
 | The Docker Hub account and username (§2) | owner — not discoverable from the repos |
 | Token expiry date, once set (§4) | **write it here when you create the token** |
 | Whether `juniper-deploy-test` should also publish to Docker Hub (§5.1) | owner — it is a test runner, not a service image |
@@ -317,10 +401,11 @@ procedure's five repos. It also bears on **OQ-3**.
 ## 11. Verification summary
 
 ```bash
-# 1. baseline / result — names only, never values
-gh api repos/pcalnon/juniper-cascor/actions/secrets --jq '[.secrets[].name]'
+# 1. names only, never values: the secrets are in the ENVIRONMENT, and NOT at repo scope
+gh api repos/pcalnon/juniper-cascor/environments/dockerhub/secrets --jq '[.secrets[].name]'
+gh api repos/pcalnon/juniper-cascor/actions/secrets --jq '[.secrets[].name]'   # no DOCKERHUB_*
 
-# 2. Option B only — the environment exists and is tag-scoped and NON-EMPTY
+# 2. the environment is tag-scoped and its policy list NON-EMPTY (§6 loops all five repos)
 gh api repos/pcalnon/juniper-cascor/environments/dockerhub/deployment-branch-policies \
   --jq '[.branch_policies[] | .type + ":" + .name]'
 
