@@ -1,0 +1,11 @@
+# corpus: 32 profiles under /home/pcalnon/.local/state/juniper-experiments/p01-logging-at8065ca0f-v3/prof
+# target: callee key containing '_filter_by_level'
+# matched callees: ['logger.py:545(_filter_by_level)']
+# target cumulative time:     1.00 s over 611,870 calls
+
+    cum_s    share         calls  caller
+     1.00  100.00%       611,870  logger.py:564(_log_at_level)
+
+# attributed to callers: 1.00 s (100.0% of target)
+# shown in top 12: 1.00 s (100.0% of target)
+# NOT shown (tail of 0 callers): 0.00 s
