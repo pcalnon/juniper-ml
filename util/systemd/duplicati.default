@@ -1,0 +1,6 @@
+# Read by systemd (EnvironmentFile=), NOT by a shell: no variable expansion, no command
+# substitution, no secrets. Each whitespace-separated word of DAEMON_OPTS becomes one argv
+# element of the wrapper ($DAEMON_OPTS, unbraced, in ExecStart=). Owned root:root 0644.
+# Under decision D-1 "keep encryption", append --require-db-encryption-key so a missing
+# credential stops the server instead of silently starting it unencrypted.
+DAEMON_OPTS="--webservice-port=8300 --webservice-interface=loopback --server-datafolder=/home/duplicati/.config/Duplicati --disable-update-check"

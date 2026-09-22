@@ -40,10 +40,12 @@ about it, including one written an hour ago.**
    in-image execution is `check_image_cpu_only.py`** — a distribution census that never imports
    the app. The `/v1/health` probe lives only in `ci.yml`, against a **locally built** image.
    Nothing in CI asserts that a *published* service image serves. Today they all happen to.
-2. **Propagate the 09-21 sweep's findings out of the predecessor handoff.** They are recorded
-   nowhere else: not in `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`,
-   and `memory/reference_juniper_deploy_image_publish_traps.md` still instructs a reader to run the
-   sweep that has already been run. **Both need updating or the item dies with that handoff.**
+2. ~~**Propagate the 09-21 sweep's findings out of the predecessor handoff.**~~ **DONE
+   2026-09-22 — juniper-ml#1996.** Both halves: the design of record now carries them as **§5.2**
+   of `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`, and
+   `memory/reference_juniper_deploy_image_publish_traps.md` has been rewritten so its class-1
+   section no longer instructs a reader to run a survey that has been run — both sections now
+   record what the sweep FOUND rather than what it was looking for.
 3. **`juniper-data`'s PyPI wheel ships its test suite.** New finding, this session, not in any
    prior document: `juniper_data-0.14.0-py3-none-any.whl` carries **95 of its 199 members** under
    `juniper_data/tests/`. Cause is `pyproject.toml:150` — `include = ["juniper_data*"]` with no
@@ -103,11 +105,19 @@ leaving **766 `.h5` files, each carrying a plaintext 32-byte multiprocessing aut
 
 ### Known gaps that no gate will catch
 
-- **Pin currency.** juniper-deploy#217's `Published Image Refs` asserts a ref **resolves**, never
-  that it is **newest** — it ran green throughout the three days canopy's pin was stale. **Zero
-  drift as of 2026-09-22**, but re-probe rather than trust: `gh release list --repo pcalnon/<name> --limit 1` for **all five**, and GHCR `tags/list` for what is actually served. Use
-  `gh release list`, **not** `gh api .../releases/latest` — that endpoint is stale for 3 of 5 repos
-  here (it answers cascor `v0.10.0`, data `v0.13.0`, canopy `v0.5.0`).
+- ~~**Pin currency.**~~ **CLOSED 2026-09-22 — juniper-deploy#226** (`13ee87aa`).
+  `scripts/verify_published_images.py` now asks the currency question it never asked, which is why
+  it ran green throughout the three days canopy's pin was stale.
+  **Advisory by default** — a `::warning::` and exit 0 — with `--fail-on-stale` for a scheduled job
+  and `--no-currency` to restore the old behaviour. Existence and currency have different blast
+  radii: a missing ref breaks `up` for everyone, a stale one ships an older but working stack, so
+  failing by default would block every unrelated PR the moment any upstream release landed. A test
+  pins that policy so it cannot drift.
+  > **The warning above about `releases/latest` is why it queries the REGISTRY, not the Releases
+  > API.** `/v2/<repo>/tags/list` answers "what could this compose file pull today"; a Release can
+  > exist whose image publish failed, and — as this bullet recorded — `releases/latest` is stale
+  > for 3 of 5 repos. Versions also compare as tuples of ints, since `"0.10.0" < "0.9.0"`
+  > lexicographically. Verified live (6/6 current) and by negative control with canopy downgraded.
 - **SLSA provenance publishes build-arg values verbatim** — `externalParameters.request.args` in
   the public in-toto blob carries `APP_VERSION`/`BUILD_DATE`/`GIT_SHA`. Benign today; it makes
   "never pass a secret as `--build-arg`" load-bearing and **currently unenforced**.

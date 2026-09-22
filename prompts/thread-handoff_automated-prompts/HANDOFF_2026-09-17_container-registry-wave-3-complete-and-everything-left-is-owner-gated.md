@@ -529,10 +529,16 @@ from a release-tagged image:**
    > juniper-ml#1980 before a post-merge `grep` caught it. **Correcting where you happen to be
    > reading leaves the rest of the claim standing**; the fix is to grep the whole document for
    > the assertion, not to edit the sentence you are looking at.
-5. **This sweep's findings live only here.** They are not in the plan, and
-   `reference_juniper_deploy_image_publish_traps.md` still instructs a reader to run the sweep that
-   has now been run. Both need updating or the item dies with this handoff.
-6. **MEMORY.md compaction**, 23.0 KB → 20 KB.
+5. ~~**This sweep's findings live only here.**~~ **PROPAGATED 2026-09-22.** The design of record
+   now carries them as **§5.2** of
+   `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`, and
+   `memory/reference_juniper_deploy_image_publish_traps.md` has been rewritten: its class-1
+   section no longer tells a reader to run a survey that has been run, and both sections now
+   record what the sweep found rather than what it was looking for.
+6. **MEMORY.md compaction** — **21.7 KB (22,202 B) against a 20 KB target**, measured
+   2026-09-22. *This line read "23.0 KB → 20 KB" until now: the same fact was stated in two
+   sections and only the other one was corrected when the figure moved. Third instance of that
+   class in this document. **Run `stat`; do not quote a size from here.***
 
 ### Validation record 2026-09-21
 

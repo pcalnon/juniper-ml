@@ -1,0 +1,126 @@
+[Unit]
+Description=Duplicati backup server (Yamaguchi job, dedicated service user)
+Documentation=file:///home/pcalnon/Development/python/Juniper/juniper-ml/notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md
+# No network-online.target: this server listens on loopback and its destination is file://,
+# so it has no network dependency to order against.
+After=local-fs.target
+# The destination and the data folder must be mounted before the server starts, and the
+# server stops if either is unmounted (an unmounted destination reads as "everything missing").
+RequiresMountsFor=/mnt/Backups /home/duplicati
+StartLimitIntervalSec=10min
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=duplicati
+Group=duplicati
+UMask=0007
+Nice=19
+IOSchedulingClass=idle
+IOSchedulingPriority=7
+EnvironmentFile=-/etc/default/duplicati
+# The settings encryption key: a root-only file, exposed to the service as
+# $CREDENTIALS_DIRECTORY/settings-key (never in the environment block, never on argv).
+LoadCredential=settings-key:/etc/credstore/duplicati-settings-key
+ExecStart=/usr/local/lib/duplicati/duplicati-wrapper.bash $DAEMON_OPTS
+# on-failure, not the vendor's always: a clean exit 0 is the server being told to stop, and
+# restarting it would fight the operator. A one-shot exit must not loop.
+Restart=on-failure
+RestartSec=30s
+# Read the whole backup Source without running as root. NOTE (D-4): this bypasses every read
+# and search check on the HOST, not only under /home/pcalnon -- see the residual in 7.1 p.3.
+AmbientCapabilities=CAP_DAC_READ_SEARCH
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+NoNewPrivileges=yes
+# Confinement. ReadWritePaths= punches the data folder, the tempdir and the destination
+# through ProtectSystem=strict and ProtectHome=read-only (man systemd.exec: nest
+# ReadWritePaths= inside read-only paths to provide writable subdirectories).
+ProtectSystem=strict
+ProtectHome=read-only
+# Scoped to the job's OWN destination, not the whole Backups/ tree. The parent holds
+# _yamaguchi_keys/ (the passphrase escrow), _yamaguchi_frozen_20260826/ and ten
+# .dlist.zip.gpg archives -- and every one of those directories is drwxrwx---
+# pcalnon:duplicati with NO sticky bit, so a ReadWritePaths= on the parent would let this
+# service read AND UNLINK the only key custody T1 and T1c have, with the deletion
+# propagating to Dropbox. That would also contradict section 8's own "nothing under
+# /mnt/Backups/Ubuntu/ is deleted or moved" rule. Duplicati needs write on the
+# destination directory only.
+ReadWritePaths=/home/duplicati /mnt/Backups/Ubuntu/Dropbox/Backups/Yamaguchi
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+RestrictRealtime=yes
+SystemCallArchitectures=native
+# --- Confinement added by consensus round 1, Lane B3 (F-1, F-2). Without these the
+# --- capability above is paired with an unrestricted exfiltration channel.
+# Socket egress is denied. It is NOT the only egress, and the reason usually given --
+# "Dropbox is a separate daemon" -- is precisely why: ReadWritePaths= below opens a
+# directory that the pcalnon Dropbox daemon replicates to a third party (S-4 records
+# `dropbox filestatus` reading "up to date" for this tree). Anything this service writes
+# into the destination LEAVES THE MACHINE, and IPAddressDeny= cannot see that path, because
+# the upload is another process's socket. Scoping ReadWritePaths= to Yamaguchi/ and D-13's
+# Dropbox root policy are therefore confinement controls, not hygiene. What this block does
+# close is the server's own sockets: the update check and usage reporting.
+IPAddressDeny=any
+IPAddressAllow=localhost
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# @system-service does NOT exclude @privileged wholesale: 18 of @privileged's 53 calls are in
+# its transitive closure (chown/fchown/lchown, capset, setfsuid, setgroups, setres*uid...),
+# which is why `systemd-analyze security` prints a 0.2 "SystemCallFilter=~@privileged ...
+# chown is allowed" row. That row is expected and is NOT evidence against this filter.
+# What @system-service DOES exclude is open_by_handle_at(2) specifically: the closure allows
+# name_to_handle_at (make a handle) and not open_by_handle_at (use one). That is the call
+# CAP_DAC_READ_SEARCH explicitly grants, and it opens ANY inode of a mounted filesystem by
+# handle -- bypassing InaccessiblePaths= and TemporaryFileSystem= entirely. Path masking
+# without this filter is therefore not a boundary at all. Verified on systemd 259 by expanding
+# the set transitively; a direct-member listing does not show it, because @system-service is
+# mostly nested groups.
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+ProtectProc=invisible
+ProcSubset=pid
+PrivateDevices=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+RestrictNamespaces=yes
+# Bound, not boundary: a mount mask is escaped by resolving a path through
+# /proc/<pid>/root of any process in another mount namespace that this uid may ptrace --
+# i.e. any duplicati-uid process OUTSIDE this unit. ProtectProc=invisible does not stop it
+# (man systemd.exec: it hides processes owned by OTHER users), and no special syscall is
+# needed, just openat. So every `sudo -u duplicati` / `su - duplicati` session is, while it
+# lives, a hole in the list below -- and section 7.3.1 prescribes exactly those as the
+# administration model. Keep them transient; `usermod -s /usr/sbin/nologin duplicati` moves
+# from P4 to P0.5a for this reason. What the mask reliably buys is protection from the
+# service's own code paths and from accident, not from a deliberate same-uid adversary.
+# /etc/credstore IS masked -- see the note below for why that does not break
+# LoadCredential=. The shadow- / gshadow- backups hold the previous generation of the same
+# hashes; /run/log/journal is the volatile journal, which -/var/log does not cover; and
+# /var/spool/cups is named by section 6's own sink checklist as a place the printed escrow
+# sheet may still sit, which makes it the one entry whose contents may be a live passphrase.
+InaccessiblePaths=-/etc/shadow -/etc/shadow- -/etc/gshadow -/etc/gshadow- -/etc/ssh -/etc/credstore -/etc/credstore.encrypted -/var/lib/docker -/var/log -/run/log/journal -/var/spool/cups -/root -/mnt/Backups/Ubuntu/Dropbox/Backups/_yamaguchi_keys
+# Disabled by the names the software ACTUALLY reads. DUPLICATI__DISABLE_UPDATE_CHECK and
+# DUPLICATI__USAGE_REPORTER_LEVEL do NOT exist: a utf-8 AND utf-16le scan of all 1,443
+# files under /usr/lib/duplicati finds neither in either encoding
+# (util/ad-hoc/2026-09-22_duplicati_literal_scan.py). The generic DUPLICATI__ mapping is
+# LOWER-case with '-' -> '_' (run-script-example.sh ll. 76-80); the upper-case forms in the
+# product are hand-written specials, e.g. DUPLICATI__ALLOW_INSECURE_DATAFOLDER, which the
+# same scan does find. An unread environment variable produces no "Unknown option supplied"
+# line, so AC-14 structurally CANNOT catch a wrong name here -- which is why the option form
+# below is also set, in /etc/default/duplicati, where AC-14 can see a typo.
+#
+# Note for anyone re-running that scan: the two names below are NOT literals either. The
+# assemblies carry the templates AUTOUPDATER_{0}_SKIP_UPDATE (Duplicati.Library.AutoUpdater.dll)
+# and USAGEREPORTER_{0}_LEVEL (Duplicati.Library.UsageReporter.dll); {0} resolves to
+# "Duplicati" from the embedded manifest resource AutoUpdateAppName.txt. So a literal scan
+# reports NOT FOUND for the substituted forms and that is CORRECT -- it is the templates plus
+# the resource that establish them. DO_NOT_TRACK is a direct literal. (Round 3.)
+Environment=AUTOUPDATER_Duplicati_SKIP_UPDATE=1
+Environment=USAGEREPORTER_Duplicati_LEVEL=none
+Environment=DO_NOT_TRACK=1
+
+[Install]
+WantedBy=multi-user.target

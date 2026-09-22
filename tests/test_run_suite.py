@@ -20,6 +20,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MODULE_PATH = REPO_ROOT / "util" / "experiments" / "run_suite.py"
 
@@ -952,3 +954,334 @@ class ComparisonReportingTest(MainLoopTest):
         root, suite_dir, _, _ = self._setup()
         self._main("--suite", str(root / "suite.yaml"))
         self.assertNotIn("## Baseline comparison", (suite_dir / "REPORT.md").read_text())
+
+
+# =====================================================================================
+# D2 (2026-09-22): the ``runtime:`` block binds
+# =====================================================================================
+
+
+def _restore_environ(saved: "dict[str, str]") -> None:
+    """Restore ``os.environ`` in place.
+
+    A named function rather than ``lambda: (os.environ.clear(), os.environ.update(saved))``:
+    ``clear()`` returns ``None``, so the tuple form is a mypy ``func-returns-value`` error and,
+    more to the point, reads as if it were building a value it then discards.
+    """
+    os.environ.clear()
+    os.environ.update(saved)
+
+
+class TestRuntimeBlockEnv(unittest.TestCase):
+    """``runtime:`` -> process environment (owner decision D2).
+
+    The failure this pins is not a crash, it is a **silent no-op**: before
+    ``runtime_block_env`` existed, ``run_experiment`` validated all three ``RUNTIME_KEYS``
+    and nothing read any of them, so a suite could set ``blas_threads`` and run 16-wide, and
+    a matrix could *vary* the key and measure one configuration N times. Every assertion here
+    is therefore about a value actually arriving somewhere, never about a call succeeding.
+    """
+
+    def test_absent_block_sets_nothing(self) -> None:
+        """No ``runtime:`` must leave the launcher's inherited environment untouched."""
+        self.assertEqual(run_suite.runtime_block_env({"experiment": {"name": "x"}}), {})
+
+    def test_blas_threads_fans_out_to_all_three_families(self) -> None:
+        """Pinning one BLAS family leaves the others at 'every core', so all three or none."""
+        env = run_suite.runtime_block_env({"runtime": {"blas_threads": 2}})
+        self.assertEqual(env, {"OMP_NUM_THREADS": "2", "MKL_NUM_THREADS": "2", "OPENBLAS_NUM_THREADS": "2"})
+
+    def test_num_processes_maps_to_the_cascor_variable(self) -> None:
+        self.assertEqual(run_suite.runtime_block_env({"runtime": {"num_processes": 4}}), {"CASCOR_NUM_PROCESSES": "4"})
+
+    def test_eval_metrics_false_emits_the_word_not_a_blank(self) -> None:
+        """cascor's ``_env_flag`` treats BLANK as the default, and that default is True.
+
+        Emitting ``""`` for ``false`` would therefore ENABLE the thing the config disabled --
+        a silent inversion, which is worse than the no-op this whole function replaces.
+        """
+        env = run_suite.runtime_block_env({"runtime": {"eval_metrics_enabled": False}})
+        self.assertEqual(env, {"JUNIPER_CASCOR_EVAL_METRICS_ENABLED": "false"})
+        self.assertNotEqual(env["JUNIPER_CASCOR_EVAL_METRICS_ENABLED"], "")
+
+    def test_eval_metrics_true_emits_true(self) -> None:
+        self.assertEqual(run_suite.runtime_block_env({"runtime": {"eval_metrics_enabled": True}}), {"JUNIPER_CASCOR_EVAL_METRICS_ENABLED": "true"})
+
+    def test_all_three_keys_together(self) -> None:
+        env = run_suite.runtime_block_env({"runtime": {"blas_threads": 8, "num_processes": 2, "eval_metrics_enabled": True}})
+        self.assertEqual(env["OMP_NUM_THREADS"], "8")
+        self.assertEqual(env["CASCOR_NUM_PROCESSES"], "2")
+        self.assertEqual(env["JUNIPER_CASCOR_EVAL_METRICS_ENABLED"], "true")
+
+    def test_non_mapping_runtime_is_refused(self) -> None:
+        """``or {}`` guards ABSENCE, not TYPE -- a list is truthy-empty and would reach ``.get``."""
+        for bad in ([], ["blas_threads"], "blas_threads: 2", 7):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(run_suite.SuiteError, "must be a mapping"):
+                    run_suite.runtime_block_env({"runtime": bad})
+
+    def test_non_positive_width_is_refused_not_dropped(self) -> None:
+        """A dropped value reproduces the original defect one layer down: applied-looking, absent."""
+        for bad in (0, -1, 1.5, "2"):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(run_suite.SuiteError, "positive integer"):
+                    run_suite.runtime_block_env({"runtime": {"blas_threads": bad}})
+
+    def test_null_CLEARS_a_key_rather_than_failing(self) -> None:
+        """``null`` must mean "unpinned", not exit 2.
+
+        ``_set_dotted`` cannot delete a key — it WRITES ``None`` — so
+        ``matrix: {runtime.blas_threads: [2, null]}`` is the only way an author can express an
+        unpinned cell. Rejecting ``None`` would mean the change that made ``blas_threads``
+        matter simultaneously removed the only way to turn it off, and would do it by refusing
+        the whole suite. The idiom is already in use on other keys
+        (``suites/p4/e-e-recurrence-readout-spectrum.yaml`` clears ``train.rff_features``).
+        """
+        for key in ("blas_threads", "num_processes", "eval_metrics_enabled"):
+            with self.subTest(key=key):
+                self.assertEqual(run_suite.runtime_block_env({"runtime": {key: None}}), {})
+        # …and a null alongside a real value clears only its own key.
+        self.assertEqual(run_suite.runtime_block_env({"runtime": {"blas_threads": None, "num_processes": 2}}), {"CASCOR_NUM_PROCESSES": "2"})
+
+    def test_cascor_only_knob_is_withheld_from_recurrence(self) -> None:
+        """Same invariant ``thread_budget_env`` already holds: recurrence gets no cascor knob.
+
+        It would otherwise land in the recurrence run's manifest ``thread_env`` and from there
+        in a baseline's ``HOST.json.thread_budget``, which is a host-IDENTITY field — so a
+        variable nothing reads could refuse a comparison.
+        """
+        self.assertEqual(run_suite.runtime_block_env({"runtime": {"num_processes": 4}}, "recurrence"), {})
+        # Still validated, so a typo is not silently swallowed on the recurrence path either.
+        with self.assertRaisesRegex(run_suite.SuiteError, "positive integer"):
+            run_suite.runtime_block_env({"runtime": {"num_processes": 0}}, "recurrence")
+        # blas_threads is NOT cascor-specific and must still apply.
+        self.assertEqual(run_suite.runtime_block_env({"runtime": {"blas_threads": 4}}, "recurrence")["OMP_NUM_THREADS"], "4")
+
+    def test_bool_is_not_accepted_as_a_width(self) -> None:
+        """``bool`` is an ``int`` subclass, so ``blas_threads: true`` would silently mean 1."""
+        with self.assertRaisesRegex(run_suite.SuiteError, "positive integer"):
+            run_suite.runtime_block_env({"runtime": {"blas_threads": True}})
+        with self.assertRaisesRegex(run_suite.SuiteError, "positive integer"):
+            run_suite.runtime_block_env({"runtime": {"num_processes": False}})
+
+    def test_non_bool_eval_metrics_is_refused(self) -> None:
+        for bad in ("true", 1, 0):
+            with self.subTest(bad=bad):
+                with self.assertRaisesRegex(run_suite.SuiteError, "must be a boolean"):
+                    run_suite.runtime_block_env({"runtime": {"eval_metrics_enabled": bad}})
+
+
+class TestRuntimeBlockReachesTheLauncher(unittest.TestCase):
+    """End-to-end: the resolved value must arrive in the launcher's PROCESS ENVIRONMENT.
+
+    Unit-testing the mapping proves the dict is right; it does not prove anything is exported.
+    These tests run a real suite against a stub launcher that dumps ``environ`` to disk, which
+    is the only form of evidence that distinguishes "wired" from "computed and discarded" --
+    the precise distinction this whole decision exists to repair.
+    """
+
+    BASE = """\
+schema_version: 1
+experiment:
+  name: fixture
+  seed: 7
+service:
+  log_level: INFO
+dataset:
+  generator: spiral
+  params:
+    n_points_per_spiral: 50
+    n_spirals: 2
+    noise: 0.1
+training:
+  params:
+    max_hidden_units: 2
+    max_iterations: 2
+    output_epochs: 5
+runtime:
+  blas_threads: 3
+  num_processes: 5
+  eval_metrics_enabled: false
+outputs:
+  max_wall_seconds: 60
+"""
+
+    SUITE = """\
+schema_version: 1
+suite:
+  name: d2-suite
+  description: test
+  app: cascor
+  base_config:
+    - {base}
+  seed_policy: fixed
+execution:
+  mode: {mode}
+  max_parallel: {par}
+  continue_on_failure: true
+  per_run_timeout_seconds: 60
+matrix:
+  training.params.max_hidden_units: [2]
+{extra_matrix}
+outputs:
+  suite_dir: {suite_dir}
+"""
+
+    @staticmethod
+    def _launched(dump: Path) -> "dict[str, str | None]":
+        """Parse the stub launcher's KEY=VALUE dump. ``<UNSET>`` becomes ``None``.
+
+        Last occurrence wins, so a multi-cell suite reports the final launch rather than
+        silently blending appended rows from several cells.
+        """
+        parsed: "dict[str, str | None]" = {}
+        for line in dump.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            key, _, value = line.partition("=")
+            parsed[key] = None if value == "<UNSET>" else value
+        return parsed
+
+    def _run(self, mode: str, par: int, extra_matrix: str = ""):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "base.yaml").write_text(self.BASE)
+        suite_dir = root / "out"
+        (root / "suite.yaml").write_text(self.SUITE.format(base=root / "base.yaml", mode=mode, par=par, suite_dir=suite_dir, extra_matrix=extra_matrix))
+        dump = root / "launcher-env.txt"
+        launcher = root / "stub_launcher.bash"
+        # Dump, from the launcher's OWN environment on --up, exactly the five variables under
+        # test, as KEY=VALUE. This is the measurement.
+        #
+        # Deliberately NOT a python child that serialises the whole environment as a mapping:
+        # `tests/test_env_repr_safety.py` forbids raw os.environ-derived mappings anywhere under
+        # `tests/` (it greps line-by-line, so even naming the construct in a comment trips it),
+        # because such a mapping sits as a frame-local and `--showlocals` renders real secrets at
+        # the head of a failure paste. Naming the five is the sharper assertion anyway --
+        # `${!v-<UNSET>}` distinguishes
+        # UNSET from EMPTY, and that is the exact distinction both `runtime_block_env` (which
+        # emits nothing for a cleared key) and the launcher's `runtime_env` array turn on.
+        launcher.write_text("#!/usr/bin/env bash\n" 'if [[ "$1" == "--up" ]]; then\n' "  for v in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do\n" '    val="${!v-<UNSET>}"\n' f'    printf \'%s=%s\\n\' "$v" "$val" >> "{dump}"\n' "  done\n" '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then exit 0; fi\n' "exit 2\n")
+        launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
+        driver = root / "stub_driver.py"
+        _write_stub_driver(driver)
+        run_root = root / "runroot"
+        run_root.mkdir()
+        old = run_suite.DEFAULT_RUN_ROOT
+        run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
+        self.addCleanup(lambda: setattr(run_suite, "DEFAULT_RUN_ROOT", old))
+        # Pin a fake cascor tree at the parallel floor, as the D5 tests above do.
+        #
+        # Without it these cases are HOST-DEPENDENT and pass only by accident: `app: cascor`
+        # with `max_parallel > 1` is gated by `check_cascor_parallel_floor`, which probes for a
+        # juniper-cascor sibling ABOVE the repo. A developer checkout has one, so the parallel
+        # cases went green locally; a CI runner does not, so the guard refused the suite (exit
+        # 2) and the assertions failed on `rc`, not on the thing under test. Building the tree
+        # makes the outcome a property of the code rather than of where it was cloned.
+        cascor_tree = root / "juniper-cascor"
+        (cascor_tree / "src").mkdir(parents=True, exist_ok=True)
+        (cascor_tree / "pyproject.toml").write_text('[project]\nname = "juniper-cascor"\nversion = "' + ".".join(str(p) for p in run_suite.CASCOR_PARALLEL_FLOOR) + '"\n')
+        env = {
+            "JUNIPER_SUITE_LAUNCHER": str(launcher),
+            "JUNIPER_SUITE_DRIVER": str(driver),
+            "JUNIPER_SUITE_PYTHON": sys.executable,
+            "JUNIPER_EXP_CASCOR_SRC_DIR": str(cascor_tree / "src"),
+        }
+        old_environ = RedactedEnv(os.environ)
+        os.environ.update(env)
+        self.addCleanup(_restore_environ, old_environ)
+        buf = io.StringIO()
+        with redirect_stdout(buf), redirect_stderr(buf):
+            rc = run_suite.main(["--suite", str(root / "suite.yaml")])
+        return rc, dump, suite_dir, buf.getvalue()
+
+    def test_sequential_run_exports_the_configured_width(self) -> None:
+        """Serial mode sets NO H-11 budget, so before D2 a serial suite ran fully unpinned."""
+        rc, dump, _suite_dir, out = self._run("sequential", 1)
+        self.assertEqual(rc, 0, msg=out)
+        self.assertTrue(dump.is_file(), msg=f"launcher never ran\n{out}")
+        launched = self._launched(dump)
+        self.assertEqual(launched.get("OMP_NUM_THREADS"), "3")
+        self.assertEqual(launched.get("MKL_NUM_THREADS"), "3")
+        self.assertEqual(launched.get("OPENBLAS_NUM_THREADS"), "3")
+        self.assertEqual(launched.get("CASCOR_NUM_PROCESSES"), "5")
+
+    def test_a_matrix_override_beats_the_h11_parallel_budget(self) -> None:
+        """PF-3's second axis IS per-cell thread width.
+
+        ``thread_budget_env`` hard-codes cascor's BLAS vars to "2" for every parallel cell. If
+        that won, every cell of PF-3 would run at width 2 and the axis would be inert -- the
+        same defect that wasted PF-2's dataset axis. So a width the SUITE names must beat the
+        H-11 split, and the registry row must make the override legible.
+        """
+        rc, dump, suite_dir, out = self._run("parallel", 2, extra_matrix="  runtime.blas_threads: [7]")
+        self.assertEqual(rc, 0, msg=out)
+        launched = self._launched(dump)
+        self.assertEqual(launched.get("OMP_NUM_THREADS"), "7", msg="the H-11 split must not overwrite a width the matrix names")
+        row = json.loads((suite_dir / "registry.jsonl").read_text().splitlines()[0])
+        self.assertEqual(row["runtime_env"]["OMP_NUM_THREADS"], "7")
+        self.assertEqual(row["thread_budget"]["OMP_NUM_THREADS"], run_suite.thread_budget_env("cascor", 2)["OMP_NUM_THREADS"], msg="both must be recorded, or the override is invisible in the evidence")
+
+    def test_an_INHERITED_width_does_NOT_beat_the_h11_budget(self) -> None:
+        """The override is scoped to intent, and an inherited value carries none.
+
+        The base config here sets ``blas_threads: 3`` and the suite never mentions it — exactly
+        the shape of `spiral-baseline.yaml`, which sets ``num_processes: 4``. If an inherited
+        value won, any parallel cascor suite built on that base would silently disarm the H-11
+        split: 4 cells x 4 processes on a 16-core host, 2x oversubscribed, and invisible because
+        `REPORT.md` prints neither budget. H-11 is a safety budget; only a suite that ASKS for a
+        width gets to spend it.
+        """
+        rc, dump, _suite_dir, out = self._run("parallel", 2)
+        self.assertEqual(rc, 0, msg=out)
+        launched = self._launched(dump)
+        # Expected values are DERIVED from `thread_budget_env`, never written as literals: its
+        # split is `max(1, nproc // (2 * max_parallel))`, so a hard-coded "4" encodes this
+        # 16-core host and reads '1' on a 2-core CI runner. That is the same host-dependence
+        # that made these cases vacuous before the cascor tree was pinned, one layer down —
+        # and the literal would have failed loudly rather than silently, but only in CI.
+        expected = run_suite.thread_budget_env("cascor", 2)
+        self.assertEqual(launched.get("OMP_NUM_THREADS"), expected["OMP_NUM_THREADS"], msg="an inherited width must lose to the H-11 split")
+        self.assertEqual(launched.get("CASCOR_NUM_PROCESSES"), expected["CASCOR_NUM_PROCESSES"], msg="H-11's split, not the base config's 5")
+        # …and the point of the test: the base config's values are the ones that must NOT win.
+        self.assertNotEqual(launched.get("OMP_NUM_THREADS"), "3", msg="the base config's inherited blas_threads must not reach the launcher")
+        self.assertNotEqual(launched.get("CASCOR_NUM_PROCESSES"), "5", msg="the base config's inherited num_processes must not reach the launcher")
+
+    def test_eval_metrics_is_exempt_from_the_h11_contest(self) -> None:
+        """H-11 is a THREAD budget and has no opinion about eval metrics.
+
+        The parallel filter must not sweep up a key the budget never contests. The base config
+        sets ``eval_metrics_enabled: false`` and the suite never names it, so it is inherited —
+        yet it must still reach the launcher in parallel mode, unlike the inherited width above.
+        """
+        rc, dump, _suite_dir, out = self._run("parallel", 2)
+        self.assertEqual(rc, 0, msg=out)
+        launched = self._launched(dump)
+        self.assertEqual(launched.get("JUNIPER_CASCOR_EVAL_METRICS_ENABLED"), "false", msg="an inherited non-thread key must survive the parallel filter")
+        # …while, in the same run, the inherited THREAD keys did lose to H-11.
+        self.assertEqual(launched.get("OMP_NUM_THREADS"), run_suite.thread_budget_env("cascor", 2)["OMP_NUM_THREADS"])
+
+    def test_a_bad_runtime_value_refuses_the_suite_before_any_cell_launches(self) -> None:
+        """Fail-closed, and fail EARLY -- the D5 lesson: a late guard has already written evidence."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "base.yaml").write_text(self.BASE.replace("blas_threads: 3", "blas_threads: 0"))
+        suite_dir = root / "out"
+        (root / "suite.yaml").write_text(self.SUITE.format(base=root / "base.yaml", mode="sequential", par=1, suite_dir=suite_dir, extra_matrix=""))
+        dump = root / "launcher-env.json"
+        launcher = root / "stub_launcher.bash"
+        launcher.write_text("#!/usr/bin/env bash\n" f'touch "{dump}"\n' 'echo "=== Experiment run stub-run-$$ is up ==="\n' "exit 0\n")
+        launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
+        driver = root / "stub_driver.py"
+        _write_stub_driver(driver)
+        old_environ = RedactedEnv(os.environ)
+        os.environ.update({"JUNIPER_SUITE_LAUNCHER": str(launcher), "JUNIPER_SUITE_DRIVER": str(driver), "JUNIPER_SUITE_PYTHON": sys.executable})
+        self.addCleanup(_restore_environ, old_environ)
+        buf = io.StringIO()
+        with redirect_stdout(buf), redirect_stderr(buf):
+            rc = run_suite.main(["--suite", str(root / "suite.yaml")])
+        self.assertEqual(rc, 2, msg=buf.getvalue())
+        self.assertIn("positive integer", buf.getvalue())
+        self.assertFalse(dump.exists(), "the launcher must never have been invoked")

@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the Juniper USB archive when a configured drive is mounted and a run is due
+
+[Path]
+# PathChanged=, never PathExists=: a PathExists= oneshot re-triggers after EVERY termination
+# (systemd.path(5)), so a "nothing due" exit 0 loops into the start-rate limit and the path
+# unit itself then fails, losing the monitoring. Verified against systemd v259 path.c.
+PathChanged=/run/media/pcalnon
+Unit=juniper-backup.service
+
+[Install]
+WantedBy=default.target
