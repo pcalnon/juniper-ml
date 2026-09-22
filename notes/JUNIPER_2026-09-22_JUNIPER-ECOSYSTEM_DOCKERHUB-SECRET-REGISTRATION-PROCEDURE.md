@@ -4,7 +4,11 @@
 **Author:** Paul Calnon
 **Date:** 2026-09-22
 **Status:** READY TO EXECUTE — owner action. **§3 RULED 2026-09-22: Option B**, a dedicated
-`dockerhub` environment, so §5.2B is the path and §5.2A is not used.
+`dockerhub` environment, so §5.2B is the path and §5.2A is not used. **§5.2B steps 1–2 DONE
+2026-09-22 in all five repos**: each `dockerhub` environment exists, admits tags `v*` and
+`juniper-*-v*` only, and has no reviewer, no wait timer and no secrets yet (verified under §6). The
+owner action still outstanding is §4 (create the token), then §5.2B **step 3** (the ten
+`gh secret set` commands), then §6.
 **Unblocks:** Wave 4 of
 [`JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`](JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md)
 §6 OQ-1, ruled 2026-09-11.
@@ -226,6 +230,11 @@ gh secret set DOCKERHUB_USERNAME --repo pcalnon/juniper-cascor
 
 ### 5.2B Environment secrets (Option B) — THE PATH, ruled 2026-09-22
 
+> **Steps 1 and 2 were run on 2026-09-22 for all five repositories, exactly as written below**
+> (gh 2.46.0, whose `-F 'key[subkey]=value'` nested-field syntax these commands rely on). **Start at
+> step 3.** Re-running step 1 only updates an environment that already exists. Do not re-run
+> step 2: both tag rules are already present in every repository (§6 has the read-back).
+
 Create the environment first, then set the secrets against it:
 
 ```bash
@@ -291,6 +300,28 @@ done
 `CROSS_REPO_DISPATCH_TOKEN,SOPS_AGE_KEY`, except `juniper-recurrence`, which holds **none**. If a
 `DOCKERHUB_*` name appears before you have done anything, stop — someone else registered it and
 you need to know who and with what scope.
+
+**Read back 2026-09-22, after steps 1–2 and before any secret.** Each repository was checked on its
+own, in the environment object, its rule list and both secret scopes:
+
+| repository | `deployment_branch_policy` | protection rules | tag rules | env secrets | repo secrets |
+| --- | --- | --- | --- | --- | --- |
+| juniper-cascor | custom, not protected-branches | `branch_policy` | `v*`, `juniper-*-v*` | none | `CROSS_REPO_DISPATCH_TOKEN`, `SOPS_AGE_KEY` |
+| juniper-cascor-worker | custom, not protected-branches | `branch_policy` | `v*`, `juniper-*-v*` | none | `CROSS_REPO_DISPATCH_TOKEN`, `SOPS_AGE_KEY` |
+| juniper-canopy | custom, not protected-branches | `branch_policy` | `v*`, `juniper-*-v*` | none | `CROSS_REPO_DISPATCH_TOKEN`, `SOPS_AGE_KEY` |
+| juniper-data | custom, not protected-branches | `branch_policy` | `v*`, `juniper-*-v*` | none | `CROSS_REPO_DISPATCH_TOKEN`, `SOPS_AGE_KEY` |
+| juniper-recurrence | custom, not protected-branches | `branch_policy` | `v*`, `juniper-*-v*` | none | none |
+
+`branch_policy` being the **only** protection rule confirms there is no `required_reviewers` and
+no `wait_timer`. The existing publish environments were not disturbed: juniper-ml's
+`tests/test_publish_env_policy_drift.py`, run live with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`, passed
+17 of 17, including `test_every_publish_environment_is_tag_gated`.
+
+> **That drift gate does not cover `dockerhub`.** It reads only the environments named in
+> `PUBLISH_ENVS = ("pypi", "testpypi")`. Nothing would notice if a `dockerhub` environment later
+> gained a branch rule or was deleted outright. Deleting it also deletes its secrets, so once
+> Wave 4 has added the Docker Hub login, the next release would fail at that step. The gap is
+> recorded in §10.
 
 **The name must match the workflow exactly.** A secret registered as `DOCKER_HUB_TOKEN` or
 `DOCKERHUB_PAT` is not a typo that CI will catch for you: `secrets.DOCKERHUB_TOKEN` simply
@@ -390,7 +421,9 @@ procedure's five repos. It also bears on **OQ-3**.
 | item | needs |
 | --- | --- |
 | ~~Option A vs Option B (§3)~~ | **RULED 2026-09-22: Option B** |
+| ~~Create the five `dockerhub` environments and their tag rules (§5.2B steps 1–2)~~ | **DONE 2026-09-22**; read back under §6 |
 | Where Wave 4 names the environment (§3, §7) | Wave 4 design: a release-only job (shape 1), or a conditional name once proven (shape 2) |
+| A drift gate for `dockerhub` (§6) | `tests/test_publish_env_policy_drift.py` reads only `pypi` / `testpypi`; extending it needs a per-environment expected tag set (`v*`, `juniper-*-v*` here, six patterns there) |
 | The Docker Hub account and username (§2) | owner — not discoverable from the repos |
 | Token expiry date, once set (§4) | **write it here when you create the token** |
 | Whether `juniper-deploy-test` should also publish to Docker Hub (§5.1) | owner — it is a test runner, not a service image |
