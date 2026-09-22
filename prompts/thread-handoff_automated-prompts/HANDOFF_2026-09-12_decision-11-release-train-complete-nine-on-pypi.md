@@ -238,7 +238,7 @@ but four untracked decision-11 defects have surfaced, one of them a live consume
    `juniper_data_client.NPZ_SPLITS` returns `ABSENT` for the *correct* version and cannot
    discriminate. Use `from juniper_data_client.constants import NPZ_SPLITS`.
 
-### 8.4 NEW outstanding work — none of it tracked by any issue or PR
+### 8.4 NEW outstanding work — untracked when found; **§8.7 records where each one now lives**
 
 **N-1 — juniper-recurrence's bench harness is BROKEN by decision 11, and CI cannot see it.**
 `juniper-recurrence/bench/datasets.py:52` is `return np.asarray(out[f"{key}_full"])` — a bare
@@ -374,3 +374,49 @@ side of the equities entity-major exception is still unverified (network / `Inpu
 so only `derive_full_split`'s consumer side is proven. `juniper-canopy` 0.7.0 and
 `juniper-recurrence-client` 0.3.0 remain un-exercised (§8.5). Nothing here re-measures the
 decision-11 contract itself; §7's L-2 and L-3 stand unchanged.
+
+### 8.7 Disposition as of 2026-09-21 end of session
+
+| item | state |
+| --- | --- |
+| **N-1** bench `*_full` break | **FIXED, MERGED** — juniper-recurrence#177. Root cause ticketed as juniper-recurrence#178. |
+| **N-2** juniper-data unreleased majors | **TICKETED** — juniper-data#410. Owner-gated: the release ceremony is not an agent's to cut. |
+| **N-3** canopy floor admits an unimportable wheel | **OWNER RULED 2026-09-21: raise to `>=0.8.1`** — juniper-ml#1991, with the `0.9.0` bump the version-labelled compatibility matrix requires. Leaves juniper-ml `BUMPED_NOT_RELEASED`; the Release is the owner's. |
+| **N-4** README pin table stale on PyPI | **FIXED, MERGED** — juniper-ml#1972. |
+| **N-5** hf/kaggle stores | **TICKETED** — juniper-data#411. The product decision it carries is still open. |
+| **N-6** cascor `__version__` drift | **TICKETED** — juniper-cascor#668. |
+| S-1 / Decision 12 / canopy#559 | unchanged; S-1 now has a ticket for the first time (juniper-data#411). |
+
+**N-1's mechanism, restated because the first account was wrong.** The invisibility was
+never `pytest.importorskip` — the `[bench]` extra installs juniper-data, so the import
+succeeds. It was the job-level path filter: `ci-recurrence-bench.yml`'s `test` job is
+`if: needs.changes.outputs.bench == 'true'`, and decision 11 changed *juniper-data*. Proof
+in both directions — run 35573944068 (before) shows `Bench smoke` **skipped** with the
+aggregate **success**; run 35639439266 (the fix PR, which touches `bench/`) shows the
+matrix running and passing on 3.12/3.13/3.14. The unpatched suite is `12 failed`. The
+aggregate's `skipped`-is-a-pass rule is deliberate and correct and is **not** the defect.
+
+### 8.8 Four qualifiers from the factual re-probe lane — true claims that mislead as stated
+
+1. **The `partition_provenance` count is 7 only with worktrees EXCLUDED.** Unfiltered the
+   sweep returns **28** files, because `JUNIPER_2026-08-29_..._TRAIN-EVAL-TEST-PARTITION-DESIGN.md`
+   is duplicated into 21 worktrees under `Juniper/worktrees/`. Anyone re-running the sweep
+   without the exclusion will get 28 and conclude the claim is wrong.
+2. **"Nine packages published" and "nine packages running" are different sentences, and only
+   the first is true.** No conda environment runs the published set. Where a version in
+   `JuniperCascor1` *does* match PyPI (cascor 0.11.0, data 0.14.0, data-client 0.5.0,
+   recurrence 0.5.0, recurrence-client 0.3.0), `pip list` shows a **path** — those are
+   editable installs tracking the local checkout, not the published wheel. Reading a version
+   match as a deployment match is the "a checkout is not a deployment" class.
+3. **`JuniperData`'s clean `pip check` is not evidence of health.** It exits 0 because that
+   env has no `juniper-recurrence` installed to trip the constraint that fails in
+   `JuniperCascor1` — and its own `juniper-data` is an editable **0.12.0**, behind the
+   released 0.14.0, with model-core 0.1.0 and recurrence-model 0.1.0. A sparser, older env,
+   not a better-maintained one. (Confirmed the hard way: the bench fix could not be tested
+   there, because recurrence-model 0.1.0 predates `derive_full_split`.)
+4. **S-1's blast radius is narrower than "juniper-data still emits `*_full`" implies** — see
+   N-5's bounding paragraph. Stating it unqualified invites the wrong severity.
+
+**A note for whoever next greps `Juniper/AGENTS.md` for `3.13.13`:** it is still there, at
+`:87`, for **JuniperCanopy1**. `:88` (JuniperCascor1) now correctly reads 3.14.7. A bare
+grep returns a hit and reads like a refutation of §8.2.
