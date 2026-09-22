@@ -7,8 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-22
+
 ### Added
 
+- **D2 implemented — the experiment `runtime:` block BINDS, where all three of its keys were
+  previously accepted and discarded** (`util/experiments/run_suite.py` `runtime_block_env`,
+  `util/experiment_stack.bash` `cascor_up`). `run_experiment` validated `blas_threads`,
+  `num_processes` and `eval_metrics_enabled` and **nothing read any of them**, so a suite that
+  capped threads ran 16-wide and a matrix that *varied* the key measured one configuration N
+  times. `eval_metrics_enabled` was the worst of the three because the schema *herds* authors
+  into it: `service:` rejects it with *"belongs in `runtime:` (process env)"*. Implemented via
+  the environment route the owner ruled for, resolved **before the first `--up`** so a bad
+  value refuses the suite rather than one cell. A width the **suite names** beats the H-11
+  parallel budget (this is what makes PF-3's axis expressible); a width merely **inherited**
+  from a base config does not, so no parallel run can silently oversubscribe itself.
+  **PF-3's inert-axis blocker is discharged** — it is still gated on D3's one-cell check, on
+  cascor's `min(process_count, pool)` worker clamp making two of its twelve cells duplicates,
+  and on a quiet host.
+  > **Two consequences an operator must know.** (1) `spiral-smoke.yaml` carries
+  > `runtime: {blas_threads: 2}`, so a new PF-1 run now records a non-null `thread_budget`
+  > while baselines `pf1-2026-09-04` and `pf1-2026-09-04b` recorded all-null. `thread_budget`
+  > is a `HOST_IDENTITY_FIELDS` member, so `compare_baseline` will **REFUSE** (exit 2) against
+  > both. That refusal is *correct* — the condition genuinely changed — but **both baselines
+  > need re-cutting** and until then a REFUSED verdict is expected, not a tooling fault.
+  > (2) Eighteen committed cascor suites inherit a now-binding block; the nine built on
+  > `util/ad-hoc/2026-08-16_h2h_wide_nrot3.yaml` set `eval_metrics_enabled: false`, which now
+  > genuinely disables the service's F1/precision/recall/ROC-AUC pass. Re-runs of those are no
+  > longer comparable to their archived evidence.
+- **D6's gate discharged — `epochs_completed` has ZERO spread, and D6's premise is refuted**
+  (`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`, new;
+  `util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py`, new). 5 thread widths × 4 epoch budgets
+  × 5 repeats = **100 observations, max within-cell spread `0`**, every budget resolving to a
+  single value ({10, 50, 68, 68}) at **1-minute load 32.26** — the most loaded host any
+  measurement in this lane has used. D6 was gated on the story that *ambient load moves the
+  count*; load does not move it, and neither does thread width, which is the mechanism by which
+  load would have had to act. The axis was verified live (`omp_get_max_threads()` tracks the
+  request w1→1 … w16→16), so this is a real invariance and not an inert axis. **The historical
+  `52` is therefore an observation of unknown provenance, not evidence of instability** — the
+  leading suspect is a different tree, which this measurement cannot separate.
+  Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
+  be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
+  reference is tree-sensitive by construction.
+- **The measurement existed already, UNCOMMITTED, and three searches missed it.** A complete
+  09-17 sweep sat at `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/`,
+  and its instrument *and* a write-up reaching the same conclusion both exist — untracked in
+  `.claude/worktrees/optimized-giggling-koala` (`util/ad-hoc/2026-09-17_epochs_completed_spread.py`,
+  `notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`). **The
+  09-17 session obeyed every placement rule and simply never committed.** So the lesson is not
+  the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
+  being committed**, and to `git`, to CI and to the next session an uncommitted file in a
+  sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
+  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
+  or retire them in favour of this one. Also recorded, because the shape recurs: this session's
+  searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
+  directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
+  A sweep whose pattern comes from the artifact you already hold will not find the one you do not.
 - **Thread-width sweep — D1 and D2's gating measurement**
   (`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`, new;
   `util/ad-hoc/2026-09-16_thread_width_{arm,sweep}.py`, new). 6 widths × 2 mechanisms × 3 repeats
@@ -29,8 +83,129 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (12.295 s vs 3.777 s), because only `thread` also moves torch's *global* — so two widths are in
   play and the mechanisms are not interchangeable.
 
+### Changed
+
+- **BREAKING (resolution): `[servers]` now floors `juniper-canopy>=0.8.1`, because every canopy wheel from 0.5.0
+  through 0.8.0 cannot import its own dashboard.** Those wheels publish **zero** top-level
+  modules -- `juniper_canopy/` contains only `__init__.py`, and the 19 modules canopy's own
+  shipped code imports are absent, so `import backend.service_backend` dies at
+  `No module named 'validation_gate'`. 0.8.1 ships all of them (juniper-canopy#631, closed
+  2026-09-17). Read from the published wheels, not a checkout; 0.8.0 was checked too, so the
+  boundary is exactly 0.8.0 -> 0.8.1. A default resolve already took 0.8.1 because pip prefers
+  the newest, so the old floor *admitted* the broken wheels rather than delivering them -- the
+  same shape as the `juniper-model-core>=0.1.0,<0.4.0` cap that
+  `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` §10 left alone
+  as "a consumer break for no behavioural gain". The reasoning inverts here: there the admitted
+  version differed only in a docstring, here it does not load. Pre-flighted against real PyPI
+  before the change -- `juniper-canopy>=0.8.1` + `juniper-cascor>=0.11.0` + `juniper-data>=0.14.0`
+  resolves in 60 packages with `juniper-service-core` 0.7.0 and `juniper-model-core` 0.3.2, both
+  inside the existing caps. **Version bumped 0.8.0 -> 0.9.0 with it**, and not cosmetically:
+  `docs/REFERENCE.md`'s compatibility matrix labels each row by the juniper-ml version carrying
+  that floor set, so a new floor set needs a version to label it and the `0.8.x` row is *added
+  to* rather than rewritten -- rewriting it would make it a false statement about the published
+  0.8.0. Minor per the pre-1.0 convention at `util/release_train/detect.py:827`, since forbidding
+  a previously-admitted version is breaking. Applied by
+  `util/ad-hoc/2026-09-21_raise_canopy_floor_0_8_1.py`, which asserts each of the ten sites'
+  exact text and requires exactly one match apiece.
+
+- **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
+  retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
+  `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`; `[recurrence]`
+  `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`,
+  `juniper-recurrence-client>=0.3.0,<0.4.0`. Decision 11 (§9.5 of
+  `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, producer-side
+  juniper-data#369) retired the `*_full` family, and every package above shipped its half of that
+  change. Until now `pip install juniper-ml[recurrence]` could not resolve the new versions **at all**:
+  the old caps were `juniper-recurrence-model<0.3.0` and `juniper-recurrence-client<0.3.0`, which
+  actively forbid the releases that carry `derive_full_split` — the reconstruction `POST /v1/crossval`
+  depends on for a post-#369 artifact.
+
+  These are **floors on a meta-package**, so nothing here is a behaviour change in this repo; the
+  behaviour is in the pinned packages, each documented in its own changelog. The lockstep artifacts
+  move with them: `tests/test_pyproject_extras.py` (which asserts the exact strings), the four extras
+  tables in `AGENTS.md`, `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`, and a new `0.8.x`
+  row in the compatibility matrix — whose prose still said "juniper-ml 0.6.0 declares" while the
+  package was at 0.7.1.
+
+- **`juniper-cascor-client` floored at `>=0.8.0`, which is where the base-URL host guard actually
+  starts.** `docs/REFERENCE.md`'s HTTP-client note said the latest released data-client was `0.4.2` and
+  "still lacks the host guard", so `pip install juniper-ml[clients]` could resolve a wheel that
+  "silently accepts `HTTPS://host` (TLS downgrade)". Checked against the *published* wheels in a clean
+  venv: `juniper-data-client` 0.5.0 and `juniper-cascor-client` 0.8.0 both refuse a hostless `https://`
+  and both **normalise** `HTTPS://host` to `https://host`, so the TLS-downgrade reading is withdrawn.
+  What survived was narrower and was a live gap — the data-client floor guaranteed the guard, the
+  cascor-client floor did not. Each published cascor-client wheel was then probed in a throwaway venv
+  (`util/ad-hoc/2026-09-11_cascor_client_guard_boundary.py`): **0.5.0, 0.6.0 and 0.7.0 all fail both
+  halves**, and **0.8.0 is the first release carrying either**. The floor is set from that measurement
+  rather than from the changelog that introduced the fix, and the gap is closed rather than documented.
+
+- Widened the `recurrence` extra's `juniper-recurrence` ceiling to admit the released next minor:
+  `juniper-recurrence>=0.2.0,<0.5.0` (0.4.0 on PyPI). Supersedes dependabot #1323, which cannot
+  co-update the `tests/test_pyproject_extras.py` lint contract; the contract and the extras tables in
+  `AGENTS.md`, `README.md`, `docs/QUICK_START.md`, and `docs/REFERENCE.md` move in lockstep — the same
+  handling the v0.7.1 widening gave dependabot #900/#901. No other ceiling moves: recurrence 0.4.0's
+  own pins (`juniper-recurrence-model<0.3.0,>=0.1.5`, `juniper-service-core<0.6.0,>=0.5.0`,
+  `juniper-model-core[crossval]<0.4.0,>=0.2.0`, `juniper-data-client<0.5.0,>=0.4.2`) all resolve inside
+  what this package already declares, so `pip install juniper-ml[recurrence]` stays satisfiable.
+  `juniper-recurrence-client` stays at `<0.3.0` (no newer release).
+- `util/ad-hoc/2026-08-14_touchup_lane_probe.py` and `util/ad-hoc/2026-08-14_signing_arc_status.py`
+  moved to `util/ad-hoc/retired/` with the `_RETIRED-2026-08-14` suffix (the #928 precedent), their
+  purposes being complete: the touch-up fan-out landed in all 8 repos with the lane, and
+  `juniper-cascor` 0.9.0 published to PyPI. Their headers now record the answers they produced rather
+  than a "retire when" condition already met.
+
+- **Editable-install drift check now detects stale metadata**, a second axis orthogonal to
+  `FRESH` / `WORKTREE_PINNED` / `ORPHANED` (`util/editable_install_drift_check.py`). An editable
+  install never re-derives its version when the source tree moves on: `import` follows the live
+  tree, but `*.dist-info/METADATA` stays frozen at whatever was declared when pip last ran. The
+  path axis cannot see that, and neither can `juniper-env-drift-check`, which asks a different
+  question — whether an installed version satisfies a consumer's declared *floor*. A stale
+  editable sits comfortably above every floor and is still wrong.
+  - Found on this host on 2026-08-14: **7 of 8** editable installs were `FRESH` **and** stale at
+    once, `juniper-data` five minors behind (`0.6.0` recorded vs `0.11.0` declared). Both existing
+    checkers reported completely clean. The consequence is not a broken `import` — it is anything
+    reading the *installed* version: juniper-cascor's own `test_version_matches_pyproject` failed
+    locally on exactly this (`0.6.0` vs pyproject `0.9.0`), and a host-launched service exports the
+    stale number as its build-info/provenance metric.
+  - New per-finding fields `installed_version` / `source_version` / `version_status`
+    (`MATCH` | `STALE` | `UNKNOWN`) in the table, the summary, and `--json`. `STALE` is **soft**
+    (exit `0` — `import` still resolves); `--strict-version` makes it exit `1`, and `--strict` is
+    unchanged, still about the path axis alone.
+  - `--fix-stale` refreshes stale installs against the path they **already point at**
+    (`drift: "stale-metadata"`), not a canonical-discovery result — reinstalling from the recorded
+    path is what re-stamps the metadata, while routing it through discovery could re-point a
+    deliberate checkout. `ORPHANED` repair is untouched (`drift: "path"`).
+  - Dynamic versions resolve only from an **explicit** declaration
+    (`[tool.setuptools.dynamic] version.attr`, including `src/` layouts, or `[tool.hatch.version] path`).
+    An unrecognized backend reports `UNKNOWN` rather than guessing at a plausible `_version.py`,
+    so the tool cannot manufacture a `STALE` finding from the wrong file.
+  - Coverage: `tests/test_editable_install_drift_check.py::VersionDriftTest` (18 arms, hermetic —
+    synthetic conda dir + ecosystem root, no real pip).
+
+- **The pin-capping rule is now stated beside the pins** (#1987, APD-ML-001). `pyproject.toml`
+  gained a comment block recording why some first-party pins carry a `<` ceiling and some do
+  not: shared LIBRARIES a consumer imports are capped, so a breaking `0.(Y+1)` cannot be
+  auto-adopted, while the rest are floored only. Comment-only — it reaches no wheel metadata
+  and changes no resolution; it exists so the next reader cannot mistake the asymmetry for
+  an oversight.
+
 ### Fixed
 
+- **The thread-width sweep's "initial pass" column is NOT the initial pass** — correction added
+  to `notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md` §2.
+  `util/ad-hoc/2026-09-16_thread_width_arm.py` sums **every** `train_output_layer` stage, and
+  cascor emits that name once per output pass — five per run — so `initial_pass_seconds` is
+  *first pass + all later passes*. Reconciles to four decimals (`thread w16`: 2.1772 first +
+  9.7991 later = 11.9759 reported). **`later_passes_seconds` and `candidate_seconds` are clean**,
+  so D1's width comparison and cascor#531's non-reproduction stand. What changes: the **−33%**
+  capping figure is computed on totals and **understates** the true benefit — recomputed from
+  first-pass figures it is **−49.2%** (2.2838 s → 1.1593 s, medians of 3) — and §2.1's "3.3×
+  gap at identical OpenMP width" is an artifact — on true first passes `thread w16` and
+  `env w16` are 2.1772 vs 2.0404, within noise. The mechanism claim survives; its attribution
+  to the initial pass does not. Separately, both D1's and D2's gates demanded **epoch counts**
+  and the arm emits **stage** counts — the string `epoch` appears in none of the 40 evidence
+  files, though the arm's docstring claims otherwise — so "the penalty does not reproduce"
+  rests on wall time alone and cannot separate *no effect* from *two effects cancelling*.
 - **README.md's `Ecosystem Compatibility` pin table shipped to PyPI advertising the 0.6.0 floors.** The file carries TWO
   pin tables and only one was guarded. `tests/test_pyproject_extras.py` pinned the
   "Available Extras" table to `pyproject.toml`, so that one tracked the decision-11 bump
@@ -322,105 +497,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   four one-off drivers from the same day, retired per the #928 precedent rather than deleted; their
   headers now record what each produced, including the `Allow-Symbol-Loss` waiver surviving ml#1316's
   squash and the armed-but-`BEHIND` split that exposed the config deadlock above.
-
-### Changed
-
-- **`[servers]` now floors `juniper-canopy>=0.8.1`, because every canopy wheel from 0.5.0
-  through 0.8.0 cannot import its own dashboard.** Those wheels publish **zero** top-level
-  modules -- `juniper_canopy/` contains only `__init__.py`, and the 19 modules canopy's own
-  shipped code imports are absent, so `import backend.service_backend` dies at
-  `No module named 'validation_gate'`. 0.8.1 ships all of them (juniper-canopy#631, closed
-  2026-09-17). Read from the published wheels, not a checkout; 0.8.0 was checked too, so the
-  boundary is exactly 0.8.0 -> 0.8.1. A default resolve already took 0.8.1 because pip prefers
-  the newest, so the old floor *admitted* the broken wheels rather than delivering them -- the
-  same shape as the `juniper-model-core>=0.1.0,<0.4.0` cap that
-  `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` §10 left alone
-  as "a consumer break for no behavioural gain". The reasoning inverts here: there the admitted
-  version differed only in a docstring, here it does not load. Pre-flighted against real PyPI
-  before the change -- `juniper-canopy>=0.8.1` + `juniper-cascor>=0.11.0` + `juniper-data>=0.14.0`
-  resolves in 60 packages with `juniper-service-core` 0.7.0 and `juniper-model-core` 0.3.2, both
-  inside the existing caps. **Version bumped 0.8.0 -> 0.9.0 with it**, and not cosmetically:
-  `docs/REFERENCE.md`'s compatibility matrix labels each row by the juniper-ml version carrying
-  that floor set, so a new floor set needs a version to label it and the `0.8.x` row is *added
-  to* rather than rewritten -- rewriting it would make it a false statement about the published
-  0.8.0. Minor per the pre-1.0 convention at `util/release_train/detect.py:827`, since forbidding
-  a previously-admitted version is breaking. Applied by
-  `util/ad-hoc/2026-09-21_raise_canopy_floor_0_8_1.py`, which asserts each of the ten sites'
-  exact text and requires exactly one match apiece.
-
-- **All eight decision-11 floors raised — the meta-package now resolves the released contract, not the
-  retired one.** `[clients]` `juniper-data-client>=0.5.0` and `juniper-cascor-client>=0.8.0`; `[servers]`
-  `juniper-canopy>=0.7.0`, `juniper-cascor>=0.11.0`, `juniper-data>=0.14.0`; `[recurrence]`
-  `juniper-recurrence-model>=0.3.0,<0.4.0`, `juniper-recurrence>=0.5.0,<0.6.0`,
-  `juniper-recurrence-client>=0.3.0,<0.4.0`. Decision 11 (§9.5 of
-  `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, producer-side
-  juniper-data#369) retired the `*_full` family, and every package above shipped its half of that
-  change. Until now `pip install juniper-ml[recurrence]` could not resolve the new versions **at all**:
-  the old caps were `juniper-recurrence-model<0.3.0` and `juniper-recurrence-client<0.3.0`, which
-  actively forbid the releases that carry `derive_full_split` — the reconstruction `POST /v1/crossval`
-  depends on for a post-#369 artifact.
-
-  These are **floors on a meta-package**, so nothing here is a behaviour change in this repo; the
-  behaviour is in the pinned packages, each documented in its own changelog. The lockstep artifacts
-  move with them: `tests/test_pyproject_extras.py` (which asserts the exact strings), the four extras
-  tables in `AGENTS.md`, `README.md`, `docs/QUICK_START.md` and `docs/REFERENCE.md`, and a new `0.8.x`
-  row in the compatibility matrix — whose prose still said "juniper-ml 0.6.0 declares" while the
-  package was at 0.7.1.
-
-- **`juniper-cascor-client` floored at `>=0.8.0`, which is where the base-URL host guard actually
-  starts.** `docs/REFERENCE.md`'s HTTP-client note said the latest released data-client was `0.4.2` and
-  "still lacks the host guard", so `pip install juniper-ml[clients]` could resolve a wheel that
-  "silently accepts `HTTPS://host` (TLS downgrade)". Checked against the *published* wheels in a clean
-  venv: `juniper-data-client` 0.5.0 and `juniper-cascor-client` 0.8.0 both refuse a hostless `https://`
-  and both **normalise** `HTTPS://host` to `https://host`, so the TLS-downgrade reading is withdrawn.
-  What survived was narrower and was a live gap — the data-client floor guaranteed the guard, the
-  cascor-client floor did not. Each published cascor-client wheel was then probed in a throwaway venv
-  (`util/ad-hoc/2026-09-11_cascor_client_guard_boundary.py`): **0.5.0, 0.6.0 and 0.7.0 all fail both
-  halves**, and **0.8.0 is the first release carrying either**. The floor is set from that measurement
-  rather than from the changelog that introduced the fix, and the gap is closed rather than documented.
-
-- Widened the `recurrence` extra's `juniper-recurrence` ceiling to admit the released next minor:
-  `juniper-recurrence>=0.2.0,<0.5.0` (0.4.0 on PyPI). Supersedes dependabot #1323, which cannot
-  co-update the `tests/test_pyproject_extras.py` lint contract; the contract and the extras tables in
-  `AGENTS.md`, `README.md`, `docs/QUICK_START.md`, and `docs/REFERENCE.md` move in lockstep — the same
-  handling the v0.7.1 widening gave dependabot #900/#901. No other ceiling moves: recurrence 0.4.0's
-  own pins (`juniper-recurrence-model<0.3.0,>=0.1.5`, `juniper-service-core<0.6.0,>=0.5.0`,
-  `juniper-model-core[crossval]<0.4.0,>=0.2.0`, `juniper-data-client<0.5.0,>=0.4.2`) all resolve inside
-  what this package already declares, so `pip install juniper-ml[recurrence]` stays satisfiable.
-  `juniper-recurrence-client` stays at `<0.3.0` (no newer release).
-- `util/ad-hoc/2026-08-14_touchup_lane_probe.py` and `util/ad-hoc/2026-08-14_signing_arc_status.py`
-  moved to `util/ad-hoc/retired/` with the `_RETIRED-2026-08-14` suffix (the #928 precedent), their
-  purposes being complete: the touch-up fan-out landed in all 8 repos with the lane, and
-  `juniper-cascor` 0.9.0 published to PyPI. Their headers now record the answers they produced rather
-  than a "retire when" condition already met.
-
-- **Editable-install drift check now detects stale metadata**, a second axis orthogonal to
-  `FRESH` / `WORKTREE_PINNED` / `ORPHANED` (`util/editable_install_drift_check.py`). An editable
-  install never re-derives its version when the source tree moves on: `import` follows the live
-  tree, but `*.dist-info/METADATA` stays frozen at whatever was declared when pip last ran. The
-  path axis cannot see that, and neither can `juniper-env-drift-check`, which asks a different
-  question — whether an installed version satisfies a consumer's declared *floor*. A stale
-  editable sits comfortably above every floor and is still wrong.
-  - Found on this host on 2026-08-14: **7 of 8** editable installs were `FRESH` **and** stale at
-    once, `juniper-data` five minors behind (`0.6.0` recorded vs `0.11.0` declared). Both existing
-    checkers reported completely clean. The consequence is not a broken `import` — it is anything
-    reading the *installed* version: juniper-cascor's own `test_version_matches_pyproject` failed
-    locally on exactly this (`0.6.0` vs pyproject `0.9.0`), and a host-launched service exports the
-    stale number as its build-info/provenance metric.
-  - New per-finding fields `installed_version` / `source_version` / `version_status`
-    (`MATCH` | `STALE` | `UNKNOWN`) in the table, the summary, and `--json`. `STALE` is **soft**
-    (exit `0` — `import` still resolves); `--strict-version` makes it exit `1`, and `--strict` is
-    unchanged, still about the path axis alone.
-  - `--fix-stale` refreshes stale installs against the path they **already point at**
-    (`drift: "stale-metadata"`), not a canonical-discovery result — reinstalling from the recorded
-    path is what re-stamps the metadata, while routing it through discovery could re-point a
-    deliberate checkout. `ORPHANED` repair is untouched (`drift: "path"`).
-  - Dynamic versions resolve only from an **explicit** declaration
-    (`[tool.setuptools.dynamic] version.attr`, including `src/` layouts, or `[tool.hatch.version] path`).
-    An unrecognized backend reports `UNKNOWN` rather than guessing at a plausible `_version.py`,
-    so the tool cannot manufacture a `STALE` finding from the wrong file.
-  - Coverage: `tests/test_editable_install_drift_check.py::VersionDriftTest` (18 arms, hermetic —
-    synthetic conda dir + ecosystem root, no real pip).
 
 ### Fixed
 
