@@ -51,9 +51,11 @@ convention the bundled redis subchart also honours, and setting it rewrites redi
 > rejects `RELEASE_NOTES_juniper-deploy_v0.3.0.md` as naming an unregistered package. The guard is
 > right; do not register a non-PyPI repo to work around it.
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
-secrets. Last state refresh: **2026-09-21** — the §5 wave table's Wave 1 and Wave 2 rows had
+secrets. Last state refresh: **2026-09-22** — the §5 wave table's Wave 1 and Wave 2 rows had
 gone stale against this Status line and are now correct, and canopy's pin has already drifted
-(see the note under §5).
+(see the note under §5). **New §5.2** records the image hardening: both publish-trap classes
+swept 2026-09-21 and now enforced in CI across all five image repos, plus the root-anchoring
+finding that swept up 766 authkey-bearing files in juniper-cascor.
 
 > **The worker release is worth a note before anyone reads its version number as a code change.**
 > Across `v0.5.0...main` there were 43 commits and 23 files with **zero** inside the packaged
@@ -357,6 +359,65 @@ docker run --rm --entrypoint python ghcr.io/pcalnon/juniper-cascor-worker:0.6.0 
 
 Expect `aarch64 2.14.0+cpu None`, ~270 MB. **Precondition: a 64-bit Pi OS** — the index carries
 `linux/arm64` only, so a 32-bit OS cannot pull it.
+
+### 5.2 Image hardening — both publish-trap classes swept, 2026-09-21
+
+`memory/reference_juniper_deploy_image_publish_traps.md` named **two** classes to check in every
+repo before its next image change. Both were swept on 2026-09-21 and both are now enforced in CI,
+in all five image repos: **juniper-cascor#661, juniper-canopy#642, juniper-data#408,
+juniper-cascor-worker#191, juniper-recurrence#176.** Each carries three layers — the
+`.dockerignore` fix, `util/check_image_no_secrets.py`, and that checker wired into **both** the
+smoke and the publish steps of `publish-image.yml`.
+
+**Neither class repeats.** But the survey found something the original framing did not anticipate,
+and it is the part worth carrying forward.
+
+**`.dockerignore` is ROOT-ANCHORED, and a directory allowlist is not a file allowlist.** Docker
+matches every pattern with Go `filepath.Match` relative to the **context root**, so a pattern
+without `**/` is inert against a nested path. Every Juniper Dockerfile uses `COPY <dir>/ ./<dir>/`,
+which ships everything tracked beneath it. In juniper-cascor the two combined:
+`.dockerignore`'s `cascor_snapshots/` never matched `src/cascor_snapshots/` — **766 `.h5` files,
+all 766 carrying a plaintext 32-byte multiprocessing authkey** (288 distinct), sitting directly
+under a shipping `COPY src/`.
+
+**What actually kept them out of the published images was `.gitignore` plus `actions/checkout`** —
+CI builds from a clean checkout, so only COMMITTED files can reach an image. Not the allowlist,
+and not `.dockerignore`. That distinction matters because the protection is narrower than it
+looks: a credential *committed* under a shipped directory would sail through, and a **local**
+`docker compose build` honours neither, so it would have baked all 766 into an image stamped with
+the RELEASED tag (juniper-deploy deliberately pairs `build:` with the published `image:`).
+
+**Three traps for whoever hardens the next repo:**
+
+- **A `/app` top-level check passes VACUOUSLY** on juniper-data, juniper-cascor-worker and
+  juniper-recurrence, whose `/app` holds only a runtime directory while the code lives in
+  `site-packages`. The checker walks `/app` **and** every installed `juniper*` package, and exits
+  2 if it finds no root or walks zero files, so it cannot silently become a no-op.
+- **Do not blanket-add `**/logs/` or `**/data/`.** juniper-canopy's `src/logs` is a **symlink**
+  that the published image carries pointing at `/app/logs`; excluding it would have silently
+  broken the container's logging path. Check the published image before twinning any
+  runtime-writable directory name.
+- **On the publish path, CI asserted the least.** The import smoke was gated
+  `if: github.event_name != 'release' && !inputs.push`, so a release executed only
+  `check_image_cpu_only.py` — a distribution census that never imports the application. All five
+  now assert the import on the path that ships.
+
+**The class-2 defect, and why a source read could not find it.**
+`juniper-cascor-worker:0.6.0` reported `__version__ == "0.4.0"` while `importlib.metadata.version()`
+and `pyproject.toml` both said `0.6.0`; `__init__.py` was never bumped, so **two** releases shipped
+a package misreporting itself, and `__version__` is in `__all__`. `pyproject.toml` alone looks
+correct — only comparing the two *inside the artifact* reveals it. Fixed in
+juniper-cascor-worker#192 by deriving from installed metadata. **The published image still answers
+`0.4.0` and will until the next worker release**, which is owner-gated.
+
+**Instruments** (juniper-ml, `util/ad-hoc/`): `2026-09-21_image_build_context_sweep.py` (class 1,
+including root-anchoring detection) and `2026-09-21_image_does_its_job_sweep.py` (class 2: import
++ `__version__`-vs-metadata + entrypoint + serve). Re-run these rather than repeating the survey.
+
+**Still open here:** nothing in juniper-deploy detects a **stale pin**.
+`scripts/verify_published_images.py` asserts existence and architecture, never **currency**, so it
+ran green throughout the three days `docker-compose.yml` pinned `juniper-canopy:0.8.0` after
+`0.8.1` had shipped (closed by juniper-deploy#225, but only for that one drift).
 
 ## 6. Open questions
 
