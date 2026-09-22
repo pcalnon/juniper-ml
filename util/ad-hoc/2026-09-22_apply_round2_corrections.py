@@ -1433,6 +1433,17 @@ edit(
 )
 
 edit(
+    "r3-installer-invocation",
+    """Install §7.3 (unit, defaults, wrapper, guard) with `util/install_duplicati_service.bash`, then `sudo systemctl start duplicati.service`.""",
+    """Install §7.3 (unit, defaults, wrapper, guard) with
+   **`sudo bash util/install_duplicati_service.bash`** — through `bash`, not directly. Every script this
+   document landed was committed through GitHub's `createCommitOnBranch` API, which **carries no file
+   mode**, so each arrives `100644` and is not executable whatever the working tree said. That is a
+   property of any API-signed commit, not a one-off to fix: the next one lands the same way. Then
+   `sudo systemctl start duplicati.service`.""",
+)
+
+edit(
     "r3-preamble-scripts",
     """**Nine of the paths below do not exist yet.** §8 names `util/install_duplicati_service.bash`,
 `util/yamaguchi-pre-backup-guard.bash`, `util/systemd/duplicati.{service,default}`,
