@@ -1,0 +1,82 @@
+# P0.1 -- the post-merge worker-profile cell for the logging arc (cascor#573).
+#
+# WHY THIS FILE EXISTS RATHER THAN RE-USING THE AUGUST CELL
+# The 2026-08-26 corpus ran
+#   ~/.local/state/juniper-experiments/suites/e-l-determinism-cap4-20260824T003754Z/cells/c000-7749f335/experiment.yaml
+# and that cell CANNOT run against current juniper-data. It carries `train_ratio: 0.8` and
+# `test_ratio: 0.2` and no `val_ratio`, from before the val split shipped. juniper-data now
+# defaults `val_ratio: 0.1`, so the request sums to 1.1 and is refused:
+#
+#   Validation error (400): train_ratio (0.8) + val_ratio (0.1) + test_ratio (0.2)
+#   must be <= 1.0, got 1.1
+#
+# Verified by running it: 2026-09-22, exit 1 after 5 s, zero profiles.
+#
+# THE SPLIT CHOICE, AND WHAT IT COSTS THE COMPARISON
+# `train_ratio` is held at 0.8 -- identical to August -- and the val split is carved out of TEST
+# rather than out of train. The quantity P0.1 measures is logging's share of WORKER self time, and
+# workers train candidates, so the training-set size is the parameter that must not move; the test
+# fraction barely touches worker profile time.
+#
+# `val_ratio: 0.0` was tried first and does NOT work, which is worth recording because the two
+# failures say different things:
+#   * juniper-data ACCEPTS 0.8 / 0.0 / 0.2 and emits an EMPTY `X_val`;
+#   * cascor then refuses it -- `cascade_correlation.py:1671`,
+#     `ValidationError: Parameter 'x_val' cannot be an empty tensor`.
+# So the direct CLI tolerates a val-less artifact (`src/spiral_problem/data_provider.py` keeps
+# `X_val` out of `required_keys`, design section 6a) but NOT an empty-val one. "Missing" and
+# "present but empty" are different states and only the first is tolerated. Verified 2026-09-22.
+#
+# **State this when quoting any comparison against the 2026-08-26 corpus**: the generator version
+# has moved (the `*_full` retirement and the val split both bumped it), so `dataset_id` differs and
+# the artifacts are NOT byte-identical even at the same seed. This is a RE-BASELINE, not a repeat.
+#
+# Everything below other than the split ratios is copied verbatim from c000-7749f335.
+schema_version: 1
+experiment:
+  name: p01-logging-corpus-cap4
+  description: P0.1 post-merge worker-profile corpus -- cap 4, seed 42, CLI arm, cProfile armed
+  seed: 42
+service:
+  log_level: INFO
+  metrics_enabled: true
+  auto_start: false
+  auto_start_data_service: false
+dataset:
+  generator: spiral
+  persist: true
+  tags:
+  - p01
+  - logging
+  - cap4
+  ttl_seconds: 86400
+  params:
+    n_spirals: 2
+    n_points_per_spiral: 500
+    n_rotations: 3.0
+    noise: 0.05
+    train_ratio: 0.8
+    val_ratio: 0.1
+    test_ratio: 0.1
+    seed: 42
+training:
+  start_fresh: true
+  params:
+    max_hidden_units: 4
+    candidate_pool_size: 8
+    learning_rate: 0.05
+    correlation_threshold: 0.2
+    patience: 200
+    candidate_epochs: 500
+    max_epochs: 2000
+    output_epochs: 2000
+    max_iterations: 128
+    early_stopping: true
+runtime:
+  num_processes: 4
+  blas_threads: 2
+  eval_metrics_enabled: false
+outputs:
+  plots: []
+  snapshot_at_end: false
+  max_wall_seconds: 14400
