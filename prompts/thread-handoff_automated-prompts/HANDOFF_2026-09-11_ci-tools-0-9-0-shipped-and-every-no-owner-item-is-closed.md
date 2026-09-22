@@ -197,10 +197,16 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
      `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`. It reads each repo's remote `main`,
      attributes ranges written in prose, and judges versions as sets. An 81-case `--self-test`
      covers it, and 15 of 15 code mutations fail that self-test
-     (`util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` re-runs them). **Its limits.** It cannot read a
-     range that is described only by context; it lists such ranges as AMBIGUOUS, and they fail
-     until someone adjudicates them. It sees a bare release only in a present-tense install claim,
-     "ci-tools 0.8.0 is already installed".
+     (`util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` re-runs them).
+   - **Its limits.**
+     - It cannot attribute a range described only by context. It lists such a range as AMBIGUOUS.
+       One that admits a different set of releases than `--expect` fails until the line is fixed or
+       recorded in the script's `ADJUDICATED`. One that matches `--expect` passes without being read,
+       whichever package it describes. The census prints those under their own heading. The
+       post-merge run lists two, `docs/REFERENCE.md:3023` and `tests/test_ci_tools_drift.py:461`.
+       Both describe the ci-tools screen pins.
+     - It sees a bare release only in a present-tense install claim, such as "ci-tools 0.8.0 is
+       already installed".
 2. **The lockfile workflows this arc touched.** There were three conversions to the signed path
    (worker#180, cascor-client#161, data-client#197). cascor#641 is different: it extended cascor's
    already-signed step to both of its locks.
@@ -317,7 +323,8 @@ python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py 
 python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py
 #   live pins: 54, one distinct range. Until the six range PRs above merge, it exits 1 and names
 #   each stale line. After they merge it still exits 1, but with exactly one STALE line,
-#   docs/QUICK_START.md:92, which none of them fixes.
+#   docs/QUICK_START.md:92, which none of them fixes. It also lists two AMBIGUOUS lines that
+#   pass (Corrections 1).
 
 # Corrections 6, both halves (the job logs expire about 90 days after 2026-09-11)
 gh api repos/pcalnon/juniper-cascor/actions/jobs/103226938997/logs | grep 'Successfully installed juniper-ci-tools'   # 0.9.0

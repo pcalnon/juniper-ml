@@ -794,6 +794,13 @@ def main() -> int:
         bad.insert(0, lag)
     print(f"\n--- STALE (fails the census) against {args.expect} ---")
     print("\n".join("  " + b for b in bad) if bad else "  (none)")
+    # An AMBIGUOUS range that admits the same releases as --expect passes, but its owner is a
+    # guess. List it, so "passes" is never mistaken for "was read".
+    failing = {b.split("  (")[0] for b in bad}
+    unread = [h for h in all_hits if h.cls == "AMBIGUOUS" and f"{h.repo}/{h.path}:{h.line}  {h.spec}  [{h.cls}]" not in failing]
+    if unread:
+        print(f"\n--- AMBIGUOUS, matching {args.expect}: passes, but the owner is unproven -- read each ---")
+        print("\n".join(f"  {h.repo}/{h.path}:{h.line}  {h.spec}" for h in unread))
     adjudicated = [h for h in all_hits if h.cls == "ADJUDICATED"]
     print(f"\n({len(adjudicated)} adjudicated ranges not listed; see ADJUDICATED in this script for each verdict)")
     return 1 if bad else 0
