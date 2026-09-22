@@ -270,7 +270,7 @@ to discover that is on a Pi.
 | 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
 | 2 | juniper-recurrence | **COMPLETE** — recurrence#153; `juniper-recurrence:0.5.0` published 2026-09-10. Build context is **nested** (`juniper-recurrence/juniper-recurrence/`, via `APP_DIR`), which also means its `.dockerignore` lives in that subdirectory and **not** at the repo root — a repo-root sweep false-positives here |
 | 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **COMPLETE 2026-09-17.** Pin (#215, 9 lines) + D-1 check (#217) + `Dockerfile.test` runner published as `ghcr.io/pcalnon/juniper-deploy-test:0.3.0` (#219 / #220 / #221, Release `v0.3.0`) = **10** pinned lines. Sibling fix: helm `values.yaml` (#216) |
-| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1) |
+| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1). The five `dockerhub` environments were **created 2026-09-22** (tags only, no secrets yet) |
 
 > **Wave 3's pin DRIFTED the day after it was declared complete, and no gate can see it.**
 > juniper-canopy cut **`v0.8.1` on 2026-09-18** — the fix for canopy#631, this arc's own
