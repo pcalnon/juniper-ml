@@ -206,7 +206,9 @@ never ratified.
   `train_output_layer` stage (cascor emits five per run), so it is total output time. The true
   first-pass benefit is **−49.2%** (2.2838 s → 1.1593 s, medians of 3). Its §2.1 "3.3× gap at
   identical OpenMP width" is an **artifact** of the same contamination — true first passes are
-  2.1772 vs 2.0404, within noise. `later_passes_seconds` and `candidate_seconds` are clean, so
+  **2.1772 vs 2.3404** (medians of 3 — an earlier draft paired the first against `env w16`'s
+  **r0**, 2.0404, which is a single repeat; the conclusion survives, the number did not).
+  `later_passes_seconds` and `candidate_seconds` are clean, so
   D1 and the cascor#531 non-reproduction stand.
 - **Do not treat "cascor#531's penalty does not reproduce" as closed.** Both D1's and D2's gates
   demanded **epoch counts**; the instrument emits **stage** counts and the string `epoch` appears
@@ -231,7 +233,7 @@ never ratified.
 |---|---|---|---|
 | `juniper-ml#2002` | 2026-09-22T09:44:49Z | **`f8ffaa48`** | D2 implemented, D6 discharged, the 09-11 handoff amended, three corrections to merged work |
 
-Nine signed commits, all created through the API (local GPG signing hangs headless).
+Nine commits, all signed and verified: **eight authored through the API** (local GPG signing hangs headless) plus one `Merge branch 'main'` sync that `safe_merge.py` made when it refreshed the base.
 **`f8ffaa48` is an ancestor of `origin/main`** (verified, not asserted); the branch
 `perf/d2-runtime-block-binds-and-d6-discharged-2026-09-22` auto-deleted on merge.
 `Post-Merge Main Verification` passed on `f8ffaa48`.
@@ -268,8 +270,8 @@ and new: `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLET
   Corollary: because delivery *is* inheritance, `data_up` and `recurrence_up` get them too —
   **`runtime.blas_threads` pins juniper-data's BLAS as well.**
 - **D6's answer, and its refuted premise.** 100 observations, **max within-cell spread 0**, every
-  budget resolving to one value ({10, 50, 68, 68}), at three load levels spanning 2.8× —
-  **19.50, 32.26, 54.49**. D6 was gated on "ambient load moves the count"; load does not, and
+  budget resolving to one value ({10, 50, 68, 68}), at three load levels spanning 2.7× —
+  **12.08, 19.50, 32.26** (all three with a `spread.json` on disk; a reported 54.49 was withdrawn as unsourced). D6 was gated on "ambient load moves the count"; load does not, and
   neither does thread width (the mechanism by which load would have had to act). The ICV was
   verified live per cell (w1→1 … w16→16), so this is a real invariance, not an inert axis. **The
   historical `52` is an observation of unknown provenance, not evidence of instability.**
@@ -297,7 +299,7 @@ python3 -m unittest -q tests.test_run_suite tests.test_experiment_stack_script t
 bash util/ad-hoc/2026-09-22_run_ci_regression_list.bash   # 165/166; the duplicati miss is tmpfs, see its caveat 1
 /opt/miniforge3/envs/JuniperCascor1/bin/python util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py --widths 1 16 --epochs 100 --repeats 2   # control stable, spread 0, 68 at both widths
 python3 util/experiments/run_suite.py --suite util/experiments/suites/perf/pf3-cascor-pool-scaling.yaml --dry-run | head -3   # 12 cells, runtime.num_processes varying
-ls ~/.local/state/juniper-experiments/baselines/cascor-micro/   # ONLY Linux-CPython-3.13-64bit — item 5
+ls ~/.local/state/juniper-experiments/baselines/cascor-micro/   # ONE machine dir: Linux-CPython-3.13-64bit (plus 4 loose files) — item 5
 ```
 
 **Stop condition for the D6 instrument.** If `control.stable` is `false`, the instrument
@@ -336,7 +338,11 @@ question reopens.
    **derive** expected values from the function. To flush class (b) locally, monkeypatch
    `os.cpu_count` *before* importing the suite, and confirm the patch actually moves the value or
    the re-run is vacuous.
-2. **`open_signed_pr.py` sends WHOLE FILE CONTENTS, and this worktree is 44 files behind `main`.**
+2. **`open_signed_pr.py` sends WHOLE FILE CONTENTS, and this worktree is far behind `main`** —
+   **24 commits / 66 files** at the time of the clobber, 39 / 126 hours later. *(An earlier
+   draft said "44 files"; 44 was the number of CHANGELOG **lines** the clobbering commit
+   deleted — a figure from the adjacent incident, reused as a file count. Measure it, do not
+   quote it.)*
    The first commit deleted two `CHANGELOG.md` entries concurrent sessions had landed. Caught by
    diffing the **pushed branch against `origin/main`**, not the local diff. Always check
    `git diff --numstat origin/main...FETCH_HEAD` for unexpected deletions after an API push.
