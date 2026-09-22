@@ -211,12 +211,18 @@ PY
 
 All under `util/ad-hoc/`, all on `main`. **Read the docstring first.**
 
+> **Re-probed 2026-09-22: six of the seven are still at the paths below; one was RETIRED.**
+> `2026-09-11_seqsafety_fanout_arm_merge.py` moved to `util/ad-hoc/retired/` in ml#1919
+> (`0532ffa5`) — retired under the owner's provenance-of-record policy, not deleted, so the
+> path in this table no longer resolves while the tool still exists. Check
+> `util/ad-hoc/retired/` before concluding a tool from any handoff is gone.
+
 | tool | writes? | question |
 | --- | --- | --- |
 | `2026-09-11_fleet_required_context_probe.py` | no | **what does each repo's RULESET actually require?** — the premise check 6a needed before any edit |
 | `2026-09-11_seqsafety_comment_fanout.py` | **yes** | patch the eight headers; anchors located structurally, not by line number |
 | `2026-09-11_seqsafety_fanout_open_prs.py` | **yes** | drive `open_signed_pr.py` once per repo, each with its OWN ruleset id |
-| `2026-09-11_seqsafety_fanout_arm_merge.py` | **yes** | arm eight nets WITH A BODY; disarms first, reads back, checks state before body |
+| ~~`2026-09-11_seqsafety_fanout_arm_merge.py`~~ **RETIRED** — now `util/ad-hoc/retired/2026-09-11_seqsafety_fanout_arm_merge_RETIRED-2026-09-11.py` (ml#1919) | **yes** | arm eight nets WITH A BODY; disarms first, reads back, checks state before body |
 | `2026-09-11_seqsafety_fanout_status.py` | no | one line per PR, one verdict line — a wall of near-identical green hides a red |
 | `2026-09-11_falsy_guard_census.py` | no | **`or {}` sites, classified by the PROVENANCE of the guarded value** |
 | `2026-09-11_residue_section4_adjudicate.py` | no | does each held-back residue line survive anywhere in the tree today? |
