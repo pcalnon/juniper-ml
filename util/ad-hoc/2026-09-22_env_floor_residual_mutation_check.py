@@ -62,6 +62,7 @@ Usage:
 from __future__ import annotations
 
 import importlib.util
+import io
 import pathlib
 import sys
 import unittest
@@ -118,7 +119,12 @@ def main() -> int:
         print("the test module did NOT bind to the reverted module -- nothing was measured", file=sys.stderr)
         return 2
 
-    result = unittest.TextTestRunner(verbosity=0, stream=open("/dev/null", "w")).run(suite)
+    # Discard the runner's own report -- this tool prints its own verdict, and a pass/fail
+    # summary from unittest would read as the opposite of what a mutation run means. An
+    # in-memory buffer rather than an open("/dev/null") handle: the handle was never closed
+    # (CodeQL "File is not always closed"), and there is no reason to touch the filesystem
+    # to throw output away.
+    result = unittest.TextTestRunner(verbosity=0, stream=io.StringIO()).run(suite)
     broke = len(result.failures) + len(result.errors)
     for case, _tb in result.failures + result.errors:
         print(f"FAILS (good)  {case._testMethodName}")
