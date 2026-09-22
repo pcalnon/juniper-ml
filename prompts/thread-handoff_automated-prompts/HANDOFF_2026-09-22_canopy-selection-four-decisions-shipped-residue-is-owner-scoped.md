@@ -52,8 +52,14 @@ Plus **juniper-ml#1977, #1981, #1982, #1984, #2003**, and **juniper-data#409** f
 > **The predecessor said nine.** It was ten: **canopy#648** was dropped from the list, and `A-N4`
 > and `A-N9` vanished from the record with it. Both are restored as items 11 and 12 below.
 
-**Remaining work.** Items 1–3 are one PR-sequence and must be done in order; 4–8 are independent;
-9–17 are record repairs and smaller gaps.
+**Remaining work.** Items **1, 2, 3 and 3b** are one PR-sequence and must be done in order — `3b`
+is hydration's acceptance criterion, not an optional extra; **4–8** are independent; **9–17** are
+record repairs and smaller gaps; **18–23** are § F, restored after this document dropped them.
+
+> **Why `3b` and not a renumber.** Items 11, 12, 18, 20 and 23 are cross-referenced by number from
+> § Validation record, from this session's PR bodies (juniper-ml#2018, #2021) and from a peer
+> session's addendum. Renumbering would silently re-point every one of them. A letter suffix is the
+> cheaper correction, and this range line is the only thing it invalidated.
 
 ---
 
