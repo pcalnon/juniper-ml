@@ -14,6 +14,11 @@ Successor to
 > Its state claims all hold. **Five of its factual claims do not**, one whole remaining-work item
 > (§0.5) is moot, and the measurement §0.1 step 2 asked for has been taken — and it **reframes the
 > P1.4 decision**. §0.0 carries all of it. Where §0.0 and a later section disagree, §0.0 is current.
+>
+> **SUPERSEDED 2026-09-22 — the title of this document is now wrong.** P1.4's second half was
+> **not** an Option D decision: §0.0.5(a) shows `log_if_enabled` is not §11's Option D at all. The
+> owner ruled the hoisted-guard + `%`-args idiom on 2026-09-22 and **Phase 1 is complete**. See the
+> banner at §0.1.
 
 **A bare "§N" means a section OF this document.** Every reference to another file names it. This
 document is
@@ -293,6 +298,26 @@ rule.**
 State: the **fix** half is complete, tested and checkpointed on branch
 `wip/logging-p14-adopt-logging-utils` in `juniper-cascor` (§6). No PR is open. The **wire** half
 is not started, and §2 argues it needs an owner ruling first.
+
+> ## ✅ CLOSED 2026-09-22 — P1.4 is discharged and Phase 1 is complete
+>
+> **The owner ruled**: convert the three sites to the **hoisted-guard + `%`-args** idiom, **not**
+> wire `log_if_enabled`. Shipped as
+> [cascor#670](https://github.com/pcalnon/juniper-cascor/pull/670), on top of
+> [cascor#667](https://github.com/pcalnon/juniper-cascor/pull/667) (the guard memo fix).
+>
+> - `src/profiling/logging_utils.py` stays **fixed-but-unwired, dead code** — that is the ruling's
+>   substance. The fix half remains on `wip/logging-p14-adopt-logging-utils`, still unmerged.
+> - **P7's queued writer stays open** (there was never a foreclosure — §0.0.5(a)), and **P6.4 stays
+>   open**, which is the foreclosure the ruling avoided (§0.0.6).
+> - Recorded as **decisions 10 and 11** in §13.1 of
+>   `notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md`.
+> - `%`-args output equivalence verified, not assumed —
+>   `util/ad-hoc/2026-09-22_p14_percent_args_output_equivalence.py`. `residual_error.shape` is a
+>   `torch.Size`, a **tuple subclass**, so §5's splat hazard was live at `:742`.
+>
+> **What remains of this arc is §0.3 (P6.4, owner-gated) and §0.4 (P0.1/P0.2, the corpus that gates
+> P2 and P3).** Everything below is the working record that produced the ruling.
 
 > **REVISED 2026-09-21 — read §0.0.4–§0.0.6 first.** Step 2 is **DONE**, and its result plus a
 > five-agent consensus review changed what steps 1, 3 and 4 should be. The original steps are kept

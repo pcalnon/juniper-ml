@@ -692,7 +692,47 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
    asserted by §4 of that handoff, recorded nowhere else. Each PR was still shown before merging.
    **Treat as expired for any new session** — approval in one session does not carry to the next.
 
-10. **P7 Option D foreclosure — STILL OPEN. The owner's call.** §11 holds that lazy message
+10. **RULED 2026-09-22 — P1.4's wire half is discharged by the hoisted-guard + `%`-args idiom, NOT
+    by wiring `log_if_enabled`.** Shipped as
+    [cascor#670](https://github.com/pcalnon/juniper-cascor/pull/670): the three per-epoch sites in
+    `CandidateUnit._display_training_progress` (`candidate_unit.py:730`, `:731`, `:742`, plus the
+    two in the rare re-init branch at `:734`/`:735`) now sit behind `_log_debug` / `_log_verbose`
+    hoisted at the top of the method, and carry `%`-args instead of f-strings. **`log_if_enabled`
+    is therefore fixed-but-unwired and `src/profiling/logging_utils.py` remains dead code** — that
+    is the ruling's substance, not an oversight.
+    - **No P7 foreclosure is recorded, because there is none to record.** §11's hazard is about a
+      callable crossing the *logger* API boundary; `log_if_enabled` invokes its lambda in the
+      caller's frame and hands `Logger` a plain `str`, which §4 of
+      [`…LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md`](JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-CALL-SITE-MIGRATION-ANALYSIS.md)
+      explicitly calls safe. **P7's queued writer stays open.**
+    - **P6.4 also stays open**, and that is the foreclosure the ruling actually avoided:
+      `log_if_enabled` takes no `*args`, so a site converted to it cannot carry `%`-args — which is
+      exactly what decision 6 holds P6.4 to decide. The chosen idiom converts those sites *to*
+      `%`-args, which is P6.4's own direction.
+    - **Two prerequisites it depended on**, both shipped first:
+      [cascor#667](https://github.com/pcalnon/juniper-cascor/pull/667) (decision 11) and the
+      output-equivalence proof (`util/ad-hoc/2026-09-22_p14_percent_args_output_equivalence.py`) —
+      `residual_error.shape` is a `torch.Size`, a **tuple subclass**, so §5's splat hazard was live
+      at `:742`. All four messages verified byte-identical, as strings and through the real Logger.
+    - **Superseded framing, kept for the record**, and superseded on its numbers as well as its
+      conclusion — the ladder below was taken *before* decision 11's fix:
+
+11. **RULED and SHIPPED 2026-09-21 — memoise the guard.** `isEnabledFor` now resolves through
+    `_resolve_level_number`, the same memo `_filter_by_level` uses
+    ([cascor#667](https://github.com/pcalnon/juniper-cascor/pull/667)). cascor#598 memoised the emit
+    path and left the guard behind, so the guard had become **more expensive than the f-string
+    interpolation it exists to prevent**. Measured **1,270 → 341 ns, 3.73×**, with all **132 cells**
+    of the (configured level × probe level) behaviour table identical across an unfixed and a fixed
+    checkout driven in separate subprocesses
+    (`util/ad-hoc/2026-09-21_p14_isenabledfor_memo_verify.py`). Three regression tests pin the
+    **mechanism**, not a wall-clock time; the mutation check fails exactly those two and nothing
+    else across four logger suites. **This moved the whole ladder** — post-fix, Option D measured
+    ~461 ns and a hoisted guard ~31 ns, so any P1.4 ruling taken on the pre-fix numbers would have
+    been taken on the wrong ones.
+
+<details><summary>Decision 10's superseded pre-#667 framing</summary>
+
+**P7 Option D foreclosure — STILL OPEN. The owner's call.** §11 holds that lazy message
     callables and a queued/deferred P7 writer "must not be adopted independently". Wiring
     `log_if_enabled` at a real call site **takes that decision**. The measurement §11 asked for was
     taken 2026-09-21 (`util/ad-hoc/2026-09-21_p14_guard_idiom_bench.py`, independently re-created as
@@ -704,6 +744,8 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
     ~2,300–2,700 ns; `%`-args ~1,353 ns; Option D ~1,200–1,400 ns; a **hoisted guard ~10–60 ns**.
     **Option D buys ~10 % over `%`-args and costs ~25× the idiom `candidate_unit.py:595-596`
     already ships.** Full write-up: §0.0.4 of the handoff named in decision 8.
+
+</details>
 
 ---
 
