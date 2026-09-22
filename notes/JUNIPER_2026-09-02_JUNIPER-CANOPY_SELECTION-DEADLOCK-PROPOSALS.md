@@ -510,11 +510,21 @@ design (its OQ-N6).
 
 ### 7.1 What is deferred, deliberately
 
-- **OQ-6 (conflict-policy default)** stays open. F1 does not settle it — and B1's R9 notes the
-  sharp irony that `clearable=False` currently makes **both** policies in §5.6 of the design of
-  record unimplementable, since
-  both say *clear* and a null dataset is not expressible. Shipping the ✕ is what makes OQ-6
-  answerable at all.
+- **OQ-6 (conflict-policy default)** ~~stays open~~. **CLOSED 2026-09-22 — `model-primary`,
+  resolved by clearing** (juniper-ml#2003, canopy#652). The ratification is recorded at
+  [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
+  §5.6.1, with D5 at `:55` struck and re-ratified.
+  The paragraph below was right about the mechanism and right about the sequencing, and is kept
+  because its prediction came true: F1 did not settle OQ-6, and **shipping the ✕ is exactly what
+  made it answerable**. B1's R9 noted the sharp irony that `clearable=False` made **both** §5.6
+  policies unimplementable, since both say *clear* and a null dataset was not expressible. Both
+  axes are clearable now, so the design's own resolution became available and was taken.
+  > **This correction is dated because it was late.** juniper-ml#2003 struck the OQ-6 text in the
+  > 06-17 design and the 09-02 reachability design and missed this file, so for 13 days two
+  > sibling documents in the same directory gave opposite answers to the same question. Found by
+  > a peer session, not by the sweep that wrote the other two. See
+  > [`JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md`](JUNIPER_2026-07-04_JUNIPER-ML_NOTES-FILE-NAMING-CONVENTION.md)
+  > for why these three sort apart despite covering one arc.
 - **F5 (relocating the capability model)** is correctly scoped as the end-state the defect
   revealed, not the fix for it. P4 named its own over-scoping: a perfect capability feed still
   yields a disconnected graph without a connectivity fix. Note the §5.3 landmine.

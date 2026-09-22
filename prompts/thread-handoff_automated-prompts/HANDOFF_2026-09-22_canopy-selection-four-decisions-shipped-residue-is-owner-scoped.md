@@ -138,12 +138,32 @@ document's first draft, one agent and one peer each used a different one:
 | of those, general existing-branch drivers (excludes the PR-opener `2026-09-10_open_signed_lockfile_prs.bash`) | **10** |
 | reusing `open_signed_pr.create_signed_commit`, as sampled in a 14-commit-stale worktree | **6** |
 
-The substantive finding is unaffected and verified: the sampled drivers **reuse**
-`create_signed_commit` (`util/open_signed_pr.py:117`) rather than redefining it, a canonical helper
-is already promoted with a hermetic test (`tests/test_open_signed_pr.py`), and
-`util/ad-hoc/push_signed_commit.py` self-declares as a promotion candidate. **The set grows weekly**
-— `2026-09-21_signed_move_on_branch.py` and `2026-09-22_append_signed_commit.py` both postdate the
-predecessor's count. That growth rate is the argument for the item.
+**CORRECTED 2026-09-22 (peer re-probe). The paragraph that stood here was half wrong**, and its
+error was the same class as the count above — a true fact about one thing offered as evidence
+about another:
+
+- ~~"a canonical helper is already promoted with a hermetic test"~~ — **true of the function,
+  false of the job.** `create_signed_commit` is importable and **6** ad-hoc files reuse it, but
+  the promoted *tool*, `util/open_signed_pr.py`, **refuses an existing branch by design**
+  (`:46-47`: *"Refuses when an open PR already exists for the branch … and when the branch already
+  exists — it never force-updates someone else's ref"*). That refusal is correct for a PR opener
+  and is exactly why it cannot serve the existing-branch case. **No existing-branch driver has
+  ever been promoted**, which is the whole of the open work.
+- **14** files under `util/ad-hoc/` carry their **own** `createCommitOnBranch` mutation rather
+  than calling the helper. (Criterion, since this number has now been miscounted three times in
+  one day: files matching `createCommitOnBranch` and **not** matching `create_signed_commit`, on
+  `origin/main`. My first attempt at this very sweep was biased — I grepped only within files
+  containing `createCommitOnBranch`, which structurally cannot see a reuser that never mentions
+  the string.)
+- Therefore the **09-08 item stands as written** — *"promote one into `util/` with a hermetic test
+  and retire the others"* — and **this session's 09-21 verdict on it ("MISSTATED — do not action
+  as written") was wrong.** Do not inherit that verdict.
+- When consolidating, **keep `push_signed_commit.py`'s `--expected-head` pin**. The `append_*`
+  drivers read the head live, which loses the concurrent-push guard.
+
+**The set grows weekly** — `2026-09-21_signed_move_on_branch.py` and
+`2026-09-22_append_signed_commit.py` both postdate the predecessor's count. That growth rate, over
+a mutation that is duplicated 14 times, is the argument for the item.
 
 > Two distinct files are named `push_signed_commit.py` (181 vs 116 lines, **not** identical) and one
 > driver lives in a **subdirectory** (`2026-09-10_soak_stopping_rule/`). A flat top-level listing undercounts.
@@ -234,6 +254,68 @@ still reads as wholly open.
 > **#371's trigger has NOT fired.** Its text is a **conjunction**: promote when A1 lands **and** the
 > rendered gate UX needs browser-level proof a pure-function test cannot express. Only the first
 > conjunct is satisfied. The predecessor's "the trigger has fired" was wrong.
+
+### F. Dropped by THIS document and restored 2026-09-22 by a peer re-probe
+
+**This section exists because the rewrite that restored six dropped items dropped four more.**
+The three validation agents were briefed on the *first draft*; nothing validated the rewrite, which
+is precisely the rule stated in § Validation record below. Found by peer session `canopy`, not by
+this session. Each item re-derived in source before being accepted here.
+
+**18. `A-N2` — §12.4's `generate → stage → train → render` loop through canopy has never been run.**
+It was item 1 of this document's own first draft and has **0 hits** in the archived revision. §12.4
+(`…REACHABILITY-DESIGN.md:538`) requires the loop "observed once"; §12.6 records fitting
+`juniper_recurrence_model.LMURegressor` directly and §12.7 records `generate → NPZ →
+CascadeCorrelationNetwork.fit` — **neither goes through `/api/stage_dataset`**. The 09-08
+predecessor's caveat is verbatim at
+`HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md:128`.
+
+**19. ∥ packaging — `yfinance` and `arc-agi` are absent from juniper-data's lockfile.**
+`requirements.lock` line 2 is `uv pip compile pyproject.toml --extra api --extra observability
+--extra mnist`; `yfinance>=0.2.40` lives in the `equities` extra (`pyproject.toml:48-53`), which is
+not compiled in, and **the image installs only the lock**. So the LMU has zero available datasets in
+the container regardless of any UI change — the deployment fact behind `_empty_dataset_set_notice`.
+Was under "Awaiting others" in the first draft; **0 hits** in the archived revision.
+
+**20. `X10` — `RecurrenceBackend.initialize()` is unconditional and `selection_is_live` consults no health signal.**
+`recurrence_backend.py:473-476` is a log line and `return True`: no probe. `selection_is_live`
+(`model_registry.py:516-537`) reads only `model_key`, `backend_type` and `spec.provider`. So a
+"live" selection is a claim about configuration, never about reachability. Section B of the archived
+revision recorded only the `Y2` claim; X10 appears nowhere. **CLAIMED by peer session `canopy`,
+unstarted — do not start it here.**
+
+**21. `Y7`, model-table half — `aria-describedby` is 0 occurrences repo-wide.**
+Design §4.3: *"Give the reason cell an id and point the row's control at it with
+`aria-describedby` (Y7)"*. At `9bffaba1`, `_build_model_selection_table`
+(`dashboard_manager.py:3530`) renders the reason as an **id-less** `html.Span` and the Select button
+carries it only via `title=`. The 09-21 correction's "accessibility half SHIPPED" covers **only**
+the dropdown's `role="status"` / `aria-live="polite"` notice at `:1418`. **canopy#368's
+accessibility clause stays open.**
+
+**22. OQ-6 has a SECOND site, and it still snaps. Unruled.**
+`dashboard_manager.py:6154-6155`, the restart-modal opener:
+`if not selection_axis_unset(dataset_type) and dataset_type not in enabled: dataset_type =
+enabled[0] if enabled else None`. A stranded **non-`⊥`** dataset is still replaced by the first
+enabled option — the behaviour canopy#652 removed from the sidebar. `⊥` itself is correctly
+preserved, and the in-code rationale ("never seed the field with a value its own list disables") is
+defensible, so **this may be deliberate — but it was never ruled under OQ-6**, and the ratification
+in `…MODEL-DATASET-SELECTION-DESIGN.md` §5.6.1 does not mention it. After #652 the sidebar rarely
+hands the modal a stranded value, but an availability change **between the gate firing and the modal
+opening** still can. **Needs an owner ruling: does model-primary-by-clearing bind this site too?**
+
+**23. Two live defects in this session's own merged PRs — FIXED in canopy#656 (see § Validation record).**
+Both were found by the peer, both reproduced here before fixing:
+- **canopy#653's `unknown` state could never fire for the case it was built for.** The dashboard
+  calls canopy's *own* route; `main.py`'s `list_dataset_generators` catches a juniper-data outage
+  (`:1908`) or refusal (`:1895`) and answers **HTTP 200 with four built-in generators carrying no
+  `available` flag**. So `resp.ok` was true, a list came back, `availability_is_known` was true, and
+  `is_generator_available` fail-open reported `equities_seq` selectable against a dead service —
+  verbatim the `A-N5` complaint. #653's tests drove the failure by making `requests.get` raise,
+  which simulates **canopy** being down, not juniper-data: **the fixture mocked the near seam.**
+- **canopy#652 announced a clear that never happened.** With the dataset already `⊥`, any gate
+  re-fire produced *"**none** is not compatible with CasCor (Cascade-Correlation), so it was
+  cleared"* — `_dataset_label(None)` renders the literal string `none`. Reachable the moment #652
+  made `⊥` a state the gate clears into. No test passed a `None` current value.
 
 ---
 
@@ -365,3 +447,26 @@ reproduced exactly, so the conclusion held for a different reason than the agent
 > and `X8`. The failure mode is not carelessness in the moment: **a shipped item and a dropped item
 > look identical in a summary.** Check the predecessor's list item by item against source, never
 > against its own status table.
+
+### This document proved its own warning within the hour
+
+**The archived revision dropped four items while restoring six** — `A-N2`, ∥ packaging, `X10` and
+`Y7`, all restored as § F above. It also shipped a half-wrong item 6 and missed a second live OQ-6
+site (§ F item 22). A peer session found every one of them; this session found none.
+
+The mechanism is stated plainly because it is the reusable part: **the three agents were briefed on
+the first draft, and nothing validated the rewrite.** The rewrite is where the six restorations
+happened, so it was simultaneously the most-changed and the least-checked text in the document.
+This is the 2026-08-18 lesson — *"the fix pass is the least trustworthy part; always run round 2 on
+the corrections"* — recorded in `feedback_validate_handoff_prompts_independently` and violated by
+the session that had just re-read it.
+
+**Two live defects in this session's own merged PRs** (§ F item 23) share one root: *a guard that
+tests the seam you were thinking about rather than the seam the defect crosses.* canopy#653's
+fixture made `requests.get` raise, which proves the `None` path works and never exercises the
+juniper-data outage the feature was built for. Fixed in **canopy#656**, mutation-checked at all
+three sites (route flag fires 1 test, the `⊥` guard 4, the consumer translation 2 including the
+end-to-end one).
+
+`X11` (first paint passes no backend) is deliberately **not** a separate item: it overlaps item 3
+(`Y3`) and the design phases the two together, so it belongs to item 3's owner.
