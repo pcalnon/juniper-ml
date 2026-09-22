@@ -633,11 +633,11 @@ Full contract: [REFERENCE — F-039 Store Probe](REFERENCE.md#f-039-store-probe)
 | `JUNIPER_CASCOR_SRC`           | `~/Development/python/Juniper/juniper-cascor/src` | Override cascor source tree for `snapshot_classify.py --stage load` and `snapshot_attribute.py` |
 | `JUNIPER_DATA_ROOT`            | `~/Development/python/Juniper/juniper-data` | Override juniper-data tree for generator imports |
 | `JUNIPER_DATA_EQUITIES_MAX_SYMBOLS` | `14` | Data-service ceiling for `equities` / `equities_seq`. A request may only lower this. `experiment_stack.bash` does **not** set it. |
-| `JUNIPER_DATA_EQUITIES_ALLOW_TRUNCATION` | `false` | Deployment-wide opt-in to a prefix cut (OR with the request flag). |
+| `JUNIPER_DATA_EQUITIES_ALLOW_TRUNCATION` | `false` | Deployment-wide opt-in to a prefix cut. Tri-state since juniper-data `APD-DATA-052`: `true` opts in, `false` REFUSES even here, `null`/omitted defers to this setting. |
 | `JUNIPER_DATA_EQUITIES_CACHE_DIR` | `~/.cache/juniper_data/equities` | Equities OHLCV/SEC cache. Experiment `data_up` sets `$RUN_DIR/equities-cache`. |
 | `JUNIPER_DATA_IMPORT_DIR`      | `/data/imports`    | Prefix `csv_import` `file_path` is resolved against. `experiment_stack` `data_up` does not set this. |
 | `JUNIPER_DATA_CSV_IMPORT_MAX_BYTES` | `134217728` (128 MiB) | Deployment ceiling; a request `max_bytes` may only lower it (`gt=0`). |
-| `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION` | `false`     | Deployment-wide opt-in to a partial csv_import (logical OR with the request). |
+| `JUNIPER_DATA_CSV_IMPORT_ALLOW_TRUNCATION` | `false`     | Deployment-wide opt-in to a partial csv_import. Tri-state since juniper-data `APD-DATA-052`: `true` opts in, `false` REFUSES even here, `null`/omitted defers to this setting. |
 | `JUNIPER_FLEET_SKIP_PRECOMMIT` | unset              | When set, `predict_merge` skips the pre-commit battery (screens still run) |
 
 Pitfall: `util/juniper_plant_all.bash` uses the `JUNIPER_CASCOR_*` names, while the `util/get_cascor_*.bash` query helpers use legacy `CASCOR_*` names.
