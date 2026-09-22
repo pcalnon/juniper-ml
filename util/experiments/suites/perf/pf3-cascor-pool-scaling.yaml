@@ -2,12 +2,34 @@
 # onset (read against the H-11 thread budget via the dashboard's Process CPU Rate panel).
 # runtime.num_processes rides the driver's rule-6-clean runtime: block. Thresholds unratified.
 #
-# BLOCKED 2026-09-10 -- DO NOT LAUNCH AS WRITTEN. The runtime: block is validated by the driver
-# and accepted by the cascor service but READ BY NOTHING on either path (no launcher export, no
-# settings projection), so the runtime.num_processes axis below is a no-op and this 4x3 matrix
-# would be four pool sizes run three times each. Blocked on the owner's runtime: decision
-# (implement -> CASCOR_NUM_PROCESSES exported per cell; retire -> re-express the axis).
+# ~~BLOCKED 2026-09-10 -- DO NOT LAUNCH AS WRITTEN.~~ The runtime: block was validated by the
+# driver and accepted by the cascor service but READ BY NOTHING on either path (no launcher
+# export, no settings projection), so the runtime.num_processes axis below was a no-op and this
+# 4x3 matrix would have been four pool sizes run three times each.
 # notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md §4, P2 plan item 2.2.
+#
+# THE INERT-AXIS BLOCKER IS DISCHARGED, 2026-09-22. The owner ruled D2 "implement, via the
+# environment route" (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md),
+# and that is now built: run_suite.runtime_block_env maps this block onto the process
+# environment and experiment_stack.bash exports CASCOR_NUM_PROCESSES per cell at cascor
+# bring-up. The three legs below therefore differ in the runtime for the first time.
+#
+# STILL DO NOT LAUNCH, for two REMAINING reasons -- neither of them the axis:
+#   1. D3's own ruling requires a ONE-CELL RUN confirming the cell's `thread_env` is non-null
+#      BEFORE the ~6.7 h matrix is committed -- `--only <cell_id>`, then read `thread_env` in
+#      that run's manifest.json. NOT `--dry-run`: it returns before cells are materialised and
+#      prints neither the runtime env nor the thread budget. That check is what would have
+#      caught the inert axis in the first place; run it, do not assume this comment.
+#   2. THE AXIS STILL DOES NOT DISCRIMINATE EVERYWHERE, so re-shape the matrix first. cascor
+#      clamps workers to `min(process_count, len(tasks))` (`cascade_correlation.py:2685`) where
+#      len(tasks) IS the pool size -- so at `candidate_pool_size: 2` the np=2 and np=4 legs are
+#      the SAME configuration, and 2 of these 12 cells are duplicates. Worse, np=1 takes the
+#      *sequential* branch (`:2472`) rather than a one-worker pool, so it is a different code
+#      path and not a point on the same speedup curve. Binding the variable was necessary but
+#      is not sufficient.
+#   3. A 1-minute load under 3. The host has not been quiet in five sessions (load 4.7-32 across
+#      2026-09-11..22), and every number this suite produces is wall-clock.
+# Thresholds remain unratified.
 schema_version: 1
 suite:
   name: pf3-cascor-pool-scaling
