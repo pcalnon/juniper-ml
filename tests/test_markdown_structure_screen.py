@@ -384,7 +384,11 @@ class H2InFenceIsNarrowedToUnclosedOrBareTest(unittest.TestCase):
         self.assertTrue(any("UNCLOSED" in f for f in found), found)
 
     def test_a_BARE_closed_fence_containing_an_h2_is_STILL_reported(self):
-        # Negative control 2: the juniper-ml#1746 shape, which was a bare fence.
+        # Negative control 2. NOT the juniper-ml#1746 shape -- this comment used to say it
+        # was, and that error is what made the narrowing look safe. ml#1749's own commit
+        # body (`7a4b1cb4`) records the lost line as "the close of the ``text`` block at
+        # REFERENCE.md:1522": a TYPED fence. The real shape is pinned in
+        # AbsorbedOpenerRestoresDroppedCloserDetectionTest below.
         found = self._findings("# N\n\n```\n## Swallowed By Bare Fence\n```\n\ntail\n")
         self.assertEqual(len(found), 1, found)
         self.assertIn("H2 swallowed", found[0])
@@ -398,6 +402,139 @@ class H2InFenceIsNarrowedToUnclosedOrBareTest(unittest.TestCase):
         self.assertFalse(screen._can_swallow_headings("```text", is_unclosed=False))
         self.assertTrue(screen._can_swallow_headings("```", is_unclosed=False))
         self.assertFalse(screen._can_swallow_headings("```markdown", is_unclosed=False))
+
+
+class AbsorbedOpenerRestoresDroppedCloserDetectionTest(unittest.TestCase):
+    """The 2026-09-15 narrowing blinded this screen to the incident that created it.
+
+    Its safety argument was: *"a dropped closer leaves the fence UNCLOSED, which is reported
+    in its own right."* That only holds in a document with nothing after the damage. In a
+    real file the NEXT block's opener is absorbed -- a delimiter carrying an info string
+    cannot close anything -- and the following bare delimiter re-closes the damaged span.
+    Fence polarity is restored, no UNCLOSED finding exists, and with the opener typed the
+    narrowed rule exempted the whole span. Every heading between them was silently inside a
+    code block, reported by nothing.
+
+    Measured on the real damaged blob, `bcc89c45:docs/REFERENCE.md` (ml#1746): the
+    pre-narrowing screen reported 2, the narrowed screen reported 0 and exit 0, and the
+    corrected screen reports 2 again. `util/markdown_structure_delta.py` execs this file
+    inside the `Documentation Links` REQUIRED check, so that damage would have shipped with
+    every check green -- the exact failure ml#1749 was opened to prevent.
+
+    The narrowing's premise was also factually wrong: its commit message says ml#1746's
+    fence "was bare", while ml#1749's own body records the lost line as the close of a
+    ```text block. Typed -- the class the narrowing exempts.
+
+    Each arm here fails against the narrowed-only predicate. The exemptions the narrowing
+    bought are kept, and pinned below as controls: neither absorbs a sibling opener.
+    """
+
+    def _findings(self, body):
+        with TemporaryDirectory() as td:
+            p = Path(td, "t.md")
+            p.write_text(body)
+            return screen.check(p)
+
+    def _doc(self, *lines):
+        """Join fixture lines explicitly.
+
+        Written as a join rather than adjacent string literals because black (line length
+        512) collapses a parenthesised group onto one line, which turns it into implicit
+        string concatenation -- the pattern CodeQL flags and that has blocked merges in this
+        repo before. A list of lines survives reformatting unchanged.
+        """
+        return "\n".join(lines) + "\n"
+
+    def test_a_dropped_closer_that_absorbs_a_typed_opener_is_reported(self):
+        """The ml#1746 shape: ```text loses its closer and eats the next ```python opener."""
+        body = self._doc(
+            "# N",
+            "",
+            "```text",
+            "banner",
+            # the closing ``` belongs HERE and is dropped
+            "",
+            "## Swallowed One",
+            "",
+            "```python",  # absorbed: it carries an info string, so it cannot close
+            "x = 1",
+            "```",  # bare, so it re-closes the DAMAGED fence -- polarity restored
+            "",
+            "tail",
+        )
+        found = self._findings(body)
+        self.assertTrue(any("H2 swallowed" in f for f in found), found)
+
+    def test_two_closes_lost_with_typed_openers_is_reported(self):
+        """Balanced-but-wrong: the heuristic the narrowing kept only for BARE fences."""
+        body = self._doc(
+            "# N",
+            "",
+            "```text",
+            "banner",
+            "",
+            "## Swallowed One",
+            "",
+            "```bash",
+            "echo hi",
+            "",
+            "## Swallowed Two",
+            "",
+            "```yaml",
+            "k: v",
+            "```",
+            "",
+            "tail",
+        )
+        found = self._findings(body)
+        self.assertTrue(any("H2 swallowed" in f for f in found), found)
+
+    def test_a_four_backtick_block_that_absorbs_a_four_backtick_opener_is_reported(self):
+        """Length is compared, not assumed: an absorbed run must be able to open a sibling."""
+        body = self._doc(
+            "# N",
+            "",
+            "````text",
+            "banner",
+            "",
+            "## Swallowed",
+            "",
+            "````python",
+            "x = 1",
+            "````",
+            "",
+            "tail",
+        )
+        found = self._findings(body)
+        self.assertTrue(any("H2 swallowed" in f for f in found), found)
+
+    def test_the_document_is_NOT_unclosed_so_nothing_else_would_report_it(self):
+        """Proves the arm is load-bearing, not a duplicate of the UNCLOSED check.
+
+        If the damaged span were merely unclosed, the pre-existing arm would already catch
+        it and this class would be redundant. It is not: polarity is even.
+        """
+        body = "# N\n\n```text\nbanner\n\n## Swallowed\n\n```python\nx = 1\n```\n\ntail\n"
+        lines = body.split("\n")
+        _spans, unclosed = screen._fence_spans(lines)
+        self.assertIsNone(unclosed)
+        self.assertTrue(any("H2 swallowed" in f for f in self._findings(body)))
+
+    # --- controls: the 17 false positives must STAY cleared -----------------------------
+
+    def test_the_ascii_banner_absorbs_nothing_and_stays_exempt(self):
+        body = "# N\n\n```text\n######\n##  BUILD FAILED\n######\n```\n\n```python\nx = 1\n```\n\ntail\n"
+        self.assertEqual(self._findings(body), [])
+
+    def test_a_jinja2_template_quoting_a_SHORTER_fence_stays_exempt(self):
+        """A ```` block legitimately quotes ``` runs; they cannot open a sibling of it."""
+        body = "# N\n\n````jinja2\n{% block b %}\n## Overview\n```\ncode\n```\n{% endblock %}\n````\n\ntail\n"
+        self.assertEqual(self._findings(body), [])
+
+    def test_a_markdown_sample_stays_exempt_even_when_it_quotes_a_typed_opener(self):
+        """The markdown-example exemption is checked BEFORE the absorbed arm, by design."""
+        body = "# N\n\n```markdown\n## Sample\n```python\ncode\n```\n\ntail\n"
+        self.assertEqual(self._findings(body), [])
 
 
 if __name__ == "__main__":
