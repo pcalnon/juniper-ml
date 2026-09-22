@@ -14,13 +14,20 @@ D6: is ``epochs_completed`` stable enough to gate on equality?
 
 WHY THIS EXISTS TWICE
 ---------------------
-This measurement was already taken once, on 2026-09-17, and the evidence survives at
-``~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json``. **The
-instrument that produced it does not.** It is in no commit, on no branch, and nothing in
-``notes/`` reports its result — so the figure could be neither reproduced nor cited, which is
-the failure mode ``AGENTS.md`` § Script placement exists to prevent (``/tmp/`` is reaped; the
-``phase4_consolidate.py`` incident is the same shape). This file re-takes the measurement from
-a committed instrument so the answer has a provenance chain.
+This measurement was already taken once, on 2026-09-17
+(``~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json``), by an
+instrument that **does** survive — ``2026-09-17_epochs_completed_spread.py``, untracked in the
+sibling worktree ``.claude/worktrees/optimized-giggling-koala``, alongside a note reaching the
+same conclusion. That session obeyed every placement rule and simply **never committed**, so to
+``git``, to CI and to this session's first searches the work did not exist.
+
+This file therefore is NOT a recovery of lost work. It exists to put the answer on a committed,
+re-runnable footing, and it adds the two things the 09-17 instrument lacks: the OpenMP ICV
+actually in force at each cell (so an inert axis is distinguishable from a real invariance) and
+a do-nothing control (so instrument perturbation is visible rather than assumed).
+
+Full account, including the search that missed the earlier work, is in
+``notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`` §1.
 
 WHAT IS MEASURED, AND WHY THIS EXACT SHAPE
 ------------------------------------------

@@ -47,11 +47,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Whether to *build* the exact-match gate remains the owner's call: only 2 of the 4 cells would
   be real assertions (at budgets 10 and 50 the count equals the request), and the gate's
   reference is tree-sensitive by construction.
-- **The measurement existed already and was unrecoverable.** A complete 09-17 sweep sat at
-  `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json` with **no
-  committed instrument and no note reporting it** — a correct answer to an owner-gated question,
-  uncitable for five days. Re-taken from a committed instrument; the 09-17 file is now reported
-  only as corroboration, which is all an orphaned artifact can honestly be.
+- **The measurement existed already, UNCOMMITTED, and three searches missed it.** A complete
+  09-17 sweep sat at `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/`,
+  and its instrument *and* a write-up reaching the same conclusion both exist — untracked in
+  `.claude/worktrees/optimized-giggling-koala` (`util/ad-hoc/2026-09-17_epochs_completed_spread.py`,
+  `notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`). **The
+  09-17 session obeyed every placement rule and simply never committed.** So the lesson is not
+  the `/tmp` one: **`util/ad-hoc/` placement protects work from `/tmp` reaping, not from never
+  being committed**, and to `git`, to CI and to the next session an uncommitted file in a
+  sibling worktree is indistinguishable from one that does not exist. That worktree is locked;
+  the lock is currently the only thing preserving it. **Owner action**: commit those two files,
+  or retire them in favour of this one. Also recorded, because the shape recurs: this session's
+  searches used `d6-epochs-spread` / `epochs_spread`, patterns taken from the *evidence
+  directory's* name, and the instrument is `epochs_completed_spread` — neither is a substring.
+  A sweep whose pattern comes from the artifact you already hold will not find the one you do not.
 - **Thread-width sweep — D1 and D2's gating measurement**
   (`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`, new;
   `util/ad-hoc/2026-09-16_thread_width_{arm,sweep}.py`, new). 6 widths × 2 mechanisms × 3 repeats

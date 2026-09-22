@@ -39,11 +39,11 @@ Successor to
 >
 > | D | ruling (2026-09-11) | state 2026-09-22 |
 > |---|---|---|
-> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2. **The DEFECT is not repaired and the repair is still an open owner item** — see the ⚠ below. |
+> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2 (16 is 4.97–7.42× worse across both runs — see ⚠ 2 for the mechanism qualifier). **The DEFECT is not repaired and the repair is still an open owner item** — see the ⚠ below. |
 > | **D2** `runtime:` block via the env route | implement, **gated** on a two-phase cap sweep | **route half measured** — it binds, and capping helps (the published −33% is measured on a contaminated column and **understates** it, ⚠ 3 below); **epoch-count half never delivered** — see ⚠ below. **IMPLEMENTED 2026-09-22**, this session. |
 > | **D3** PF-3 | unblock via D2, then a quiet host | **still blocked** — D2's code has only just landed, and the host has never been quiet. |
 > | **D4** PF-2 retarget | retarget at the candidate phase + 2 axes | **SPEC'd**; axis 3 calibrated (viable, gate on *accuracy*, sample 2,3,4,5). **Axis 2 needs an OWNER CALL** — 250 → 500,000 is unreachable, juniper-data caps `n_points_per_spiral` at 10,000. |
-> | **D5** CI floor-check hazard | relocate onto the execution path | **SHIPPED** — `check_cascor_parallel_floor`, `util/experiments/run_suite.py:162`, called from `main`, 6 negative-test assertions. |
+> | **D5** CI floor-check hazard | relocate onto the execution path | **SHIPPED** — `check_cascor_parallel_floor`, `util/experiments/run_suite.py:162`, called from `main`. Six assertions reference it, of which **three are refusals** (`assertRaisesRegex`) and three are allow-cases. |
 > | **D6** `epochs_completed` | re-measure the spread before gating | **DISCHARGED 2026-09-22** — spread is **zero**, and D6's premise is refuted. [`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](../../notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md). |
 >
 > ## ⚠ Three corrections to what the 09-16 sweep is usually quoted as having settled
@@ -59,7 +59,8 @@ Successor to
 >
 > **2. "16 is 5–7× worse" needs its mechanism qualifier.** That penalty is the `thread`
 > mechanism's. On the `env` route — the one the owner actually ruled for — width 16 costs about
-> **1%** (later-pass medians 1.574 vs ~1.55 at width 2). The 09-16 note itself calls `thread`
+> **1%** (later-pass medians 1.574 vs ~1.55 at width 2). "5–7×" is also loose: the true span
+> across both runs is **4.97–7.42×**. The 09-16 note itself calls `thread`
 > w16 "an artificial worst case that no production configuration produces". Quoting the 5–7×
 > without saying which mechanism produced it overstates the case for capping by a wide margin.
 >
@@ -90,7 +91,9 @@ Successor to
 > ## What shipped 2026-09-22 (this re-probe session)
 >
 > - **D2 IMPLEMENTED.** `runtime:` no longer binds nothing. See the §1 item 1 D2 block below.
-> - **D6 DISCHARGED** from a committed instrument, after its 09-17 evidence was found orphaned.
+> - **D6 DISCHARGED** from a committed instrument. Its 09-17 predecessor is **not lost** — the
+>   instrument and a note both exist, UNCOMMITTED, in `.claude/worktrees/optimized-giggling-koala`
+>   (that worktree is locked; do not remove it). Committing them is the owner's call.
 >
 > **Changed by this session, by filename**: `util/experiments/run_suite.py`,
 > `util/experiment_stack.bash`, `tests/test_run_suite.py`,

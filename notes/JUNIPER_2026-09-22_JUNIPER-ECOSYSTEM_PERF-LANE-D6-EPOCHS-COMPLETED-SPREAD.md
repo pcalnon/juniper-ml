@@ -24,27 +24,52 @@ Evidence: `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260922/s
 
 ---
 
-## 1. The measurement was taken once already, and the result was unrecoverable
+## 1. The measurement was taken once already — and it is UNCOMMITTED, not lost
+
+> **This section was WRONG in this document's first draft, and the correction is the more
+> useful finding.** The draft said the 09-17 instrument "is in no commit, on no branch" and
+> that nothing in `notes/` reported it, and drew the `/tmp`-script moral from that. An
+> independent fact-check refuted all three claims. What follows is the corrected account.
 
 `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json` was written
-**2026-09-17 19:43** and holds a complete 5 × 4 × 5 sweep. **Nothing else survives of it.**
+**2026-09-17 19:43** and holds a complete 5 × 4 × 5 sweep. Its instrument and its write-up both
+**exist**, and both are **untracked in a sibling worktree**:
 
-- No instrument produced it that is in any commit or on any branch — `util/ad-hoc/` has no D6
-  script, and `d6-epochs-spread` / `epochs_spread` match nothing in the repository.
-- No `notes/` document reports it, and no `CHANGELOG.md` entry mentions it.
-- The last perf-lane PR, `juniper-ml#1962`, shipped the thread-width sweep and its two
-  instruments; it did not carry this.
+| artifact | path | mtime |
+|---|---|---|
+| instrument | `.claude/worktrees/optimized-giggling-koala/util/ad-hoc/2026-09-17_epochs_completed_spread.py` | 19:43 |
+| write-up | `.claude/worktrees/optimized-giggling-koala/notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md` | 19:44 |
 
-So a correct answer to an owner-gated question sat on disk for five days, uncitable because it
-could not be reproduced and unfindable because nothing pointed at it. That is the failure mode
-`AGENTS.md` § Script placement exists to prevent, and it is the same shape as the
-`phase4_consolidate.py` / `v2_citation_validate.py` loss: **an instrument written outside `util/`
-takes its result with it.** The rule is usually argued from the script's value; this is the
-cheaper argument — *the evidence outlives the instrument and is worthless without it.*
+That note is titled *"`epochs_completed` is deterministic: 100 runs, zero variance — an
+exact-match gate is safe"*, and its §2 carries the same 10 / 50 / 68 / 68 table. **The 09-17
+session reached this document's conclusion five days earlier and did the work properly** —
+instrument under `util/ad-hoc/`, note under `notes/` with the canonical filename. It obeyed
+every placement rule.
 
-**This document does not cite the 09-17 file as its result.** It re-took the measurement from a
-committed instrument and cites that. The 09-17 file is reported below only as corroboration,
-which is all an orphaned artifact can honestly be.
+**What it did not do was commit.**
+`git log --all -- <either path>` is empty; neither file is on any branch, and
+`juniper-ml#1962` (the last perf-lane PR) carried the width sweep but not this. So the moral is
+**not** the `phase4_consolidate.py` / `v2_citation_validate.py` one — nothing here was written
+in `/tmp/`, and `AGENTS.md` § Script placement was followed to the letter. The narrower and
+less obvious lesson:
+
+> **`util/ad-hoc/` placement protects work from `/tmp` reaping; it does not protect it from
+> never being committed.** To every consumer not standing in that one directory — `git`, the
+> notes tree, CI, the next session, and the three searches this session ran — an uncommitted
+> file in a sibling worktree is indistinguishable from a file that does not exist. The 09-11
+> handoff records that `optimized-giggling-koala` is **locked and must not be removed**; that
+> lock is now the only thing standing between this work and its loss.
+
+**And the search that missed it is worth recording too.** This session grepped
+`d6-epochs-spread` and `epochs_spread` — patterns drawn from the *evidence directory's* name.
+The instrument is called `epochs_completed_spread`, of which neither is a substring. A sweep
+whose pattern is derived from the artifact you already found will not find the artifact you did
+not. Search the space of plausible names, not the name you happen to hold.
+
+**ACTION FOR THE OWNER**: those two files should be committed from
+`optimized-giggling-koala`, or deliberately retired in favour of this document's instrument.
+This session did not take them — they are another session's uncommitted work in a locked
+worktree, and moving them is that session's call, not this one's.
 
 ---
 
@@ -151,8 +176,9 @@ Three qualifications the owner should have before deciding to build it:
 ## 5. A side finding: the mapped libgomp has changed, and it is not the one the ICV note records
 
 [`JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
-§3 instructs that every ICV reading record the libgomp path from `/proc/self/maps`, and records
-the then-current value as `/opt/miniforge3/envs/JuniperCascor1/lib/libgomp.so.1.0.0`.
+**§1** (lines 55–57 — not §3, which begins at line 114) instructs that every ICV reading record
+the libgomp path from `/proc/self/maps`, and records the then-current value as
+`/opt/miniforge3/envs/JuniperCascor1/lib/libgomp.so.1.0.0`.
 
 This run maps a **different library**:
 
@@ -172,28 +198,41 @@ value, not the one the note quotes.
 
 ---
 
-## 6. Corroboration from the orphaned 09-17 evidence
+## 6. Two independent instruments, five days apart, agreeing exactly
 
-Reported second, and separately, because an artifact with no instrument cannot carry a result on
-its own.
+> The first draft headed this section *"Corroboration from the orphaned 09-17 evidence"* and
+> argued the older artifact could be no more than corroboration because it had no instrument.
+> It has one (§1). The two can therefore be **diffed**, which makes this agreement stronger
+> than the draft allowed.
 
-| | 2026-09-17 (orphaned) | 2026-09-22 (this run) |
-|---|---|---|
-| widths × budgets × repeats | 5 × 4 × 5 | 5 × 4 × 5 |
-| e10 / e50 / e100 / e200 | 10 / 50 / 68 / 68 | 10 / 50 / 68 / 68 |
-| within-cell spread | 0 | 0 |
-| 1-minute load | 19.50 | 32.26 |
-| torch / python | 2.11.0+cu130 / 3.14.7 | 2.11.0+cu130 / 3.14.7 |
-| ICV verified per cell | **not recorded** | recorded (§2.1) |
-| control arm | **none** | before and after, stable |
+| | 2026-09-17 (uncommitted) | 2026-09-22 (this run) | independent re-run, 09-22 |
+|---|---|---|---|
+| widths × budgets × repeats | 5 × 4 × 5 | 5 × 4 × 5 | 2 × 2 × 3 |
+| e10 / e50 / e100 / e200 | 10 / 50 / 68 / 68 | 10 / 50 / 68 / 68 | — / — / 68 / 68 |
+| within-cell spread | 0 | 0 | 0 |
+| **1-minute load** | **19.50** | **32.26** | **54.49** |
+| torch / python | 2.11.0+cu130 / 3.14.7 | 2.11.0+cu130 / 3.14.7 | same |
+| ICV verified per cell | not recorded | recorded (§2.1) | recorded |
+| control arm | none | before and after, stable | stable |
 
-The two agree exactly. The 09-22 run is the citable one: it records the ICV actually in force and
-carries a control, so it can distinguish "the axis did nothing" from "the axis did nothing that
-mattered". The 09-17 file cannot, which is worth stating plainly — **the numbers being identical
-does not make the older artifact equivalent evidence.** Agreement between a measurement and an
-unreproducible one is corroboration, not validation
-(`corpus agreement is NOT validation` — three candidate rules once agreed on all 483 real series
-and two of them shipped defects).
+**Three load levels spanning 2.8× — 19.50, 32.26, 54.49 — return the identical result.** The
+third column is a re-run performed by a reviewer fact-checking this document, not by its author,
+on an instrument they did not write. That is the strongest form the load-invariance claim takes,
+and it is stronger than §3 states.
+
+The two full instruments were written five days apart by different sessions and agree
+key-for-key. They are **functionally equivalent in construction** — same seed, same shapes, the
+same `train_detailed` call — which is *why* they agree, and is also the limit of what the
+agreement proves: two instruments that build the benchmark the same way will make the same
+mistake if that construction is wrong. What separates them is that this one records the ICV
+actually in force and carries a do-nothing control, so it can tell "the axis did nothing" from
+"the axis was never applied". The 09-17 instrument cannot.
+
+So: agreement between two same-shaped instruments is **replication**, not independent
+validation of the construction (`corpus agreement is NOT validation` — three candidate rules
+once agreed on all 483 real series and two of them shipped defects). The construction is
+validated by a different argument: it reproduces `test_epoch_scaling` verbatim, which is the
+thing a gate would gate.
 
 ---
 
@@ -217,8 +256,17 @@ question reopens.
 
 ## 8. Provenance
 
-Measured 2026-09-22 against juniper-cascor `main`, read-only, from
-`JuniperCascor1` (Python 3.14.7, torch 2.11.0+cu130). The 09-17 evidence was found during a
-state re-probe of
+Measured 2026-09-22 read-only from `JuniperCascor1` (Python 3.14.7, torch 2.11.0+cu130) against
+the juniper-cascor primary checkout, whose HEAD was **`b35fab1` on branch `fix/serena-mcp-file`,
+10 commits ahead of `main` (`70d5ca1`)** — *not* `main`, as this section first claimed.
+
+**The numerics are nonetheless main's**: `git diff main..HEAD --name-only` touches
+`.serena/project.yml`, CI workflows, requirements/lockfiles, `src/api/security.py` and
+`util/check_image_no_secrets.py`, and **nothing under `candidate_unit/`** — the only tree this
+measurement exercises. The correction is recorded rather than quietly fixed because §3 makes
+*"a different tree"* the leading suspect for the historical 52, so a sloppy tree identifier in
+this document is exactly the kind of thing that would make the next round unfalsifiable.
+
+The 09-17 work was found during a state re-probe of
 [`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_perf-lane-burst-terminator-is-the-result-queue-unpickle-and-the-getter-repins.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_perf-lane-burst-terminator-is-the-result-queue-unpickle-and-the-getter-repins.md)
 and is not this session's work.
