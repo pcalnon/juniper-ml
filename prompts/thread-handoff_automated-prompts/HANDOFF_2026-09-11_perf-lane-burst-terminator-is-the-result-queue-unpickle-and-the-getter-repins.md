@@ -22,6 +22,89 @@ Successor to
 > cmdline — a child of this session's probe would be minutes old and carry the cascor **primary**
 > path. Both were checked at hand-off: no child of this session survived.
 
+---
+
+> # ⚠ RE-PROBED 2026-09-22 — §1's WORK LIST IS SUBSTANTIALLY DISCHARGED, AND ONE OF ITS STANDING RECOMMENDATIONS IS NOW BROKEN
+>
+> Eleven days passed and **no successor handoff was ever written**, while three perf-lane PRs
+> shipped. Read this block before acting on anything below it.
+>
+> | §1 item | state on 2026-09-22 |
+> |---|---|
+> | **1 — six owner decisions, "put them to the owner"** | **DONE, on 2026-09-11, hours after this file was written.** All six RULED: [`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`](../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md) (`juniper-ml#1927`). Per-decision status in the table below. **Do not re-ask the owner.** |
+> | **2 — a micro cut on an idle host** | **STILL BLOCKED (5th session), and the recipe below is now BROKEN** — see the `0003` block in §1 item 2. |
+> | **3 — three narrowed ICV residuals** | **UNTOUCHED.** Still open, still optional. The 09-16 sweep closed a *different* residual (its own draft's), not these. |
+>
+> **The six decisions, as ruled and as executed:**
+>
+> | D | ruling (2026-09-11) | state 2026-09-22 |
+> |---|---|---|
+> | **D1** cascor thread-pin defect | measure later output passes at widths > 2 first | **The WIDTH question is answered** — [`…THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md): widths 2–8 indistinguishable, keep 2 (16 is 4.97–7.42× worse across both runs — see ⚠ 2 for the mechanism qualifier). **The DEFECT is not repaired and the repair is still an open owner item** — see the ⚠ below. |
+> | **D2** `runtime:` block via the env route | implement, **gated** on a two-phase cap sweep | **route half measured** — it binds, and capping helps (the published −33% is measured on a contaminated column and **understates** it, ⚠ 3 below); **epoch-count half never delivered** — see ⚠ below. **IMPLEMENTED 2026-09-22**, this session. |
+> | **D3** PF-3 | unblock via D2, then a quiet host | **still blocked** — D2's code has only just landed, and the host has never been quiet. |
+> | **D4** PF-2 retarget | retarget at the candidate phase + 2 axes | **SPEC'd**; axis 3 calibrated (viable, gate on *accuracy*, sample 2,3,4,5). **Axis 2 needs an OWNER CALL** — 250 → 500,000 is unreachable, juniper-data caps `n_points_per_spiral` at 10,000. |
+> | **D5** CI floor-check hazard | relocate onto the execution path | **SHIPPED** — `check_cascor_parallel_floor`, `util/experiments/run_suite.py:162`, called from `main`. Six assertions reference it, of which **three are refusals** (`assertRaisesRegex`) and three are allow-cases. |
+> | **D6** `epochs_completed` | re-measure the spread before gating | **DISCHARGED 2026-09-22** — spread is **zero**, and D6's premise is refuted. [`notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](../../notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md). |
+>
+> ## ⚠ Three corrections to what the 09-16 sweep is usually quoted as having settled
+>
+> **1. "No repair is owed" would be wrong.** D1 asked whether 2 is the right width; the answer
+> is "nothing in 2–8 beats it". That is *not* the same as the **cascor thread-pin defect being
+> repaired**. `cascade_correlation.py:1180` still calls `torch.set_num_threads(max(2,
+> worker_thread_count * 2))` inside `_init_multiprocessing`, which binds only the constructing
+> thread — so the training thread still runs the initial output pass unpinned at 16.
+> `…ICV-INSTRUMENT.md` and `…BURST-LIBRARY-ATTRIBUTION.md` both still call the repair an open
+> owner decision, and the 09-16 sweep never retracts them. D2's environment route is a
+> **workaround available to the experiment harness**, not a fix to cascor.
+>
+> **2. "16 is 5–7× worse" needs its mechanism qualifier.** That penalty is the `thread`
+> mechanism's. On the `env` route — the one the owner actually ruled for — width 16 costs about
+> **1%** (later-pass medians 1.574 vs ~1.55 at width 2). "5–7×" is also loose: the true span
+> across both runs is **4.97–7.42×**. The 09-16 note itself calls `thread`
+> w16 "an artificial worst case that no production configuration produces". Quoting the 5–7×
+> without saying which mechanism produced it overstates the case for capping by a wide margin.
+>
+> **3. The sweep's "initial pass" column is not the initial pass**, and its §2.1 3.3× gap is an
+> artifact of that. Full correction, with the reconciling arithmetic, is now in
+> [`notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md) §2.
+> The −33% **understates** the real capping benefit — recomputed from first-pass figures it is
+> **−49.2%** (2.2838 s -> 1.1593 s, medians of 3). D1's conclusion and the cascor#531
+> non-reproduction are unaffected.
+>
+> ## ⚠ The D1/D2 gates were reported as met, and the instrument never emitted what they asked for
+>
+> Both gates demanded **epoch counts** — D1: *"reporting epoch count and total wall time, never
+> ms/epoch"*; D2 item 4: *"epoch counts per phase"*. `util/ad-hoc/2026-09-16_thread_width_arm.py`
+> emits `later_pass_count` and `candidate_phase_count`, which count **STAGES, not epochs**, and
+> the string `epoch` occurs in **none of the 40 evidence files**. The arm's own docstring claims
+> it reports *"epochs completed and the final accuracy"*; it reports neither.
+>
+> **Why it matters, narrowly.** The headline *"cascor#531's candidate-phase penalty does not
+> reproduce"* rests on candidate-phase **wall time** alone. Wall time is epochs × time-per-epoch,
+> so a flat wall is equally consistent with *no effect* and with *two effects cancelling* — and
+> cancelling is live, because the ruling's §1 records two channels moving oppositely (throughput
+> 1.26× → 1.14×, epoch count 1.21× → 1.03×). The epoch-count channel is numerics-driven, so it
+> bears on result **identity**, not merely speed.
+>
+> **This does not undo D2's implementation** — a key that is accepted and discarded is a defect
+> either way — but **nobody may cite the 09-16 note as closing the penalty question.**
+>
+> ## What shipped 2026-09-22 (this re-probe session)
+>
+> - **D2 IMPLEMENTED.** `runtime:` no longer binds nothing. See the §1 item 1 D2 block below.
+> - **D6 DISCHARGED** from a committed instrument. Its 09-17 predecessor is **not lost** — the
+>   instrument and a note both exist, UNCOMMITTED, in `.claude/worktrees/optimized-giggling-koala`
+>   (that worktree is locked; do not remove it). Committing them is the owner's call.
+>
+> **Changed by this session, by filename**: `util/experiments/run_suite.py`,
+> `util/experiment_stack.bash`, `tests/test_run_suite.py`,
+> `tests/test_experiment_stack_script.py`,
+> `util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py` (new),
+> `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md` (new),
+> and this file.
+
+---
+
 Document of record:
 [`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md`](../../notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md)
 ("the ICV note"), shipped on `juniper-ml#1896`. "The attribution note" is
@@ -44,8 +127,34 @@ decisions remain owner-gated, unchanged in substance.
 
 ### Work list, in order
 
-1. **Six owner decisions are open — put them to the owner; do NOT take them yourself.** Unchanged
-   in substance from the predecessor's §1 item 1. One is better informed:
+1. ~~**Six owner decisions are open — put them to the owner; do NOT take them yourself.**~~
+   **ALL SIX RULED 2026-09-11** (`juniper-ml#1927`). The table below is kept because each row
+   still names where a decision's *substance* lives, which the ruling note cites rather than
+   restates. **Do not re-ask.** Current status per decision is in the re-probe block at the top.
+
+   > **D2 is now IMPLEMENTED (2026-09-22).** The `runtime:` block had been **accepted and
+   > discarded**: `run_experiment.py` validated all three `RUNTIME_KEYS` and nothing read any of
+   > them, so `runtime: {blas_threads: 2}` ran 16-wide and a matrix that *varied* the key
+   > measured one configuration N times. `eval_metrics_enabled` was worst — `service:` rejects it
+   > with *"belongs in runtime: (process env)"*, herding authors into a key that did nothing.
+   >
+   > Implemented as the owner ruled it, via the environment route: `run_suite.runtime_block_env`
+   > resolves the block before the first `--up` (fail-closed — a bad value refuses the suite,
+   > D5's lesson), and `experiment_stack.bash` exports and **records** the variables at cascor
+   > bring-up, so `env/launch.env` finally states the width the service actually ran at.
+   >
+   > **An explicit `runtime:` value beats the H-11 parallel budget split.** Not a preference:
+   > PF-3's second axis *is* per-cell thread width, so if the H-11 split won, every PF-3 cell
+   > would run at width 2 and the axis would be inert a second time — the exact failure D3's
+   > ruling tells you to dry-run-check for. Both values are recorded on the registry row
+   > (`thread_budget` and `runtime_env`), so an oversubscribing override is visible in the
+   > evidence rather than inferred from the YAML.
+   >
+   > **This makes D3's prescribed check meaningful for the first time.** "Verify with a one-cell
+   > dry run that the cell's `thread_env` is non-null" could not have failed informatively
+   > before — nothing set it.
+
+   One is better informed:
    - **The cascor thread-pin defect.** Repair options unchanged (pin on the training thread, or
      set the process default before any BLAS-importing import). **Its EXTENT is now bounded**: the
      defect costs the **initial output pass only**, because the training thread is re-pinned to 2
@@ -68,8 +177,37 @@ decisions remain owner-gated, unchanged in substance.
    `cat juniper-cascor/docs/testing/REFERENCE.md` from this worktree returns "No such file or
    directory", while juniper-ml ships a `docs/REFERENCE.md` of its own that a bare relative path
    can silently resolve to. The runnable invocation is the first block of the probe note's §8,
-   which already uses absolute paths. `0003` stays the recommended compare target;
-   `--benchmark-compare=0003`, never `--benchmark-compare-fail`.
+   which already uses absolute paths. ~~`0003` stays the recommended compare target;
+   `--benchmark-compare=0003`~~, never `--benchmark-compare-fail`.
+
+   > ## ⚠ RE-PROBED 2026-09-22 — `--benchmark-compare=0003` CANNOT RESOLVE ANY MORE
+   >
+   > pytest-benchmark keys its storage directory on the **interpreter**, and `JuniperCascor1`
+   > was rebuilt 3.13 → 3.14 on 2026-09-12. The store holds exactly one directory:
+   >
+   > ```
+   > ~/.local/state/juniper-experiments/baselines/cascor-micro/Linux-CPython-3.13-64bit/
+   >     0001_3286b758…  0002_145fbe92…  0003_a51b7c58…
+   > ```
+   >
+   > `Linux-CPython-3.14-64bit/` does not exist. The next cut lands there, in an **empty** store,
+   > numbered `0001`.
+   >
+   > **Verified in the installed source, not assumed.** `pytest_benchmark/session.py:45-49`
+   > always sets `default_machine_id = get_machine_id()`, and `get_machine_id()` is
+   > `'{system}-{implementation}-{major.minor}-{arch}'`. `storage/file.py:80` then resolves a
+   > one-part glob as `platform_glob = self.default_machine_id` — so a **bare**
+   > `--benchmark-compare=0003` searches `Linux-CPython-3.14-64bit/` **only**, and finds
+   > nothing. The standing recommendation repeated across three handoffs and
+   > `docs/REFERENCE.md` is dead as written.
+   >
+   > **The two-part form still resolves**: `--benchmark-compare=Linux-CPython-3.13-64bit/0003`
+   > takes the `len(parts) == 2` branch (`file.py:77-78`) and would load it. **Do not reach for
+   > that as the fix.** It compares across a different interpreter *and* a different torch, so
+   > it is not like-for-like; it would produce a number that looks comparable and is not —
+   > which is worse than no comparison. Whoever gets the quiet host should cut a **fresh 3.14
+   > reference** and say so. Treat the four-session-old "re-cut and compare to `0003`" plan as
+   > retired.
 3. **Three narrowed residuals** (the ICV note's §7), all optional. The first is S only by the
    larger-payload route; its interposer alternative is an LD_PRELOAD-class native shim and is not
    S. The third is **not S** — `ptrace_scope` is 1 here and the arc's standing rule is not to
@@ -156,12 +294,21 @@ decisions remain owner-gated, unchanged in substance.
 ```bash
 git fetch origin && git rev-parse --short origin/main   # 4b13f318 or a descendant
 git log --oneline -1 origin/main -- notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-BURST-TERMINATOR-AND-ICV-INSTRUMENT.md
-python3 -m unittest -q tests/test_pf8_icv_checkpoint_probe.py tests/test_pf8_burst_attribution.py tests/test_pf8_occupancy_probe.py tests/test_ci_test_wiring_drift.py   # 18 + 14 + 26 + 11 = 69 OK
+python3 -m unittest -q tests/test_pf8_icv_checkpoint_probe.py tests/test_pf8_burst_attribution.py tests/test_pf8_occupancy_probe.py tests/test_ci_test_wiring_drift.py   # 18 + 14 + 26 + 11 = 69 OK  (re-probed 2026-09-22: 72 — the suites grew; the count, not the result, is stale)
 python3 util/ad-hoc/2026-09-11_icv_trace_align.py --json ~/.local/state/juniper-experiments/suites/pf8-icv-checkpoint-20260911/growth.json   # (a) REFUTED, (b) SUPPORTED, re-pin inside _validate_training_result
 python3 util/ad-hoc/2026-09-10_agents_md_test_list_drift.py   # 165 / 165 / 165, zero drift
 ls ~/.local/state/juniper-experiments/suites/pf8-icv-checkpoint-20260911/   # 4 evidence files
 ps -eo pid,cmd | grep "[/]juniper-cascor/src"   # empty: no holder on the cascor primary
 cat /home/pcalnon/Development/python/Juniper/juniper-cascor/.git/refs/heads/main   # cc0d1630..., NOT a51b7c58
+```
+
+Added 2026-09-22, for the two items this re-probe closed:
+
+```bash
+python3 -m unittest -q tests.test_run_suite tests.test_experiment_stack_script   # 118 + 92 = 210 OK
+python3 -c "import importlib.util,pathlib; s=importlib.util.spec_from_file_location('r','util/experiments/run_suite.py'); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); print(m.runtime_block_env({'runtime':{'blas_threads':2}}))"   # all three BLAS vars = '2', not {}
+/opt/miniforge3/envs/JuniperCascor1/bin/python util/ad-hoc/2026-09-22_d6_epochs_completed_spread.py --widths 1 16 --epochs 100 --repeats 2   # control stable, spread 0, 68 at both widths
+ls ~/.local/state/juniper-experiments/baselines/cascor-micro/   # ONLY Linux-CPython-3.13-64bit — see the 0003 block in §1 item 2
 ```
 
 **Stop condition.** Re-run the `icv-map` mode and check the **`none` control arm**: if it reports

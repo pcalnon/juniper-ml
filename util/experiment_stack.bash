@@ -643,8 +643,42 @@ cascor_up() {
     # is undefined there. Best-effort — no git, or a non-repo checkout, yields empty,
     # and cascor treats blank as unset rather than recording a lie.
     git_sha="$(git -C "${CASCOR_SRC_DIR}" rev-parse --short=12 HEAD 2>/dev/null || true)"
+    # D2 (perf lane, owner-ruled 2026-09-11; route half of the gate measured 2026-09-17, the
+    # epoch-count half never delivered — see `run_suite.runtime_block_env`): the `runtime:` block's
+    # thread budget, made VISIBLE.
+    #
+    # Be precise about what this does, because the obvious reading is wrong: these variables
+    # already REACH cascor without it. `run_suite.execute_cell` puts them in this launcher's own
+    # environment, and the launch subshell does not use `env -i`, so uvicorn inherits them
+    # regardless. **Delivery is by inheritance; this block adds RECORDING.** Without it the
+    # announce line and `env/launch.env` describe a launch whose thread width is unstated — and
+    # for a lane whose every finding is "record the width actually in force or the reading means
+    # nothing", an unrecorded width is the whole problem. Naming them also makes the launch
+    # explicit rather than ambient, which is the same argument the D-C block above makes.
+    #
+    # Blast radius worth knowing: because delivery IS inheritance, `data_up` and `recurrence_up`
+    # receive the same variables. `runtime.blas_threads` pins juniper-data's BLAS too, not just
+    # cascor's. That is usually what you want from a per-run budget; it is not what the key's
+    # name suggests.
+    #
+    # Built ONCE and consumed at all three sites. The D-C/Q-6 vars above are triplicated by hand
+    # and guarded by count-3 tests because hand-copied sites drift; an array cannot drift from
+    # itself, so this needs no such test — only proof that all three sites consume it.
+    #
+    # Passed through an `env` ARRAY rather than a `VAR=${VAR:-}` prefix, for the same reason
+    # `data_up` builds `gil_env`: an EMPTY `OMP_NUM_THREADS` is not the same as an unset one.
+    # The prefix form would export `OMP_NUM_THREADS=` on every run that sets no budget — which
+    # is most of them — turning "the caller said nothing" into "the caller said something
+    # malformed". Only variables that are actually set are named.
+    local -a runtime_env=()
+    local _rv
+    for _rv in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do
+        if [[ -n "${!_rv:-}" ]]; then runtime_env+=("${_rv}=${!_rv}"); fi
+    done
+    local runtime_announce=""
+    if [[ ${#runtime_env[@]} -gt 0 ]]; then runtime_announce="${runtime_env[*]} "; fi
     banner "juniper-cascor  ->  http://127.0.0.1:${CASCOR_PORT}  (${CASCOR_CONDA})"
-    announce "cd ${CASCOR_SRC_DIR} && LD_LIBRARY_PATH= JUNIPER_CASCOR_METRICS_ENABLED=true JUNIPER_CASCOR_AUTO_START=false JUNIPER_CASCOR_AUTO_START_DATA_SERVICE=false JUNIPER_CASCOR_LOG_LEVEL=INFO JUNIPER_CASCOR_SNAPSHOTS_DIR=${RUN_DIR}/snapshots JUNIPER_CASCOR_LOG_DIR=${LOG_DIR} JUNIPER_DATA_URL=${DATA_URL} JUNIPER_CASCOR_RUN_ID=${RUN_ID:-} JUNIPER_CASCOR_EXPERIMENT=${JUNIPER_CASCOR_EXPERIMENT:-${EXPERIMENT:-}} JUNIPER_CASCOR_CELL_ID=${JUNIPER_CASCOR_CELL_ID:-} JUNIPER_CASCOR_DATASET_ID=${JUNIPER_CASCOR_DATASET_ID:-} JUNIPER_CASCOR_GIT_SHA=${git_sha} ${config_env}${uvicorn_bin} api.app:create_app --factory --host 127.0.0.1 --port ${CASCOR_PORT}   # nohup -> ${LOG_DIR}/juniper-cascor.log"
+    announce "cd ${CASCOR_SRC_DIR} && ${runtime_announce}LD_LIBRARY_PATH= JUNIPER_CASCOR_METRICS_ENABLED=true JUNIPER_CASCOR_AUTO_START=false JUNIPER_CASCOR_AUTO_START_DATA_SERVICE=false JUNIPER_CASCOR_LOG_LEVEL=INFO JUNIPER_CASCOR_SNAPSHOTS_DIR=${RUN_DIR}/snapshots JUNIPER_CASCOR_LOG_DIR=${LOG_DIR} JUNIPER_DATA_URL=${DATA_URL} JUNIPER_CASCOR_RUN_ID=${RUN_ID:-} JUNIPER_CASCOR_EXPERIMENT=${JUNIPER_CASCOR_EXPERIMENT:-${EXPERIMENT:-}} JUNIPER_CASCOR_CELL_ID=${JUNIPER_CASCOR_CELL_ID:-} JUNIPER_CASCOR_DATASET_ID=${JUNIPER_CASCOR_DATASET_ID:-} JUNIPER_CASCOR_GIT_SHA=${git_sha} ${config_env}${uvicorn_bin} api.app:create_app --factory --host 127.0.0.1 --port ${CASCOR_PORT}   # nohup -> ${LOG_DIR}/juniper-cascor.log"
     if is_dry; then return 0; fi
 
     # See data_up: ``cascor_up || failed=1`` disables set -e inside this body.
@@ -664,7 +698,8 @@ cascor_up() {
         "JUNIPER_CASCOR_CELL_ID=${JUNIPER_CASCOR_CELL_ID:-}" \
         "JUNIPER_CASCOR_DATASET_ID=${JUNIPER_CASCOR_DATASET_ID:-}" \
         "JUNIPER_CASCOR_GIT_SHA=${git_sha}" \
-        "JUNIPER_CASCOR_CONFIG_FILE=${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}"
+        "JUNIPER_CASCOR_CONFIG_FILE=${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" \
+        "${runtime_env[@]}"
     if [[ "${CONDA_ACTIVATE}" == "1" ]]; then activate_conda "${CASCOR_CONDA}" || return 1; fi
     (
         cd "${CASCOR_SRC_DIR}" || exit 1
@@ -682,7 +717,7 @@ cascor_up() {
             JUNIPER_CASCOR_DATASET_ID="${JUNIPER_CASCOR_DATASET_ID:-}" \
             JUNIPER_CASCOR_GIT_SHA="${git_sha}" \
             JUNIPER_CASCOR_CONFIG_FILE="${CONFIG_PATH:+${RUN_DIR}/config/experiment.yaml}" \
-            nohup "${uvicorn_bin}" api.app:create_app --factory --host 127.0.0.1 --port "${CASCOR_PORT}" >"${LOG_DIR}/juniper-cascor.log" 2>&1 &
+            nohup env "${runtime_env[@]}" "${uvicorn_bin}" api.app:create_app --factory --host 127.0.0.1 --port "${CASCOR_PORT}" >"${LOG_DIR}/juniper-cascor.log" 2>&1 &
     )
     # No `$!` here on purpose — F-6.
     wait_for_health "juniper-cascor" "http://127.0.0.1:${CASCOR_PORT}/v1/health" "${HEALTH_TIMEOUT}" "api.app:create_app .*--port ${CASCOR_PORT}" || return 1

@@ -515,7 +515,9 @@ class TestLaunchLines(unittest.TestCase):
         ensure_at = cascor_up.index('ensure_dir "${LOG_DIR}"')
         # Anchor on the real invocation, not the bare word: the ``announce`` dry-run line carries a
         # trailing ``# nohup -> ...`` comment that precedes ensure_dir and would match first.
-        launch_at = cascor_up.index('nohup "${uvicorn_bin}"')
+        # The D2 runtime-env array sits between ``nohup`` and the binary, so the anchor is the
+        # ``nohup env "${runtime_env[@]}"`` prefix — still absent from the announce line.
+        launch_at = cascor_up.index('nohup env "${runtime_env[@]}"')
         self.assertLess(ensure_at, launch_at, "LOG_DIR must be created before the cascor launch")
 
     def test_recurrence_launch_recipe(self) -> None:
