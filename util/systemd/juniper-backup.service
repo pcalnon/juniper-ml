@@ -1,0 +1,11 @@
+[Unit]
+Description=Juniper per-repo archive to attached USB drives
+OnFailure=juniper-backup-failure.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/juniper-backup-scheduled.bash
+TimeoutStartSec=infinity
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
