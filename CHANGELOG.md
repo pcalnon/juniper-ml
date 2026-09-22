@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **`[servers]` now floors `juniper-canopy>=0.8.1`, because every canopy wheel from 0.5.0
+- **BREAKING (resolution): `[servers]` now floors `juniper-canopy>=0.8.1`, because every canopy wheel from 0.5.0
   through 0.8.0 cannot import its own dashboard.** Those wheels publish **zero** top-level
   modules -- `juniper_canopy/` contains only `__init__.py`, and the 19 modules canopy's own
   shipped code imports are absent, so `import backend.service_backend` dies at

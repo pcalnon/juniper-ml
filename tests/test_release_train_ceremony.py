@@ -52,6 +52,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+from collections import OrderedDict
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
@@ -1834,6 +1835,54 @@ class ExecuteOutputFormatTest(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertIn("no BUMPED_NOT_RELEASED packages", buf.getvalue())
         self.assertNotIn("ceremony-result:", buf.getvalue())
+
+
+class BreakingFieldTest(unittest.TestCase):
+    """`Breaking changes:` must not read NO on a release whose CHANGELOG says BREAKING.
+
+    Until 2026-09-22 the field was derived solely from the presence of a `### Removed`
+    section. That under-reported badly: the ecosystem's pre-1.0 convention maps breaking to
+    MINOR (`detect.py:827`), so a breaking change usually lands under `Changed` or `Fixed`.
+
+    Caught on two real releases cut the same day. juniper-data 0.15.0 carries
+    "**BREAKING (contract): `equities` and `equities_seq` go to `generator_version` 4.0.0"
+    -- every equities dataset_id changes -- and rendered "Breaking changes: NO" directly
+    above that bullet. A Release body is not re-cuttable, so it would have published a
+    permanent self-contradiction.
+    """
+
+    def _render(self, sections):
+        return notes_render._render_standard(
+            pypi_name="juniper-data",
+            version="0.15.0",
+            bump="minor",
+            date="2026-09-22",
+            sections=OrderedDict(sections),
+            template_text="",
+            repo_root=None,
+            final=True,
+        )
+
+    def test_removed_section_still_reports_breaking(self):
+        body = self._render([("Removed", ["- dropped the legacy loader"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_uppercase_marker_in_a_changed_bullet_reports_breaking(self):
+        body = self._render([("Changed", ["- **BREAKING (contract): generator_version 4.0.0**"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_uppercase_marker_in_a_fixed_bullet_reports_breaking(self):
+        body = self._render([("Fixed", ["- **BREAKING (resolution): the floor now forbids 0.7.0**"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_ordinary_release_still_reports_not_breaking(self):
+        body = self._render([("Fixed", ["- tightened a log message"]), ("Added", ["- a new probe"])])
+        self.assertIn("**Breaking changes:** NO", body)
+
+    def test_lowercase_breaking_in_prose_does_not_flip_the_field(self):
+        """Case-sensitive on purpose: prose says "breaks consumers" all the time."""
+        body = self._render([("Fixed", ["- a breaking-news parser; this breaks nothing"])])
+        self.assertIn("**Breaking changes:** NO", body)
 
 
 if __name__ == "__main__":
