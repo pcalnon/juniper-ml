@@ -237,9 +237,33 @@ def _remaining_sections_comment(template_text: str, filled: tuple, repo_root: "P
     return lines
 
 
+def _is_breaking(sections: "OrderedDict[str, list]") -> bool:
+    """Does this release break consumers?
+
+    A ``### Removed`` section is the obvious signal and was the ONLY one until 2026-09-22.
+    That under-reported badly, because the ecosystem's pre-1.0 convention maps breaking to
+    MINOR (``detect.py:827``) and a breaking change therefore usually lands under ``Changed``
+    or ``Fixed``, not ``Removed``.
+
+    Measured on the two releases cut that day. juniper-data 0.15.0 carries
+    *"**BREAKING (contract): `equities` and `equities_seq` go to `generator_version` 4.0.0"* --
+    every equities ``dataset_id`` changes -- and rendered **"Breaking changes: NO"** directly
+    above that bullet. juniper-ml 0.9.0 raises a floor that forbids previously-admitted
+    canopy versions and did the same. **A Release body is not re-cuttable**, so each would
+    have published a permanent self-contradiction.
+
+    So: also honour the uppercase ``BREAKING`` marker the CHANGELOGs already use. Deliberately
+    case-SENSITIVE -- lowercase "breaking" appears in ordinary prose ("breaks consumers at
+    import time") and matching it would flip well-behaved releases to YES.
+    """
+    if "removed" in {k.lower() for k in sections}:
+        return True
+    return any("BREAKING" in bullet for bullets in sections.values() for bullet in bullets)
+
+
 def _render_standard(pypi_name: str, version: str, bump: str, date: str, sections: "OrderedDict[str, list]", template_text: str, repo_root: "Path | None", changelog_url: "str | None" = None, final: bool = False) -> str:
     rtype = release_type(bump)
-    breaking = "YES" if ("removed" in {k.lower() for k in sections}) else "NO"
+    breaking = "YES" if _is_breaking(sections) else "NO"
     focus = ", ".join(dict.fromkeys(_FOCUS.get(k.lower(), k.lower()) for k in sections)) or "maintenance"
     name = display_name(pypi_name)
     lines: list = [
