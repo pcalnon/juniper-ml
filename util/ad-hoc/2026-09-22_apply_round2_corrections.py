@@ -24,6 +24,7 @@ Usage:  python3 util/ad-hoc/2026-09-22_apply_round2_corrections.py [--check]
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -177,6 +178,7 @@ edit(
     """| World-readable server-DB copies, **by path** | Reachable by any local user, all under `/home/duplicati/.config/Duplicati/`: `Duplicati-server.backup` **0777**, `backups/Duplicati-server_2026-08-22_pre-dbpath-fix.sqlite` **0644**, `temp1/Duplicati.GUI.TrayIcon-crashlog.txt` **0644** (note S-9a) | `chmod 0600` the duplicati-home set — `enc-v1:` under the pcalnon-profile libsecret key, so encrypted but wrongly exposed |
 | **Re-measuring the exposure creates a new copy of it** | A `journalctl` capture large enough to count these lines is itself a complete second copy. Round 2's host lane made an 876 MB one and removed it eight minutes later | Any agent or operator who re-verifies §6's counts deletes the capture in the same session, and says so |
 
+- **(sink-a)** Large tool outputs are written as **separate files** under `<session>/tool-results/`, not inlined into the `.jsonl` — which is exactly where this arc's oversized `journalctl` captures landed, *because* they were too large to inline. A purge that walks only the transcripts misses them.
 - **(S-9a)** Every ancestor of those three is 0755 or 0777, so they need no group membership to read. `temp1/`
   holds a **second** full copy set (`.backup`, `.sqlite`, `-shm`, a 112 MB `-wal`) at 0600 and `temp/` a third
   112 MB `-wal`; neither directory is named in §4.1. The same-named files under
@@ -1279,9 +1281,7 @@ edit(
     """| Claude Code transcripts under `~/.claude/projects/…` | **cloud-linked**, and they capture every `journalctl` output this arc produced; the count grows with every tool call, so any figure is an upper bound | count-grep and purge; this is what makes D-2's "local exposure" framing false |""",
     """| Claude Code transcripts **and persisted tool-result files** under `~/.claude/projects/…` | **cloud-linked**, and **inside the backup Source** — note (AC-3a) lists `.claude/projects` among the *unfiltered* 0700 trees, so every capture is in every T1 fileset and in Dropbox (note sink-a) | count-grep and purge **both** the `.jsonl` transcripts and the `tool-results/` files; this is what makes D-2's "local exposure" framing false |
 | Per-session agent scratch trees under `/tmp/claude-1000/…` | Round 1's six lanes and round 2's four each wrote captures, extracted units and analysis output there, `drwx------ pcalnon` | `/tmp` is **tmpfs**, so a reboot clears them and they are **not** in the backup Source — state that rather than leave it inferred; until a reboot they are readable by every `pcalnon` process |
-| Ad-hoc instruments that **read** a secret file | `2026-09-21_env_value_equality.py`, `…_settings_key_hash_probe.py`, `2026-09-22_credential_file_shape.py`, `duplicati_api.py` (S-5a) | an instrument that reads a secret is itself a sink if it writes an artifact: each states in its header what it writes and where, and none writes into `notes/`, `util/` or the backup Source |
-
-- **(sink-a)** Large tool outputs are written as **separate files** under `<session>/tool-results/`, not inlined into the `.jsonl` — which is exactly where this arc's oversized `journalctl` captures landed, *because* they were too large to inline. A purge that walks only the transcripts misses them.""",
+| Ad-hoc instruments that **read** a secret file | `2026-09-21_env_value_equality.py`, `…_settings_key_hash_probe.py`, `2026-09-22_credential_file_shape.py`, `duplicati_api.py` (S-5a) | an instrument that reads a secret is itself a sink if it writes an artifact: each states in its header what it writes and where, and none writes into `notes/`, `util/` or the backup Source |""",
 )
 
 # --- R2B-16: the escrow ACL -----------------------------------------------------------
@@ -1624,6 +1624,22 @@ def main() -> int:
     ]
     for lineno, width in over:
         print(f"  OVER-WIDE table row at line {lineno}: {width} chars", file=sys.stderr)
+
+    # A note inserted BETWEEN table rows splits the table: the rows after it become a second,
+    # header-less table. markdownlint does not see this -- MD055/MD056 need a malformed row,
+    # and these rows are individually well formed -- but CI's `util/markdown_structure_delta.py`
+    # does, and it failed juniper-ml#1999 on exactly that ("0 -> 1 structural problems"). Report
+    # it here so the round trip through CI is not the first thing that notices.
+    for lineno, line in enumerate(text.split("\n"), start=1):
+        if not line.startswith("|"):
+            continue
+        prev = text.split("\n")[lineno - 2] if lineno >= 2 else ""
+        if prev.startswith("|"):
+            continue
+        # First row of a table: the NEXT line must be the separator.
+        nxt = text.split("\n")[lineno] if lineno < len(text.split("\n")) else ""
+        if not re.match(r"^\|[\s:|-]+\|\s*$", nxt):
+            print(f"  HEADERLESS TABLE at line {lineno}: {line[:90]}", file=sys.stderr)
 
     if args.check:
         print(f"\n--check: {len(EDITS)} stage-2 edits would apply; nothing written")
