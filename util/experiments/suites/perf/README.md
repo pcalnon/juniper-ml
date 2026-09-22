@@ -11,8 +11,8 @@ python util/experiments/run_suite.py --suite util/experiments/suites/perf/<file>
 | ID | File | Instrument surface |
 | --- | --- | --- |
 | PF-1 | `pf1-cascor-spiral-repeats.yaml` | step-duration p50/p95 + wall-clock variance over 5 identical cells |
-| PF-2 | `pf2-cascor-dataset-scaling.yaml` | wall-clock vs samples; RSS via the experiments dashboard Performance row |
-| PF-3 | `pf3-cascor-pool-scaling.yaml` | speedup curve; oversubscription onset via the Process CPU Rate panel. **BLOCKED 2026-09-10 — do not launch as written**: its `runtime.num_processes` axis is read by nothing on either path (P2 item 2.2, owner; `notes/JUNIPER_2026-09-10_JUNIPER-ECOSYSTEM_PERF-LANE-PF8-OCCUPANCY-PROBE.md` §4) |
+| PF-2 | `pf2-cascor-dataset-scaling.yaml` | wall-clock vs samples; RSS via the experiments dashboard Performance row. **DO NOT RUN AS WRITTEN — its `n_points_per_spiral` axis MEASURES AN INVARIANT** (`step_count` identical at 250 and 2000 at every epoch budget). Re-specified against three new axes in `notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`; axis 3 is calibrated, axis 2 awaits an owner call |
+| PF-3 | `pf3-cascor-pool-scaling.yaml` | speedup curve; oversubscription onset. ~~**BLOCKED 2026-09-10**: `runtime.num_processes` read by nothing~~ — **inert-axis blocker DISCHARGED 2026-09-22** (D2 implemented). **Still do not launch**: 3 reasons in the suite header |
 | PF-4 | — not a driver suite | cascor's in-repo perf suite; report-only timing reference cut with `--benchmark-autosave` outside every checkout (`juniper-cascor` `docs/testing/REFERENCE.md` § Micro timing reference). No `baseline_*.json` ever held timing data |
 | PF-5 | `pf5-recurrence-d-scaling.yaml` | fit time vs `d`; r² vs fit time |
 | PF-6 | `pf6-recurrence-nsteps-scaling.yaml` | fit time vs window count |
