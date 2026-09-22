@@ -394,5 +394,179 @@ class ResolveSiteDirsTest(unittest.TestCase):
         self.assertEqual(mod._load_ecosystem_envs(self.root / "absent.yaml"), {})
 
 
+class MalformedOperatorInputGuardTest(unittest.TestCase):
+    """A truthy NON-mapping from an operator-authored file must degrade, not raise.
+
+    ``x.get(k) or {}`` guards ABSENCE, not TYPE: a value that is truthy and not a mapping
+    passes straight through to the next ``.get()`` / ``.values()`` / ``.items()`` and raises
+    ``AttributeError``. Both of this tool's inputs are hand-authored -- a target repo's
+    ``pyproject.toml`` and ``prompts/agent_templates/data/ecosystem.yaml`` -- so a list
+    where a table belongs is reachable **by typing**, which is the one provenance class
+    ``notes/JUNIPER_2026-09-11_JUNIPER-ML_FALSY-GUARD-POPULATION-TRIAGE.md`` §3 names as
+    reachable without a version skew.
+
+    The file already believed this -- in ONE place. ``_load_ecosystem_envs`` guards the
+    INNER value with ``isinstance(meta, dict)`` while leaving its container bare. That is
+    the audit-every-call-site failure ml#1914 fixed in ``run_experiment.py``, recurring in
+    a second file.
+
+    ``declared_floors`` is NOT a second precedent, and reading it as one was wrong:
+    ``project = data.get("project", {}) if isinstance(data, dict) else {}`` guards ``data``
+    -- the parsed document -- and ``_pyproject_data`` returns ``tomllib.load`` (always a
+    dict) or ``{}``. The test could never be False. It was a **vacuous guard beside the
+    defect**, not evidence against it, and the read one line later crashed on exactly the
+    input it appears to screen. Found by adversarial validation, 2026-09-22.
+
+    Reachability is NOT uniform across the three, and the tests do not pretend otherwise:
+    the ``ecosystem.yaml`` arm is the operative one -- that file exists in juniper-ml only,
+    ``resolve_site_dirs`` falls back to it for every sibling-repo check, nothing else in the
+    repo consumes ``conda_envs``, and yamllint checks syntax, not structure. The two
+    ``pyproject.toml`` arms are weaker: a sibling's pyproject that malformed would already
+    fail ``pip install`` / ``python -m build``, so they are reachable mainly mid-edit or
+    against a scratch root. Both are worth pinning; only one is likely.
+
+    ``_load_ecosystem_envs`` is the sharpest of the three because its own docstring states
+    the contract it broke -- *"empty on any failure -- PyYAML missing, file absent, or
+    malformed; the caller degrades"* -- while its ``except`` catches only
+    ``(OSError, yaml.YAMLError)``. An ``AttributeError`` escapes the documented contract and
+    reaches the operator as a traceback instead of the exit-2 resolution failure that
+    ``docs/REFERENCE.md`` promises.
+    """
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def _toml(self, body: str) -> Path:
+        path = self.root / "pyproject.toml"
+        path.write_text(body, encoding="utf-8")
+        return path
+
+    def _yaml(self, body: str) -> Path:
+        path = self.root / "ecosystem.yaml"
+        path.write_text(body, encoding="utf-8")
+        return path
+
+    # --- the three defects -------------------------------------------------------------
+
+    def test_project_name_degrades_when_project_table_is_an_array(self) -> None:
+        """``project = ["x"]`` is valid TOML and yields a list, not a table.
+
+        Pinned at the FUNCTION level deliberately. ``main`` calls ``declared_floors`` before
+        ``resolve_site_dirs`` -> ``_project_name``, and both read the same file, so the
+        sibling site shadows this one and an end-to-end test would never reach it. A guard
+        is still owed here: the shadowing is an ordering accident, not a design.
+        """
+        path = self._toml('project = ["not-a-table"]\n')
+        self.assertIsNone(mod._project_name(path))
+
+    def test_project_name_degrades_when_project_is_a_string(self) -> None:
+        path = self._toml('project = "oops"\n')
+        self.assertIsNone(mod._project_name(path))
+
+    def test_declared_floors_degrades_when_optional_dependencies_is_an_array(self) -> None:
+        """``optional-dependencies`` as an array reached ``.values()``."""
+        path = self._toml('[project]\nname = "juniper-thing"\ndependencies = []\noptional-dependencies = ["oops"]\n')
+        self.assertEqual(mod.declared_floors(path), {})
+
+    def test_declared_floors_still_reads_dependencies_when_extras_are_malformed(self) -> None:
+        """Degrading on a bad ``optional-dependencies`` must not discard the GOOD table.
+
+        A guard that returns ``{}`` for the whole document would pass the test above while
+        silently dropping every floor the operator declared correctly -- a false OK from a
+        drift checker, which is worse than the crash it replaced.
+        """
+        path = self._toml('[project]\nname = "juniper-thing"\ndependencies = ["juniper-data-client>=0.4.1"]\noptional-dependencies = ["oops"]\n')
+        self.assertEqual(mod.declared_floors(path), {"juniper-data-client": "0.4.1"})
+
+    def test_load_ecosystem_envs_degrades_when_conda_envs_is_a_list(self) -> None:
+        """``conda_envs:`` written as a YAML sequence reached ``.items()``.
+
+        The docstring promises empty-on-malformed; this pins that promise.
+        """
+        path = self._yaml("version: 1\nconda_envs:\n  - JuniperData\n  - JuniperCascor1\n")
+        self.assertEqual(mod._load_ecosystem_envs(path), {})
+
+    def test_load_ecosystem_envs_degrades_when_document_is_a_sequence(self) -> None:
+        """The whole document, not just ``conda_envs``, can be a sequence.
+
+        ``yaml.safe_load(...) or {}`` did not help: a non-empty list is TRUTHY, so it passed
+        the falsy guard and reached ``.get``.
+        """
+        path = self._yaml("- JuniperData\n- JuniperCascor1\n")
+        self.assertEqual(mod._load_ecosystem_envs(path), {})
+
+    def test_load_ecosystem_envs_degrades_on_non_utf8_bytes(self) -> None:
+        """``UnicodeDecodeError`` is a ``ValueError``, not an ``OSError``.
+
+        It therefore escaped ``except (OSError, yaml.YAMLError)`` and broke the same
+        empty-on-malformed contract by a second route -- the one the first pass missed.
+        """
+        path = self.root / "ecosystem.yaml"
+        path.write_bytes(b"conda_envs:\n  Env\xff\xfe: {used_by: juniper-alpha}\n")
+        self.assertEqual(mod._load_ecosystem_envs(path), {})
+
+    def test_load_ecosystem_envs_skips_a_non_string_env_name(self) -> None:
+        """A YAML key is not necessarily a string.
+
+        ``NO:`` parses as the boolean ``False`` (the "Norway problem") and ``3:`` as an int.
+        Both used to reach ``site_packages_for_env``, where ``conda_dir / "envs" / env_name``
+        raises ``TypeError`` on a non-str. The well-formed sibling entry must survive -- a
+        guard that drops the whole mapping would hide a working configuration.
+        """
+        # Joined explicitly rather than written as adjacent literals: black (line length
+        # 512) collapses those onto one line, producing implicit string concatenation --
+        # the pattern CodeQL flags and that has blocked merges in this repo.
+        path = self._yaml(
+            "\n".join(
+                [
+                    "conda_envs:",
+                    '  NO: {python: "3.13", used_by: juniper-norway}',
+                    '  3: {python: "3.13", used_by: juniper-three}',
+                    '  EnvOne: {python: "3.13", used_by: juniper-alpha}',
+                ]
+            )
+            + "\n"
+        )
+        self.assertEqual(mod._load_ecosystem_envs(path), {"juniper-alpha": "EnvOne"})
+
+    def test_malformed_ecosystem_reaches_the_cli_as_exit_two(self) -> None:
+        """The operator-visible contract: exit 2 with a reason, never a traceback.
+
+        ``docs/REFERENCE.md`` and the cheatsheet both document exit 2 as "resolution
+        failed". An ``AttributeError`` out of ``_load_ecosystem_envs`` bypassed ``main``'s
+        own error handling entirely.
+        """
+        repo = self.root / "repo"
+        (repo / "prompts" / "agent_templates" / "data").mkdir(parents=True)
+        (repo / "pyproject.toml").write_text('[project]\nname = "juniper-thing"\ndependencies = ["juniper-data-client>=0.4.1"]\n')
+        (repo / "prompts" / "agent_templates" / "data" / "ecosystem.yaml").write_text("version: 1\nconda_envs:\n  - JuniperData\n")
+        conda = self.root / "miniforge3"
+        conda.mkdir()
+        err = io.StringIO()
+        with redirect_stderr(err):
+            code = mod.main(["--repo-root", str(repo), "--conda-dir", str(conda)])
+        self.assertEqual(code, 2)
+
+    # --- negative controls: these pass BEFORE the fix and must keep passing -------------
+
+    def test_wellformed_pyproject_still_reads_its_name(self) -> None:
+        path = self._toml('[project]\nname = "juniper-thing"\n')
+        self.assertEqual(mod._project_name(path), "juniper-thing")
+
+    def test_wellformed_extras_floors_are_still_collected(self) -> None:
+        path = self._toml(_PYPROJECT)
+        floors = mod.declared_floors(path)
+        self.assertEqual(floors.get("juniper-observability"), "0.2.0")
+        self.assertEqual(floors.get("juniper-data-client"), "0.4.1")
+
+    def test_wellformed_ecosystem_still_maps_used_by(self) -> None:
+        path = self._yaml('version: 1\nconda_envs:\n  EnvOne: {python: "3.13", used_by: juniper-alpha}\n')
+        self.assertEqual(mod._load_ecosystem_envs(path), {"juniper-alpha": "EnvOne"})
+
+
 if __name__ == "__main__":
     unittest.main()
