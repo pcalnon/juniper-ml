@@ -32,7 +32,8 @@
 >    via `util/markdown_structure_delta.py`.
 >    **Repaired 2026-09-22** by detecting the dropped-closer fingerprint directly
 >    (`_absorbed_openers`): ml#1746 scores **2** again and the tree still screens **ZERO
->    across 1119 tracked paths**. The trade-off ml#1944 accepted was false — both were
+>    across every tracked path** (1119 when measured that morning, 1127 that evening — the
+>    ZERO is the claim, the denominator drifts). The trade-off ml#1944 accepted was false — both were
 >    available at once. Proof is re-runnable:
 >    `util/ad-hoc/2026-09-22_structure_screen_ml1746_regression.py`.
 > 2. **The `or {}` population was TRIAGED — ml#1914, merged 2026-09-11**, hours after this
@@ -80,8 +81,16 @@
 >   not be a string — `NO:` parses as boolean `False` (the "Norway problem") and reached
 >   `site_packages_for_env`, where `conda_dir / "envs" / env_name` raises `TypeError`.
 >
-> Final: **12 tests**, 5 + 2 mutation-checked against the pre-fix code, the rest negative
-> controls. The residual pair is proved load-bearing by
+> Final: **12 tests — 9 pin the fix, 3 are negative controls**, measured in ONE run against
+> the pre-fix module by `util/ad-hoc/2026-09-22_env_floor_full_mutation_matrix.py`.
+>
+> > **ml#2001's body says "5 + 2", and that was the unit error again — this time in a claim
+> > about rigour.** The 5 came from the original eight tests and the 2 from the residual pair
+> > added later; they were *added together* instead of re-running the whole class against one
+> > baseline, so the work under-reported itself by two. §2a of the triage note says rows and
+> > guards must come from the same run; so must "how many tests pin this fix".
+>
+> The residual pair is separately proved load-bearing by
 > `util/ad-hoc/2026-09-22_env_floor_residual_mutation_check.py` — whose **first version was
 > itself vacuous**, shadowing by `PYTHONPATH` while the suite's own
 > `sys.path.insert(0, util/)` won, so every test "passed" against a module that was never
@@ -112,7 +121,9 @@ See the RE-EVALUATION banner. The through-line held one turn longer than its aut
     and mis-located it twice across two review rounds. Fixed 2026-09-10; tree is 17/2
     and both survivors are provable screen artifacts.
     [The 17/2 was an artifact of the SCREEN's over-strong fence rule, not of the tree.
-     ml#1944 narrowed the rule 2026-09-15; the tree is ZERO / 1084.]
+     ml#1944 narrowed the rule 2026-09-15 and the tree went to ZERO -- but that
+     narrowing was over-broad in turn and blinded the screen to ml#1746 itself;
+     ml#2000 corrected it 2026-09-22, keeping ZERO. Re-run for the path total.]
   - "28 unguarded `or {}` chains across 7 files" -> the census matched ONE expression
     shape, GATED whole files on a hard-coded ten-filename roster, and counted any
     `isinstance` in a function as a guard for every chain in it. Rebuilt: 397 sites /
@@ -128,7 +139,9 @@ Remaining work: NONE from this arc. Two standing items a successor may pick up:
 [BOTH CLOSED 2026-09-22 -- see the RE-EVALUATION banner above. Kept verbatim because
 the reasoning is the durable part; the STATUS is not.]
 
-1. [CLOSED -- ml#1944, 2026-09-15. The screen was narrowed; the tree is ZERO / 1084.]
+1. [CLOSED -- ml#1944, 2026-09-15, which MEASURED zero across 1084 paths; that narrowing
+   was itself over-broad and ml#2000 corrected it 2026-09-22. The tree still screens ZERO;
+   the path total is not a constant, so re-run rather than quoting one.]
    OWNER QUESTION, unanswered since ml#1886's body: whether the 17 residual
    markdown-structure findings (13 in STANDING-ITEMS' ```text banner, 4 in
    PROMPT-ANALYSIS' ````jinja2 sample) should be written down as a standing note.
@@ -165,10 +178,21 @@ Key context:
 | `origin/main` (juniper-ml) | re-measure — it moves every few minutes |
 | this session's ml PRs | **#1886, #1890, #1895** |
 | the 6a fan-out | **8 sibling PRs, all MERGED** — canopy#617, cascor#643, cascor-client#162, cascor-worker#182, data#393, data-client#198, deploy#210, recurrence#167 |
-| markdown structure debt | ~~**17 / 2** — both known screen false positives~~ **ZERO across 1084 paths** (re-measured 2026-09-22; ml#1944 narrowed the screen) |
+| markdown structure debt | ~~**17 / 2** — both known screen false positives~~ **ZERO** — re-measured 2026-09-22 after ml#1944 narrowed the screen and ml#2000 corrected that narrowing. **ZERO is the invariant; the DENOMINATOR is not** — it read 1084 paths on 09-15, 1119 that morning and 1127 that evening. Re-run the screen rather than quoting a total from here |
 | `Sequence Safety` comment drift | **zero** across all nine repos |
 | residue §4 | **adjudicated, zero content losses** |
-| `or {}` population (ml `util/`) | ~~**397 sites / 96 files**; 294 `read`-class, ~117 live~~ **the unit was wrong.** Re-measured 2026-09-22 *after* the env-floor fix: **402 rows / 102 files** (299 `read`-class) collapse to **75 distinct guards / 18 files** outside `util/ad-hoc/`, **+7 the census structurally cannot see** = **82, a FLOOR**. By in-file evidence: `same-key` 9 (7 of them run_suite's already-gated `doc`), `helper` 2, `file-level` 51, `none` 13 |
+| `or {}` population (ml `util/`) | ~~**397 sites / 96 files**; 294 `read`-class, ~117 live~~ **the unit was wrong.** One coherent post-ml#2001 measurement, 2026-09-22: **400 rows / 102 files** (297 `read`-class) collapse to **75 guards / 18 files** outside `util/ad-hoc/`. By evidence tier: `same-key` 9, `helper` 2, `file-level` 51, `none` 13. ~~**+7** = **82, a FLOOR**~~ — see the note below |
+
+> **The "82 floor" in that row was the unit error AGAIN — a third time, on criteria rather
+> than units.** Two earlier drafts of this row paired pre-fix rows with post-fix guards;
+> the replacement then added **75** (from `2026-09-22_falsy_guard_next_batch.py`) to **+7**
+> (from `2026-09-11_falsy_guard_triage.py --blind-spot`). Those come from different filters:
+> `next_batch` matches `reads_untrusted or risk == "read"`, the triage matches
+> `risk == "read"` alone, so the triage counts **73** and prints its own floor as
+> **73 + 7 = 80**. They differ by exactly `util/release_train/propose.py:918` and `:1070`.
+> **No tool prints 82.** Take a floor from ONE tool — 80, or 75 non-ad-hoc guards — and say
+> which. Corrected 2026-09-22 after adversarial validation caught it; the lesson is in
+> `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_structure-screen-was-blind-to-its-founding-incident-and-five-open-items-in-run-suite.md` §1.
 
 ### Verification commands
 
@@ -345,9 +369,10 @@ implemented), `util/ad-hoc/2026-09-11_falsy_guard_census.py`,
 `test_a_BARE_closed_fence_containing_an_h2_is_STILL_reported`);
 `util/env_floor_drift_check.py` (five sites + a new `_mapping()` coercer, a widened
 `except`, and a non-string-key skip); `tests/test_env_floor_drift_check.py` (new
-`MalformedOperatorInputGuardTest`, 12 tests); and three new tools,
+`MalformedOperatorInputGuardTest`, 12 tests); and four new tools,
 `util/ad-hoc/2026-09-22_falsy_guard_next_batch.py`,
-`util/ad-hoc/2026-09-22_env_floor_residual_mutation_check.py`, and
+`util/ad-hoc/2026-09-22_env_floor_residual_mutation_check.py`,
+`util/ad-hoc/2026-09-22_env_floor_full_mutation_matrix.py`, and
 `util/ad-hoc/2026-09-22_structure_screen_ml1746_regression.py`.
 
 ### 6c. OPEN — five things validation found that this session did NOT fix
