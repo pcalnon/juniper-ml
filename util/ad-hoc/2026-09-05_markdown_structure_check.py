@@ -112,10 +112,54 @@ def _info_string(opener_line: str) -> str:
     return m.group("info").strip() if m else ""
 
 
-def _can_swallow_headings(opener_line: str, is_unclosed: bool) -> bool:
+def _absorbed_openers(lines: list, spans: list) -> set:
+    """Opener line numbers whose span ABSORBED what looks like another block's opener.
+
+    This is the fingerprint of a dropped closing fence, and it is the only thing that makes
+    the 2026-09-15 narrowing safe.
+
+    When a closer goes missing, the fence does NOT end up "unclosed" in any document that
+    has more fences after it. The next block's opener -- ```python, ```text, whatever -- is
+    swallowed as content, because a delimiter carrying an info string cannot close anything
+    (CommonMark 4.5, and `_fence_spans` implements exactly that). The *following* bare
+    delimiter then closes the damaged fence. Polarity is restored, no UNCLOSED finding is
+    produced, and every heading in between is silently inside a code block.
+
+    So: a CLOSED fence that contains a same-character delimiter run at least as long as its
+    own, carrying an info string, is a fence that ate a block boundary. That is reportable
+    even when the opener is typed.
+
+    Why the length test matters: a ````jinja2 or ````markdown sample legitimately quotes
+    ``` blocks, and those runs are SHORTER than the four-backtick opener, so they are not
+    absorbed openers -- they are content the author deliberately nested. Only a run that
+    could actually have opened a sibling block counts.
+    """
+    absorbed = set()
+    for idx, line in enumerate(lines):
+        opener = spans[idx]
+        if opener is None or idx + 1 == opener[0]:
+            continue
+        m = _FENCE.match(line)
+        om = _FENCE.match(opener[1])
+        if not m or not om:
+            continue
+        run, info = m.group("run"), m.group("info")
+        orun = om.group("run")
+        if run[0] != orun[0] or len(run) < len(orun):
+            continue
+        if not info.strip():
+            continue  # a bare delimiter this long WOULD have closed the fence; not absorbed
+        if run[0] == "`" and "`" in info:
+            continue  # not a valid opener either (CommonMark 4.5) -- ordinary content
+        absorbed.add(opener[0])
+    return absorbed
+
+
+def _can_swallow_headings(opener_line: str, is_unclosed: bool, absorbed_opener: bool = False) -> bool:
     """May an H2 inside THIS fence be reported as swallowed?
 
-    Only when the fence is UNCLOSED, or carries NO info string.
+    When the fence is UNCLOSED, when it carries NO info string, or when it ABSORBED a
+    sibling block's opener (see `_absorbed_openers`).
 
     NARROWED 2026-09-15, after the previous rule -- "anything but ```markdown has no
     business containing an H2" -- was refuted by two legitimate counterexamples on `main`,
@@ -134,14 +178,28 @@ def _can_swallow_headings(opener_line: str, is_unclosed: bool) -> bool:
     the SAME failure this file's SEPARATOR comment records from the `-{2,}` regex, repeating
     in the adjacent rule.
 
-    What is NOT lost: an unclosed fence is still reported in its own right by the UNCLOSED
-    check, so no genuinely swallowed heading escapes -- it is reported under the defect that
-    caused it. A BARE fence is still checked, which keeps the balanced-but-wrong (two closes
-    lost) heuristic that motivated the rule: the fence that swallowed 36 headings in
-    juniper-ml#1746 was bare.
-
     An explicit info string is the author asserting "this block is code or data of type X".
     Taking that assertion at face value is what removes the false positives.
+
+    CORRECTED 2026-09-22 -- the narrowing as first written was NOT safe, and the sentence
+    that said it was got the record backwards. It read: *"the fence that swallowed 36
+    headings in juniper-ml#1746 was bare."* It was not. The repair commit `7a4b1cb4`
+    (ml#1749) states the lost line was *"the close of the ``text`` block at
+    REFERENCE.md:1522"* -- a TYPED fence, precisely the class the narrowing exempts.
+
+    Measured against the actual damaged blob (`bcc89c45:docs/REFERENCE.md`): the
+    pre-narrowing screen reports 2 problems naming that ```text fence; the narrowed screen
+    reported ZERO and exit 0. The instrument had been blinded to its own founding incident,
+    and `util/markdown_structure_delta.py` execs THIS file inside the `Documentation Links`
+    REQUIRED check, so the same damage would have shipped green.
+
+    The reasoning behind "an unclosed fence is still reported in its own right" is where it
+    went wrong: a dropped closer only leaves the document unclosed when nothing follows it.
+    In a real document the next opener is absorbed and a later bare delimiter re-closes the
+    span, so there is no UNCLOSED finding to fall back on. `_absorbed_openers` detects that
+    shape directly, which restores detection WITHOUT restoring the 17 false positives --
+    both of those blocks absorb nothing. The trade-off the narrowing accepted was false: the
+    tree still screens clean, and ml#1746 is caught again.
     """
     if is_unclosed:
         return True
@@ -149,8 +207,11 @@ def _can_swallow_headings(opener_line: str, is_unclosed: bool) -> bool:
         # Subsumed by the info-string test below (```markdown is never bare), but kept
         # explicit: it names the original motivating case, juniper-canopy's AGENTS.md
         # sample document, whose four permanent findings made this screen unwireable.
+        # Checked BEFORE the absorbed-opener arm on purpose: a markdown sample quotes fence
+        # delimiters as its whole point, so that arm would re-introduce the exact finding
+        # this exemption exists to remove.
         return False
-    return not _info_string(opener_line)
+    return absorbed_opener or not _info_string(opener_line)
 
 
 def _fence_spans(lines: list) -> tuple:
@@ -219,12 +280,13 @@ def check(path: Path) -> list:
     # tree. Every other info string, and a BARE fence, is still checked: the fence that
     # swallowed 36 headings in juniper-ml#1746 was not a markdown example.
     spans, unclosed = _fence_spans(lines)
+    absorbed = _absorbed_openers(lines, spans)
     for i, line in enumerate(lines, 1):
         opener = spans[i - 1]
         if opener is None or _FENCE.match(line):
             continue
         is_unclosed = unclosed is not None and opener[0] == unclosed[0]
-        if line.startswith("## ") and _can_swallow_headings(opener[1], is_unclosed):
+        if line.startswith("## ") and _can_swallow_headings(opener[1], is_unclosed, opener[0] in absorbed):
             problems.append(
                 f"H2 swallowed by the fence opened at line {opener[0]} "
                 f"({opener[1].strip()[:20]!r}): line {i}: {line.strip()[:60]}"
