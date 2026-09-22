@@ -420,11 +420,15 @@ the RELEASED tag (juniper-deploy deliberately pairs `build:` with the published 
 and `pyproject.toml` both said `0.6.0`; `__init__.py` was never bumped, so **two** releases shipped
 a package misreporting itself, and `__version__` is in `__all__`. `pyproject.toml` alone looks
 correct — only comparing the two *inside the artifact* reveals it. Fixed in
-juniper-cascor-worker#192 by deriving from installed metadata. **The published image still answers
-`0.4.0` and will until the next worker release**, which is owner-gated. That release is proposed
-in juniper-cascor-worker#194 (0.6.1, opened 2026-09-22), which is green and waiting for the
-owner's merge and Release. The published 0.6.0 **wheel** is affected too: its `__init__.py`
-hard-codes `__version__ = "0.4.0"`.
+juniper-cascor-worker#192 by deriving from installed metadata, and **shipped in v0.6.1**. That
+release was cut 2026-09-22 at 23:03Z from juniper-cascor-worker#194 (merged `38f39cb8`).
+**Verified on the published artifact:** `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and
+run, prints `0.6.1 0.6.1`. At 23:31Z the PyPI upload was still waiting at the owner's `pypi`
+gate. The 0.6.0 artifacts still report `0.4.0` and always will, because a published artifact is
+never rebuilt. The 0.6.0 **wheel** is affected too: its `__init__.py` hard-codes
+`__version__ = "0.4.0"`. juniper-deploy still pinned `0.6.0` at that point, at
+`docker-compose.yml:364` and `k8s/helm/juniper/values.yaml:301`, and a concurrent session has
+taken the repin.
 
 **A second class-2 finding (2026-09-22): the published juniper-data image cannot generate
 `equities` or `equities_seq`.** A concurrent session found this; it was re-verified here inside
