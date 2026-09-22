@@ -20,6 +20,8 @@ import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
+from tests.redacted_env import RedactedEnv
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MODULE_PATH = REPO_ROOT / "util" / "experiments" / "run_suite.py"
 
@@ -1125,6 +1127,21 @@ outputs:
   suite_dir: {suite_dir}
 """
 
+    @staticmethod
+    def _launched(dump: Path) -> "dict[str, str | None]":
+        """Parse the stub launcher's KEY=VALUE dump. ``<UNSET>`` becomes ``None``.
+
+        Last occurrence wins, so a multi-cell suite reports the final launch rather than
+        silently blending appended rows from several cells.
+        """
+        parsed: "dict[str, str | None]" = {}
+        for line in dump.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            key, _, value = line.partition("=")
+            parsed[key] = None if value == "<UNSET>" else value
+        return parsed
+
     def _run(self, mode: str, par: int, extra_matrix: str = ""):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
@@ -1132,10 +1149,32 @@ outputs:
         (root / "base.yaml").write_text(self.BASE)
         suite_dir = root / "out"
         (root / "suite.yaml").write_text(self.SUITE.format(base=root / "base.yaml", mode=mode, par=par, suite_dir=suite_dir, extra_matrix=extra_matrix))
-        dump = root / "launcher-env.json"
+        dump = root / "launcher-env.txt"
         launcher = root / "stub_launcher.bash"
-        # Dump the launcher's OWN environment on --up. This is the measurement.
-        launcher.write_text("#!/usr/bin/env bash\n" 'if [[ "$1" == "--up" ]]; then\n' f'  {sys.executable} -c "import json,os,sys; json.dump(dict(os.environ), open(sys.argv[1],\'w\'))" "{dump}"\n' '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then exit 0; fi\n' "exit 2\n")
+        # Dump, from the launcher's OWN environment on --up, exactly the five variables under
+        # test, as KEY=VALUE. This is the measurement.
+        #
+        # Deliberately NOT a python child that serialises the whole environment as a mapping:
+        # `tests/test_env_repr_safety.py` forbids raw os.environ-derived mappings anywhere under
+        # `tests/` (it greps line-by-line, so even naming the construct in a comment trips it),
+        # because such a mapping sits as a frame-local and `--showlocals` renders real secrets at
+        # the head of a failure paste. Naming the five is the sharper assertion anyway --
+        # `${!v-<UNSET>}` distinguishes
+        # UNSET from EMPTY, and that is the exact distinction both `runtime_block_env` (which
+        # emits nothing for a cleared key) and the launcher's `runtime_env` array turn on.
+        launcher.write_text(
+            "#!/usr/bin/env bash\n"
+            'if [[ "$1" == "--up" ]]; then\n'
+            "  for v in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do\n"
+            '    val="${!v-<UNSET>}"\n'
+            f"    printf '%s=%s\\n' \"$v\" \"$val\" >> \"{dump}\"\n"
+            "  done\n"
+            '  echo "=== Experiment run stub-run-$$ is up ==="\n'
+            "  exit 0\n"
+            "fi\n"
+            'if [[ "$1" == "--down" ]]; then exit 0; fi\n'
+            "exit 2\n"
+        )
         launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
         driver = root / "stub_driver.py"
         _write_stub_driver(driver)
@@ -1145,7 +1184,7 @@ outputs:
         run_suite.DEFAULT_RUN_ROOT = run_root  # type: ignore[attr-defined]
         self.addCleanup(lambda: setattr(run_suite, "DEFAULT_RUN_ROOT", old))
         env = {"JUNIPER_SUITE_LAUNCHER": str(launcher), "JUNIPER_SUITE_DRIVER": str(driver), "JUNIPER_SUITE_PYTHON": sys.executable}
-        old_environ = dict(os.environ)
+        old_environ = RedactedEnv(os.environ)
         os.environ.update(env)
         self.addCleanup(_restore_environ, old_environ)
         buf = io.StringIO()
@@ -1158,7 +1197,7 @@ outputs:
         rc, dump, _suite_dir, out = self._run("sequential", 1)
         self.assertEqual(rc, 0, msg=out)
         self.assertTrue(dump.is_file(), msg=f"launcher never ran\n{out}")
-        launched = json.loads(dump.read_text())
+        launched = self._launched(dump)
         self.assertEqual(launched.get("OMP_NUM_THREADS"), "3")
         self.assertEqual(launched.get("MKL_NUM_THREADS"), "3")
         self.assertEqual(launched.get("OPENBLAS_NUM_THREADS"), "3")
@@ -1174,7 +1213,7 @@ outputs:
         """
         rc, dump, suite_dir, out = self._run("parallel", 2, extra_matrix="  runtime.blas_threads: [7]")
         self.assertEqual(rc, 0, msg=out)
-        launched = json.loads(dump.read_text())
+        launched = self._launched(dump)
         self.assertEqual(launched.get("OMP_NUM_THREADS"), "7", msg="the H-11 split must not overwrite a width the matrix names")
         row = json.loads((suite_dir / "registry.jsonl").read_text().splitlines()[0])
         self.assertEqual(row["runtime_env"]["OMP_NUM_THREADS"], "7")
@@ -1192,7 +1231,7 @@ outputs:
         """
         rc, dump, _suite_dir, out = self._run("parallel", 2)
         self.assertEqual(rc, 0, msg=out)
-        launched = json.loads(dump.read_text())
+        launched = self._launched(dump)
         self.assertEqual(launched.get("OMP_NUM_THREADS"), "2", msg="an inherited width must lose to the H-11 split")
         self.assertEqual(launched.get("CASCOR_NUM_PROCESSES"), "4", msg="H-11's split, not the base config's 5")
 
@@ -1205,7 +1244,7 @@ outputs:
         """
         rc, dump, _suite_dir, out = self._run("parallel", 2)
         self.assertEqual(rc, 0, msg=out)
-        launched = json.loads(dump.read_text())
+        launched = self._launched(dump)
         self.assertEqual(launched.get("JUNIPER_CASCOR_EVAL_METRICS_ENABLED"), "false", msg="an inherited non-thread key must survive the parallel filter")
         # …while, in the same run, the inherited THREAD keys did lose to H-11.
         self.assertEqual(launched.get("OMP_NUM_THREADS"), "2")
@@ -1224,7 +1263,7 @@ outputs:
         launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
         driver = root / "stub_driver.py"
         _write_stub_driver(driver)
-        old_environ = dict(os.environ)
+        old_environ = RedactedEnv(os.environ)
         os.environ.update({"JUNIPER_SUITE_LAUNCHER": str(launcher), "JUNIPER_SUITE_DRIVER": str(driver), "JUNIPER_SUITE_PYTHON": sys.executable})
         self.addCleanup(_restore_environ, old_environ)
         buf = io.StringIO()
