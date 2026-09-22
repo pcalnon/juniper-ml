@@ -51,7 +51,9 @@ convention the bundled redis subchart also honours, and setting it rewrites redi
 > rejects `RELEASE_NOTES_juniper-deploy_v0.3.0.md` as naming an unregistered package. The guard is
 > right; do not register a non-PyPI repo to work around it.
 **Wave 4 committed** (OQ-1 ruled 2026-09-11, §6), blocked on the five `DOCKERHUB_TOKEN`
-secrets. Last state refresh: **2026-09-22** — the §5 wave table's Wave 1 and Wave 2 rows had
+secrets. Those are now **environment** secrets in a tag-restricted `dockerhub` environment, not
+repository secrets. The owner ruled this on 2026-09-22 (§3 of
+`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`). Last state refresh: **2026-09-22** — the §5 wave table's Wave 1 and Wave 2 rows had
 gone stale against this Status line and are now correct, and canopy's pin has already drifted
 (see the note under §5). **New §5.2** records the image hardening: both publish-trap classes
 swept 2026-09-21 and now enforced in CI across all five image repos, plus the root-anchoring
@@ -268,7 +270,7 @@ to discover that is on a Pi.
 | 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
 | 2 | juniper-recurrence | **COMPLETE** — recurrence#153; `juniper-recurrence:0.5.0` published 2026-09-10. Build context is **nested** (`juniper-recurrence/juniper-recurrence/`, via `APP_DIR`), which also means its `.dockerignore` lives in that subdirectory and **not** at the repo root — a repo-root sweep false-positives here |
 | 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **COMPLETE 2026-09-17.** Pin (#215, 9 lines) + D-1 check (#217) + `Dockerfile.test` runner published as `ghcr.io/pcalnon/juniper-deploy-test:0.3.0` (#219 / #220 / #221, Release `v0.3.0`) = **10** pinned lines. Sibling fix: helm `values.yaml` (#216) |
-| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets (§6 OQ-1) |
+| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1) |
 
 > **Wave 3's pin DRIFTED the day after it was declared complete, and no gate can see it.**
 > juniper-canopy cut **`v0.8.1` on 2026-09-18** — the fix for canopy#631, this arc's own
@@ -430,7 +432,7 @@ ran green throughout the three days `docker-compose.yml` pinned `juniper-canopy:
   | private repositories, Personal | 1 — irrelevant; all five are public |
   | pull rate, authenticated Personal | **200 per 6 hours** |
   | pull rate, unauthenticated | **100 per 6 hours** per IPv4 address **or IPv6 /64 subnet** |
-  | how a pull is counted | **once per architecture** — a 2-arch index pulled on both arches is 2 |
+  | how a pull is counted | **once per architecture** — a 2-arch index pulled on both arches is 2. **Not confirmed on re-read 2026-09-22**: the usage page does not state it (procedure §9) |
   | storage cap | none stated for public repositories |
 
   **The size objection is gone**: the CPU-only images are 270–312 MB compressed, not the
@@ -438,16 +440,26 @@ ran green throughout the three days `docker-compose.yml` pinned `juniper-canopy:
 
   **The live constraint is the anonymous rate, not storage.** 100 per 6 h is scoped to an
   IPv4 address *or an IPv6 /64* — so every Pi node behind one household connection shares
-  one bucket, and a 2-arch image costs one pull per arch. Wave 4 should therefore log
+  one bucket, and a 2-arch image may cost one pull per arch (unconfirmed, see the table). Wave 4 should therefore log
   **authenticated** pulls on the Pi nodes (200/6 h) rather than rely on the anonymous
   allowance, and that is a deployment note, not a workflow change. It also bears on OQ-3,
   which until now was framed as a RAM question only.
 
   **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
-  `DOCKERHUB_USERNAME`) repository secret in each of the five image repos —
+  `DOCKERHUB_USERNAME`) secret in each of the five image repos —
   juniper-cascor, juniper-cascor-worker, juniper-canopy, juniper-data, juniper-recurrence.
   Until those exist the second login+push cannot be added, and adding it early would fail
   every release. Scope the token to **Read & Write**, not Admin.
+
+  **Scope RULED 2026-09-22: an environment secret, not a repository secret.** The owner chose
+  Option B of §3 of `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
+  In each repository the secrets live in a `dockerhub` environment restricted to release tags,
+  with no reviewer and no wait timer. A repository secret would be readable by every workflow on
+  every ref. Registration steps are in that procedure's §5.2B. **The ruling constrains the
+  workflow change.** `publish-image.yml`'s `build` job also runs on pull requests and dispatches,
+  and its `merge` job also runs on `push=true` dispatches. A tags-only environment named
+  unconditionally on either job therefore rejects those runs. Wave 4 must name the environment
+  only where the run is a release. The procedure's §3 and §7 give the two ways to do that.
 - **OQ-2.** Should a `:X.Y.Z-cuda` variant exist for cascor / cascor-worker, and if so is it
   built on release or on demand? (D-5.)
 - **OQ-3.** Do the Pi nodes have enough RAM to run a torch-bearing worker in practice? This
