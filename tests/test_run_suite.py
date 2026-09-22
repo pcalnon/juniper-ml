@@ -1162,19 +1162,7 @@ outputs:
         # `${!v-<UNSET>}` distinguishes
         # UNSET from EMPTY, and that is the exact distinction both `runtime_block_env` (which
         # emits nothing for a cleared key) and the launcher's `runtime_env` array turn on.
-        launcher.write_text(
-            "#!/usr/bin/env bash\n"
-            'if [[ "$1" == "--up" ]]; then\n'
-            "  for v in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do\n"
-            '    val="${!v-<UNSET>}"\n'
-            f"    printf '%s=%s\\n' \"$v\" \"$val\" >> \"{dump}\"\n"
-            "  done\n"
-            '  echo "=== Experiment run stub-run-$$ is up ==="\n'
-            "  exit 0\n"
-            "fi\n"
-            'if [[ "$1" == "--down" ]]; then exit 0; fi\n'
-            "exit 2\n"
-        )
+        launcher.write_text("#!/usr/bin/env bash\n" 'if [[ "$1" == "--up" ]]; then\n' "  for v in OMP_NUM_THREADS MKL_NUM_THREADS OPENBLAS_NUM_THREADS CASCOR_NUM_PROCESSES JUNIPER_CASCOR_EVAL_METRICS_ENABLED; do\n" '    val="${!v-<UNSET>}"\n' f'    printf \'%s=%s\\n\' "$v" "$val" >> "{dump}"\n' "  done\n" '  echo "=== Experiment run stub-run-$$ is up ==="\n' "  exit 0\n" "fi\n" 'if [[ "$1" == "--down" ]]; then exit 0; fi\n' "exit 2\n")
         launcher.chmod(launcher.stat().st_mode | stat.S_IEXEC)
         driver = root / "stub_driver.py"
         _write_stub_driver(driver)
