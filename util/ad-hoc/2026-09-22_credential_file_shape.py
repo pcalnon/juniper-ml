@@ -41,7 +41,8 @@ def describe(path: str) -> int:
         return 1
     print(f"file: {path}  mode={oct(st.st_mode)[-4:]}  size={st.st_size}  uid={st.st_uid} gid={st.st_gid}")
     try:
-        lines = open(path, encoding="utf-8", errors="replace").read().split("\n")
+        with open(path, encoding="utf-8", errors="replace") as handle:
+            lines = handle.read().split("\n")
     except OSError as exc:
         print(f"  unreadable: {exc.strerror}", file=sys.stderr)
         return 1
