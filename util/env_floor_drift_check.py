@@ -127,11 +127,26 @@ class FloorFinding:
 # ── floor extraction (target repo's pyproject) ───────────────────────────────
 
 
+def _mapping(value: Any) -> dict:
+    """Coerce a value to a mapping, non-raising.
+
+    ``x.get(k) or {}`` guards ABSENCE, not TYPE: a value that is truthy and not a mapping
+    reaches the next ``.get()`` / ``.values()`` / ``.items()`` and raises ``AttributeError``.
+    Both of this tool's inputs are hand-authored -- a target repo's ``pyproject.toml`` and
+    ``prompts/agent_templates/data/ecosystem.yaml`` -- so ``project = ["x"]`` or a
+    ``conda_envs:`` sequence is reachable **by typing**, not only across a version skew.
+
+    Malformed input must degrade the way this module already degrades everywhere else
+    (``{}`` / ``None``, then exit 2 with a resolution reason), never escape as a traceback.
+    """
+    return value if isinstance(value, dict) else {}
+
+
 def _pyproject_data(pyproject: Path) -> dict:
     if tomllib is not None:
         try:
             with pyproject.open("rb") as handle:
-                return tomllib.load(handle)
+                return _mapping(tomllib.load(handle))
         except (OSError, ValueError):
             return {}
     return {}
@@ -139,7 +154,7 @@ def _pyproject_data(pyproject: Path) -> dict:
 
 def _project_name(pyproject: Path) -> "str | None":
     data = _pyproject_data(pyproject)
-    name = data.get("project", {}).get("name")
+    name = _mapping(data.get("project")).get("name")
     if isinstance(name, str):
         return name
     # Regex fallback for the no-tomllib case.
@@ -173,12 +188,15 @@ def declared_floors(pyproject: Path) -> dict[str, str]:
     every ``[project.optional-dependencies]`` extra (the meta-package keeps them in
     extras). The self-package and floorless / extra-only refs are skipped."""
     data = _pyproject_data(pyproject)
-    project = data.get("project", {}) if isinstance(data, dict) else {}
+    project = _mapping(data.get("project"))
     self_name = normalize(project.get("name", "")) if isinstance(project.get("name"), str) else ""
 
-    reqs: list[str] = list(project.get("dependencies", []) or [])
-    for deps in (project.get("optional-dependencies", {}) or {}).values():
-        reqs.extend(deps or [])
+    # A malformed `optional-dependencies` must not discard the `dependencies` the operator
+    # DID declare correctly: a drift checker that silently reports no floors is a false OK.
+    deps_declared = project.get("dependencies")
+    reqs: list[str] = list(deps_declared) if isinstance(deps_declared, list) else []
+    for deps in _mapping(project.get("optional-dependencies")).values():
+        reqs.extend(deps if isinstance(deps, list) else [])
 
     floors: dict[str, str] = {}
     for req in reqs:
@@ -259,11 +277,27 @@ def _load_ecosystem_envs(data_path: Path) -> dict[str, str]:
     except ModuleNotFoundError:
         return {}
     try:
-        data = yaml.safe_load(data_path.read_text(encoding="utf-8")) or {}
-    except (OSError, yaml.YAMLError):
+        # UnicodeDecodeError is a ValueError, NOT an OSError, so a non-UTF-8 ecosystem.yaml
+        # escaped the two-exception tuple and broke the same docstring contract by a second
+        # route. Caught explicitly rather than by widening to `Exception`, which would also
+        # swallow a bug in this function.
+        data = _mapping(yaml.safe_load(data_path.read_text(encoding="utf-8")))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
         return {}
     out: dict[str, str] = {}
-    for env_name, meta in (data.get("conda_envs", {}) or {}).items():
+    # The docstring above promises empty-on-malformed and the `except` catches only
+    # OSError / YAMLError, so a `conda_envs:` SEQUENCE used to escape as AttributeError --
+    # past main()'s own handling, reaching the operator as a traceback instead of the
+    # documented exit-2 resolution failure. The inner `meta` was already guarded.
+    for env_name, meta in _mapping(data.get("conda_envs")).items():
+        # A YAML key is not necessarily a string. An env named `NO` parses as the BOOLEAN
+        # False (the "Norway problem") and one named `3` as an int; both then reach
+        # site_packages_for_env, where `conda_dir / "envs" / env_name` raises TypeError on a
+        # non-str. Skipping them keeps the mapping honest -- a key that cannot name a
+        # directory cannot name an env -- and the caller degrades to exit 2 with a reason,
+        # which is what an operator who quoted the key needs to see.
+        if not isinstance(env_name, str):
+            continue
         used_by = (meta or {}).get("used_by") if isinstance(meta, dict) else None
         if isinstance(used_by, str):
             out[normalize(used_by)] = env_name

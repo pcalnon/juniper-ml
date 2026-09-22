@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly window for the Juniper per-repo USB archives (skips when no valid drive is mounted)
+
+[Timer]
+OnCalendar=Sun *-*-* 03:00:00
+RandomizedDelaySec=15m
+Persistent=true
+Unit=juniper-backup.service
+
+[Install]
+WantedBy=timers.target
