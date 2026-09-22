@@ -503,14 +503,20 @@ grep -n 'enabled\[0\]\|2702-2706' \
 # --- item 14: the authority G11 cites
 grep -rn 'UNBOUNDED_IMPORT_GENERATORS' src/    # expect 2 references, 0 definitions
 
-# --- item 3b: has G7 been written yet? (1 hit = still only the header comment)
-grep -rn 'G7' src/ | grep -v 'G1a-G1d / G3 / G6 / G7'   # expect NO output until 3b ships
-#   Today the single hit is test_selection_reachability_guardrails.py:13, a header comment
-#   listing G7 among the guardrails that "arrive with their own". An assertion, not a mention,
-#   is what closes 3b -- so grep for the ASSERTION, not the label.
+# --- item 3b: G7 CANDIDATE FINDER. This is not a verdict -- read the next comment.
+grep -rn 'G7' src/tests/            # today: 1 hit, the header comment at
+                                    # test_selection_reachability_guardrails.py:13 listing G7
+                                    # among the guardrails that "arrive with their own"
+#   A MENTION IS NOT A GUARDRAIL. Open every hit and confirm it ASSERTS that the mount dataset
+#   value equals the backend's staged dataset. A test named for G7 that asserts nothing satisfies
+#   this grep and closes nothing.
 
-# --- item 3: is there a Y3 guardrail? There is none in the design's §5 table either.
-grep -rn 'nn_model' src/tests/ | grep -i 'hydrat\|reload\|restore' || echo "no Y3 guardrail"
+# --- item 3: Y3 guardrail CANDIDATE FINDER. File-scoped on purpose, and noisy on purpose.
+grep -rl 'nn_model' src/tests/ | xargs grep -ln 'reload\|hydrat\|restore' || echo "no candidates"
+#   Measured 2026-09-22: 4 candidate files, and ALL FOUR are incidental -- "auto-restored" in a
+#   fixture docstring, "silently restore the deadlock" in a comment. There is still no Y3
+#   guardrail, which the design's §5 table independently confirms (G1a-G11, nothing on the Y3
+#   read side). Open each candidate; do not trust the count.
 
 # --- §12 still closed: 14 seeds / cascor 8 / recurrence 6 / unseeded arc_agi + csv_import
 python -c "from src.model_registry import DATASET_TYPES; print(len(DATASET_TYPES))"
@@ -619,6 +625,22 @@ attempts.** A sixth round is the correct default. The one structural lesson: **e
 was introduced by that round's own fix**, never inherited — so the text to re-read hardest is the
 text you just changed, and the statements most likely to be stale are the ones that *scope* what
 you changed (ranges, orders, counts, "the only X") rather than the change itself.
+
+> **Round 5 did it again, in the commands it added to catch exactly this.** Both new §
+> Verification commands were defective on first write, and both produced the *right answer today by
+> luck*:
+>
+> - The `G7` check **grepped the label** while the comment beside it said *"grep for the ASSERTION,
+>   not the label"*. A test named for `G7` that asserts nothing would have satisfied it.
+> - The `Y3` check was **line-scoped** (`grep nn_model | grep reload`), so a guardrail naming the
+>   concern in its title and touching `nn_model` twenty lines down would not match. It printed
+>   "no Y3 guardrail" — the correct answer, by accident. File-scoped, it finds **4 candidates**,
+>   all of them incidental matches in docstrings and comments.
+>
+> Both are now **candidate finders that say so**, with the measured result recorded beside them.
+> **A verification command is an assertion about the world and needs the same scepticism as a
+> sentence** — including "does it produce this output because the claim is true, or because the
+> command is too narrow to see the counter-example?"
 
 **The count lesson is now sharper than "state your criterion", which item 6 already did.** The
 criterion was executed exactly and still measured the wrong thing: *matching a string* is not
