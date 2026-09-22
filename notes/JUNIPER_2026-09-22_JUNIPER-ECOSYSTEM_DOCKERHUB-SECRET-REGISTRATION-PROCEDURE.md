@@ -118,7 +118,11 @@ pull-request run cannot use it. The branch policy is itself a protection rule: t
 `branch_policy` among the protection rules of juniper-cascor's `pypi` environment, next to
 `required_reviewers` and `wait_timer`. And "the job won't start until all of the environment's
 protection rules pass". (GitHub Docs, *Deployments and environments* and *Control deployments*,
-read 2026-09-22.) Neither job runs only on release tags. In
+read 2026-09-22.) **This ecosystem has already seen it happen.** After the `testpypi`
+environments got tag-only rules, `gh workflow run publish.yml --ref main` was run as a negative
+control. The TestPyPI job failed with **zero steps** and the annotation *Branch "main" is not
+allowed to deploy to testpypi due to environment protection rules*. That is recorded in
+juniper-ml#1151, 2026-08-17. Neither job runs only on release tags. In
 `juniper-cascor/.github/workflows/publish-image.yml`:
 
 | job | triggers | refs it runs on | a tags-only `dockerhub` environment |
