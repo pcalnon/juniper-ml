@@ -2,7 +2,7 @@
 
 **Session**: container-registry rollout — evaluating the 09-15 handoff, closing its sweep, and the residuals four validation lanes found
 **Predecessor**: `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md` — **read it from `main`, not from a worktree** (see the first trap below)
-**Status**: **PARTLY CONSUMED 2026-09-22.** Items 2–4 are done, item 1 has narrowed, and the Wave 4 bullet is superseded. Read the banner before the goal.
+**Status**: **PARTLY CONSUMED 2026-09-22.** Items 2–4 are done, item 1 has narrowed, the Wave 4 bullet is superseded, and the published-worker defect in the title is resolved for the image (v0.6.1). Read the banner before the goal.
 
 ---
 
@@ -25,9 +25,13 @@
   session said on 2026-09-22, at about 19:35Z, that it was **evaluating** this, and nothing had
   been opened for it at the time of writing. Check open PRs in the five image repos before
   starting it.
-- **"A published image is wrong right now" still holds.** The fix release is proposed as
-  **juniper-cascor-worker#194** (0.6.1): green, waiting for the owner's merge and Release. The
-  0.6.0 **wheel** is wrong too; its `__init__.py` hard-codes `"0.4.0"`.
+- **"A published image is wrong right now" is RESOLVED for the image.** **v0.6.1** was released
+  2026-09-22 at 23:03Z, from juniper-cascor-worker#194 (merged `38f39cb8`).
+  `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and run, prints `0.6.1 0.6.1`. At 23:31Z
+  the PyPI upload was still waiting at the owner's `pypi` gate. The 0.6.0 image and wheel still
+  report `0.4.0` and always will; the 0.6.0 wheel's `__init__.py` hard-codes `"0.4.0"`.
+  juniper-deploy still pins `0.6.0` (`docker-compose.yml:364`, `values.yaml:301`), and a
+  concurrent session has taken the repin.
 - **The Wave 4 bullet is superseded.** The owner ruled §3 of
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` as
   **Option B**: the credential is an **environment** secret, not a repository secret
