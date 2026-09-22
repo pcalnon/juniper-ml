@@ -1623,10 +1623,22 @@ jobs:
   # in ml#1944, where the adjacent H2-in-fence rule failed ADDED files for problems they did not
   # contain. So: soak first.
   #
+  # THE SOAK HAS SINCE CONTRADICTED THE BACKTEST -- which could not have seen this: it scored merged
+  # commits, and none of its 40 exercised C2 or C4. Live record 2026-09-18..22, every PR head: 9
+  # distinct findings, 2 true and 7 false, and all 7 false ones were still present at their PR's
+  # FINAL head, so a required version would have blocked 7 merges. Five are C4 reading a deliberate
+  # heading rename ("... — NOT CHOSEN", a strikethrough, a corrected figure) as a LOST heading; two
+  # are C2 firing on a wrapped prose line opening `git).` or `make the`. Neither check has a waiver.
+  # Record: prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-
+  # corrected-and-the-fleet-slack-deficit.md, § Re-evaluation 2026-09-22.
+  #
   # PROMOTION PATH (owner-ratified, flood analysis §4 decision 8): soak advisory, then promote IN
-  # THE RULESET -- never via the Quality Gate's `needs:`, which gates nothing. Promote by dropping
-  # the `|| true` below and adding this job's NAME as a required context. Until then this job is
-  # green by construction and reports through annotations and the job summary.
+  # THE RULESET -- never via the Quality Gate's `needs:`, which gates nothing. Promote by replacing
+  # the step's FINAL `exit 0` with `exit "$rc"` and adding this job's NAME as a required context.
+  # Deleting that `exit 0` is NOT enough: the `if` before it is then the last command and returns
+  # 0 either way, so the check still cannot fail. Decide at the same time whether rc 2 ("refused to
+  # report") should fail, and whether the early `exit 0` on a failed diff should. Until then this
+  # job is green by construction and reports through annotations and the job summary.
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   markdown-structure-advisory:
     name: Markdown Structure (advisory soak)
@@ -1695,7 +1707,10 @@ jobs:
           if [ "$rc" -ne 0 ]; then
             # An annotation, not a failure -- the soak is worthless if nobody sees the findings,
             # and worse than worthless if it blocks a PR before the evidence justifies it.
-            echo "::warning title=Markdown structure C1-C4 (advisory, exit ${rc})::findings against ${base}; see the job summary. Not blocking during the soak."
+            # NO COMMA in the title: a comma ENDS a workflow-command property, and the title used
+            # to read "(advisory, exit N)" -- so the API recorded "Markdown structure C1-C4
+            # (advisory" and the exit code never left the log.
+            echo "::warning title=Markdown structure C1-C4 (advisory) exit ${rc}::findings against ${base}; see the job summary. Not blocking during the soak."
           fi
           exit 0
 

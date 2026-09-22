@@ -86,21 +86,30 @@ WHAT THIS TOOL DOES DIFFERENTLY
 It also prints v1's unfiltered span alongside, so the correction is auditable rather than
 asserted.
 
-KNOWN DEFECT -- RE-RUN TAILS (found 2026-09-22; this tool is NOT corrected in place)
-------------------------------------------------------------------------------------
-`head_rows` reads check-runs with the API's default `filter=latest`, so a RE-RUN replaces the
-first attempt of that context and the span runs from the ORIGINAL start to the re-run's finish:
+KNOWN DEFECT -- LATER EXECUTIONS INFLATE THE SPAN (found 2026-09-22; NOT corrected in place)
+-------------------------------------------------------------------------------------------
+`head_rows` reads check-runs with the API's default `filter=latest`, which keeps the latest
+check-run per name WITHIN EACH WORKFLOW RUN. Two consequences:
 
-    juniper-canopy#653       first pass FAILED 10:08Z; one job re-run at 19:01Z    33,299 s
-    juniper-recurrence#175   a ~743 s pass; pre-commit ran on the head 2.5 h later  9,886 s
+  * a RE-RUN ATTEMPT replaces its run's earlier attempt -- and the jobs that passed are COPIED
+    into the new attempt with their original timestamps -- so the span runs from the pass's
+    original start to the re-run's finish;
+  * a workflow run started by a LATER EVENT on the same head (a PR edit re-firing `Guard PR
+    base branch`, a second trigger) is a different run, is not replaced, and enters the span.
 
-`safe_merge` reports a failure when it happens, and a later invocation starts a fresh wait,
-so a re-run tail is never spent against a budget -- and both figures exceed 4x p90, so the
-sizing rule cannot be satisfied over them at all. The raw max this tool prints is therefore
-an upper bound on the healthy worst case, not the healthy worst case. Size budgets from
-`util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py rerun-split`, which computes this tool's
-own span over `filter=all` and sets aside every head carrying a sequential same-name re-run.
-Setting heads aside can only LOWER a max, so the two tools agree wherever no re-run occurred.
+    juniper-canopy#653      first pass FAILED at 10:08Z; two jobs re-run at 19:01Z   33,299 s
+    juniper-recurrence#175  two run sets fired 1 s apart; concurrency cancelled 5
+                            required contexts and 4 aggregators failed; the cancelled
+                            pre-commit run was re-run 2.5 h later, merge 4 s after it  9,886 s
+
+A later execution is not part of the pass `safe_merge` waited on, and both figures exceed
+4x p90, so the sizing rule cannot be satisfied over them. The raw max printed here is an
+upper bound, not the healthy worst case. Size budgets from
+`util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py first-pass`: each head's FIRST PASS (the
+first execution of every required context, over `filter=all`), over heads whose first pass
+passed. It drops no head for a repeat -- an earlier rule that did set aside 13 heads whose
+only repeat was a successful `Guard PR base branch` run, and dropping heads can only LOWER a
+max, the unsafe direction for a "budget > max" rule.
 
 Usage
 -----

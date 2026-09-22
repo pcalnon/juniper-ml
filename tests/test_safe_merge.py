@@ -31,21 +31,28 @@ _spec.loader.exec_module(safe_merge)
 
 # THE SINGLE SOURCE OF TRUTH FOR MEASURED CI SPANS. repo -> (p90, observed_max), required
 # contexts only, over the last 30 merged heads, RE-MEASURED 2026-09-22 with
-# `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py rerun-split`: v2's own span
-# (`util/ad-hoc/2026-09-08_measure_required_check_span_v2.py`) with every head that carries a
-# sequential same-name RE-RUN set aside. Clean heads per row: ml 30, data 28, cascor 27,
-# canopy 26, cascor-worker 29, data-client 28, deploy 29, recurrence 27.
+# `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py first-pass`: each head's FIRST PASS --
+# the first execution of every required context, from `check-runs?filter=all` -- over the heads
+# whose first pass passed. Healthy heads per row: ml 30, data 30, cascor 29, canopy 27,
+# cascor-worker 30, data-client 30, deploy 30, recurrence 29. An independently written
+# instrument in the 2026-09-22 consensus round reproduced all eight rows exactly.
 #
-# WHY RE-RUN HEADS ARE SET ASIDE. v2 reads check-runs with the API's default
-# `filter=latest`, so a re-run REPLACES the first attempt and the span runs from the original
-# start to the re-run's finish. Raw v2 put canopy's max at 33,299 s (#653: its first pass FAILED
-# at 10:08 UTC 2026-09-22, and one job was re-run at 19:01) and recurrence's at 9,886 s (#175:
-# a clean ~743 s pass, then a pre-commit run on the same head 2.5 h later). safe_merge reports a
-# failure when it happens, and a later invocation starts a fresh wait, so a re-run tail never
-# counts against a budget -- and both figures exceed 4x p90, so no budget could satisfy the
-# rule over them. Setting heads aside can only LOWER a max: the three maxima that forced raises
-# on 2026-09-22 (data 2589, data-client 2565, deploy 965) are clean single passes and read the
-# same on raw v2.
+# WHY THE FIRST PASS, NOT v2's RAW SPAN. v2 (`util/ad-hoc/2026-09-08_measure_required_check_span_v2.py`)
+# reads check-runs with `filter=latest`, the latest per name WITHIN EACH WORKFLOW RUN, so an
+# execution AFTER the pass enters its span: a re-run attempt (its passed jobs are copied in with
+# their original timestamps), or a run started by a later event. Raw v2 put canopy's max at
+# 33,299 s (#653: its first pass FAILED at 10:08 UTC 2026-09-22 and two jobs were re-run at
+# 19:01) and recurrence's at 9,886 s (#175: concurrency cancelled part of its first pass and the
+# cancelled pre-commit run was re-run 2.5 h later). Neither later execution is part of the pass
+# safe_merge waits on, and both figures exceed 4x p90, so no budget could satisfy the rule over
+# them. No head is DROPPED for a repeat: an earlier rule that did so set aside 13 healthy heads
+# whose only repeat was a successful `Guard PR base branch` run, and dropping heads can only
+# LOWER a max -- the unsafe side of a "budget > max" rule. The five unhealthy heads (canopy
+# #653/#651/#636, cascor #647, recurrence #175) all had first passes BELOW their repo's max.
+#
+# juniper-ml's row is the window #1981-#2015. Two merges later the window read (733, 1061): #1981,
+# a 2005 s healthy pass, had slid out of it. The pin keeps the demonstrated 2005 s, because a
+# window edge moving is not evidence the worst case improved.
 #
 # THIS CONSTANT EXISTS BECAUSE THE NUMBERS WERE PINNED TWICE AND DRIFTED APART. `KillResilienceTest`
 # and `TimeoutSizingTest` each carried their own copy; ml#1828 and ml#1851 updated the first and
@@ -64,7 +71,7 @@ _spec.loader.exec_module(safe_merge)
 MEASURED_SPANS = {
     "juniper-ml": (910, 2005),
     "juniper-data": (1651, 2589),
-    "juniper-cascor": (1615, 2221),
+    "juniper-cascor": (1717, 2221),
     "juniper-canopy": (1798, 2174),
     "juniper-cascor-worker": (1576, 2059),
     "juniper-data-client": (1545, 2565),
@@ -589,19 +596,23 @@ class KillResilienceTest(SafeMergeTestBase):
         re-write both halves rather than trusting the pair below.
 
         AND IT HAPPENED AGAIN. Re-measured 2026-09-22, thirteen days later, THREE budgets no
-        longer cleared their own max, each on a clean single pass stretched by within-span
-        queueing on the contended 2026-09-11 / 2026-09-21 windows:
+        longer cleared their own max. Each max is a single pass -- every workflow run on
+        attempt 1, each required context run once, none failed -- and each was mostly RUNNER
+        QUEUE, not CI work (measured in the 2026-09-22 consensus round: 64-82% of the span had
+        no required job running while one waited):
 
             juniper-data         p90  955 -> 1651   max 2126 -> 2589 (#405)   2400 -> 3300
             juniper-data-client  p90  896 -> 1545   max 1725 -> 2565 (#206)   2400 -> 3300
             juniper-deploy       p90  262 ->  450   max  375 ->  965 (#211)    700 -> 1400
 
-        Raised mid-window (data and data-client hit TIMEOUT_CEILING first). This test stayed
-        GREEN through all thirteen days: it can only assert against the pair recorded here,
-        so a live budget going stale is invisible to it until someone re-measures.
+        Raised mid-window (data and data-client hit TIMEOUT_CEILING first). Whether a budget
+        should absorb that queue at all is an OPEN OWNER DECISION -- see the note above
+        `REPO_TIMEOUTS` in util/safe_merge.py, which records the dissent. This test COULD NOT
+        GO RED through those thirteen days: it asserts only against the pair recorded here, so
+        a live budget going stale is invisible to it until someone re-measures.
 
-        NUMBERS ARE FROM 2026-09-22, n=30 merged heads, v2's span with RE-RUN heads set
-        aside -- see `MEASURED_SPANS` for why and for `n` per row. Before that, the v2
+        NUMBERS ARE FROM 2026-09-22, n=30 merged heads, each head's FIRST PASS over healthy
+        heads -- see `MEASURED_SPANS` for why and for `n` per row. Before that, the v2
         INSTRUMENT, n=30, RE-MEASURED 2026-09-09. v1
         (`util/ad-hoc/2026-08-20_measure_required_check_span.py`) filtered nothing, so every
         bot and out-of-band check-run on the head SHA entered the span -- it overstated the

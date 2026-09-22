@@ -43,8 +43,13 @@ MUTATIONS = [
     ),
     (
         "resolver never reads the table",
-        "        return int(mod.timeout_for(repo)), f\"measured budget for {repo} ({path.name} timeout_for)\"\n",
-        "        return DEFAULT_TIMEOUT, f\"measured budget for {repo} ({path.name} timeout_for)\"\n",
+        "        seconds = int(mod.timeout_for(repo))\n",
+        "        seconds = DEFAULT_TIMEOUT\n",
+    ),
+    (
+        "unmeasured repo labelled as measured",
+        "        return seconds, f\"{path.name} DEFAULT_TIMEOUT -- {repo} has no measured budget\"\n",
+        "        return seconds, f\"measured budget for {repo} ({path.name} REPO_TIMEOUTS)\"\n",
     ),
     (
         "silent fallback (source no longer says FALLBACK)",

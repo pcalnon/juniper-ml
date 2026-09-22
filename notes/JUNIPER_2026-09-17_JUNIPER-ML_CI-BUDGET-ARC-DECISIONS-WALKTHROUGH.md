@@ -79,13 +79,15 @@ empty, and proving that took two probes.
 checks every week. The header's *"No additional secret is required for the common case"* is what
 made that read as fine.
 
-> **Mechanism corrected 2026-09-22** (the re-evaluation in
+> **Refined 2026-09-22** (the re-evaluation in
 > [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)).
-> The runs were not *suppressed*. On all four `GITHUB_TOKEN` PRs — #1304, #1517, #1806, #1932 —
-> the `pull_request` runs were **created** and parked at `action_required` with **zero jobs**. The
-> effect above is right, the mechanism is not, and the workflow header now says so. The fix is
-> verified by effect: #1970 (2026-09-21), the first weekly PR after it, ran **5 of 5** runs on
-> attempt 1 under `juniper-release-train[bot]`. That is one week, `n = 1`.
+> "Does not trigger" is right in effect and incomplete as a mechanism. All 18 `GITHUB_TOKEN` PRs
+> this workflow opened (#325–#1932) ran **zero jobs** at opening, in two shapes. 5 got no
+> `pull_request` run at all, the latest #1139 on 2026-08-17. 13 had their runs **created** and
+> parked at `action_required`: 12 of those were released by the owner re-running them, #1806 by a
+> close/reopen. The fix is verified by effect: #1970 (2026-09-21), the first weekly PR after it,
+> ran jobs in all 5 of its opening-commit `pull_request` runs on attempt 1, under
+> `juniper-release-train[bot]`. That is one week, `n = 1`.
 
 **No new secret was needed.** `release-train.yml` already mints a `create-github-app-token`
 (`RELEASE_TRAIN_APP_ID` = 4362741) for exactly this reason. The same pattern now gates on that
@@ -277,6 +279,12 @@ second happened to include.
 2. **Promoting the §5.3 soak** once it has run clean on enough real PRs — a ruleset change, adding
    the job name `Markdown Structure (advisory soak)` as a required context and dropping the step's
    trailing `exit 0`.
+   > **Corrected 2026-09-22.** Dropping the trailing `exit 0` does not make the check able to fail:
+   > the `if` before it becomes the last command and returns 0 either way. The step must end in
+   > `exit "$rc"`. The soak has also not run clean — 7 false findings in its first four days, every
+   > one present at its PR's final head — so the evidence is currently against promotion. Record:
+   > [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md)
+   > § Re-evaluation 2026-09-22.
 3. **`juniper-cascor-client`'s budget** if that repo comes back into play (§1) — re-measure first.
 
 ---

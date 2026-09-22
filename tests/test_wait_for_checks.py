@@ -658,8 +658,11 @@ class TimeoutResolutionTest(unittest.TestCase):
         self.assertTrue(undercut, "no budget exceeds the fallback -- the row test is no longer discriminating")
 
     def test_unmeasured_repo_takes_safe_merges_own_fallback_not_1800(self):
-        seconds, _ = MOD.resolve_timeout("juniper-not-a-measured-repo")
+        """...and is NOT labelled "measured": a default dressed as a measurement is false authority."""
+        seconds, source = MOD.resolve_timeout("juniper-not-a-measured-repo")
         self.assertEqual(seconds, self.SM.DEFAULT_TIMEOUT)
+        self.assertIn("has no measured budget", source)
+        self.assertNotIn("measured budget for", source)
 
     def test_unreadable_table_falls_back_and_says_so(self):
         with tempfile.TemporaryDirectory() as td:
