@@ -7,9 +7,9 @@
 both reported, and every finding is applied or recorded as dissent in §11. Verbatim reports:
 `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md` and
 `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`.
-**§8 is executable in this order and no other**: P0.5 items 1–2, then **P0 step −1** (land the nine
-scripts §8 invokes — they exist today only as tagged blocks here), then **P0 step 0**'s owner gates,
-then P0, then P0.5b. Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named
+**§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and
+merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s
+owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder). Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named
 in P1 step 4.
 **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
 **Companions**:

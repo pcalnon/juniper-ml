@@ -1340,10 +1340,12 @@ edit(
 # --- D8: bare P0.5 references now that the bucket is split ----------------------------
 edit(
     "r3-ref-header",
-    """then **P0 step 0**'s owner gates,
+    """**§8 is executable in this order and no other**: P0.5 items 1–2, then **P0 step −1** (land the nine
+scripts §8 invokes — they exist today only as tagged blocks here), then **P0 step 0**'s owner gates,
 then P0.""",
-    """then **P0 step 0**'s owner gates,
-then P0, then P0.5b.""",
+    """**§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and
+merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s
+owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).""",
 )
 
 edit(
