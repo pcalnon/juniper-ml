@@ -1221,7 +1221,7 @@ outputs:
         self.assertEqual(launched.get("OMP_NUM_THREADS"), "7", msg="the H-11 split must not overwrite a width the matrix names")
         row = json.loads((suite_dir / "registry.jsonl").read_text().splitlines()[0])
         self.assertEqual(row["runtime_env"]["OMP_NUM_THREADS"], "7")
-        self.assertEqual(row["thread_budget"]["OMP_NUM_THREADS"], "2", msg="both must be recorded, or the override is invisible in the evidence")
+        self.assertEqual(row["thread_budget"]["OMP_NUM_THREADS"], run_suite.thread_budget_env("cascor", 2)["OMP_NUM_THREADS"], msg="both must be recorded, or the override is invisible in the evidence")
 
     def test_an_INHERITED_width_does_NOT_beat_the_h11_budget(self) -> None:
         """The override is scoped to intent, and an inherited value carries none.
@@ -1236,8 +1236,17 @@ outputs:
         rc, dump, _suite_dir, out = self._run("parallel", 2)
         self.assertEqual(rc, 0, msg=out)
         launched = self._launched(dump)
-        self.assertEqual(launched.get("OMP_NUM_THREADS"), "2", msg="an inherited width must lose to the H-11 split")
-        self.assertEqual(launched.get("CASCOR_NUM_PROCESSES"), "4", msg="H-11's split, not the base config's 5")
+        # Expected values are DERIVED from `thread_budget_env`, never written as literals: its
+        # split is `max(1, nproc // (2 * max_parallel))`, so a hard-coded "4" encodes this
+        # 16-core host and reads '1' on a 2-core CI runner. That is the same host-dependence
+        # that made these cases vacuous before the cascor tree was pinned, one layer down —
+        # and the literal would have failed loudly rather than silently, but only in CI.
+        expected = run_suite.thread_budget_env("cascor", 2)
+        self.assertEqual(launched.get("OMP_NUM_THREADS"), expected["OMP_NUM_THREADS"], msg="an inherited width must lose to the H-11 split")
+        self.assertEqual(launched.get("CASCOR_NUM_PROCESSES"), expected["CASCOR_NUM_PROCESSES"], msg="H-11's split, not the base config's 5")
+        # …and the point of the test: the base config's values are the ones that must NOT win.
+        self.assertNotEqual(launched.get("OMP_NUM_THREADS"), "3", msg="the base config's inherited blas_threads must not reach the launcher")
+        self.assertNotEqual(launched.get("CASCOR_NUM_PROCESSES"), "5", msg="the base config's inherited num_processes must not reach the launcher")
 
     def test_eval_metrics_is_exempt_from_the_h11_contest(self) -> None:
         """H-11 is a THREAD budget and has no opinion about eval metrics.
@@ -1251,7 +1260,7 @@ outputs:
         launched = self._launched(dump)
         self.assertEqual(launched.get("JUNIPER_CASCOR_EVAL_METRICS_ENABLED"), "false", msg="an inherited non-thread key must survive the parallel filter")
         # …while, in the same run, the inherited THREAD keys did lose to H-11.
-        self.assertEqual(launched.get("OMP_NUM_THREADS"), "2")
+        self.assertEqual(launched.get("OMP_NUM_THREADS"), run_suite.thread_budget_env("cascor", 2)["OMP_NUM_THREADS"])
 
     def test_a_bad_runtime_value_refuses_the_suite_before_any_cell_launches(self) -> None:
         """Fail-closed, and fail EARLY -- the D5 lesson: a late guard has already written evidence."""

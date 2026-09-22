@@ -30,6 +30,20 @@
 #   2. A long-lived worktree drifts BEHIND main, and these suites run against whatever the
 #      worktree holds. This one was 44 files behind when the script was written. A green run
 #      here does not prove a green run on a branch cut from current main.
+#   3. THIS SCRIPT DOES NOT FIX THE BIGGEST GAP, which is that a dev box is host-ADVANTAGED.
+#      It runs the same suites in the same privileged environment, so a test that passes here
+#      for a reason CI does not share still passes here. Two instances, both from #2002 and
+#      both invisible to a full local sweep:
+#        * a parallel `app: cascor` suite is gated by `check_cascor_parallel_floor`, which
+#          probes for a juniper-cascor SIBLING. A dev checkout has one; a runner does not, so
+#          the suite was refused (exit 2) and the assertions never reached their subject.
+#          Pin `JUNIPER_EXP_CASCOR_SRC_DIR` at a tree the test builds.
+#        * `thread_budget_env` splits on `os.cpu_count()`, so a literal expectation encodes
+#          the dev box's core count. 16 cores gives 4; a 2-core runner gives 1. DERIVE
+#          expected values from the function; never write the number.
+#      To flush the second class locally, monkeypatch `os.cpu_count` before importing the
+#      suite and re-run -- confirm the patch actually moves the budget, or the re-run is
+#      vacuous.
 set -uo pipefail
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 2
