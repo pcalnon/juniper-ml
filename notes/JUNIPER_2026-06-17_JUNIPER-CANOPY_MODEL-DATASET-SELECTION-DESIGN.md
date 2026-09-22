@@ -52,7 +52,7 @@ A0 (registry + de-dup) is independent of all UX choices and proceeds first (§10
 | D2 | **Reason at the locus, via label suffix.** Incompatible options are **disabled (greyed)** to prevent selection; the *reason* is rendered **on the option itself** — a label suffix in the dataset dropdown ("Spirals — needs 2-D model") and a reason cell in the model table. No reverse-mapped selected-side tooltip as the sole channel. |
 | D3 | **Compatibility grid is a secondary, informational view** behind a "compatibility / help" affordance — not the primary selector. |
 | D4 | **Clear/reset = conventional inline ✕** on each control (clearing one auto-widens the other via the gate). The original cross-placement is retained as a **spike alternative** (OQ-2), not the default. |
-| D5 | **Conflict rule is a swappable policy** (§5.6). Correctness comes from the predicate + backend (applied symmetrically); greying/labelling is a best-effort affordance, **not** the correctness guarantee. The default policy (dataset-primary vs model-primary) is chosen after the A1 spike / first real use. |
+| D5 | **Conflict rule is a swappable policy** (§5.6). Correctness comes from the predicate + backend (applied symmetrically); greying/labelling is a best-effort affordance, **not** the correctness guarantee. ~~The default policy (dataset-primary vs model-primary) is chosen after the A1 spike / first real use.~~ **Default RATIFIED 2026-09-22 as `model-primary`, resolved by clearing — see §5.6 and OQ-6.** |
 | D6 | **Scale is first-class** (§6): near-term dozens-to-hundreds of model variants → categorization + faceting + search, backed by a registry carrying `category`/`family`/`variant`/`version`. |
 | D7 | **Model selection lives on a dedicated full-width surface** (a Models tab or modal — §9 OQ-1) with a **searchable, facet-filtered table**. The **sidebar keeps the dataset dropdown + a compact "Model: X ▸ change" summary** that opens the surface. The dropdown is *not* the scale vehicle. |
 | D8 | **Lifecycle status drives presentation** (§5.7). `status ∈ {live, coming_soon, experimental, deprecated, broken}`; non-`live` models are shown but Train-disabled with a distinct reason — separate from incompatibility greying. |
@@ -166,9 +166,51 @@ swappable policy** in the resolver:
 - *model-primary:* keep model, clear dataset + notice. (Fits the model-centric
   benchmarking trajectory.)
 
-Default chosen post-spike. The predicate + backend (§5.9) enforce correctness regardless
+~~Default chosen post-spike.~~ The predicate + backend (§5.9) enforce correctness regardless
 of which policy/UI affordance is active — greying is best-effort, **not** the guarantee
 (so a coarse-greying gap cannot push an invalid pair through).
+
+#### 5.6.1 RATIFIED 2026-09-22 — `model-primary`, resolved by clearing (OQ-6 closed)
+
+**Decision: `model-primary`.** A conflict is resolved by clearing the *dataset* and
+notifying; the model is kept. Shipped in juniper-canopy#652.
+
+Three things are worth recording, because the gap between what this section said and what
+shipped lasted three months and was not visible from either side alone.
+
+**1. Neither policy was implementable when this was written.** Both options above resolve by
+*clearing*, and the dataset dropdown was `clearable=False` — a null dataset could not be
+expressed. N7 of
+[`JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md)
+records this: that design did not choose a default, it made OQ-6 *answerable* by making both
+axes clearable. So "decide post-spike" was not deferral for want of evidence; the decision
+had no expressible outcome until §4 shipped.
+
+**2. What shipped in the interim was a third thing, mislabelled as the first.**
+`_gate_dataset_options_handler` snapped the dataset to the first compatible entry
+(`enabled[0]`) under the comment *"(dataset-primary conflict policy, D5)"*. That keeps the
+**model** and changes the dataset — model-primary's direction, not dataset-primary's — and
+it *replaces* rather than clears, which is neither policy in this section. A reader checking
+the code against this document would have found a policy name that appears here and a
+behaviour that does not.
+
+**3. The ratified behaviour differs from the snap in a way that matters.** Clearing lands on
+`⊥`, where Apply and Start are already disabled, so the operator chooses deliberately from
+the gated list instead of inheriting a dataset the gate picked. The consequence to watch:
+the empty-set branch (§5.8) *also* returns a cleared value, so the two states are now
+distinguishable only by their **notice** — one informational and auto-dismissing, one
+blocking and persistent. canopy#652 pins that distinction in
+`test_clearing_is_distinguishable_from_the_empty_set`.
+
+`dataset-primary` remains implementable and is not foreclosed; D5's "swappable" property is
+intact. This records which way the switch is set, not that it was welded.
+
+> **Identifier collision, for anyone grepping.** `OQ-6` names a *different* open question in
+> the juniper-recurrence lineage — the NPZ 3-D contract, refactor-owned, in
+> `JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md` and
+> `JUNIPER_2026-06-05_JUNIPER-RECURRENCE_RECURSE-DELTA-T-HANDLING.md`. Two unrelated
+> questions, same label, neither wrong in its own document. Closing this one says nothing
+> about that one.
 
 ### 5.7 Lifecycle / gated models (D8)
 
@@ -302,7 +344,11 @@ conflated *shape/temporal structure* (now `ndim` + `temporal`/`requires_dt`) wit
 - **OQ-4:** table component (`DataTable` vs custom vs AG-Grid).
 - **OQ-5:** the precise input-requirement axes separating category-i/ii models as they
   land (fills `temporal`/`requires_dt` + any new clause). Engine is robust to deferral.
-- **OQ-6:** conflict-policy default (dataset- vs model-primary) — decide post-spike (D5).
+- ~~**OQ-6:** conflict-policy default (dataset- vs model-primary) — decide post-spike (D5).~~
+  **CLOSED 2026-09-22: `model-primary`, resolved by clearing.** See §5.6.1; shipped in
+  juniper-canopy#652. It could not have been decided "post-spike" as written — both
+  candidates resolve by clearing, and neither was expressible until both axes became
+  clearable in §4 of the selection-reachability design.
 
 ---
 
