@@ -54,7 +54,7 @@ construction; it is in the logger internals, which is P2/P3 territory:
 naming its path. That is deliberate: the 2026-08-26 corpus recorded only a *path*, into
 `~/.local/state`, which is neither version-controlled nor durable. A path is not an identity.
 
-The cell is `util/experiments/suites/perf/p01-logging-corpus-cap4.yaml`, and it is **not** the August
+The cell is `util/ad-hoc/2026-09-22_p01_logging_corpus_cell.yaml`, and it is **not** the August
 cell. **The August cell can no longer run**, and both ways it fails are worth knowing:
 
 1. It carries `train_ratio: 0.8` / `test_ratio: 0.2` and no `val_ratio`, from before the val split.
@@ -95,7 +95,7 @@ not durable** — `prof_manifest.txt` is what survives. Re-create with
 ```bash
 bash util/ad-hoc/2026-09-22_p01_logging_corpus_run.bash \
     <cascor-worktree>/src \
-    util/experiments/suites/perf/p01-logging-corpus-cap4.yaml \
+    util/ad-hoc/2026-09-22_p01_logging_corpus_cell.yaml \
     ~/.local/state/juniper-experiments/<NEW-out-root> 360
 
 python util/ad-hoc/2026-09-22_p02_logging_share_decompose.py <out-root>/prof

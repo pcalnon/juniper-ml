@@ -622,7 +622,7 @@ Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical
    [`reports/p01-logging-corpus-2026-09-22/`](../reports/p01-logging-corpus-2026-09-22/README.md);
    instruments `util/ad-hoc/2026-09-22_p01_logging_corpus_run.bash` and
    `util/ad-hoc/2026-09-22_p02_logging_share_decompose.py`; cell
-   `util/experiments/suites/perf/p01-logging-corpus-cap4.yaml`.
+   `util/ad-hoc/2026-09-22_p01_logging_corpus_cell.yaml`.
    - **The §3.1 caveat holds and is why this is a LOWER BOUND.** 16.70 % is what the instrument can
      *attribute*; discarded-record f-string construction is inline in each caller's own self time
      and is not separately attributable. Do not restate it as "logging costs 16.7 %".
