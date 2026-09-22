@@ -52,14 +52,28 @@ Plus **juniper-ml#1977, #1981, #1982, #1984, #2003**, and **juniper-data#409** f
 > **The predecessor said nine.** It was ten: **canopy#648** was dropped from the list, and `A-N4`
 > and `A-N9` vanished from the record with it. Both are restored as items 11 and 12 below.
 
-**Remaining work.** Items **1, 2, 3 and 3b** are one PR-sequence and must be done in order — `3b`
-is hydration's acceptance criterion, not an optional extra; **4–8** are independent; **9–17** are
-record repairs and smaller gaps; **18–23** are § F, restored after this document dropped them.
+**Remaining work.**
 
-> **Why `3b` and not a renumber.** Items 11, 12, 18, 20 and 23 are cross-referenced by number from
-> § Validation record, from this session's PR bodies (juniper-ml#2018, #2021) and from a peer
-> session's addendum. Renumbering would silently re-point every one of them. A letter suffix is the
-> cheaper correction, and this range line is the only thing it invalidated.
+- **Items 1, 3 and 3b are ONE PR** — the design's **PR 2**
+  (`…REACHABILITY-DESIGN.md:349`): §4.10 hydration on *both* axes plus `G7`.
+- **Item 2 FOLLOWS it**, and may not precede it (`D-N10`,
+  `…REACHABILITY-DESIGN.md:404-409`: *"§4.10 lands dataset-axis hydration **first** (PR 2), after
+  which `⊥` appears only when the backend truly holds nothing"*).
+- **4–8** are independent; **9–17** are record repairs and smaller gaps; **18–21** are § F items
+  this document dropped and a peer restored; **22** is a live defect it never carried; **23** is
+  already fixed (canopy#656) and is kept as the record of what shipped.
+
+> **This line was wrong in the revision merged as juniper-ml#2021**, which said *"Items 1, 2, 3 and
+> 3b … must be done in order"*. That puts `⊥`-at-mount **before** the hydration it depends on —
+> contradicting `D-N10`, and contradicting item 2's own text two screens below. **Round 4's fix
+> introduced it**: adding `3b` forced a rewrite of the range line, and the rewrite asserted an order
+> without re-reading the ordering constraint it was restating.
+
+> **Why `3b` and not a renumber.** Items **4, 6, 14, 15, 19, 21 and 22** are cited from outside this
+> file — PR bodies, squash messages, and the peer addendum being added to
+> [`HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md`](HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md).
+> (Items 11 and 12 are cited only *within* this file; juniper-ml#2021 named the wrong set.)
+> Renumbering would silently re-point every external citation, so the letter suffix stands.
 
 ---
 
@@ -98,27 +112,51 @@ writers race for the dropdown's value — the `§4.1`-vs-`§4.10` two-writer con
 `nn_model`**. So `current_nn_model` is write-only and a reload shows "Active: CasCor" over a
 recurrence backend. Register entry: [`notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md`](../../notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md) §6.4.
 
-**The design phases this as PR 2 alongside item 1** (`…REACHABILITY-DESIGN.md:349` — *"§4.10
-hydration, **both** axes (X1's dataset-side sibling, Y3) **+ G7**"*).
+**The design phases this as PR 2 alongside item 1**
+(`…REACHABILITY-DESIGN.md:349` — *"§4.10 hydration, **both** axes (X1's dataset-side sibling, Y3)
++ **G7**"*).
 
-**3b. `G7` — the guardrail that proves item 1 worked. Do not build hydration without it.**
-`…REACHABILITY-DESIGN.md:287` defines it: *"the mount dataset value equals the backend's staged
-dataset (§4.10)"*, status **"fails — no hydration exists at all"**. The PR plan at `:349` pairs it
-with hydration in the same row, so it is not a follow-up: it is the acceptance criterion for items 1
-and 3. The only `G7` anywhere in canopy `src/` is a header comment
+> **Item 3 has NO guardrail, and that is a gap to close, not an omission to work around.** `G7`
+> is **dataset-axis only** (below), and the design's §5 test table
+> (`…REACHABILITY-DESIGN.md:274-291`) runs `G1a`–`G11` with **nothing covering the Y3 read side** —
+> `G5` is about `swapped is False`, not about hydrating `nn_model`. So item 3 can ship fully broken
+> with every guardrail green. **Specify a Y3 guardrail as part of this PR.**
+
+**3b. `G7` — the guardrail that proves ITEM 1 worked. Do not build hydration without it.**
+`…REACHABILITY-DESIGN.md:287` defines it: *"the mount **dataset** value equals the backend's staged
+dataset (§4.10)"*, status **"fails — no hydration exists at all"**. The PR plan at `…REACHABILITY-DESIGN.md:349` puts it in
+the same row as hydration, so it is not a follow-up: it is **item 1's acceptance criterion**. The
+only `G7` anywhere in canopy `src/` is a header comment
 (`src/tests/regression/test_selection_reachability_guardrails.py:13`) — **no test asserts it**.
 
-> **Both earlier revisions of this document quoted `:349` and stopped one token short of `+ G7`.**
-> The result was a handoff that told a successor to build the feature and not the test that proves
-> it. Verified 0 hits for `G7` in the revision merged as juniper-ml#2018.
+> **`G7` cannot stand in for a Y3 test.** It compares a *dataset* value against the backend's
+> *staged dataset*; no Y3 defect can make it fail. The revision merged as juniper-ml#2021 called it
+> *"the acceptance criterion for items 1 and 3"*, which both overstates its reach and **conceals the
+> missing Y3 guardrail above** — and contradicted this item's own heading in the same breath.
+
+> **Both earlier revisions of this document quoted `…REACHABILITY-DESIGN.md:349` and stopped one token short of `+ G7`** —
+> juniper-ml#2014's and #2018's alike, not #2018's alone. The result was a handoff that told a
+> successor to build the feature and not the test that proves it. Verified 0 hits for `G7` in the
+> revision merged as juniper-ml#2018.
 
 ### B. CLAIMED by a peer session — do not start these
 
-> **These claims LAPSE at 2026-09-29T00:00Z.** After that, treat items 4 and 20 as unclaimed and
-> start them, **unless** an open PR or a pushed branch carries the work. A document asserting the
-> claim — this one, or the peer's own addendum — **does not count as evidence that it is live**;
-> only a PR or a branch does. Without a lapse, a claim made by a session that has since ended
-> blocks every successor indefinitely, and the successor cannot tell a busy peer from a dead one.
+> **These claims LAPSE at 2026-09-29T00:00Z. Until then they hold — do not start items 4 or 20.**
+>
+> **From 2026-09-29T00:00Z onward**, treat them as unclaimed and start them **unless** an **open
+> PR** or a **pushed branch** carries the work. At that point, and only then, a *document* asserting
+> the claim — this one, or the peer's addendum to
+> [`HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md`](HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md)
+> — stops counting as evidence that it is live; only an open PR or a pushed branch does.
+>
+> Without a lapse, a claim made by a session that has since ended blocks every successor
+> indefinitely, and the successor cannot tell a busy peer from a dead one.
+
+> **The revision merged as juniper-ml#2021 got this wrong in a way that inverted it.** Its
+> "a document does not count; only a PR or a branch does" carried **no time qualifier**, and no PR
+> exists for either item today — so read literally it cancelled "do not start" *immediately*, which
+> is the opposite of a claim lapse. A rule about what happens *after* a deadline has to say so in
+> the same sentence.
 
 **4. `Y2` — model persistence for recurrence. Waves 2 and 3.**
 **Design of record: [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)**
@@ -137,11 +175,26 @@ named volume), no-deletion inherited from §6.4, and a third service status `"re
   `recurrence_service_adapter.py` still has only `train` and `training_status`. Peer session
   `canopy` is doing both now.
 
-The canopy-side defect: `main.py:2573`/`:2818` gate the snapshot path on
-`backend.backend_type == "service"`; the `else` branch writes cascor-shaped meta via h5py — zero
-LMU state — and returns `"Snapshot created successfully"` with `"mode": "real"`.
+The canopy-side defect: `main.py` gates the snapshot path on `backend.backend_type == "service"`;
+the `else` branch writes cascor-shaped meta via h5py — zero LMU state — and returns
+`"Snapshot created successfully"` with `"mode": "real"`.
 
-> **That gate is deliberate, not an oversight.** `main.py:2568-2573` carries the A1-iii-a rationale:
+> **There are THREE such conditions on that path, not two** — create, the **restore lookup**, and
+> restore itself. The middle one is the one every count so far has missed: under a
+> `RecurrenceBackend` the lookup returns **404 first**, because `_demo_snapshots` is populated only
+> in demo mode. A peer session probed it with a `TestClient` against a git archive of canopy
+> `886147b5` and measured **SAVE 201 `"success"` / RESTORE 404** — so the save silently lies and the
+> restore cannot find what the save claimed to write.
+>
+> **Neither this item nor the design counts the third.**
+> [`notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md`](../../notes/JUNIPER_2026-09-16_JUNIPER-RECURRENCE_MODEL-PERSISTENCE-DESIGN.md)
+> §8 item 3 and §11.4 step 3 both name two. Peer session `canopy` **claims wave 3 and will handle
+> all three there.**
+>
+> Cited by behaviour rather than line: the peer's line numbers are from `886147b5` and do not match
+> a current checkout. Locate by the `backend_type == "service"` predicate on the snapshot routes.
+
+> **That gate is deliberate, not an oversight.** `main.py` carries the A1-iii-a rationale beside it:
 > *"recurrence also exposes `_adapter` but it is a `RecurrenceServiceAdapter` with
 > cascor-incompatible semantics."* The fix is a **third branch**, never a widened predicate.
 
@@ -172,24 +225,31 @@ about another:
   exists — it never force-updates someone else's ref"*). That refusal is correct for a PR opener
   and is exactly why it cannot serve the existing-branch case. **No existing-branch driver has
   ever been promoted**, which is the whole of the open work.
-- **8** files under `util/ad-hoc/` carry their **own** `createCommitOnBranch` mutation rather than
-  calling the helper. Criterion: files containing a literal `createCommitOnBranch(input` mutation
-  site and **not** matching `create_signed_commit`, on `origin/main`.
+- **The duplicated work is 4 files.** This set has now been counted **five** times and been wrong
+  five times, so here is the whole taxonomy instead of a number — **do not re-derive it, and do not
+  quote one of these figures without its row**:
 
-  > **This number was published as 14 and was wrong — the fourth miscount of this one set in a
-  > single day, and the second in this document.** 14 is the count of files that *mention the
-  > string*; six of them mention it in prose or delegate to `open_signed_pr.py`
-  > (`2026-08-29_open_ceiling_bump_prs.py`, `2026-09-10_open_signed_lockfile_prs.bash`,
-  > `2026-09-21_handoff_apply_round40_laneB.py`, `2026-09-22_apply_round2_corrections.py`,
-  > `base_branch_guard/rollout.py`, `handoff_round39_apply_laneB2.py`).
+  | figure | what it actually counts | files |
+  |---|---|---|
+  | **17** | mention `createCommitOnBranch` anywhere | — |
+  | **14** | mention it **and** lack `create_signed_commit` | — |
+  | **8** | contain a literal `createCommitOnBranch(input` **mutation site** | the 4 below, plus `2026-08-12_open_branch_protection_probes.py`, `2026-08-13_sweep_duplicate_ci_runs.py`, `2026-09-15_fan_out_pr_budget_alarm.py` (new-branch openers: they `POST git/refs`) and `2026-08-21_d4_expected_head_oid_probe.py` (a one-off probe) |
+  | **4** | **existing-branch drivers carrying their own mutation** — the actual duplication | `2026-08-24_commit_driver_fix_to_pr_branch.py`, `2026-08-26_commit_files_to_pr_branch.py`, `2026-09-21_signed_move_on_branch.py`, `2026-09-22_append_signed_commit.py` |
+  | **6** | existing-branch drivers that **reuse** the helper | — |
+  | **10** | existing-branch drivers in total (4 + 6) | — |
+
+  > **Five wrong numbers, each defensible in isolation, is the finding.** `4` (predecessor, stale);
+  > `6` (sampled from a 14-commit-stale worktree); `14` (string matches published as a duplication
+  > count); `8` (mutation sites, but counting openers and a probe as drivers); and `17` if you grep
+  > the bare name. Every correction was more precise than the last and still answered a slightly
+  > different question than the sentence asked.
   >
-  > **The lesson is sharper than "state your criterion", which that paragraph already did.** The
-  > stated criterion was executed exactly and was still the wrong instrument for the claim: the
-  > claim was *carries its own mutation*, and matching a string is not carrying a mutation. **A
-  > criterion can be precise, reproducible, honestly disclosed, and measure something other than
-  > what the sentence asserts.** An earlier attempt at this same sweep was wrong a different way —
-  > it grepped only within files containing `createCommitOnBranch`, a denominator that
-  > structurally cannot contain a reuser which never mentions the string.
+  > **The lesson is sharper than "state your criterion" — the paragraph that shipped `14` already
+  > did that, and warned about criterion mismatch in the same breath.** A criterion can be precise,
+  > reproducible, honestly disclosed, and *still* measure something other than what the sentence
+  > asserts. Read the claim and the criterion as two separate sentences and ask what satisfies one
+  > but not the other: a file that **documents** the mutation satisfies the grep and not the claim;
+  > a **new-branch opener** carries the mutation but is not the duplication the item is about.
 - Therefore the **09-08 item stands as written** — *"promote one into `util/` with a hermetic test
   and retire the others"* — and **this session's 09-21 verdict on it ("MISSTATED — do not action
   as written") was wrong.** Do not inherit that verdict.
@@ -198,7 +258,7 @@ about another:
 
 **The set grows weekly** — `2026-09-21_signed_move_on_branch.py` and
 `2026-09-22_append_signed_commit.py` both postdate the predecessor's count. That growth rate, over
-a mutation that is duplicated 8 times, is the argument for the item.
+a mutation that four existing-branch drivers each re-implement, is the argument for the item.
 
 > Two distinct files are named `push_signed_commit.py` (181 vs 116 lines, **not** identical) and one
 > driver lives in a **subdirectory** (`2026-09-10_soak_stopping_rule/`). A flat top-level listing undercounts.
@@ -290,7 +350,12 @@ still reads as wholly open.
 > rendered gate UX needs browser-level proof a pure-function test cannot express. Only the first
 > conjunct is satisfied. The predecessor's "the trigger has fired" was wrong.
 
-### F. Dropped by THIS document and restored 2026-09-22 by a peer re-probe
+### F. Found by a peer re-probe, 2026-09-22 — mostly dropped by THIS document, not all of it
+
+> **Items 18–21 were dropped** by this document and restored here. **Item 22 was never carried** —
+> it is a live defect no revision had found. **Item 23 is already fixed** (canopy#656) and is kept
+> as the record of what shipped. The revision merged as juniper-ml#2021 called all six "restored
+> after this document dropped them", which is true of four of them.
 
 **This section exists because the rewrite that restored six dropped items dropped four more.**
 The three validation agents were briefed on the *first draft*; nothing validated the rewrite, which
@@ -305,7 +370,7 @@ CascadeCorrelationNetwork.fit` — **neither goes through `/api/stage_dataset`**
 predecessor's caveat is verbatim at
 [`HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md`](HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md)
 § *Not established (carry forward)*. **Cited by heading, not by line.** This was `:128`; a peer
-session is inserting ~130 lines above it, which would have silently re-pointed the citation into
+session is inserting 91 lines above it, which would have silently re-pointed the citation into
 the new text. A line number is not a durable citation across concurrent sessions.
 
 **19. ∥ packaging — `yfinance` and `arc-agi` are absent from juniper-data's lockfile.**
@@ -438,6 +503,15 @@ grep -n 'enabled\[0\]\|2702-2706' \
 # --- item 14: the authority G11 cites
 grep -rn 'UNBOUNDED_IMPORT_GENERATORS' src/    # expect 2 references, 0 definitions
 
+# --- item 3b: has G7 been written yet? (1 hit = still only the header comment)
+grep -rn 'G7' src/ | grep -v 'G1a-G1d / G3 / G6 / G7'   # expect NO output until 3b ships
+#   Today the single hit is test_selection_reachability_guardrails.py:13, a header comment
+#   listing G7 among the guardrails that "arrive with their own". An assertion, not a mention,
+#   is what closes 3b -- so grep for the ASSERTION, not the label.
+
+# --- item 3: is there a Y3 guardrail? There is none in the design's §5 table either.
+grep -rn 'nn_model' src/tests/ | grep -i 'hydrat\|reload\|restore' || echo "no Y3 guardrail"
+
 # --- §12 still closed: 14 seeds / cascor 8 / recurrence 6 / unseeded arc_agi + csv_import
 python -c "from src.model_registry import DATASET_TYPES; print(len(DATASET_TYPES))"
 ```
@@ -518,14 +592,33 @@ session, none by this one:
 
 | defect | correction |
 |---|---|
-| **`G7` had 0 hits** — both prior revisions quoted `…REACHABILITY-DESIGN.md:349` and stopped one token before `+ **G7**` | restored as item 3b, with its definition at `:287` and the fact that no test asserts it |
-| **item 6's "14"** was a *string-match* count published as a *duplication* count | **8** carry a real `createCommitOnBranch(input` site; six mention it in prose or delegate |
-| **items 4 and 20 claimed work with no expiry** | both now lapse **2026-09-29T00:00Z** unless a PR or branch carries them |
+| **`G7` had 0 hits** — both prior revisions quoted `…REACHABILITY-DESIGN.md:349` and stopped one token before `+ **G7**` | restored as item 3b, with its definition at `…REACHABILITY-DESIGN.md:287` and the fact that no test asserts it |
+| **item 6's "14"** was a *string-match* count published as a *duplication* count | superseded by the taxonomy table in item 6 — the duplicated work is **4 files** |
+| **items 4 and 20 claimed work with no expiry** | both now lapse **2026-09-29T00:00Z**, after which an **open PR** or **pushed branch** is required to keep the claim |
 
-**Three rounds, and each one's fix introduced the next one's defect.** Round 1 fixed 29 draft
+### Round 5 — two MAJOR, seven MINOR, all from the peer
+
+| defect | correction |
+|---|---|
+| **`G7` called "the acceptance criterion for items 1 and 3"** — it is **dataset-axis only** and cannot fail on a `Y3` defect | scoped to item 1, and **the missing Y3 guardrail is now recorded as a gap** under item 3 |
+| **the order line put item 2 before hydration** — contradicting `D-N10` *and* item 2's own text | items **1, 3, 3b** are design PR 2; **item 2 follows** |
+| the count again (`8` counted openers and a probe as drivers; `14` was mis-described) | **taxonomy table** replaces the number — 17 / 14 / 8 / **4** / 6 / 10, each row with its criterion |
+| the lapse had **no time qualifier**, so read literally it cancelled the claim immediately | rewritten: the claim **holds until** the date, and the PR-or-branch test applies **from** it |
+| "why 3b" named the wrong externally-cited items; § Verification commands had no `G7` check | corrected to **4, 6, 14, 15, 19, 21, 22**; a `G7` check added |
+| "18–23 … this document dropped them" — 22 was never in it, 23 is already fixed | range line now distinguishes dropped / never-carried / already-shipped |
+| "round 2 shipped the truncated quote" — it is identical in #2014 | attributed to **both** earlier revisions |
+| bare `:349` / `:287`; unnamed peer addendum; `**+ G7**` vs `+ **G7**`; "~130 lines" | all named and corrected; the insertion is **91** lines |
+
+**Five rounds, and each one's fix introduced the next one's defect.** Round 1 fixed 29 draft
 defects and dropped four items. Round 2 restored those and shipped a wrong count plus a truncated
-quotation. Round 3 fixed those. The rate is falling, but the pattern has not broken, and a fourth
-round is the correct default rather than a sign of trouble.
+quotation. Round 3 fixed those and left a stale range line. Round 4 fixed the range line and
+asserted an order that contradicted the design. Round 5 fixed that.
+
+**The rate is falling and the severity is falling, but the pattern has not broken once in five
+attempts.** A sixth round is the correct default. The one structural lesson: **every round's defect
+was introduced by that round's own fix**, never inherited — so the text to re-read hardest is the
+text you just changed, and the statements most likely to be stale are the ones that *scope* what
+you changed (ranges, orders, counts, "the only X") rather than the change itself.
 
 **The count lesson is now sharper than "state your criterion", which item 6 already did.** The
 criterion was executed exactly and still measured the wrong thing: *matching a string* is not
