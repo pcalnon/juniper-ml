@@ -1,0 +1,1201 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8056",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8056",
+    "version": "0.6.0",
+    "git_sha": "17588539f115c7ae594008b4db384eed71f6ec22",
+    "build_date": "2026-09-23T00:36:22Z"
+  },
+  "tab": "candidates",
+  "started_at": "2026-09-23T00:37:08Z",
+  "seconds": 150.0,
+  "tab_opened": true,
+  "growth": {
+    "launched_at_s": 11.8,
+    "exit": 0,
+    "record": "reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_pr657_verify_candidates_growth_grow_68.json",
+    "tail": [
+      "[t=   8.2] fsm=STARTED phase=CANDIDATE hidden=65 metrics=106",
+      "[t=  10.2] fsm=STARTED phase=CANDIDATE hidden=66 metrics=109",
+      "[t=  11.2] fsm=STARTED phase=CANDIDATE hidden=67 metrics=112",
+      "[t=  12.2] fsm=STARTED phase=CANDIDATE hidden=68 metrics=115",
+      "[t=  13.2] fsm=COMPLETED phase=OUTPUT hidden=68 metrics=116",
+      "after: {'fsm': 'COMPLETED', 'phase': 'OUTPUT', 'hidden_units': 68, 'uuid': '1cd15120-8f71-4319-ab7d-a384bfd692a9', 'total_metrics': 116}",
+      "snapshot: http 200 {'status': 'success', 'data': {'id': 'snapshot_20260923T003754Z', 'path': '/home/pcalnon/Development/python/Juniper/juniper-cascor/cascor-snapshots/snapshot_20260923T003754Z.h5', 'timestamp': '20260923T003754Z', 'description': ''}, 'meta': {'timestamp': 1790123874.8629353, 'version': '0.6.0'}}",
+      "=> COMPLETED  (record -> reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_pr657_verify_candidates_growth_grow_68.json)"
+    ]
+  },
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 15,
+      "rt_ms": {
+        "n": 15,
+        "min": 20.2,
+        "p50": 30.4,
+        "p90": 41.7,
+        "max": 498.1,
+        "mean": 60.4
+      },
+      "gap_ms": {
+        "n": 14,
+        "min": 2588.9,
+        "p50": 9965.8,
+        "p90": 10828.2,
+        "max": 16330.7,
+        "mean": 9852.1
+      },
+      "overlaps": 0
+    },
+    "update_status_display": {
+      "requests": 3,
+      "rt_ms": {
+        "n": 3,
+        "min": 8.4,
+        "p50": 8.9,
+        "p90": 9.1,
+        "max": 9.1,
+        "mean": 8.8
+      },
+      "gap_ms": {
+        "n": 2,
+        "min": 10700.8,
+        "p50": 16325.7,
+        "p90": 16325.7,
+        "max": 16325.7,
+        "mean": 13513.2
+      },
+      "overlaps": 0
+    },
+    "update_epoch_progress": {
+      "requests": 3,
+      "rt_ms": {
+        "n": 3,
+        "min": 7.9,
+        "p50": 8.6,
+        "p90": 10.6,
+        "max": 10.6,
+        "mean": 9.0
+      },
+      "gap_ms": {
+        "n": 2,
+        "min": 10701.1,
+        "p50": 16257.9,
+        "p90": 16257.9,
+        "max": 16257.9,
+        "mean": 13479.5
+      },
+      "overlaps": 0
+    },
+    "update_pool_info": {
+      "requests": 3,
+      "rt_ms": {
+        "n": 3,
+        "min": 7.1,
+        "p50": 7.6,
+        "p90": 10.0,
+        "max": 10.0,
+        "mean": 8.2
+      },
+      "gap_ms": {
+        "n": 2,
+        "min": 10705.7,
+        "p50": 15934.5,
+        "p90": 15934.5,
+        "max": 15934.5,
+        "mean": 13320.1
+      },
+      "overlaps": 0
+    },
+    "update_loss_plot (State since #618)": {
+      "requests": 5,
+      "rt_ms": {
+        "n": 5,
+        "min": 58.0,
+        "p50": 153.6,
+        "p90": 555.5,
+        "max": 555.5,
+        "mean": 210.5
+      },
+      "gap_ms": {
+        "n": 4,
+        "min": 7681.9,
+        "p50": 16870.1,
+        "p90": 40371.9,
+        "max": 40371.9,
+        "mean": 19118.5
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 293,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 78,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 76,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 29,
+    "dataset-swap-events-store.data": 29,
+    "metrics-panel-metrics-store.data": 20,
+    "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 9,
+    "network-visualizer-topology-store.data": 8,
+    "metrics-panel-metrics-store.data@15586d300aa70069205f6b6c4219bfbeb86bfb1346f8fa1c90efa1e3e429297a": 6,
+    "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metr": 5,
+    "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-pan": 5,
+    "metrics-panel-progress-detail.children": 3,
+    "metrics-panel-current-lr.children": 3,
+    "metrics-panel-phase-duration.children": 3,
+    "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...met": 3,
+    "metrics-panel-replay-controls.style": 3,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 3,
+    "candidate-metrics-panel-history-section.children": 2,
+    "..network-evolution-grid-container.children...network-evolution-stats.children..": 2,
+    "worker-panel-workers-store.data": 1,
+    "decision-boundary-boundary-data.data": 1,
+    "decision-boundary-dataset-data.data": 1,
+    "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+    "pinned-params-store.data": 1,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "candidate-metrics-panel-training-state-store",
+    "reads": 39,
+    "readable": 39,
+    "distinct_timestamps": 3,
+    "samples": [
+      {
+        "t": 4.5,
+        "ok": true,
+        "timestamp": 1790123844.2912438,
+        "keys": 61
+      },
+      {
+        "t": 9.3,
+        "ok": true,
+        "timestamp": 1790123844.2912438,
+        "keys": 61
+      },
+      {
+        "t": 12.4,
+        "ok": true,
+        "timestamp": 1790123844.2912438,
+        "keys": 61
+      },
+      {
+        "t": 17.3,
+        "ok": true,
+        "timestamp": 1790123844.2912438,
+        "keys": 61
+      },
+      {
+        "t": 21.5,
+        "ok": true,
+        "timestamp": 1790123844.2912438,
+        "keys": 61
+      },
+      {
+        "t": 25.4,
+        "ok": true,
+        "timestamp": 1790123866.6133535,
+        "keys": 61
+      },
+      {
+        "t": 31.5,
+        "ok": true,
+        "timestamp": 1790123866.6133535,
+        "keys": 61
+      },
+      {
+        "t": 36.0,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 42.3,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 46.4,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 50.0,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 53.9,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 58.1,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 62.5,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 74.0,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 77.0,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 81.2,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 83.7,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 86.4,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 89.8,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 93.8,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 97.2,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 100.3,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 103.7,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 106.1,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 109.4,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 112.4,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 115.2,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 117.4,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 120.3,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 123.6,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 126.2,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 129.6,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 132.8,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 135.8,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 138.6,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 141.4,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 144.6,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      },
+      {
+        "t": 147.8,
+        "ok": true,
+        "timestamp": 1790123876.0471509,
+        "keys": 61
+      }
+    ]
+  },
+  "writer_responses": {
+    "carried_store": 2,
+    "no_update": 13,
+    "unparsed": 0,
+    "distinct_timestamps_delivered": 2
+  },
+  "panel": {
+    "samples": [
+      {
+        "t": 5.6,
+        "dom": {
+          "badge": "",
+          "phase": "Idle",
+          "pool_size": "0",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "",
+          "history_cards": 0
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 10.8,
+        "dom": {
+          "badge": "",
+          "phase": "Idle",
+          "pool_size": "0",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "",
+          "history_cards": 0
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 14.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 0
+        },
+        "server": {
+          "status": "Started",
+          "pool_status": "Training",
+          "pool_phase": "Training",
+          "pool_size": 8,
+          "candidate_epoch": 451,
+          "candidate_total_epochs": 3000
+        }
+      },
+      {
+        "t": 19.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 0
+        },
+        "server": {
+          "status": "Started",
+          "pool_status": "Training",
+          "pool_phase": "Training",
+          "pool_size": 8,
+          "candidate_epoch": 401,
+          "candidate_total_epochs": 3000
+        }
+      },
+      {
+        "t": 23.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 0
+        },
+        "server": {
+          "status": "Started",
+          "pool_status": "Training",
+          "pool_phase": "Training",
+          "pool_size": 8,
+          "candidate_epoch": 601,
+          "candidate_total_epochs": 3000
+        }
+      },
+      {
+        "t": 26.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 0
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 33.2,
+        "dom": {
+          "badge": "Training",
+          "phase": "Training",
+          "pool_size": "8",
+          "progress_display": "block",
+          "epoch_progress": "501/3000",
+          "pool_info": "Top 2 Candidates\nRank\tCandidate ID\tCorrelation\n1\t1\t0.2154\n2\t7\t0.0702\nPool Traini",
+          "history_cards": 2
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 36.9,
+        "dom": {
+          "badge": "Training",
+          "phase": "Training",
+          "pool_size": "8",
+          "progress_display": "block",
+          "epoch_progress": "501/3000",
+          "pool_info": "Top 2 Candidates\nRank\tCandidate ID\tCorrelation\n1\t1\t0.2154\n2\t7\t0.0702\nPool Traini",
+          "history_cards": 2
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 44.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 47.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 51.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 55.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 58.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 64.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 75.4,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 78.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 82.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 84.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 87.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 90.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 95.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 98.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 101.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 104.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 107.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 110.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 113.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 115.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 118.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 121.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 124.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 127.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 130.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 134.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 136.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 139.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 142.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 145.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      },
+      {
+        "t": 149.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8",
+          "progress_display": "none",
+          "epoch_progress": null,
+          "pool_info": "No active candidate pool",
+          "history_cards": 6
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0,
+          "candidate_total_epochs": 0
+        }
+      }
+    ],
+    "server_pool_status_seen": [
+      "Inactive",
+      "Training"
+    ],
+    "dom_badge_seen": [
+      "",
+      "Inactive",
+      "Training"
+    ]
+  }
+}
