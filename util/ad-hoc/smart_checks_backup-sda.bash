@@ -106,7 +106,7 @@ if [[ "${START_TESTS}" == "${TRUE}" ]]; then
     smartctl -t "${CURRENT_TEST_TYPE}" "${CURRENT_DEVICE}" > "${START_TESTS_FILE}" 2>&1
     chown "${USERNAME}":"${USERNAME}" "${START_TESTS_FILE}"
 elif [[ "${CHECK_RESULT}" == "${TRUE}" ]]; then
-    # display the results of the smart tests 
+    # display the results of the smart tests
     smartctl --xall "${CURRENT_DEVICE}" > "${CHECK_RESULT_FILE}" 2>&1
     chown "${USERNAME}":"${USERNAME}" "${CHECK_RESULT_FILE}"
 elif [[ ( ( "${START_TESTS}" == "${FALSE}" ) && ( "${CHECK_RESULT}" == "${FALSE}" ) ) || ( ( "${START_TESTS}" == "${TRUE}" ) && ( "${CHECK_RESULT}" == "${TRUE}" ) ) ]]; then
@@ -114,5 +114,3 @@ elif [[ ( ( "${START_TESTS}" == "${FALSE}" ) && ( "${CHECK_RESULT}" == "${FALSE}
 else
     echo "Error: This code should be unreachable."
 fi
-
-
