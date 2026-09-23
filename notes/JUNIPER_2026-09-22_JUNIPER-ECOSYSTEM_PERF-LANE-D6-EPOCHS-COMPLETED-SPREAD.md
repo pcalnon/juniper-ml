@@ -217,20 +217,40 @@ value, not the one the note quotes.
 > It has one (§1). The two can therefore be **diffed**, which makes this agreement stronger
 > than the draft allowed.
 
-| | 2026-09-17 (uncommitted) | 2026-09-22 (this run) | independent re-run, 09-22 |
+> ## ⚠ CORRECTION 2026-09-22 — a load figure in this table was UNSOURCED, and is withdrawn
+>
+> The first version of this table carried a third column at **1-minute load 54.49**, described
+> as a reviewer's independent re-run. **No artifact for it exists anywhere** — a sweep of
+> `~/.local/state/juniper-experiments/` finds no `spread.json` recording that load. The figure
+> came from a reviewer's prose report and was written here as though it were a measurement of
+> record. It is **withdrawn**, and replaced below by a run whose JSON is on disk.
+>
+> Two reviewer replications were reported but retained no artifact (at loads ~54.49 and ~7.49).
+> They are **not** cited as evidence here. A number without a file is a claim, not a
+> measurement — which is the whole discipline this lane runs on.
+
+| | 2026-09-17 (uncommitted) | 2026-09-22 (canonical) | 2026-09-22b (post-cascor#670) |
 |---|---|---|---|
 | widths × budgets × repeats | 5 × 4 × 5 | 5 × 4 × 5 | 2 × 2 × 3 |
 | e10 / e50 / e100 / e200 | 10 / 50 / 68 / 68 | 10 / 50 / 68 / 68 | — / — / 68 / 68 |
 | within-cell spread | 0 | 0 | 0 |
-| **1-minute load** | **19.50** | **32.26** | **54.49** |
-| torch / python | 2.11.0+cu130 / 3.14.7 | 2.11.0+cu130 / 3.14.7 | same |
+| **1-minute load** | **19.50** | **32.26** | **12.08** |
+| cascor tree | `b35fab1` | `b35fab1` | **`05c13d5`** |
+| torch / python | 2.11.0+cu130 / 3.14.7 | same | same |
 | ICV verified per cell | not recorded | recorded (§2.1) | recorded |
 | control arm | none | before and after, stable | stable |
+| evidence | `d6-epochs-spread-20260917/` | `…-20260922/` | `…-20260922b-post-cascor670/` |
 
-**Three load levels spanning 2.8× — 19.50, 32.26, 54.49 — return the identical result.** The
-third column is a re-run performed by a reviewer fact-checking this document, not by its author,
-on an instrument they did not write. That is the strongest form the load-invariance claim takes,
-and it is stronger than §3 states.
+**All three have a `spread.json` on disk.** Loads of 12.08, 19.50 and 32.26 — a 2.7× span —
+return the identical result.
+
+**The third column is the more interesting one, and it is not about load at all.** It was taken
+after `cascor#670` (`8065ca0`, *"guard the three per-epoch sites in
+`_display_training_progress`"*) changed `candidate_unit/candidate_unit.py` by +28/−5 — **the
+exact file this measurement exercises.** `epochs_completed` did not move. That is a direct,
+if single, datum against §4's open worry that the gate's reference is tree-sensitive: one real
+cascor change to the measured file left it invariant. It does **not** settle the question — a
+change to the *numerics* rather than to logging is the case that would.
 
 The two full instruments were written five days apart by different sessions and agree
 key-for-key. They are **functionally equivalent in construction** — same seed, same shapes, the
