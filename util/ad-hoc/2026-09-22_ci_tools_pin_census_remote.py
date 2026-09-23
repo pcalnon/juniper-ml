@@ -75,6 +75,12 @@ COUNTED, and passed:
   current-state sentence appended to that line is covered too. ``SNAPSHOT_RE`` marks ANY
   timestamped basename HISTORICAL, not only the ``conf/`` snapshots.
 
+UNTESTED by the self-test:
+
+* The download path. The self-test stubs ``load_remote`` whole, so the tarball reader is not
+  exercised. The member filter is checked only by the suffix probes (``.md``, ``.py``,
+  workflows, lockfiles, Makefile, Dockerfile).
+
 REFUSED (exit 2):
 
 * A repo read with no juniper-ci-tools install at all. A repo whose only installs are
@@ -118,8 +124,10 @@ Usage:  python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py [--expect '
 Exit:   0 when nothing judged is stale; 1 when something is (each listed), including when
         --expect itself does not admit the latest release; 2 when the census could not run --
         a failed download, an unreadable tarball, a missing ``packaging``, an invalid or
-        non-0.x --expect, a 1.0 release, a --ref/--local key naming no repo in REPOS, or a
-        repo read with zero live pins. A census that could not run is not clean.
+        non-0.x --expect, a 1.0 release, a --ref/--local key naming no repo in REPOS or named
+        twice, or a repo read with no juniper-ci-tools install. An unpinned install is an
+        install: it is reported (UNRESOLVED, exit 1), never refused. A census that could not run
+        is not clean.
 """
 
 from __future__ import annotations
@@ -819,6 +827,7 @@ def self_test() -> int:
     doc_only = {"juniper-deploy": {"docs/X.md": "CI pins `juniper-ci-tools>=0.9.0,<0.10.0`.\n"}}
     # Real docs mention the package elsewhere in the file; without that the pre-filter skips the file.
     context_only = {"juniper-ml": {"docs/X.md": "CI installs juniper-ci-tools from PyPI.\n\n### Sequence-safety screens\n\n`main-verify.yml` enforces the two new `>=0.9.0,<0.10.0` screen pins.\n"}}
+    commented = {"juniper-deploy": {".github/workflows/lint.yml": '      # run: pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n'}}
     v09, v010 = ("0.9.0", ["0.8.0", "0.9.0"]), ("0.10.0", ["0.9.0", "0.10.0"])
     scenarios = [
         ("clean trees", tree(), v09, [], 0, "STALE (fails the census)", ""),
@@ -832,6 +841,10 @@ def self_test() -> int:
         ("a misspelt --ref key", tree(), v09, ["--ref", "juniper-cascr=abc"], 2, "", "name no repo"),
         ("a misspelt --local key", tree(), v09, ["--local", "juniper-deplyo=/nonexistent"], 2, "", "name no repo"),
         ("a repo given twice", tree(), v09, ["--ref", "juniper-ml=aaaa", "--ref", "juniper-ml=bbbb"], 2, "", "repeated"),
+        ("a repo given to both --ref and --local", tree(), v09, ["--ref", "juniper-ml=aaaa", "--local", "juniper-ml=/nonexistent"], 2, "", "repeated"),
+        ("a repo whose only pin is commented out", tree(commented, drop_live="juniper-deploy"), v09, [], 2, "", "no juniper-ci-tools install read"),
+        ("an earlier repo's unpinned install does not count for a later one", tree(drop_live="juniper-deploy", unpinned="juniper-cascor"), v09, [], 2, "", "juniper-deploy: no juniper-ci-tools install read"),
+        ("the passing AMBIGUOUS line itself is listed", tree(context_only), v09, [], 0, "juniper-ml/docs/X.md:5", ""),
     ]
     try:
         for desc, loader, versions, argv, want, out_has, err_has in scenarios:
@@ -854,7 +867,7 @@ def self_test() -> int:
 
     # The repo's own extra is read from the juniper-ci-tools requirement, not the first range in pyproject.toml.
     members = {
-        "pyproject.toml": 'dependencies = ["httpx>=0.27,<0.28"]\n[project.optional-dependencies]\ntools = ["juniper-ci-tools>=0.9.0,<0.10.0"]\n',
+        "pyproject.toml": 'dependencies = ["httpx>=0.27,<0.28"]\n# juniper-ci-tools, see below: an old note once said >=0.6.0,<0.7.0\n[project.optional-dependencies]\ntools = ["juniper-ci-tools>=0.9.0,<0.10.0"]\n',
         "docs/X.md": "The tools extra is `juniper-ci-tools>=0.9.0,<0.10.0`.\n",
     }
     doc_classes = {h.cls for h in census_members("juniper-x", members) if h.path == "docs/X.md"}
@@ -862,7 +875,7 @@ def self_test() -> int:
     failed += not members_ok
     print(f"  {'ok  ' if members_ok else 'FAIL'} the own extra comes from the juniper-ci-tools requirement  got={sorted(doc_classes)}")
 
-    probes = ("repo-sha/Makefile", "repo-sha/Dockerfile.test", "repo-sha/requirements-cpu.lock", "repo-sha/docs/X.md", "repo-sha/util/x.py", "repo-sha/.github/workflows/ci.yml")
+    probes = ("repo-sha/Makefile", "repo-sha/Dockerfile.test", "repo-sha/requirements-cpu.lock", "repo-sha/docs/X.md", "repo-sha/util/x.py", "repo-sha/.github/workflows/ci.yml", "repo-sha/.github/workflows/ci.yaml", "repo-sha/pyproject.toml")
     for probe in probes:
         if not is_text_member(probe):
             failed += 1
@@ -932,8 +945,8 @@ def main(argv: list[str] | None = None) -> int:
 
     by_class = Counter(h.cls for h in all_hits)
     live = [h for h in all_hits if h.cls == "LIVE"]
-    if not live:
-        raise RuntimeError("zero live pins across every repo -- the census read nothing it could judge")
+    if not live and not any(h.cls == "UNRESOLVED" for h in all_hits):
+        raise RuntimeError("no juniper-ci-tools install read in any repo -- the census read nothing it could judge")
     per_repo: dict[str, int] = defaultdict(int)
     for h in live:
         per_repo[h.repo] += 1

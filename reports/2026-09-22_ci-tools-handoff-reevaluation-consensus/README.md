@@ -9,8 +9,8 @@ verdicts, reconciliation, instrument and limits. This README indexes the files, 
 they were made. It restates none of the record's findings, so the two cannot drift apart.
 
 Each file holds one lane's brief as sent, any message sent to it mid-run, and its final report as
-returned, all verbatim, taken from the session's subagent transcripts. Only the round-3 lanes got a
-mid-run message: a usage limit stopped all three, and each was resumed in place. A subagent's
+returned, all verbatim, taken from the session's subagent transcripts. Only the round-3 lanes and
+R5 got a mid-run message: a usage limit stopped them, and each was resumed in place. A subagent's
 report otherwise lives only in a local, unversioned transcript. Line numbers inside a report refer to the revision that lane reviewed.
 
 | file | round | lane | entry point |
@@ -28,6 +28,7 @@ report otherwise lives only in a local, unversioned transcript. Line numbers ins
 | `round3-laneA-record-and-new-numbers.md` | 3 | R3-C (Lane A) | the validation record and every new number, from primary sources |
 | `round4-laneB-attack-the-round3-fix-pass.md` | 4 | R4-A (Lane B) | attack the round-3 fix pass, plus a ledger of every round-3 finding |
 | `round4-laneB-ship-side-steelman.md` | 4 | R4-B (Lane B, opposing brief) | argue the merge; find over-correction and noise |
+| `round5-laneAB-verify-the-round4-fix-pass.md` | 5 | R5 (Lanes A and B) | the round-4 fix pass only |
 
 The instruments the record cites are in `util/ad-hoc/`:
 - `2026-09-22_ci_tools_pin_census_remote.py`, the census;

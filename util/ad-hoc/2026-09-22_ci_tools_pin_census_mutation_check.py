@@ -26,9 +26,14 @@ the census cannot silently retire a mutation.
 - Among the survivors are the lookback and attribution constants, the pre-filter, the
   bare-release verbs, composite-action handling, the ADJUDICATED lookup and keys, the
   floor-only skip and some comment-branch shapes.
+- Round 5's two survivors are not guarded:
+  - the command line reporting stale (1) as could-not-run (2). The self-test's command-line case
+    runs offline, so it can only check a refusal;
+  - a failing AMBIGUOUS line also being listed as passing.
 - Each lane report lists its own survivors, in
   reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/: round3-laneA-census-adequacy.md,
-  round3-laneB-attack-the-round2-fix-pass.md and round4-laneB-attack-the-round3-fix-pass.md.
+  round3-laneB-attack-the-round2-fix-pass.md, round4-laneB-attack-the-round3-fix-pass.md and
+  round5-laneAB-verify-the-round4-fix-pass.md.
 
 The mutants are written to a temporary directory and deleted afterwards. Nothing in the tree
 changes.
@@ -66,7 +71,7 @@ MUTATIONS = {
     "a repo with no install accepted": ("        if installs == 0:\n", "        if False:\n"),
     "misspelt --ref/--local keys accepted": ("    if unknown:\n        raise ValueError", "    if False:\n        raise ValueError"),
     "candidates omit the next releases": ("    return sorted(set(released) | set(extra), key=Version)", "    return sorted(set(released), key=Version)"),
-    # Added after round 4, whose lanes found each of these surviving the 93-case self-test.
+    # Added after round 4. Eight of these survived round 4's 93-case self-test; two mutate code added in the same pass.
     "the command line bypasses run()": ("    raise SystemExit(run())", "    raise SystemExit(main())"),
     "misspelt --local keys accepted": ("unknown = sorted((set(refs) | set(locals_)) - set(REPOS))", "unknown = sorted(set(refs) - set(REPOS))"),
     "repeated --ref/--local keys accepted": ("    if repeated:\n        raise ValueError", "    if False:\n        raise ValueError"),
@@ -77,6 +82,15 @@ MUTATIONS = {
     ".py files never read": ('".ini", ".py", ".bash"', '".ini", ".bash"'),
     "the own extra read from any range": (r'm = re.search(r"juniper[-_]ci[-_]tools\s*(" + SPEC_RE.pattern', r'm = re.search(r"(" + SPEC_RE.pattern'),
     "passing AMBIGUOUS lines not listed": ("    if unread:\n        print(", "    if False:\n        print("),
+    # Added after round 5, whose lane wrote these; each survived the 99-case self-test.
+    "repeated-key check ignores --local": ('    keys = [item.split("=", 1)[0] for item in args.ref + args.local]\n', '    keys = [item.split("=", 1)[0] for item in args.ref]\n'),
+    "install guard counts COMMENT hits": ('        installs = live + sum(1 for h in hits if h.cls == "UNRESOLVED")\n', '        installs = live + sum(1 for h in hits if h.cls in ("UNRESOLVED", "COMMENT"))\n'),
+    "install guard counts any .github/ hit": ('        installs = live + sum(1 for h in hits if h.cls == "UNRESOLVED")\n', '        installs = live + sum(1 for h in hits if h.cls == "UNRESOLVED" or h.path.startswith(".github/"))\n'),
+    "install guard counts earlier repos' installs": ('        installs = live + sum(1 for h in hits if h.cls == "UNRESOLVED")\n', '        installs = live + sum(1 for h in all_hits + hits if h.cls == "UNRESOLVED")\n'),
+    "AMBIGUOUS heading printed, lines dropped": ('for h in unread))\n', 'for h in unread[:0]))\n'),
+    "own extra read across the rest of the line": (r'm = re.search(r"juniper[-_]ci[-_]tools\s*(" + SPEC_RE.pattern', r'm = re.search(r"juniper[-_]ci[-_]tools[^\n]*?(" + SPEC_RE.pattern'),
+    ".yaml files never read": ('TEXT_SUFFIXES = (".yml", ".yaml", ".md",', 'TEXT_SUFFIXES = (".yml", ".md",'),
+    ".toml files never read": ('".rst", ".toml", ".txt",', '".rst", ".txt",'),
 }
 
 

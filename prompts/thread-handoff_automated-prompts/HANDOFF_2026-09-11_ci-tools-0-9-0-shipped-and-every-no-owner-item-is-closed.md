@@ -14,26 +14,32 @@ is left that does not need the owner. That was false when written (Corrections 5
 verification commands, the pin greps, measure the wrong thing (Corrections 1). Continue the arc from
 `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
 The status banner of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`
-(juniper-ml#2019, then juniper-ml#2025) agrees with this one. It does not carry the open items this
-banner found, and those are now filed as issues (below). The design of record is `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
+was last updated by juniper-ml#2025, at 2026-09-22 23:40 UTC. Three of its facts have moved since:
+- the worker `0.6.1` wheel reached PyPI;
+- the owner ruled on equities (juniper-data#421);
+- juniper-deploy#227 merged.
+
+Note b and § Where the remaining work lives record each of these. That banner does not carry the
+open items this one found either; those are now filed as issues (below). The design of record is
+`notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
 
 > **In one minute.**
 > - **Superseded.** This handoff's title and goal were false when written. Do not paste the goal,
 >   and do not run its two pin greps (Corrections 1 and 5).
-> - **Continue from `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.**
->   Its banner is current as of juniper-ml#2025.
+> - **Continue from `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`**,
+>   and read its banner as of juniper-ml#2025: three of its facts have moved since (see above).
 > - **Filed from this re-evaluation, 2026-09-23:**
 >   - the X7 flake: juniper-canopy#661;
 >   - the 6f watch: juniper-recurrence#182;
 >   - arc_agi's unchanged `dataset_id`: juniper-data#427.
 >   The `dockerhub` drift gate is the open row in §10 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
 > - **In flight when this was written:**
->   - juniper-cascor#673 (docs);
+>   - juniper-cascor#673 (docs; auto-merge is armed, so an update-branch merges it);
 >   - juniper-deploy#229 (the worker `0.6.1` repin);
 >   - juniper-ml#2020 (this banner's PR).
 >   Do not duplicate them. Every merge needs the owner's explicit approval in your session.
-> - **For stale ci-tools text, the census is a first pass.** An exit 0 means "none of the shapes it
->   parses", not "clean" (Corrections 1).
+> - **For stale ci-tools text, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` is a first pass.**
+>   An exit 0 means "none of the shapes it parses", not "clean" (Corrections 1).
 
 Every repository fact below was re-probed between 2026-09-22 19:54 UTC and 2026-09-23 01:50 UTC,
 through the GitHub API, PyPI or GHCR, never from a local checkout. Later moves are not reflected. The Pi probe, the worktree directories, the conda environments and the
@@ -167,8 +173,8 @@ and the pull is still owed before any Pi node runs a Juniper image.
   `main`, 0.586 s, 0.743 s and 0.726 s. The last failure was on canopy#655, a docs-only PR from this
   banner's own set. Four of the five went green on a re-run.
 - **What the readings cannot tell apart.**
-  - A blocking call on the loop leaves a gap of at least the whole 0.4 s block. The test file's
-    sensitivity control asserts `worst_gap >= BLOCK_SECONDS * 0.8`.
+  - A blocking call on the loop leaves a gap of at least the whole 0.4 s block. The sensitivity
+    control in `test_x7_sites_outside_main_gate.py` asserts `worst_gap >= BLOCK_SECONDS * 0.8`.
   - So every reading fits an on-loop call plus 0.19–0.41 s of other delay. It fits just as well
     an off-loop call plus runner suspension.
   - The green re-runs rule out only a deterministic regression.
@@ -220,20 +226,21 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
        attributes ranges written in prose, judges prose ranges as sets of releases and live pins as
        text, and fails when `--expect` excludes the latest release.
      - **What it established.** On this corpus, round 3's independent instrument found no stale line
-       that the census missed, judged by the census's own rules. Its report is
+       that `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` missed, judged by its own rules. The report is
        `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneA-census-adequacy.md`.
        - After the six range PRs, the one stale line left was `docs/QUICK_START.md:92`. This
          banner's PR fixes it.
-       - The same instrument listed five floor-only lines that the census passes by design. One is
-         juniper-ml's `.github/workflows/main-verify.yml:72`, `(PyPI >=0.8.0)`. These lines state a
-         floor below CI's, and they are not rewritten here.
-     - **What its tests prove.** `--self-test` has 99 cases, and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` has
-       34 chosen mutants, all killed. Together they guard only the rules they name.
-       The review lanes' own mutants still find survivors, and the docstring of `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`
-       and the lane reports list them.
+       - The same instrument listed five floor-only lines. The census counts and passes three of
+         them by design, among them juniper-ml's `.github/workflows/main-verify.yml:72`,
+         `(PyPI >=0.8.0)`, and it drops the other two, in juniper-data-client's workflows.
+       - These lines state a floor below CI's. They are not rewritten here.
+     - **What its tests prove.** Its `--self-test` has 103 cases, and
+       `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` has 42 chosen mutants, all killed. Together they guard only
+       the rules they name. The docstring of `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` lists what still
+       survives, and so do the lane reports in `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`.
      - **Its limits.** An exit 0 means "none of the shapes it parses", not "clean". The docstring of
        `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` lists what the census drops without output, what
-       it counts and passes, and what it refuses.
+       it counts and passes, what its self-test does not exercise, and what it refuses.
 2. **The lockfile workflows this arc touched.** There were three conversions to the signed path
    (worker#180, cascor-client#161, data-client#197). cascor#641 is different: it extended cascor's
    already-signed step to both of its locks.
@@ -257,9 +264,10 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
        the defect "has never fired only because every run so far found the lockfile already
        current". juniper-cascor-client#170 and juniper-data-client#210 correct them.
 3. **Dates.** "(2026-09-10)" is the local (CDT) date. In UTC the eight ceiling PRs merged on
-   2026-09-11; the in-place note at § What shipped has the times.
-4. **"47 pin lines across 26 files per pass" mixes two scopes.** It is 47 lines in 30 files per pass,
-   43 of them in 26 workflow files. The in-place note at § What shipped has the breakdown.
+   2026-09-11, between 01:32 and 01:52. juniper-ml#1869 merged on 2026-09-10.
+4. **"47 pin lines across 26 files per pass" mixes two scopes.**
+   - The ceiling pass changed 47 lines in 30 files, 43 of them in 26 workflow files.
+   - The floor pass changed 50 lines in 31 files.
 5. **The title and goal were false when written.** "Nothing is left that does not need the owner",
    "every no-owner item is closed" and "ran to completion across all nine repos" all failed on
    2026-09-11:
@@ -346,8 +354,8 @@ cd /home/pcalnon/Development/python/Juniper
 # util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py: run it from any juniper-ml checkout at or
 # after juniper-ml#2020's merge commit.
 # The primary checkout needs `git pull --ff-only` first: a worktree is not a checkout.
-python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --self-test   # 99 passed, 0 failed
-python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py      # 34 of 34 mutations killed
+python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --self-test   # 103 passed, 0 failed
+python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py      # 42 of 42 mutations killed
 python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py
 #   live pins: 54, one distinct range. Once juniper-ml#2020 and juniper-cascor#673 have merged, it
 #   exits 0 and lists two AMBIGUOUS lines that pass. An exit 0 is not proof of clean text
@@ -393,20 +401,23 @@ ls -d juniper-ml/.claude/worktrees/luminous-inventing-crystal juniper-ml/.claude
 Validated under `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
 Each lane's brief, any mid-run message and its report are archived verbatim in
 `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`. The rows below were checked against
-those reports, not written from memory.
+those archived reports, not written from memory.
 
 **Sizing (§3 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`).**
-- **Criticality is high.** This is a document of record. Seven PRs were reviewed alongside it,
-  though none depends on it.
+- **Criticality is high.** This is a document of record. Seven PRs were reviewed alongside it, and
+  none depends on it.
 - **Uncertainty was high at the start.**
   - The banner overturns claims this document made.
-  - The census was a new instrument, and it was wrong in round 1.
+  - `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` was a new instrument, and it was wrong in
+    round 1.
   - Several claims were universals: "every", "exactly", "all nine".
-- **That is the top-right cell.** It asks for 3+ Lane A with distinct entry points, 2+ Lane B with
-  opposing briefs, and at least two iterations.
-- **The one de-escalator was met in round 3.** Independent instruments reproduced two results
-  end-to-end:
-  - the census's post-merge result, in
+- **That puts it in the top-right cell** of §3 of
+  `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`. The cell asks
+  for 3+ Lane A with distinct entry points, 2+ Lane B with opposing briefs, and at least two
+  iterations.
+- **The procedure's one de-escalator was met in round 3.** Independent instruments reproduced two
+  results end-to-end:
+  - the post-merge result of `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, in
     `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneA-census-adequacy.md`;
   - the X7 run list, twice, in
     `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneB-attack-the-round2-fix-pass.md`
@@ -421,12 +432,19 @@ those reports, not written from memory.
   | 2 | two: R2-B, R2-C | one: R2-A |
   | 3 | two: R3-B, R3-C | one: R3-A |
   | 4 | none | two: R4-A (refute), R4-B (ship side) |
+  | 5 | one lane with both lenses: R5 | (the same lane) |
 
-- **Deviations from §2 and §3 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.**
-  - **Pool size.** Rounds 2–4 each ran below the cell's 3+ Lane A and 2+ Lane B.
-  - **Opposing briefs.** Only round 4 ran a ship-side lane, R4-B. Rounds 1–3 asked every Lane B to
-    refute.
-  - **Order.** Lane A and Lane B ran concurrently in every round. §2 asks for Lane A first.
+- **Deviations from §2–§4 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.**
+  - **Pool size.** Rounds 2–5 each ran below the cell's 3+ Lane A and 2+ Lane B.
+  - **Opposing briefs.** Only round 4 ran a ship-side lane (R4-B). Every other Lane B brief asked
+    for refutation.
+  - **Order.** Lane A and Lane B ran concurrently in rounds 1–3, where §2 asks for Lane A first.
+    Round 4 ran Lane B only.
+  - **Termination.** Round 5 did not meet the §4 test by the letter: its finding 1 changed a
+    disposition, and findings 2, 3 and 9 changed numbers. All four were measured,
+    low-uncertainty edits. So, as R5 recommended, they were confirmed by re-running round 5's own
+    instruments and not by a round 6. Eight of its ten mutants are now killed, and the
+    verification block below was re-run. The owner may judge that differently.
 
 **Conduct.**
 - **Read-only, with two exceptions.** Neither changed a reviewed file.
@@ -435,22 +453,28 @@ those reports, not written from memory.
     discloses.
   - R2-A ran `git fetch` in the worktree.
 - **Round windows (UTC).**
-  - Round 1: 19:54–20:23.
-  - Round 2: 20:41–21:19.
-  - Round 3: 23:28–00:46. A usage limit stopped its lanes at 23:52, and they resumed in place at
-    00:31.
-  - Round 4: 01:02–01:43.
+
+  | round | window | pause |
+  | --- | --- | --- |
+  | 1 | 2026-09-22 19:54–20:23 | none |
+  | 2 | 2026-09-22 20:41–21:19 | none |
+  | 3 | 2026-09-22 23:28 to 09-23 00:46 | 23:52–00:31 |
+  | 4 | 2026-09-23 01:02–01:43 | none |
+  | 5 | 2026-09-23 02:01–06:01 | 02:05–05:21 |
+
+  Both pauses were usage limits. The stopped lanes resumed in place.
 - **In round 2, my own writes reached two lanes mid-round.**
   - I appended the X7 conclusion to `project_container_registry_rollout_2026-09-08.md`, in the
     unversioned memory directory. R2-A read it before writing its X7 finding, so that finding was
     not independent of me.
   - I edited `reference_canopy_x7_timing_tests_flake_on_ci_runners.md` in the same directory, and
     R2-C read it.
-  - I re-ran canopy#655's failed CI jobs, which changed its checks but not its content.
+  - I re-ran canopy#655's failed CI jobs. That changed its checks, not its content.
   - Round 3 re-derived the X7 evidence independently, and the finding changed.
-- **In round 3, I edited two memory files mid-round**: `reference_prose_form_version_ranges_evade_pin_regexes.md`
-  and `MEMORY.md`. No round-3 lane read either. R3-C did read this session's own log, as its brief
-  asked, and the log narrates those edits.
+- **In round 3, I edited two memory files mid-round:**
+  `reference_prose_form_version_ranges_evade_pin_regexes.md` and `MEMORY.md`. No round-3 lane read
+  either. R3-C did read this session's transcript, as its brief asked, and the transcript
+  narrates those edits.
 - **In round 4, the artifacts moved under the lanes.**
   - An auto-merge sweep running as `pcalnon`, which this session did not run, merged five reviewed
     PRs mid-round: juniper-cascor-client#170, juniper-data-client#210, juniper-deploy#227,
@@ -458,6 +482,7 @@ those reports, not written from memory.
   - Each landed byte-identical to its reviewed head.
   - The sweep also armed juniper-ml#2020. I disarmed it twice and converted it to draft.
   - I opened juniper-deploy#229 mid-round. It is a new PR, not one under review.
+- **In round 5, nothing under review changed.** juniper-ml#2020 stayed a draft at `dac2538f`.
 
 | round | lane (type): entry point | verdict | what it found that changed this banner or a PR |
 | --- | --- | --- | --- |
@@ -473,61 +498,67 @@ those reports, not written from memory.
 | 3 | R3-B (A): census adequacy, its own instrument and 26 mutations | ADEQUATE WITH FIXES | under its own rules the census misses nothing the independent instrument finds; silent drops remain in natural shapes; a surviving mutant turned the post-merge run into exit 0 |
 | 3 | R3-C (A): the record and every new number, from primary sources, about 118 claims | PASS WITH FINDINGS | the conduct claim hid my round-2 writes; the seedless-nonce explanation was wrong; 30 worktrees, not 28; the repin was already claimed |
 | 4 | R4-A (B): attack the round-3 fix pass, plus a ledger of every round-3 finding | SAFE WITH FIXES | the new zero-live-pins guard refused a repo whose installs are unpinned; the worker wheel and the equities ruling were already done; the `run()` scenarios missed six mutants; the stored squash body was stale |
-| 4 | R4-B (B, ship side): argue the merge, find over-correction | SHIP WITH CHANGES | the three open items lived only in this banner; the first screen restated `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`; bookkeeping corrections gated nothing |
+| 4 | R4-B (B, ship side): the whole PR set; argue the merge, find over-correction | SHIP WITH CHANGES | the three open items lived only in this banner; the first screen restated `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`; bookkeeping corrections gated nothing |
+| 5 | R5 (A and B): the round-4 fix pass only, plus a ledger of every round-4 finding | SAFE WITH FIXES | the one-minute block pointed at a banner whose owner-decision status is stale; two shortened corrections lost numbers; the census stated its refusal contract three ways; five of its ten mutants survived |
 
 **Reconciliation (§5 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`).**
-- **Lone findings, rounds 3 and 4.** Every load-bearing finding that only one lane reported was
-  re-derived before it was applied. The sources were the CI logs, the lane transcripts, the test
-  file, both data images, PyPI, the census, and the lanes' own crafted cases.
+- **Lone findings, rounds 3–5.** Every load-bearing finding that only one lane reported was
+  re-derived before it was applied. The sources were the CI logs, the lane transcripts, canopy's
+  `src/tests/regression/test_x7_sites_outside_main_gate.py`, both data images, PyPI, the census, and
+  the lanes' own crafted cases and mutants.
 - **Two lone round-2 findings had not been re-derived.** They were R2-A's X7 mechanism and its
   "equally unowned" for the keepalive test, findings 1 and 13 of
   `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round2-laneB-attack-the-fix-pass.md`.
   Round 3 refuted both.
-- **One measurement dispute.** It was about arc_agi:
+- **One measurement dispute: arc_agi.**
   - B1 said it is not installed in the data image
-    (`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneB1-refute-conclusions.md`);
+    (`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneB1-refute-conclusions.md`).
   - A2 measured it in both images
-    (`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneA2-published-artifacts.md`);
-  - opening the image settled it for A2: `HF_AVAILABLE` is True in both.
+    (`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneA2-published-artifacts.md`).
+  - Opening the image settled it for A2: `HF_AVAILABLE` is True in both.
 - **One of my own measurements was wrong, and so was my first explanation of it.**
   - My first probe found arc_agi's `dataset_id` differing between the images, and I blamed a
     seedless nonce.
   - In fact the probe hashed a raw params dict. The service validates params through
     `ArcAgiParams` first, whose `seed` defaults to `DEFAULT_GENERATOR_SEED`: 42, unless
-    `JUNIPER_DATA_DEFAULT_GENERATOR_SEED` overrides it (juniper-data#322). Only an explicit
-    `seed: null` draws a nonce.
-  - Through the params class, a default request gives `arc_agi-3.0.0-5cbabfa9a9026f82` in both
-    images.
+    `JUNIPER_DATA_DEFAULT_GENERATOR_SEED` overrides it (juniper-data#322).
+  - Only an explicit `seed: null` draws a nonce. Through the params class, a default request gives
+    `arc_agi-3.0.0-5cbabfa9a9026f82` in both images.
 - **Round 4's lanes disagreed on stopping.**
-  - R4-A held that its findings change dispositions and actions, so the fix pass needs its own
-    round.
-  - R4-B held that the fixes are pointer, date and structure edits of measured facts, which §3
-    sizes as a self-check.
-  - **Resolved:**
-    - round 5 is one narrow lane on this fix pass's census code and new claims;
-    - the pointer and date edits were self-checked, by re-running the verification block and
-      re-probing each fact.
-- **Declined.**
+  - R4-A held that the fix pass needed its own round.
+  - R4-B held that a self-check was enough.
+  - Resolved: round 5 was one narrow lane. Its own recommendation on stopping is the Termination
+    deviation above.
+- **Declined, or left for another change.**
   - A line in § What shipped begins `#163's` without a repo name. It is original text, and this
     banner does not rewrite the original.
-  - R4-B asked to drop the X7 flake from Corrections 5. The original itself named the flake ("Do
+  - R4-B asked to drop the X7 flake from Corrections 5. The original named the flake itself ("Do
     not chase it in the PR"), and it was an item left that did not need the owner.
-  - Some census gaps are documented as limits of an ad-hoc tool, not closed:
-    - R3-B's attribution shapes;
-    - R4-A's tarball-level stubs.
+  - R3-B's attribution shapes, and round 5's two surviving mutants, are documented as limits of an
+    ad-hoc tool. Both are named in the docstrings of
+    `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and
+    `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`.
+  - R4-B proposed two further changes, and both are left for a separate decision:
+    - a new §6 failure mode in
+      `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`, for a
+      target that moves faster than a round;
+    - graduating `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` into `util/`, with its
+      self-test wired into CI.
+  - R4-B asked to move the conduct detail out of this record. It stays, because the disclosure is
+    the point.
 - **Unresolved dissent.** B1 held that creating the throwaway repository for Wave 4's
   conditional-shape test is startable. This banner files it as owner-gated, because it creates a
   repository in the owner's account.
 
 **Instrument.** The census is `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, in its third
 version.
-- **Its self-test** passes 99 of 99 cases. They include exit-code scenarios run through `run()`,
-  and one run through the command line.
-- **Its mutation check**, `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`, kills 34
-  of 34 chosen mutants. The lanes' own mutants still find survivors, and that script's docstring
-  lists their kinds.
-- **It can give a different answer.** At `main` on 2026-09-23 it exits 1 and names 13 stale
-  lines: the 11 that juniper-ml#2020 fixes and the 2 that juniper-cascor#673 fixes.
+- **Its self-test** passes 103 of 103 cases. They include exit-code and output scenarios run
+  through `run()`, and one run through the command line.
+- **Its mutation check**, `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`, kills 42
+  of 42 chosen mutants. The docstring of
+  `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` lists the kinds that still survive.
+- **It can give a different answer.** At `main` on 2026-09-23 it exits 1 and names 13 stale lines:
+  the 11 that juniper-ml#2020 fixes and the 2 that juniper-cascor#673 fixes.
 - **Sample.** Nine repositories, with 54 live pins and one distinct range.
 - **Its limits** are in Corrections 1 and in the docstring of
   `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`.
@@ -539,8 +570,6 @@ version.
 - what the missing equities capability cost a real juniper-recurrence run. That was inferred from
   the image's lock and the compose file, not observed. The next juniper-data release carries the
   fix.
-
-**Round 5:** pending. This line is replaced when round 5 reports.
 
 ---
 
