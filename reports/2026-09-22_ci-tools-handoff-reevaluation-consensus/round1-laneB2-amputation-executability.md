@@ -7,7 +7,8 @@
 
 **Ran:** 2026-09-22T19:55:49Z to 2026-09-22T20:20:36Z, read-only. Agent `agent-a765f117f302f2596`.
 
-Both sections below are verbatim: the brief as sent, then the lane's final report as returned.
+The sections below are verbatim: the brief as sent, any message sent mid-run, then the lane's final
+report as returned.
 Line numbers in the report refer to the revision it reviewed, not to the file as merged.
 
 ## Brief

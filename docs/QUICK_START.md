@@ -82,20 +82,30 @@ See [`../juniper-observability/README.md`](../juniper-observability/README.md) f
 pip list | grep juniper
 ```
 
-Expected output (with `[all]`):
+Expected output (with `[all]`): 18 lines, one per package. The versions are what `juniper-ml` 0.9.0
+resolved to on 2026-09-22. A later release inside each extra's range (the table above) is expected,
+not a failure. Two of these packages come in transitively: `juniper-cascor-model` and
+`juniper-cascor-protocol`.
 
 ```bash
-juniper-canopy           0.5.x
-juniper-cascor           0.5.x
-juniper-cascor-client    0.5.x
-juniper-cascor-worker    0.4.x
-juniper-ci-tools         0.4.x
-juniper-config-tools     0.1.x
-juniper-data             0.6.x
-juniper-data-client      0.4.x
-juniper-doc-tools        0.1.x
-juniper-ml               0.6.0
-juniper-observability    0.2.x
+juniper-canopy              0.8.x
+juniper-cascor              0.11.x
+juniper-cascor-client       0.8.x
+juniper-cascor-model        0.1.x
+juniper-cascor-protocol     0.2.x
+juniper-cascor-worker       0.6.x
+juniper-ci-tools            0.9.x
+juniper-config-tools        0.1.x
+juniper-data                0.15.x
+juniper-data-client         0.5.x
+juniper-doc-tools           0.1.x
+juniper-ml                  0.9.0
+juniper-model-core          0.3.x
+juniper-observability       0.4.x
+juniper-recurrence          0.5.x
+juniper-recurrence-client   0.3.x
+juniper-recurrence-model    0.3.x
+juniper-service-core        0.7.x
 ```
 
 ```python

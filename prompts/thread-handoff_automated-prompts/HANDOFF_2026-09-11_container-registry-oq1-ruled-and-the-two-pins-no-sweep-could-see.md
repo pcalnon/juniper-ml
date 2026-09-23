@@ -3,7 +3,7 @@
 **Session**: container-registry rollout — the owner-gated tail, plus a defect found by running the
 predecessor's own verification command
 **Predecessor**: `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`
-**Status**: **SUPERSEDED** by `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`; the arc's current tip is `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`. Do not act on the remaining-work list below. Since this was written, Wave 3 completed, a post-#179 worker image exists, and Wave 4 moved to a `dockerhub` environment (Option B, juniper-ml#2009). Re-checked 2026-09-22 from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`'s status banner.
+**Status**: **SUPERSEDED** by `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md`; the arc's current tip is `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`. Do not act on the remaining-work list below. Since this was written, Wave 3 completed, a post-#179 worker image exists, and Wave 4 moved to a `dockerhub` environment (Option B of §3 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`, juniper-ml#2009). Re-checked 2026-09-22 from `HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`'s status banner.
 
 ---
 

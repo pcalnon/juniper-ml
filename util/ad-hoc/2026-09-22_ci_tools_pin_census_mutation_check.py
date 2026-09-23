@@ -20,6 +20,13 @@ round 2 named. A mutation "survives" when the self-test still passes, and any su
 this check (exit 1). An anchor that no longer matches exactly once also fails it, so an edit to
 the census cannot silently retire a mutation.
 
+**A kill here proves only the rules listed.** The mutants are chosen, not exhaustive. In round 3,
+two review lanes wrote 21 and 26 mutants of their own, and most survived. The nine added at the end
+of MUTATIONS are the survivors that the round-3 self-test cases now kill. Others still survive: the
+lookback and attribution constants, the ADJUDICATED keys' substring and spec components, and the
+comment-branch shapes. Their reports are in
+reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
+
 The mutants are written to a temporary directory and deleted afterwards. Nothing in the tree
 changes.
 """
@@ -46,6 +53,16 @@ MUTATIONS = {
     "heading naming another package drops the range": ('            return None\n    return None\n\n\nCOMPARISON_RE', '            return "other"\n    return None\n\n\nCOMPARISON_RE'),
     "comment block inherits a code line's name": ("        if is_comment_line(lineno) or col >= comment_start(raw):\n", "        if False:\n"),
     "unresolved installs ignore continuations": ('            if body.rstrip().endswith("\\\\"):\n                buf += body.rstrip()[:-1] + " "\n                continue\n', ""),
+    # Added after round 3, whose lanes found each of these surviving the 81-case self-test.
+    "OWN-EXTRA matches any range": ("            elif extra is not None and spec == extra:\n", "            elif extra is not None:\n"),
+    "util/ad-hoc/ not history": ('path.startswith("util/ad-hoc/") or ', ""),
+    "CHANGELOG not history": ('base.startswith("CHANGELOG") or ', ""),
+    "prompts/ and reports/ not history": ('HISTORICAL_SEGMENTS = {"notes", "prompts", "reports", "releases", "history", "legacy"}', 'HISTORICAL_SEGMENTS = {"notes", "releases", "history", "legacy"}'),
+    "main() exits 0 whatever it finds": ("    return 1 if bad else 0\n\n\ndef run(", "    return 0\n\n\ndef run("),
+    "a lagging --expect not counted": ("    if lag:\n        bad.insert(0, lag)\n", ""),
+    "a repo with zero live pins accepted": ("        if live == 0:\n", "        if False:\n"),
+    "misspelt --ref/--local keys accepted": ("    if unknown:\n        raise ValueError", "    if False:\n        raise ValueError"),
+    "candidates omit the next releases": ("    return sorted(set(released) | set(extra), key=Version)", "    return sorted(set(released), key=Version)"),
 }
 
 

@@ -35,8 +35,35 @@ References are transparent: a possessive (``juniper-ml's``), a PR ref (``juniper
 ``juniper-ml PR #1909``) and a URL or path segment (``/juniper-ml/pull/869``). A range
 directly after ANOTHER name (``httpx>=0.27``, ``juniper-doc-tools>=…``) belongs to that name.
 If another juniper name sits between an earlier ci-tools name and the range, the range is
-AMBIGUOUS rather than silently dropped. The ``0.x`` restriction keeps Python and pip specifiers
+AMBIGUOUS (see below), not attributed. The ``0.x`` restriction keeps Python and pip specifiers
 out; the census refuses to run (exit 2) once juniper-ci-tools reaches 1.0.
+
+Known silent drops -- an exit 0 means "none of the shapes this parses", not "clean"
+-----------------------------------------------------------------------------------
+Round 3 of the 2026-09-22 consensus review found these. Each is dropped with NO output, not even
+AMBIGUOUS. The review's reports are in reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
+
+* Owner-drop shapes.
+  - A range whose nearest name is a repo or another package, even in ci-tools context:
+    "the sequence-safety workflows in juniper-cascor pin ``>=0.8.0,<0.9.0``".
+  - A table whose header names a repo (``| package | pin in juniper-ml |``). The row's own
+    ci-tools cell is then ignored.
+* Context outside the range's own block. An unattributed range is listed as AMBIGUOUS only when
+  ``ci-tools``, ``screen pin`` or ``sequence-safety`` appears in its own paragraph, its comment
+  block (a bare ``#`` line ends one), or its nearest heading.
+* Bare releases, in one word order only. A bare release counts only as
+  ``ci-tools 0.X.Y is|are [already|now] installed|pinned|in use|required``, and ``0.N.x`` only
+  straight after ``juniper-ci-tools``. "CI installs juniper-ci-tools 0.8.0" is not seen.
+* Floor-only prose. ``>=0.8.0`` is REQUIREMENT and passes unless it excludes the latest release.
+  A floor below CI's is therefore never reported.
+* Under tests/, only comments and docstrings are judged. Other string literals and non-``.py``
+  files are FIXTURE.
+* Unpinned installs.
+  - They are checked only in workflows.
+  - Every ``==${...}`` pin is exempt.
+  - So is any install line that carries some other 0.x specifier.
+* Candidate-set sampling. A ceiling between two sampled releases (``<0.9.2``) reads as equal
+  to ``<0.10.0``.
 
 How each is judged
 ------------------
@@ -59,10 +86,12 @@ HISTORICAL   a path segment notes/ prompts/ reports/ releases/ history/ legacy/,
              util/ad-hoc/, or a timestamped snapshot (``requirements_ci_2026-09-21_08-25-31.txt``)
              -- counted only.
 AMBIGUOUS    a range the attribution could not assign, in text whose section names ci-tools, a
-             screen pin or sequence-safety, that does not already equal --expect. It FAILS the
-             census until someone reads it and either fixes the line or records a verdict in
-             ADJUDICATED below. ``docs/REFERENCE.md`` once described "the two new
-             ``>=0.8.0,<0.9.0`` screen pins" without naming the package; no regex attributes that.
+             screen pin or sequence-safety. One that admits a different set of releases than
+             --expect FAILS the census until someone fixes the line or records a verdict in
+             ADJUDICATED below. One that matches --expect passes; the run lists it under its
+             own heading, because its owner is a guess. ``docs/REFERENCE.md`` once described
+             "the two new ``>=0.8.0,<0.9.0`` screen pins" without naming the package; no regex
+             attributes that.
 
 Exceptions (EXCEPTIONS, ADJUDICATED) are keyed by (repo, path, a substring of the line, the
 specifier), each with a reason, so new drift on the same line is still judged.
@@ -74,8 +103,8 @@ Usage:  python3 util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py [--expect '
 Exit:   0 when nothing judged is stale; 1 when something is (each listed), including when
         --expect itself does not admit the latest release; 2 when the census could not run --
         a failed download, an unreadable tarball, a missing ``packaging``, an invalid or
-        non-0.x --expect, a 1.0 release, or zero live pins found anywhere. A census that could
-        not run is not clean.
+        non-0.x --expect, a 1.0 release, a --ref/--local key naming no repo in REPOS, or a
+        repo read with zero live pins. A census that could not run is not clean.
 """
 
 from __future__ import annotations
@@ -726,11 +755,73 @@ def self_test() -> int:
     failed += not guard_ok
     print(f"  {'ok  ' if guard_ok else 'FAIL'} --expect validated up front, and a range that excludes the latest release fails")
 
+    # Location decides whether a range is judged at all. Round 3 showed each of these could be
+    # deleted with the self-test still green.
+    history_cases = [
+        ("util/ad-hoc/2026-09-11_x.py", "# pip install 'juniper-ci-tools>=0.6.0,<0.7.0'\n"),
+        ("CHANGELOG.md", "- CI now pins `juniper-ci-tools>=0.6.0,<0.7.0`.\n"),
+        ("prompts/x/HANDOFF_x.md", "CI pins `juniper-ci-tools>=0.6.0,<0.7.0`.\n"),
+        ("reports/x/lane.md", "CI pins `juniper-ci-tools>=0.6.0,<0.7.0`.\n"),
+    ]
+    for path, text in history_cases:
+        got = {(h.line, h.cls) for h in census_text("juniper-x", path, text, None)}
+        ok = got == {(1, "HISTORICAL")}
+        failed += not ok
+        print(f"  {'ok  ' if ok else 'FAIL'} {path:<64} is history  got={sorted(got)}")
+
+    # The repo's own extra is exempt only when the range IS that extra.
+    own = normalise(">=0.9.0,<0.10.0")
+    same_extra = {(h.line, h.cls) for h in census_text("juniper-x", "docs/X.md", "The extra is `juniper-ci-tools>=0.9.0,<0.10.0`.\n", own)}
+    other_extra = {(h.line, h.cls) for h in census_text("juniper-x", "docs/X.md", "CI pins `juniper-ci-tools>=0.6.0,<0.7.0`.\n", own)}
+    extra_ok = same_extra == {(1, "OWN-EXTRA")} and other_extra == {(1, "DOC")}
+    failed += not extra_ok
+    print(f"  {'ok  ' if extra_ok else 'FAIL'} only the repo's own extra range is OWN-EXTRA  got={sorted(same_extra)} {sorted(other_extra)}")
+
+    # The exit-code contract, through run() with the network stubbed: 0 clean, 1 stale, 2 could not run.
+    import contextlib
+
+    g = globals()
+    saved = {k: g[k] for k in ("load_remote", "published_versions")}
+    live_wf = '      run: pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n'
+
+    def tree(extra_files: dict[str, dict[str, str]] | None = None, drop_live: str | None = None, empty: str | None = None):
+        def fake_load_remote(repo: str, ref: str) -> tuple[str, dict[str, str]]:
+            if repo == empty:
+                return "0" * 40, {}
+            members = {".github/workflows/ci.yml": ("" if repo == drop_live else live_wf) + "# juniper-ci-tools\n"}
+            members.update((extra_files or {}).get(repo, {}))
+            return "f" * 40, members
+
+        return fake_load_remote
+
+    stale_doc = {"juniper-ml": {"docs/X.md": "CI pins `juniper-ci-tools>=0.6.0,<0.7.0`.\n"}}
+    wide_doc = {"juniper-ml": {"docs/X.md": "CI pins `juniper-ci-tools>=0.9.0,<0.11.0`.\n"}}
+    scenarios = [
+        ("clean trees", tree(), ("0.9.0", ["0.8.0", "0.9.0"]), [], 0),
+        ("one stale doc", tree(stale_doc), ("0.9.0", ["0.8.0", "0.9.0"]), [], 1),
+        ("a doc range wider than --expect", tree(wide_doc), ("0.9.0", ["0.8.0", "0.9.0"]), [], 1),
+        ("--expect behind the latest release", tree(), ("0.10.0", ["0.9.0", "0.10.0"]), [], 1),
+        ("a misspelt --ref key", tree(), ("0.9.0", ["0.9.0"]), ["--ref", "juniper-cascr=abc"], 2),
+        ("a repo with zero live pins", tree(drop_live="juniper-deploy"), ("0.9.0", ["0.9.0"]), [], 2),
+        ("a repo read as empty", tree(empty="juniper-data"), ("0.9.0", ["0.9.0"]), [], 2),
+    ]
+    try:
+        for desc, loader, versions, argv, want in scenarios:
+            g["load_remote"] = loader
+            g["published_versions"] = lambda v=versions: v
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                rc = run(argv)
+            ok = rc == want
+            failed += not ok
+            print(f"  {'ok  ' if ok else 'FAIL'} run(): {desc:<58} exit={rc} expected={want}")
+    finally:
+        g.update(saved)
+
     for probe in ("repo-sha/Makefile", "repo-sha/Dockerfile.test", "repo-sha/requirements-cpu.lock"):
         if not is_text_member(probe):
             failed += 1
             print(f"  FAIL is_text_member misses {probe}")
-    total = len(cases) + len(verdict_cases) + 2
+    total = len(cases) + len(verdict_cases) + 2 + len(history_cases) + 1 + len(scenarios)
     print(f"self-test: {total - failed} passed, {failed} failed")
     return 1 if failed else 0
 
@@ -744,19 +835,23 @@ def latest_lag_message(expect: str, latest: str) -> str | None:
     return None
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.strip().split("\n", 1)[0])
     ap.add_argument("--expect", default=">=0.9.0,<0.10.0", help="the specifier every live pin should carry")
     ap.add_argument("--self-test", action="store_true", help="run the crafted-case checks and exit")
     ap.add_argument("--ref", action="append", default=[], metavar="REPO=REF", help="census REF instead of main for REPO")
     ap.add_argument("--local", action="append", default=[], metavar="REPO=PATH", help="census a local tree for REPO")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
     if args.self_test:
         return self_test()
 
     validate_expect(args.expect)
     refs = dict(item.split("=", 1) for item in args.ref)
     locals_ = dict(item.split("=", 1) for item in args.local)
+    # A misspelt key would census that repo's main instead, silently.
+    unknown = sorted((set(refs) | set(locals_)) - set(REPOS))
+    if unknown:
+        raise ValueError(f"--ref/--local name no repo this census reads: {', '.join(unknown)} (known: {', '.join(REPOS)})")
     latest, released = published_versions()
     if not latest.startswith("0."):
         raise ValueError(f"juniper-ci-tools {latest} is not 0.x; widen _VER0 before trusting this census")
@@ -772,8 +867,11 @@ def main() -> int:
             raise RuntimeError(f"{repo}: no text files read from {sha} -- nothing was censused")
         hits = census_members(repo, members)
         live = sum(1 for h in hits if h.cls == "LIVE")
-        warn = "   WARNING: no live pins" if live == 0 else ""
-        print(f"{repo:<24} {sha[:40]:<40}  mentions={len(hits)}  live={live}{warn}")
+        print(f"{repo:<24} {sha[:40]:<40}  mentions={len(hits)}  live={live}")
+        if live == 0:
+            # Every repo pins juniper-ci-tools in CI today. A repo that reads as having none was read
+            # wrongly or has dropped the package; either way its clean result would mean nothing.
+            raise RuntimeError(f"{repo}: zero live pins at {sha[:12]} -- if it no longer uses juniper-ci-tools, remove it from REPOS")
         all_hits.extend(hits)
 
     by_class = Counter(h.cls for h in all_hits)
@@ -806,11 +904,16 @@ def main() -> int:
     return 1 if bad else 0
 
 
-if __name__ == "__main__":
+def run(argv: list[str] | None = None) -> int:
+    """main() with the exit-code contract: 0 clean, 1 stale, 2 could not run (never 0)."""
     try:
-        raise SystemExit(main())
+        return main(argv)
     except SystemExit:
         raise
     except Exception as exc:  # a census that could not run is not clean
         print(f"ERROR: census could not run: {type(exc).__name__}: {exc}", file=sys.stderr)
-        raise SystemExit(2)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(run())

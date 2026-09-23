@@ -8,9 +8,10 @@ The review ran under `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGE
 verdicts, reconciliation, instrument and limits. This README only indexes the files. It restates
 none of the record's content, so the two cannot drift apart.
 
-Each file holds one lane's brief as sent and its final report as returned, both verbatim, taken
-from the session's subagent transcripts. A subagent's report otherwise lives only in a local,
-unversioned transcript. Line numbers inside a report refer to the revision that lane reviewed.
+Each file holds one lane's brief as sent, any message sent to it mid-run, and its final report as
+returned, all verbatim, taken from the session's subagent transcripts. Only the round-3 lanes got a
+mid-run message: a usage limit stopped all three, and each was resumed in place. A subagent's
+report otherwise lives only in a local, unversioned transcript. Line numbers inside a report refer to the revision that lane reviewed.
 
 | file | round | lane | entry point |
 | --- | --- | --- | --- |
@@ -22,8 +23,11 @@ unversioned transcript. Line numbers inside a report refer to the revision that 
 | `round2-laneB-attack-the-fix-pass.md` | 2 | R2-A (Lane B) | attack the round-1 fix pass |
 | `round2-laneA-census-adequacy.md` | 2 | R2-B (Lane A) | its own instrument, then mutations of the census |
 | `round2-laneA-full-read-artifact-first.md` | 2 | R2-C (Lane A) | the whole document, re-derived from primary artifacts |
+| `round3-laneB-attack-the-round2-fix-pass.md` | 3 | R3-A (Lane B) | attack the round-2 fix pass, plus a ledger of every earlier finding |
+| `round3-laneA-census-adequacy.md` | 3 | R3-B (Lane A) | its own instrument, then 26 mutations of the census |
+| `round3-laneA-record-and-new-numbers.md` | 3 | R3-C (Lane A) | the validation record and every new number, from primary sources |
 
 The instruments the record cites are in `util/ad-hoc/`:
 - `2026-09-22_ci_tools_pin_census_remote.py`, the census;
-- `2026-09-22_ci_tools_pin_census_mutation_check.py`, which proves the census's self-test
-  discriminates.
+- `2026-09-22_ci_tools_pin_census_mutation_check.py`, which checks that the census's self-test
+  fails when any rule it lists is removed. It proves nothing about rules it does not list.
