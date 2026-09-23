@@ -251,15 +251,16 @@ DEFAULT_TIMEOUT = 2400  # unmeasured repos: the "standard" tier
 # after the first required context had started; queue-free, all three spans fit their OLD
 # budgets; no re-measure has lowered an already-pinned budget, and every change to one was a
 # raise (09-22: 3 raised, 6 stood); and four of nine budgets now sit at TIMEOUT_CEILING, where the
-# next stale one cannot be raised. The case for shipping: the "> observed max" rule the tests
-# enforce has no queue exemption; the 2026-09-09 raises of ml and recurrence followed it -- though
-# ml's came in the same commit (ml#1851) that wrote that paragraph, to cover the same PR's span,
-# and read the paragraph as covering PRE-start queue only, which the span excludes by construction
-# (the WITHDRAWN (1) note below, 2026-09-10, kept that reading and replaced only its reasoning);
-# holding refuses healthy PRs during contention, where a refusal disarms the auto-merge net; and
-# both past lowerings went stale within a day (the default, 1800 -> 900 s on 2026-08-19 and back
-# up to 2400 on 08-20; deploy and recurrence first pinned at 700 s on 2026-09-08, recurrence
-# raised to 2000 the next day). The GENERAL
+# next stale one cannot be raised. Against it: budgets set below the default have a mixed record
+# -- recurrence's 700 s (2026-09-08) went stale within a day, as did the default's own 2026-08-19
+# cut to 900 s, while ml's 900 s (pinned 2026-08-20) held 16 days and deploy's 700 s held 14. The
+# case for shipping: the "> observed max" rule the tests enforce has no queue exemption; the
+# 2026-09-09 raises of ml and recurrence followed it; and holding refuses healthy PRs during
+# contention, where a refusal disarms the auto-merge net. Against it: both 09-09 raises came in the
+# same commit (ml#1851) that wrote that paragraph -- ml's to cover the very PR whose refusal the
+# paragraph calls "the design working" -- and that commit read the paragraph as covering PRE-start
+# queue only, which the span excludes by construction (the WITHDRAWN (1) note below, 2026-09-10,
+# kept that reading and replaced only its reasoning). The GENERAL
 # question -- should a budget absorb within-span contention, and what happens when a repo at the
 # ceiling goes stale -- stays open, recorded in
 # prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md.
@@ -314,8 +315,8 @@ REPO_TIMEOUTS = {
     # What is not withdrawn: 1500 REFUSED ml#1828 live, on a PR whose 17 required contexts
     # every one passed.
     #
-    # 09-22: p90 910, max 2005 (30 healthy heads, window #1981-#2014 -- #2004 lies in that range
-    # but merged after the measurement, and the pair is the same with it) -> window (2005, 3640].
+    # 09-22: p90 910, max 2005 (30 healthy heads: the 30 newest merged PRs between 20:08 and 20:18
+    # UTC, #1981-#2014 less #2004 and #2013, which merged later) -> window (2005, 3640].
     # 2800 stands. Later reads gave p90 857, then 733, then 680 (2026-09-23 00:33 UTC), each with
     # max 1061: #1981, a 2005 s healthy pass, had slid out -- one head at the window's edge halves
     # this max. At 680, 2800 exceeds 4x p90 (2720) by 80 s. NOT re-pinned: a window edge moving is

@@ -33,7 +33,9 @@ def main() -> int:
     res = mod.probe_first_pass(n=n)
     row = res["rows"][0]
     print(json.dumps({k: row.get(k) for k in ("repo", "window", "sample_prs", "healthy", "verdict")}))
-    ok = bool(row.get("window")) and row.get("window") != "empty" and len(row.get("sample_prs") or []) == n
+    sample = row.get("sample_prs") or []
+    # Exact, not merely present: a reversed, constant or stale window must fail this.
+    ok = len(sample) == n and sample == sorted(sample) and row.get("window") == f"#{sample[0]}-#{sample[-1]}"
     print("WINDOW RECORDED" if ok else "WINDOW MISSING")
     return 0 if ok else 1
 

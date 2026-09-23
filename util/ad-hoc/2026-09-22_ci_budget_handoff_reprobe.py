@@ -429,7 +429,7 @@ def probe_first_pass(n: int = 30) -> dict:
             }
         )
         print(f"        {repo:<22} {len(healthy):>7} {len(unhealthy):>7} {len(unmeas):>6} {p90v:>6.0f} {mxv:>6} {'#' + str(max_pr):>7} {budget:>6} {4 * p90v:>6.0f} {round(max(raw)):>7}  {verdict}")
-        print(f"            window {window}: the {len(sample)} newest merged PRs by creation, listed in the JSON; any other number in the range was not a merged PR when this ran")
+        print(f"            window {window}: the {len(sample)} newest merged PRs by creation (every one is listed under --json); any other number in the range was not a merged PR when this ran")
         if len(healthy) < 10:
             print(f"            only {len(healthy)} healthy heads: p90 sits at or next to the max; treat both as one observation")
         for u in sorted(unhealthy, key=lambda r: -r["raw_span"]):
@@ -656,7 +656,7 @@ def probe_soak(since: str) -> dict:
     print("       could it read differently? yes -- every [FAIL] block the screen prints is parsed and counted; a run with no markdown")
     print("       change examines nothing and is NOT evidence either way; adjudicating true vs false is NOT done here.")
     if not checks:
-        raise Unmeasurable("no soak check-runs found -- refusing to report a clean soak")
+        raise Unmeasurable(f"no COMPLETED soak check-runs ({len(in_flight)} in flight) -- refusing to report a clean soak")
     if unclassified:
         raise Unmeasurable(f"soak: {len(unclassified)} readable log(s) neither examined a file nor said why")
     lost = [c for c in unread if c["conclusion"] != "cancelled"]
@@ -811,9 +811,14 @@ def main(argv=None) -> int:
             return 2
 
     chosen = PROBES if args.probe == "all" else [args.probe]
-    results: dict = {"measured_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    results: dict = {"measured_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "probe_started_at": {}}
     failed = []
     for name in chosen:
+        # Each probe enumerates when IT starts. Under `all` a late probe runs minutes after the
+        # run's own stamp, so quote a probe's figures with this time, not with `measured_at`.
+        started = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        results["probe_started_at"][name] = started
+        print(f"[{name}] started {started}")
         try:
             fn = {
                 "structure": probe_structure,

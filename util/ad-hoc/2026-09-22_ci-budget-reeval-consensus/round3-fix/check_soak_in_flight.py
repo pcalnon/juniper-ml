@@ -89,7 +89,9 @@ def main() -> int:
     stub(unguarded)
     ctrl = verdict(unguarded)
     print(f"guard deleted: {ctrl}")
-    ok = got == "in_flight=1 completed=1 examined=1" and ctrl.startswith("UNMEASURABLE")
+    # The control must fail for the RIGHT reason: the queued run scored as a lost log.
+    expected_ctrl = "UNMEASURABLE: soak: 1 completed run(s) whose log could not be read after retries: [1]"
+    ok = got == "in_flight=1 completed=1 examined=1" and ctrl == expected_ctrl
     print("PASS" if ok else "FAIL")
     return 0 if ok else 1
 
