@@ -1,0 +1,11 @@
+{
+  "step": "render_api_network_stats",
+  "t_utc": "2026-09-23T19:45:04.799Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/network/stats",
+  "status": 503,
+  "response": {
+    "error": "No network data available"
+  },
+  "elapsed_s": 0.005
+}

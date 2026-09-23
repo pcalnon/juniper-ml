@@ -1,0 +1,2 @@
+2026-09-23 14:54:39,453 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:54:39,453 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 0.0004412238205427885, 'rmse': 0.021005328384550156, 'mae': 0.014304412824196014, 'r2': 0.00841966061470234, 'loss': 0.0004412238205427885})

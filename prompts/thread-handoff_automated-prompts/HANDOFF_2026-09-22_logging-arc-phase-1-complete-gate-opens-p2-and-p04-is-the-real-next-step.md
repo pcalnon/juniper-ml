@@ -4,6 +4,15 @@ Successor to
 `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-17_logging-arc-phase-1-four-of-five-shipped-and-p14-is-an-option-d-decision.md`
 (the **predecessor**; every bare "the predecessor" below means that file).
 
+> ## ✅ UPDATE 2026-09-23: VALIDATED — five independent lanes ran; READ §8 BEFORE ACTING ON §0–§5
+>
+> Lane A ×3 (git/GitHub; the source tree; re-derivation of every number) and Lane B ×2 (refute the
+> conclusions; omission + executability + receipts) ran against this document frozen at juniper-ml
+> `7b226ca0`. They found **23 corrections**, recorded item by item in §8 — including that
+> `logging_utils.py` was NOT fixed on `main` (§3 item 1 was false), that P0.4 as specified in §0.1
+> could not meet its own acceptance, and that the suite §0.2 calls P2.1's "only detector" cannot
+> detect P2.1's likely failure. The original banner is kept below for the record.
+>
 > ## ⚠ VALIDATION STATUS: INDEPENDENT CONSENSUS DID **NOT** RUN — VALIDATE THIS BEFORE TRUSTING IT
 >
 > Consensus was attempted per
@@ -377,3 +386,81 @@ Listed because they are evidence the unverified remainder is not clean:
 3. **Three ambiguous section references.** A bare `§N` means a section of *this* document, and
    `§5`, `§3.1` and `§7.1` were used for the roadmap's sections — where this document's `§5` is Git
    status. All three now name their file. One role-only reference ("the design") likewise.
+
+---
+
+## 8. Independent validation, 2026-09-23
+
+Run per
+[`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
+against this document **frozen at juniper-ml `7b226ca0`**, cascor at `0d2d826` (and `010d035` where
+the text pins it). Every lane read by `git show <sha>:<path>`, so no branch movement could reach it.
+
+| lane | entry point | model | verdict in one line |
+| --- | --- | --- | --- |
+| A1 | git / GitHub state only | sonnet | every PR/merge/branch/signature claim CONFIRMED; §5's worktree state wrong |
+| A2 | the cascor source tree at `0d2d826` | sonnet | §0.1's P0.4 citations wrong; P2.2's seventh closure gone; P2.1(c) prescription correct |
+| A3 | re-running every instrument | sonnet | 16.70 % reproduces exactly — and the instrument undercounts |
+| B1 | REFUTE the conclusions | opus | "P0.4 before P2.1" REFUTED as argued; P0.4-as-specified REFUTED; the gate WEAKENED |
+| B2 | omission, executability, receipts | opus | `logging_utils` not fixed on `main`; §1 not executable; live traps dropped |
+
+**Reconciliation.** Findings two or more lanes reached independently are marked *convergent*. A
+load-bearing finding only one lane reported was **re-derived by the author** before it was written
+here (marked *re-derived*); one that was not is marked *reported*.
+
+### 8.1 Corrections
+
+| # | where | the claim | what is true | basis |
+| --- | --- | --- | --- | --- |
+| 1 | §0.1(d) | formatter strings at `constants_logging.py:152-158`, `conf/logging_config.yaml:47`, `api/observability.py:119` | the file is `src/cascor_constants/constants_logging/constants_logging.py`; the console prefix that omits the function is `:156`, not `:157`; Path C is `observability.py:118`; a fourth copy sits in `conf/logging_config-CANOPY.yaml`, which nothing loads | A2, B1, B2 convergent; re-derived |
+| 2 | §0.1(d) | option (i), a golden of formatter strings, "covers all three copies" | it cannot meet the acceptance: the `+` sentinel is written by CODE (`logger.py:581-582`), every `datefmt` is omitted, and B1's probe showed a strings-only golden unchanged under five breaks. **Built differently, as [cascor#680](https://github.com/pcalnon/juniper-cascor/pull/680)** — see the roadmap's §3.1 STATUS block | B1, B2 convergent |
+| 3 | §0.2 | `test_logger_frame_resolution.py` is P2.1's only detector | it is **not a detector of P2.1's likely failure**: it calls `_frame_info` directly and never an emit method, so it passes P2.1 with `.f_back` forgotten (6/6) and with one hop too many. The detector is cascor#680's `test_path_a_resolves_the_real_caller`, mutation-checked against both | B1, B2 convergent (probes); re-derived by the P0.4 mutation check |
+| 4 | §0.2 and §7 defect 1 | the test "models the contract rather than calling `_frame_info` directly", so the original claim was "close to the opposite" | the ORIGINAL claim was right in substance — the suite does call `_frame_info` directly (`:79`, `:98`, `:112`, `:117`); only its line numbers were wrong. §7 defect 1 over-corrected | B1, B2 convergent |
+| 5 | §0.2 | making `_frame_info` walk two hops fails "both classes" | only `TestFrameResolutionEquivalence` fails (3 tests), and only its depth-0/1 probes can see it | B1 reported |
+| 6 | §0.2 | P2.2 hoists **seven** closures | **six**, all after the filter (`logger.py:579`, `:580`, `:332`, `:333`, `:350`, `:351`); the `_get_log_level` lambda left the emit path with P1.1 (#644), and deleting it is symbol loss | A2, B1, B2 convergent |
+| 7 | §0.2 | eager `currentframe` is the P2.1 cost (0.507 s / 611,870) | confirmed — and eager `_tsp()` (`datetime.now`) costs **0.571 s** over the same calls, invisible to the instrument; P2.1 saves both | A3; re-derived |
+| 8 | §7 ✗ | 16.70 % of worker self time | reproduces exactly, but the instrument undercounts: 3 of its 5 matcher entries are dead and the per-record builtins are absent. Caller-weighted: **28.25 %** (A3: 29.2 %). The gate's decision is unchanged. B1 measured cProfile inflating the discarded path 3.17×, so measure P2 as an unprofiled wall-clock A/B | A3; re-derived (`util/ad-hoc/2026-09-23_p02_matcher_adequacy_check.py`); B1 reported |
+| 9 | §7 ✗ | `Tensor.__format__` 0.13 s over 2,912 calls | that is CUMULATIVE time; self time is 0.011 s | A3 |
+| 10 | §0.2 | 91 % discarded | 90.46 % (58,399 emitted of 611,870) | A3 |
+| 11 | §7 ✗ | #667: 1,270 → 341 ns, 3.73×, 132/132 cells | 132/132 exact; timing reproduced at 1,891.6 → 452.4 ns, 4.18× — directionally consistent | A3 |
+| 12 | §3 item 1 | `logging_utils.py` is "fixed-but-unwired dead code" | **not fixed on `main`**: five `logger.log(level, msg)` sites raise `TypeError` against the `Logger` class, and `trace`/`verbose` pass `5`/`15`. The fix existed only on WIP `1b918e6`. **Re-landed as [cascor#681](https://github.com/pcalnon/juniper-cascor/pull/681)** | B2; re-derived |
+| 13 | §2 | "Phase 1 is complete" | not until cascor#681 merges — P1.4's fix half was never on `main` | B2; re-derived |
+| 14 | §3 item 2 | "Recorded in §13.1" (the P6.4 hot-files ruling) | it was not — decision 6 still read "P6.4 open … held". Transcribed 2026-09-23 | B2 |
+| 15 | §5 | "clean them up" — the five cascor worktrees are "merged or spent" | **4 of 5 are dirty** (memo, p14-guard, p64, measure); in three the dirt is byte-identical to the merged PR, `--measure--`'s differs; `p01` holds 5 ignored `.h5` snapshots that `git worktree remove` would delete; and a SIXTH worktree (`--wip--logging-p14--`) holds the WIP branch | A1, B2 convergent; re-derived |
+| 16 | §5 | "decide whether to close" the WIP branch | closing it would have destroyed the only copy of the `logging_utils` fix (row 12) | B2 |
+| 17 | §1 | the verification block "runs as written" | `<a cascor worktree>` is a shell syntax error as written; `log --oneline -3` cannot certify `c1de246` (use `merge-base --is-ancestor`); the byte-gate md5 prints `1` when both `git show` calls fail | B2 |
+| 18 | §0.4 | decision 7 lives in "§7.1 of …ROADMAP.md" | the roadmap has no §7.1 — it is §7.1 of `notes/JUNIPER_2026-08-29_JUNIPER-CASCOR_LOGGING-REDESIGN-DESIGN.md` (`:363`) | B2; re-derived |
+| 19 | §0.4 | the ruled-but-unstarted list | omits ruled, UNBLOCKED work: decision 5's P4.1–P4.3 (unblocked since P1.1 shipped), decision 3's P5.1, and P6.1–P6.3 (`src/cascade_correlation/backups/` is still tracked) | B2 |
+| 20 | §4 | the trap list | dropped five live traps: the PINNED black (local 26.5.1 vs cascor's pin 25.1.0 — run `/opt/miniforge3/bin/pre-commit`), gh 2.46.0 breaking `gh pr edit` (use `gh api -X PATCH`), headless commit signing hanging (use `util/open_signed_pr.py` / `util/ad-hoc/2026-09-08_push_signed_commit.py`), the byte-gate vs `_INTENTIONAL_DIVERGENCE` ordering against decision 4, and unmarked-test deselection | B2 |
+| 21 | §0.1(c) | "~17 scripts" anchor on message text | **18 scripts, 104 anchors, 35 live markers** (10 anchors already GONE) — enumerated mechanically by `util/ad-hoc/2026-09-22_p04_log_marker_census.py` | census |
+| 22 | RECON N-4 (inherited) | nothing parses `[file.py: func:LINE]` | three scripts anchor on it (8 anchors); RECON §3's "Path B carries milliseconds" is also wrong — Path B is second resolution, the ms records are Path C. Both corrected at source | census and shape survey; B1 corroborated the `datefmt` split |
+| 23 | §0.4 / P0.7 | cascor#573's status comment | accurate when posted, now stale: it predates P0.2's 16.70 % | A1 |
+
+Found while building P0.4, not by a lane: **[cascor#679](https://github.com/pcalnon/juniper-cascor/issues/679)** —
+`LogConfig.__init__` binds the custom-level closures so the logger becomes the message; at
+VERBOSE/TRACE every `juniper`-logger `.verbose()`/`.trace()` raises inside logging and the record is
+lost.
+
+### 8.2 Minimum record (procedure §7)
+
+- **Instruments**: `git`/`gh` for A1; `git show` of the cascor tree plus Python probes for A2; the
+  archived 32-profile corpus with the P0.2, P6.4 and census instruments for A3; variant and mutation
+  probes of `logger.py` for B1 and B2. Every instrument could have returned a different answer — A3's
+  bounds and B1's variant table both did.
+- **Iterations: ONE.** Round 1 produced corrections, so the procedure calls for a round 2 briefed on
+  these corrections. **It has not run** on this section or on the roadmap/RECON corrections it
+  caused. Treat rows 1–23 as round-1 output.
+- **Unresolved dissent**: none on a disposition. Row 8's corrected share is 28.25 % (caller-weighted,
+  the author) against 29.2 % (whole-builtin, A3); both methods are named and both clear the gate.
+- **What this evidence cannot support**: any cost claim from a profiled share (row 8); any
+  statement that P2.1 is SAFE beyond "the harness would catch a frame-depth error on the eight emit
+  methods" — cascor#680 checks Path A's emit methods, not every path to `_frame_info`.
+  - **The concrete case: B1's P4 forward hazard.** The first fix pass dropped it. It was restored
+    2026-09-23 in the roadmap's P2.1(c) CORRECTION block
+    (`notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` §5).
+  - **The mechanism.** The ruled P4 prototype puts `BoundLogger._emit` between the public method and
+    emission (`util/ad-hoc/2026-09-10_p41_a2bind_prototype.py:66-75`). After P2.1 that extra hop
+    would mis-attribute every record, and neither detector drives that path.
+  - **The obligation.** P4.1 must extend cascor#680's emitter before it ships.
+  - **Why it belongs here.** It is residue loss of the kind the procedure warns about: a lane
+    reported it, the reconciliation read it, and no document carried it.

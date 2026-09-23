@@ -1,0 +1,70 @@
+{
+  "ids_before": 4,
+  "ids_after": 5,
+  "new_ids": [
+    "multi_sine-3.0.0-8dfa94a78568d243"
+  ],
+  "meta": {
+    "multi_sine-3.0.0-8dfa94a78568d243": {
+      "url": "http://127.0.0.1:8111/v1/datasets/multi_sine-3.0.0-8dfa94a78568d243",
+      "status": 200,
+      "elapsed_s": 0.007,
+      "body": {
+        "dataset_id": "multi_sine-3.0.0-8dfa94a78568d243",
+        "generator": "multi_sine",
+        "generator_version": "3.0.0",
+        "params": {
+          "n_steps": 2000,
+          "lookback": 32,
+          "horizon": 1,
+          "sample_dt": 1.0,
+          "train_ratio": 0.8,
+          "val_ratio": 0.1,
+          "seed": 0,
+          "scaling": "identity",
+          "n_components": 3,
+          "frequencies": null,
+          "amplitudes": null,
+          "phases": null,
+          "noise_std": 0.0
+        },
+        "n_samples": 1968,
+        "n_features": 1,
+        "task_type": "regression",
+        "n_classes": null,
+        "n_train": 1574,
+        "n_val": 197,
+        "n_test": 197,
+        "class_distribution": null,
+        "sequence": true,
+        "lookback": 32,
+        "time_unit": "steps",
+        "dt_scaling": {
+          "method": "identity"
+        },
+        "target_scaling": {
+          "y": {
+            "method": "identity"
+          }
+        },
+        "truncation": null,
+        "data_quality": null,
+        "artifact_formats": [
+          "npz"
+        ],
+        "created_at": "2026-09-23T19:45:04.366608Z",
+        "checksum": "8737eac52237f5bd1fd76f5c85922dd78acc3bcca408ec668f2ddd71b68f30ec",
+        "dataset_name": null,
+        "dataset_version": null,
+        "parent_dataset_id": null,
+        "description": null,
+        "created_by": null,
+        "tags": [],
+        "ttl_seconds": null,
+        "expires_at": null,
+        "last_accessed_at": "2026-09-23T19:45:04.385929Z",
+        "access_count": 1
+      }
+    }
+  }
+}

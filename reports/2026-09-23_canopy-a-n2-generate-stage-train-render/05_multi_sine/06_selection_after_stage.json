@@ -1,0 +1,21 @@
+{
+  "step": "selection_after_stage",
+  "t_utc": "2026-09-23T19:45:04.292Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/selection",
+  "status": 200,
+  "response": {
+    "nn_model": "recurrence",
+    "backend": "recurrence",
+    "execution": "one_shot",
+    "status": "live",
+    "swapped": false,
+    "selected": true,
+    "dataset": {
+      "value": "multi_sine",
+      "source": "pending",
+      "generator": "multi_sine"
+    }
+  },
+  "elapsed_s": 0.005
+}

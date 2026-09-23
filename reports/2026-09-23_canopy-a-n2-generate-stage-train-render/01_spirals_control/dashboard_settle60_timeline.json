@@ -1,0 +1,34 @@
+[
+  {
+    "t_s": 5.0,
+    "top_status": "Stopped",
+    "top_phase": "Idle",
+    "top_epoch": "0",
+    "top_hidden_units": "0",
+    "network_info": "Input Nodes: 2 |  | Hidden Units: 10 / 10 |  | Output Nodes: 2 |  | Training Step: 11 |  | Epoch (in phase): \u2014 |  | Iteration: 9 / 1000000 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+  },
+  {
+    "t_s": 15.0,
+    "top_status": "Stopped",
+    "top_phase": "Idle",
+    "top_epoch": "0",
+    "top_hidden_units": "0",
+    "network_info": "Input Nodes: 2 |  | Hidden Units: 10 / 10 |  | Output Nodes: 2 |  | Training Step: 11 |  | Epoch (in phase): \u2014 |  | Iteration: 9 / 1000000 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+  },
+  {
+    "t_s": 30.0,
+    "top_status": "Completed \u2014 early stopped",
+    "top_phase": "Output Training",
+    "top_epoch": "11",
+    "top_hidden_units": "10 / 10",
+    "network_info": "Input Nodes: 2 |  | Hidden Units: 10 / 10 |  | Output Nodes: 2 |  | Training Step: 11 |  | Epoch (in phase): \u2014 |  | Iteration: 9 / 1000000 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+  },
+  {
+    "t_s": 60.0,
+    "top_status": "Completed \u2014 early stopped",
+    "top_phase": "Output Training",
+    "top_epoch": "11",
+    "top_hidden_units": "10 / 10",
+    "network_info": "Input Nodes: 2 |  | Hidden Units: 10 / 10 |  | Output Nodes: 2 |  | Training Step: 11 |  | Epoch (in phase): \u2014 |  | Iteration: 9 / 1000000 |  | Training Phase: Idle |  | Network Connected: Yes |  | Monitoring: Inactive"
+  }
+]

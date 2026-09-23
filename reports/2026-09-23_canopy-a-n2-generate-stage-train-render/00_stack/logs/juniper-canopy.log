@@ -1,0 +1,434 @@
+2026-09-23 14:27:28 | system | INFO | WebSocketManager initialized: max_connections=50, heartbeat_interval=30s, reconnect_attempts=5, reconnect_delay=2s
+2026-09-23 14:27:29 | system | INFO | Starting server on 127.0.0.1:8061
+2026-09-23 14:27:29 | system | INFO | Debug mode: False
+2026-09-23 14:27:29 | system | INFO | Dashboard available at: http://127.0.0.1:8061/dashboard/
+2026-09-23 14:27:29 | system | INFO | WebSocket endpoint: ws://127.0.0.1:8061/ws
+2026-09-23 14:27:29 | system | INFO | API documentation: http://127.0.0.1:8061/docs
+2026-09-23 14:27:29 | system | INFO | Dependency floor check passed (3 juniper-* floor(s) satisfied).
+2026-09-23 14:27:29,106 [INFO] system: Dependency floor check passed (3 juniper-* floor(s) satisfied).
+2026-09-23 14:27:29 | system | WARNING | juniper-canopy is running OPEN — no API-key authentication is configured and require_auth is False, so protected routes will serve UNAUTHENTICATED. Set require_auth=True and populate the API-key secret to fail closed in a secured deployment.
+2026-09-23 14:27:29,106 [WARNING] system: juniper-canopy is running OPEN — no API-key authentication is configured and require_auth is False, so protected routes will serve UNAUTHENTICATED. Set require_auth=True and populate the API-key secret to fail closed in a secured deployment.
+2026-09-23 14:27:29 | system | INFO | Starting Juniper Canopy application
+2026-09-23 14:27:29,106 [INFO] system: Starting Juniper Canopy application
+2026-09-23 14:27:29 | system | INFO | Settings: server=127.0.0.1:8061, demo=False
+2026-09-23 14:27:29,107 [INFO] system: Settings: server=127.0.0.1:8061, demo=False
+2026-09-23 14:27:29 | system | INFO | Event loop captured for thread-safe broadcasting
+2026-09-23 14:27:29,107 [INFO] system: Event loop captured for thread-safe broadcasting
+2026-09-23 14:27:30,634 [INFO] juniper_canopy.backend: Service mode: connecting to CasCor at http://127.0.0.1:8212
+2026-09-23 14:27:30,687 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/health/live "HTTP/1.1 200 OK"
+2026-09-23 14:27:30 | system | INFO | JuniperData reachable at http://127.0.0.1:8111 (53.5ms)
+2026-09-23 14:27:30,688 [INFO] system: JuniperData reachable at http://127.0.0.1:8111 (53.5ms)
+2026-09-23 14:27:30,705 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8212/v1/health/live "HTTP/1.1 200 OK"
+2026-09-23 14:27:30 | system | INFO | JuniperCascor reachable at http://127.0.0.1:8212 (17.7ms)
+2026-09-23 14:27:30,706 [INFO] system: JuniperCascor reachable at http://127.0.0.1:8212 (17.7ms)
+2026-09-23 14:27:30,724 [INFO] juniper_canopy.backend.service_backend: ServiceBackend: no existing cascor network found (will create on start)
+2026-09-23 14:27:30,724 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay started
+2026-09-23 14:27:30,724 [INFO] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor started (use_websocket_set_params=True)
+2026-09-23 14:27:30,724 [INFO] juniper_canopy.backend.service_backend: ServiceBackend connected to http://127.0.0.1:8212
+2026-09-23 14:27:30,724 [INFO] juniper_canopy.backend.status_cache: Status cache refresher started (interval=1.00s)
+2026-09-23 14:27:30 | system | INFO | Backend initialized: service
+2026-09-23 14:27:30,725 [INFO] system: Backend initialized: service
+2026-09-23 14:27:30 | system | INFO | WebSocket keepalive heartbeat started (interval=30s, channel=training)
+2026-09-23 14:27:30,725 [INFO] system: WebSocket keepalive heartbeat started (interval=30s, channel=training)
+2026-09-23 14:27:30 | system | INFO | Application startup complete
+2026-09-23 14:27:30,725 [INFO] system: Application startup complete
+2026-09-23 14:27:30,768 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor metrics stream connected to ws://127.0.0.1:8212
+2026-09-23 14:27:30,768 [INFO] juniper_canopy.backend.cascor_service_adapter: Control stream supervisor connected to ws://127.0.0.1:8212
+2026-09-23 14:27:35,770 [WARNING] juniper_cascor_client.observability: juniper_cascor_client_unrecognized_ws_frame type=initial_status endpoint=training
+2026-09-23 14:27:35,771 [WARNING] juniper_canopy.observability: juniper_canopy_unrecognized_ws_frame
+2026-09-23 14:28:30,729 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 4 frame(s) in last 60s (metrics=0, state=1, topology=0, connection_established=1, initial_metrics=1, initial_status=1); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-09-23 14:29:30,730 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-09-23 14:30:30,678 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:30:30,685 [ERROR] juniper_canopy.backend.cascor_service_adapter: Failed to update cascor params via REST: No network created
+2026-09-23 14:30:30 | system | WARNING | Backend parameter application failed: No network created
+2026-09-23 14:30:30,685 [WARNING] system: Backend parameter application failed: No network created
+2026-09-23 14:30:30,706 [WARNING] juniper_canopy.backend.cascor_service_adapter: Failed to fetch canopy params: No network created
+2026-09-23 14:30:30,731 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=25.0s; reconnects=0
+2026-09-23 14:30:47,288 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:30:47,294 [ERROR] juniper_canopy.backend.cascor_service_adapter: Failed to update cascor params via REST: No network created
+2026-09-23 14:30:47 | system | WARNING | Backend parameter application failed: No network created
+2026-09-23 14:30:47,294 [WARNING] system: Backend parameter application failed: No network created
+2026-09-23 14:30:47,306 [WARNING] juniper_canopy.backend.cascor_service_adapter: Failed to fetch canopy params: No network created
+2026-09-23 14:31:30,731 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 1468 frame(s) in last 60s (metrics=1009, state=11, topology=0, candidate_progress=448); status=healthy; last-frame-age=0.0s; reconnects=0
+2026-09-23 14:32:30,734 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 3624 frame(s) in last 60s (metrics=1804, state=28, topology=0, candidate_progress=1792); status=healthy; last-frame-age=0.2s; reconnects=0
+2026-09-23 14:33:19,387 [INFO] juniper_canopy.backend.cascor_service_adapter: Training complete event received from cascor
+2026-09-23 14:33:30,735 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 2672 frame(s) in last 60s (metrics=1609, state=20, topology=1, candidate_progress=1031, cascade_add=10, event=1); status=healthy; last-frame-age=11.3s; reconnects=0
+2026-09-23 14:33:46 | system | INFO | Client connected: training-client-133098118871184 (Total: 1)
+2026-09-23 14:33:46,924 [INFO] system: Client connected: training-client-133098118871184 (Total: 1)
+2026-09-23 14:33:46 | system | INFO | Client connected: control-client-133098118733008 (Total: 2)
+2026-09-23 14:33:46,940 [INFO] system: Client connected: control-client-133098118733008 (Total: 2)
+2026-09-23 14:33:50,680 [INFO] config_manager: Configuration loaded from /home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--verify--a-n2-loop--20260923-1415--48074653/conf/app_config.yaml
+2026-09-23 14:33:50,683 [INFO] backend.redis_client: Redis library not installed - Redis integration disabled
+2026-09-23 14:33:53,529 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:33:53,989 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:33:56,598 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:34:10 | system | INFO | Control client disconnected: control-client-133098118733008
+2026-09-23 14:34:10,505 [INFO] system: Control client disconnected: control-client-133098118733008
+2026-09-23 14:34:10 | system | INFO | Client disconnected: control-client-133098118733008 (Remaining: 1)
+2026-09-23 14:34:10,505 [INFO] system: Client disconnected: control-client-133098118733008 (Remaining: 1)
+2026-09-23 14:34:10 | system | INFO | Client disconnected: training-client-133098118871184
+2026-09-23 14:34:10,506 [INFO] system: Client disconnected: training-client-133098118871184
+2026-09-23 14:34:10 | system | INFO | Client disconnected: training-client-133098118871184 (Remaining: 0)
+2026-09-23 14:34:10,508 [INFO] system: Client disconnected: training-client-133098118871184 (Remaining: 0)
+2026-09-23 14:34:30,735 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=11.3s; reconnects=0
+2026-09-23 14:35:30,734 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=11.3s; reconnects=0
+2026-09-23 14:35:33 | system | INFO | Client connected: training-client-133098118436272 (Total: 1)
+2026-09-23 14:35:33,501 [INFO] system: Client connected: training-client-133098118436272 (Total: 1)
+2026-09-23 14:35:33 | system | INFO | Client connected: control-client-133098118653584 (Total: 2)
+2026-09-23 14:35:33,516 [INFO] system: Client connected: control-client-133098118653584 (Total: 2)
+2026-09-23 14:35:40,549 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:35:41,144 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:35:43,752 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:36:30,735 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=11.3s; reconnects=0
+2026-09-23 14:36:35 | system | INFO | Control client disconnected: control-client-133098118653584
+2026-09-23 14:36:35,865 [INFO] system: Control client disconnected: control-client-133098118653584
+2026-09-23 14:36:35 | system | INFO | Client disconnected: control-client-133098118653584 (Remaining: 1)
+2026-09-23 14:36:35,865 [INFO] system: Client disconnected: control-client-133098118653584 (Remaining: 1)
+2026-09-23 14:36:35 | system | INFO | Client disconnected: training-client-133098118436272
+2026-09-23 14:36:35,866 [INFO] system: Client disconnected: training-client-133098118436272
+2026-09-23 14:36:35 | system | INFO | Client disconnected: training-client-133098118436272 (Remaining: 0)
+2026-09-23 14:36:35,866 [INFO] system: Client disconnected: training-client-133098118436272 (Remaining: 0)
+2026-09-23 14:37:05 | system | INFO | Client connected: training-client-133097999429200 (Total: 1)
+2026-09-23 14:37:05,776 [INFO] system: Client connected: training-client-133097999429200 (Total: 1)
+2026-09-23 14:37:05 | system | INFO | Client connected: control-client-133097595001488 (Total: 2)
+2026-09-23 14:37:05,790 [INFO] system: Client connected: control-client-133097595001488 (Total: 2)
+2026-09-23 14:37:12,232 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:37:12,771 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:37:15,392 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:37:30,735 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=11.3s; reconnects=0
+2026-09-23 14:37:52 | system | INFO | Control client disconnected: control-client-133097595001488
+2026-09-23 14:37:52,092 [INFO] system: Control client disconnected: control-client-133097595001488
+2026-09-23 14:37:52 | system | INFO | Client disconnected: control-client-133097595001488 (Remaining: 1)
+2026-09-23 14:37:52,093 [INFO] system: Client disconnected: control-client-133097595001488 (Remaining: 1)
+2026-09-23 14:37:52 | system | INFO | Client disconnected: training-client-133097999429200
+2026-09-23 14:37:52,093 [INFO] system: Client disconnected: training-client-133097999429200
+2026-09-23 14:37:52 | system | INFO | Client disconnected: training-client-133097999429200 (Remaining: 0)
+2026-09-23 14:37:52,093 [INFO] system: Client disconnected: training-client-133097999429200 (Remaining: 0)
+2026-09-23 14:38:06,752 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:38:06,758 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via REST: ['candidate_epochs']
+2026-09-23 14:38:06,763 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs', 'candidate_epochs']
+2026-09-23 14:38:06 | system | INFO | Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:38:06,763 [INFO] system: Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:38:13,363 [INFO] juniper_canopy.backend.cascor_service_adapter: Training complete event received from cascor
+2026-09-23 14:38:30,736 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 99 frame(s) in last 60s (metrics=10, state=6, topology=1, candidate_progress=80, cascade_add=1, event=1); status=healthy; last-frame-age=17.4s; reconnects=0
+2026-09-23 14:38:37 | system | INFO | Client connected: training-client-133098119109936 (Total: 1)
+2026-09-23 14:38:37,659 [INFO] system: Client connected: training-client-133098119109936 (Total: 1)
+2026-09-23 14:38:37 | system | INFO | Client connected: control-client-133098121308560 (Total: 2)
+2026-09-23 14:38:37,702 [INFO] system: Client connected: control-client-133098121308560 (Total: 2)
+2026-09-23 14:38:44,732 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:38:45,338 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:38:47,867 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:39:27 | system | INFO | Client disconnected: training-client-133098119109936
+2026-09-23 14:39:27,239 [INFO] system: Client disconnected: training-client-133098119109936
+2026-09-23 14:39:27 | system | INFO | Client disconnected: training-client-133098119109936 (Remaining: 1)
+2026-09-23 14:39:27,240 [INFO] system: Client disconnected: training-client-133098119109936 (Remaining: 1)
+2026-09-23 14:39:27 | system | INFO | Control client disconnected: control-client-133098121308560
+2026-09-23 14:39:27,240 [INFO] system: Control client disconnected: control-client-133098121308560
+2026-09-23 14:39:27 | system | INFO | Client disconnected: control-client-133098121308560 (Remaining: 0)
+2026-09-23 14:39:27,241 [INFO] system: Client disconnected: control-client-133098121308560 (Remaining: 0)
+2026-09-23 14:39:30,737 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=17.4s; reconnects=0
+2026-09-23 14:39:30,820 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:39:30,825 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via REST: ['candidate_epochs']
+2026-09-23 14:39:30,829 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs', 'candidate_epochs']
+2026-09-23 14:39:30 | system | INFO | Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:39:30,829 [INFO] system: Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:39:43,787 [INFO] juniper_canopy.backend.cascor_service_adapter: Training complete event received from cascor
+2026-09-23 14:39:52 | system | INFO | Client connected: training-client-133098119123680 (Total: 1)
+2026-09-23 14:39:52,251 [INFO] system: Client connected: training-client-133098119123680 (Total: 1)
+2026-09-23 14:39:52 | system | INFO | Client connected: control-client-133097952677392 (Total: 2)
+2026-09-23 14:39:52,267 [INFO] system: Client connected: control-client-133097952677392 (Total: 2)
+2026-09-23 14:39:58,867 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:39:59,401 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:40:02,285 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:40:30,737 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 708 frame(s) in last 60s (metrics=45, state=13, topology=1, candidate_progress=640, cascade_add=8, event=1); status=healthy; last-frame-age=17.0s; reconnects=0
+2026-09-23 14:40:41 | system | INFO | Control client disconnected: control-client-133097952677392
+2026-09-23 14:40:41,545 [INFO] system: Control client disconnected: control-client-133097952677392
+2026-09-23 14:40:41 | system | INFO | Client disconnected: control-client-133097952677392 (Remaining: 1)
+2026-09-23 14:40:41,545 [INFO] system: Client disconnected: control-client-133097952677392 (Remaining: 1)
+2026-09-23 14:40:41 | system | INFO | Client disconnected: training-client-133098119123680
+2026-09-23 14:40:41,546 [INFO] system: Client disconnected: training-client-133098119123680
+2026-09-23 14:40:41 | system | INFO | Client disconnected: training-client-133098119123680 (Remaining: 0)
+2026-09-23 14:40:41,546 [INFO] system: Client disconnected: training-client-133098119123680 (Remaining: 0)
+2026-09-23 14:40:48,285 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:40:48,290 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via REST: ['candidate_epochs']
+2026-09-23 14:40:48,294 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs', 'candidate_epochs']
+2026-09-23 14:40:48 | system | INFO | Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:40:48,295 [INFO] system: Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:41:04,379 [ERROR] juniper_canopy.backend.cascor_service_adapter: Failed to start training: Training cannot be started: _pad_dataset_for_network: dataset (15, 2) exceeds network capacity (2, 2); resize the network first
+2026-09-23 14:41:04 | system | WARNING | Training start rejected: Training cannot be started: _pad_dataset_for_network: dataset (15, 2) exceeds network capacity (2, 2); resize the network first
+2026-09-23 14:41:04,379 [WARNING] system: Training start rejected: Training cannot be started: _pad_dataset_for_network: dataset (15, 2) exceeds network capacity (2, 2); resize the network first
+2026-09-23 14:41:06,025 [WARNING] juniper_canopy.backend.cascor_service_adapter: Failed to get decision boundary: JuniperCascorClientError: HTTP 500: Failed to compute decision boundary
+2026-09-23 14:41:30,737 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=16.9s; reconnects=0
+2026-09-23 14:41:46 | system | INFO | Client connected: training-client-133098118704752 (Total: 1)
+2026-09-23 14:41:46,358 [INFO] system: Client connected: training-client-133098118704752 (Total: 1)
+2026-09-23 14:41:46 | system | INFO | Client connected: control-client-133097595499968 (Total: 2)
+2026-09-23 14:41:46,370 [INFO] system: Client connected: control-client-133097595499968 (Total: 2)
+2026-09-23 14:41:52,453 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:41:52,870 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:41:55,459 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:42:30,737 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=16.9s; reconnects=0
+2026-09-23 14:42:31 | system | INFO | Control client disconnected: control-client-133097595499968
+2026-09-23 14:42:31,927 [INFO] system: Control client disconnected: control-client-133097595499968
+2026-09-23 14:42:31 | system | INFO | Client disconnected: control-client-133097595499968 (Remaining: 1)
+2026-09-23 14:42:31,928 [INFO] system: Client disconnected: control-client-133097595499968 (Remaining: 1)
+2026-09-23 14:42:31 | system | INFO | Client disconnected: training-client-133098118704752
+2026-09-23 14:42:31,928 [INFO] system: Client disconnected: training-client-133098118704752
+2026-09-23 14:42:31 | system | INFO | Client disconnected: training-client-133098118704752 (Remaining: 0)
+2026-09-23 14:42:31,929 [INFO] system: Client disconnected: training-client-133098118704752 (Remaining: 0)
+2026-09-23 14:42:47,557 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:42:47,562 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via REST: ['candidate_epochs']
+2026-09-23 14:42:47,566 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs', 'candidate_epochs']
+2026-09-23 14:42:47 | system | INFO | Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:42:47,566 [INFO] system: Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:43:22,512 [INFO] juniper_canopy.backend.cascor_service_adapter: Training complete event received from cascor
+2026-09-23 14:43:23,933 [WARNING] juniper_canopy.backend.cascor_service_adapter: Failed to get decision boundary: JuniperCascorClientError: HTTP 500: Failed to compute decision boundary
+2026-09-23 14:43:30,738 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 953 frame(s) in last 60s (metrics=804, state=11, topology=1, candidate_progress=135, cascade_add=1, event=1); status=healthy; last-frame-age=8.2s; reconnects=0
+2026-09-23 14:43:55 | system | INFO | Client connected: training-client-133098118703888 (Total: 1)
+2026-09-23 14:43:55,781 [INFO] system: Client connected: training-client-133098118703888 (Total: 1)
+2026-09-23 14:43:55 | system | INFO | Client connected: control-client-133098118701296 (Total: 2)
+2026-09-23 14:43:55,825 [INFO] system: Client connected: control-client-133098118701296 (Total: 2)
+2026-09-23 14:44:02,283 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:44:02,775 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:44:05,662 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:44:30,738 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 0 frame(s) in last 60s (metrics=0, state=0, topology=0); status=healthy; last-frame-age=8.2s; reconnects=0
+2026-09-23 14:44:57 | system | INFO | Control client disconnected: control-client-133098118701296
+2026-09-23 14:44:57,360 [INFO] system: Control client disconnected: control-client-133098118701296
+2026-09-23 14:44:57 | system | INFO | Client disconnected: control-client-133098118701296 (Remaining: 1)
+2026-09-23 14:44:57,360 [INFO] system: Client disconnected: control-client-133098118701296 (Remaining: 1)
+2026-09-23 14:44:57 | system | INFO | Client disconnected: training-client-133098118703888
+2026-09-23 14:44:57,361 [INFO] system: Client disconnected: training-client-133098118703888
+2026-09-23 14:44:57 | system | INFO | Client disconnected: training-client-133098118703888 (Remaining: 0)
+2026-09-23 14:44:57,361 [INFO] system: Client disconnected: training-client-133098118703888 (Remaining: 0)
+2026-09-23 14:45:04,261 [INFO] juniper_canopy.backend: Recurrence mode: model 'recurrence' -> RecurrenceServiceAdapter at http://127.0.0.1:8221
+2026-09-23 14:45:04,261 [INFO] juniper_canopy.backend.recurrence_backend: RecurrenceBackend ready (lazy connect) for http://127.0.0.1:8221
+2026-09-23 14:45:04 | system | INFO | Global training_state seeded for recurrence (one-shot) backend: idle
+2026-09-23 14:45:04,262 [INFO] system: Global training_state seeded for recurrence (one-shot) backend: idle
+2026-09-23 14:45:04,263 [INFO] juniper_canopy.backend.status_cache: Status cache refresher stopped
+2026-09-23 14:45:04,264 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay stopped
+2026-09-23 14:45:04,264 [INFO] juniper_canopy.backend.cascor_service_adapter: CascorServiceAdapter shutting down — cascor continues running
+2026-09-23 14:45:04,264 [INFO] juniper_canopy.backend.service_backend: ServiceBackend disconnected — cascor continues running independently
+2026-09-23 14:45:04 | system | INFO | Backend swapped for model 'recurrence' -> recurrence
+2026-09-23 14:45:04,264 [INFO] system: Backend swapped for model 'recurrence' -> recurrence
+2026-09-23 14:45:04,636 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:45:04,638 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 1.7278558467416116e-15, 'rmse': 4.156748545127082e-08, 'mae': 3.0632678222024194e-08, 'r2': 0.9999999999999991, 'loss': 1.7278558467416116e-15})
+2026-09-23 14:45:19 | system | INFO | Client connected: training-client-133097595497952 (Total: 1)
+2026-09-23 14:45:19,998 [INFO] system: Client connected: training-client-133097595497952 (Total: 1)
+2026-09-23 14:45:20 | system | INFO | Client connected: control-client-133097595496224 (Total: 2)
+2026-09-23 14:45:20,013 [INFO] system: Client connected: control-client-133097595496224 (Total: 2)
+2026-09-23 14:45:20,908 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:26,564 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:45:27,224 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:45:28,645 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:30,255 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:45:32,280 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:32,664 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:45:34,982 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:45:37,391 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:42,772 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:44,617 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:45:46,234 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:51,464 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:45:53,492 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:45:58,669 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:46:01,311 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:46:04,355 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:46:06,779 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:46:11,577 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:46:13,073 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:46:18,696 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:46:21,629 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:46:23,928 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:46:24 | system | INFO | Control client disconnected: control-client-133097595496224
+2026-09-23 14:46:24,182 [INFO] system: Control client disconnected: control-client-133097595496224
+2026-09-23 14:46:24 | system | INFO | Client disconnected: control-client-133097595496224 (Remaining: 1)
+2026-09-23 14:46:24,183 [INFO] system: Client disconnected: control-client-133097595496224 (Remaining: 1)
+2026-09-23 14:46:24 | system | INFO | Client disconnected: training-client-133097595497952
+2026-09-23 14:46:24,183 [INFO] system: Client disconnected: training-client-133097595497952
+2026-09-23 14:46:24 | system | INFO | Client disconnected: training-client-133097595497952 (Remaining: 0)
+2026-09-23 14:46:24,183 [INFO] system: Client disconnected: training-client-133097595497952 (Remaining: 0)
+2026-09-23 14:47:14,257 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:47:14,258 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 5.957741702031115e-06, 'rmse': 0.0024408485618798875, 'mae': 0.0019373407454300984, 'r2': 0.9998908210499093, 'loss': 5.957741702031115e-06})
+2026-09-23 14:47:15 | system | INFO | Client connected: training-client-133098118704752 (Total: 1)
+2026-09-23 14:47:15,578 [INFO] system: Client connected: training-client-133098118704752 (Total: 1)
+2026-09-23 14:47:15 | system | INFO | Client connected: control-client-133098118707776 (Total: 2)
+2026-09-23 14:47:15,592 [INFO] system: Client connected: control-client-133098118707776 (Total: 2)
+2026-09-23 14:47:16,479 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:23,192 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:47:24,030 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:47:25,558 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:27,574 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:47:28,615 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:30,145 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:47:32,166 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:47:33,422 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:41,336 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:42,848 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:45,740 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:47:47,339 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:54,327 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:47:56,633 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:47:57,412 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:03,963 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:48:05,217 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:13,605 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:17,745 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:48:18,259 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:24,762 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:48:25,737 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:32,036 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:34,232 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:48:35 | system | INFO | Control client disconnected: control-client-133098118707776
+2026-09-23 14:48:35,533 [INFO] system: Control client disconnected: control-client-133098118707776
+2026-09-23 14:48:35 | system | INFO | Client disconnected: control-client-133098118707776 (Remaining: 1)
+2026-09-23 14:48:35,533 [INFO] system: Client disconnected: control-client-133098118707776 (Remaining: 1)
+2026-09-23 14:48:35 | system | INFO | Client disconnected: training-client-133098118704752
+2026-09-23 14:48:35,534 [INFO] system: Client disconnected: training-client-133098118704752
+2026-09-23 14:48:35 | system | INFO | Client disconnected: training-client-133098118704752 (Remaining: 0)
+2026-09-23 14:48:35,534 [INFO] system: Client disconnected: training-client-133098118704752 (Remaining: 0)
+2026-09-23 14:48:36,230 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:48:36,231 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 0.016212640128922803, 'rmse': 0.12732886604742383, 'mae': 0.09337712188155063, 'r2': 0.9917802403262425, 'loss': 0.016212640128922803})
+2026-09-23 14:48:37 | system | INFO | Client connected: training-client-133098118703888 (Total: 1)
+2026-09-23 14:48:37,573 [INFO] system: Client connected: training-client-133098118703888 (Total: 1)
+2026-09-23 14:48:37 | system | INFO | Client connected: control-client-133097595497808 (Total: 2)
+2026-09-23 14:48:37,615 [INFO] system: Client connected: control-client-133097595497808 (Total: 2)
+2026-09-23 14:48:38,423 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:46,958 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:48:47,861 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:48:51,197 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:53,779 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:48:56,528 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:48:56,942 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:48:59,966 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:49:00,211 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:07,903 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:09,140 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:12,509 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:49:14,114 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:20,052 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:22,680 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:49:23,834 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:29,645 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:32,454 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:49:33,904 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:39,144 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:42,134 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:49:43 | system | INFO | Control client disconnected: control-client-133097595497808
+2026-09-23 14:49:43,575 [INFO] system: Control client disconnected: control-client-133097595497808
+2026-09-23 14:49:43 | system | INFO | Client disconnected: control-client-133097595497808 (Remaining: 1)
+2026-09-23 14:49:43,575 [INFO] system: Client disconnected: control-client-133097595497808 (Remaining: 1)
+2026-09-23 14:49:43 | system | INFO | Client disconnected: training-client-133098118703888
+2026-09-23 14:49:43,576 [INFO] system: Client disconnected: training-client-133098118703888
+2026-09-23 14:49:43 | system | INFO | Client disconnected: training-client-133098118703888 (Remaining: 0)
+2026-09-23 14:49:43,578 [INFO] system: Client disconnected: training-client-133098118703888 (Remaining: 0)
+2026-09-23 14:49:44,477 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:49:44,478 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 0.012242626372316393, 'rmse': 0.1106464024372975, 'mae': 0.08826007658924385, 'r2': 0.04290334272721197, 'loss': 0.012242626372316393})
+2026-09-23 14:49:46 | system | INFO | Client connected: training-client-133097595493920 (Total: 1)
+2026-09-23 14:49:46,615 [INFO] system: Client connected: training-client-133097595493920 (Total: 1)
+2026-09-23 14:49:46 | system | INFO | Client connected: control-client-133097595494784 (Total: 2)
+2026-09-23 14:49:46,678 [INFO] system: Client connected: control-client-133097595494784 (Total: 2)
+2026-09-23 14:49:48,003 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:52,718 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:49:55,921 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:49:57,574 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:49:59,665 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:50:00,637 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:02,228 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:50:04,263 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:50:04,586 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:11,629 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:13,509 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:15,547 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:50:23,029 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:25,334 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:50:31,753 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:33,428 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:36,099 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:50:38,350 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:44,405 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:46,933 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:50:48,907 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:56,233 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:50:56 | system | INFO | Control client disconnected: control-client-133097595494784
+2026-09-23 14:50:56,723 [INFO] system: Control client disconnected: control-client-133097595494784
+2026-09-23 14:50:56 | system | INFO | Client disconnected: control-client-133097595494784 (Remaining: 1)
+2026-09-23 14:50:56,724 [INFO] system: Client disconnected: control-client-133097595494784 (Remaining: 1)
+2026-09-23 14:50:56 | system | INFO | Client disconnected: training-client-133097595493920
+2026-09-23 14:50:56,724 [INFO] system: Client disconnected: training-client-133097595493920
+2026-09-23 14:50:56 | system | INFO | Client disconnected: training-client-133097595493920 (Remaining: 0)
+2026-09-23 14:50:56,724 [INFO] system: Client disconnected: training-client-133097595493920 (Remaining: 0)
+2026-09-23 14:50:57,359 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:50:57,359 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 2.4825429940144477, 'rmse': 1.575608769337886, 'mae': 1.1402197056427876, 'r2': 0.0052809197291319165, 'loss': 2.4825429940144477})
+2026-09-23 14:50:58 | system | INFO | Client connected: training-client-133097595494784 (Total: 1)
+2026-09-23 14:50:58,639 [INFO] system: Client connected: training-client-133097595494784 (Total: 1)
+2026-09-23 14:50:58 | system | INFO | Client connected: control-client-133097595495936 (Total: 2)
+2026-09-23 14:50:58,654 [INFO] system: Client connected: control-client-133097595495936 (Total: 2)
+2026-09-23 14:50:59,590 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:03,883 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:51:06,592 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:51:07,939 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:09,531 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:51:11,367 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:11,643 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:51:13,686 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:51:16,189 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:20,457 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:23,903 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:51:25,299 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:31,298 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:33,671 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:51:35,557 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:41,221 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:43,462 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:51:45,213 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:51,532 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:51:54,978 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:51:56,269 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:52:05,899 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:52:10,547 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:52:12,780 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:52:13 | system | INFO | Control client disconnected: control-client-133097595495936
+2026-09-23 14:52:13,209 [INFO] system: Control client disconnected: control-client-133097595495936
+2026-09-23 14:52:13 | system | INFO | Client disconnected: control-client-133097595495936 (Remaining: 1)
+2026-09-23 14:52:13,209 [INFO] system: Client disconnected: control-client-133097595495936 (Remaining: 1)
+2026-09-23 14:52:13 | system | INFO | Client disconnected: training-client-133097595494784
+2026-09-23 14:52:13,210 [INFO] system: Client disconnected: training-client-133097595494784
+2026-09-23 14:52:13 | system | INFO | Client disconnected: training-client-133097595494784 (Remaining: 0)
+2026-09-23 14:52:13,210 [INFO] system: Client disconnected: training-client-133097595494784 (Remaining: 0)
+2026-09-23 14:54:39,453 [INFO] httpx: HTTP Request: POST http://127.0.0.1:8221/v1/train "HTTP/1.1 200 OK"
+2026-09-23 14:54:39,453 [INFO] juniper_canopy.backend.recurrence_backend: recurrence fit complete (final_metrics={'mse': 0.0004412238205427885, 'rmse': 0.021005328384550156, 'mae': 0.014304412824196014, 'r2': 0.00841966061470234, 'loss': 0.0004412238205427885})
+2026-09-23 14:54:42 | system | INFO | Client connected: training-client-133097595496368 (Total: 1)
+2026-09-23 14:54:42,280 [INFO] system: Client connected: training-client-133097595496368 (Total: 1)
+2026-09-23 14:54:42 | system | INFO | Client connected: control-client-133097595494208 (Total: 2)
+2026-09-23 14:54:42,298 [INFO] system: Client connected: control-client-133097595494208 (Total: 2)
+2026-09-23 14:54:43,407 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:54:47,767 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:54:51,102 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:54:52,745 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:54:54,401 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:54:55,608 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:54:57,140 [INFO] httpx: HTTP Request: GET http://127.0.0.1:8111/v1/generators "HTTP/1.1 200 OK"
+2026-09-23 14:54:59,496 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:55:00,119 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:06,940 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:08,902 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:11,614 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:55:17,505 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:18,820 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:22,349 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:55:24,351 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:31,951 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:34,056 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:55:34,506 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:40,915 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:55:41,998 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:48,074 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:53,167 [INFO] frontend.base_component.HDF5SnapshotsPanel: Fetching snapshots from API
+2026-09-23 14:55:55,850 [WARNING] frontend.dashboard_manager: Network stats API returned 503
+2026-09-23 14:55:56 | system | INFO | Client disconnected: training-client-133097595496368
+2026-09-23 14:55:56,210 [INFO] system: Client disconnected: training-client-133097595496368
+2026-09-23 14:55:56 | system | INFO | Client disconnected: training-client-133097595496368 (Remaining: 1)
+2026-09-23 14:55:56,210 [INFO] system: Client disconnected: training-client-133097595496368 (Remaining: 1)
+2026-09-23 14:55:56 | system | INFO | Control client disconnected: control-client-133097595494208
+2026-09-23 14:55:56,217 [INFO] system: Control client disconnected: control-client-133097595494208
+2026-09-23 14:55:56 | system | INFO | Client disconnected: control-client-133097595494208 (Remaining: 0)
+2026-09-23 14:55:56,217 [INFO] system: Client disconnected: control-client-133097595494208 (Remaining: 0)

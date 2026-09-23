@@ -474,11 +474,23 @@ publish environments were not disturbed: juniper-ml's
 `tests/test_publish_env_policy_drift.py`, run live with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`, passed
 17 of 17, including `test_every_publish_environment_is_tag_gated`.
 
-> **That drift gate does not cover `dockerhub`.** It reads only the environments named in
-> `PUBLISH_ENVS = ("pypi", "testpypi")`, and only in the repositories the release-train registry
-> lists. Nothing would notice if a `dockerhub` environment later gained a branch rule or was
-> deleted outright. Deleting it also deletes its secrets and variables, so once Wave 4 has added
-> the Docker Hub login, the next release would fail at that step. The gap is recorded in §10.
+> **That drift gate has covered `dockerhub` since 2026-09-23, as a LOCAL gate.** Until then it read
+> only `pypi` and `testpypi`, and only in the release-train registry's repositories. Nothing would
+> have noticed a `dockerhub` environment gaining a branch rule or being deleted outright. Deleting
+> one also deletes its secrets and variables. And a workflow run that names a missing environment
+> makes GitHub recreate it with no protection rules, which admits every ref (GitHub Docs, *Managing
+> environments for deployment*). The gate now checks four things:
+>
+> - the five environments of §5.1, against their own tag set (`v*`, `juniper-*-v*`), with no
+>   branch rule;
+> - that no `DOCKERHUB_*` secret or variable exists at repository scope. It reads names only, and
+>   `gh` filters out the values;
+> - that no other repository has a `dockerhub` environment;
+> - that its detectors fire on synthetic violations, which needs no network.
+>
+> Per-PR CI cannot read the five repositories, so that half skips there and names them. Run it with
+> `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 python3 -m unittest tests/test_publish_env_policy_drift.py`.
+> Its repair points here, to §5.2B steps 1–2, and not to the `pypi` helper, which adds six patterns.
 
 **The name, and its context, must match the workflow exactly.** A secret registered as
 `DOCKER_HUB_TOKEN` or `DOCKERHUB_PAT` is not a typo that CI will catch for you:
@@ -642,7 +654,7 @@ can be rotated independently.
 | ~~Option A vs Option B (§3)~~ | **RULED 2026-09-22: Option B** |
 | ~~Create the five `dockerhub` environments and their tag rules (§5.2B steps 1–2)~~ | **DONE 2026-09-22**; read back under §6 |
 | Where Wave 4 names the environment (§3, §7) | Wave 4 design: a release-only job (shape 1), or a conditional name once proven (shape 2) |
-| A drift gate for `dockerhub` (§6) | `tests/test_publish_env_policy_drift.py` reads only `pypi` / `testpypi`, in the eight repos of `util/release_train/registry.yaml`; three of them ship no image. Extending it needs its own repo set (§5.1's five) and its own tag set (`v*`, `juniper-*-v*`; `pypi` has six) |
+| ~~A drift gate for `dockerhub` (§6)~~ | **DONE 2026-09-23**: `tests/test_publish_env_policy_drift.py` checks §5.1's five with their own tag set, the repository scope, and every other repository. It is a local gate; §6 has the command |
 | The Docker Hub account, its username, and public-by-default repositories (§2) | owner — not discoverable from the repos |
 | `DOCKERHUB_USERNAME`: variable or secret (§5.2B step 3a) | owner, before step 3. A variable is recommended; Wave 4 reads `vars.` or `secrets.` to match |
 | CI token expiry date (§4) | **not set yet**. The owner tells the working session, which records it here by PR, or edits this row |

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The publish-environment drift gate covers the `dockerhub` environments**
+  (`tests/test_publish_env_policy_drift.py`). Wave 4's Docker Hub credential will live in a
+  tags-only `dockerhub` environment in the five image repos (Option B, owner ruling 2026-09-22), and
+  nothing watched those settings. The gate now checks each one against its own tag set, `v*` and
+  `juniper-*-v*`, where `pypi` has six. It also checks that no `DOCKERHUB_*` secret or variable sits
+  at repository scope, where every workflow on every ref could read it. That check reads names only:
+  `gh` applies the `--jq` filter, so a variable's value never reaches the test. A third check
+  confirms that no repo outside the five has the environment. A missing environment is reported as
+  a failure, because a workflow run that names it makes GitHub recreate it with no protection rules.
+  The repair hint points at §5.2B of
+  `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`, because
+  the `pypi` helper would add six patterns. Live, with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`, 33 tests
+  pass, up from 17, with every repo read. Three mutations fail as they should: one shared tag set, a
+  prefix pointed at the real `CROSS_REPO_DISPATCH_TOKEN`, and an environment name that exists. Per-PR
+  CI cannot read the image repos, so the `dockerhub` half is a local gate and skips there by name.
+  §6 and §10 of the procedure are updated.
+
 ### Changed
 
 - **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
@@ -22,6 +41,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The launcher suites' kill helper killed nothing for a nohup'd stub, so the stub outlived its
+  test and raced `TemporaryDirectory` cleanup** (juniper-ml#2046; `tests/process_cleanup.py`, new;
+  `tests/test_isolated_stack_script.py`; `tests/test_experiment_stack_script.py`). That turned `main`
+  red on run 35864791786 (`OSError: [Errno 39] Directory not empty: '…/markers'`) and HALTed the
+  0.10.0 release ceremony. Ten hand-copied `_force_kill` helpers sent `os.killpg(pid)` first and read
+  its `ProcessLookupError` as "already dead". `killpg` also raises that for a live pid that leads no
+  process group, which describes every service the launchers start with a bare `nohup … &`. A census
+  of every call site (`util/ad-hoc/2026-09-23_force_kill_survivor_census.py`, new) found two copies
+  handed such a pid in passing runs: `TestDataUpLive`'s, which #2046 named, and the module-level copy
+  in `test_experiment_stack_script.py`, which it did not. 8 stubs outlived their tests per run of the
+  two suites. Two more copies back up a teardown under test and fail exactly when their test does.
+  `TestStopPort`'s, the issue's other named copy, is only ever handed `setsid` leaders. All five now
+  call one `force_kill`. It stops the process, then kills it along with every descendant and every
+  member of a group it leads, and waits for all of them. It also kills a stub's in-flight `mv` child,
+  which the issue's suggested fix orphaned alive in 20 of 100 runs of a constructed slow-writer
+  shape (`util/ad-hoc/2026-09-23_force_kill_orphan_writer_race.py`, new). It never widens to
+  `killpg(getpgid(pid))`, because these stubs share the test runner's own process group. Four new
+  `TestForceKill` cases each assert their launch shape as a precondition, and
+  `util/ad-hoc/2026-09-23_force_kill_mutation_check.py` (new) kills 5/5 mutants, including the old
+  helper and the issue's fix. The five copies left are handed only `setsid` leaders, which `killpg`
+  reaches. Also fixed: each suite had a mid-file `if __name__ == "__main__":` block, so
+  `python3 tests/<file>` ran 52 of 74 and 82 of 92 tests. CI uses `-m unittest`, which always ran all
+  of them.
 - **The release-train ceremony cut every Release with `--latest=false`, so six repos' "Latest"
   badges fell behind** (`util/release_train/ceremony.py`, `util/release_train/detect.py`,
   `util/release_train/registry.yaml`). The flag was right for juniper-ml's sub-packages and wrong

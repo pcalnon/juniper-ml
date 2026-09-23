@@ -1,0 +1,154 @@
+[
+  {
+    "step": "selection_before",
+    "t_utc": "2026-09-23T19:47:14.054Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/selection",
+    "status": 200,
+    "elapsed_s": 0.005
+  },
+  {
+    "step": "model_select",
+    "t_utc": "2026-09-23T19:47:14.060Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/model/select",
+    "status": 200,
+    "elapsed_s": 0.004
+  },
+  {
+    "step": "state_before",
+    "t_utc": "2026-09-23T19:47:14.064Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/state",
+    "status": 200,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "stage_dataset",
+    "t_utc": "2026-09-23T19:47:14.071Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/stage_dataset",
+    "status": 200,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "status_after_stage",
+    "t_utc": "2026-09-23T19:47:14.075Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/status",
+    "status": 200,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "selection_after_stage",
+    "t_utc": "2026-09-23T19:47:14.077Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/selection",
+    "status": 200,
+    "elapsed_s": 0.002
+  },
+  {
+    "step": "metrics_history_before",
+    "t_utc": "2026-09-23T19:47:14.080Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+    "status": 200,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "train_start",
+    "t_utc": "2026-09-23T19:47:14.083Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/train/start",
+    "status": 200,
+    "elapsed_s": 0.005
+  },
+  {
+    "step": "render_api_train_status",
+    "t_utc": "2026-09-23T19:47:14.295Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/train/status",
+    "status": 200,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "render_api_status",
+    "t_utc": "2026-09-23T19:47:14.299Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/status",
+    "status": 200,
+    "elapsed_s": 0.002
+  },
+  {
+    "step": "render_api_metrics",
+    "t_utc": "2026-09-23T19:47:14.302Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/metrics",
+    "status": 200,
+    "elapsed_s": 0.002
+  },
+  {
+    "step": "render_api_metrics_history_limit_0",
+    "t_utc": "2026-09-23T19:47:14.304Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+    "status": 200,
+    "elapsed_s": 0.002
+  },
+  {
+    "step": "render_api_dataset",
+    "t_utc": "2026-09-23T19:47:14.307Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/dataset",
+    "status": 200,
+    "elapsed_s": 0.005
+  },
+  {
+    "step": "render_api_state",
+    "t_utc": "2026-09-23T19:47:14.312Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/state",
+    "status": 200,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "render_api_selection",
+    "t_utc": "2026-09-23T19:47:14.315Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/selection",
+    "status": 200,
+    "elapsed_s": 0.004
+  },
+  {
+    "step": "render_api_topology",
+    "t_utc": "2026-09-23T19:47:14.320Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/topology",
+    "status": 503,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "render_api_network_stats",
+    "t_utc": "2026-09-23T19:47:14.323Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/network/stats",
+    "status": 503,
+    "elapsed_s": 0.002
+  },
+  {
+    "step": "render_api_decision_boundary",
+    "t_utc": "2026-09-23T19:47:14.326Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/decision_boundary",
+    "status": 503,
+    "elapsed_s": 0.003
+  },
+  {
+    "step": "render_api_stream_health",
+    "t_utc": "2026-09-23T19:47:14.330Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/stream_health",
+    "status": 200,
+    "elapsed_s": 0.002
+  }
+]

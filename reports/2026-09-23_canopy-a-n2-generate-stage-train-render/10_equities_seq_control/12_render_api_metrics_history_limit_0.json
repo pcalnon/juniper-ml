@@ -1,0 +1,20 @@
+{
+  "step": "render_api_metrics_history_limit_0",
+  "t_utc": "2026-09-23T19:54:40.682Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+  "status": 200,
+  "response": {
+    "history": [
+      {
+        "mse": 0.0004412238205427885,
+        "rmse": 0.021005328384550156,
+        "mae": 0.014304412824196014,
+        "r2": 0.00841966061470234,
+        "loss": 0.0004412238205427885,
+        "epoch": 1
+      }
+    ]
+  },
+  "elapsed_s": 0.004
+}

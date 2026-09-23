@@ -1,0 +1,229 @@
+# http://127.0.0.1:8061/dashboard/ status=200 captured 61.8s after navigation
+
+Juniper Canopy Dashboard
+
+Real-time monitoring for Cascade Correlation Neural Networks
+
+🌙
+●
+Status: Completed — converged
+|
+Phase: Output Training
+|
+Step: 2
+|
+Hidden Units: 1 / 10
+Latency: 6ms
+WS: Connected
+Training Controls
+▶ Start Training
+⏸ Pause Training
+⏯ Resume Training
+⏹ Stop Training
+↻ Reset Training
+Meta Parameters
+▼Neural Network
+
+Maximum Iterations:
+
+Maximum Total Epochs:
+
+Output Epochs (per pass):
+
+Output Weight Init:
+
+Zero
+
+Output Optimizer:
+
+Adam
+
+Activation Function:
+
+Tanh
+
+Learning Rate:
+
+Maximum Hidden Units:
+
+▼Multi-Node Layers
+Enable multi-node layers
+▼Network Growth Triggers
+Preset Epochs
+Convergence Detection
+
+Number of Epochs:
+
+Convergence Threshold:
+
+Patience (epochs):
+
+Model:
+
+Active: CasCor (Cascade-Correlation)
+▸ change
+rank-2 (tabular) models only
+▼Current Dataset — Equities (tabular)
+
+Type:
+
+Equities (tabular)
+
+Start Date:
+
+Inclusive start date (YYYY-MM-DD) for the price history.
+
+End Date:
+
+Exclusive end date (YYYY-MM-DD). None = today (UTC).
+
+Purchase Date:
+
+Cost-basis purchase date (YYYY-MM-DD); per-ticker clamped to the first available trading day.
+
+Basis Price Field:
+
+close
+
+Price field used for cost basis on the purchase date.
+
+Fundamentals Fill:
+
+drop
+
+How to represent pre-2009 missing total_shares / market_cap: zero-fill, leave NaN, or drop rows.
+
+Regression Target:
+
+next_close
+
+Representation of the y_reg target: raw next-day close, simple return (next_close/close - 1), or log return ln(next_close/close). The return variants are stationary; the raw close is not.
+
+Week52 Window:
+
+Rolling window (trading sessions) for 52-week high/low.
+
+Normalize Features:
+
+Min-max normalize each feature column to [0, 1], fit on the TRAIN partition only (falling back to the full set only when train is empty). Fitting on the full set would let validation and test rows move the scaler and leak into training -- the leak juniper-data#314 removed.
+
+Max Symbols:
+
+Cap on the number of symbols (after ordering), APD-DATA-018. A universe larger than this is REFUSED unless allow_truncation is set. Omit to use the deployment default (JUNIPER_DATA_EQUITIES_MAX_SYMBOLS); None means unbounded and is honoured only up to that deployment ceiling.
+
+Apply DatasetLive Dataset Switch
+▶Candidate Nodes
+Apply Parameters
+Network Information
+
+Input Nodes: 15
+
+Hidden Units: 1 / 10
+
+Output Nodes: 2
+
+Training Step: 2
+
+Epoch (in phase): —
+
+Iteration: 0 / 1000000
+
+Training Phase: Idle
+
+Network Connected: Yes
+
+Monitoring: Inactive
+
+▶Network Information: Details
+Experimental Functions
+Enable Experimental Functions
+Training Metrics
+Candidate Metrics
+Network Topology
+Network Evolution
+Decision Boundary
+Dataset View
+Workers
+Parameters
+Snapshots
+Replay
+Network Editor
+Redis
+Cassandra
+Tutorial
+About
+Training MetricsStatus: OutputGrowth Iteration 0/1000000 | Best Corr: 0.0000 | Candidates: 40/40Phase Duration: 1m 44s
+💾 Save
+|
+Select layout...
+📂 Load
+🗑️
+⏮
+◀
+▶
+▶
+⏭
+|
+1x
+2x
+4x
+0 / 499
+Display Mode:
+Sliding Window
+Full History
+Between Hidden Units
+Window:
+Training Step
+2
+Loss
+0.2489
+Accuracy
+52.62%
+Hidden Units
+1 / 10
+Learning Rate
+0.100000
+Cascade Iteration
+0/10
+Candidate Epoch
+0
+2k
+4k
+6k
+8k
+10k
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+Training Loss Over Time
+Output Training
+Candidate Training
+Validation Loss
+Iteration
+Loss
++Unit #1
+0
+2k
+4k
+6k
+8k
+10k
+0%
+20%
+40%
+60%
+80%
+100%
+Classification Metrics
+Accuracy
+F1
+Precision
+Recall
+ROC-AUC
+Validation Accuracy
+Iteration
+Score
++Unit #1
