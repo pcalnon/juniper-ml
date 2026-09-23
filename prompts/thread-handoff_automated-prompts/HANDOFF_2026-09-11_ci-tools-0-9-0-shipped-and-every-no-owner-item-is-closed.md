@@ -12,42 +12,31 @@
 **Do not paste the goal below as a new thread's prompt.** Its title and opening claim that nothing
 is left that does not need the owner. That was false when written (Corrections 5), and two of its
 verification commands, the pin greps, measure the wrong thing (Corrections 1). Continue the arc from
-`HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`. Its own status banner
-(juniper-ml#2019, brought up to date by juniper-ml#2025) agrees with this one. The design of record
-is `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
+`HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
+The status banner of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`
+(juniper-ml#2019, then juniper-ml#2025) agrees with this one. It does not carry the open items this
+banner found, and those are now filed as issues (below). The design of record is `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
 
-> **What has moved since `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`
-> was written.**
-> - Items 3 and 4 of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` are done
->   (juniper-data#420, juniper-cascor-worker#193).
-> - Half of item 1 of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` has shipped.
->   - Since the 2026-09-21 hardening wave, each `publish-image.yml` imports its application
->     package on the publish path. For cascor that package is `cascade_correlation` alone. Its
->     `api` service module is imported only by the build-only smoke step, which also imports
->     `snapshots`.
->   - What remains is a serve check for the four HTTP images and a `__version__`-vs-metadata
->     check.
->   - The serve check must probe liveness, `/v1/health`. The 2026-09-21 image sweep found that
->     standalone cascor correctly answers 503 on `/v1/health/ready`.
-> - juniper-ml#2019 recorded all of this in the status banner of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.
->   It also corrected the two passages of `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` that said
->   no stale-pin check exists; juniper-deploy#226 added one.
-> - **The "published image is wrong right now" section of `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`
->   is resolved for the image.** juniper-ml#2025 recorded that in
->   `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` too.
->   - **Release.** juniper-cascor-worker#194 merged at 22:56 UTC (`38f39cb8`). The `v0.6.1`
->     Release was published at 23:03 UTC, and the image tag at about 23:08 UTC.
->   - **Version.** `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1` (index `sha256:c1576472…`)
->     reports `__version__` `0.6.1`. Since worker#192 that value derives from the installed
->     metadata, so it cannot disagree with it. What discriminates is the revision label,
->     `38f39cb8`, which is the `v0.6.1` tag. A pre-#192 build printed `0.4.0`.
->   - **Wheel.** The `0.6.1` wheel was not on PyPI at 2026-09-23 00:35 UTC. Its publish run,
->     `35795531350`, waits on the owner's `pypi` deployment approval.
->   - **Pins.** juniper-deploy still pins worker `0.6.0`, in `docker-compose.yml` and in the
->     Helm values. The repin is claimed (see the Startable list below).
+> **In one minute.**
+> - **Superseded.** This handoff's title and goal were false when written. Do not paste the goal,
+>   and do not run its two pin greps (Corrections 1 and 5).
+> - **Continue from `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`.**
+>   Its banner is current as of juniper-ml#2025.
+> - **Filed from this re-evaluation, 2026-09-23:**
+>   - the X7 flake: juniper-canopy#661;
+>   - the 6f watch: juniper-recurrence#182;
+>   - arc_agi's unchanged `dataset_id`: juniper-data#427.
+>   The `dockerhub` drift gate is the open row in §10 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
+> - **In flight when this was written:**
+>   - juniper-cascor#673 (docs);
+>   - juniper-deploy#229 (the worker `0.6.1` repin);
+>   - juniper-ml#2020 (this banner's PR).
+>   Do not duplicate them. Every merge needs the owner's explicit approval in your session.
+> - **For stale ci-tools text, the census is a first pass.** An exit 0 means "none of the shapes it
+>   parses", not "clean" (Corrections 1).
 
-Every repository fact below was re-probed on 2026-09-22 through the GitHub API, PyPI or GHCR, never
-from a local checkout. The Pi probe, the worktree directories, the conda environments and the
+Every repository fact below was re-probed between 2026-09-22 19:54 UTC and 2026-09-23 01:50 UTC,
+through the GitHub API, PyPI or GHCR, never from a local checkout. Later moves are not reflected. The Pi probe, the worktree directories, the conda environments and the
 container measurements all come from this workstation.
 
 ### What this document asked for, and where each ask landed
@@ -57,26 +46,26 @@ The item numbers are this document's goal's numbering, which it inherited from
 `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` numbers its items
 differently.
 
-| item | state, 2026-09-22 |
+| item | state, 2026-09-22/23 |
 | --- | --- |
 | **1**: first publish in recurrence and canopy | **CLOSED.** recurrence `0.5.0` (2026-09-10, recorded below); canopy's first image with `v0.8.0` (2026-09-12), whose package came up public |
 | **3**: the Pi pull, against a post-#179 image | **WAIVED** as a Wave 3 gate by the owner (2026-09-15), re-filed against first Pi deployment and OQ-3. Still owed; not runnable here (note a) |
 | **4**: Wave 3 | **CLOSED**; its D-1 gate is closed **as re-scoped** (note b) |
 | **5**: Wave 4, Docker Hub | **IN PROGRESS, owner-gated** (note c) |
-| **6**: "Every follow-up in item 6 is closed" | **6f is OPEN**, blocked upstream (note d) |
+| **6**: "Every follow-up in item 6 is closed" | **6f is OPEN**, blocked upstream; tracked as juniper-recurrence#182 (note d) |
 | **7**: OQ-1 … OQ-4 | OQ-1 **CLOSED** 2026-09-11. OQ-2 and OQ-4 await an owner design ruling; OQ-3's gate is the Pi pull (note e) |
 
-| this document's claim | state, 2026-09-22 |
+| this document's claim | state, 2026-09-22/23 |
 | --- | --- |
 | § What shipped: the ceilings, the Release, the floors | **CONFIRMED.** All 20 cited merge SHAs match `mergeCommit.oid`. The three PRs listed without one are canopy#619 `a5cbdcd1`, cascor#645 `63a29e87` and ml#1869 `ee57a892`. Publish runs `34579752944` and `34461928708` succeeded |
 | "47 pin lines across 26 files per pass" | **MIXES TWO SCOPES** (Corrections 4) |
 | "no stale ceiling and no stale floor anywhere (want 0 and 0)" | **WRONG AS WRITTEN** (Corrections 1) |
 | *Weaker*: the floor bump is inert because pip resolves the newest match | **PARTLY TRUE** (Corrections 6) |
 | *Weaker*: the cascor-client#161 / data-client#197 conversions have never executed | **Their signed-commit path has never fired, and as the repos stand it cannot** (Corrections 2) |
-| canopy's X7 flake: "Do not chase it in the PR" | **Sound advice for a PR. The flake itself is OPEN, unowned and undiagnosed** (note f) |
+| canopy's X7 flake: "Do not chase it in the PR" | **Sound advice for a PR. The flake itself is OPEN and undiagnosed**, tracked as juniper-canopy#661 (note f) |
 | the worktree debris "to clean up when the owner signals" | **STILL PRESENT**, and wider than listed (note g) |
 
-**a. The Pi pull.** A valid target now exists: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0`, with
+**a. The Pi pull.** A valid target now exists: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, with
 torch `2.14.0+cpu`. It cannot run from here:
 - `turing` (192.168.50.222) shows 100% ping loss.
 - This host has no arm64 `binfmt_misc` handler.
@@ -93,6 +82,13 @@ and the pull is still owed before any Pi node runs a Juniper image.
 - **Images.** GHCR serves a release image for all five: cascor `0.11.0`; data `0.14.0` and `0.15.0`;
   canopy `0.8.0` and `0.8.1`; worker `0.6.0` and, since about 23:08 UTC on 2026-09-22, `0.6.1`;
   recurrence `0.5.0`.
+- **Worker `0.6.1`.**
+  - juniper-cascor-worker#194 merged at 2026-09-22 22:56 UTC (`38f39cb8`). The Release was
+    published at 23:03 UTC, and the image tag at about 23:08 UTC. The wheel reached PyPI at
+    00:37 UTC on 09-23.
+  - The image's revision label, `38f39cb8` (the `v0.6.1` tag), is what identifies the build.
+    `__version__` cannot: since worker#192 it derives from the installed metadata. A pre-#192 build
+    printed `0.4.0`.
 - **juniper-deploy.** The compose repin, the Helm fix, the runner image and the D-1 gate landed on
   2026-09-16/17: juniper-deploy#215, #216, #219/#220/#221 and #217.
 - **D-1.** `HANDOFF_2026-09-15_all-five-images-published-and-the-pi-gate-wave-3-still-owes.md` marks
@@ -103,8 +99,7 @@ and the pull is still owed before any Pi node runs a Juniper image.
   published stack.** The live-stack tests skip in CI.
 - **Pin drift, three times since.** The pins have fallen behind three times: canopy `0.8.1` (closed
   by juniper-deploy#225), data `0.15.0` (juniper-deploy#227) and, since 2026-09-22, worker
-  `0.6.1` (the repin is claimed; see the Startable list below). juniper-deploy#226 now warns on a
-  stale pin.
+  `0.6.1` (juniper-deploy#229, open). juniper-deploy#226 now warns on a stale pin.
 
 **c. Wave 4.**
 - **The ruling.** OQ-1 was ruled on 2026-09-11. The procedure is
@@ -147,8 +142,9 @@ and the pull is still owed before any Pi node runs a Juniper image.
   - `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`;
   - `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
 
-  Its only record is the comment above `filterwarnings` in
-  `juniper-recurrence/juniper-recurrence/pyproject.toml`.
+  Its only record was the comment above `filterwarnings` in
+  `juniper-recurrence/juniper-recurrence/pyproject.toml`. Since 2026-09-23 it is tracked as
+  juniper-recurrence#182.
 
 **e. OQ-2, OQ-3, OQ-4**, as §6 of
 `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md` states them:
@@ -163,38 +159,26 @@ and the pull is still owed before any Pi node runs a Juniper image.
 - **OQ-4**: should juniper-deploy publish a versioned stack manifest?
 
 **f. The X7 flake. The cause is undiagnosed, so do not change a bound until it is diagnosed.**
+- **Tracked since 2026-09-23 as juniper-canopy#661**, which carries the run list and the argument.
 - **The test.** `test_initialize_sync_does_not_block_the_loop`
   (`src/tests/regression/test_x7_sites_outside_main_gate.py`) asserts a stall bound of
-  `BLOCK_SECONDS * 0.5` (0.2 s) against a 0.4 s stub block. It is unchanged since canopy#585
-  (2026-09-05).
-- **The evidence.** It has failed at least five times in canopy CI since then:
-  - 0.715 s: run `34154880308`, a Dependabot branch, Python 3.12 on macOS (2026-09-07);
-  - 0.807 s: run `34397237323`, on `main` at `95284f37` (2026-09-09);
-  - 0.586 s: run `34418776436`, branch `fix/y5-generators-proxy-api-key` (2026-09-09);
-  - 0.743 s: run `34600043077`, canopy#619 (2026-09-11);
-  - 0.726 s: run `35780782107`, canopy#655, a docs-only PR from this banner's own set
-    (2026-09-22).
-
-  The same module's `test_relay_cascade_add_does_not_block_the_loop` failed at 0.696 s (run
-  `34292213310`, canopy#601). Four of the five failing runs went green on a re-run. The one on
-  `main` was never re-run. The job logs expire about 90 days after each run.
-- **What the readings cannot tell apart.** Every stall exceeds the stub's 0.4 s block, and that
-  does not rule the defect out.
-  - A blocking call on the loop leaves a gap of at least the whole block. The file's own
+  `BLOCK_SECONDS * 0.5` (0.2 s) against a 0.4 s stub block. It is unchanged since canopy#585.
+- **The evidence.** It has failed in CI at least five times since 2026-09-05: 0.715 s, 0.807 s on
+  `main`, 0.586 s, 0.743 s and 0.726 s. The last failure was on canopy#655, a docs-only PR from this
+  banner's own set. Four of the five went green on a re-run.
+- **What the readings cannot tell apart.**
+  - A blocking call on the loop leaves a gap of at least the whole 0.4 s block. The test file's
     sensitivity control asserts `worst_gap >= BLOCK_SECONDS * 0.8`.
-  - So a 0.6–0.8 s reading fits an on-loop call plus 0.2–0.4 s of other delay. It fits equally
+  - So every reading fits an on-loop call plus 0.19–0.41 s of other delay. It fits just as well
     an off-loop call plus runner suspension.
   - The green re-runs rule out only a deterministic regression.
 - **How to diagnose.** Record where in the timeline the worst gap falls: before the stub starts,
-  while it runs, or after it returns. Only then decide between re-tuning and a fix.
-- **Who owns it.** `HANDOFF_2026-09-12_canopy-selection-section-12-closed-residue-remains.md` has two item 10s.
-  - **This test is unowned.** The table row records the X7 flake as fixed by canopy#649, which
-    is true of the module it names, `test_x7_loop_responsiveness.py`. canopy#649 did not touch
-    this test's file.
-  - **The keepalive test it also names is owned.**
-    `test_main_import_and_lifespan.py::test_keepalive_loop_survives_broadcast_error` is carried
-    by §E item 13 of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md`, which names
-    it by its lines, `:349-362`.
+  while it runs, or after it returns.
+- **Ownership.** Before juniper-canopy#661 nothing tracked this test. `HANDOFF_2026-09-12_canopy-selection-section-12-closed-residue-remains.md` has two item
+  10s:
+  - one covers the sibling module, `test_x7_loop_responsiveness.py`, which canopy#649 fixed;
+  - one covers `test_main_import_and_lifespan.py::test_keepalive_loop_survives_broadcast_error`,
+    which item 13 of §E of `HANDOFF_2026-09-22_canopy-selection-four-decisions-shipped-residue-is-owner-scoped.md` carries.
 
 **g. Worktrees.** All of the following exist: 30 sibling worktrees and two session worktrees.
 Every PR the sibling worktrees served is merged; the two session worktrees served no PR.
@@ -232,28 +216,24 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
      to all 54. It still reads only the live-pin shape, `juniper-ci-tools>=X,<Y`.
    - **Use the census as a first pass, not as proof.** This banner's PR adds
      `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`.
-     - **What it does.** It reads each repo's remote `main`, or a `--ref`. It attributes ranges
-       written in prose, judges prose ranges as sets of releases and live pins as text, and fails
-       when `--expect` excludes the latest release.
-     - **What it established.** On this corpus an independent instrument agreed with it. After the
-       six range PRs, the one stale line left was `docs/QUICK_START.md:92`, and this banner's PR
-       fixes that too. The instrument's report is `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneA-census-adequacy.md`.
-     - **Its self-test** has 93 cases. They include exit-code scenarios run through `run()`.
-     - **Its mutation check.** `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` kills each
-       of its 24 chosen mutants.
-       - The 24 are not exhaustive. Round-3 lanes wrote 47 more, and 36 of those survived the
-         81-case self-test.
-       - This PR then added cases, and nine mutants, for the fail-open ones among them: the exit
-         code, the lag, the run guards. It did the same for the history paths and for the repo's
-         own extra.
-       - The rest still survive. The docstring of `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` names them.
-     - **Its limits.** An exit 0 means "none of the shapes it parses", not "clean". Its own
-       docstring lists the shapes it drops without any output, including:
-       - a range whose nearest name is a repo;
-       - a range cut off from its name by a bare `#` line;
-       - a bare release in any word order but one;
-       - floor-only prose;
-       - string literals under `tests/`.
+     - **What it does.** It reads each repo's remote `main`, or a `--ref` or `--local` tree. It
+       attributes ranges written in prose, judges prose ranges as sets of releases and live pins as
+       text, and fails when `--expect` excludes the latest release.
+     - **What it established.** On this corpus, round 3's independent instrument found no stale line
+       that the census missed, judged by the census's own rules. Its report is
+       `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneA-census-adequacy.md`.
+       - After the six range PRs, the one stale line left was `docs/QUICK_START.md:92`. This
+         banner's PR fixes it.
+       - The same instrument listed five floor-only lines that the census passes by design. One is
+         juniper-ml's `.github/workflows/main-verify.yml:72`, `(PyPI >=0.8.0)`. These lines state a
+         floor below CI's, and they are not rewritten here.
+     - **What its tests prove.** `--self-test` has 99 cases, and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` has
+       34 chosen mutants, all killed. Together they guard only the rules they name.
+       The review lanes' own mutants still find survivors, and the docstring of `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`
+       and the lane reports list them.
+     - **Its limits.** An exit 0 means "none of the shapes it parses", not "clean". The docstring of
+       `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` lists what the census drops without output, what
+       it counts and passes, and what it refuses.
 2. **The lockfile workflows this arc touched.** There were three conversions to the signed path
    (worker#180, cascor-client#161, data-client#197). cascor#641 is different: it extended cascor's
    already-signed step to both of its locks.
@@ -276,17 +256,10 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
      - Neither signed path is exercised, so its correctness is unproven. Both repos' comments said
        the defect "has never fired only because every run so far found the lockfile already
        current". juniper-cascor-client#170 and juniper-data-client#210 correct them.
-3. **Dates.** "Ceilings → `<0.10.0` (2026-09-10)" gives the local (CDT) date. This document says its
-   times are UTC. In UTC the eight ceiling PRs merged on 2026-09-11, between 01:32 and 01:52;
-   juniper-ml#1869 merged on 2026-09-10.
-4. **"47 pin lines across 26 files per pass" mixes two scopes.** Counting the added lines that
-   carry `juniper-ci-tools` in each PR's diff:
-   - The ceiling pass changed 43 lines in 26 workflow files, plus 4 in 4 `AGENTS.md` files: 47
-     lines in 30 files. Of the 43, 39 are live pins and 4 are header comments.
-   - The floor pass changed those same 47, plus 3 in cascor's `test_sequence_safety_retired.py`: 50
-     lines in 31 files.
-   - The "54 live pins" of `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` is a third quantity. It is 13 (juniper-ml) + 39 + cascor's two stale
-     pins, which neither pass touched.
+3. **Dates.** "(2026-09-10)" is the local (CDT) date. In UTC the eight ceiling PRs merged on
+   2026-09-11; the in-place note at § What shipped has the times.
+4. **"47 pin lines across 26 files per pass" mixes two scopes.** It is 47 lines in 30 files per pass,
+   43 of them in 26 workflow files. The in-place note at § What shipped has the breakdown.
 5. **The title and goal were false when written.** "Nothing is left that does not need the owner",
    "every no-owner item is closed" and "ran to completion across all nine repos" all failed on
    2026-09-11:
@@ -300,9 +273,9 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
      under `>=0.8.0,<0.10.0`. That was nine and a half hours before cascor#645 raised the floor.
    - **False on the same push, for the stale pins.** Job `103226938137`, from
      `ci-cascor-model.yml`, installed **0.6.0** under its stale `>=0.6.0,<0.7.0` (Corrections 1).
-   - **False for any environment that already holds an older release.** pip does not upgrade a
-     requirement that is already satisfied. `JuniperCascor1` holds `juniper-ci-tools` 0.8.0 and
-     `JuniperCanopy1` holds 0.6.0 today; only a floor moves them.
+   - **Separately, outside CI.** pip does not upgrade a requirement that is already satisfied, so a
+     pre-populated environment keeps its release until someone installs under the new floor.
+     `JuniperCascor1` holds `juniper-ci-tools` 0.8.0 and `JuniperCanopy1` holds 0.6.0 today.
 
 ### Where the remaining work lives
 
@@ -311,15 +284,13 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
   then the verification in §6 and the workflow change in §7 of `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
 - The Pi pull, once `turing` is reachable (note a).
 - The rulings on OQ-2 and OQ-4 (note e).
-- Whether the juniper-data image should carry the equities extra. The stack cannot generate equities
-  data: the image has no `yfinance`, while the stack's juniper-recurrence reads `equities_seq` from
-  it. juniper-ml#2019 records this in §5.2 of
-  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`.
-- The releases that would deliver fixes already on `main`:
-  - **the worker's wheel.** `v0.6.1` is cut and its image is fixed (the blockquote above). The
-    `0.6.1` wheel waits on the owner's `pypi` deployment approval (run `35795531350`).
-  - **data's.** The `0.15.0` wheel ships 97 of its 201 members as tests. data#420 fixed it after
-    the tag was cut.
+- **The next juniper-data release.** It ships two fixes already on `main`:
+  - data#420's wheel without the test suite. The `0.15.0` wheel ships 97 of its 201 members as
+    tests.
+  - data#421's image that can generate equities. It merged 2026-09-23 00:56 UTC (`68c3cd7c`) on the
+    owner's 2026-09-22 ruling.
+
+  Until that release, the stack's juniper-recurrence cannot get `equities_seq` from the image.
 - The worktree-cleanup signal (note g).
 - If Wave 4 takes the conditional shape: creating the throwaway repository that
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` needs, to
@@ -330,47 +301,57 @@ Cleanup waits for the owner's explicit signal, and `worktree remove` deletes ign
   `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` that remains.
   `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md` records a concurrent session
   evaluating it on 2026-09-22. Before starting it, check the five image repos for an open PR.
-- **Diagnose the X7 flake** (note f) before any change to a bound.
+  - Each `publish-image.yml` already imports its application package on the publish path. For
+    cascor that is `cascade_correlation` alone; its `api` module is imported only by the build-only
+    smoke step.
+  - The serve check must probe liveness, `/v1/health`. A standalone cascor correctly answers 503 on
+    `/v1/health/ready`.
+- **Diagnose the X7 flake** (note f; juniper-canopy#661) before any change to a bound.
 - **The `dockerhub` drift gate**, the open row in §10 of
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
-- **A report to juniper-data about arc_agi.** juniper-data#402, which closed issue #401, changed
-  arc_agi's `task_type` without bumping its generator version. So an arc_agi request with the
-  default seed (42, since juniper-data#319) or any explicit seed, but not an explicit `seed: null`,
-  resolves to the same `dataset_id` under 0.14.0 and 0.15.0, and a cached artifact keeps the
-  fabricated class metadata. This was measured in both images.
-- **Watching 6f** for a starlette release (note d).
-- **Claimed: the juniper-deploy repin to worker `0.6.1`** (compose and Helm values).
-  - The session that wrote this banner took it on 2026-09-22.
-  - It is sequenced after juniper-deploy#227, which edits the same two files.
-  - Do not open a second one.
+- **arc_agi's generator version**, filed as juniper-data#427.
+  - juniper-data#402 (closing issue #401) changed arc_agi's `task_type` without bumping its
+    generator version.
+  - So any seeded arc_agi request resolves to the same `dataset_id` under 0.14.0 and 0.15.0, and a
+    cached artifact keeps the fabricated class metadata. That includes a default request, whose seed
+    is `DEFAULT_GENERATOR_SEED`: 42 unless `JUNIPER_DATA_DEFAULT_GENERATOR_SEED` overrides it
+    (juniper-data#322). Only an explicit `seed: null` escapes it.
+  - Measured in both images.
+- **Watching 6f** (note d; juniper-recurrence#182) for a starlette release.
+- **The juniper-deploy repin to worker `0.6.1`** is open as juniper-deploy#229. Do not open a
+  second one.
 
-**Authored 2026-09-22 by the session that wrote this banner, awaiting merge.** Each merge still needs
-the owner's explicit approval in the session doing it.
-- **juniper-deploy#227**: the data `0.15.0` pin.
+**Authored 2026-09-22/23 by the session that wrote this banner.** Each merge still needs the owner's
+explicit approval in the session doing it. This is the state at 2026-09-23 01:50 UTC.
+- **Pins.**
+  - juniper-deploy#227 (data `0.15.0`): merged, `a725f69b`.
+  - juniper-deploy#229 (worker `0.6.1`): open.
 - **Six PRs covering all 23 of the census's current-state lines** that name a `juniper-ci-tools`
-  range or release CI no longer installs (the class juniper-cascor-worker#193 fixed):
-  - juniper-ml#2020 (this banner's PR);
-  - juniper-canopy#655;
-  - juniper-cascor#673;
-  - juniper-cascor-client#170;
-  - juniper-data-client#210;
-  - juniper-deploy#228.
+  range or release CI no longer installs. This is the class juniper-cascor-worker#193 fixed.
+  - juniper-canopy#655: merged, `26e0546f`.
+  - juniper-cascor-client#170: merged, `346d11b8`.
+  - juniper-data-client#210: merged, `9bc8870a`.
+  - juniper-deploy#228: merged, `fc21de93`.
+  - juniper-cascor#673: open.
+  - juniper-ml#2020: this banner's PR. It also rewrites the "Expected output" block of
+    `docs/QUICK_START.md`, which dated from juniper-ml 0.6.0.
 
-  juniper-ml#2020 also rewrites the "Expected output" block of `docs/QUICK_START.md`, which dated
-  from juniper-ml 0.6.0. The two client-repo PRs also correct their lockfile comments.
+  The two client-repo PRs also correct their lockfile comments.
+- **Issues:** juniper-canopy#661, juniper-recurrence#182 and juniper-data#427.
 
 ### Verification commands (use these, not the goal's)
 
 ```bash
 cd /home/pcalnon/Development/python/Juniper
-# The census. Run it from any juniper-ml checkout at or after juniper-ml#2020's merge commit.
+# util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py: run it from any juniper-ml checkout at or
+# after juniper-ml#2020's merge commit.
 # The primary checkout needs `git pull --ff-only` first: a worktree is not a checkout.
-python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --self-test   # 93 passed, 0 failed
-python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py      # 24 of 24 mutations killed
+python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py --self-test   # 99 passed, 0 failed
+python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py      # 34 of 34 mutations killed
 python3 juniper-ml/util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py
-#   live pins: 54, one distinct range. Until the six range PRs above merge, it exits 1 and names
-#   each stale line. After they merge it exits 0, and it lists two AMBIGUOUS lines that pass. An
-#   exit 0 is not proof of clean text (Corrections 1).
+#   live pins: 54, one distinct range. Once juniper-ml#2020 and juniper-cascor#673 have merged, it
+#   exits 0 and lists two AMBIGUOUS lines that pass. An exit 0 is not proof of clean text
+#   (Corrections 1).
 
 # Corrections 6, both halves (the job logs expire about 90 days after 2026-09-11)
 gh api repos/pcalnon/juniper-cascor/actions/jobs/103226938997/logs | grep 'Successfully installed juniper-ci-tools'   # 0.9.0
@@ -410,18 +391,28 @@ ls -d juniper-ml/.claude/worktrees/luminous-inventing-crystal juniper-ml/.claude
 ### Validation record for this banner
 
 Validated under `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
-Each lane's brief and report are archived verbatim in
+Each lane's brief, any mid-run message and its report are archived verbatim in
 `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/`. The rows below were checked against
 those reports, not written from memory.
 
 **Sizing (§3 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`).**
-- **Criticality is high.** This is a document of record, and seven merges hang on it.
-- **Uncertainty is high after the escalators.**
+- **Criticality is high.** This is a document of record. Seven PRs were reviewed alongside it,
+  though none depends on it.
+- **Uncertainty was high at the start.**
   - The banner overturns claims this document made.
-  - The census is a new instrument, and it was wrong in round 1.
+  - The census was a new instrument, and it was wrong in round 1.
   - Several claims were universals: "every", "exactly", "all nine".
 - **That is the top-right cell.** It asks for 3+ Lane A with distinct entry points, 2+ Lane B with
   opposing briefs, and at least two iterations.
+- **The one de-escalator was met in round 3.** Independent instruments reproduced two results
+  end-to-end:
+  - the census's post-merge result, in
+    `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneA-census-adequacy.md`;
+  - the X7 run list, twice, in
+    `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneB-attack-the-round2-fix-pass.md`
+    and `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round3-laneA-record-and-new-numbers.md`.
+
+  Later rounds re-ran instruments rather than re-deriving those results.
 - **Lanes run.**
 
   | round | Lane A | Lane B |
@@ -429,31 +420,44 @@ those reports, not written from memory.
   | 1 | three: A1, A2, A3 | two: B1, B2 |
   | 2 | two: R2-B, R2-C | one: R2-A |
   | 3 | two: R3-B, R3-C | one: R3-A |
+  | 4 | none | two: R4-A (refute), R4-B (ship side) |
 
-- **Two deviations from §2 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.**
-  - **No lane argued the ship side.** Every Lane B brief asked for refutation. So the review could
-    find what a fix got wrong or missed, but no lane was asked whether a fix went too far.
-  - **Lane A and Lane B ran concurrently in every round.** §2 asks for Lane A first.
+- **Deviations from §2 and §3 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.**
+  - **Pool size.** Rounds 2–4 each ran below the cell's 3+ Lane A and 2+ Lane B.
+  - **Opposing briefs.** Only round 4 ran a ship-side lane, R4-B. Rounds 1–3 asked every Lane B to
+    refute.
+  - **Order.** Lane A and Lane B ran concurrently in every round. §2 asks for Lane A first.
 
 **Conduct.**
-- **Read-only, with two exceptions.** Every lane was briefed read-only. Two stepped outside that,
-  and neither changed a reviewed file:
-  - B2's `py_compile` wrote two gitignored `.pyc` files, which its report discloses;
+- **Read-only, with two exceptions.** Neither changed a reviewed file.
+  - B2's `py_compile` wrote two gitignored `.pyc` files, which
+    `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneB2-amputation-executability.md`
+    discloses.
   - R2-A ran `git fetch` in the worktree.
-- **No reviewed file or PR changed while a round ran.** The windows were:
-  - round 1: 19:54–20:23 UTC;
-  - round 2: 20:41–21:19 UTC;
-  - round 3: 23:28 UTC to 00:46 UTC. A usage limit stopped its three lanes at 23:52; they resumed
-    in place at 00:31.
+- **Round windows (UTC).**
+  - Round 1: 19:54–20:23.
+  - Round 2: 20:41–21:19.
+  - Round 3: 23:28–00:46. A usage limit stopped its lanes at 23:52, and they resumed in place at
+    00:31.
+  - Round 4: 01:02–01:43.
 - **In round 2, my own writes reached two lanes mid-round.**
-  - At 20:44:54 UTC I appended the X7 conclusion to an unversioned memory file. R2-A read it at
-    20:50, before writing its X7 finding.
-  - At 20:55 UTC I edited a second memory file, which R2-C read at 20:57.
-  - At 20:54 UTC I re-ran canopy#655's failed CI jobs. That changed its checks, not its content.
-  - So R2-A's X7 finding was not independent of the author. Round 3 re-derived the X7 evidence
-    from 312 canopy runs, in two lanes, and the finding changed.
-- **In round 3, I edited two memory files mid-round.** No round-3 lane read either; I checked
-  their transcripts.
+  - I appended the X7 conclusion to `project_container_registry_rollout_2026-09-08.md`, in the
+    unversioned memory directory. R2-A read it before writing its X7 finding, so that finding was
+    not independent of me.
+  - I edited `reference_canopy_x7_timing_tests_flake_on_ci_runners.md` in the same directory, and
+    R2-C read it.
+  - I re-ran canopy#655's failed CI jobs, which changed its checks but not its content.
+  - Round 3 re-derived the X7 evidence independently, and the finding changed.
+- **In round 3, I edited two memory files mid-round**: `reference_prose_form_version_ranges_evade_pin_regexes.md`
+  and `MEMORY.md`. No round-3 lane read either. R3-C did read this session's own log, as its brief
+  asked, and the log narrates those edits.
+- **In round 4, the artifacts moved under the lanes.**
+  - An auto-merge sweep running as `pcalnon`, which this session did not run, merged five reviewed
+    PRs mid-round: juniper-cascor-client#170, juniper-data-client#210, juniper-deploy#227,
+    juniper-deploy#228 and juniper-canopy#655.
+  - Each landed byte-identical to its reviewed head.
+  - The sweep also armed juniper-ml#2020. I disarmed it twice and converted it to draft.
+  - I opened juniper-deploy#229 mid-round. It is a new PR, not one under review.
 
 | round | lane (type): entry point | verdict | what it found that changed this banner or a PR |
 | --- | --- | --- | --- |
@@ -466,48 +470,77 @@ those reports, not written from memory.
 | 2 | R2-B (A): census adequacy, its own instrument and 16 mutations | ADEQUATE WITH FIXES | `--expect` never checked against the latest release; the self-test never reached the verdicts; `tests/` exempt; ranges dropped past links, tables and paragraph breaks; the clean post-merge run hid `QUICK_START.md:92` |
 | 2 | R2-C (A): the whole document, artifact-first, about 176 claims | PASS WITH FINDINGS | 5 refuted (among them data#401 cited for data#402) and 4 stale but unmarked |
 | 3 | R3-A (B): attack the round-2 fix pass, plus a ledger of every earlier finding | SAFE WITH FIXES | five X7 failures, not three, and the X7 mechanism was a lone round-2 claim applied unchecked; the keepalive test is owned; the census's limits and "15 of 15" over-stated; the PR title still said 19 |
-| 3 | R3-B (A): census adequacy, its own instrument and 26 mutations | ADEQUATE WITH FIXES | its independent list misses nothing the census misses on this corpus; silent drops remain in natural shapes; a surviving mutant turned the post-merge run into exit 0 |
+| 3 | R3-B (A): census adequacy, its own instrument and 26 mutations | ADEQUATE WITH FIXES | under its own rules the census misses nothing the independent instrument finds; silent drops remain in natural shapes; a surviving mutant turned the post-merge run into exit 0 |
 | 3 | R3-C (A): the record and every new number, from primary sources, about 118 claims | PASS WITH FINDINGS | the conduct claim hid my round-2 writes; the seedless-nonce explanation was wrong; 30 worktrees, not 28; the repin was already claimed |
+| 4 | R4-A (B): attack the round-3 fix pass, plus a ledger of every round-3 finding | SAFE WITH FIXES | the new zero-live-pins guard refused a repo whose installs are unpinned; the worker wheel and the equities ruling were already done; the `run()` scenarios missed six mutants; the stored squash body was stale |
+| 4 | R4-B (B, ship side): argue the merge, find over-correction | SHIP WITH CHANGES | the three open items lived only in this banner; the first screen restated `HANDOFF_2026-09-22_ten-prs-landed-and-the-published-worker-still-reports-0-4-0.md`; bookkeeping corrections gated nothing |
 
 **Reconciliation (§5 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`).**
-- **Lone findings.** Every load-bearing finding that only one round-3 lane reported was re-derived
-  before it was applied. The sources were the CI logs, the lane transcripts, the test file, both
-  data images and the census itself.
+- **Lone findings, rounds 3 and 4.** Every load-bearing finding that only one lane reported was
+  re-derived before it was applied. The sources were the CI logs, the lane transcripts, the test
+  file, both data images, PyPI, the census, and the lanes' own crafted cases.
 - **Two lone round-2 findings had not been re-derived.** They were R2-A's X7 mechanism and its
-  "equally unowned" for the keepalive test. Round 3 refuted both.
-- **One measurement dispute.** B1 said arc_agi is not installed in the data image; A2 measured it
-  in both images. Opening the image settled it for A2: `HF_AVAILABLE` is True in both.
+  "equally unowned" for the keepalive test, findings 1 and 13 of
+  `reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round2-laneB-attack-the-fix-pass.md`.
+  Round 3 refuted both.
+- **One measurement dispute.** It was about arc_agi:
+  - B1 said it is not installed in the data image
+    (`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneB1-refute-conclusions.md`);
+  - A2 measured it in both images
+    (`reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/round1-laneA2-published-artifacts.md`);
+  - opening the image settled it for A2: `HF_AVAILABLE` is True in both.
 - **One of my own measurements was wrong, and so was my first explanation of it.**
   - My first probe found arc_agi's `dataset_id` differing between the images, and I blamed a
     seedless nonce.
   - In fact the probe hashed a raw params dict. The service validates params through
-    `ArcAgiParams` first, and its `seed` defaults to 42 (juniper-data#319). Only an explicit
+    `ArcAgiParams` first, whose `seed` defaults to `DEFAULT_GENERATOR_SEED`: 42, unless
+    `JUNIPER_DATA_DEFAULT_GENERATOR_SEED` overrides it (juniper-data#322). Only an explicit
     `seed: null` draws a nonce.
   - Through the params class, a default request gives `arc_agi-3.0.0-5cbabfa9a9026f82` in both
     images.
-- **Declined.** A line in § What shipped begins `#163's` without a repo name. It is original text,
-  and this banner does not rewrite the original.
+- **Round 4's lanes disagreed on stopping.**
+  - R4-A held that its findings change dispositions and actions, so the fix pass needs its own
+    round.
+  - R4-B held that the fixes are pointer, date and structure edits of measured facts, which §3
+    sizes as a self-check.
+  - **Resolved:**
+    - round 5 is one narrow lane on this fix pass's census code and new claims;
+    - the pointer and date edits were self-checked, by re-running the verification block and
+      re-probing each fact.
+- **Declined.**
+  - A line in § What shipped begins `#163's` without a repo name. It is original text, and this
+    banner does not rewrite the original.
+  - R4-B asked to drop the X7 flake from Corrections 5. The original itself named the flake ("Do
+    not chase it in the PR"), and it was an item left that did not need the owner.
+  - Some census gaps are documented as limits of an ad-hoc tool, not closed:
+    - R3-B's attribution shapes;
+    - R4-A's tarball-level stubs.
 - **Unresolved dissent.** B1 held that creating the throwaway repository for Wave 4's
   conditional-shape test is startable. This banner files it as owner-gated, because it creates a
   repository in the owner's account.
 
 **Instrument.** The census is `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`, in its third
 version.
-- **Its self-test** passes 93 of 93 cases, including the exit-code scenarios run through `run()`.
-- **Its mutation check**, `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`, kills 24
-  of 24 chosen mutants. The mutants that survive are named in that script's docstring.
-- **It can give a different answer.** At `main` today it exits 1 and names 23 stale lines.
-- **Sample.** Nine repositories' remote `main`: 54 live pins, one distinct range.
-- **Its limits** are in Corrections 1 and in its own docstring.
+- **Its self-test** passes 99 of 99 cases. They include exit-code scenarios run through `run()`,
+  and one run through the command line.
+- **Its mutation check**, `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py`, kills 34
+  of 34 chosen mutants. The lanes' own mutants still find survivors, and that script's docstring
+  lists their kinds.
+- **It can give a different answer.** At `main` on 2026-09-23 it exits 1 and names 13 stale
+  lines: the 11 that juniper-ml#2020 fixes and the 2 that juniper-cascor#673 fixes.
+- **Sample.** Nine repositories, with 54 live pins and one distinct range.
+- **Its limits** are in Corrections 1 and in the docstring of
+  `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py`.
 
 **What this cannot support:**
 - that no stale `juniper-ci-tools` text survives outside the shapes the census reads;
 - any cause for the X7 flake;
 - any Docker Hub rate-limit arithmetic, which comes from Docker's documentation, not from a pull;
-- what the missing equities extra costs a real juniper-recurrence run. That was inferred from the
-  image's lock and the compose file, not observed.
+- what the missing equities capability cost a real juniper-recurrence run. That was inferred from
+  the image's lock and the compose file, not observed. The next juniper-data release carries the
+  fix.
 
-**Round 4:** pending. This line is replaced when round 4 reports.
+**Round 5:** pending. This line is replaced when round 5 reports.
 
 ---
 
@@ -622,8 +655,8 @@ requirement legible.
   `0.743s` against a `0.2s` bound, shape `1 failed, 6366 passed`. The recorded memory names this exact
   test and bound and records it failing on `main` itself. canopy `main` was green; re-ran the job.
   **Do not chase it in the PR.**
-  > **2026-09-22.** The advice holds for a PR. The flake itself is open, unowned and undiagnosed, and
-  > every recorded stall exceeds the stub's own block (Status banner, note f).
+  > **2026-09-22.** The advice holds for a PR. The flake itself is open and undiagnosed. Since
+  > 2026-09-23 it is tracked as juniper-canopy#661 (Status banner, note f).
 
 ### Remaining work — all owner-gated
 

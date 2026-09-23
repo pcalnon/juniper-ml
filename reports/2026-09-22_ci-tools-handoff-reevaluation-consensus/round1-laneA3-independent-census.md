@@ -3,7 +3,7 @@
 
 **Entry point:** repository contents at remote `main`, with its own census built first.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T19:55:12Z to 2026-09-22T20:08:53Z, read-only. Agent `agent-a7ad2af2b2e3ac827`.
 

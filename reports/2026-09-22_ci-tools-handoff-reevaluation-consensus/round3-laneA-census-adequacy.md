@@ -3,7 +3,7 @@
 
 **Entry point:** instrument adequacy: its own instrument, then 26 mutations of the census.
 
-**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md` and the PRs named in the brief.
+**Target:** `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md`, `util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py` and `util/ad-hoc/2026-09-22_ci_tools_pin_census_mutation_check.py` and the PRs named in the brief.
 
 **Ran:** 2026-09-22T23:28:21Z to 2026-09-23T00:45:47Z, read-only. Agent `agent-ad373550cfa2cb2a4`.
 

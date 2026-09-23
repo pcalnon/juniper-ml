@@ -38,32 +38,47 @@ If another juniper name sits between an earlier ci-tools name and the range, the
 AMBIGUOUS (see below), not attributed. The ``0.x`` restriction keeps Python and pip specifiers
 out; the census refuses to run (exit 2) once juniper-ci-tools reaches 1.0.
 
-Known silent drops -- an exit 0 means "none of the shapes this parses", not "clean"
------------------------------------------------------------------------------------
-Round 3 of the 2026-09-22 consensus review found these. Each is dropped with NO output, not even
-AMBIGUOUS. The review's reports are in reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
+Known limits -- an exit 0 means "none of the shapes this parses", not "clean"
+-----------------------------------------------------------------------------
+Rounds 3 and 4 of the 2026-09-22 consensus review found these. The review's reports are in
+reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
+
+DROPPED with no output at all (not even AMBIGUOUS):
 
 * Owner-drop shapes.
   - A range whose nearest name is a repo or another package, even in ci-tools context:
     "the sequence-safety workflows in juniper-cascor pin ``>=0.8.0,<0.9.0``".
-  - A table whose header names a repo (``| package | pin in juniper-ml |``). The row's own
-    ci-tools cell is then ignored.
+  - A table whose header names a repo (``| package | pin in juniper-ml |``); the row's own
+    ci-tools cell is then ignored. The ``| repo | ci-tools pin |`` shape drops too: the short
+    name in a header is not recognised.
 * Context outside the range's own block. An unattributed range is listed as AMBIGUOUS only when
   ``ci-tools``, ``screen pin`` or ``sequence-safety`` appears in its own paragraph, its comment
   block (a bare ``#`` line ends one), or its nearest heading.
-* Bare releases, in one word order only. A bare release counts only as
+* A file that never names the package. The pre-filter reads only files that mention
+  juniper-ci-tools, ci-tools or one of its console scripts.
+* Bare releases in any word order but one. A bare release counts only as
   ``ci-tools 0.X.Y is|are [already|now] installed|pinned|in use|required``, and ``0.N.x`` only
   straight after ``juniper-ci-tools``. "CI installs juniper-ci-tools 0.8.0" is not seen.
-* Floor-only prose. ``>=0.8.0`` is REQUIREMENT and passes unless it excludes the latest release.
-  A floor below CI's is therefore never reported.
-* Under tests/, only comments and docstrings are judged. Other string literals and non-``.py``
-  files are FIXTURE.
-* Unpinned installs.
-  - They are checked only in workflows.
-  - Every ``==${...}`` pin is exempt.
-  - So is any install line that carries some other 0.x specifier.
-* Candidate-set sampling. A ceiling between two sampled releases (``<0.9.2``) reads as equal
-  to ``<0.10.0``.
+* Unpinned installs outside workflows. They are checked only in workflows. Every ``==${...}``
+  pin is exempt, and so is any install line that carries some other 0.x specifier.
+
+COUNTED, and passed:
+
+* Floor-only prose. ``>=0.8.0`` is REQUIREMENT and passes unless it excludes the latest release,
+  so a floor below CI's is never reported. The same happens to a reversed clause order:
+  ``<1.0,>=0.8.0`` is read from its first 0.x clause.
+* Test code. Under tests/, only comments, docstrings and ``.md``/``.rst`` files are judged;
+  other string literals and other files are FIXTURE.
+* Candidate-set sampling. A ceiling between two sampled releases (``<0.9.2``) reads as equal to
+  ``<0.10.0``.
+* Keys a whole line wide. An ADJUDICATED or EXCEPTION key covers its whole physical line, so a
+  current-state sentence appended to that line is covered too. ``SNAPSHOT_RE`` marks ANY
+  timestamped basename HISTORICAL, not only the ``conf/`` snapshots.
+
+REFUSED (exit 2):
+
+* A repo read with no juniper-ci-tools install at all. A repo whose only installs are
+  ``==${VAR}`` pins lands here, because the census cannot read the variable.
 
 How each is judged
 ------------------
@@ -778,17 +793,22 @@ def self_test() -> int:
     print(f"  {'ok  ' if extra_ok else 'FAIL'} only the repo's own extra range is OWN-EXTRA  got={sorted(same_extra)} {sorted(other_extra)}")
 
     # The exit-code contract, through run() with the network stubbed: 0 clean, 1 stale, 2 could not run.
+    # Each scenario also names text its output must carry, so a guard that fires for the wrong
+    # reason, or a listing that goes missing, still fails.
     import contextlib
+    import subprocess
 
     g = globals()
     saved = {k: g[k] for k in ("load_remote", "published_versions")}
     live_wf = '      run: pip install "juniper-ci-tools>=0.9.0,<0.10.0"\n'
+    unpinned_wf = "      run: pip install juniper-ci-tools\n"
 
-    def tree(extra_files: dict[str, dict[str, str]] | None = None, drop_live: str | None = None, empty: str | None = None):
+    def tree(extra_files: dict[str, dict[str, str]] | None = None, drop_live: str | None = None, empty: str | None = None, unpinned: str | None = None):
         def fake_load_remote(repo: str, ref: str) -> tuple[str, dict[str, str]]:
             if repo == empty:
                 return "0" * 40, {}
-            members = {".github/workflows/ci.yml": ("" if repo == drop_live else live_wf) + "# juniper-ci-tools\n"}
+            install = unpinned_wf if repo == unpinned else "" if repo == drop_live else live_wf
+            members = {".github/workflows/ci.yml": install + "# juniper-ci-tools\n"}
             members.update((extra_files or {}).get(repo, {}))
             return "f" * 40, members
 
@@ -796,32 +816,58 @@ def self_test() -> int:
 
     stale_doc = {"juniper-ml": {"docs/X.md": "CI pins `juniper-ci-tools>=0.6.0,<0.7.0`.\n"}}
     wide_doc = {"juniper-ml": {"docs/X.md": "CI pins `juniper-ci-tools>=0.9.0,<0.11.0`.\n"}}
+    doc_only = {"juniper-deploy": {"docs/X.md": "CI pins `juniper-ci-tools>=0.9.0,<0.10.0`.\n"}}
+    # Real docs mention the package elsewhere in the file; without that the pre-filter skips the file.
+    context_only = {"juniper-ml": {"docs/X.md": "CI installs juniper-ci-tools from PyPI.\n\n### Sequence-safety screens\n\n`main-verify.yml` enforces the two new `>=0.9.0,<0.10.0` screen pins.\n"}}
+    v09, v010 = ("0.9.0", ["0.8.0", "0.9.0"]), ("0.10.0", ["0.9.0", "0.10.0"])
     scenarios = [
-        ("clean trees", tree(), ("0.9.0", ["0.8.0", "0.9.0"]), [], 0),
-        ("one stale doc", tree(stale_doc), ("0.9.0", ["0.8.0", "0.9.0"]), [], 1),
-        ("a doc range wider than --expect", tree(wide_doc), ("0.9.0", ["0.8.0", "0.9.0"]), [], 1),
-        ("--expect behind the latest release", tree(), ("0.10.0", ["0.9.0", "0.10.0"]), [], 1),
-        ("a misspelt --ref key", tree(), ("0.9.0", ["0.9.0"]), ["--ref", "juniper-cascr=abc"], 2),
-        ("a repo with zero live pins", tree(drop_live="juniper-deploy"), ("0.9.0", ["0.9.0"]), [], 2),
-        ("a repo read as empty", tree(empty="juniper-data"), ("0.9.0", ["0.9.0"]), [], 2),
+        ("clean trees", tree(), v09, [], 0, "STALE (fails the census)", ""),
+        ("one stale doc, and it is named", tree(stale_doc), v09, [], 1, "juniper-ml/docs/X.md:1", ""),
+        ("a doc range wider than --expect", tree(wide_doc), v09, [], 1, "juniper-ml/docs/X.md:1", ""),
+        ("--expect behind the latest release", tree(), v010, [], 1, "does not admit the latest published release", ""),
+        ("a passing AMBIGUOUS line is listed", tree(context_only), v09, [], 0, "AMBIGUOUS, matching", ""),
+        ("a repo whose only install is unpinned is reported", tree(unpinned="juniper-deploy"), v09, [], 1, "UNRESOLVED", ""),
+        ("a repo with ci-tools text but no install", tree(doc_only, drop_live="juniper-deploy"), v09, [], 2, "", "no juniper-ci-tools install read"),
+        ("a repo read as empty", tree(empty="juniper-data"), v09, [], 2, "", "nothing was censused"),
+        ("a misspelt --ref key", tree(), v09, ["--ref", "juniper-cascr=abc"], 2, "", "name no repo"),
+        ("a misspelt --local key", tree(), v09, ["--local", "juniper-deplyo=/nonexistent"], 2, "", "name no repo"),
+        ("a repo given twice", tree(), v09, ["--ref", "juniper-ml=aaaa", "--ref", "juniper-ml=bbbb"], 2, "", "repeated"),
     ]
     try:
-        for desc, loader, versions, argv, want in scenarios:
+        for desc, loader, versions, argv, want, out_has, err_has in scenarios:
             g["load_remote"] = loader
             g["published_versions"] = lambda v=versions: v
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
                 rc = run(argv)
-            ok = rc == want
+            ok = rc == want and out_has in out.getvalue() and err_has in err.getvalue()
             failed += not ok
             print(f"  {'ok  ' if ok else 'FAIL'} run(): {desc:<58} exit={rc} expected={want}")
     finally:
         g.update(saved)
 
-    for probe in ("repo-sha/Makefile", "repo-sha/Dockerfile.test", "repo-sha/requirements-cpu.lock"):
+    # The command line itself goes through run(): a refusal must exit 2, not escape as a traceback (1).
+    cli = subprocess.run([sys.executable, __file__, "--ref", "juniper-cascr=abc"], capture_output=True, text=True)
+    cli_ok = cli.returncode == 2
+    failed += not cli_ok
+    print(f"  {'ok  ' if cli_ok else 'FAIL'} the command line exits 2 on a misspelt --ref  exit={cli.returncode}")
+
+    # The repo's own extra is read from the juniper-ci-tools requirement, not the first range in pyproject.toml.
+    members = {
+        "pyproject.toml": 'dependencies = ["httpx>=0.27,<0.28"]\n[project.optional-dependencies]\ntools = ["juniper-ci-tools>=0.9.0,<0.10.0"]\n',
+        "docs/X.md": "The tools extra is `juniper-ci-tools>=0.9.0,<0.10.0`.\n",
+    }
+    doc_classes = {h.cls for h in census_members("juniper-x", members) if h.path == "docs/X.md"}
+    members_ok = doc_classes == {"OWN-EXTRA"}
+    failed += not members_ok
+    print(f"  {'ok  ' if members_ok else 'FAIL'} the own extra comes from the juniper-ci-tools requirement  got={sorted(doc_classes)}")
+
+    probes = ("repo-sha/Makefile", "repo-sha/Dockerfile.test", "repo-sha/requirements-cpu.lock", "repo-sha/docs/X.md", "repo-sha/util/x.py", "repo-sha/.github/workflows/ci.yml")
+    for probe in probes:
         if not is_text_member(probe):
             failed += 1
             print(f"  FAIL is_text_member misses {probe}")
-    total = len(cases) + len(verdict_cases) + 2 + len(history_cases) + 1 + len(scenarios)
+    total = len(cases) + len(verdict_cases) + 2 + len(history_cases) + 1 + len(scenarios) + 2
     print(f"self-test: {total - failed} passed, {failed} failed")
     return 1 if failed else 0
 
@@ -852,6 +898,11 @@ def main(argv: list[str] | None = None) -> int:
     unknown = sorted((set(refs) | set(locals_)) - set(REPOS))
     if unknown:
         raise ValueError(f"--ref/--local name no repo this census reads: {', '.join(unknown)} (known: {', '.join(REPOS)})")
+    # A repeated key, or a repo given both a --ref and a --local, would silently drop one of them.
+    keys = [item.split("=", 1)[0] for item in args.ref + args.local]
+    repeated = sorted({k for k in keys if keys.count(k) > 1})
+    if repeated:
+        raise ValueError(f"each repo may be named once across --ref and --local; repeated: {', '.join(repeated)}")
     latest, released = published_versions()
     if not latest.startswith("0."):
         raise ValueError(f"juniper-ci-tools {latest} is not 0.x; widen _VER0 before trusting this census")
@@ -867,11 +918,16 @@ def main(argv: list[str] | None = None) -> int:
             raise RuntimeError(f"{repo}: no text files read from {sha} -- nothing was censused")
         hits = census_members(repo, members)
         live = sum(1 for h in hits if h.cls == "LIVE")
+        installs = live + sum(1 for h in hits if h.cls == "UNRESOLVED")
         print(f"{repo:<24} {sha[:40]:<40}  mentions={len(hits)}  live={live}")
-        if live == 0:
-            # Every repo pins juniper-ci-tools in CI today. A repo that reads as having none was read
-            # wrongly or has dropped the package; either way its clean result would mean nothing.
-            raise RuntimeError(f"{repo}: zero live pins at {sha[:12]} -- if it no longer uses juniper-ci-tools, remove it from REPOS")
+        if installs == 0:
+            # Every repo installs juniper-ci-tools in CI today. A repo read with no install at all
+            # was read wrongly or has dropped the package, and its clean result would mean nothing.
+            # An UNPINNED install is an install: it is reported (UNRESOLVED fails), never refused.
+            raise RuntimeError(
+                f"{repo}: no juniper-ci-tools install read at {sha[:12]} -- the census could not judge it. "
+                "Check the read first; drop the repo from REPOS only if it no longer installs the package"
+            )
         all_hits.extend(hits)
 
     by_class = Counter(h.cls for h in all_hits)

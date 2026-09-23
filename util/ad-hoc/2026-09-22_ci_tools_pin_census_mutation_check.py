@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prove the ci-tools pin census's --self-test discriminates: remove one branch at a time, and the self-test must FAIL.
+Check that the ci-tools pin census's --self-test fails when a listed rule is removed, one rule at a time.
 
 Project: juniper-ml
 Sub-Project: ad-hoc tooling
@@ -10,7 +10,7 @@ Status: ad-hoc -- investigation
 Retire when: RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 Related: util/ad-hoc/2026-09-22_ci_tools_pin_census_remote.py (the script under test);
          prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-11_ci-tools-0-9-0-shipped-and-every-no-owner-item-is-closed.md
-         (its Corrections 1 and validation record cite "15 of 15")
+         (its Corrections 1 and validation record cite this check)
 
 A self-test that still passes with a branch deleted does not test that branch. Round 2 of the
 banner's consensus review found exactly that: with the DOC/COMMENT verdict removed, the census's
@@ -20,12 +20,15 @@ round 2 named. A mutation "survives" when the self-test still passes, and any su
 this check (exit 1). An anchor that no longer matches exactly once also fails it, so an edit to
 the census cannot silently retire a mutation.
 
-**A kill here proves only the rules listed.** The mutants are chosen, not exhaustive. In round 3,
-two review lanes wrote 21 and 26 mutants of their own, and most survived. The nine added at the end
-of MUTATIONS are the survivors that the round-3 self-test cases now kill. Others still survive: the
-lookback and attribution constants, the ADJUDICATED keys' substring and spec components, and the
-comment-branch shapes. Their reports are in
-reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/.
+**A kill here proves only the rules listed.** The mutants are chosen, not exhaustive.
+- In rounds 3 and 4 the review lanes applied mutants of their own, and some still survive.
+- The groups added at the end of MUTATIONS are the ones this self-test now kills.
+- Among the survivors are the lookback and attribution constants, the pre-filter, the
+  bare-release verbs, composite-action handling, the ADJUDICATED lookup and keys, the
+  floor-only skip and some comment-branch shapes.
+- Each lane report lists its own survivors, in
+  reports/2026-09-22_ci-tools-handoff-reevaluation-consensus/: round3-laneA-census-adequacy.md,
+  round3-laneB-attack-the-round2-fix-pass.md and round4-laneB-attack-the-round3-fix-pass.md.
 
 The mutants are written to a temporary directory and deleted afterwards. Nothing in the tree
 changes.
@@ -60,9 +63,20 @@ MUTATIONS = {
     "prompts/ and reports/ not history": ('HISTORICAL_SEGMENTS = {"notes", "prompts", "reports", "releases", "history", "legacy"}', 'HISTORICAL_SEGMENTS = {"notes", "releases", "history", "legacy"}'),
     "main() exits 0 whatever it finds": ("    return 1 if bad else 0\n\n\ndef run(", "    return 0\n\n\ndef run("),
     "a lagging --expect not counted": ("    if lag:\n        bad.insert(0, lag)\n", ""),
-    "a repo with zero live pins accepted": ("        if live == 0:\n", "        if False:\n"),
+    "a repo with no install accepted": ("        if installs == 0:\n", "        if False:\n"),
     "misspelt --ref/--local keys accepted": ("    if unknown:\n        raise ValueError", "    if False:\n        raise ValueError"),
     "candidates omit the next releases": ("    return sorted(set(released) | set(extra), key=Version)", "    return sorted(set(released), key=Version)"),
+    # Added after round 4, whose lanes found each of these surviving the 93-case self-test.
+    "the command line bypasses run()": ("    raise SystemExit(run())", "    raise SystemExit(main())"),
+    "misspelt --local keys accepted": ("unknown = sorted((set(refs) | set(locals_)) - set(REPOS))", "unknown = sorted(set(refs) - set(REPOS))"),
+    "repeated --ref/--local keys accepted": ("    if repeated:\n        raise ValueError", "    if False:\n        raise ValueError"),
+    "the install guard fires only on a repo with no hits": ("        if installs == 0:\n", "        if not hits:\n"),
+    "an unpinned install counted as no install": ('        installs = live + sum(1 for h in hits if h.cls == "UNRESOLVED")\n', "        installs = live\n"),
+    "an empty read not refused as such": ("        if not members:\n            raise RuntimeError", "        if False:\n            raise RuntimeError"),
+    ".md files never read": ('TEXT_SUFFIXES = (".yml", ".yaml", ".md", ".rst",', 'TEXT_SUFFIXES = (".yml", ".yaml", ".rst",'),
+    ".py files never read": ('".ini", ".py", ".bash"', '".ini", ".bash"'),
+    "the own extra read from any range": (r'm = re.search(r"juniper[-_]ci[-_]tools\s*(" + SPEC_RE.pattern', r'm = re.search(r"(" + SPEC_RE.pattern'),
+    "passing AMBIGUOUS lines not listed": ("    if unread:\n        print(", "    if False:\n        print("),
 }
 
 

@@ -5,8 +5,8 @@ This directory holds the lane reports of the consensus review of the 2026-09-22 
 The review ran under `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`.
 
 **The record is that banner's section "Validation record for this banner"**: sizing, conduct,
-verdicts, reconciliation, instrument and limits. This README only indexes the files. It restates
-none of the record's content, so the two cannot drift apart.
+verdicts, reconciliation, instrument and limits. This README indexes the files, and says only how
+they were made. It restates none of the record's findings, so the two cannot drift apart.
 
 Each file holds one lane's brief as sent, any message sent to it mid-run, and its final report as
 returned, all verbatim, taken from the session's subagent transcripts. Only the round-3 lanes got a
@@ -26,6 +26,8 @@ report otherwise lives only in a local, unversioned transcript. Line numbers ins
 | `round3-laneB-attack-the-round2-fix-pass.md` | 3 | R3-A (Lane B) | attack the round-2 fix pass, plus a ledger of every earlier finding |
 | `round3-laneA-census-adequacy.md` | 3 | R3-B (Lane A) | its own instrument, then 26 mutations of the census |
 | `round3-laneA-record-and-new-numbers.md` | 3 | R3-C (Lane A) | the validation record and every new number, from primary sources |
+| `round4-laneB-attack-the-round3-fix-pass.md` | 4 | R4-A (Lane B) | attack the round-3 fix pass, plus a ledger of every round-3 finding |
+| `round4-laneB-ship-side-steelman.md` | 4 | R4-B (Lane B, opposing brief) | argue the merge; find over-correction and noise |
 
 The instruments the record cites are in `util/ad-hoc/`:
 - `2026-09-22_ci_tools_pin_census_remote.py`, the census;
