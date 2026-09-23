@@ -1,23 +1,21 @@
 # Backup infrastructure — integrated design, root-cause analysis and remediation plan
 
-**Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
-**Author**: Paul Calnon
-**Date**: 2026-09-21
-**Status**: VALIDATED (round 2) — consensus round 1 (six validators) and round 2 (four lanes) have
-both reported, and every finding is applied or recorded as dissent in §11. Verbatim reports:
-`JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md` and
-`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`.
-**§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and
-merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s
-owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder). Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named
-in P1 step 4.
-**Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
-**Companions**:
-[`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) (the design of record, "PLAN"),
-[`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md) (the certification record, "YAM"),
-[`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ("DMG"),
-[`JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md) ("GPG"),
-[`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md) ("CON", the validation procedure this document is held to).
+- **Project**: Juniper (workstation backup infrastructure, host `yamaguchi`)
+- **Author**: Paul Calnon
+- **Date**: 2026-09-21
+- **Status**: VALIDATED (round 2) — consensus round 1 (six validators) and round 2 (four lanes) have both reported, and every finding is applied or recorded as dissent in §11.
+Verbatim reports:
+  - `JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-1-RECORD.md`
+  - `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_BACKUP-DESIGN-CONSENSUS-ROUND-2-RECORD.md`
+- **§8 is executable in this order and no other**: **P0.5a** items 1–2, then **P0 step −1** (review and merge the nine scripts §8 invokes that are now staged; the tenth is a P3 deliverable), then **P0 step 0**'s owner gates, then **P0**, then **P0.5b** (the re-key, which needs the recovered data folder).
+  - Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved except the one escrow copy named in P1 step 4.
+- **Supersedes in part**: the *Dropbox-era* operating state; does **not** supersede the certification record
+- **Companions**:
+  - [`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-FRESH-BACKUP-SET-PLAN.md) (the design of record, "PLAN"),
+  - [`JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md`](JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md) (the certification record, "YAM"),
+  - [`JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md`](JUNIPER_2026-08-23_JUNIPER-ECOSYSTEM_DUPLICATI-ARCHIVE-DAMAGE-FINDINGS.md) ("DMG"),
+  - [`JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md`](JUNIPER_2026-08-24_JUNIPER-ECOSYSTEM_DUPLICATI-GPG-FLUSH-FAILURE-INVESTIGATION.md) ("GPG"),
+  - [`JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md) ("CON", the validation procedure this document is held to).
 
 ---
 
@@ -25,14 +23,14 @@ in P1 step 4.
 
 Three steps, each carried out by independent agents with **different entry points**, then reconciled here (CON §2 Lane A / §5):
 
-| Step | Entry point | Agent lens |
-| --- | --- | --- |
-| 1a. Evaluate the documented design | the seven `notes/` documents of record | documented design, certification status, contradictions, rules to carry forward |
-| 1b. Reconstruct the as-built design | the thirteen session handoffs + every script and unit in `util/`, `util/systemd/`, `util/ad-hoc/`, `scripts/` | mechanism inventory, chronology, guards catalogue, tar-lane analysis |
-| 2a. Determine the live state | the host only: systemd, journal, processes, filesystems, databases (copies), Dropbox | observations vs inferences, timeline from inode timestamps |
-| 2b. Static and behavioural analysis of the new wrapper lane | the repository, GitHub, shellcheck, synthetic inputs | defects with severity and evidence |
-| 2c. Product behaviour | Duplicati source, docs, releases; systemd man pages; sandboxed `help` runs | verified option names, data-folder rules, schema versions |
-| 3. This design | all of the above plus the orchestrator's own forensics (§5, Appendix A) | reconciliation, design, remediation |
+| Step                                                        | Entry point                                                                                                   | Agent lens                                                                      |
+|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| 1a. Evaluate the documented design                          | the seven `notes/` documents of record                                                                        | documented design, certification status, contradictions, rules to carry forward |
+| 1b. Reconstruct the as-built design                         | the thirteen session handoffs + every script and unit in `util/`, `util/systemd/`, `util/ad-hoc/`, `scripts/` | mechanism inventory, chronology, guards catalogue, tar-lane analysis            |
+| 2a. Determine the live state                                | the host only: systemd, journal, processes, filesystems, databases (copies), Dropbox                          | observations vs inferences, timeline from inode timestamps                      |
+| 2b. Static and behavioural analysis of the new wrapper lane | the repository, GitHub, shellcheck, synthetic inputs                                                          | defects with severity and evidence                                              |
+| 2c. Product behaviour                                       | Duplicati source, docs, releases; systemd man pages; sandboxed `help` runs                                    | verified option names, data-folder rules, schema versions                       |
+| 3. This design                                              | all of the above plus the orchestrator's own forensics (§5, Appendix A)                                       | reconciliation, design, remediation                                             |
 
 Instruments written for step 2/3 and kept as provenance: `util/ad-hoc/2026-09-21_duplicati_server_db_forensics.py` (read-only inspection of **copies** of every candidate server database), `util/ad-hoc/2026-09-21_env_file_shape.py` (shape of a secret file without printing a value), `util/ad-hoc/2026-09-21_lint_design_snippets.py` (extracts every tagged code block of this document, then runs the real linter on each — extraction completes before any lint so a unit whose
 `ExecStart=` names a later block resolves), `util/ad-hoc/2026-09-21_wrap_long_markdown_lines.py` (wraps over-long prose lines at word boundaries for MD013 without touching tables or fences). Validation round 1 added two more, both of which changed a conclusion: `util/ad-hoc/2026-09-21_duplicati_settings_key_hash_probe.py` (tests a candidate settings key against a database **copy** offline, from the SHA-256 of the key embedded in every `enc-v1:` value — it excluded both candidates §5.4 had ranked) and
@@ -563,12 +561,12 @@ first draft inventoried none of these:
 `duplicati` uid outside it" differ only by the capability and the mount view, which is why the table below is
 worth writing down: every row is a way to become the other.
 
-| Who can act as `duplicati` | How | What they gain |
-| --- | --- | --- |
-| root | `su`, `runuser` | everything |
-| the service itself | — | capability + mount view |
-| any run-script the job names | job option, set through the API | capability + mount view + the job's whole option set in its environment (§7.5) |
-| **any local user, today** | `/home/duplicati/bin` and `/home/duplicati/.config/Duplicati` are 0777 with no sticky bit — rename-replace the wrapper or the database | the next start (closed by P0.5) |
+| Who can act as `duplicati`   | How                                                                                                                                    | What they gain                                                                 |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| root                         | `su`, `runuser`                                                                                                                        | everything                                                                     |
+| the service itself           | —                                                                                                                                      | capability + mount view                                                        |
+| any run-script the job names | job option, set through the API                                                                                                        | capability + mount view + the job's whole option set in its environment (§7.5) |
+| **any local user, today**    | `/home/duplicati/bin` and `/home/duplicati/.config/Duplicati` are 0777 with no sticky bit — rename-replace the wrapper or the database | the next start (closed by P0.5)                                                |
 
 | Crossing | Mechanism | Closed by |
 | --- | --- | --- |
@@ -2301,16 +2299,16 @@ owner's two criteria:
    §7.3.6 already forbids for `duplicati-server-util change-password`. The new passphrase must reach the
    tool by a channel that is not argv, or the rotation leaks the secret it exists to protect.
 
-| # | Step | Gate before proceeding |
-| --- | --- | --- |
-| 1 | SMART test `sda` — **DONE 2026-09-23, PASSED** (note 10.2a). Restore-drill the CURRENT set — outstanding, and **discharged by AC-4's pre-recovery drill inside §8 P0 step 11**, not before P0 (note 10.2c) | AC-4's first drill passes on the current passphrase |
-| 2 | Scrub the leaked copies: the S-7 file, the `.env` comment block, and D-8's journal scrub after P1 | S-3, S-6 and S-7 counts all read zero |
-| 3 | Mint the new passphrase; place it at `/etc/credstore/duplicati-passphrase` root:root 0600 | never in `.env`, never on argv, never echoed |
-| 4 | Copy the 877 volumes to staging on **`nvme0n1p5` (`/`)** — **not** `sda` (note 10.2b); ≈203 GiB required | per-file hashes match the source |
-| 5 | `recompress … --reencrypt --new-passphrase` against the **staging** copy only | exit 0, and every volume re-encrypted |
-| 6 | Recreate the local database against staging; restore-drill from staging | a drill passes on the NEW passphrase |
-| 7 | Swap staging in as the live destination | the old set is retained untouched until step 6 passed |
-| 8 | Delete-forever the old ciphertext server-side (Dropbox retains deleted files 30 d on Basic/Plus/Family, 180 d on Professional) | only after step 7 is verified |
+| # | Step                                                                                                                                                                                                       | Gate before proceeding                                |
+|---|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| 1 | SMART test `sda` — **DONE 2026-09-23, PASSED** (note 10.2a). Restore-drill the CURRENT set — outstanding, and **discharged by AC-4's pre-recovery drill inside §8 P0 step 11**, not before P0 (note 10.2c) | AC-4's first drill passes on the current passphrase   |
+| 2 | Scrub the leaked copies: the S-7 file, the `.env` comment block, and D-8's journal scrub after P1                                                                                                          | S-3, S-6 and S-7 counts all read zero                 |
+| 3 | Mint the new passphrase; place it at `/etc/credstore/duplicati-passphrase` root:root 0600                                                                                                                  | never in `.env`, never on argv, never echoed          |
+| 4 | Copy the 877 volumes to staging on **`nvme0n1p5` (`/`)** — **not** `sda` (note 10.2b); ≈203 GiB required                                                                                                   | per-file hashes match the source                      |
+| 5 | `recompress … --reencrypt --new-passphrase` against the **staging** copy only                                                                                                                              | exit 0, and every volume re-encrypted                 |
+| 6 | Recreate the local database against staging; restore-drill from staging                                                                                                                                    | a drill passes on the NEW passphrase                  |
+| 7 | Swap staging in as the live destination                                                                                                                                                                    | the old set is retained untouched until step 6 passed |
+| 8 | Delete-forever the old ciphertext server-side (Dropbox retains deleted files 30 d on Basic/Plus/Family, 180 d on Professional)                                                                             | only after step 7 is verified                         |
 
 **Step 1 is first, is not optional, and is currently HALF DONE**: the SMART half passed on
 2026-09-23; the drill half is AC-4's and runs inside P0 (note 10.2c), so step 2 is not unblocked and
@@ -2330,7 +2328,6 @@ failed at the thing it was for.
   under/over-limit count of 0/0. Age is the only soft spot and it reads better than the hours suggest —
   28,941 power-on hours (~3.3 years) but only **1,803 Head Flying Hours** and ~10.4 TB written in life.
   This **closes** the §12 / D-12a carried item "sda SMART never read".
-
 
 - **(10.2b)** **Staging goes on `nvme0n1p5` (`/`), not on `sda`.** `sda1` has 3.1 TiB free and is the
   obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
@@ -2520,20 +2517,20 @@ afternoon. (The older file is identifiable in the journal by its own error, `lin
 
 ## Appendix B — index of code artifacts in this document
 
-| Tagged block | Purpose | Linted by |
-| --- | --- | --- |
-| `etc/default/duplicati` | systemd `EnvironmentFile` | `KEY=VALUE` / `--option` grammar (keyed on the path, since the file has no extension) |
-| `etc/systemd/system/duplicati.service` | the service unit | `systemd-analyze verify` |
-| `usr/local/lib/duplicati/duplicati-wrapper.bash` | wrapper v2 | `bash -n`, shellcheck |
-| `util/install_duplicati_service.bash` | installer | `bash -n`, shellcheck |
-| `home/duplicati/.config/Duplicati/.env` | `.env` contract | `KEY=VALUE` / `--option` grammar (keyed on the basename `.env`) |
-| `util/ad-hoc/2026-09-21_backup_destination_permissions.bash` | permission model | `bash -n`, shellcheck |
-| `usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash` | pre-backup guard | `bash -n`, shellcheck |
-| `home/pcalnon/.config/systemd/user/juniper-backup.{timer,path,service}` | T2 units | `systemd-analyze verify` |
-| `util/juniper-backup-scheduled.bash` | T2 scheduler | `bash -n`, shellcheck |
-| `util/ad-hoc/2026-09-21_probe_settings_key_on_copy.bash` | Procedure A probe (confirmation only) | `bash -n`, shellcheck |
-| `util/ad-hoc/2026-09-22_confirm_a0_premise.bash` | Procedure A0 premise check | `bash -n`, shellcheck |
-| `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash` | Procedure A0 restore | `bash -n`, shellcheck |
+| Tagged block                                                            | Purpose                               | Linted by                                                                             |
+|-------------------------------------------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------|
+| `etc/default/duplicati`                                                 | systemd `EnvironmentFile`             | `KEY=VALUE` / `--option` grammar (keyed on the path, since the file has no extension) |
+| `etc/systemd/system/duplicati.service`                                  | the service unit                      | `systemd-analyze verify`                                                              |
+| `usr/local/lib/duplicati/duplicati-wrapper.bash`                        | wrapper v2                            | `bash -n`, shellcheck                                                                 |
+| `util/install_duplicati_service.bash`                                   | installer                             | `bash -n`, shellcheck                                                                 |
+| `home/duplicati/.config/Duplicati/.env`                                 | `.env` contract                       | `KEY=VALUE` / `--option` grammar (keyed on the basename `.env`)                       |
+| `util/ad-hoc/2026-09-21_backup_destination_permissions.bash`            | permission model                      | `bash -n`, shellcheck                                                                 |
+| `usr/local/lib/duplicati/yamaguchi-pre-backup-guard.bash`               | pre-backup guard                      | `bash -n`, shellcheck                                                                 |
+| `home/pcalnon/.config/systemd/user/juniper-backup.{timer,path,service}` | T2 units                              | `systemd-analyze verify`                                                              |
+| `util/juniper-backup-scheduled.bash`                                    | T2 scheduler                          | `bash -n`, shellcheck                                                                 |
+| `util/ad-hoc/2026-09-21_probe_settings_key_on_copy.bash`                | Procedure A probe (confirmation only) | `bash -n`, shellcheck                                                                 |
+| `util/ad-hoc/2026-09-22_confirm_a0_premise.bash`                        | Procedure A0 premise check            | `bash -n`, shellcheck                                                                 |
+| `util/ad-hoc/2026-09-22_restore_server_db_from_fileset.bash`            | Procedure A0 restore                  | `bash -n`, shellcheck                                                                 |
 
 Run: `python3 util/ad-hoc/2026-09-21_lint_design_snippets.py --doc notes/JUNIPER_2026-09-21_JUNIPER-ECOSYSTEM_BACKUP-INFRASTRUCTURE-INTEGRATED-DESIGN.md --workdir <scratch>`.
 
