@@ -1,0 +1,134 @@
+{
+  "case": "09_delay_product",
+  "model": "recurrence",
+  "value": "delay_product",
+  "role": "\u00a712 rank-3 (\u00a712.6)",
+  "tag": "",
+  "start_route": "start",
+  "started_utc": "2026-09-23T19:50:57.121Z",
+  "csrf_enabled": true,
+  "model_select": {
+    "status": 200,
+    "backend": "recurrence"
+  },
+  "effective_params_before": {
+    "nn_max_iterations": null,
+    "nn_output_epochs": null,
+    "nn_max_total_epochs": null,
+    "cn_training_iterations": null,
+    "nn_max_hidden_units": null,
+    "cn_pool_size": null,
+    "nn_patience": null
+  },
+  "stage": {
+    "status": 200,
+    "elapsed_s": 0.004,
+    "payload": {
+      "nn_dataset_type": "delay_product",
+      "nn_model": "recurrence"
+    }
+  },
+  "history_len_before": 1,
+  "start": {
+    "status": 200,
+    "elapsed_s": 0.004,
+    "response": {
+      "status": "started",
+      "ok": true,
+      "is_training": true,
+      "message": "recurrence fit started"
+    },
+    "body": {
+      "dataset": {
+        "generator": "delay_product"
+      }
+    }
+  },
+  "train_outcome": "completed",
+  "train_wall_s": 0.21,
+  "render_status_codes": {
+    "/api/train/status": 200,
+    "/api/status": 200,
+    "/api/metrics": 200,
+    "/api/metrics/history?limit=0": 200,
+    "/api/dataset": 200,
+    "/api/state": 200,
+    "/api/selection": 200,
+    "/api/topology": 503,
+    "/api/network/stats": 503,
+    "/api/decision_boundary": 503,
+    "/api/stream_health": 200
+  },
+  "history_len_after": 1,
+  "history_last": {
+    "mse": 2.4825429940144477,
+    "rmse": 1.575608769337886,
+    "mae": 1.1402197056427876,
+    "r2": 0.0052809197291319165,
+    "loss": 2.4825429940144477,
+    "epoch": 1
+  },
+  "history_new_rows": 0,
+  "metrics": {
+    "mse": 2.4825429940144477,
+    "rmse": 1.575608769337886,
+    "mae": 1.1402197056427876,
+    "r2": 0.0052809197291319165,
+    "loss": 2.4825429940144477,
+    "epoch": 1
+  },
+  "dataset_view": {
+    "num_samples": 1574,
+    "num_features": 1,
+    "num_classes": 1,
+    "loaded": true,
+    "dataset_name": "delay_product-3.0.0-10ae313fa6bdef23"
+  },
+  "current_dataset": {
+    "dataset_type": "delay_product"
+  },
+  "final_status": {
+    "fsm_status": "trained",
+    "phase": "complete",
+    "is_running": false,
+    "is_training": false,
+    "completed": true,
+    "failed": false,
+    "current_epoch": 1,
+    "hidden_units": null,
+    "completion_reason": "converged"
+  },
+  "topology_shape": {},
+  "generated": [
+    {
+      "dataset_id": "delay_product-3.0.0-10ae313fa6bdef23",
+      "generator": "delay_product",
+      "generator_version": "3.0.0",
+      "n_train": 1574,
+      "n_val": 197,
+      "n_test": 197,
+      "n_features": 1,
+      "n_classes": null
+    }
+  ],
+  "log_slices": {
+    "data": {
+      "bytes": 444,
+      "excerpt_lines": 5
+    },
+    "cascor": {
+      "bytes": 0,
+      "excerpt_lines": 0
+    },
+    "canopy": {
+      "bytes": 359,
+      "excerpt_lines": 2
+    },
+    "recurrence": {
+      "bytes": 550,
+      "excerpt_lines": 2
+    }
+  },
+  "case_wall_s": 0.3,
+  "finished_utc": "2026-09-23T19:50:57.426Z"
+}

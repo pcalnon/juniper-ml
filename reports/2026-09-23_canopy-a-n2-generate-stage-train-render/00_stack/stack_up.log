@@ -1,0 +1,85 @@
+[2026-09-23_a_n2_stack.bash] ports: data=8111 cascor=8212 canopy=8061 recurrence=8221
+[2026-09-23_a_n2_stack.bash] run dir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run
+[2026-09-23_a_n2_stack.bash] project dir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-eco
+[2026-09-23_a_n2_stack.bash]   juniper-data -> /home/pcalnon/Development/python/Juniper/worktrees/juniper-data--verify--a-n2-loop--20260923-1415--ce436819 @ ce4368190a11f40d93e1bccd1a2fee2ea20632a0
+[2026-09-23_a_n2_stack.bash]   juniper-cascor -> /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--verify--a-n2-loop--20260923-1415--f7a6d573 @ f7a6d57347dad86d830bbf80b735ba6e54bb3868
+[2026-09-23_a_n2_stack.bash]   juniper-canopy -> /home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--verify--a-n2-loop--20260923-1415--48074653 @ 480746530fbe9062a6a3eaad5cab165c85b72ce8
+[2026-09-23_a_n2_stack.bash] data extras: api,mnist,equities
+[2026-09-23_a_n2_stack.bash] snapshots: cascor=/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/cascor-snapshots canopy=/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/cascor-snapshots
+
+[isolated_stack.bash] === Bringing UP the isolated E2E trio (data 8111 / cascor 8212 / canopy 8061 / recurrence 8221) ===
+[isolated_stack.bash] $ ss -tlnH "sport = :8221"   # 8211 occupancy pre-check (deploy maps host 8211 -> recurrence ctr 8210)
+
+[isolated_stack.bash] === juniper-data  ->  http://127.0.0.1:8111  (dedicated venv) ===
+[isolated_stack.bash] $ mkdir -p /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run && cd /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run
+[isolated_stack.bash] $ python3.14 -m venv /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/.venv-data
+[isolated_stack.bash] $ source /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/.venv-data/bin/activate
+[isolated_stack.bash] $ pip install -e '/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-eco/juniper-data[api,mnist,equities]' prometheus_client juniper-observability
+[isolated_stack.bash] $ python -m juniper_data --host 127.0.0.1 --port 8111   # nohup -> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/logs/juniper-data.log (+PYTHON_GIL=0 iff the venv python is a free-threaded build)
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+[isolated_stack.bash] Waiting for juniper-data health at http://127.0.0.1:8111/v1/health (timeout 60s)
+[isolated_stack.bash] juniper-data is healthy (took 4s)
+
+[isolated_stack.bash] === juniper-cascor  ->  http://127.0.0.1:8212  (JuniperCascor1) ===
+[isolated_stack.bash] $ conda activate JuniperCascor1 && cd /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-eco/juniper-cascor/src
+[isolated_stack.bash] $ LD_LIBRARY_PATH= JUNIPER_DATA_URL=http://127.0.0.1:8111 JUNIPER_CASCOR_WS_CONTROL_ALLOWED_ORIGINS=http://127.0.0.1:8061 JUNIPER_CASCOR_GIT_SHA=f7a6d57347dad86d830bbf80b735ba6e54bb3868 JUNIPER_CASCOR_BUILD_DATE=<utc-now> uvicorn api.app:create_app --factory --host 127.0.0.1 --port 8212   # nohup -> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/logs/juniper-cascor.log
+[isolated_stack.bash] Waiting for juniper-cascor health at http://127.0.0.1:8212/v1/health (timeout 60s)
+[isolated_stack.bash] juniper-cascor is healthy (took 6s)
+
+[isolated_stack.bash] === juniper-recurrence  ->  http://127.0.0.1:8221  (JuniperCascor1, console script) ===
+[isolated_stack.bash] $ LD_LIBRARY_PATH= JUNIPER_RECURRENCE_METRICS_ENABLED=true JUNIPER_RECURRENCE_RATE_LIMIT_ENABLED=false JUNIPER_DATA_URL=http://127.0.0.1:8111 /opt/miniforge3/envs/JuniperCascor1/bin/juniper-recurrence serve --host 127.0.0.1 --port 8221   # nohup -> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/logs/juniper-recurrence.log
+[isolated_stack.bash] Waiting for juniper-recurrence health at http://127.0.0.1:8221/v1/health/ready (timeout 60s)
+[isolated_stack.bash] juniper-recurrence is healthy (took 2s)
+
+[isolated_stack.bash] === juniper-canopy  ->  http://127.0.0.1:8061  (JuniperCanopy1, service mode) ===
+[isolated_stack.bash] $ conda activate JuniperCanopy1 && cd /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-eco/juniper-canopy/src
+[isolated_stack.bash] $ JUNIPER_CANOPY_DEMO_MODE=0 JUNIPER_CANOPY_SERVER__HOST=127.0.0.1 JUNIPER_CANOPY_SERVER__PORT=8061 JUNIPER_CANOPY_CASCOR_SERVICE_URL=http://127.0.0.1:8212 JUNIPER_CANOPY_JUNIPER_DATA_URL=http://127.0.0.1:8111 JUNIPER_CANOPY_CASCOR_WS_ORIGIN=http://127.0.0.1:8061 JUNIPER_CANOPY_WEBSOCKET__ALLOWED_ORIGINS=["http://127.0.0.1:8061","http://localhost:8061"] JUNIPER_CANOPY_SNAPSHOT_DIR=/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/cascor-snapshots JUNIPER_CANOPY_GIT_SHA=480746530fbe9062a6a3eaad5cab165c85b72ce8 JUNIPER_CANOPY_BUILD_DATE=<utc-now> JUNIPER_CANOPY_RECURRENCE_SERVICE_URL=http://127.0.0.1:8221 python main.py   # nohup -> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/logs/juniper-canopy.log
+[isolated_stack.bash] Waiting for juniper-canopy health at http://127.0.0.1:8061/v1/health (timeout 60s)
+[isolated_stack.bash] juniper-canopy is healthy (took 6s)
+
+[isolated_stack.bash] === Isolated E2E trio is up ===
+[isolated_stack.bash] data   : http://127.0.0.1:8111/v1/health
+[isolated_stack.bash] cascor : http://127.0.0.1:8212/v1/health
+[isolated_stack.bash] recurrence : http://127.0.0.1:8221/v1/health/ready
+[isolated_stack.bash] canopy : http://127.0.0.1:8061/v1/health

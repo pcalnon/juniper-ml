@@ -1,0 +1,51 @@
+{
+  "step": "render_api_status",
+  "t_utc": "2026-09-23T19:43:22.524Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/status",
+  "status": 200,
+  "response": {
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": true,
+    "failed": false,
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "current_epoch": 2,
+    "hidden_units": 1,
+    "network_connected": true,
+    "monitoring_active": false,
+    "input_size": 15,
+    "output_size": 2,
+    "learning_rate": 0.1,
+    "max_hidden_units": 10,
+    "max_epochs": 114000,
+    "current_step": 2,
+    "grow_iteration": 0,
+    "grow_max": 1000000,
+    "output_epoch": 0,
+    "output_total_epochs": 0,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "pending_dataset": null,
+    "dataset_shortfall": null,
+    "completion_reason": "below_threshold",
+    "current_dataset": {
+      "dataset_type": "equities",
+      "symbols": [
+        "AAPL",
+        "MSFT",
+        "GOOGL",
+        "AMZN",
+        "NVDA"
+      ],
+      "fundamentals_fill": "drop",
+      "normalize_features": true
+    },
+    "status_class": "ok",
+    "stale": false,
+    "age_seconds": 0.072
+  },
+  "elapsed_s": 0.009
+}

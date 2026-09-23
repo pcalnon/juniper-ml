@@ -1,0 +1,174 @@
+# http://127.0.0.1:8061/dashboard/ status=200 captured 74.4s after navigation
+
+Juniper Canopy Dashboard
+
+Real-time monitoring for Cascade Correlation Neural Networks
+
+🌙
+●
+Status: Completed — converged
+|
+Phase: Complete
+|
+Step: 1
+|
+Latency: 5ms
+WS: Connected
+Training Controls
+▶ Start Training
+⏸ Pause Training
+⏯ Resume Training
+⏹ Stop Training
+↻ Reset Training
+Meta Parameters
+▼Neural Network
+
+Maximum Iterations:
+
+Maximum Total Epochs:
+
+Output Epochs (per pass):
+
+Output Weight Init:
+
+Zero
+
+Output Optimizer:
+
+Adam
+
+Activation Function:
+
+Tanh
+
+Learning Rate:
+
+Maximum Hidden Units:
+
+▼Multi-Node Layers
+Enable multi-node layers
+▼Network Growth Triggers
+Preset Epochs
+Convergence Detection
+
+Number of Epochs:
+
+Convergence Threshold:
+
+Patience (epochs):
+
+Model:
+
+Active: Recurrence (LMU)
+▸ change
+rank-3 (sequence) Δt-aware models only
+▼Current Dataset — Equities (sequence)
+
+Type:
+
+Equities (sequence)
+
+Start Date:
+
+Inclusive start date (YYYY-MM-DD) for the price history.
+
+End Date:
+
+Exclusive end date (YYYY-MM-DD). None = today (UTC).
+
+Purchase Date:
+
+Cost-basis purchase date (YYYY-MM-DD); per-ticker clamped to the first available trading day.
+
+Basis Price Field:
+
+close
+
+Price field used for cost basis on the purchase date.
+
+Fundamentals Fill:
+
+drop
+
+How to represent pre-2009 missing total_shares / market_cap: zero-fill, leave NaN, or drop rows.
+
+Regression Target:
+
+return
+
+Representation of the y_reg target: raw next-day close, simple return (next_close/close - 1), or log return ln(next_close/close). The return variants are stationary; the raw close is not.
+
+Week52 Window:
+
+Rolling window (trading sessions) for 52-week high/low.
+
+Normalize Features:
+
+Min-max normalize each feature column to [0, 1], fit on the TRAIN partition only (falling back to the full set only when train is empty). Fitting on the full set would let validation and test rows move the scaler and leak into training -- the leak juniper-data#314 removed.
+
+Max Symbols:
+
+Cap on the number of symbols (after ordering), APD-DATA-018. A universe larger than this is REFUSED unless allow_truncation is set. Omit to use the deployment default (JUNIPER_DATA_EQUITIES_MAX_SYMBOLS); None means unbounded and is honoured only up to that deployment ceiling.
+
+Lookback:
+
+Number of past trading-day steps per sequence window (L).
+
+Apply DatasetLive Dataset Switch
+▶Candidate Nodes
+Apply Parameters
+Network Information
+
+Input Nodes: 0
+
+Hidden Units: 0
+
+Output Nodes: 0
+
+Training Step: 1
+
+Epoch (in phase): —
+
+Iteration: —
+
+Training Phase: Idle
+
+Network Connected: Yes
+
+Monitoring: Inactive
+
+▶Network Information: Details
+Experimental Functions
+Enable Experimental Functions
+Training Metrics
+Dataset View
+Parameters
+Snapshots
+Replay
+Network Editor
+Redis
+Cassandra
+Tutorial
+About
+Training MetricsStatus: Idle
+💾 Save
+|
+Select layout...
+📂 Load
+🗑️
+Display Mode:
+Sliding Window
+Full History
+Between Hidden Units
+Window:
+Recurrence (LMU) — final regression metrics
+R²
+0.0084
+RMSE
+0.0210
+MSE
+0.0004
+MAE
+0.0143
+Loss
+0.0004

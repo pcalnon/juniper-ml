@@ -1,0 +1,34 @@
+{
+  "recorded_utc": "2026-09-23T19:58:45.944Z",
+  "my_ports": {
+    "8111": null,
+    "8212": null,
+    "8061": null,
+    "8221": null
+  },
+  "my_ports_free": true,
+  "protected": {
+    "2856834": {
+      "expected_port": 8101,
+      "alive": true,
+      "listening_pid_on_port": 2856834,
+      "listening_matches": true,
+      "cmdline": "python -m juniper_data --host 127.0.0.1 --port 8101"
+    },
+    "2857489": {
+      "expected_port": 8202,
+      "alive": true,
+      "listening_pid_on_port": 2857489,
+      "listening_matches": true,
+      "cmdline": "/opt/miniforge3/envs/JuniperCascor1/bin/python3.14 /opt/miniforge3/envs/JuniperCascor1/bin/uvicorn api.app:create_app --factory --host 127.0.0.1 --port 8202"
+    },
+    "2858037": {
+      "expected_port": 8051,
+      "alive": true,
+      "listening_pid_on_port": 2858037,
+      "listening_matches": true,
+      "cmdline": "python main.py"
+    }
+  },
+  "ss_relevant_ports": "LISTEN 0      2048        127.0.0.1:8101  0.0.0.0:* users:((\"python\",pid=2856834,fd=12))     \nLISTEN 0      2048        127.0.0.1:8056  0.0.0.0:* users:((\"python\",pid=3754863,fd=18))     \nLISTEN 0      2048        127.0.0.1:8051  0.0.0.0:* users:((\"python\",pid=2858037,fd=16))     \nLISTEN 0      2048        127.0.0.1:8055  0.0.0.0:* users:((\"python\",pid=3746650,fd=18))     \nLISTEN 0      2048        127.0.0.1:8202  0.0.0.0:* users:((\"uvicorn\",pid=2857489,fd=13))    "
+}

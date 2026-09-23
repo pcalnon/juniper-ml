@@ -1,0 +1,11 @@
+{
+  "step": "render_api_decision_boundary",
+  "t_utc": "2026-09-23T19:47:14.326Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/decision_boundary",
+  "status": 503,
+  "response": {
+    "error": "No decision boundary data available"
+  },
+  "elapsed_s": 0.003
+}

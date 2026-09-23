@@ -1,0 +1,213 @@
+# http://127.0.0.1:8061/dashboard/ status=200 captured 49.9s after navigation
+
+Juniper Canopy Dashboard
+
+Real-time monitoring for Cascade Correlation Neural Networks
+
+🌙
+●
+Status: Completed — early stopped
+|
+Phase: Output Training
+|
+Step: 13
+|
+Hidden Units: 11 / 32
+Latency: 7ms
+WS: Connected
+Training Controls
+▶ Start Training
+⏸ Pause Training
+⏯ Resume Training
+⏹ Stop Training
+↻ Reset Training
+Meta Parameters
+▼Neural Network
+
+Maximum Iterations:
+
+Maximum Total Epochs:
+
+Output Epochs (per pass):
+
+Output Weight Init:
+
+Zero
+
+Output Optimizer:
+
+Adam
+
+Activation Function:
+
+Tanh
+
+Learning Rate:
+
+Maximum Hidden Units:
+
+▼Multi-Node Layers
+Enable multi-node layers
+▼Network Growth Triggers
+Preset Epochs
+Convergence Detection
+
+Number of Epochs:
+
+Convergence Threshold:
+
+Patience (epochs):
+
+Model:
+
+Active: CasCor (Cascade-Correlation)
+▸ change
+rank-2 (tabular) models only
+▼Current Dataset — Gaussian Blobs
+
+Type:
+
+Gaussian Blobs
+
+N Classes:
+
+Number of classes/blobs
+
+N Samples Per Class:
+
+Number of samples per class
+
+N Features:
+
+Number of features/dimensions
+
+Class Std:
+
+Standard deviation for each class. Single value applies to all classes.
+
+Center Radius:
+
+Radius for auto-placed centers when centers is None
+
+Noise:
+
+Additional Gaussian noise level
+
+Apply DatasetLive Dataset Switch
+▶Candidate Nodes
+Apply Parameters
+Network Information
+
+Input Nodes: 2
+
+Hidden Units: 11 / 32
+
+Output Nodes: 2
+
+Training Step: 13
+
+Epoch (in phase): —
+
+Iteration: 0 / 8
+
+Training Phase: Idle
+
+Network Connected: Yes
+
+Monitoring: Inactive
+
+▶Network Information: Details
+Experimental Functions
+Enable Experimental Functions
+Training Metrics
+Candidate Metrics
+Network Topology
+Network Evolution
+Decision Boundary
+Dataset View
+Workers
+Parameters
+Snapshots
+Replay
+Network Editor
+Redis
+Cassandra
+Tutorial
+About
+Training MetricsStatus: OutputGrowth Iteration 0/8 | Best Corr: 0.5996 | Candidates: 40/40Phase Duration: 1m 12s
+💾 Save
+|
+Select layout...
+📂 Load
+🗑️
+⏮
+◀
+▶
+▶
+⏭
+|
+1x
+2x
+4x
+0 / 499
+Display Mode:
+Sliding Window
+Full History
+Between Hidden Units
+Window:
+Training Step
+13
+Loss
+0.0029
+Accuracy
+100.00%
+Hidden Units
+11 / 32
+Learning Rate
+0.100000
+Cascade Iteration
+0/32
+Candidate Epoch
+0
+2k
+4k
+6k
+8k
+10k
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+Training Loss Over Time
+Output Training
+Candidate Training
+Validation Loss
+Iteration
+Loss
++Unit #10
++Unit #11
+0
+2k
+4k
+6k
+8k
+10k
+0%
+20%
+40%
+60%
+80%
+100%
+Classification Metrics
+Accuracy
+F1
+Precision
+Recall
+ROC-AUC
+Validation Accuracy
+Iteration
+Score
++Unit #10
++Unit #11

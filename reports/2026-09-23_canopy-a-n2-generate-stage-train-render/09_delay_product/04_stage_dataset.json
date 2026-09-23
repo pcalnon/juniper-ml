@@ -1,0 +1,26 @@
+{
+  "step": "stage_dataset",
+  "t_utc": "2026-09-23T19:50:57.139Z",
+  "method": "POST",
+  "url": "http://127.0.0.1:8061/api/stage_dataset",
+  "request_body": {
+    "nn_dataset_type": "delay_product",
+    "nn_model": "recurrence"
+  },
+  "status": 200,
+  "response": {
+    "status": "success",
+    "data": {
+      "status": "staged",
+      "config": {
+        "nn_dataset_type": "delay_product"
+      },
+      "dataset_ref": {
+        "generator": "delay_product",
+        "params": {},
+        "split": "train"
+      }
+    }
+  },
+  "elapsed_s": 0.004
+}

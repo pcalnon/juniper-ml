@@ -1,0 +1,23 @@
+{
+  "step": "status_after_stage",
+  "t_utc": "2026-09-23T19:45:04.287Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/status",
+  "status": 200,
+  "response": {
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": false,
+    "failed": false,
+    "fsm_status": "idle",
+    "phase": "idle",
+    "network_connected": false,
+    "monitoring_active": false,
+    "pending_dataset": {
+      "nn_dataset_type": "multi_sine"
+    },
+    "current_dataset": null
+  },
+  "elapsed_s": 0.004
+}

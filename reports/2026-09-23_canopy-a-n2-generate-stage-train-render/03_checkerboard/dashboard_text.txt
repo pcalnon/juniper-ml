@@ -1,0 +1,217 @@
+# http://127.0.0.1:8061/dashboard/ status=200 captured 49.7s after navigation
+
+Juniper Canopy Dashboard
+
+Real-time monitoring for Cascade Correlation Neural Networks
+
+🌙
+●
+Status: Completed — max iterations
+|
+Phase: Output Training
+|
+Step: 22
+|
+Hidden Units: 19 / 32
+Latency: 6ms
+WS: Connected
+Training Controls
+▶ Start Training
+⏸ Pause Training
+⏯ Resume Training
+⏹ Stop Training
+↻ Reset Training
+Meta Parameters
+▼Neural Network
+
+Maximum Iterations:
+
+Maximum Total Epochs:
+
+Output Epochs (per pass):
+
+Output Weight Init:
+
+Zero
+
+Output Optimizer:
+
+Adam
+
+Activation Function:
+
+Tanh
+
+Learning Rate:
+
+Maximum Hidden Units:
+
+▼Multi-Node Layers
+Enable multi-node layers
+▼Network Growth Triggers
+Preset Epochs
+Convergence Detection
+
+Number of Epochs:
+
+Convergence Threshold:
+
+Patience (epochs):
+
+Model:
+
+Active: CasCor (Cascade-Correlation)
+▸ change
+rank-2 (tabular) models only
+▼Current Dataset — Checkerboard
+
+Type:
+
+Checkerboard
+
+N Samples:
+
+Total number of samples
+
+N Squares:
+
+Number of squares per side (total squares = n_squares^2)
+
+Noise:
+
+Gaussian noise level
+
+Apply DatasetLive Dataset Switch
+▶Candidate Nodes
+Apply Parameters
+Network Information
+
+Input Nodes: 2
+
+Hidden Units: 19 / 32
+
+Output Nodes: 2
+
+Training Step: 22
+
+Epoch (in phase): —
+
+Iteration: 7 / 8
+
+Training Phase: Idle
+
+Network Connected: Yes
+
+Monitoring: Inactive
+
+▶Network Information: Details
+Experimental Functions
+Enable Experimental Functions
+Training Metrics
+Candidate Metrics
+Network Topology
+Network Evolution
+Decision Boundary
+Dataset View
+Workers
+Parameters
+Snapshots
+Replay
+Network Editor
+Redis
+Cassandra
+Tutorial
+About
+Training MetricsStatus: OutputGrowth Iteration 7/8 | Best Corr: 0.0120 | Candidates: 40/40Phase Duration: 1m 3s
+💾 Save
+|
+Select layout...
+📂 Load
+🗑️
+⏮
+◀
+▶
+▶
+⏭
+|
+1x
+2x
+4x
+0 / 499
+Display Mode:
+Sliding Window
+Full History
+Between Hidden Units
+Window:
+Training Step
+22
+Loss
+0.2479
+Accuracy
+50.00%
+Hidden Units
+19 / 32
+Learning Rate
+0.100000
+Cascade Iteration
+7/32
+Candidate Epoch
+0
+2k
+4k
+6k
+8k
+10k
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+Training Loss Over Time
+Output Training
+Candidate Training
+Validation Loss
+Iteration
+Loss
++Unit #10
++Unit #11
++Unit #12
++Unit #13
++Unit #14
++Unit #15
++Unit #16
++Unit #17
++Unit #18
++Unit #19
+0
+2k
+4k
+6k
+8k
+10k
+0%
+20%
+40%
+60%
+80%
+100%
+Classification Metrics
+Accuracy
+F1
+Precision
+Recall
+ROC-AUC
+Validation Accuracy
+Iteration
+Score
++Unit #10
++Unit #11
++Unit #12
++Unit #13
++Unit #14
++Unit #15
++Unit #16
++Unit #17
++Unit #18
++Unit #19

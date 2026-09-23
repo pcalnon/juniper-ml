@@ -1,0 +1,238 @@
+{
+  "case": "01_spirals_control",
+  "model": "cascor",
+  "value": "spirals",
+  "role": "pre-\u00a712 control (rank-2, CasCor)",
+  "tag": "",
+  "start_route": "start",
+  "started_utc": "2026-09-23T19:30:47.271Z",
+  "csrf_enabled": true,
+  "model_select": {
+    "status": 200,
+    "backend": "service"
+  },
+  "caps": {
+    "status": 502,
+    "applied": null,
+    "skipped_detail": null,
+    "error": "Backend rejected parameters: No network created"
+  },
+  "effective_params_before": {
+    "nn_max_iterations": 1000,
+    "nn_output_epochs": null,
+    "nn_max_total_epochs": 1000000,
+    "cn_training_iterations": 500,
+    "nn_max_hidden_units": 1000,
+    "cn_pool_size": 100,
+    "nn_patience": 50
+  },
+  "stage": {
+    "status": 200,
+    "elapsed_s": 0.01,
+    "payload": {
+      "nn_dataset_type": "spirals",
+      "nn_dataset_elements": 1000,
+      "nn_dataset_noise": 0.25,
+      "nn_spiral_rotations": 1.5,
+      "nn_spiral_number": 2,
+      "nn_model": "cascor"
+    }
+  },
+  "history_len_before": 0,
+  "start": {
+    "status": 200,
+    "elapsed_s": 1.101,
+    "response": {
+      "status": "started",
+      "ok": true,
+      "is_training": true
+    },
+    "body": null
+  },
+  "train_outcome": "completed",
+  "train_wall_s": 152.06,
+  "render_status_codes": {
+    "/api/train/status": 200,
+    "/api/status": 200,
+    "/api/metrics": 200,
+    "/api/metrics/history?limit=0": 200,
+    "/api/dataset": 200,
+    "/api/state": 200,
+    "/api/selection": 200,
+    "/api/topology": 200,
+    "/api/network/stats": 200,
+    "/api/decision_boundary": 200,
+    "/api/stream_health": 200
+  },
+  "history_len_after": 4422,
+  "history_last": {
+    "epoch": 11,
+    "metrics": {
+      "loss": 0.04743914678692818,
+      "accuracy": 0.963,
+      "val_loss": 0.046156998723745346,
+      "val_accuracy": 0.9725,
+      "f1": 0.9724998281239259,
+      "precision": 0.9728391356542617,
+      "recall": 0.9727563701832913,
+      "roc_auc": 0.9961991448075818
+    },
+    "network_topology": {
+      "hidden_units": 10
+    },
+    "phase": "output",
+    "timestamp": "2026-09-23T14:33:19.358575",
+    "eval_metrics": null
+  },
+  "history_new_rows": 4422,
+  "history_first_new": {
+    "epoch": 1,
+    "metrics": {
+      "loss": 0.7876380681991577,
+      "accuracy": null,
+      "val_loss": null,
+      "val_accuracy": null,
+      "f1": null,
+      "precision": null,
+      "recall": null,
+      "roc_auc": null
+    },
+    "network_topology": {
+      "hidden_units": 0
+    },
+    "phase": "output",
+    "timestamp": "2026-09-23T14:30:50.404577",
+    "eval_metrics": null
+  },
+  "metrics": {
+    "epoch": 11,
+    "metrics": {
+      "loss": 0.04743914678692818,
+      "accuracy": 0.963,
+      "val_loss": 0.046156998723745346,
+      "val_accuracy": 0.9725,
+      "f1": 0.9724998281239259,
+      "precision": 0.9728391356542617,
+      "recall": 0.9727563701832913,
+      "roc_auc": 0.9961991448075818
+    },
+    "network_topology": {
+      "hidden_units": 10
+    },
+    "phase": null,
+    "timestamp": "2026-09-23T14:33:20.531471",
+    "eval_metrics": {
+      "enabled": true,
+      "average": "macro",
+      "split": "validation",
+      "n_samples": 400,
+      "n_classes": 2,
+      "undefined": {},
+      "final": {
+        "f1": 0.9499994444382716,
+        "precision": 0.9502133712660028,
+        "recall": 0.95031345871682,
+        "roc_auc": 0.992530345471522,
+        "average": "macro",
+        "n_samples": 300,
+        "n_classes": 2,
+        "undefined": {},
+        "split": "test",
+        "final": true
+      }
+    }
+  },
+  "dataset_view": {
+    "num_samples": 1700,
+    "num_features": 2,
+    "num_classes": 2,
+    "loaded": true,
+    "train_samples": 1000,
+    "val_samples": 400,
+    "test_samples": 300,
+    "inputs": {
+      "_truncated_by_a_n2_slim": true,
+      "rows": 1000,
+      "cols": 2,
+      "first_3": [
+        [
+          3.5475008487701416,
+          7.047628402709961
+        ],
+        [
+          3.357844829559326,
+          0.6241128444671631
+        ],
+        [
+          -6.398258686065674,
+          -3.064913511276245
+        ]
+      ]
+    },
+    "targets": {
+      "_truncated_by_a_n2_slim": true,
+      "rows": 1000,
+      "cols": null,
+      "first_3": [
+        0,
+        1,
+        1
+      ]
+    }
+  },
+  "current_dataset": {
+    "dataset_type": "spirals",
+    "n_samples": 1000,
+    "noise": 0.25,
+    "rotations": 1.5,
+    "n_spirals": 2
+  },
+  "final_status": {
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "is_running": false,
+    "is_training": false,
+    "completed": true,
+    "failed": false,
+    "current_epoch": 11,
+    "hidden_units": 10,
+    "completion_reason": "early_stopped"
+  },
+  "topology_shape": {
+    "hidden_units": 10,
+    "nodes": 14,
+    "connections": 89
+  },
+  "generated": [
+    {
+      "dataset_id": "spiral-3.0.0-16e3f162cf258238",
+      "generator": "spiral",
+      "generator_version": "3.0.0",
+      "n_train": 1000,
+      "n_val": 400,
+      "n_test": 300,
+      "n_features": 2,
+      "n_classes": 2
+    }
+  ],
+  "log_slices": {
+    "data": {
+      "bytes": 430,
+      "excerpt_lines": 5
+    },
+    "cascor": {
+      "bytes": 113861700,
+      "excerpt_lines": 600
+    },
+    "canopy": {
+      "bytes": 1247,
+      "excerpt_lines": 5
+    },
+    "recurrence": {
+      "bytes": 0,
+      "excerpt_lines": 0
+    }
+  },
+  "case_wall_s": 156.62,
+  "finished_utc": "2026-09-23T19:33:23.888Z"
+}

@@ -1,0 +1,11 @@
+{
+  "step": "metrics_history_before",
+  "t_utc": "2026-09-23T19:30:47.337Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+  "status": 200,
+  "response": {
+    "history": []
+  },
+  "elapsed_s": 0.017
+}
