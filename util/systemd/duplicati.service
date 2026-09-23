@@ -14,7 +14,9 @@ StartLimitBurst=5
 Type=simple
 User=duplicati
 Group=duplicati
-UMask=0007
+# D-14 (RULED 2026-09-22): 0027, not 0007. New volumes land 0640 duplicati:duplicati, so pcalnon
+# and the Dropbox daemon read them through the group and neither can rewrite or unlink one.
+UMask=0027
 Nice=19
 IOSchedulingClass=idle
 IOSchedulingPriority=7
