@@ -270,7 +270,7 @@ to discover that is on a Pi.
 | 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
 | 2 | juniper-recurrence | **COMPLETE** — recurrence#153; `juniper-recurrence:0.5.0` published 2026-09-10. Build context is **nested** (`juniper-recurrence/juniper-recurrence/`, via `APP_DIR`), which also means its `.dockerignore` lives in that subdirectory and **not** at the repo root — a repo-root sweep false-positives here |
 | 3 | juniper-deploy — pin `image:` to registry refs, keep `build:` for local dev | **COMPLETE 2026-09-17.** Pin (#215, 9 lines) + D-1 check (#217) + `Dockerfile.test` runner published as `ghcr.io/pcalnon/juniper-deploy-test:0.3.0` (#219 / #220 / #221, Release `v0.3.0`) = **10** pinned lines. Sibling fix: helm `values.yaml` (#216) |
-| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1) |
+| 4 | Docker Hub as a second push target (D-2 phase 2) | **committed** — OQ-1 ruled 2026-09-11; blocked on the five `DOCKERHUB_TOKEN` secrets, `dockerhub` **environment** secrets per the 2026-09-22 ruling (§6 OQ-1). The five `dockerhub` environments were **created 2026-09-22** (tags only, no secrets yet) |
 
 > **Wave 3's pin DRIFTED the day after it was declared complete, and no gate can see it.**
 > juniper-canopy cut **`v0.8.1` on 2026-09-18** — the fix for canopy#631, this arc's own
@@ -283,10 +283,21 @@ to discover that is on a Pi.
 > **resolves**; it does not assert the ref is the **newest release**. Those are different
 > properties and only the first is checked — so the stack pinned a superseded canopy for three
 > days with every required check green and nothing naming it. A **resolution** gate is not a
-> **currency** gate. Comparing `gh release list` against the pins is a separate check that does
-> not exist; it is deliberately not added here, because a currency gate goes red on every
-> upstream release including ones this repo has not yet chosen to adopt. Until someone decides
-> that trade-off, **re-probe the pins against `gh release list` whenever this plan is opened**.
+> **currency** gate. When this note was written (2026-09-21), comparing `gh release list` against
+> the pins was a separate check that did not exist. It was deliberately not added here, because a
+> currency gate goes red on every upstream release, including ones this repo has not yet chosen
+> to adopt. Until someone decides that trade-off, **re-probe the pins against `gh release list`
+> whenever this plan is opened**.
+>
+> **Superseded 2026-09-22: the check now exists, and it resolved that trade-off by being
+> advisory.** juniper-deploy#226 (merged 08:34Z, `13ee87aa`) taught
+> `scripts/verify_published_images.py` to report currency. By default it prints a `::warning::`
+> and exits 0; `--fail-on-stale` makes a stale pin an error, and `--no-currency` restores the old
+> behaviour. It asks the registry's `tags/list` rather than `releases/latest`, which is stale for
+> some repos. It runs only inside juniper-deploy's CI (`ci.yml`, *Published Image Refs*), which
+> has no schedule and does not pass `--fail-on-stale`. So a stale pin surfaces as a warning, and
+> only on a juniper-deploy CI run. Run against deploy `main` on 2026-09-22, it flagged
+> `juniper-data:0.14.0` as a **STALE PIN** (0.15.0 published) and the other five refs as current.
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
 constraint most likely to break arm64. Proving it there de-risks the other four.
@@ -409,17 +420,46 @@ the RELEASED tag (juniper-deploy deliberately pairs `build:` with the published 
 and `pyproject.toml` both said `0.6.0`; `__init__.py` was never bumped, so **two** releases shipped
 a package misreporting itself, and `__version__` is in `__all__`. `pyproject.toml` alone looks
 correct — only comparing the two *inside the artifact* reveals it. Fixed in
-juniper-cascor-worker#192 by deriving from installed metadata. **The published image still answers
-`0.4.0` and will until the next worker release**, which is owner-gated.
+juniper-cascor-worker#192 by deriving from installed metadata, and **shipped in v0.6.1**. That
+release was cut 2026-09-22 at 23:03Z from juniper-cascor-worker#194 (merged `38f39cb8`).
+**Verified on the published artifact:** `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and
+run, prints `0.6.1 0.6.1`. At 23:31Z the PyPI upload was still waiting at the owner's `pypi`
+gate. The 0.6.0 artifacts still report `0.4.0` and always will, because a published artifact is
+never rebuilt. The 0.6.0 **wheel** is affected too: its `__init__.py` hard-codes
+`__version__ = "0.4.0"`. juniper-deploy still pinned `0.6.0` at that point, at
+`docker-compose.yml:364` and `k8s/helm/juniper/values.yaml:301`, and a concurrent session has
+taken the repin.
+
+**A second class-2 finding (2026-09-22): the published juniper-data image cannot generate
+`equities` or `equities_seq`.** A concurrent session found this; it was re-verified here inside
+the published artifact. `requirements.lock` is compiled with
+`--extra api --extra observability --extra mnist`. The Dockerfile's comment (`:20-24`) explains
+those three extras and never mentions equities, so the omission is undocumented, not a recorded
+decision. pandas arrives through the `mnist` chain; **yfinance does not arrive at all**. Inside
+`ghcr.io/pcalnon/juniper-data:0.15.0`, `EQUITIES_DEPS_AVAILABLE` is `False`, so every `equities`
+and `equities_seq` request raises `ImportError(install_hint())`
+(`juniper_data/generators/equities/generator.py:310-311`, `equities_seq/generator.py:142-143`).
+The stack is where this bites. juniper-deploy points juniper-recurrence at
+`http://juniper-data:8100` (`docker-compose.yml:605`), and recurrence's data path is written for
+exactly that generator (`juniper_recurrence/data.py:1`: "juniper-data-client → 3-D `equities_seq`
+NPZ"). The image builds, starts and imports cleanly, so every existing check passes. It still
+cannot do one of its jobs. The finding predates 0.15.0 and is **not fixed here**. Adding
+`--extra equities` to the image lock adds yfinance, and in the stack it means outbound calls to
+Yahoo and SEC. That is a decision for the owner, not a lockfile edit. A class-2 instrument could
+catch this class by importing each generator's availability flag inside the image, which is
+cheaper than serving a request.
 
 **Instruments** (juniper-ml, `util/ad-hoc/`): `2026-09-21_image_build_context_sweep.py` (class 1,
 including root-anchoring detection) and `2026-09-21_image_does_its_job_sweep.py` (class 2: import
 + `__version__`-vs-metadata + entrypoint + serve). Re-run these rather than repeating the survey.
 
-**Still open here:** nothing in juniper-deploy detects a **stale pin**.
-`scripts/verify_published_images.py` asserts existence and architecture, never **currency**, so it
-ran green throughout the three days `docker-compose.yml` pinned `juniper-canopy:0.8.0` after
-`0.8.1` had shipped (closed by juniper-deploy#225, but only for that one drift).
+**Closed 2026-09-22 by juniper-deploy#226: juniper-deploy now detects a stale pin.** This
+paragraph used to say nothing did, and that was true when it was written.
+`scripts/verify_published_images.py` asserted existence and architecture but never
+**currency**, so it ran green throughout the three days `docker-compose.yml` pinned
+`juniper-canopy:0.8.0` after `0.8.1` had shipped (that one drift was closed by juniper-deploy#225).
+It now also reports currency, as an advisory warning by default; the note under §5 has the
+details. It caught the next drift the same day: `juniper-data:0.14.0` against a published 0.15.0.
 
 ## 6. Open questions
 

@@ -31,6 +31,7 @@ Default is a dry run.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import re
 import sys
 from pathlib import Path
@@ -39,7 +40,13 @@ MEMORY_DIR = Path("/home/pcalnon/.claude/projects/-home-pcalnon-Development-pyth
 INDEX = MEMORY_DIR / "MEMORY.md"
 
 LINK = re.compile(r"\[[^\]]*\]\(([A-Za-z0-9_\-.]+\.md)\)")
-HEADING = "## Index digest (moved from MEMORY.md, 2026-09-11)"
+# The heading was a hard-coded "2026-09-11" until 2026-09-22, by which time 57 appends made
+# that day had been filed under a heading claiming they were made eleven days earlier. A
+# provenance stamp that cannot change is a provenance stamp that lies on its second run.
+HEADING = f"## Index digest (moved from MEMORY.md, {_dt.date.today():%Y-%m-%d})"
+#: Every heading this tool has ever written, so an append still finds an existing section
+#: instead of opening a second one beside it.
+KNOWN_HEADINGS = (HEADING, "## Index digest (moved from MEMORY.md, 2026-09-11)")
 PREAMBLE = "The index carried this inline. It is preserved verbatim here so compacting MEMORY.md loses nothing; several of these facts existed nowhere else."
 
 
@@ -93,7 +100,7 @@ def main() -> int:
     for primary, entries in by_target.items():
         text = primary.read_text()
         block = [""]
-        if HEADING not in text:
+        if not any(h in text for h in KNOWN_HEADINGS):
             block += ["---", "", HEADING, "", PREAMBLE, ""]
         for _n, line in entries:
             block.append(line)
