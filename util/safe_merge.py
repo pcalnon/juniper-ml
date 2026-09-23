@@ -251,9 +251,11 @@ DEFAULT_TIMEOUT = 2400  # unmeasured repos: the "standard" tier
 # after the first required context had started; queue-free, all three spans fit their OLD
 # budgets; no re-measure has lowered an already-pinned budget, and every change to one was a
 # raise (09-22: 3 raised, 6 stood); and four of nine budgets now sit at TIMEOUT_CEILING, where the
-# next stale one cannot be raised. Against it: budgets set below the default have a mixed record
-# -- recurrence's 700 s (2026-09-08) went stale within a day, as did the default's own 2026-08-19
-# cut to 900 s, while ml's 900 s (pinned 2026-08-20) held 16 days and deploy's 700 s held 14. The
+# next stale one cannot be raised. Against it: budgets set below the default have not held --
+# recurrence's 700 s (2026-09-08) went stale within a day, as did the default's own 2026-08-19 cut
+# to 900 s, and deploy's 700 s was exceeded by a healthy pass within about two days (deploy#211,
+# 965 s, 2026-09-11), unnoticed until 2026-09-22; only ml's 900 s (pinned 2026-08-20) lasted, 16
+# days, until it refused ml#1754. The
 # case for shipping: the "> observed max" rule the tests enforce has no queue exemption; the
 # 2026-09-09 raises of ml and recurrence followed it; and holding refuses healthy PRs during
 # contention, where a refusal disarms the auto-merge net. Against it: both 09-09 raises came in the
@@ -316,7 +318,8 @@ REPO_TIMEOUTS = {
     # every one passed.
     #
     # 09-22: p90 910, max 2005 (30 healthy heads: the 30 newest merged PRs between 20:08 and 20:18
-    # UTC, #1981-#2014 less #2004 and #2013, which merged later) -> window (2005, 3640].
+    # UTC -- #1981-#2014 less #2004 and #2013, which merged later, #2012, still open, and #1994,
+    # an issue) -> window (2005, 3640].
     # 2800 stands. Later reads gave p90 857, then 733, then 680 (2026-09-23 00:33 UTC), each with
     # max 1061: #1981, a 2005 s healthy pass, had slid out -- one head at the window's edge halves
     # this max. At 680, 2800 exceeds 4x p90 (2720) by 80 s. NOT re-pinned: a window edge moving is

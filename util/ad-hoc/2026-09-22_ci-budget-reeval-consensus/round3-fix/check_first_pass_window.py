@@ -34,7 +34,8 @@ def main() -> int:
     row = res["rows"][0]
     print(json.dumps({k: row.get(k) for k in ("repo", "window", "sample_prs", "healthy", "verdict")}))
     sample = row.get("sample_prs") or []
-    # Exact, not merely present: a reversed, constant or stale window must fail this.
+    # Exact, not merely present: a window string that disagrees with the probe's own sample fails
+    # this. It cannot catch a sample that is itself wrong, and `sorted` holds by construction.
     ok = len(sample) == n and sample == sorted(sample) and row.get("window") == f"#{sample[0]}-#{sample[-1]}"
     print("WINDOW RECORDED" if ok else "WINDOW MISSING")
     return 0 if ok else 1

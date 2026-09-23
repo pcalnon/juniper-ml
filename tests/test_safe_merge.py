@@ -54,7 +54,8 @@ _spec.loader.exec_module(safe_merge)
 # #653/#651/#636, cascor #647, recurrence #175) all had first passes BELOW their repo's max.
 #
 # juniper-ml's row is the 30 newest merged PRs between 20:08 and 20:18 UTC on 2026-09-22:
-# #1981-#2014, less #2004 and #2013, which merged later. Later reads gave (857, 1061),
+# #1981-#2014, less #2004 and #2013 (merged later), #2012 (still open) and #1994 (an issue).
+# Later reads gave (857, 1061),
 # (733, 1061) and, at 2026-09-23 00:33 UTC, (680, 1061), where the 2800 s budget exceeds 4x p90
 # by 80 s: #1981, a 2005 s healthy pass, had slid out of the window. The pin keeps the
 # demonstrated 2005 s and its
