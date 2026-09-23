@@ -379,7 +379,7 @@ read 6: moon's score shifted 1.000 → 0.995 → one snapshot's first-pass winne
 **The fix** (`seeded_params`): supply `DATASET_SEED` only to a generator declaring none, and
 leave a declared seed alone. spiral therefore keeps the exact instance every analysis above used,
 so nothing here needs re-deriving for spiral; the other five become reproducible for the first
-time. `--dataset-seed` overrides it, and changing it redefines the canonical instance.
+time. That instance is generator 1.x's. Since decision 11 every generator is at 3.0.0 or later, and V-1 found that each one's rows changed, so a rebuild now scores a different instance and does not reproduce these counts (juniper-ml#2034). `--dataset-seed` overrides it, and changing it redefines the canonical instance.
 
 ### 8.1 The reproducible figures
 

@@ -7,6 +7,8 @@
 **Version**: 0.7.1
 **Last Updated**: 2026-08-26
 
+**Pre-decision-11, selected-on (annotated 2026-09-23, juniper-ml#2034).** This page's figures and the T6 table it points to as current were both measured before juniper-data 0.13.0 / juniper-cascor 0.11.0, and their val scores are selected-on, not held-out. Neither is comparable with a later result.
+
 > **RE-BASELINED 2026-08-26 (T6).** This ladder predates cascor#514. Re-measured at cascor
 > `67d7ea3`: cap 32 → 0.840, cap 64 → **1.000**, cap 128 → **1.000** val (walls 260 / 517 /
 > 1,004 s) — the ceiling this note reached at 128 units is now reached at **64**, and the control
