@@ -96,6 +96,8 @@ The five stageable generators' ranking feeds the §12 difficulty axis; spiral's 
 
 ### E-C — noise robustness on spiral + moon (8 cells) — RE-MEASURED AT CAP 64, 2026-08-29
 
+**Pre-decision-11, selected-on (annotated 2026-09-23, juniper-ml#2034).** Measured before juniper-data 0.13.0 / juniper-cascor 0.11.0, on a two-way artifact whose `X_test` fed patience and early stopping in-loop and was then reported, so these scores are **selected-on, not held-out**. Retained as measured, and not comparable with a later result (`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §7).
+
 > **This table replaces the cap-12 surface published 2026-08-26** (itself a replacement for the
 > 08-09/08-11 smoke-cap rows; both supersessions remain in git history). That grid's four spiral
 > rows were `max_iterations`-bound at 12 units and flat at ≈0.63–0.66, and `moon-n20` was bound at
@@ -216,6 +218,8 @@ The intended accuracy/units/wall-clock surface is **entirely degenerate — this
 The suite artifacts (12 registries, aggregates, per-cell manifests) are the reproducible evidence base for the F-P4-1 investigation.
 
 ### E-A / E-I re-baselined (2026-08-26, cascor `67d7ea3`) — T6
+
+**Pre-decision-11, selected-on (annotated 2026-09-23, juniper-ml#2034).** Measured before juniper-data 0.13.0 / juniper-cascor 0.11.0, on a two-way artifact whose `X_test` fed patience and early stopping in-loop and was then reported, so these scores are **selected-on, not held-out**. Retained as measured, and not comparable with a later result (`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §7).
 
 The post-F-P4-1 E-A grid ([R-3 re-run, 2026-08-14](JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-R3-EA-RERUN-EVIDENCE.md))
 and the E-I capacity ladder ([2026-08-14](JUNIPER_2026-08-14_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-E-I-CAP-CEILING-EVIDENCE.md))

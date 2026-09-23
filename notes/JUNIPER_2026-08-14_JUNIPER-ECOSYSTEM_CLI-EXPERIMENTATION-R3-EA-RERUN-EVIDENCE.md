@@ -7,6 +7,8 @@
 **Version**: 0.7.1
 **Last Updated**: 2026-08-26
 
+**Pre-decision-11, selected-on (annotated 2026-09-23, juniper-ml#2034).** This page's figures and the T6 table it points to as current were both measured before juniper-data 0.13.0 / juniper-cascor 0.11.0, and their val scores are selected-on, not held-out. Neither is comparable with a later result.
+
 > **RE-BASELINED 2026-08-26 (T6).** This grid predates cascor#514, the comparability boundary
 > R-5 §5.1 established. The same 12 cells were re-measured at cascor `67d7ea3` in the T6 campaign;
 > the current table — with these walls as a reference column — is in the

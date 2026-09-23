@@ -6,6 +6,8 @@
 **Date**: 2026-08-08
 **Status**: EVALUATED — 9/9 criteria evidenced; one sub-arm (Grafana dashboard render) pending the F-P1-2 owner decision
 **Plan of record**: [JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md](JUNIPER_2026-07-29_JUNIPER-ECOSYSTEM_CASCOR-RECURRENCE-CLI-TEST-VALIDATION-EXPERIMENTATION-PLAN.md) §10.4
+**Pre-decision-11, selected-on (annotated 2026-09-23, juniper-ml#2034).** Measured before juniper-data 0.13.0 / juniper-cascor 0.11.0, on a two-way artifact whose `X_test` fed patience and early stopping in-loop and was then reported, so these scores are **selected-on, not held-out**. Retained as measured, and not comparable with a later result (`JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md` §7).
+
 **Prior evidence**: [P0](JUNIPER_2026-07-30_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P0-PREFLIGHT-EVIDENCE.md) · [P1](JUNIPER_2026-08-07_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P1-SMOKE-EVIDENCE.md) · [P2](JUNIPER_2026-08-08_JUNIPER-ECOSYSTEM_CLI-EXPERIMENTATION-P2-DATASET-MATRIX-EVIDENCE.md)
 
 ---
