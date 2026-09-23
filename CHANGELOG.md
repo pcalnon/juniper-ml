@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-22
+
+### Changed
+
+- **BREAKING (resolution): `[servers]` now floors `juniper-data>=0.15.0`, because 0.14.0 still serves the
+  `equities` generators at the contract 0.15.0 replaced.** Read from the published wheels, not a
+  checkout: 0.14.0 ships `equities` and `equities_seq` at `VERSION = "3.0.0"`, 0.15.0 at `"5.0.0"`.
+  The two majors between them are the owner rulings of juniper-data#395 -- `adj_close` leaves the
+  default feature matrix because `close / adj_close` encodes dividends paid *after* each row, and
+  the SEC share history becomes an as-of join on the FILED date, so a restated period no longer
+  rewrites when a value became knowable -- and the regression fix of juniper-data#404. PyPI never
+  served the intermediate 4.0.0, so an upgrade goes straight from 3.0.0 to 5.0.0. The old floor did
+  not *deliver* 0.14.0 -- a fresh resolve already takes 0.15.0 -- but it *admitted* it: in a clean
+  venv holding `juniper-data==0.14.0`, `pip install "juniper-ml[servers]==0.9.0"` installs canopy,
+  cascor and their dependencies and leaves juniper-data at 0.14.0, so "5.0.0 is what `pip install`
+  serves" was true only of an unconstrained install. The same shape as 0.9.0's `juniper-canopy`
+  floor, ruled the same way. Pre-flighted against real PyPI before the change --
+  `juniper-canopy>=0.8.1` + `juniper-cascor>=0.11.0` + `juniper-data>=0.15.0` resolves in 60 packages with
+  `juniper-service-core` 0.7.0 and `juniper-model-core` 0.3.2, both inside the existing caps, and
+  the two juniper-data wheels declare identical base dependencies, so the raise adds no requirement
+  edge. **Version bumped 0.9.0 -> 0.10.0 with it**, for the reason 0.9.0 gave:
+  `docs/REFERENCE.md`'s compatibility matrix labels each row by the juniper-ml version carrying
+  that floor set, so the `0.9.x` row is kept and a `0.10.x` row added. Minor per the pre-1.0
+  convention at `util/release_train/detect.py:827`, since forbidding a previously-admitted version
+  is breaking. Applied by `util/ad-hoc/2026-09-22_raise_data_floor_0_15_0.py`, which asserts each
+  site's exact text, requires exactly one match apiece, and refuses to open this section unless
+  `[Unreleased]` is empty.
+
 ## [0.9.0] - 2026-09-22
 
 ### Added
