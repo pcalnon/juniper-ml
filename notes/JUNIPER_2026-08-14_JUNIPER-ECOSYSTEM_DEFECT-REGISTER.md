@@ -239,7 +239,7 @@ highest *potential* consequence in the register, and it is inert today only beca
 
 Fifteen entries share one shape: **a guard adopted in one copy of near-identical code and not in its siblings.** They are not all the same mechanism, and the distinction matters for what fixes them:
 
-**Copy drift** — a service maintains its own copy of shared code and misses a fix. A drift check against `juniper-service-core` would catch these. **All of this group is now closed, and every row is encoded**: each has been ported (or, for the two rows with no shared implementation, fixed independently in both forks) and promoted to `ENFORCED`. The `OPTIONS`/CORS row was the last one open — it had landed in *no* copy, so there was nothing to derive a marker from until both forks were fixed.
+**Copy drift** — a service maintains its own copy of shared code and misses a fix. A drift check against `juniper-service-core` would catch these. **All of this group is now closed, and every row is encoded** *(for the two forks the gate walks — a fourth copy of the two key-handling guards, in `juniper-canopy`, is `APD-ECO-008`; juniper-service-core's copy of the compare is not a gate site at all)*: each has been ported (or, for the two rows with no shared implementation, fixed independently in both forks) and promoted to `ENFORCED`. The `OPTIONS`/CORS row was the last one open — it had landed in *no* copy, so there was nothing to derive a marker from until both forks were fixed.
 
 > **That drift check now exists**: `juniper-ml/tests/test_service_fork_drift.py`
 > ([juniper-ml#1103](https://github.com/pcalnon/juniper-ml/pull/1103)). It encodes this table as a
@@ -1101,7 +1101,7 @@ there.
 >
 > **New fork drift, deliberate and invisible to the gate.** Fixing service-core and not cascor means
 > the canonical package no longer exempts the doc paths while cascor's fork still does.
-> `tests/test_service_fork_drift.py` will **not** catch this: its six guards cover the body cap,
+> `tests/test_service_fork_drift.py` will **not** catch this: its six guards *(seven since ml#1974 added the non-short-circuiting compare)* cover the body cap,
 > `Content-Length` parsing, serialization-error narrowing, blank-key filtering, the pre-auth throttle
 > and CORS ordering — `EXEMPT_PATHS` membership is not among them, so the gate stays green across a
 > real divergence. Not waived (adding a `KNOWN_GAP` row would break the ledger's zero-waiver
@@ -1275,7 +1275,7 @@ explicit-`allow_truncation: false`-on-every-apply defect and the `val_ratio` /
 | APD-DATA-050 | **FIXED ([juniper-data#404](https://github.com/pcalnon/juniper-data/pull/404))** — the causal scale-typo filter [juniper-data#395](https://github.com/pcalnon/juniper-data/pull/395) shipped judged every point against a median that **included that point**, so an outlier dominated its own basis and could never be rejected. No `min_periods` value repairs it — the problem is membership, not sample size — and the two real cases sit at opposite ends of what a relative test can reach: AIZ's typo is at position 1 and EOG's at position 0. Both were **delivered**: AIZ 116,799,796,000 against a truth of 117,926,517 (990×), EOG 251,931,774,000 against 587,723,622 (428×). The pre-#395 filter caught both, but only by consulting filings that had not happened yet — the look-ahead #395 was written to remove — so the row is a regression of the fix, not a case for reverting it | C | `generators/equities/generator.py` (`_fetch_shares`, the relative filter and `_SHARES_ABSOLUTE_CEILING`) | — | High |
 | APD-DATA-052 | **FIXED ([juniper-data#418](https://github.com/pcalnon/juniper-data/pull/418))** — **a caller could not refuse truncation where the operator enabled it.** `allow_truncation` is a two-state `bool` whose absence and whose explicit `false` are indistinguishable downstream: the route binds deployment defaults before `generate`, and the three `or settings.*` sites then read the bound value, so an explicit `false` is overridden by the deployment on every apply. The asymmetry is deliberate and documented today ("A client cannot opt out of the operator's choice") and the owner **ruled on 2026-09-09 to reverse it**: `true \| false \| null`, with `null`/omitted deferring to the deployment. **Filed 2026-09-15**, six days after the ruling — it had been recorded only in the round-38 handoff, which §4.9's preamble already named as a gap; a ruled item with no row is invisible to every count this register produces | C | `api/routes/datasets.py` (the binder hook), `generators/csv_import/generator.py`, `generators/equities/generator.py` (two `or settings.*` sites), `tests/unit/test_csv_import_generator.py::test_request_can_opt_out_of_deployment_allow_truncation` (**inverted, not deleted** — the surviving half is `test_omitted_allow_truncation_still_defers_to_the_deployment`) | — | High |
 | APD-DATA-051 | Several comments in `generators/equities/generator.py` quote counts from a **485-payload sweep** against a cache that holds **486**, and the numerators cannot be reproduced: re-measuring with the generator's own parsing gives 183 CIKs carrying a restatement where the comment says 162, and 42 value-changing period-end collisions where it says 54. Bumping the denominator alone would leave every numerator asserting a measurement nobody redid, so #404 deliberately renumbered nothing. Either the predicates are recovered and the figures restated, or the comments stop quoting counts they cannot defend. `util/ad-hoc/2026-09-15_remeasure_shares_cache_figures.py` (juniper-data) is the instrument | E | `generators/equities/generator.py` (the comment blocks at `_SHARES_ABSOLUTE_CEILING`, `SHARES_QUALITY_STALE`, `_SHARES_FACTS_LADDER`, `_condition_one`'s dedup, and `_fetch_shares`' observation table) | — | High |
-| APD-ECO-008 | **There is a FOURTH `APIKeyAuth`, and the drift gate cannot express it.** Closing `APD-CASCOR-005` ([juniper-cascor#659](https://github.com/pcalnon/juniper-cascor/pull/659) / [juniper-ml#1974](https://github.com/pcalnon/juniper-ml/pull/1974)) ported juniper-data's non-short-circuiting `matched`-flag compare into juniper-cascor and juniper-service-core. **`juniper-canopy/src/security.py:74` is still `any(hmac.compare_digest(api_key, k) for k in self._api_keys)`** — it short-circuits, so the number of comparisons depends on where the matching key falls. The row is filed for the SECOND half, which outlives the timing question: `tests/test_service_fork_drift.py` declares `_FORK_REPOS = ("juniper-data", "juniper-cascor")` at `:59`, and `test_every_guard_is_well_formed` asserts `site.repo in _FORK_REPOS` at `:285` — so a canopy site is rejected by the gate's own structural check and **no guard can reference canopy even in principle**. *(Corrected 2026-09-22: this row said widening `_FORK_REPOS` "asserts every EXISTING guard against canopy too, which is a real blast radius". It does not — every guard names its sites explicitly, and widened the gate ran the same 8 tests with 0 failures and 0 skips; the row-level entry below carries the measurement and the ruling.)* Canopy also diverges at `:53` — `set(api_keys) if api_keys else set()`, with no blank-key filter anywhere in the constructor, where the other three carry `{k for k in (api_keys or []) if isinstance(k, str) and k.strip()}`. That second divergence is **probably not an auth bypass** (its only caller maps `""` to `None`, disabling auth, and `enforce_auth_posture` fails the boot when `require_auth` is set) — but that reading has never been independently refuted, so it is recorded as the best current reading and not as a settled fact | M | `juniper-canopy/src/security.py` (`:53` constructor, `:74` compare); `juniper-ml/tests/test_service_fork_drift.py` (`_FORK_REPOS` at `:59`, the assertion at `:285`) | — | High |
+| APD-ECO-008 | **There is a FOURTH `APIKeyAuth`, and the drift gate cannot express it.** Closing `APD-CASCOR-005` ([juniper-cascor#659](https://github.com/pcalnon/juniper-cascor/pull/659) / [juniper-ml#1974](https://github.com/pcalnon/juniper-ml/pull/1974)) ported juniper-data's non-short-circuiting `matched`-flag compare into juniper-cascor and juniper-service-core. **`juniper-canopy/src/security.py:74` is still `any(hmac.compare_digest(api_key, k) for k in self._api_keys)`** — it short-circuits, so the number of comparisons depends on where the matching key falls. The row is filed for the SECOND half, which outlives the timing question: `tests/test_service_fork_drift.py` declares `_FORK_REPOS = ("juniper-data", "juniper-cascor")` at `:59`, and `test_every_guard_is_well_formed` asserts `site.repo in _FORK_REPOS` at `:285` — so a canopy site is rejected by the gate's own structural check and **no guard can reference canopy even in principle**. *(Corrected 2026-09-22: this row said widening `_FORK_REPOS` "asserts every EXISTING guard against canopy too, which is a real blast radius". It does not — every guard names its sites explicitly, and widened the gate ran the same 8 tests with 0 failures and 0 skips; the row-level entry below carries the measurement and the ruling.)* Canopy also diverges at `:53` — `set(api_keys) if api_keys else set()`, with no blank-key filter anywhere in the constructor, where the other three carry the predicate `isinstance(k, str) and k.strip()` (juniper-data inside `list(dict.fromkeys(...))`, deliberately a list; the other two in a set comprehension). That second divergence is **probably not an auth bypass** (its only caller maps `""` to `None`, disabling auth, and `enforce_auth_posture` fails the boot when `require_auth` is set) — but that reading has never been independently refuted, so it is recorded as the best current reading and not as a settled fact. *(Refuted 2026-09-22 for the WebSocket path, by [juniper-canopy#660](https://github.com/pcalnon/juniper-canopy/pull/660): the `?api_key=` fallback is never trimmed, so a whitespace-only env key authenticated `/ws?api_key=+++`. Over HTTP the reading holds. See the row-level entry below.)* | M | `juniper-canopy/src/security.py` (`:53` constructor, `:74` compare); `juniper-ml/tests/test_service_fork_drift.py` (`_FORK_REPOS` at `:59`, the assertion at `:285`) | — | High |
 | APD-DATA-053 | **FIXED ([juniper-data#417](https://github.com/pcalnon/juniper-data/pull/417))** — **three unresolved merge-conflict blocks were committed to `docs/DEVELOPER_CHEATSHEET.md` and rendered verbatim on `main`**: nine literal `<<<<<<<` / `=======` / `>>>>>>>` marker lines citing `03b3b94c` (twice) and `8d9b71ea`. All three were purely ADDITIVE — each side was distinct content (`## Empty-train shape metadata` vs `## Equities symbol cap`; `## Standalone generator imports` vs ``## DatasetMeta `n_val` ``; three troubleshooting rows vs three more) — so nothing had to be chosen between and no content was dropped. Found while auditing `allow_truncation` documentation surfaces for `APD-DATA-052`, which is the point worth keeping: **no check in this repo looks for conflict markers**, and markdownlint does not flag them. The defect survived every required check on the PR that introduced it and on every PR since | M | `docs/DEVELOPER_CHEATSHEET.md` (blocks at `:180`, `:222`, `:300` as committed) | — | High |
 | APD-ML-002 | **`_headline_metrics` can never match, and never has — `aggregate.csv` has never carried a single metric.** It reads `final_accuracy` / `test_accuracy` / `val_accuracy` / `train_r2` / `cv_r2` / `r2` off the **top** of `stats["cascor"]` / `stats["recurrence"]`; `build_stats` emits `{final, eval_scalars, completion_reason, candidate_correlation, training_step_duration}` and `{final_metrics, n_epochs, stopped_reason, dataset_descriptor, theta, readout, crossval}`. Intersection is **∅**. Measured over the live corpus at `~/.local/state/juniper-experiments`: **413 `stats.json` → 0 yield a metric; 418 registry rows → 0 non-empty `metrics`; 107 `aggregate.csv` → 0 accuracy/r2 columns.** `git log -L` shows one commit for the function (`513e7df2`, ml#1032) and `build_stats`' cascor block is byte-identical there, so *"always"* is literal. **Do not fix it by unwrapping one level** — only 2 of the 6 names exist at *any* depth (`cascor.final.val_accuracy` — the KEY is present in 369 files and carries a NUMBER in 348, and only the 348 could ever be read; `recurrence.final_metrics.r2` / `recurrence.crossval.*.r2` 38); `final_accuracy`, `test_accuracy`, `train_r2`, `cv_r2` exist **nowhere**, so four are wrong *names*, not wrong nesting | C | `util/experiments/run_suite.py:580-595` vs `util/experiments/stats_summary.py:223-229`, `:246-254` | — | High |
 | APD-ML-003 | **`expand_cells` raises raw exceptions on operator-typeable suite YAML, exiting 1 where its own documented contract says 2.** `run_suite.py:28-29` states *"1 = suite completed with failed cells"* and *"2 = misuse / suite-validation error"*, printed by `--help` via `description=__doc__` at `:860`; `main`'s `try:` at `:874` / `except SuiteError` at `:882` returns 2 at `:884`, so anything that is not a `SuiteError` escapes `sys.exit(main())` as CPython's default **1** — colliding exactly with the documented meaning of 1, so a caller cannot distinguish "bad suite" from "cells failed". (`main` has **five** `return 2` sites — `:884`, `:916`, `:925`, `:965`, `:972` — and three are not `SuiteError` paths.) Four shapes reproduce: `base_config: [123]` → `TypeError … 'PosixPath' and 'int'` at `_resolve_base_config:286` via `:337`; `include: [{config: 7, overrides: {}}]` → same via `:350`; `include: [{overrides: abc}]` → `ValueError` at `:351`; `include: [{overrides: [1,2]}]` → `TypeError` at `:351`. Controls `matrix: [1,2]` and `exclude: foo` **do** exit 2 cleanly, which is the contrast that makes it a defect. **The contract is stated in TWO places and broken against both** — an earlier draft of this row said it lived only in the docstring, which validation refuted: `docs/REFERENCE.md:5136` *"### Resume, `--only`, and exit codes"* carries a three-row table at `:5142-5146` whose `2` reads *"Suite YAML / `--only` / `--resume` dir / **materialise validation**"*, which is precisely the promise `expand_cells` breaks, and that table is the one operators read. (`docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md:41-53` genuinely does not restate them for `run_suite`; its "exit 0/1/2" at `:46` is `compare_baseline.py`.) A fix must repair both surfaces | R | `util/experiments/run_suite.py:286`, `:337`, `:350-351`, `:874`, `:882-884`; contract at `:28-29` and `docs/REFERENCE.md:5136-5146` | — | High |
@@ -1301,7 +1301,7 @@ or unparks its row and nothing else):
   > offered was this session's own handoff, which §1's 2026-09-09 note names as the failure case:
   > *"a handoff listed it" is a licensing mechanism, which the rule above says the rule set does not
   > contain … the claim reduced to a machine authorising its own backlog.* **These five need an
-  > owner decision before code is written**, exactly as `APD-ECO-008` states for itself. The
+  > owner decision before code is written**, exactly as `APD-ECO-008` did until its 2026-09-22 ruling. The
   > reproductions establish that each defect is REAL; they do not establish that fixing it is the
   > next thing to do.
   **One sequencing constraint, which is not a park:** `APD-ML-002` should ship with tests for the
@@ -1352,17 +1352,35 @@ or unparks its row and nothing else):
   and narrowing the constant to its one reachable member. The startup dependency this introduces is a
   design constraint on the implementation, not a reason to revisit the ruling.
   **The question that ruling left open is RULED 2026-09-22: withhold the opt-in, and retry.** The
-  2026-09-11 text did not say what cascor does when it cannot fetch the list, and that had to be
-  settled before code. cascor fetches the list **lazily**, the first time a dataset request needs
-  it, and memoizes a success. If the fetch fails it sends **no** truncation opt-in for that request
-  — juniper-data's own deployment default then governs, which errs toward refusing partial data —
-  logs that it did so, and fetches again on the next request; a failure is never memoized.
-  Rejected: refusing to start (a hard boot dependency that makes start order load-bearing); a
-  built-in fallback copy of the set (it keeps the very duplicate this row exists to remove, as a
-  fallback free to drift); a last-known set cached on disk (state to manage, and still no rule for a
-  first boot). The set is consulted only immediately before a dataset request, on two paths —
-  auto-start and the staged reload — so the lazy fetch removes the startup dependency the 2026-09-11
-  text anticipated rather than tolerating it.
+  2026-09-09 ruling did not say what cascor does when it cannot fetch the list, and that had to be
+  settled before code. As ruled: fetch the list the first time a dataset is requested and keep it
+  once fetched; if the fetch fails, send no truncation opt-in for that request, so juniper-data's own
+  deployment default applies — which errs toward refusing partial data — and try the fetch again
+  next time. Rejected: refusing to start; a built-in fallback copy of the set; a last-known set
+  cached on disk. *(Why each was rejected is this entry's reading, not the owner's words: a hard boot
+  dependency makes start order load-bearing; a fallback copy keeps the very duplicate this row exists
+  to remove, free to drift; a cached set is state to manage and still has no rule for a first boot.)*
+  **Three implementation constraints the ruling implies but does not state**, recorded so the
+  implementer does not rediscover them: (1) "no opt-in" withholds only **cascor's own deployment
+  default** — a caller-supplied `allow_truncation` of either polarity still passes through
+  unchanged, as the resolver's "A DEFAULT, NEVER AN OVERRIDE" contract already requires; (2)
+  `_describe_dataset_fetch_failure` keys its remedy off what went on the wire, so a withheld opt-in
+  must not produce the "set `JUNIPER_CASCOR_ALLOW_TRUNCATED_DATASETS=true`" remedy on a deployment
+  where that knob is already on; (3) `_resolve_truncation_stance` is a `@staticmethod` and neither
+  caller passes it a data client, so the memo needs state and a client that the resolver does not
+  have today; (4) the fetch belongs inside the branch that consults the set (`allow_truncated` on
+  AND no caller stance), keyed by the juniper-data URL that `_reload_dataset` re-reads on every
+  call, with a short timeout and no retries — on the reload path it runs under `_lock`, and the
+  data client's defaults (30 s, 3 retries) would hold that lock for minutes against a dead
+  listing. The set is consulted immediately before a dataset request on two paths —
+  `_reload_dataset` and `app.py`'s `_auto_start_training` — and the lazy fetch removes a startup
+  dependency **only on the first**. Auto-start is itself a boot-time dataset request that runs once
+  and swallows its failure, so on that path the fetch is still made at boot, a failure is tolerated
+  rather than retried, and there is no next request. *(Options not offered: failing the individual
+  request closed, and forwarding the opt-in when membership is unknown — fail open, which the
+  resolver's own comment says a non-truncatable generator would ignore. The 2026-09-21 framing of
+  this question named fail-closed, fail-open and a cached set; only the last reached the owner as
+  such.)*
 - `APD-CASCOR-009`, `APD-CASCOR-010`, `APD-CASCOR-012` — **closed 2026-09-09** by cascor#640, built under the
   owner's commissioning instruction for this arc, which named the four cascor follow-ups as remaining work.
   That is an owner instruction and is the only thing that licensed the work; it is **not** the withdrawn
@@ -1375,6 +1393,9 @@ or unparks its row and nothing else):
   offered and rejected, as was re-siting it to another value; the rejected options and the reasoning
   are recorded at the row's §4 entry and its §5.1 verification row. With this ruling **no row in
   this register is awaiting an owner decision** — every open row is implementation work.
+  *(True when written, 2026-09-21; **false from 2026-09-22**: `APD-ECO-008` was filed that day
+  awaiting a decision — ruled the same day — and `APD-ML-002` … `APD-ML-006` were filed needing
+  one before code is written, and still do.)*
   The original framing, left standing because it is what the ruling was taken against:
   **owner decision owed: ratify or remove.** It was added by the session
   implementing the `-043` ruling, not by a ruling, and a bound nobody chose is exactly the kind
@@ -1423,7 +1444,10 @@ or unparks its row and nothing else):
   `src/security.py` gets the `matched`-flag compare (`:74`) **and** the blank-key filter (`:53`);
   `juniper-canopy` joins `_FORK_REPOS`; and canopy becomes a site of the two key-handling guards,
   `nonshortcircuit-key-compare` and `blank-api-key-filter`. Canopy's PR lands first, so both guards
-  are `ENFORCED` from the moment they name it. Rejected: widening with the compare fix alone (the
+  can be `ENFORCED` from the moment they name it — **a label, not yet a check**: the cross-repo
+  assertions run only in the weekly or dispatched `docs-full-check`, so the widening PR must be run
+  locally with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1` against current sibling checkouts before merge, and
+  the workflow dispatched after it. Rejected: widening with the compare fix alone (the
   filter divergence left recorded); a separate canopy gate; fixing the line and adding no guard.
   **The ruling was taken against a corrected premise, and the correction is the finding.** As filed,
   this entry and the row above said widening the tuple "then asserts **every existing guard** against
@@ -1431,19 +1455,49 @@ or unparks its row and nothing else):
   read in exactly three places: `test_every_guard_is_well_formed`'s membership assertion,
   `_find_ecosystem_root`'s directory probe, and a skip message. Measured 2026-09-22 against the local
   sibling checkouts with the tuple widened to include `juniper-canopy`: the same 8 tests, 0 failures,
-  0 skips, before and after. The one real cost is that the root finder then needs a canopy checkout,
-  which the weekly `docs-full-check` job already clones. A blast radius nobody had measured made the
-  cheapest complete option read as the expensive one — and "whether the gate analysis has a cheaper
-  option" was exactly what the round-41 validation had recorded as unattacked.
-  **The filter half is a behaviour change, stated here so no summary rounds it away.** A
-  whitespace-only `CANOPY_API_KEY` supplied through the environment variable (a secret *file* is
-  stripped by `get_secret`, becomes `""`, and already disables auth) today enables `APIKeyAuth` with
-  a key no client can present, so every request is refused — while `enforce_auth_posture` already
-  classifies the same value as "no key", failing the boot under `require_auth` and warning "running
-  OPEN" otherwise. After the filter `APIKeyAuth` agrees with the posture check: under `require_auth`
-  the boot still fails; without it the service runs open with that warning, which is what the three
-  siblings' `APIKeyAuth` already does. **Fixing the line alone remains the option that looks
-  cheapest and leaves the class open** — the reason the row was filed against the gate.
+  0 skips, before and after. *(That equality says less than it appears to: the tuple only makes the
+  root finder probe for a canopy DIRECTORY, whose contents no existing guard reads, so it holds
+  whenever the directory exists.)* A blast radius nobody had measured made the cheapest complete
+  option read as the expensive one — and whether the gate analysis had a cheaper option was exactly
+  what the round-41 validation had recorded as unattacked (§6 of
+  `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_defect-register-round-41-d-a-shipped-and-the-two-defects-its-own-audit-found.md`).
+  **Widening does have a real cost, and it is not the one the filing named.** `_find_ecosystem_root`
+  returns a root only when EVERY tuple member is a directory there, a missing root is a SKIP, and
+  `docs-full-check.yml`'s clone step swallows a failed clone (`|| echo "WARNING…"`). Widened naively,
+  one failed canopy clone would therefore silently switch off the whole cross-repo gate — the
+  juniper-data and juniper-cascor guards included — while the weekly job stays green. The widening PR
+  must keep the root probe anchored on the original two forks, so that an absent canopy checkout
+  fails the gate's file-existence test instead of skipping everything.
+  **The filter half is a behaviour change, and the owner was not shown it when ruling** — it was
+  measured afterwards, by the implementing PR
+  ([juniper-canopy#660](https://github.com/pcalnon/juniper-canopy/pull/660)), and is recorded here and
+  surfaced to the owner rather than folded in silently. A whitespace-only `CANOPY_API_KEY` supplied
+  through the environment variable (a secret *file* is stripped by `get_secret`, becomes `""`, and
+  already disables auth) enables `APIKeyAuth` before the fix. **It did not fail closed everywhere.**
+  Over HTTP it did: both uvicorn parsers reduce an all-whitespace `X-API-Key` to empty, so a route
+  that checks the header refuses every caller. **Over the WebSocket path it did not**: the
+  `?api_key=` fallback is URL-decoded and never trimmed, so `/ws?api_key=+++` authenticated — the
+  "key" was trivially guessable there. `enforce_auth_posture` meanwhile already classified the value
+  as "no key", failing the boot under `require_auth` and warning "running OPEN" otherwise. After the
+  filter `APIKeyAuth` agrees with the posture check on both paths: under `require_auth` the boot still
+  fails; without it — or with `JUNIPER_SKIP_AUTH_POSTURE_CHECK` set — the service runs open with that
+  warning, which is what the three siblings' `APIKeyAuth` already does. Two things the fix does not
+  change: canopy's WebSocket endpoints admit keyless browser clients by design
+  (`allow_browser_auth=True`), and `src/frontend/internal_api.py` still sends the configured key as
+  an `X-API-Key` header on its self-calls, which `requests` refuses (`InvalidHeader`) for a
+  whitespace-only value — broken in that configuration before and after. Canopy configures exactly
+  one key (`[api_key]`), so the compare fix changes no timing in production today; it is there so
+  the gate can hold canopy to the same shape as its siblings. **How large the change is depends on
+  a default**: canopy's `require_auth` defaults to `false` (`src/settings.py`), so "without it" is
+  the default configuration, not an edge — and disabling `APIKeyAuth` also disables the Origin +
+  CSRF checks on canopy's `/api/train/*` browser surface, which `src/security.py` skips when auth is
+  not enabled. A deployment that failed loudly on its keyed HTTP routes (every call 401) therefore
+  serves them unauthenticated after the fix, announced only by the boot-time WARNING it already
+  printed. **One copy stays unwatched even after this ruling**: juniper-service-core's own `matched`
+  loop is not a gate site (the guard's sites are the forks), and nothing tests it, although its
+  CHANGELOG describes the guard as a marker in this gate. **Fixing the line alone remains the
+  option that looks cheapest and leaves the class open** — the reason the row was filed against the
+  gate.
 
 ---
 
@@ -1556,7 +1610,7 @@ These carry their **original IDs** — they were counted in the 96, and are mark
 | APD-DATA-053 | Three merge-conflict blocks committed to `docs/DEVELOPER_CHEATSHEET.md` | [juniper-data#417](https://github.com/pcalnon/juniper-data/pull/417) | Nine marker lines removed; both halves of all three conflicts retained. Blocks 1 and 2 each join two `##` sections and gained the `---` separator the document uses between sections; block 3's halves are rows of one table and were left contiguous, because a separator there would have cut the table in two. Diff is `-9 / +6` in one file. |
 | APD-DATA-018 | No async job pattern — generation runs inside the request | [juniper-data#326](https://github.com/pcalnon/juniper-data/pull/326) / [juniper-data#354](https://github.com/pcalnon/juniper-data/pull/354) | **Closed by bounding the inputs, not by building the async pattern** — owner decision 2026-09-04, Option 6 of [`JUNIPER_2026-09-01_JUNIPER-DATA_ASYNC-JOB-PATTERN-DECISION-ANALYSIS.md`](JUNIPER_2026-09-01_JUNIPER-DATA_ASYNC-JOB-PATTERN-DECISION-ANALYSIS.md). **The two halves took different units, and that is the finding.** `csv_import` bounds **bytes** (128 MiB, from a measured 14.4 MB/s over the whole `generate()` path); `equities` bounds **symbols** (14, from 30 s ÷ 2.1 s per symbol). **A cap's unit must be something the server can measure BEFORE doing the work.** `csv_import` has an input in hand, so bytes are a `stat`; `equities` has no input — the request is a ticker list and a date range, and its byte count does not exist until the fetches the cap exists to prevent have already been made, so a byte cap there could only ever be a *prediction* derived from (symbols × horizon). The symbol count is known with zero network calls, which is where `_resolve_symbols` raises. *(**Corrected 2026-09-05.** This row originally argued the unit choice from a correlation — "163× the payload costs 1.16× the time … the Russell 3000 over one day is 92 KB and 1.7–3.2 h, so a byte cap would admit the expensive request and reject the cheap one" — and had the direction **backwards**. That 92 KB came from a purely proportional model, `2,923 × 32.1 B/day`, with no per-request intercept; Russell 3000 × 1 day is 2,923 separate HTTP calls, and fitting an intercept to the source document's own two smallest rows gives **2.07 MB** — 22× larger, and larger than the 210 KB single-symbol request. Bytes are **positively** correlated with cost here. The decision stands; the argument for it was replaced with one that does not depend on the correlation at all. Same correction applied to [`JUNIPER_2026-09-04_JUNIPER-DATA_EQUITIES-INGEST-SIZING-AND-FIELD-AVAILABILITY.md`](JUNIPER_2026-09-04_JUNIPER-DATA_EQUITIES-INGEST-SIZING-AND-FIELD-AVAILABILITY.md) §1 and `juniper-data/CHANGELOG.md`.)* Sizing and the full field-availability matrix: [`JUNIPER_2026-09-04_JUNIPER-DATA_EQUITIES-INGEST-SIZING-AND-FIELD-AVAILABILITY.md`](JUNIPER_2026-09-04_JUNIPER-DATA_EQUITIES-INGEST-SIZING-AND-FIELD-AVAILABILITY.md). Both halves share one contract: **422 refusal until the caller opts in**, a request may only *lower* the cap (`min(requested, deployment)`), and an authorised cut writes a **permanent** `DatasetMeta.truncation` descriptor over a reserved channel key popped before checksum + NPZ persist. `equities`' old cut was a bare slice that truncated **silently** with `max_symbols=None` — every request fanning out over all 503 constituents at 18–34 min against a 30 s budget. `equities_seq` inherits the bound *and* the annotation. Review caught two ways the byte cap was defeatable (caller could raise it; `stat` was trusted over the read) and the mutation matrix caught two ways the tests were not: a record-boundary arm that passed against the guard's deletion, and an equities annotation that no test required to reach `generate()`. Matrix is 12/12 with two expected-survival rows. *(Corrected 2026-09-22: it had silently become **11/12**. `M2-record-boundary-trim-removed` anchored on the pre-#372 condition, and #372 moved the trim into `_parse_csv_stream` and widened it with the unclosed-quote clause without re-anchoring, so that arm reported `SKIPPED -- anchor matched 0 times` and scored a false verdict. **The script still exits 0 on a SKIPPED arm**, and one skipped line among twelve is easy to miss, which is why this stood. Found only because APD-DATA-052 broke a SECOND anchor in the same instrument (`M3`, which reads the `allow_truncation` site the tri-state rewrote) and re-running the whole matrix exposed both. Both re-anchored in [juniper-data#418](https://github.com/pcalnon/juniper-data/pull/418); 12/12 again. A mutation instrument that cannot find its own target is not a passing check, and nothing here was watching it.)* |
 
-The §2.3 copy-drift recommendation was built alongside them: `tests/test_service_fork_drift.py` ([juniper-ml#1103](https://github.com/pcalnon/juniper-ml/pull/1103)) now holds **all six** copy-drift guards as `ENFORCED` so they cannot silently regress — every row in §2.3's table.
+The §2.3 copy-drift recommendation was built alongside them: `tests/test_service_fork_drift.py` ([juniper-ml#1103](https://github.com/pcalnon/juniper-ml/pull/1103)) now holds **all six** copy-drift guards as `ENFORCED` so they cannot silently regress — every row in §2.3's table. *(Seven since [juniper-ml#1974](https://github.com/pcalnon/juniper-ml/pull/1974), 2026-09-21, which added `nonshortcircuit-key-compare` directly as `ENFORCED`; the table gained its row 2026-09-22.)*
 No `KNOWN_GAP` rows remain -- the ledger's self-maintaining half fired twice (throttle, then blank-key filter) and both times did exactly what it was built to do: fail on the fix and demand promotion.
 Promoting the `pre-auth-throttle` row exercised that mechanism end to end and exposed a limit worth carrying forward: a single name marker would have gone green on a bare `import`, so the promoted row asserts two markers — see the caveat under §2.3.
 The final row, `cors-outside-auth`, could not be expressed as markers at all. Its regression shape is two `add_middleware` calls **swapping places**, so both markers are present either way and any presence-only check would report SUCCESS on the exact defect it exists to catch — the vacuous-pass class. It is encoded instead as an **ordered** site: `RequestIdMiddleware` must be registered before `CORSMiddleware`, which is precisely "CORS is registered last, so it runs outermost". The ordering matcher carries its own negative controls, and both of them are killed by disabling the order check — deliberately placed in the always-on structural class, so they still run in `ci.yml` where the cross-repo arms skip.
