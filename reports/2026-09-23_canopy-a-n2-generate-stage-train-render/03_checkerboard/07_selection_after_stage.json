@@ -1,0 +1,21 @@
+{
+  "step": "selection_after_stage",
+  "t_utc": "2026-09-23T19:39:30.858Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/selection",
+  "status": 200,
+  "response": {
+    "nn_model": "cascor",
+    "backend": "service",
+    "execution": "live",
+    "status": "live",
+    "swapped": false,
+    "selected": true,
+    "dataset": {
+      "value": "checkerboard",
+      "source": "pending",
+      "generator": "checkerboard"
+    }
+  },
+  "elapsed_s": 0.007
+}

@@ -1,0 +1,21 @@
+[2026-09-23_a_n2_stack.bash] ports: data=8111 cascor=8212 canopy=8061 recurrence=8221
+[2026-09-23_a_n2_stack.bash] run dir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run
+[2026-09-23_a_n2_stack.bash] project dir: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-eco
+[2026-09-23_a_n2_stack.bash]   juniper-data -> /home/pcalnon/Development/python/Juniper/worktrees/juniper-data--verify--a-n2-loop--20260923-1415--ce436819 @ ce4368190a11f40d93e1bccd1a2fee2ea20632a0
+[2026-09-23_a_n2_stack.bash]   juniper-cascor -> /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--verify--a-n2-loop--20260923-1415--f7a6d573 @ f7a6d57347dad86d830bbf80b735ba6e54bb3868
+[2026-09-23_a_n2_stack.bash]   juniper-canopy -> /home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--verify--a-n2-loop--20260923-1415--48074653 @ 480746530fbe9062a6a3eaad5cab165c85b72ce8
+[2026-09-23_a_n2_stack.bash] data extras: api,mnist,equities
+[2026-09-23_a_n2_stack.bash] snapshots: cascor=/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/cascor-snapshots canopy=/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/cascor-snapshots
+
+[isolated_stack.bash] === Bringing DOWN the isolated E2E trio + cleaning artifacts ===
+[isolated_stack.bash] $ kill $(ss -tlnpH "sport = :8061" | grep -oE 'pid=[0-9]+' | cut -d= -f2)   # stop juniper-canopy on 8061
+[isolated_stack.bash] Stopping juniper-canopy (pid 3805344) on port 8061
+[isolated_stack.bash] $ kill $(ss -tlnpH "sport = :8221" | grep -oE 'pid=[0-9]+' | cut -d= -f2)   # stop juniper-recurrence on 8221
+[isolated_stack.bash] Stopping juniper-recurrence (pid 3804962) on port 8221
+[isolated_stack.bash] $ kill $(ss -tlnpH "sport = :8212" | grep -oE 'pid=[0-9]+' | cut -d= -f2)   # stop juniper-cascor on 8212
+[isolated_stack.bash] Stopping juniper-cascor (pid 3803758) on port 8212
+[isolated_stack.bash] $ kill $(ss -tlnpH "sport = :8111" | grep -oE 'pid=[0-9]+' | cut -d= -f2)   # stop juniper-data on 8111
+[isolated_stack.bash] Stopping juniper-data (pid 3802524) on port 8111
+[isolated_stack.bash] $ rm -rf /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/data /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/.venv-data /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/*.pid   # run artifacts
+[isolated_stack.bash] $ rm -f /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-eco/juniper-canopy/src/snapshots/snapshot_*.h5   # canopy-local snapshot artifacts (.h5 ONLY)
+[isolated_stack.bash] Teardown complete

@@ -1,0 +1,27 @@
+{
+  "step": "render_api_train_status",
+  "t_utc": "2026-09-23T19:47:14.295Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/train/status",
+  "status": 200,
+  "response": {
+    "backend": "recurrence",
+    "execution": "one_shot",
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": true,
+    "failed": false,
+    "fsm_status": "trained",
+    "phase": "complete",
+    "network_connected": true,
+    "monitoring_active": false,
+    "pending_dataset": null,
+    "current_dataset": {
+      "dataset_type": "mackey_glass"
+    },
+    "current_epoch": 1,
+    "completion_reason": "converged"
+  },
+  "elapsed_s": 0.003
+}

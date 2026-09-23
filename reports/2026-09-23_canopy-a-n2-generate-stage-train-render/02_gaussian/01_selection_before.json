@@ -1,0 +1,21 @@
+{
+  "step": "selection_before",
+  "t_utc": "2026-09-23T19:38:06.734Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/selection",
+  "status": 200,
+  "response": {
+    "nn_model": "cascor",
+    "backend": "service",
+    "execution": "live",
+    "status": "live",
+    "swapped": false,
+    "selected": true,
+    "dataset": {
+      "value": "spirals",
+      "source": "loaded",
+      "generator": "spirals"
+    }
+  },
+  "elapsed_s": 0.008
+}

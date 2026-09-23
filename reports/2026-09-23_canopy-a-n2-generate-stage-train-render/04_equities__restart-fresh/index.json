@@ -1,0 +1,162 @@
+[
+  {
+    "step": "selection_before",
+    "t_utc": "2026-09-23T19:42:47.541Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/selection",
+    "status": 200,
+    "elapsed_s": 0.008
+  },
+  {
+    "step": "model_select",
+    "t_utc": "2026-09-23T19:42:47.549Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/model/select",
+    "status": 200,
+    "elapsed_s": 0.004
+  },
+  {
+    "step": "set_params_caps",
+    "t_utc": "2026-09-23T19:42:47.553Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/set_params",
+    "status": 200,
+    "elapsed_s": 0.015
+  },
+  {
+    "step": "state_before",
+    "t_utc": "2026-09-23T19:42:47.568Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/state",
+    "status": 200,
+    "elapsed_s": 0.011
+  },
+  {
+    "step": "stage_dataset",
+    "t_utc": "2026-09-23T19:42:47.584Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/stage_dataset",
+    "status": 200,
+    "elapsed_s": 0.008
+  },
+  {
+    "step": "status_after_stage",
+    "t_utc": "2026-09-23T19:42:47.592Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/status",
+    "status": 200,
+    "elapsed_s": 0.004
+  },
+  {
+    "step": "selection_after_stage",
+    "t_utc": "2026-09-23T19:42:47.597Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/selection",
+    "status": 200,
+    "elapsed_s": 0.007
+  },
+  {
+    "step": "metrics_history_before",
+    "t_utc": "2026-09-23T19:42:47.604Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+    "status": 200,
+    "elapsed_s": 0.476
+  },
+  {
+    "step": "train_restart_fresh",
+    "t_utc": "2026-09-23T19:42:48.131Z",
+    "method": "POST",
+    "url": "http://127.0.0.1:8061/api/train/restart",
+    "status": 200,
+    "elapsed_s": 1.085
+  },
+  {
+    "step": "render_api_train_status",
+    "t_utc": "2026-09-23T19:43:22.498Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/train/status",
+    "status": 200,
+    "elapsed_s": 0.012
+  },
+  {
+    "step": "render_api_status",
+    "t_utc": "2026-09-23T19:43:22.524Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/status",
+    "status": 200,
+    "elapsed_s": 0.009
+  },
+  {
+    "step": "render_api_metrics",
+    "t_utc": "2026-09-23T19:43:22.533Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/metrics",
+    "status": 200,
+    "elapsed_s": 0.02
+  },
+  {
+    "step": "render_api_metrics_history_limit_0",
+    "t_utc": "2026-09-23T19:43:22.557Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+    "status": 200,
+    "elapsed_s": 0.087
+  },
+  {
+    "step": "render_api_dataset",
+    "t_utc": "2026-09-23T19:43:22.652Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/dataset",
+    "status": 200,
+    "elapsed_s": 1.001
+  },
+  {
+    "step": "render_api_state",
+    "t_utc": "2026-09-23T19:43:23.891Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/state",
+    "status": 200,
+    "elapsed_s": 0.01
+  },
+  {
+    "step": "render_api_selection",
+    "t_utc": "2026-09-23T19:43:23.902Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/selection",
+    "status": 200,
+    "elapsed_s": 0.008
+  },
+  {
+    "step": "render_api_topology",
+    "t_utc": "2026-09-23T19:43:23.910Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/topology",
+    "status": 200,
+    "elapsed_s": 0.008
+  },
+  {
+    "step": "render_api_network_stats",
+    "t_utc": "2026-09-23T19:43:23.918Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/network/stats",
+    "status": 200,
+    "elapsed_s": 0.008
+  },
+  {
+    "step": "render_api_decision_boundary",
+    "t_utc": "2026-09-23T19:43:23.927Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/decision_boundary",
+    "status": 503,
+    "elapsed_s": 0.009
+  },
+  {
+    "step": "render_api_stream_health",
+    "t_utc": "2026-09-23T19:43:23.936Z",
+    "method": "GET",
+    "url": "http://127.0.0.1:8061/api/stream_health",
+    "status": 200,
+    "elapsed_s": 0.006
+  }
+]

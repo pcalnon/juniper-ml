@@ -1,0 +1,15 @@
+{
+  "step": "render_api_stream_health",
+  "t_utc": "2026-09-23T19:45:04.811Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/stream_health",
+  "status": 200,
+  "response": {
+    "overall": "n/a",
+    "mode": "recurrence",
+    "dataset_source": null,
+    "relay": null,
+    "control": null
+  },
+  "elapsed_s": 0.006
+}
