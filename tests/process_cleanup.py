@@ -106,11 +106,14 @@ def force_kill(pid: int) -> None:
     try:
         os.killpg(pid, signal.SIGKILL)
     except (ProcessLookupError, PermissionError):
+        # The usual answer for a nohup'd pid, which leads no group. It carries no verdict: the
+        # per-victim kill below still reaches pid, and the wait after it decides.
         pass
     for victim in victims:
         try:
             os.kill(victim, signal.SIGKILL)
         except (ProcessLookupError, PermissionError):
+            # Already gone -- the group kill or its own exit got there first. The wait decides.
             pass
     for _ in range(40):
         if not any(is_running(victim) for victim in victims):

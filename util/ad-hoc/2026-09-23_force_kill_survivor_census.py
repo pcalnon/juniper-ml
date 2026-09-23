@@ -107,6 +107,7 @@ def census(module_name: str) -> "tuple[dict, unittest.TestResult]":
         try:
             os.kill(pid, signal.SIGKILL)
         except (ProcessLookupError, PermissionError):
+            # Exited after the census counted it: already what we want.
             pass
     return rows, result
 

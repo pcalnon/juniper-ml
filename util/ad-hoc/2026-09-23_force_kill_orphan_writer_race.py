@@ -163,6 +163,7 @@ def run_one(helper, max_delay_ms: float, slow_writer_ms: float) -> "dict[str, bo
             try:
                 os.kill(stray, signal.SIGKILL)
             except (ProcessLookupError, PermissionError):
+                # Exited between being counted and being reaped: already what we want.
                 pass
     return outcome
 

@@ -2086,6 +2086,7 @@ class TestForceKill(unittest.TestCase):
             if self.SLEEP.encode() in Path(f"/proc/{pid}/cmdline").read_bytes():
                 os.kill(pid, signal.SIGKILL)
         except OSError:
+            # Gone before cleanup ran, which is the passing case: nothing left to reap.
             pass
 
     @staticmethod

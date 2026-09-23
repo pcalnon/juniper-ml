@@ -99,6 +99,7 @@ def m_no_group_reach(pid: int) -> None:
         try:
             os.kill(victim, signal.SIGKILL)
         except (ProcessLookupError, PermissionError):
+            # Already gone; the mutant's verdict comes from the test, not from this call.
             pass
     for _ in range(40):
         if not any(pc.is_running(victim) for victim in victims):
@@ -122,11 +123,13 @@ def m_no_final_wait(pid: int) -> None:
     try:
         os.killpg(pid, signal.SIGKILL)
     except (ProcessLookupError, PermissionError):
+        # pid leads no group -- expected for a nohup'd stub, as in the shipped helper.
         pass
     for victim in victims:
         try:
             os.kill(victim, signal.SIGKILL)
         except (ProcessLookupError, PermissionError):
+            # Already gone; the mutant's verdict comes from the test, not from this call.
             pass
 
 
