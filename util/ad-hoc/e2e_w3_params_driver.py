@@ -178,7 +178,14 @@ def log_since(offset: int, needles: tuple[str, ...]) -> list[str]:
 # Browser helpers
 # --------------------------------------------------------------------------
 def open_dashboard(pw, capture: list):
-    browser = pw.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+    # 2026-09-22: the default launch renders WebGL through SwiftShader (software Vulkan --
+    # ``util/ad-hoc/2026-09-22_headless_gpu_renderer_check.py``), which every browser
+    # measurement in this arc inherited. JUNIPER_E2E_BROWSER_GPU=1 opts into the host's
+    # real GPU, so a harness-bound result can be told from a product-bound one.
+    args = ["--disable-dev-shm-usage"]
+    if os.environ.get("JUNIPER_E2E_BROWSER_GPU") == "1":
+        args += ["--enable-gpu", "--ignore-gpu-blocklist", "--use-angle=vulkan", "--enable-features=Vulkan"]
+    browser = pw.chromium.launch(headless=True, args=args)
     ctx = browser.new_context(viewport={"width": 1600, "height": 1100})
     page = ctx.new_page()
 

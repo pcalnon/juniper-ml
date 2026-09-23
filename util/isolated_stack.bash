@@ -272,6 +272,16 @@ data_up() {
     require_cmd python3.14 || return 1
     ensure_dir "${RUN_DIR}"
     ensure_dir "${LOG_DIR}"
+    # A USABLE venv, not a directory. ${RUN_DIR} defaults under /tmp, which
+    # systemd-tmpfiles ages (``Q /tmp 1777 root root 10d``): once the venv's files are
+    # ten days old they are DELETED and its directories are left standing. A bare
+    # ``[[ -d ]]`` then saw a venv, skipped the create, and failed at ``source
+    # bin/activate`` -- found 2026-09-22 with bin/ empty, no pyvenv.cfg, and zero files
+    # under twenty site-packages directories. Rebuild anything short of activatable.
+    if [[ -d "${DATA_VENV}" ]] && ! [[ -f "${DATA_VENV}/bin/activate" && -x "${DATA_VENV}/bin/python" ]]; then
+        log "${DATA_VENV} exists but is not a usable venv (no bin/activate or bin/python -- aged out?); rebuilding"
+        rm -rf -- "${DATA_VENV:?}" || return 1
+    fi
     [[ -d "${DATA_VENV}" ]] || python3.14 -m venv "${DATA_VENV}" || return 1
     # shellcheck source=/dev/null
     source "${DATA_VENV}/bin/activate" || return 1
