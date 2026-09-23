@@ -1,0 +1,80 @@
+{
+  "probe": "2026-09-22_f048_replay_cycle_cleanroom.py",
+  "dash": "4.2.0",
+  "runs_per_arm": 2,
+  "arms": {
+    "cycle": [
+      {
+        "pos_after_fill": "0 / 79",
+        "label_before": "\u25b6",
+        "labels_after_clicks": [
+          "\u23f8",
+          "\u25b6",
+          "\u23f8"
+        ],
+        "pos_end": "0 / 79",
+        "B_requests_after_clicks": 3,
+        "B_requests": 5,
+        "B_responses": 5,
+        "A_requests": 5,
+        "console": [],
+        "mode": "cycle",
+        "port": 8063
+      },
+      {
+        "pos_after_fill": "0 / 79",
+        "label_before": "\u25b6",
+        "labels_after_clicks": [
+          "\u23f8",
+          "\u25b6",
+          "\u23f8"
+        ],
+        "pos_end": "0 / 79",
+        "B_requests_after_clicks": 3,
+        "B_requests": 5,
+        "B_responses": 5,
+        "A_requests": 5,
+        "console": [],
+        "mode": "cycle",
+        "port": 8065
+      }
+    ],
+    "acyclic": [
+      {
+        "pos_after_fill": "0 / 79",
+        "label_before": "\u25b6",
+        "labels_after_clicks": [
+          "\u23f8",
+          "\u25b6",
+          "\u23f8"
+        ],
+        "pos_end": "0 / 79",
+        "B_requests_after_clicks": 3,
+        "B_requests": 3,
+        "B_responses": 3,
+        "A_requests": 5,
+        "console": [],
+        "mode": "acyclic",
+        "port": 8064
+      },
+      {
+        "pos_after_fill": "0 / 79",
+        "label_before": "\u25b6",
+        "labels_after_clicks": [
+          "\u23f8",
+          "\u25b6",
+          "\u23f8"
+        ],
+        "pos_end": "0 / 79",
+        "B_requests_after_clicks": 3,
+        "B_requests": 3,
+        "B_responses": 3,
+        "A_requests": 5,
+        "console": [],
+        "mode": "acyclic",
+        "port": 8066
+      }
+    ]
+  },
+  "verdict": "NO-DEADLOCK"
+}

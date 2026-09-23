@@ -6,6 +6,7 @@ Application: util/ad-hoc
 Author:      Paul Calnon
 Version:     1.0.0
 License:     MIT License
+Superseded:  for new use by util/push_signed_commit.py (--add and --delete in one pinned commit, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 Move (add + delete) a file on an EXISTING branch of a sibling repo, in ONE GitHub-signed commit.
 

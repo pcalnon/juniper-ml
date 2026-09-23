@@ -1,0 +1,391 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8051",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8051",
+    "version": "0.8.1",
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "build_date": "2026-09-22T19:38:01Z"
+  },
+  "tab": "metrics",
+  "started_at": "2026-09-22T19:50:51Z",
+  "seconds": 60.0,
+  "tab_opened": true,
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 13,
+      "rt_ms": {
+        "n": 13,
+        "min": 6.3,
+        "p50": 20.6,
+        "p90": 25.3,
+        "max": 42.3,
+        "mean": 21.2
+      },
+      "gap_ms": {
+        "n": 12,
+        "min": 113.0,
+        "p50": 5062.3,
+        "p90": 5952.0,
+        "max": 9707.0,
+        "mean": 4716.9
+      },
+      "overlaps": 0
+    },
+    "update_progress_detail": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 7.0,
+        "p50": 7.9,
+        "p90": 8.8,
+        "max": 8.9,
+        "mean": 7.9
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4839.0,
+        "p50": 5828.7,
+        "p90": 8998.8,
+        "max": 23485.9,
+        "mean": 8515.2
+      },
+      "overlaps": 0
+    },
+    "update_learning_rate": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 5.5,
+        "p50": 8.1,
+        "p90": 9.6,
+        "max": 9.7,
+        "mean": 8.1
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4835.2,
+        "p50": 5829.9,
+        "p90": 9000.0,
+        "max": 22937.9,
+        "mean": 8436.7
+      },
+      "overlaps": 0
+    },
+    "update_phase_duration": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 5.2,
+        "p50": 9.9,
+        "p90": 12.7,
+        "max": 12.7,
+        "mean": 9.3
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4832.8,
+        "p50": 5830.7,
+        "p90": 8999.4,
+        "max": 22932.0,
+        "mean": 8435.9
+      },
+      "overlaps": 0
+    },
+    "update_training_progress": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 6.9,
+        "p50": 7.9,
+        "p90": 9.7,
+        "max": 10.6,
+        "mean": 8.3
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 5134.5,
+        "p50": 5712.3,
+        "p90": 9000.3,
+        "max": 21987.7,
+        "mean": 8301.1
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 114,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 27,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 27,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 12,
+    "dataset-swap-events-store.data": 12,
+    "metrics-panel-metrics-store.data": 8,
+    "metrics-panel-replay-controls.style": 8,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 2,
+    "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..": 1,
+    "..cn-candidate-selection-radio.style...cn-top-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb...cn-random-candidates-": 1,
+    "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..": 1,
+    "parameters-panel-params-store.data": 1,
+    "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..": 1,
+    "..dataset-plotter-scatter-plot.figure...dataset-plotter-distribution-plot.figure...dataset-plotter-sample-count.children...dataset-plotter-feature-count.childre": 1,
+    "..dataset-plotter-seq-target-plot.figure...dataset-plotter-seq-target-plot.style..": 1,
+    "metrics-panel-view-state.data": 1,
+    "network-visualizer-view-state.data": 1,
+    "hdf5-snapshots-panel-selected-id.data": 1,
+    "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..": 1,
+    "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metr": 1,
+    "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-pan": 1,
+    "candidate-metrics-panel-loss-plot.figure": 1,
+    "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 1,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 1,
+    "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+    "pinned-params-store.data": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "metrics-panel-training-state-store",
+    "reads": 15,
+    "readable": 15,
+    "distinct_timestamps": 10,
+    "samples": [
+      {
+        "t": 1.0,
+        "ok": true,
+        "timestamp": 1790106660.730949,
+        "keys": 61
+      },
+      {
+        "t": 5.4,
+        "ok": true,
+        "timestamp": 1790106660.730949,
+        "keys": 61
+      },
+      {
+        "t": 16.8,
+        "ok": true,
+        "timestamp": 1790106225.8547032,
+        "keys": 31
+      },
+      {
+        "t": 20.0,
+        "ok": true,
+        "timestamp": 1790106225.8547032,
+        "keys": 31
+      },
+      {
+        "t": 22.9,
+        "ok": true,
+        "timestamp": 1790106684.5903556,
+        "keys": 61
+      },
+      {
+        "t": 25.8,
+        "ok": true,
+        "timestamp": 1790106684.5903556,
+        "keys": 61
+      },
+      {
+        "t": 30.0,
+        "ok": true,
+        "timestamp": 1790106689.5095093,
+        "keys": 61
+      },
+      {
+        "t": 34.8,
+        "ok": true,
+        "timestamp": 1790106695.177337,
+        "keys": 61
+      },
+      {
+        "t": 37.1,
+        "ok": true,
+        "timestamp": 1790106695.177337,
+        "keys": 61
+      },
+      {
+        "t": 40.5,
+        "ok": true,
+        "timestamp": 1790106700.3648272,
+        "keys": 61
+      },
+      {
+        "t": 44.1,
+        "ok": true,
+        "timestamp": 1790106704.5381355,
+        "keys": 61
+      },
+      {
+        "t": 47.7,
+        "ok": true,
+        "timestamp": 1790106709.1899154,
+        "keys": 61
+      },
+      {
+        "t": 50.9,
+        "ok": true,
+        "timestamp": 1790106709.1899154,
+        "keys": 61
+      },
+      {
+        "t": 54.7,
+        "ok": true,
+        "timestamp": 1790106715.1612225,
+        "keys": 61
+      },
+      {
+        "t": 59.1,
+        "ok": true,
+        "timestamp": 1790106720.2022233,
+        "keys": 61
+      }
+    ]
+  },
+  "phase_duration": {
+    "samples": [
+      {
+        "t": 1.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 21s",
+        "shown_s": 441,
+        "expected_s": 449.9,
+        "lag_s": 8.9
+      },
+      {
+        "t": 6.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 28s",
+        "shown_s": 448,
+        "expected_s": 454.9,
+        "lag_s": 6.9
+      },
+      {
+        "t": 18.0,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 28s",
+        "shown_s": 448,
+        "expected_s": 466.5,
+        "lag_s": 18.5
+      },
+      {
+        "t": 21.2,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 28s",
+        "shown_s": 448,
+        "expected_s": 469.8,
+        "lag_s": 21.8
+      },
+      {
+        "t": 24.0,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 28s",
+        "shown_s": 448,
+        "expected_s": 472.6,
+        "lag_s": 24.6
+      },
+      {
+        "t": 27.6,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 51s",
+        "shown_s": 471,
+        "expected_s": 476.1,
+        "lag_s": 5.1
+      },
+      {
+        "t": 31.4,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 51s",
+        "shown_s": 471,
+        "expected_s": 479.9,
+        "lag_s": 8.9
+      },
+      {
+        "t": 35.7,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 7m 56s",
+        "shown_s": 476,
+        "expected_s": 484.2,
+        "lag_s": 8.2
+      },
+      {
+        "t": 38.2,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 2s",
+        "shown_s": 482,
+        "expected_s": 486.8,
+        "lag_s": 4.8
+      },
+      {
+        "t": 41.8,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 2s",
+        "shown_s": 482,
+        "expected_s": 490.3,
+        "lag_s": 8.3
+      },
+      {
+        "t": 45.2,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 2s",
+        "shown_s": 482,
+        "expected_s": 493.8,
+        "lag_s": 11.8
+      },
+      {
+        "t": 49.6,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 11s",
+        "shown_s": 491,
+        "expected_s": 498.2,
+        "lag_s": 7.2
+      },
+      {
+        "t": 52.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 16s",
+        "shown_s": 496,
+        "expected_s": 500.9,
+        "lag_s": 4.9
+      },
+      {
+        "t": 56.2,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 16s",
+        "shown_s": 496,
+        "expected_s": 504.7,
+        "lag_s": 8.7
+      },
+      {
+        "t": 60.8,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 21s",
+        "shown_s": 501,
+        "expected_s": 509.4,
+        "lag_s": 8.4
+      }
+    ],
+    "lag_s": {
+      "n": 15,
+      "min": 4.8,
+      "p50": 8.4,
+      "p90": 21.8,
+      "max": 24.6,
+      "mean": 10.5
+    }
+  }
+}

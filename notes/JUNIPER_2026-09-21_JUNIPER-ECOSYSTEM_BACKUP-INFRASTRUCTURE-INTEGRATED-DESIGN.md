@@ -461,7 +461,7 @@ complete as the last agent who cleaned up after themselves.
 | --- | --- | --- | --- | --- | --- |
 | S-1 | Old settings key (36 chars) | `scripts/duplicati-wrapper.bash` comment line 49, in `main` since #1967 (`6708cb28`); 23 systemd `Invalid slot` journal lines, **and the same 23 lines in `syslog-20260919.gz` (5) and `syslog-20260920.gz` (18)** | 2026-09-18 / 09-20 | anyone with the repository (public); every process running as `pcalnon`, via `adm`; root | Treat as burned; it unlocks nothing (note S-1a). The block is already removed in-tree (P1 step 3); close the detection gap (below) |
 | S-2 | Current settings key = **the live `Yamaguchi` backup passphrase** (32 chars) | `.env` line 22 (0660 duplicati:duplicati — readable by any `pcalnon` process carrying gid 139 — note S-2b); journal **and `/var/log/syslog*`**: 12 `Exporting Environment Variable` and 12 `Settings Encryption Key:` lines on 09-20 | 2026-09-20 | same as S-1 | Never reuse the backup passphrase as the settings key — the key exists to protect the passphrase at rest. Re-key in **P0.5b** (note S-2a) |
-| S-3 | `PASSPHRASE`, `PASSPHRASE_OLD` | `.env` lines 17–18 as commented-out assignments; journal **and `/var/log/syslog*`**: **60** `LINE: "# export …"` echoes on 09-20 = 12 `PASSPHRASE` + 12 `PASSPHRASE_OLD` + 36 `SETTINGS_ENCRYPTION_KEY`, each carrying text after the `=` | 2026-09-20 | root, `adm` (= every `pcalnon` process), group `duplicati` — and, through S-7, **every local user** | Delete the commented lines. **Rotation does not re-encrypt existing volumes.** **D-2 must be re-decided** (note S-3a) |
+| S-3 | `PASSPHRASE`, `PASSPHRASE_OLD` | `.env` lines 17–18 as commented-out assignments; journal **and `/var/log/syslog*`**: **60** `LINE: "# export …"` echoes on 09-20 = 12 `PASSPHRASE` + 12 `PASSPHRASE_OLD` + 36 `SETTINGS_ENCRYPTION_KEY`, each carrying text after the `=` | 2026-09-20 | root, `adm` (= every `pcalnon` process), group `duplicati` — and, through S-7, **every local user** | Delete the commented lines. **D-2 RULED 2026-09-22** (§10.1); rotation alone does not re-encrypt (note S-3b) |
 | S-4 | Same passphrases in `…/Dropbox/Backups/_yamaguchi_keys/env` (`-rwxrwx--- pcalnon:duplicati`, 388 B — **group-readable by the service user**, where YAM §8.19.2 recorded 0600 in a 0700 dir) | inside the Dropbox-synced tree; `dropbox filestatus` reads `up to date` | since the Dropbox root moved onto `sda1` (~09-15) | the Dropbox account and every device or app linked to it; locally, group `duplicati` | `chmod 0600` now; copy out, then delete forever and audit the account (note S-4a) |
 | S-5 | Web-UI credential — **and twelve other secrets beside it** | primary checkout `.env` (`DUPLICATI_WEB_CREDENTIAL`), **mode 0664 — world-readable**, now stale; 12 other names in the same file, several of them Slack tokens. It holds **0** `PASSPHRASE=` lines, so S-3 is *not* world-readable through it | since 2026-08-23 | every local user | New UI password, stored 0600 at `~/.config/duplicati-backup/web-credential`; **both** API clients re-pointed in the same PR (note S-5a) |
 | S-6 | Sign-in token URLs | journal **and syslog**: **five** `signin.html?token=…` URLs (09-19 21:20:41, 21:57:41; 09-20 13:32:50, 13:36:40, 18:19:46), not one; all expired | 2026-09-19 | `adm` (= every `pcalnon` process) for each token's lifetime | Set the password on the first start, then pass `--webservice-disable-signin-tokens` (note S-6a) |
@@ -475,6 +475,7 @@ Notes on the rows above:
   *processes*, never of the user.
 - **(S-2a)** The `.env` comment labels this value "Ubuntu-fresh". **That label is stale**: `util/ad-hoc/2026-09-21_env_value_equality.py` shows it byte-identical to the live Yamaguchi passphrase. Read the value, never the comment. The replacement key is random, distinct from every passphrase, delivered as a systemd credential, and escrowed with the passphrases.
 - **(S-3a)** D-2 was ruled "accept + scrub" against a *local journal* exposure. The reader set is now: every process running as `pcalnon` (via `adm`), `/var/log/syslog*` for another ~10 days, this arc's cloud-linked Claude Code transcripts, a world-readable cleartext file inside the backup source (S-7), and — through S-4 — a third party's cloud. Four different ways in which "local readers only" is false.
+- **(S-3b)** "Rotation does not re-encrypt existing volumes" is true of a rotation and **not** of the product as a whole: `Duplicati.CommandLine.RecoveryTool.Implementation.dll` carries a `recompress` verb taking `--reencrypt` and `--new-passphrase`, which rewrites existing volumes under a new passphrase. That is what makes D-2's ruling — rotate **and keep** the existing sets — achievable rather than aspirational. §10.2 sequences it and names the three hazards that ride with it.
 - **(S-4a)** `dropbox exclude add` is **not** an alternative to moving it: selective-sync exclusion removes the *local* copy and leaves the cloud one in place. So: `cp -a` the folder to a sibling outside the Dropbox root, sha256-verify both sides, delete the in-tree copy on owner sign-off, then **"Delete forever"** on dropbox.com and audit the account (2FA, linked devices, third-party apps, plan retention). The sda1 escrow was accepted as a *machine-local* copy, not a
   cloud copy — its own README says so. Exclude `_yamaguchi_records/` too if it lists paths.
 - **(S-5a)** The UI credential is not a convenience: any authenticated API principal can point the job's `--run-script-before` at any path, and that script runs as `duplicati` with `CAP_DAC_READ_SEARCH`. It is **a host-wide read of everything the service can read** (§7.3.6). Also remove `util/ad-hoc/duplicati_api.py`'s bare-secret fallback, which posts the whole file as the password when no candidate key matches — and since its key list omits
@@ -613,7 +614,9 @@ StartLimitBurst=5
 Type=simple
 User=duplicati
 Group=duplicati
-UMask=0007
+# D-14 (RULED 2026-09-22): 0027, not 0007. New volumes land 0640 duplicati:duplicati, so pcalnon
+# and the Dropbox daemon read them through the group and neither can rewrite or unlink one.
+UMask=0027
 Nice=19
 IOSchedulingClass=idle
 IOSchedulingPriority=7
@@ -996,6 +999,46 @@ done
 bash -n "${WRAPPER_SRC}"
 bash -n "${GUARD_SRC}"
 
+# --- D-6 drift gate (RULED 2026-09-22) -----------------------------------------------------
+# The repository is canonical and what the unit executes is a COPY. Two different things can
+# therefore drift, and they mean OPPOSITE things:
+#
+#   * the INSTALLED file no longer matches what was blessed -> someone edited /usr/local/lib
+#     outside this installer. Never overwrite that silently; it is the only evidence.
+#   * the REPOSITORY no longer matches what was blessed -> an intended behaviour change. That
+#     is legitimate, and is exactly what --update-backup-behavior authorises.
+#
+# A symlink into the checkout was considered for this job and rejected: on a fresh host the
+# checkout does not exist yet, so ExecStart= would resolve to a dangling target and the service
+# would not start -- failing in the bare-metal recovery case the symlink was proposed for.
+BLESSED=/usr/local/lib/duplicati/.blessed.sha256
+UPDATE_BEHAVIOR=0
+for arg in "$@"; do
+    [[ "${arg}" == "--update-backup-behavior" ]] && UPDATE_BEHAVIOR=1
+done
+
+blessed_for() { [[ -s "${BLESSED}" ]] && awk -v d="$1" '$2 == d { print $1 }' "${BLESSED}"; }
+
+drift=0
+for pair in "${WRAPPER_SRC}:${WRAPPER_DST}" "${UNIT_SRC}:${UNIT_DST}" "${DEFAULTS_SRC}:${DEFAULTS_DST}" "${GUARD_SRC}:${GUARD_DST}"; do
+    src="${pair%%:*}"; dst="${pair##*:}"
+    want="$(blessed_for "${dst}")"
+    [[ -n "${want}" ]] || continue          # never blessed: first install, nothing to compare
+    if [[ -f "${dst}" ]] && [[ "$(sha256sum "${dst}" | cut -d' ' -f1)" != "${want}" ]]; then
+        echo "DRIFT: installed ${dst} does not match its blessed checksum -- changed outside this installer" >&2
+        drift=1
+    fi
+    if [[ "$(sha256sum "${src}" | cut -d' ' -f1)" != "${want}" ]]; then
+        echo "BEHAVIOUR CHANGE: ${src} differs from the blessed checksum" >&2
+        drift=1
+    fi
+done
+if (( drift == 1 && UPDATE_BEHAVIOR == 0 )); then
+    echo "Refusing to install. Inspect the differences, then re-run with --update-backup-behavior" >&2
+    echo "to bless the current repository contents as what this host executes." >&2
+    exit 4
+fi
+
 install -d -m 0755 -o root -g root /usr/local/lib/duplicati
 install -d -m 0700 -o root -g root /etc/credstore
 install -m 0755 -o root -g root "${WRAPPER_SRC}" "${WRAPPER_DST}"
@@ -1012,11 +1055,18 @@ if [[ "$(stat -c '%U:%a' "${DATA_FOLDER}")" != "duplicati:700" ]]; then
     exit 1
 fi
 
+: > "${BLESSED}.new"
 for pair in "${WRAPPER_SRC}:${WRAPPER_DST}" "${UNIT_SRC}:${UNIT_DST}" "${DEFAULTS_SRC}:${DEFAULTS_DST}" "${GUARD_SRC}:${GUARD_DST}"; do
     src="${pair%%:*}"; dst="${pair##*:}"
     cmp -s "${src}" "${dst}" || { echo "checksum mismatch after install: ${dst}" >&2; exit 1; }
+    printf '%s  %s\n' "$(sha256sum "${dst}" | cut -d' ' -f1)" "${dst}" >> "${BLESSED}.new"
     echo "installed ${dst} ($(sha256sum "${dst}" | cut -c1-16))"
 done
+# Bless only after every copy verified. A blessed file written earlier would record a state that
+# a later failure never reached, and the next run would compare against a fiction.
+install -m 0644 -o root -g root "${BLESSED}.new" "${BLESSED}"
+rm -f "${BLESSED}.new"
+echo "blessed ${BLESSED} (re-bless deliberately with --update-backup-behavior)"
 
 if [[ ! -s "${CRED_DST}" ]]; then
     printf '%s\n' "NOTE: ${CRED_DST} is absent or empty. Create it before starting:" \
@@ -1186,13 +1236,14 @@ bearer JWT is a secret carried by every database copy (S-8).
 
 | Path | Owner:group | Mode | Why |
 | --- | --- | --- | --- |
-| `/mnt/Backups`, `/mnt/Backups/Ubuntu` | `pcalnon:duplicati` | `2770` | traverse for both; setgid keeps the group on new entries |
-| `/mnt/Backups/Ubuntu/Dropbox` (Dropbox root) | `pcalnon:duplicati` | `2770` | Dropbox (pcalnon) owns it; the service traverses |
-| `/mnt/Backups/Ubuntu/Dropbox/Backups` and every subdirectory | `pcalnon:duplicati` | `2770` + default ACL `g:duplicati:rwx` | new directories inherit; the service can create/rename/delete |
-| volumes (`duplicati-*.zip.aes`) | creator`:duplicati` | `0660` | service umask `0007` produces `0660`; Dropbox reads via group |
+| `/mnt/Backups`, `/mnt/Backups/Ubuntu` | `pcalnon:duplicati` | `2750` | traverse for both; setgid keeps the group on new entries |
+| `/mnt/Backups/Ubuntu/Dropbox` (Dropbox root) | `pcalnon:duplicati` | `2770` | Dropbox runs as `pcalnon` and must write its own root; the service only traverses (note D-14b) |
+| `/mnt/Backups/Ubuntu/Dropbox/Backups` and every subdirectory | `duplicati:duplicati` | `2750` + default ACL `g:duplicati:r-x` | the service owns and writes; `pcalnon` and Dropbox **read** through the group |
+| volumes (`duplicati-*.zip.aes`) | `duplicati:duplicati` | `0640` | service `UMask=0027` produces `0640`; Dropbox reads via group and cannot unlink |
 | `_yamaguchi_keys/` | `pcalnon:duplicati` | `0700`, the `env` file **0600**, and the folder **copied out of the Dropbox root** then deleted from it on owner sign-off (S-4) | escrow must not sync to the cloud, and must not be group-readable by the service user |
 
-**The group-write model above is itself an open owner decision — D-14.** As written it grants
+**D-14 is RULED (2026-09-22): the read-only model above is in force** (§10.1). The rejected
+alternative — the R-7/R-8 group-write form, directories `2770` and files `0660` — would have granted
 **write and delete** on all 877 volumes to every process running as `pcalnon` (editors, browsers,
 package hooks, agent sessions) and — by AC-7's own prerequisite — to the Dropbox daemon. A
 cloud-side deletion (a compromised account, a linked phone, another machine) or a local `rm -rf`
@@ -1202,9 +1253,10 @@ chowned to `duplicati`: `pcalnon` and Dropbox read through the group, remote→l
 loudly instead of silently deleting the master, and hand maintenance goes through `sudo -u
 duplicati` — which this design has already accepted for the data folder. Note honestly what this
 buys: `pcalnon` is root-equivalent on this host (`sudo`, `docker`), so it is protection against
-**accident and commodity malware**, not against a deliberate local adversary. D-14 is the owner's
-call; the script below implements the R-7/R-8 group-write model as specified, and must be re-run
-after a D-14 ruling that changes it.
+**accident and commodity malware**, not against a deliberate local adversary. That limit was stated
+before the ruling and the ruling was made with it in view. The script below now implements the
+read-only model, and must be run once against the existing tree: it chowns the 877 volumes to
+`duplicati` and drops their group-write bit, which is the step that makes a cloud-side delete fail.
 
 Two facts to know before running it on a synced tree: `chmod 0660` strips an executable bit Dropbox has
 already synced from **1,784** files — every regular file under `…/Dropbox/Backups` carries one — so it
@@ -1231,20 +1283,28 @@ ROOT=/mnt/Backups/Ubuntu/Dropbox/Backups
 [[ "$(id -u)" -eq 0 ]] || { echo "run with sudo" >&2; exit 2; }
 mountpoint -q /mnt/Backups || { echo "/mnt/Backups is not a mountpoint; refusing" >&2; exit 3; }
 [[ -d "${ROOT}" ]] || { echo "${ROOT} missing; refusing" >&2; exit 3; }
+# D-14 RULED 2026-09-22: the READ-ONLY model. pcalnon and Dropbox read through the group; only
+# the service writes. The two mount parents keep 2750, and the Dropbox root keeps 2770 because
+# the sync daemon runs as pcalnon and must write its own root -- narrowing that would break sync,
+# not harden it. See section 10.1 and note D-14b.
 chgrp duplicati /mnt/Backups /mnt/Backups/Ubuntu /mnt/Backups/Ubuntu/Dropbox
-chmod 2770 /mnt/Backups /mnt/Backups/Ubuntu /mnt/Backups/Ubuntu/Dropbox
-chgrp -R duplicati "${ROOT}"
-find "${ROOT}" -type d -exec chmod 2770 {} +
-find "${ROOT}" -type f -exec chmod 0660 {} +
-setfacl -R -m g:duplicati:rwX -m d:g:duplicati:rwX "${ROOT}"
+chmod 2750 /mnt/Backups /mnt/Backups/Ubuntu
+chmod 2770 /mnt/Backups/Ubuntu/Dropbox
+# The destination tree passes to the service user. This chown is the step that makes a cloud-side
+# or accidental local delete FAIL: unlinking a volume needs write on its directory, and after this
+# only duplicati has it.
+chown -R duplicati:duplicati "${ROOT}"
+find "${ROOT}" -type d -exec chmod 2750 {} +
+find "${ROOT}" -type f -exec chmod 0640 {} +
+setfacl -R -m g:duplicati:rX -m d:g:duplicati:rX "${ROOT}"
 if [[ -d "${ROOT}/_yamaguchi_keys" ]]; then
     # Strip the named ACL entry the recursive setfacl above just applied here. chmod sets the
     # ACL MASK, not the entry, so `g:duplicati:rwX` would survive with an empty mask and any
     # later `chmod g+rx` would silently re-enable the service user's access.
     setfacl -R -b "${ROOT}/_yamaguchi_keys"
     chmod 0700 "${ROOT}/_yamaguchi_keys"
-    # The find above set every regular file to 0660; the escrow env must not be group-readable
-    # by the service user (design section 6, S-4).
+    # The find above set every regular file to 0640; the escrow env must not be group-readable
+    # by the service user at all (design section 6, S-4).
     [[ -e "${ROOT}/_yamaguchi_keys/env" ]] && chmod 0600 "${ROOT}/_yamaguchi_keys/env"
     echo "NOTE: ${ROOT}/_yamaguchi_keys is inside the Dropbox root -- copy it out (design §6 S-4)" >&2
 fi
@@ -1647,14 +1707,14 @@ that differ. `sqlite3` and `gitleaks` are **not installed** on this host; step 3
 second.
 
 Phases are ordered; nothing in a later phase is a precondition of an earlier one — **but that is true of
-phases, not of decisions**: P0 applies the recommendations of D-1 (credstore + `--require-db-encryption-key`),
-D-4 (`AmbientCapabilities`), D-6 (installed copy), D-9 (loopback) **and D-14** (the §7.3.2 unit sets
-`UMask=0007`, the group-write value, while D-14 recommends the read-only `0027`) before the owner has ruled on
-any of them. **D-2 is a sixth**: P0 step 11 runs a full backup under the very passphrase D-2 asks whether to
-retire, and P1 step 5 re-decides it afterwards. Either rule those six first, or accept that P0 applies them
-**provisionally** — a contrary ruling on D-1/D-4/D-6/D-9/D-14 means re-installing the unit, and a contrary
-ruling on D-2 means the first post-recovery fileset is written under a passphrase that is then replaced. Step
-0 makes that explicit.
+phases, not of decisions**. That distinction mattered while the gates were open; **they were ruled on
+2026-09-22 and §10.1 records them**, so P0 now applies decisions rather than recommendations: D-1
+(credstore + `--require-db-encryption-key`), D-4 (`AmbientCapabilities`), D-6 (installed copy **plus the
+drift gate**), D-9 (loopback) and D-14 (the §7.3.2 unit now sets `UMask=0027`, the ruled read-only value).
+**D-2 no longer forces a choice at this point.** It was ruled *rotate and keep*, and §10.2 sequences the
+rotation to run **after** the recovery is complete and drill-verified — so P0 step 11's full backup is
+written under the current passphrase deliberately, not by default, and is re-encrypted later rather than
+discarded. Step 0 verifies the artifacts match §10.1 instead of asking for a decision.
 
 Every destructive step is preceded by a copy. **Nothing under `/mnt/Backups/Ubuntu/` is deleted or moved by
 any step below, with exactly one exception, and it needs owner sign-off**: the passphrase escrow copy at
@@ -1670,9 +1730,11 @@ item 1 closes the path by which the service user controls the very binaries step
 P0.5 is printed *after* P0 only because it also carries work that follows the recovery; an operator working
 top to bottom would otherwise run the recovery with that path open.
 
-**0. Owner gates — none of these is a session's to decide.** (a) Rule D-1, D-4, D-6, D-9 **and D-14**, decide whether
-D-2 is re-decided before or after the first run, or record that P0 applies their recommendations
-provisionally. (b) Have the escrowed `PASSPHRASE` to hand, from the printed
+**0. Owner gates — RULED 2026-09-22 (§10.1); this step is now a verification, not a decision.** (a) Confirm the
+installed artifacts match the rulings: `UMask=0027` in the unit (D-14), `AmbientCapabilities=CAP_DAC_READ_SEARCH`
+with the §7.3.2 confinement set (D-4), `--webservice-interface=loopback` (D-9),
+`--require-db-encryption-key` (D-1), and a `.blessed.sha256` written by the installer (D-6). D-2's rotation is
+**not** part of P0 — it runs after recovery, per §10.2. (b) Have the escrowed `PASSPHRASE` to hand, from the printed
 sheet or the password manager — **not** from the Dropbox-synced copy, which is the thing S-4 is about. (c)
 Confirm Procedure A0's premise with the read-only script below. **Run P0 step 1's freeze first** — it
 needs the job index that step copies aside, because it points `--dbpath` at a throwaway copy of it rather
@@ -2122,7 +2184,7 @@ Notes on the criteria above:
 - **(AC-8a)** `gitleaks` is **not installed on this host**, so that half of the criterion can only run once P0.5a item 6 adds the pre-commit hook — until then AC-8 is the journal, syslog, `.env` and wrapper checks only, and says so.
 - **(AC-12a)** Measured offline on the unit as designed: **1.7 OK**, against **5.2 MEDIUM** for the same unit with round 1's Lane B3 directives removed. That is why the gate is 2.0 and not 5.2 — a 5.2-shaped gate is passed by a unit with `IPAddressDeny`, `SystemCallFilter`, `ProtectProc`, `ProcSubset`, `PrivateDevices`, `ProtectClock`, `ProtectHostname`, `ProtectKernelLogs` and `RestrictNamespaces` **all deleted**, i.e. by exactly the silent drop this
   criterion exists to prevent. The run produces **15** ✗ rows; the accepted set is `AmbientCapabilities=`, `CapabilityBoundingSet=~CAP_(DAC_*|FOWNER|IPC_OWNER)`, `SystemCallFilter=~@privileged`, `SystemCallFilter=~@resources`, `RestrictAddressFamilies=~AF_UNIX`, `RestrictAddressFamilies=~AF_(INET|INET6)`, `PrivateNetwork=`, `PrivateUsers=`, `ProtectHome=`, `RootDirectory=/RootImage=`, `RemoveIPC=`, `MemoryDenyWriteExecute=`, `DeviceAllow=`,
-  `IPAddressDeny=` and `UMask=` (the last pending D-14). The `~@privileged` row is a **set-wide** test and does not contradict §7.3.2's narrower, correct claim about `open_by_handle_at`. `MemoryDenyWriteExecute=` would break the .NET JIT and `PrivateUsers=` conflicts with `AmbientCapabilities=`, so neither is a candidate; `RemoveIPC=yes` is free and unclaimed. **None of the added directives has been executed against 2.4.0.0 on this host** (open item
+  `IPAddressDeny=` and `UMask=` (the last now RULED at `0027`, D-14, §10.1). The `~@privileged` row is a **set-wide** test and does not contradict §7.3.2's narrower, correct claim about `open_by_handle_at`. `MemoryDenyWriteExecute=` would break the .NET JIT and `PrivateUsers=` conflicts with `AmbientCapabilities=`, so neither is a candidate; `RemoveIPC=yes` is free and unclaimed. **None of the added directives has been executed against 2.4.0.0 on this host** (open item
   O-12) — trial them with `systemd-run` against the P0 step 1 freeze copy, not against a probe copy that only exists if step 3's confirmation probe was run.
 - **(AC-14a)** An **environment variable** the server does not read logs nothing at all, so AC-14 is blind to that class — which is why §7.3.2's two `Environment=` names were verified against the shipped assemblies rather than trusted to this grep.
 - **(AC-13a)** Pinned as an acceptance check because a run-script path is a plain job option with no allow-list: anyone holding the UI credential can point it anywhere and have it execute as `duplicati` **with** `CAP_DAC_READ_SEARCH` (§7.3.6). A silent change to this option is a privilege escalation that no other check would catch.
@@ -2155,7 +2217,100 @@ Notes on the decisions above:
   O-2). Closed by this design: the watchdog `ProgramState` check (§7.6).
 - **(D-13a)** The owner prompt said "Dropbox syncs only the contents of `Backups/`"; §4.4 corrected that to nine excluded folders with everything else at the root syncing, and no decision item then asked what the root *should* be. This one does.
 - **(D-14a)** R-8 asks only for **read**; the group-write form lets a cloud-side deletion (compromised account, linked phone, another machine) or an accidental local `rm -rf` propagate into the local master and on to T1c. State the limit honestly: `pcalnon` is root-equivalent via `sudo`/`docker` anyway, so the read-only form buys protection against **accident and commodity malware**, not against a deliberate local adversary. It conflicts with R-7's
-  "read/write/execute as appropriate", which is exactly why it is the owner's call and not this design's.
+  "read/write/execute as appropriate", which is why it was the owner's call and not this design's.
+  **Ruled 2026-09-22: the read-only form** (§10.1).
+
+---
+
+### 10.1 Owner rulings — 2026-09-22
+
+All seven open gates were ruled by the owner in one interactive session on 2026-09-22. **The Ruling
+column below is binding and the Recommendation column above is historical.** D-3, D-5, D-7, D-10, D-11,
+D-12 and D-13 remain open and keep their recommendations.
+
+| ID | Ruling | Effect in this document |
+| --- | --- | --- |
+| D-1 | **Keep database encryption.** A random key distinct from every passphrase, at `/etc/credstore/duplicati-settings-key` root:root 0600, delivered by `LoadCredential=`, made mandatory by `--require-db-encryption-key` | §7.3.5's recommendation becomes binding; the 2026-08-30 objection is accepted as the price |
+| D-2 | **Rotate the passphrase and KEEP the existing sets.** Scrub first, then re-encrypt all 877 volumes with the RecoveryTool, staged and verified before any swap | §6 note S-3 corrected; new §10.2 carries the order of operations |
+| D-4 | **`CAP_DAC_READ_SEARCH`**, paired with §7.3.2's confinement set | §7.1 principle 3 becomes binding; the "duplicati uid == root-read" residual stands |
+| D-6 | **Root-owned installed copy, plus a drift gate.** A blessed sha256 per installed file, checked every run; `--update-backup-behavior` is the escape hatch | §7.3.4's installer gains the gate; `/home/duplicati/bin/` is deleted |
+| D-8 | **Scrub once, after P1** (`--rotate` + `--vacuum-time=1s`) | unchanged from the recommendation |
+| D-9 | **Loopback only**, plus `--webservice-disable-signin-tokens` once a password exists | §7.3.6 becomes binding |
+| D-14 | **Read-only destination model.** Directories `duplicati:duplicati 2750`, files `0640`, `UMask=0027`, existing volumes chowned to `duplicati` | §7.4's table and its script rewritten; the unit's `UMask=` goes `0007` → `0027` |
+
+- **(10.1a)** **D-6's ruling is stronger than the recommendation it replaces.** The recommendation was a
+  bare copy. The owner added a no-change gate with an explicit `--update-backup-behavior` switch, which
+  catches two things a bare copy cannot: an installed artifact edited outside the installer, and a
+  repository that has moved ahead of what is deployed. The symlink form was considered and rejected on
+  one decisive fact — on a fresh host the checkout does not exist yet, so a symlink at the install path
+  is **dangling and `ExecStart` fails**, defeating the bare-metal recovery case it was proposed for.
+- **(10.1b)** **D-2's ruling required correcting two variable names before it could be recorded.**
+  `SETTINGS_ENCRYPTION_KEY` encrypts the **server database**; the backup volumes are encrypted with the
+  job's **`PASSPHRASE`**. `SETTINGS_ENCRYPTION_KEY_OLD` and `PASSPHRASE_OLD` **do not exist in 2.4.0.0** —
+  scanned across 1,443 files in UTF-8 and UTF-16LE, zero hits each
+  (`util/ad-hoc/2026-09-22_duplicati_literal_scan.py`). Writing the new passphrase into
+  `SETTINGS_ENCRYPTION_KEY` would have re-keyed the database and left all 877 volumes under the leaked
+  passphrase. §4.1 records that on this host the active `SETTINGS_ENCRYPTION_KEY` **already equals
+  `PASSPHRASE`** — the same conflation, already made once, and part of what broke.
+- **(10.1c)** **The new passphrase does not go in `.env`.** That file is `0660 duplicati:duplicati` and the
+  wrapper echoed every one of its lines into the journal and syslog — 60 echoes on 09-20, which is S-3,
+  the exposure being remediated. It goes to `/etc/credstore` under `LoadCredential=`: the same custody
+  model as D-1's settings key, and a **distinct value** from it.
+- **(10.1d)** **D-14b.** The Dropbox root keeps `2770` while everything beneath `Backups/` moves to
+  `duplicati:duplicati 2750`. The sync daemon runs as `pcalnon` and must write its own root; narrowing
+  that would break synchronisation rather than harden anything. The protection comes from the
+  destination tree below it, where only `duplicati` holds write on the directories — which is what an
+  unlink requires.
+
+### 10.2 D-2 execution: scrub, rotate, re-encrypt — order of operations
+
+The owner set two criteria: **access to backup data is never lost**, and **the new passphrase does not
+leak**. The sequence below is ordered by those and not by convenience. **None of it is a session's to
+execute** — it is owner-gated exactly as §8 is, and it runs *after* the recovery, not during it.
+
+**The mechanism exists in the product.** `Duplicati.CommandLine.RecoveryTool.Implementation.dll` carries a
+`recompress` verb (strings read from the assembly rather than by running it —
+`util/ad-hoc/2026-09-22_recoverytool_verbs.py`):
+
+```text
+recompress <targetcompression> <remoteurl> <localfolder> --reupload --reencrypt [options]
+3) If --reencrypt is supplied, again reencrypts using same passphrase. If the
+   --new-passphrase option is present, encryption happens using the new passphrase
+4) If --reupload is supplied, files with old compression are deleted and recompressed
+   files are uploaded back to remote storage
+Warning: Before recompress delete local database and after recompress recreate local
+database before executing any operation on backup.
+```
+
+So an existing fileset **can** cross a passphrase rotation, which is what makes "rotate without losing
+the backups" a real option rather than a wish. Three hazards ride with it, and each touches one of the
+owner's two criteria:
+
+1. **`--reupload` deletes the originals at the destination.** The sole local copy sits on `sda`, a disk
+   that has never had a SMART test (§12, carried). This is why the ruling is **stage → verify → swap**
+   and not in-place, and why nothing here contradicts §8's rule that nothing under
+   `/mnt/Backups/Ubuntu/` is deleted or moved.
+2. **The local database must be deleted before and recreated after.** A Recreate across 877 volumes is
+   long, and §5.3 records that an *aborted* per-job Recreate is precisely what produced the database
+   this whole arc began by misreading.
+3. **`--new-passphrase=` on argv is world-readable** through `/proc/*/cmdline` — the same defect class
+   §7.3.6 already forbids for `duplicati-server-util change-password`. The new passphrase must reach the
+   tool by a channel that is not argv, or the rotation leaks the secret it exists to protect.
+
+| # | Step | Gate before proceeding |
+| --- | --- | --- |
+| 1 | SMART test `sda`; restore-drill the CURRENT set | a drill passes on the current passphrase |
+| 2 | Scrub the leaked copies: the S-7 file, the `.env` comment block, and D-8's journal scrub after P1 | S-3, S-6 and S-7 counts all read zero |
+| 3 | Mint the new passphrase; place it at `/etc/credstore/duplicati-passphrase` root:root 0600 | never in `.env`, never on argv, never echoed |
+| 4 | Copy the 877 volumes to staging (≈203 GiB free required) | per-file hashes match the source |
+| 5 | `recompress … --reencrypt --new-passphrase` against the **staging** copy only | exit 0, and every volume re-encrypted |
+| 6 | Recreate the local database against staging; restore-drill from staging | a drill passes on the NEW passphrase |
+| 7 | Swap staging in as the live destination | the old set is retained untouched until step 6 passed |
+| 8 | Delete-forever the old ciphertext server-side (Dropbox retains deleted files 30 d on Basic/Plus/Family, 180 d on Professional) | only after step 7 is verified |
+
+**Step 1 is first and is not optional.** Steps 4–7 are a bulk rewrite of the only local copy of
+202.8 GiB, guarded by a disk whose health has never once been read. A rotation that loses the data it
+was protecting has failed at the thing it was for.
 
 ---
 

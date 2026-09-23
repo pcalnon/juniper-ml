@@ -458,7 +458,7 @@ class SequenceSafetyPackageMigrationTest(unittest.TestCase):
       (a) *resurrection guard* -- juniper-ml's own tree carries none of the migrated
           inline paths (``test_inline_sequence_safety_tree_is_gone`` + a synthetic-fixture
           negative that proves the guard bites);
-      (b) *pin admits current* -- the two new screen pins (``>=0.8.0,<0.10.0`` in ci.yml's
+      (b) *pin admits current* -- the two new screen pins (``>=0.9.0,<0.10.0`` in ci.yml's
           sequence-safety job and in main-verify.yml) still admit the current
           juniper-ci-tools version, enforced by ``JuniperCiToolsDriftTest`` above now that
           ``main-verify.yml`` is one of juniper-ml's own workflows, all of which

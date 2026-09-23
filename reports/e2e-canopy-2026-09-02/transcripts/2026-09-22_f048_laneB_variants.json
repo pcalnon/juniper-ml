@@ -1,0 +1,5335 @@
+{
+  "probe": "f048_laneB_variants.py",
+  "dash": "4.2.0",
+  "runs": 2,
+  "results": [
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u23f8",
+      "t_clicks_ms": [
+        6468,
+        9524,
+        12552
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u23f8",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 168,
+        "quiescent": 10,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            454,
+            [],
+            4
+          ],
+          [
+            455,
+            [],
+            4
+          ],
+          [
+            455,
+            [],
+            4
+          ],
+          [
+            455,
+            [],
+            4
+          ],
+          [
+            457,
+            [],
+            4
+          ],
+          [
+            457,
+            [],
+            4
+          ],
+          [
+            457,
+            [],
+            4
+          ],
+          [
+            1319,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1319,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1319,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ]
+        ],
+        "t_install": 449.80000019073486,
+        "t_first_feeder_pending": 1319,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6468,
+          9524,
+          12552
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 135,
+          "state.data": 96,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 31,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.42
+      ],
+      "R": false,
+      "F": false,
+      "variant": "dup-always",
+      "arm": "cycle",
+      "port": 8111
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6494,
+        9551,
+        12585
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 288,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1362,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1362,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1363,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ]
+        ],
+        "t_install": 475.59999990463257,
+        "t_first_feeder_pending": 1362,
+        "quiescent_after_feeder_start": 1,
+        "t_clicks_ms": [
+          6494,
+          9551,
+          12585
+        ],
+        "requested_residency": {
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 31,
+          "..slider.value...pos.children..": 24,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.55,
+        9.6,
+        12.63
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-always",
+      "arm": "acyclic",
+      "port": 8112
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6391,
+        9431,
+        12477
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 283,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1291,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1292,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1292,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ]
+        ],
+        "t_install": 376.89999985694885,
+        "t_first_feeder_pending": 1291,
+        "quiescent_after_feeder_start": 2,
+        "t_clicks_ms": [
+          6391,
+          9431,
+          12477
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 54,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 31,
+          "play.children": 27,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 5,
+      "ctl_responses": 5,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.3,
+        2.32,
+        6.43,
+        9.48,
+        12.51
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-always",
+      "arm": "merged",
+      "port": 8113
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u23f8",
+      "t_clicks_ms": [
+        6442,
+        9503,
+        12540
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u23f8",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 158,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1327,
+            [
+              "other.data"
+            ],
+            4
+          ],
+          [
+            1328,
+            [
+              "other.data"
+            ],
+            4
+          ],
+          [
+            1328,
+            [
+              "other.data"
+            ],
+            4
+          ]
+        ],
+        "t_install": 427.2999999523163,
+        "t_first_feeder_pending": 1327,
+        "quiescent_after_feeder_start": 2,
+        "t_clicks_ms": [
+          6442,
+          9503,
+          12540
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 135,
+          "state.data": 96,
+          "other.data": 31,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.39
+      ],
+      "R": false,
+      "F": false,
+      "variant": "unrelated-always",
+      "arm": "cycle",
+      "port": 8114
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6424,
+        9473,
+        12505
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 288,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1318,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1318,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1318,
+            [
+              "other.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 409.2999999523163,
+        "t_first_feeder_pending": 1318,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6424,
+          9473,
+          12505
+        ],
+        "requested_residency": {
+          "other.data": 31,
+          "..slider.value...pos.children..": 24,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.46,
+        9.51,
+        12.54
+      ],
+      "R": true,
+      "F": true,
+      "variant": "unrelated-always",
+      "arm": "acyclic",
+      "port": 8115
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6351,
+        9411,
+        12450
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 283,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1257,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1257,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1257,
+            [
+              "other.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 338.2000000476837,
+        "t_first_feeder_pending": 1257,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6351,
+          9411,
+          12450
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 54,
+          "other.data": 31,
+          "play.children": 27,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 5,
+      "ctl_responses": 5,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.29,
+        2.28,
+        6.4,
+        9.46,
+        12.48
+      ],
+      "R": true,
+      "F": true,
+      "variant": "unrelated-always",
+      "arm": "merged",
+      "port": 8116
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u23f8",
+      "t_clicks_ms": [
+        6443,
+        9494,
+        12534
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u23f8",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 158,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1326,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1326,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1326,
+            [
+              "data.data"
+            ],
+            4
+          ]
+        ],
+        "t_install": 429,
+        "t_first_feeder_pending": 1326,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6443,
+          9494,
+          12534
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 135,
+          "state.data": 96,
+          "data.data": 31,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.39
+      ],
+      "R": false,
+      "F": false,
+      "variant": "primary-always",
+      "arm": "cycle",
+      "port": 8117
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6392,
+        9439,
+        12486
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 240,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1288,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1288,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1289,
+            [
+              "data.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 377.40000009536743,
+        "t_first_feeder_pending": 1288,
+        "quiescent_after_feeder_start": 1,
+        "t_clicks_ms": [
+          6392,
+          9439,
+          12486
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 235,
+          "data.data": 31,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 4
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.44,
+        9.49,
+        12.52
+      ],
+      "R": true,
+      "F": false,
+      "variant": "primary-always",
+      "arm": "acyclic",
+      "port": 8118
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6448,
+        9504,
+        12530
+      ],
+      "labels_after_clicks": [
+        "\u25b6",
+        "\u25b6",
+        "\u25b6"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 159,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1319,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1319,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1319,
+            [
+              "data.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 424.19999980926514,
+        "t_first_feeder_pending": 1319,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6448,
+          9504,
+          12530
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 142,
+          "data.data": 31,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.35
+      ],
+      "R": false,
+      "F": false,
+      "variant": "primary-always",
+      "arm": "merged",
+      "port": 8119
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6360,
+        9418,
+        12456
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 11,
+      "census": {
+        "n": 1019,
+        "quiescent": 411,
+        "quiescent_with_requested": 296,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            353,
+            [],
+            4
+          ],
+          [
+            353,
+            [],
+            4
+          ],
+          [
+            353,
+            [],
+            4
+          ],
+          [
+            353,
+            [],
+            4
+          ],
+          [
+            354,
+            [],
+            4
+          ],
+          [
+            355,
+            [],
+            4
+          ],
+          [
+            355,
+            [],
+            4
+          ],
+          [
+            1249,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1249,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1249,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1463,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1463,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1463,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1464,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1464,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1464,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1481,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1481,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1481,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1502,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1502,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1502,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1503,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1503,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1503,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1504,
+            [
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1515,
+            [],
+            8
+          ],
+          [
+            1515,
+            [],
+            8
+          ],
+          [
+            1515,
+            [],
+            8
+          ],
+          [
+            1515,
+            [],
+            8
+          ],
+          [
+            1516,
+            [],
+            8
+          ],
+          [
+            1516,
+            [],
+            8
+          ],
+          [
+            1516,
+            [],
+            8
+          ],
+          [
+            2248,
+            [
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2248,
+            [
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2248,
+            [
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2251,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            2251,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            2475,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2475,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ]
+        ],
+        "t_install": 345.5,
+        "t_first_feeder_pending": 1249,
+        "quiescent_after_feeder_start": 30,
+        "t_clicks_ms": [
+          6360,
+          9418,
+          12456
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 228,
+          "play.children": 111,
+          "state.data": 73,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 44,
+          "data.data": 5
+        }
+      },
+      "ctl_requests": 17,
+      "ctl_responses": 17,
+      "pos_requests": 17,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.33,
+        1.5,
+        2.5,
+        3.48,
+        4.49,
+        5.48,
+        6.47,
+        7.48,
+        8.49,
+        9.47,
+        10.48,
+        11.48,
+        12.48,
+        12.56,
+        13.48,
+        14.49,
+        15.49
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-gapped",
+      "arm": "cycle",
+      "port": 8120
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6473,
+        9528,
+        12564
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 650,
+        "quiescent": 255,
+        "quiescent_with_requested": 143,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1354,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1355,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1355,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1570,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1570,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1570,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1572,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1572,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1572,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1591,
+            [],
+            4
+          ],
+          [
+            1591,
+            [],
+            4
+          ],
+          [
+            1591,
+            [],
+            4
+          ],
+          [
+            1591,
+            [],
+            4
+          ],
+          [
+            1597,
+            [],
+            4
+          ],
+          [
+            1597,
+            [],
+            4
+          ],
+          [
+            1597,
+            [],
+            4
+          ],
+          [
+            2352,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2352,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2352,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2354,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            2354,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            2565,
+            [
+              "..slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2565,
+            [
+              "..slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2565,
+            [
+              "..slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2575,
+            [],
+            8
+          ],
+          [
+            2575,
+            [],
+            8
+          ],
+          [
+            2575,
+            [],
+            8
+          ],
+          [
+            2575,
+            [],
+            8
+          ],
+          [
+            2577,
+            [],
+            8
+          ],
+          [
+            2577,
+            [],
+            8
+          ],
+          [
+            2577,
+            [],
+            8
+          ],
+          [
+            3352,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            3353,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            3353,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            3567,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3567,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3567,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3567,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3567,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3567,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ]
+        ],
+        "t_install": 454,
+        "t_first_feeder_pending": 1354,
+        "quiescent_after_feeder_start": 39,
+        "t_clicks_ms": [
+          6473,
+          9528,
+          12564
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 120,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 44,
+          "play.children": 18,
+          "state.data": 7,
+          "data.data": 5
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 19,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.52,
+        9.57,
+        12.62
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-gapped",
+      "arm": "acyclic",
+      "port": 8121
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6394,
+        9452,
+        12490
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 13,
+      "census": {
+        "n": 898,
+        "quiescent": 330,
+        "quiescent_with_requested": 225,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1289,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1290,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1290,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1505,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1505,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1505,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1506,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1506,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1506,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1529,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1529,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1529,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1548,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1548,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1548,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1558,
+            [],
+            5
+          ],
+          [
+            1558,
+            [],
+            5
+          ],
+          [
+            1558,
+            [],
+            5
+          ],
+          [
+            1558,
+            [],
+            5
+          ],
+          [
+            1559,
+            [],
+            5
+          ],
+          [
+            1559,
+            [],
+            5
+          ],
+          [
+            1559,
+            [],
+            5
+          ],
+          [
+            2288,
+            [
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2288,
+            [
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2288,
+            [
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2291,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            5
+          ],
+          [
+            2291,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            5
+          ],
+          [
+            2506,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            2506,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            2506,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            2523,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2523,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2523,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2528,
+            [
+              "play.children"
+            ],
+            10
+          ],
+          [
+            2528,
+            [
+              "play.children"
+            ],
+            10
+          ],
+          [
+            2528,
+            [
+              "play.children"
+            ],
+            10
+          ],
+          [
+            2538,
+            [],
+            11
+          ],
+          [
+            2538,
+            [],
+            11
+          ],
+          [
+            2538,
+            [],
+            11
+          ],
+          [
+            2538,
+            [],
+            11
+          ]
+        ],
+        "t_install": 376.40000009536743,
+        "t_first_feeder_pending": 1289,
+        "quiescent_after_feeder_start": 39,
+        "t_clicks_ms": [
+          6394,
+          9452,
+          12490
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 231,
+          "play.children": 117,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 44,
+          "data.data": 5
+        }
+      },
+      "ctl_requests": 20,
+      "ctl_responses": 20,
+      "pos_requests": 20,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.3,
+        1.51,
+        2.32,
+        2.52,
+        3.51,
+        4.51,
+        5.51,
+        6.44,
+        6.51,
+        7.53,
+        8.51,
+        9.49,
+        9.52,
+        10.51,
+        11.51,
+        12.51,
+        12.54,
+        13.51,
+        14.51,
+        15.51
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-gapped",
+      "arm": "merged",
+      "port": 8122
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6436,
+        9475,
+        12515
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 10,
+      "census": {
+        "n": 973,
+        "quiescent": 392,
+        "quiescent_with_requested": 291,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1322,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1322,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1322,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1534,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1534,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1534,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1536,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1536,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1536,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1549,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1549,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1549,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1562,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1562,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1562,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1562,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1562,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1562,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1564,
+            [
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1572,
+            [],
+            8
+          ],
+          [
+            1572,
+            [],
+            8
+          ],
+          [
+            1572,
+            [],
+            8
+          ],
+          [
+            1572,
+            [],
+            8
+          ],
+          [
+            1574,
+            [],
+            8
+          ],
+          [
+            1574,
+            [],
+            8
+          ],
+          [
+            1574,
+            [],
+            8
+          ],
+          [
+            2322,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            8
+          ],
+          [
+            2322,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            8
+          ],
+          [
+            2322,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            8
+          ],
+          [
+            2325,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2325,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2538,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2538,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2538,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2541,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2541,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2541,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2555,
+            [
+              "state.data"
+            ],
+            11
+          ],
+          [
+            2555,
+            [
+              "state.data"
+            ],
+            11
+          ],
+          [
+            2555,
+            [
+              "state.data"
+            ],
+            11
+          ]
+        ],
+        "t_install": 421.5,
+        "t_first_feeder_pending": 1322,
+        "quiescent_after_feeder_start": 37,
+        "t_clicks_ms": [
+          6436,
+          9475,
+          12515
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 222,
+          "play.children": 104,
+          "state.data": 79,
+          "data.data": 44,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 5
+        }
+      },
+      "ctl_requests": 16,
+      "ctl_responses": 16,
+      "pos_requests": 17,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.39,
+        1.56,
+        2.56,
+        3.56,
+        4.54,
+        5.55,
+        6.54,
+        7.56,
+        8.56,
+        9.55,
+        10.55,
+        11.55,
+        12.56,
+        13.55,
+        14.56,
+        15.55
+      ],
+      "R": true,
+      "F": true,
+      "variant": "primary-gapped",
+      "arm": "cycle",
+      "port": 8123
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6452,
+        9491,
+        12522
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 611,
+        "quiescent": 245,
+        "quiescent_with_requested": 140,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1330,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1330,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1330,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1542,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1542,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1542,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1543,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1544,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1544,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1558,
+            [],
+            4
+          ],
+          [
+            1558,
+            [],
+            4
+          ],
+          [
+            1558,
+            [],
+            4
+          ],
+          [
+            1558,
+            [],
+            4
+          ],
+          [
+            1563,
+            [],
+            4
+          ],
+          [
+            1563,
+            [],
+            4
+          ],
+          [
+            1563,
+            [],
+            4
+          ],
+          [
+            2328,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            4
+          ],
+          [
+            2328,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            4
+          ],
+          [
+            2329,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            4
+          ],
+          [
+            2332,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2332,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2547,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            6
+          ],
+          [
+            2547,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            6
+          ],
+          [
+            2547,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            6
+          ],
+          [
+            2560,
+            [],
+            7
+          ],
+          [
+            2561,
+            [],
+            7
+          ],
+          [
+            2561,
+            [],
+            7
+          ],
+          [
+            2561,
+            [],
+            7
+          ],
+          [
+            2565,
+            [],
+            7
+          ],
+          [
+            2565,
+            [],
+            7
+          ],
+          [
+            2565,
+            [],
+            7
+          ],
+          [
+            3328,
+            [
+              "data.data"
+            ],
+            7
+          ],
+          [
+            3328,
+            [
+              "data.data"
+            ],
+            7
+          ],
+          [
+            3329,
+            [
+              "data.data"
+            ],
+            7
+          ],
+          [
+            3541,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3541,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3541,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3543,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3543,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3543,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ]
+        ],
+        "t_install": 436.5,
+        "t_first_feeder_pending": 1330,
+        "quiescent_after_feeder_start": 37,
+        "t_clicks_ms": [
+          6452,
+          9491,
+          12522
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 178,
+          "data.data": 44,
+          "play.children": 18,
+          "state.data": 14,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 5
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 16,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.49,
+        9.53,
+        12.56
+      ],
+      "R": true,
+      "F": true,
+      "variant": "primary-gapped",
+      "arm": "acyclic",
+      "port": 8124
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6472,
+        9509,
+        12551
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 10,
+      "census": {
+        "n": 764,
+        "quiescent": 325,
+        "quiescent_with_requested": 227,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1361,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1361,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1362,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1574,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1574,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1574,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1576,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1576,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1576,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1593,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1593,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1593,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1599,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1600,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1600,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1611,
+            [],
+            5
+          ],
+          [
+            1611,
+            [],
+            5
+          ],
+          [
+            1611,
+            [],
+            5
+          ],
+          [
+            1611,
+            [],
+            5
+          ],
+          [
+            1613,
+            [],
+            5
+          ],
+          [
+            1613,
+            [],
+            5
+          ],
+          [
+            1613,
+            [],
+            5
+          ],
+          [
+            2361,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            5
+          ],
+          [
+            2361,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            5
+          ],
+          [
+            2361,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            5
+          ],
+          [
+            2363,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2363,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2575,
+            [
+              "..state.data...slider.value...pos.children..",
+              "..state.data...slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2575,
+            [
+              "..state.data...slider.value...pos.children..",
+              "..state.data...slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2575,
+            [
+              "..state.data...slider.value...pos.children..",
+              "..state.data...slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2589,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            2589,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            2589,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            2594,
+            [
+              "play.children"
+            ],
+            8
+          ],
+          [
+            2594,
+            [
+              "play.children"
+            ],
+            8
+          ],
+          [
+            2594,
+            [
+              "play.children"
+            ],
+            8
+          ],
+          [
+            2605,
+            [],
+            9
+          ],
+          [
+            2605,
+            [],
+            9
+          ],
+          [
+            2605,
+            [],
+            9
+          ],
+          [
+            2605,
+            [],
+            9
+          ]
+        ],
+        "t_install": 458.2999999523163,
+        "t_first_feeder_pending": 1361,
+        "quiescent_after_feeder_start": 38,
+        "t_clicks_ms": [
+          6472,
+          9509,
+          12551
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 240,
+          "play.children": 93,
+          "data.data": 44,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 5
+        }
+      },
+      "ctl_requests": 16,
+      "ctl_responses": 16,
+      "pos_requests": 16,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.39,
+        1.59,
+        2.59,
+        3.6,
+        4.58,
+        5.58,
+        6.61,
+        7.58,
+        8.58,
+        9.59,
+        10.58,
+        11.58,
+        12.59,
+        13.58,
+        14.58,
+        15.58
+      ],
+      "R": true,
+      "F": true,
+      "variant": "primary-gapped",
+      "arm": "merged",
+      "port": 8125
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u23f8",
+      "t_clicks_ms": [
+        6540,
+        9593,
+        12626
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u23f8",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 158,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1381,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1381,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1381,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ]
+        ],
+        "t_install": 523.3000001907349,
+        "t_first_feeder_pending": 1381,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6540,
+          9593,
+          12626
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 135,
+          "state.data": 96,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 31,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.48
+      ],
+      "R": false,
+      "F": false,
+      "variant": "dup-always",
+      "arm": "cycle",
+      "port": 8126
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6381,
+        9442,
+        12476
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 288,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1284,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1284,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1285,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ]
+        ],
+        "t_install": 367.40000009536743,
+        "t_first_feeder_pending": 1284,
+        "quiescent_after_feeder_start": 1,
+        "t_clicks_ms": [
+          6381,
+          9442,
+          12476
+        ],
+        "requested_residency": {
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 31,
+          "..slider.value...pos.children..": 24,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.43,
+        9.48,
+        12.52
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-always",
+      "arm": "acyclic",
+      "port": 8127
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6399,
+        9452,
+        12496
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 283,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1298,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1299,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1299,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ]
+        ],
+        "t_install": 383.2999999523163,
+        "t_first_feeder_pending": 1298,
+        "quiescent_after_feeder_start": 2,
+        "t_clicks_ms": [
+          6399,
+          9452,
+          12496
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 54,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 31,
+          "play.children": 27,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 5,
+      "ctl_responses": 5,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.31,
+        2.33,
+        6.45,
+        9.5,
+        12.54
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-always",
+      "arm": "merged",
+      "port": 8128
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u23f8",
+      "t_clicks_ms": [
+        6369,
+        9415,
+        12458
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u23f8",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 158,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1263,
+            [
+              "other.data"
+            ],
+            4
+          ],
+          [
+            1264,
+            [
+              "other.data"
+            ],
+            4
+          ],
+          [
+            1265,
+            [
+              "other.data"
+            ],
+            4
+          ]
+        ],
+        "t_install": 352.09999990463257,
+        "t_first_feeder_pending": 1263,
+        "quiescent_after_feeder_start": 2,
+        "t_clicks_ms": [
+          6369,
+          9415,
+          12458
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 135,
+          "state.data": 96,
+          "other.data": 31,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.32
+      ],
+      "R": false,
+      "F": false,
+      "variant": "unrelated-always",
+      "arm": "cycle",
+      "port": 8129
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6373,
+        9423,
+        12457
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 288,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1276,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1276,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1277,
+            [
+              "other.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 355,
+        "t_first_feeder_pending": 1276,
+        "quiescent_after_feeder_start": 1,
+        "t_clicks_ms": [
+          6373,
+          9423,
+          12457
+        ],
+        "requested_residency": {
+          "other.data": 31,
+          "..slider.value...pos.children..": 24,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.41,
+        9.46,
+        12.49
+      ],
+      "R": true,
+      "F": true,
+      "variant": "unrelated-always",
+      "arm": "acyclic",
+      "port": 8130
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 79",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6374,
+        9427,
+        12459
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 283,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1279,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1279,
+            [
+              "other.data"
+            ],
+            2
+          ],
+          [
+            1279,
+            [
+              "other.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 357.69999980926514,
+        "t_first_feeder_pending": 1279,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6374,
+          9427,
+          12459
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 54,
+          "other.data": 31,
+          "play.children": 27,
+          "data.data": 4
+        }
+      },
+      "ctl_requests": 5,
+      "ctl_responses": 5,
+      "pos_requests": 5,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.29,
+        2.31,
+        6.42,
+        9.47,
+        12.5
+      ],
+      "R": true,
+      "F": true,
+      "variant": "unrelated-always",
+      "arm": "merged",
+      "port": 8131
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u23f8",
+      "t_clicks_ms": [
+        6362,
+        9390,
+        12426
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u23f8",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 158,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1255,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1255,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1255,
+            [
+              "data.data"
+            ],
+            4
+          ]
+        ],
+        "t_install": 351.5,
+        "t_first_feeder_pending": 1255,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6362,
+          9390,
+          12426
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 135,
+          "state.data": 96,
+          "data.data": 31,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.32
+      ],
+      "R": false,
+      "F": false,
+      "variant": "primary-always",
+      "arm": "cycle",
+      "port": 8132
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6347,
+        9404,
+        12439
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 240,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1251,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1251,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1251,
+            [
+              "data.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 331.40000009536743,
+        "t_first_feeder_pending": 1251,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6347,
+          9404,
+          12439
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 235,
+          "data.data": 31,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 4
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.4,
+        9.44,
+        12.48
+      ],
+      "R": true,
+      "F": false,
+      "variant": "primary-always",
+      "arm": "acyclic",
+      "port": 8133
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 0",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6384,
+        9438,
+        12477
+      ],
+      "labels_after_clicks": [
+        "\u25b6",
+        "\u25b6",
+        "\u25b6"
+      ],
+      "pos_end": "0 / 0",
+      "ctl_requests_after_clicks": 0,
+      "census": {
+        "n": 159,
+        "quiescent": 3,
+        "quiescent_with_requested": 3,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1294,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1294,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1294,
+            [
+              "data.data"
+            ],
+            2
+          ]
+        ],
+        "t_install": 371.69999980926514,
+        "t_first_feeder_pending": 1294,
+        "quiescent_after_feeder_start": 0,
+        "t_clicks_ms": [
+          6384,
+          9438,
+          12477
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 142,
+          "data.data": 31,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 4
+        }
+      },
+      "ctl_requests": 1,
+      "ctl_responses": 1,
+      "pos_requests": 1,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.32
+      ],
+      "R": false,
+      "F": false,
+      "variant": "primary-always",
+      "arm": "merged",
+      "port": 8134
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6364,
+        9416,
+        12451
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 9,
+      "census": {
+        "n": 918,
+        "quiescent": 369,
+        "quiescent_with_requested": 277,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1267,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1267,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1268,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            1484,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1484,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1484,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1485,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1485,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1485,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1502,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1502,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1502,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1518,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1518,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1518,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1519,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1520,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1520,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1521,
+            [
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1533,
+            [],
+            8
+          ],
+          [
+            1533,
+            [],
+            8
+          ],
+          [
+            1533,
+            [],
+            8
+          ],
+          [
+            1533,
+            [],
+            8
+          ],
+          [
+            1535,
+            [],
+            8
+          ],
+          [
+            1535,
+            [],
+            8
+          ],
+          [
+            1535,
+            [],
+            8
+          ],
+          [
+            2265,
+            [
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2265,
+            [
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2266,
+            [
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2268,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            2268,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            2483,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2483,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2483,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2485,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2485,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2485,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2500,
+            [
+              "state.data"
+            ],
+            11
+          ],
+          [
+            2500,
+            [
+              "state.data"
+            ],
+            11
+          ],
+          [
+            2500,
+            [
+              "state.data"
+            ],
+            11
+          ]
+        ],
+        "t_install": 349.7000000476837,
+        "t_first_feeder_pending": 1267,
+        "quiescent_after_feeder_start": 38,
+        "t_clicks_ms": [
+          6364,
+          9416,
+          12451
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 231,
+          "play.children": 98,
+          "state.data": 75,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 44,
+          "data.data": 5
+        }
+      },
+      "ctl_requests": 16,
+      "ctl_responses": 15,
+      "pos_requests": 16,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.32,
+        1.51,
+        2.51,
+        3.49,
+        4.51,
+        5.51,
+        6.49,
+        7.51,
+        8.5,
+        9.49,
+        10.49,
+        11.5,
+        12.49,
+        13.5,
+        14.5,
+        15.51
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-gapped",
+      "arm": "cycle",
+      "port": 8135
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6372,
+        9421,
+        12464
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 637,
+        "quiescent": 232,
+        "quiescent_with_requested": 134,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1284,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1284,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1285,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1497,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1497,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1497,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1500,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1500,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1500,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1518,
+            [],
+            4
+          ],
+          [
+            1518,
+            [],
+            4
+          ],
+          [
+            1518,
+            [],
+            4
+          ],
+          [
+            1518,
+            [],
+            4
+          ],
+          [
+            1524,
+            [],
+            4
+          ],
+          [
+            1525,
+            [],
+            4
+          ],
+          [
+            1525,
+            [],
+            4
+          ],
+          [
+            2283,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2283,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2284,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2287,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            2287,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            4
+          ],
+          [
+            2503,
+            [
+              "..slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2503,
+            [
+              "..slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2503,
+            [
+              "..slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2520,
+            [],
+            8
+          ],
+          [
+            2520,
+            [],
+            8
+          ],
+          [
+            2520,
+            [],
+            8
+          ],
+          [
+            2520,
+            [],
+            8
+          ],
+          [
+            2523,
+            [],
+            8
+          ],
+          [
+            2523,
+            [],
+            8
+          ],
+          [
+            2523,
+            [],
+            8
+          ],
+          [
+            3283,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            3283,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            3283,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            8
+          ],
+          [
+            3493,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3493,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3493,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3493,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3493,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            3493,
+            [
+              "..slider.value...pos.children.."
+            ],
+            9
+          ]
+        ],
+        "t_install": 358,
+        "t_first_feeder_pending": 1284,
+        "quiescent_after_feeder_start": 38,
+        "t_clicks_ms": [
+          6372,
+          9421,
+          12464
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 120,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 44,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data": 5
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 19,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.42,
+        9.47,
+        12.5
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-gapped",
+      "arm": "acyclic",
+      "port": 8136
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6350,
+        9395,
+        12434
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u25b6"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 12,
+      "census": {
+        "n": 831,
+        "quiescent": 304,
+        "quiescent_with_requested": 206,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1257,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1257,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1257,
+            [
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            2
+          ],
+          [
+            1472,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1472,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1472,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1473,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1473,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1473,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1490,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1490,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1490,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1496,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1496,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1496,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            1509,
+            [],
+            5
+          ],
+          [
+            2256,
+            [
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2256,
+            [
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2256,
+            [
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2258,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            5
+          ],
+          [
+            2258,
+            [
+              "data.data",
+              "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969"
+            ],
+            5
+          ],
+          [
+            2472,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            2472,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            2472,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            9
+          ],
+          [
+            2487,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2487,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2487,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2490,
+            [
+              "play.children"
+            ],
+            10
+          ],
+          [
+            2490,
+            [
+              "play.children"
+            ],
+            10
+          ],
+          [
+            2490,
+            [
+              "play.children"
+            ],
+            10
+          ],
+          [
+            2500,
+            [],
+            11
+          ],
+          [
+            2500,
+            [],
+            11
+          ],
+          [
+            2500,
+            [],
+            11
+          ],
+          [
+            2500,
+            [],
+            11
+          ]
+        ],
+        "t_install": 335.7000000476837,
+        "t_first_feeder_pending": 1257,
+        "quiescent_after_feeder_start": 37,
+        "t_clicks_ms": [
+          6350,
+          9395,
+          12434
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 207,
+          "play.children": 104,
+          "data.data@8d7e34ec301edb145192f853dbd2f8a05810bcd0219db89f11e040546fdce969": 44,
+          "data.data": 5
+        }
+      },
+      "ctl_requests": 19,
+      "ctl_responses": 19,
+      "pos_requests": 19,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.27,
+        1.49,
+        2.28,
+        2.48,
+        3.48,
+        4.48,
+        5.48,
+        6.39,
+        6.48,
+        7.48,
+        8.48,
+        9.44,
+        9.48,
+        10.48,
+        11.48,
+        12.47,
+        12.48,
+        13.48,
+        14.48
+      ],
+      "R": true,
+      "F": true,
+      "variant": "dup-gapped",
+      "arm": "merged",
+      "port": 8137
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6494,
+        9549,
+        12587
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u25b6"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 10,
+      "census": {
+        "n": 933,
+        "quiescent": 374,
+        "quiescent_with_requested": 281,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1379,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1380,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1380,
+            [
+              "data.data"
+            ],
+            4
+          ],
+          [
+            1594,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1594,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1594,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1596,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1596,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1596,
+            [
+              "..slider.value...pos.children.."
+            ],
+            5
+          ],
+          [
+            1609,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1609,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1609,
+            [
+              "state.data"
+            ],
+            6
+          ],
+          [
+            1620,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1620,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1620,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1621,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1622,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1622,
+            [
+              "..slider.value...pos.children..",
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1623,
+            [
+              "play.children"
+            ],
+            7
+          ],
+          [
+            1632,
+            [],
+            8
+          ],
+          [
+            1632,
+            [],
+            8
+          ],
+          [
+            1632,
+            [],
+            8
+          ],
+          [
+            1632,
+            [],
+            8
+          ],
+          [
+            1633,
+            [],
+            8
+          ],
+          [
+            1633,
+            [],
+            8
+          ],
+          [
+            1633,
+            [],
+            8
+          ],
+          [
+            2377,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            8
+          ],
+          [
+            2377,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            8
+          ],
+          [
+            2377,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            8
+          ],
+          [
+            2379,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2379,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            8
+          ],
+          [
+            2593,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2593,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2593,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2595,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2595,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2595,
+            [
+              "..slider.value...pos.children.."
+            ],
+            10
+          ],
+          [
+            2608,
+            [
+              "state.data"
+            ],
+            11
+          ],
+          [
+            2608,
+            [
+              "state.data"
+            ],
+            11
+          ],
+          [
+            2608,
+            [
+              "state.data"
+            ],
+            11
+          ]
+        ],
+        "t_install": 479.5,
+        "t_first_feeder_pending": 1379,
+        "quiescent_after_feeder_start": 39,
+        "t_clicks_ms": [
+          6494,
+          9549,
+          12587
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 231,
+          "play.children": 98,
+          "state.data": 95,
+          "data.data": 43,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 5
+        }
+      },
+      "ctl_requests": 16,
+      "ctl_responses": 16,
+      "pos_requests": 16,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.44,
+        1.62,
+        2.62,
+        3.61,
+        4.61,
+        5.61,
+        6.6,
+        7.62,
+        8.61,
+        9.6,
+        10.62,
+        11.61,
+        12.62,
+        13.6,
+        14.62,
+        15.62
+      ],
+      "R": true,
+      "F": true,
+      "variant": "primary-gapped",
+      "arm": "cycle",
+      "port": 8138
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6420,
+        9477,
+        12508
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 80",
+      "ctl_requests_after_clicks": 3,
+      "census": {
+        "n": 611,
+        "quiescent": 239,
+        "quiescent_with_requested": 134,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            1318,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1318,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1319,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1533,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1533,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1533,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1535,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1535,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1535,
+            [
+              "..slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1551,
+            [],
+            4
+          ],
+          [
+            1551,
+            [],
+            4
+          ],
+          [
+            1551,
+            [],
+            4
+          ],
+          [
+            1551,
+            [],
+            4
+          ],
+          [
+            1557,
+            [],
+            4
+          ],
+          [
+            1557,
+            [],
+            4
+          ],
+          [
+            1557,
+            [],
+            4
+          ],
+          [
+            2317,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            4
+          ],
+          [
+            2317,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            4
+          ],
+          [
+            2317,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            4
+          ],
+          [
+            2320,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2320,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            4
+          ],
+          [
+            2533,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            6
+          ],
+          [
+            2533,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            6
+          ],
+          [
+            2533,
+            [
+              "..slider.value...pos.children..",
+              "..slider.value...pos.children.."
+            ],
+            6
+          ],
+          [
+            2549,
+            [],
+            7
+          ],
+          [
+            2550,
+            [],
+            7
+          ],
+          [
+            2550,
+            [],
+            7
+          ],
+          [
+            2550,
+            [],
+            7
+          ],
+          [
+            2554,
+            [],
+            7
+          ],
+          [
+            2554,
+            [],
+            7
+          ],
+          [
+            2554,
+            [],
+            7
+          ],
+          [
+            3317,
+            [
+              "data.data"
+            ],
+            7
+          ],
+          [
+            3317,
+            [
+              "data.data"
+            ],
+            7
+          ],
+          [
+            3317,
+            [
+              "data.data"
+            ],
+            7
+          ],
+          [
+            3528,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3528,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3528,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3529,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3529,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            3529,
+            [
+              "..slider.value...pos.children.."
+            ],
+            8
+          ]
+        ],
+        "t_install": 402.2999999523163,
+        "t_first_feeder_pending": 1318,
+        "quiescent_after_feeder_start": 38,
+        "t_clicks_ms": [
+          6420,
+          9477,
+          12508
+        ],
+        "requested_residency": {
+          "..slider.value...pos.children..": 172,
+          "data.data": 44,
+          "play.children": 18,
+          "state.data": 6,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 5
+        }
+      },
+      "ctl_requests": 3,
+      "ctl_responses": 3,
+      "pos_requests": 16,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        6.47,
+        9.51,
+        12.55
+      ],
+      "R": true,
+      "F": true,
+      "variant": "primary-gapped",
+      "arm": "acyclic",
+      "port": 8139
+    },
+    {
+      "store_found": true,
+      "pos_after_fill": "0 / 80",
+      "label_before": "\u25b6",
+      "t_clicks_ms": [
+        6320,
+        9374,
+        12415
+      ],
+      "labels_after_clicks": [
+        "\u23f8",
+        "\u25b6",
+        "\u23f8"
+      ],
+      "pos_end": "0 / 79",
+      "ctl_requests_after_clicks": 9,
+      "census": {
+        "n": 736,
+        "quiescent": 316,
+        "quiescent_with_requested": 215,
+        "nonreq_pending_min": 0,
+        "q_samples": [
+          [
+            306,
+            [],
+            2
+          ],
+          [
+            306,
+            [],
+            2
+          ],
+          [
+            306,
+            [],
+            2
+          ],
+          [
+            1238,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1239,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1239,
+            [
+              "data.data"
+            ],
+            2
+          ],
+          [
+            1454,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1454,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1454,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1456,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1456,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1456,
+            [
+              "..state.data...slider.value...pos.children.."
+            ],
+            3
+          ],
+          [
+            1473,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1473,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1473,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            4
+          ],
+          [
+            1480,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1480,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1480,
+            [
+              "play.children"
+            ],
+            4
+          ],
+          [
+            1493,
+            [],
+            5
+          ],
+          [
+            1493,
+            [],
+            5
+          ],
+          [
+            1493,
+            [],
+            5
+          ],
+          [
+            1493,
+            [],
+            5
+          ],
+          [
+            1494,
+            [],
+            5
+          ],
+          [
+            1495,
+            [],
+            5
+          ],
+          [
+            1495,
+            [],
+            5
+          ],
+          [
+            2237,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            5
+          ],
+          [
+            2237,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            5
+          ],
+          [
+            2238,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97"
+            ],
+            5
+          ],
+          [
+            2240,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2240,
+            [
+              "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97",
+              "data.data"
+            ],
+            5
+          ],
+          [
+            2454,
+            [
+              "..state.data...slider.value...pos.children..",
+              "..state.data...slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2454,
+            [
+              "..state.data...slider.value...pos.children..",
+              "..state.data...slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2454,
+            [
+              "..state.data...slider.value...pos.children..",
+              "..state.data...slider.value...pos.children.."
+            ],
+            7
+          ],
+          [
+            2470,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            2470,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            2470,
+            [
+              "..state.data...slider.value...pos.children..",
+              "play.children",
+              "..state.data...slider.value...pos.children.."
+            ],
+            8
+          ],
+          [
+            2475,
+            [
+              "play.children"
+            ],
+            8
+          ],
+          [
+            2475,
+            [
+              "play.children"
+            ],
+            8
+          ],
+          [
+            2475,
+            [
+              "play.children"
+            ],
+            8
+          ],
+          [
+            2486,
+            [],
+            9
+          ]
+        ],
+        "t_install": 305.40000009536743,
+        "t_first_feeder_pending": 1239,
+        "quiescent_after_feeder_start": 34,
+        "t_clicks_ms": [
+          6320,
+          9374,
+          12415
+        ],
+        "requested_residency": {
+          "..state.data...slider.value...pos.children..": 228,
+          "play.children": 87,
+          "data.data": 44,
+          "data.data@851875e8c9bfbc3702e086728eb5029ab426595c536acda4ad1fa45e75496f97": 5
+        }
+      },
+      "ctl_requests": 16,
+      "ctl_responses": 15,
+      "pos_requests": 16,
+      "feed_requests": 15,
+      "ctl_request_times_s": [
+        0.26,
+        1.47,
+        2.46,
+        3.46,
+        4.46,
+        5.46,
+        6.46,
+        7.46,
+        8.46,
+        9.46,
+        10.46,
+        11.46,
+        12.46,
+        13.46,
+        14.46,
+        15.46
+      ],
+      "R": true,
+      "F": true,
+      "variant": "primary-gapped",
+      "arm": "merged",
+      "port": 8140
+    }
+  ]
+}

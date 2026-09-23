@@ -1,0 +1,1362 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "32b889980fc2d19d",
+    "argv": [
+      "claim1",
+      "--seconds",
+      "90",
+      "--redux",
+      "--tag",
+      "run2_redux"
+    ],
+    "step": "claim1"
+  },
+  "provenance_before": {
+    "captured_utc": "2026-09-22T21:14:57.650+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "provenance_after": {
+    "captured_utc": "2026-09-22T21:16:53.244+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "browser": {
+    "launch_args": [
+      "--disable-dev-shm-usage",
+      "--enable-gpu",
+      "--ignore-gpu-blocklist",
+      "--use-angle=vulkan",
+      "--enable-features=Vulkan"
+    ],
+    "headless": true,
+    "webgl_about_blank": {
+      "webgl": "webgl2",
+      "vendor": "Google Inc. (NVIDIA)",
+      "renderer": "ANGLE (NVIDIA, Vulkan 1.4.312 (NVIDIA NVIDIA GeForce RTX 2080 (0x00001E87)), NVIDIA)"
+    }
+  },
+  "served_writers_of_metrics_store": [
+    {
+      "output": "metrics-panel-metrics-store.data",
+      "inputs": [
+        "metrics-store-interval.n_intervals",
+        "metrics-panel-display-mode-store.data"
+      ],
+      "state": [
+        "ws-liveness-store.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": false,
+      "clientside": false,
+      "websocket": false
+    },
+    {
+      "output": "metrics-panel-metrics-store.data@15586d300aa70069205f6b6c4219bfbeb86bfb1346f8fa1c90efa1e3e429297a",
+      "inputs": [
+        "ws-metrics-buffer.data"
+      ],
+      "state": [
+        "metrics-panel-display-mode-store.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    }
+  ],
+  "tab_activation": {
+    "t_tab_click": 4.855,
+    "before": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "after": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "tab_matches": 1,
+    "open_dialogs_after_click": []
+  },
+  "phases_s": {
+    "idle": [
+      4.855,
+      94.855
+    ]
+  },
+  "summary": {
+    "rest_poll_all_capture": {
+      "window_s": [
+        null,
+        null
+      ],
+      "responses": 15,
+      "by_class": {
+        "carried": 1,
+        "no_update": 13,
+        "pending": 1
+      },
+      "by_branch": {
+        "write (fetched list != State)": 1,
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 13,
+        "unparseable": 1
+      },
+      "distinct_carried_payload_shas": {
+        "92e4bfae13963661": 1
+      },
+      "distinct_state_shas_sent": {
+        "4f53cda18c2baa0c": 1,
+        "92e4bfae13963661": 14
+      }
+    },
+    "rest_poll_idle_window": {
+      "window_s": [
+        4.855,
+        94.855
+      ],
+      "responses": 11,
+      "by_class": {
+        "carried": 1,
+        "no_update": 10
+      },
+      "by_branch": {
+        "write (fetched list != State)": 1,
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 10
+      },
+      "distinct_carried_payload_shas": {
+        "92e4bfae13963661": 1
+      },
+      "distinct_state_shas_sent": {
+        "4f53cda18c2baa0c": 1,
+        "92e4bfae13963661": 10
+      }
+    },
+    "rest_poll_first_60s_after_tab": {
+      "window_s": [
+        4.855,
+        64.855
+      ],
+      "responses": 7,
+      "by_class": {
+        "carried": 1,
+        "no_update": 6
+      },
+      "by_branch": {
+        "write (fetched list != State)": 1,
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 6
+      },
+      "distinct_carried_payload_shas": {
+        "92e4bfae13963661": 1
+      },
+      "distinct_state_shas_sent": {
+        "4f53cda18c2baa0c": 1,
+        "92e4bfae13963661": 6
+      }
+    },
+    "rest_poll_idle_after_first_fill": {
+      "window_s": [
+        12.027999999999999,
+        94.855
+      ],
+      "responses": 10,
+      "by_class": {
+        "no_update": 10
+      },
+      "by_branch": {
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 10
+      },
+      "distinct_carried_payload_shas": {},
+      "distinct_state_shas_sent": {
+        "92e4bfae13963661": 10
+      }
+    },
+    "rest_poll_control_window": null,
+    "ws_append_writer": {
+      "responses": 0,
+      "by_class": {}
+    },
+    "reference_fetches_distinct": [
+      {
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "n": 23
+      }
+    ],
+    "reference_fetch_errors": [],
+    "all_update_component_requests": 338,
+    "requests_by_output_top": [
+      [
+        "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+        53
+      ],
+      [
+        "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+        52
+      ],
+      [
+        "dataset-swap-events-store.data",
+        23
+      ],
+      [
+        "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+        23
+      ],
+      [
+        "metrics-panel-training-state-store.data",
+        23
+      ],
+      [
+        "metrics-panel-progress-detail.children",
+        14
+      ],
+      [
+        "metrics-panel-phase-duration.children",
+        14
+      ],
+      [
+        "metrics-panel-current-lr.children",
+        14
+      ],
+      [
+        "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+        14
+      ],
+      [
+        "metrics-panel-replay-controls.style",
+        14
+      ],
+      [
+        "..sidebar-pinned-list.children...sidebar-pinned-card.style..",
+        3
+      ],
+      [
+        "..experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..",
+        2
+      ],
+      [
+        "..nn-growth-preset-epochs-input.disabled...nn-growth-convergence-threshold-input.disabled..",
+        2
+      ],
+      [
+        "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..",
+        2
+      ],
+      [
+        "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..",
+        2
+      ],
+      [
+        "..apply-params-button.disabled...params-status.children..",
+        2
+      ],
+      [
+        "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..",
+        2
+      ],
+      [
+        "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..",
+        2
+      ],
+      [
+        "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309",
+        2
+      ],
+      [
+        "pinned-params-store.data",
+        2
+      ],
+      [
+        "..theme-state.data...dark-mode-toggle.children..",
+        1
+      ],
+      [
+        "loaded-snapshot-swap-events-store.data",
+        1
+      ],
+      [
+        "..start-button.disabled...start-button.children...pause-button.disabled...pause-button.children...stop-button.disabled...stop-button.children...resume-button.disabled...resume-button.children...reset-button.disabled...reset-button.children...apply-dataset-button.disabled..",
+        1
+      ],
+      [
+        "metrics-panel-layout-dropdown.options",
+        1
+      ],
+      [
+        "network-visualizer-topology-store.data",
+        1
+      ]
+    ]
+  },
+  "rest_poll_rows": [
+    {
+      "seq": 80,
+      "t_req": 12.027,
+      "t_done": 12.047,
+      "latency_s": 0.02,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 6,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "4f53cda18c2baa0c",
+        "len": 0
+      },
+      "class": "carried",
+      "why": "id_in_response_map",
+      "http": 200,
+      "resp_bytes": 28570,
+      "carried": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "carried_equals_state_py_eq": false,
+      "carried_equals_ref_py_eq": true,
+      "state_equals_ref_py_eq": false,
+      "ref": {
+        "t": 11.253,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "write (fetched list != State)"
+    },
+    {
+      "seq": 106,
+      "t_req": 19.737,
+      "t_done": 19.761,
+      "latency_s": 0.024,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 8,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 21.305,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 128,
+      "t_req": 34.7,
+      "t_done": 34.727,
+      "latency_s": 0.027,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 9,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 36.357,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 146,
+      "t_req": 40.673,
+      "t_done": 40.7,
+      "latency_s": 0.027,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 10,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 41.371,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 163,
+      "t_req": 47.75,
+      "t_done": 47.783,
+      "latency_s": 0.033,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 11,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 46.382,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 181,
+      "t_req": 54.327,
+      "t_done": 54.354,
+      "latency_s": 0.027,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 12,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 56.412,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 198,
+      "t_req": 60.865,
+      "t_done": 60.888,
+      "latency_s": 0.023,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 13,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 61.429,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 215,
+      "t_req": 68.45,
+      "t_done": 68.498,
+      "latency_s": 0.048,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 14,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 66.447,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 235,
+      "t_req": 75.702,
+      "t_done": 75.726,
+      "latency_s": 0.024,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 15,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 76.479,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 257,
+      "t_req": 84.233,
+      "t_done": 84.268,
+      "latency_s": 0.035,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 16,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 86.508,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 272,
+      "t_req": 89.663,
+      "t_done": 89.698,
+      "latency_s": 0.035,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 17,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 91.532,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 287,
+      "t_req": 95.982,
+      "t_done": 96.004,
+      "latency_s": 0.022,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 18,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 96.556,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 297,
+      "t_req": 101.798,
+      "t_done": 101.87,
+      "latency_s": 0.072,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 19,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 101.577,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 319,
+      "t_req": 107.725,
+      "t_done": 107.75,
+      "latency_s": 0.025,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 20,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 106.602,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 337,
+      "t_req": null,
+      "t_done": null,
+      "latency_s": null,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 21,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "pending",
+      "why": "no_response_before_capture_end",
+      "http": null,
+      "resp_bytes": null,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 1.212,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "unparseable"
+    }
+  ],
+  "ws_append_rows": [],
+  "redux_vs_state_agreement": [
+    {
+      "snapshot": "idle_start",
+      "redux_store_sha": "4f53cda18c2baa0c",
+      "redux_len": 0,
+      "next_poll_seq": 80,
+      "next_poll_state_sha": "4f53cda18c2baa0c"
+    },
+    {
+      "snapshot": "idle_30s",
+      "redux_store_sha": "92e4bfae13963661",
+      "redux_len": 95,
+      "next_poll_seq": 163,
+      "next_poll_state_sha": "92e4bfae13963661"
+    },
+    {
+      "snapshot": "idle_60s",
+      "redux_store_sha": "92e4bfae13963661",
+      "redux_len": 95,
+      "next_poll_seq": 257,
+      "next_poll_state_sha": "92e4bfae13963661"
+    },
+    {
+      "snapshot": "idle_90s",
+      "redux_store_sha": "92e4bfae13963661",
+      "redux_len": 95,
+      "next_poll_seq": null,
+      "next_poll_state_sha": null
+    }
+  ],
+  "snapshots": [
+    {
+      "label": "idle_start",
+      "t": 9.598,
+      "wire_seq": 71,
+      "dom": {
+        "t_page_ms": 11504,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 0,
+          "max": 100,
+          "drag_value": 0
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 8,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "prioritized": {
+            "n": 24,
+            "relevant": [
+              "metrics-panel-replay-controls.style",
+              "replay-weight-buffer.data"
+            ]
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 12,
+            "relevant": [
+              "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..",
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 31,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children.."
+            ]
+          },
+          "completed": 88
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "4f53cda18c2baa0c",
+          "len": 0
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 0,
+        "poll_seq": 80
+      }
+    },
+    {
+      "label": "idle_30s",
+      "t": 44.003,
+      "wire_seq": 153,
+      "dom": {
+        "t_page_ms": 44397,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 0,
+          "max": 100,
+          "drag_value": 0
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 3,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 10,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 254
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 146
+      }
+    },
+    {
+      "label": "idle_60s",
+      "t": 76.974,
+      "wire_seq": 237,
+      "dom": {
+        "t_page_ms": 77348,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 0,
+          "max": 100,
+          "drag_value": 0
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 3,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 11,
+            "relevant": [
+              "metrics-panel-metrics-store.data",
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 469
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 215
+      }
+    },
+    {
+      "label": "idle_90s",
+      "t": 110.538,
+      "wire_seq": 324,
+      "dom": {
+        "t_page_ms": 110654,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 0,
+          "max": 100,
+          "drag_value": 0
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 2,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 7,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 680
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 319
+      }
+    }
+  ],
+  "console_errors_warnings": []
+}

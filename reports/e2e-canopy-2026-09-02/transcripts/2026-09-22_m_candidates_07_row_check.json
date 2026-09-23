@@ -1,0 +1,139 @@
+{
+  "probe": "2026-09-22_m_candidates_07_row_check.py",
+  "canopy": "http://127.0.0.1:8051",
+  "candidate_rows": 30,
+  "runs": [
+    {
+      "render": {
+        "ok": true,
+        "t_s": 4.8,
+        "figure": {
+          "present": true,
+          "traces": [
+            {
+              "name": "Candidate Training",
+              "n": 30
+            }
+          ],
+          "paper_bgcolor": "#ffffff",
+          "font_color": "#212529",
+          "html_dark": false
+        }
+      },
+      "theme": {
+        "ok": false,
+        "t_s": 17.1,
+        "before": [
+          "#ffffff",
+          "#212529",
+          false
+        ],
+        "after": [
+          "#ffffff",
+          "#212529",
+          true
+        ]
+      },
+      "restore": {
+        "ok": true,
+        "t_s": 1.6,
+        "after": [
+          "#ffffff",
+          "#212529",
+          true
+        ]
+      },
+      "i": 0
+    },
+    {
+      "render": {
+        "ok": true,
+        "t_s": 12.5,
+        "figure": {
+          "present": true,
+          "traces": [
+            {
+              "name": "Candidate Training",
+              "n": 30
+            }
+          ],
+          "paper_bgcolor": "#ffffff",
+          "font_color": "#212529",
+          "html_dark": false
+        }
+      },
+      "theme": {
+        "ok": false,
+        "t_s": 18.6,
+        "before": [
+          "#ffffff",
+          "#212529",
+          false
+        ],
+        "after": [
+          "#ffffff",
+          "#212529",
+          true
+        ]
+      },
+      "restore": {
+        "ok": true,
+        "t_s": 1.2,
+        "after": [
+          "#ffffff",
+          "#212529",
+          true
+        ]
+      },
+      "i": 1
+    },
+    {
+      "render": {
+        "ok": true,
+        "t_s": 12.5,
+        "figure": {
+          "present": true,
+          "traces": [
+            {
+              "name": "Candidate Training",
+              "n": 30
+            }
+          ],
+          "paper_bgcolor": "#ffffff",
+          "font_color": "#212529",
+          "html_dark": false
+        }
+      },
+      "theme": {
+        "ok": false,
+        "t_s": 17.0,
+        "before": [
+          "#ffffff",
+          "#212529",
+          false
+        ],
+        "after": [
+          "#ffffff",
+          "#212529",
+          true
+        ]
+      },
+      "restore": {
+        "ok": true,
+        "t_s": 1.3,
+        "after": [
+          "#ffffff",
+          "#212529",
+          true
+        ]
+      },
+      "i": 2
+    }
+  ],
+  "serving": {
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "version": "0.8.1",
+    "build_date": "2026-09-22T19:38:01Z"
+  },
+  "verdict": "FAIL"
+}

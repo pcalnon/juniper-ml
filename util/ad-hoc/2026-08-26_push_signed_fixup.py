@@ -10,6 +10,7 @@ Status: ad-hoc -- tooling gap filler
 Retire when: superseded by an `--update` mode on util/open_signed_pr.py, or RETAINED as
              provenance per the owner policy (2026-08-25)
 Related: util/open_signed_pr.py (whose create_signed_commit this reuses verbatim)
+Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 Why this exists
 ---------------

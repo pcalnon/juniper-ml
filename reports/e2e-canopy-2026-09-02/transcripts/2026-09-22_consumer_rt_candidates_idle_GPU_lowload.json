@@ -1,0 +1,649 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8051",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8051",
+    "version": "0.8.1",
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "build_date": "2026-09-22T19:38:01Z"
+  },
+  "tab": "candidates",
+  "started_at": "2026-09-22T20:49:06Z",
+  "seconds": 90.0,
+  "tab_opened": true,
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 39,
+      "rt_ms": {
+        "n": 39,
+        "min": 16.8,
+        "p50": 25.5,
+        "p90": 33.5,
+        "max": 54.3,
+        "mean": 26.8
+      },
+      "gap_ms": {
+        "n": 38,
+        "min": 1502.7,
+        "p50": 2015.3,
+        "p90": 2712.6,
+        "max": 7847.0,
+        "mean": 2237.6
+      },
+      "overlaps": 0
+    },
+    "update_status_display": {
+      "requests": 0,
+      "rt_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_epoch_progress": {
+      "requests": 0,
+      "rt_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_pool_info": {
+      "requests": 0,
+      "rt_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_loss_plot (State since #618)": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 134.3,
+        "p50": 134.3,
+        "p90": 134.3,
+        "max": 134.3,
+        "mean": 134.3
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 149,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 43,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 42,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 18,
+    "dataset-swap-events-store.data": 18,
+    "metrics-panel-metrics-store.data": 11,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 2,
+    "worker-panel-workers-store.data": 1,
+    "decision-boundary-boundary-data.data": 1,
+    "decision-boundary-dataset-data.data": 1,
+    "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metr": 1,
+    "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-pan": 1,
+    "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 1,
+    "network-visualizer-topology-store.data": 1,
+    "metrics-panel-training-state-store.data": 1,
+    "metrics-panel-progress-detail.children": 1,
+    "metrics-panel-current-lr.children": 1,
+    "metrics-panel-phase-duration.children": 1,
+    "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...met": 1,
+    "metrics-panel-replay-controls.style": 1,
+    "pinned-params-store.data": 1,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "candidate-metrics-panel-training-state-store",
+    "reads": 23,
+    "readable": 23,
+    "distinct_timestamps": 1,
+    "samples": [
+      {
+        "t": 0.9,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 11.5,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 15.7,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 20.2,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 23.8,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 28.0,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 31.5,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 34.5,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 37.7,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 41.6,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 45.3,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 48.6,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 51.5,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 55.2,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 59.2,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 62.5,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 66.3,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 69.7,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 73.9,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 77.4,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 81.0,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 84.6,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      },
+      {
+        "t": 88.9,
+        "ok": true,
+        "timestamp": 1790110164.6427774,
+        "keys": 61
+      }
+    ]
+  },
+  "writer_responses": {
+    "carried_store": 39,
+    "no_update": 0,
+    "unparsed": 1,
+    "distinct_timestamps_delivered": 39
+  },
+  "panel": {
+    "samples": [
+      {
+        "t": 1.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 13.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 16.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 21.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 25.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 29.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 32.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 36.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 39.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 43.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 46.4,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 49.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 53.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 57.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 60.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 64.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 68.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 70.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 75.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 79.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 82.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 85.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 90.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      }
+    ],
+    "server_pool_status_seen": [
+      "Inactive"
+    ],
+    "dom_badge_seen": [
+      "Inactive"
+    ]
+  }
+}

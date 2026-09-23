@@ -1,0 +1,304 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "247558f62002272b",
+    "argv": [
+      "modal"
+    ],
+    "step": "modal"
+  },
+  "provenance": {
+    "captured_utc": "2026-09-22T21:10:13.770+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "samples": [
+    {
+      "t": 4.2,
+      "dialogs": []
+    },
+    {
+      "t": 7.0,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 9.7,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 16.2,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 20.3,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 25.6,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 34.4,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 38.4,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 42.3,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 46.3,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 50.2,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "t": 53.2,
+      "dialogs": [
+        {
+          "cls": "fade modal show",
+          "id": null,
+          "visible": true,
+          "title": "Welcome to Juniper Canopy",
+          "text": "Welcome to Juniper CanopyJuniper Canopy is a real-time monitoring dashboard for Cascade Correlation Neural Network training. Here's how to get started:Configure parameters in the sidebar (or use defaults)Click Start to begin trainingWatch metrics, topology, and decision boundaries update liveSave snapshots to checkpoint your progressSee the Tutorial tab for a complete reference guide.Get Started",
+          "buttons": [
+            {
+              "id": null,
+              "text": "",
+              "cls": "btn-close"
+            },
+            {
+              "id": "welcome-modal-close",
+              "text": "Get Started",
+              "cls": "btn btn-primary"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "webgl_about_blank": {
+    "webgl": "webgl2",
+    "vendor": "Google Inc. (NVIDIA)",
+    "renderer": "ANGLE (NVIDIA, Vulkan 1.4.312 (NVIDIA NVIDIA GeForce RTX 2080 (0x00001E87)), NVIDIA)"
+  }
+}
