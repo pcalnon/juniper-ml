@@ -10,6 +10,7 @@ Status:      ad-hoc (decision-11 release train); candidate for util/ promotion
 Related:     util/open_signed_pr.py (opens a NEW branch + PR; refuses an existing
              branch), util/release_train/propose.py (opens release-proposal PRs
              whose branches this script then completes)
+Superseded:  for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 Why this exists
 ---------------

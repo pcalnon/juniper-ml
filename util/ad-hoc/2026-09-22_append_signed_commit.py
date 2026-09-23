@@ -8,6 +8,7 @@ Created:     2026-09-22
 Status:      ad-hoc -- cross-repo tooling
 Retire when: promote to util/ if it is wanted a second time; otherwise RETAINED as provenance
 Related:     util/open_signed_pr.py (the reference implementation; its DUP-GUARD is why this exists)
+Superseded:  for new use by util/push_signed_commit.py -- the util/ promotion "Retire when" asked for; RETAINED here as provenance (owner policy 2026-08-25).
 
 `util/open_signed_pr.py` opens a branch, a signed commit and a PR in one call, and refuses to run
 when an open PR already exists for the branch -- correctly, because re-running it is almost always

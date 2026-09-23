@@ -8,6 +8,7 @@ Created: 2026-09-08
 Status: ad-hoc — wip (candidate for promotion next to util/open_signed_pr.py, with a hermetic test like tests/test_open_signed_pr.py)
 Retire when: RETAINED — ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 Related: util/open_signed_pr.py (whose ``create_signed_commit`` this reuses verbatim); canopy#601 (the first PR it added a fix-up to)
+Superseded: for new use by util/push_signed_commit.py, its promoted form (the same required --expected-head, plus a FULL-sha check, a default-branch refusal and a signature/parent read-back); RETAINED here as provenance.
 
 Why this exists
 ---------------
