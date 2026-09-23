@@ -41,9 +41,11 @@ coincide, so the split is a no-op and behaviour is byte-identical to Phase 3:
   4. **Auto-merge** -- enable ``gh pr merge --auto --squash`` on it; if the repo has ``allow_auto_merge``
      off (step 3.3 has not landed yet) enabling **degrades gracefully** to the owner one-click merge,
      it is NOT a halt.
-  5. **Cut the Release** -- ``gh release create <tag> --latest=false --notes-file <archive>``. The
-     Release **creates** the tag for a sub-package (procedure S11.4), so there is deliberately **no**
-     ``--verify-tag`` (there is no pre-existing tag to verify).
+  5. **Cut the Release** -- ``gh release create <tag> --latest|--latest=false --notes-file <archive>``.
+     ``--latest`` only for the package whose registry entry says ``latest: true`` -- one per repo, the
+     package that owns that repo's "Latest" badge -- and ``--latest=false`` for every other (procedure
+     S11.4). The Release **creates** the tag for a sub-package (procedure S11.4), so there is
+     deliberately **no** ``--verify-tag`` (there is no pre-existing tag to verify).
   6. **Monitor** -- watch the triggered publish run; the run legitimately parks at the ``pypi``
      environment gate: that terminal state ``PENDING_PYPI_APPROVAL`` **is success for the train** (plan
      S5.1 terminal-healthy). A TestPyPI-verify failure before Gate 2 is a HALT.
@@ -600,6 +602,7 @@ class CeremonyPlan:
     released_version: "str | None"
     target_version: "str | None"
     tag: "str | None" = None
+    latest: bool = False  # registry ``latest``: cut with --latest (the repo's badge-owning package) or --latest=false (procedure S11.4)
     archive_repo: str = detect.META_REPO  # the exempt notes-archive PR is ALWAYS central in juniper-ml (plan S10.2)
     state: str = "CEREMONY_PLANNED"  # CEREMONY_PLANNED | RESUME_MONITOR | ALREADY_RELEASED | HALTED | SKIPPED_CROSS_REPO
     halted: bool = False
@@ -624,6 +627,7 @@ class CeremonyPlan:
             "released_version": self.released_version,
             "target_version": self.target_version,
             "tag": self.tag,
+            "latest": self.latest,
             "state": self.state,
             "halted": self.halted,
             "halt_reason": self.halt_reason,
@@ -826,19 +830,21 @@ def make_live_sources(owner: str, repo_root: Path, ecosystem_root: Path, *, allo
         except SourceError:
             return False
 
-    def create_release(repo: str, tag: str, title: str, notes_relpath: str, content: str) -> str:
+    def create_release(repo: str, tag: str, title: str, notes_relpath: str, content: str, *, latest: bool = False) -> str:
         # Render the notes body to a SCRATCH temp file (never into any checkout). The archived copy
         # already rode the exempt archive PR into juniper-ml's central notes/releases/ (``notes_relpath``,
         # kept for the record/log); writing it into the OWNING checkout here left a stray untracked file
-        # that dirtied the tree (07-19 live run). --notes-file takes the temp path. --latest=false: a
-        # sub-package Release never steals the meta-package's "latest" badge (procedure S11.4). NO
+        # that dirtied the tree (07-19 live run). --notes-file takes the temp path. ``latest`` is the
+        # registry's per-repo badge owner (procedure S11.4): --latest for it, --latest=false for every other
+        # package, so a sub-package Release never steals its repo's badge. The default is the badge-safe
+        # --latest=false; until 2026-09-23 that was the ONLY value, and every repo's badge went stale. NO
         # --verify-tag: the Release CREATES the tag. The cross-repo Release is cut on the owning repo via
         # --repo owner/<repo>; gh does not need a local checkout of it (the temp notes file suffices).
         fd, tmp_path = tempfile.mkstemp(prefix="release-notes-", suffix=".md")
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as fh:
                 fh.write(content)
-            return (_cgh(["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest=false"]) or "").strip()
+            return (_cgh(["release", "create", tag, "--repo", f"{owner}/{repo}", "--title", title, "--notes-file", tmp_path, "--latest" if latest else "--latest=false"]) or "").strip()
         finally:
             try:
                 os.unlink(tmp_path)
@@ -895,7 +901,7 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
     ``plan.repo`` is the OWNING repo (Release + monitor); ``plan.archive_repo`` stays juniper-ml (the
     central exempt archive PR, plan S10.2). ``cross_repo`` unlocks a sibling when its checkout is present."""
     target = pkg.get("declared_version")
-    plan = CeremonyPlan(pypi_name=entry.pypi_name, repo=entry.repo, released_version=pkg.get("released_version"), target_version=target)
+    plan = CeremonyPlan(pypi_name=entry.pypi_name, repo=entry.repo, released_version=pkg.get("released_version"), target_version=target, latest=entry.latest)
 
     # 0. capability guard (Phase 4.1): in-repo always; a sibling only when --cross-repo-capable AND its
     # checkout is on disk. The exempt archive PR is ALWAYS central (plan.archive_repo == juniper-ml).
@@ -969,7 +975,8 @@ def plan_ceremony(entry: "detect.PackageEntry", pkg: dict, sources: CeremonySour
     if not on_main:
         actions.append(CeremonyAction("enable_auto_merge", "enable `gh pr merge --auto --squash` on the archive PR (degrades to the owner one-click merge if allow_auto_merge is off -- step 3.3 not yet landed)", {"branch": plan.archive_branch}))
 
-    actions.append(CeremonyAction("cut_release", f"`gh release create {plan.tag} --latest=false --notes-file {plan.archive_relpath}` -- the Release CREATES the tag (no --verify-tag)", {"tag": plan.tag, "notes_relpath": plan.archive_relpath, "latest": False}))
+    latest_flag = "--latest" if plan.latest else "--latest=false"
+    actions.append(CeremonyAction("cut_release", f"`gh release create {plan.tag} {latest_flag} --notes-file {plan.archive_relpath}` -- the Release CREATES the tag (no --verify-tag)", {"tag": plan.tag, "notes_relpath": plan.archive_relpath, "latest": plan.latest}))
     actions.append(_monitor_action(plan.tag))
     plan.state = "CEREMONY_PLANNED"
     plan.actions = actions
@@ -1068,7 +1075,7 @@ def execute_ceremony(plan: CeremonyPlan, sources: CeremonySources, base_branch: 
         elif action.kind == "cut_release":
             if sources.create_release is None:
                 raise SourceError("execute needs the create_release seam member")
-            result["release_url"] = sources.create_release(plan.repo, plan.tag, f"{plan.pypi_name} v{plan.target_version}", plan.archive_relpath, plan.archive_content)
+            result["release_url"] = sources.create_release(plan.repo, plan.tag, f"{plan.pypi_name} v{plan.target_version}", plan.archive_relpath, plan.archive_content, latest=plan.latest)
         elif action.kind == "monitor_publish":
             verdict = monitor_publish_run(sources, plan.repo, plan.tag, **(monitor_kwargs or {}))
             if verdict == "HALT_TESTPYPI":

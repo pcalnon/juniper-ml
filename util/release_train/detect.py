@@ -172,6 +172,10 @@ class PackageEntry:
     # ``ci.yml`` (the 7 repos with a single repo-level CI). juniper-recurrence has no repo-wide ci.yml --
     # its three packages gate through path-scoped per-package lanes -- so those entries override it.
     main_ci_workflow: str = "ci.yml"
+    # Optional (procedure S11.4): True for the ONE package per repo whose Release takes the repo's "Latest"
+    # badge -- the ceremony cuts it with ``--latest`` and every other package with ``--latest=false``. Only a
+    # YAML boolean ``true`` sets it; anything else (absent, a quoted "true") reads False, the badge-safe side.
+    latest: bool = False
 
     @property
     def pyproject_rel(self) -> str:
@@ -205,6 +209,7 @@ def load_registry(path: "Path | None" = None) -> list[PackageEntry]:
                 ship_paths=list(raw.get("ship_paths", []) or []),
                 exclude_paths=list(raw.get("exclude_paths", []) or []),
                 main_ci_workflow=raw.get("main_ci_workflow") or "ci.yml",
+                latest=raw.get("latest") is True,
             )
         )
     return entries

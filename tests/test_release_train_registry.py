@@ -311,6 +311,54 @@ class RegistryStructuralTest(unittest.TestCase):
         self.assertEqual(entries["juniper-recurrence-client"].main_ci_workflow, "ci-recurrence-client.yml")
         self.assertEqual(entries["juniper-recurrence-model"].main_ci_workflow, "ci-recurrence-model.yml")
 
+    def test_exactly_one_latest_package_per_repo(self):
+        # Optional per-package field (procedure S11.4): the ceremony cuts the ``latest: true`` package with
+        # --latest and every other with --latest=false. Zero in a repo leaves its badge stale forever --
+        # the pre-2026-09-23 state, when six repos' badges trailed (juniper-ml's read v0.6.0 at v0.10.0).
+        # Two would let a sub-package Release take the badge from its repo's main package.
+        per_repo: dict = {}
+        for pkg in self.packages:
+            value = pkg.get("latest")
+            if value is not None:
+                self.assertIs(type(value), bool, f"{pkg['pypi_name']}: latest must be a YAML boolean, got {value!r}")
+            if value is True:
+                per_repo.setdefault(pkg["repo"], []).append(pkg["pypi_name"])
+        for repo in sorted(PUBLISHING_REPOS):
+            self.assertEqual(len(per_repo.get(repo, [])), 1, f"{repo}: expected exactly ONE latest: true package, got {per_repo.get(repo, [])}")
+
+    def test_every_v_tagged_package_owns_its_repos_badge(self):
+        # Procedure S11.4: the v<version>-tagged package is the one whose Release is "Latest". A repo with
+        # no v* package (juniper-recurrence: all three tags are juniper-<pkg>-v*) gives the badge to its app.
+        latest = {p["pypi_name"] for p in self.packages if p.get("latest") is True}
+        v_tagged = {p["pypi_name"] for p in self.packages if p["tag_pattern"] == "v*"}
+        self.assertTrue(v_tagged <= latest, f"v*-tagged package(s) without latest: true: {sorted(v_tagged - latest)}")
+        self.assertEqual(latest - v_tagged, {"juniper-recurrence"}, f"only juniper-recurrence's app may own a badge without a v* tag; got {sorted(latest - v_tagged)}")
+
+    def test_latest_loader_reads_only_a_boolean_true(self):
+        # The detect.py loader is what the ceremony consumes. A quoted "true" is a typo, not a flag: it must
+        # read False (the badge-safe side), and the per-repo count above then fails loudly on the real file.
+        sys.path.insert(0, str(REPO_ROOT / "util" / "release_train"))
+        import detect as detect_mod  # noqa: PLC0415
+
+        entries = {e.pypi_name: e for e in detect_mod.load_registry()}
+        for pkg in self.packages:
+            self.assertEqual(entries[pkg["pypi_name"]].latest, pkg.get("latest") is True, pkg["pypi_name"])
+        self.assertTrue(entries["juniper-data"].latest)
+        self.assertFalse(entries["juniper-cascor-model"].latest)
+
+        base = {"repo": "juniper-ml", "path": ".", "version_source": "static", "tag_pattern": "v*", "archive_name": "RELEASE_NOTES_v{version}.md"}
+        lines = ["packages:"]
+        for name, raw in (("juniper-a", "true"), ("juniper-b", '"true"'), ("juniper-c", None), ("juniper-d", "false")):
+            lines.append(f"  - pypi_name: {name}")
+            lines.extend(f"    {key}: {value!r}" for key, value in base.items())
+            if raw is not None:
+                lines.append(f"    latest: {raw}")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "registry.yaml"
+            path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            loaded = {e.pypi_name: e.latest for e in detect_mod.load_registry(path)}
+        self.assertEqual(loaded, {"juniper-a": True, "juniper-b": False, "juniper-c": False, "juniper-d": False})
+
 
 class RegistryInRepoResolutionTest(unittest.TestCase):
     """Unconditional: the 7 in-repo juniper-ml entries <-> the 7 tracked pyprojects."""
