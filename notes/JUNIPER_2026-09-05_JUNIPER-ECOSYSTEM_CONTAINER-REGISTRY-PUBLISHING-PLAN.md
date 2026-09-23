@@ -10,6 +10,9 @@
 **public**, confirmed by an anonymous pull), `juniper-cascor-worker:0.6.0` (cut 2026-09-15,
 publish run 35033610624 all three jobs green; censused from the pulled image:
 `torch=2.14.0+cpu (cuda=None) distributions=24 cuda_stack=0`, *CPU-only contract holds*).
+**Newer release images since** (GHCR tag lists, probed 2026-09-22): `juniper-data:0.15.0`,
+`juniper-canopy:0.8.1` and `juniper-cascor-worker:0.6.1`. cascor (0.11.0) and recurrence (0.5.0)
+have had no release since.
 **WAVE 3 IS COMPLETE (2026-09-17).** All three of its items shipped, and
 `juniper-deploy/docker-compose.yml` now carries **ten** Juniper `image:` lines, every one a
 published registry ref and none a local build-output tag:
@@ -54,8 +57,9 @@ convention the bundled redis subchart also honours, and setting it rewrites redi
 secrets. Those are now **environment** secrets in a tag-restricted `dockerhub` environment, not
 repository secrets. The owner ruled this on 2026-09-22 (§3 of
 `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`). Last state refresh: **2026-09-22** — the §5 wave table's Wave 1 and Wave 2 rows had
-gone stale against this Status line and are now correct, and canopy's pin has already drifted
-(see the note under §5). **New §5.2** records the image hardening: both publish-trap classes
+gone stale against this Status line and are now correct. The deploy pins drifted three times after
+Wave 3 closed, and all three drifts are closed: canopy by juniper-deploy#225, data by #227, and the
+worker by #229, merged 2026-09-23 06:23Z (see the note under §5). **New §5.2** records the image hardening: both publish-trap classes
 swept 2026-09-21 and now enforced in CI across all five image repos, plus the root-anchoring
 finding that swept up 766 authkey-bearing files in juniper-cascor.
 
@@ -68,10 +72,11 @@ finding that swept up 766 authkey-bearing files in juniper-cascor.
 > ref. That overloading is a property of D-1 and will recur whenever an image input moves without
 > a library change; worth an OQ if it happens a third time.
 >
-> **The wheel SHIPPED 2026-09-17, and the claim above now holds against the published bytes**
+> **The wheel SHIPPED 2026-09-18 00:18Z (09-17 CDT), and the claim above now holds against the published bytes**
 > rather than the git diff that predicted it — which matters, because a checkout is not a
 > deployment (juniper-model-core 0.3.1 shipped stale under an unchanged version while the repo
-> was already correct). PyPI serves `juniper-cascor-worker` **0.6.0**; run `35033610592` is
+> was already correct). PyPI served `juniper-cascor-worker` **0.6.0** from 2026-09-18 00:18Z,
+> its upload time, until 0.6.1 at 2026-09-23 00:37Z (§5.2); run `35033610592` is
 > `completed/success`. Both wheels were downloaded and compared member-by-member by SHA-256
 > (`util/ad-hoc/2026-09-17_verify_worker_060_wheel.py`): **all 10 packaged module files are
 > byte-identical**, 16 members each, and only `METADATA` / `WHEEL` / `RECORD` differ. The check
@@ -153,8 +158,8 @@ and GHCR from the owning repo needs **no secret at all** — `GITHUB_TOKEN` with
 `packages: write`.
 
 **The rejected alternative's one real advantage** was centralising the *Docker Hub*
-credential in a single repo instead of four. That is genuine but small: GHCR needs none,
-and four `gh secret set` calls are scriptable for rotation.
+credential in a single repo instead of five. That is genuine but small: GHCR needs none,
+and five `gh secret set` calls are scriptable for rotation.
 
 **juniper-deploy keeps a real role:** it publishes its own `Dockerfile.test` runner, pins
 the consumed tags, and becomes the natural home for an integration test that pulls the
@@ -264,7 +269,7 @@ to discover that is on a Pi.
 | Wave | Repo | Status |
 | --- | --- | --- |
 | 1 (pilot) | juniper-cascor-worker | **COMPLETE.** `publish-image.yml` landed as worker#172; the CUDA-contamination fix as worker#175. Image `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0` published 2026-09-15 (run `35033610624`, three jobs green), censused CPU-only from the pulled artifact |
-| — | *verify: pull and run on a Pi node* | **WAIVED as a Wave 3 gate, owner, 2026-09-15 (§5.1).** Re-filed as the gate on **first Pi deployment** and on **OQ-3**, which is what it actually tests. Target: `ghcr.io/pcalnon/juniper-cascor-worker:0.6.0`, the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
+| — | *verify: pull and run on a Pi node* | **WAIVED as a Wave 3 gate, owner, 2026-09-15 (§5.1).** Re-filed as the gate on **first Pi deployment** and on **OQ-3**, which is what it actually tests. Target: the **newest** worker release, `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1` when last updated (§5.1); `0.6.0` was the first **post-#179** image. Do **not** use `dispatch-9890a23`; it predates the torch 2.12.0 → 2.14.0 bump |
 | 2 | juniper-cascor | **COMPLETE** — cascor#634; `juniper-cascor:0.11.0` published 2026-09-09 |
 | 2 | juniper-canopy | **COMPLETE** — canopy#603; `juniper-canopy:0.8.0` published 2026-09-12, item 1's first publish (package came up **public**, proven by an anonymous pull). **Superseded by `0.8.1`** 2026-09-18 — see the pin-drift note below |
 | 2 | juniper-data | **COMPLETE** — data#385; `juniper-data:0.14.0` published 2026-09-09 |
@@ -276,8 +281,8 @@ to discover that is on a Pi.
 > juniper-canopy cut **`v0.8.1` on 2026-09-18** — the fix for canopy#631, this arc's own
 > side-finding, where every published canopy wheel back to 0.5.0 omitted ten top-level
 > `src/*.py` modules that thirteen of its own shipped files import. Wave 3 had pinned `0.8.0`
-> on 09-17. Proposed fix: juniper-deploy#225, moving all four sites
-> (`docker-compose.yml:656,800,891` + `k8s/helm/juniper/values.yaml:220`) to `0.8.1`.
+> on 09-17. Fixed by juniper-deploy#225 (merged 2026-09-21 13:11Z, `0f907577`), moving all four
+> sites (`docker-compose.yml:656,800,891` + `k8s/helm/juniper/values.yaml:220`) to `0.8.1`.
 >
 > **The D-1 gate cannot catch this class.** `Published Image Refs` asserts that a pinned ref
 > **resolves**; it does not assert the ref is the **newest release**. Those are different
@@ -298,6 +303,11 @@ to discover that is on a Pi.
 > has no schedule and does not pass `--fail-on-stale`. So a stale pin surfaces as a warning, and
 > only on a juniper-deploy CI run. Run against deploy `main` on 2026-09-22, it flagged
 > `juniper-data:0.14.0` as a **STALE PIN** (0.15.0 published) and the other five refs as current.
+>
+> **State at 2026-09-23 13:09Z.** juniper-deploy#227 (merged 01:05Z, `a725f69b`) moved data to
+> `0.15.0`. The worker 0.6.1 release then made the worker pin stale. juniper-deploy#229, opened by
+> another session, moved it to `0.6.1` (merged 06:23Z, `d589dd95`). Every pin then matched its
+> image's newest release. Re-probe rather than trusting this line.
 
 The worker is the pilot because it has the only committed arm64 consumer and carries the
 constraint most likely to break arm64. Proving it there de-risks the other four.
@@ -362,11 +372,13 @@ authentication from the Pi LAN — is a **fleet-readiness** fact, not an **image
 therefore re-filed against **first Pi deployment** and **OQ-3**, which are the things it tests.
 
 **This is a waiver, not a retirement.** The pull still owes before any Pi node runs a Juniper
-image, and the command is unchanged:
+image. The target is the **newest** worker release: `0.6.1` when this was written, which is when
+the command below moved from `:0.6.0`. If a newer worker release exists when the pull is run, use
+that instead. An older tag is not a valid target, because it tests an image nobody will deploy.
 
 ```bash
-docker pull ghcr.io/pcalnon/juniper-cascor-worker:0.6.0
-docker run --rm --entrypoint python ghcr.io/pcalnon/juniper-cascor-worker:0.6.0 -c \
+docker pull ghcr.io/pcalnon/juniper-cascor-worker:0.6.1
+docker run --rm --entrypoint python ghcr.io/pcalnon/juniper-cascor-worker:0.6.1 -c \
   "import platform, torch; print(platform.machine(), torch.__version__, torch.version.cuda)"
 ```
 
@@ -423,35 +435,93 @@ correct — only comparing the two *inside the artifact* reveals it. Fixed in
 juniper-cascor-worker#192 by deriving from installed metadata, and **shipped in v0.6.1**. That
 release was cut 2026-09-22 at 23:03Z from juniper-cascor-worker#194 (merged `38f39cb8`).
 **Verified on the published artifact:** `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and
-run, prints `0.6.1 0.6.1`. At 23:31Z the PyPI upload was still waiting at the owner's `pypi`
-gate. The 0.6.0 artifacts still report `0.4.0` and always will, because a published artifact is
-never rebuilt. The 0.6.0 **wheel** is affected too: its `__init__.py` hard-codes
-`__version__ = "0.4.0"`. juniper-deploy still pinned `0.6.0` at that point, at
-`docker-compose.yml:364` and `k8s/helm/juniper/values.yaml:301`, and a concurrent session has
-taken the repin.
+run, prints `0.6.1 0.6.1`. The owner then approved the PyPI deploy, and PyPI has served 0.6.1
+since 2026-09-23 00:37Z; its wheel reads `__version__` from metadata. On the owner's instruction,
+GitHub's "Latest" badge was moved to v0.6.1. The 0.6.0 artifacts still report `0.4.0` and always
+will, because a published artifact is never rebuilt. The 0.6.0 **wheel** is affected too: its
+`__init__.py` hard-codes `__version__ = "0.4.0"`. juniper-deploy still pinned `0.6.0` at that
+point, at `docker-compose.yml:364` and `k8s/helm/juniper/values.yaml:301`, so the stack keeps
+running the defective image until the repin. That repin is juniper-deploy#229, opened by another
+session and merged 2026-09-23 06:23Z (`d589dd95`).
+
+One residue remains. The **source-checkout fallback literal** in `__init__.py` still reads
+`"0.6.0"` at `pyproject.toml` 0.6.1, although the file's own comment says to bump it with the
+version, because the release train does not edit it. juniper-data's fallback reads `"0.14.0"` at
+0.15.0 for the same reason. Only a source checkout with no installed metadata reaches that line.
+
+**juniper-cascor carries the same defect, on a different surface in each artifact, and the
+class-2 sweep could not see it.** juniper-cascor#668, filed 2026-09-21 18:46Z, reports that
+`juniper_cascor.__version__` is a hard-coded `"0.6.0"` while the distribution is 0.11.0.
+
+- **The 0.11.0 wheel** has `__version__ = "0.6.0"`.
+- **The 0.11.0 image** does not ship the `juniper_cascor` package at all. Its Dockerfile copies
+  `pyproject.toml`, `README.md`, `LICENSE` and `src/` into the build (`Dockerfile:47-48`), never
+  the top-level `juniper_cascor/`. So `import juniper_cascor` fails there with
+  `ModuleNotFoundError`, and only the `juniper_cascor-0.11.0.dist-info` is present. The image's stale surface is the API response
+  envelope. `src/api/models/common.py` hard-coded `_API_VERSION = "0.6.0"`, the default of every
+  `ResponseEnvelope.meta.version`, so enveloped responses such as `GET /v1/workers` report
+  `0.6.0`. `/v1/health` already read metadata and reports 0.11.0 correctly.
+
+juniper-cascor#672 (merged 2026-09-23 01:12Z, `0d2d826b`) closed #668. It makes all three
+surfaces read installed metadata, falling back to `"0.0.0-dev"`: `juniper_cascor/__init__.py`,
+the envelope default, and `/v1/health`'s fallback. It takes effect at cascor's next release. The
+published 0.11.0 artifacts say `0.6.0` for good.
+
+The sweep missed it on both counts. It probes cascor's `__version__` through
+`cascade_correlation`, which defines none; the probe prints `ABSENT`, and `ABSENT` is not scored
+as a mismatch. Its serve check reads only `/v1/health`, which was right. A cascor check has to
+compare an enveloped response's `meta.version` with `importlib.metadata.version("juniper-cascor")`.
+Pointing the import probe at `juniper_cascor` instead would fail on every image.
 
 **A second class-2 finding (2026-09-22): the published juniper-data image cannot generate
 `equities` or `equities_seq`.** A concurrent session found this; it was re-verified here inside
-the published artifact. `requirements.lock` is compiled with
-`--extra api --extra observability --extra mnist`. The Dockerfile's comment (`:20-24`) explains
-those three extras and never mentions equities, so the omission is undocumented, not a recorded
-decision. pandas arrives through the `mnist` chain; **yfinance does not arrive at all**. Inside
-`ghcr.io/pcalnon/juniper-data:0.15.0`, `EQUITIES_DEPS_AVAILABLE` is `False`, so every `equities`
+the published artifact. At `v0.15.0`, `requirements.lock` was compiled with
+`--extra api --extra observability --extra mnist`. The Dockerfile's comment (`:20-24` at that tag)
+explained those three extras and never mentioned equities, so the omission was undocumented, not a
+recorded decision. In that lock, pandas arrived through the `mnist` chain; **yfinance did not
+arrive at all**. Since juniper-data#421, `main`'s lock and that comment both include equities.
+Inside `ghcr.io/pcalnon/juniper-data:0.15.0`, `EQUITIES_DEPS_AVAILABLE` is `False`, so every `equities`
 and `equities_seq` request raises `ImportError(install_hint())`
 (`juniper_data/generators/equities/generator.py:310-311`, `equities_seq/generator.py:142-143`).
 The stack is where this bites. juniper-deploy points juniper-recurrence at
 `http://juniper-data:8100` (`docker-compose.yml:605`), and recurrence's data path is written for
 exactly that generator (`juniper_recurrence/data.py:1`: "juniper-data-client → 3-D `equities_seq`
 NPZ"). The image builds, starts and imports cleanly, so every existing check passes. It still
-cannot do one of its jobs. The finding predates 0.15.0 and is **not fixed here**. Adding
-`--extra equities` to the image lock adds yfinance, and in the stack it means outbound calls to
-Yahoo and SEC. That is a decision for the owner, not a lockfile edit. A class-2 instrument could
-catch this class by importing each generator's availability flag inside the image, which is
-cheaper than serving a request.
+cannot do one of its jobs. The finding predates 0.15.0. Adding `--extra equities` to the image
+lock adds yfinance, and in the stack it means outbound calls to Yahoo and SEC, so it was put to
+the owner rather than made as a lockfile edit. A class-2 instrument could catch this class by
+importing each generator's availability flag inside the image, which is cheaper than serving a
+request.
+
+**RULED 2026-09-22 (owner): the image includes equities.** juniper-data#421 merged 2026-09-23 at
+00:56Z (`68c3cd7c`). It compiles the lock with `--extra equities`: 12 packages added, no existing
+pin moved. On an image built from that tree, `GET /v1/generators` answers `available: true` for
+both generators; the published 0.15.0 image, probed the same way, answers `false`.
+**Published images change only at the next data release, and the release train did not see the
+need for it.** Until 2026-09-23 06:22Z, `detect.py` classified juniper-data as `UP_TO_DATE`. #421
+touched nothing under the registry's `ship_paths: ["juniper_data/"]`, and #420, whose
+`pyproject.toml` edit changed the wheel, was discounted as tooling-only. The train does not count
+image-only or packaging-config changes as ship changes. It only flags them for review
+(*"UP_TO_DATE but CHANGELOG [Unreleased] lists ['added', 'fixed'] (review)"*). That is a gap in
+its own right.
+
+It now sees a ship change for an unrelated reason. juniper-data#422 merged at 06:22Z (`ce436819`)
+and edits `juniper_data/storage/*.py`, so `detect.py` reports `UNRELEASED_CHANGES`: a minor bump,
+3 ship changes, probed 13:09Z. #428, still open, edits `juniper_data/api/` and `core/models.py`.
+Even so, the release needs a **hand-made version-bump PR**, which the ceremony then handles as
+`BUMPED_NOT_RELEASED`, because the train opens nothing by itself. `release-train.yml` resolves its mode from
+the dispatch input, then the `RELEASE_TRAIN_MODE` repository variable, then `report`. juniper-ml
+has no such variable, so the daily run only reports. Only a `mode=propose` dispatch, or a local
+`propose.py --execute --cross-repo` run, opens a proposal; `propose.py` is a dry run by default. `propose.py`'s dup-guard (`find_existing_release_pr`) treats any open PR on a
+`release/juniper-data-v*` branch as a duplicate. A hand-made PR on that branch name therefore
+stops a dispatched train from opening a second one.
 
 **Instruments** (juniper-ml, `util/ad-hoc/`): `2026-09-21_image_build_context_sweep.py` (class 1,
 including root-anchoring detection) and `2026-09-21_image_does_its_job_sweep.py` (class 2: import
-+ `__version__`-vs-metadata + entrypoint + serve). Re-run these rather than repeating the survey.
++ `__version__`-vs-metadata + entrypoint + serve). Re-run these rather than repeating the survey,
+but fix the class-2 sweep first. Its `IMAGES` table hard-codes the tags it probes, and three are
+superseded: data `0.14.0`, canopy `0.8.0` and worker `0.6.0`. It also scores an absent
+`__version__` as a pass, which is how cascor's defect got through (above).
 
 **Closed 2026-09-22 by juniper-deploy#226: juniper-deploy now detects a stale pin.** This
 paragraph used to say nothing did, and that was true when it was written.
@@ -460,6 +530,7 @@ paragraph used to say nothing did, and that was true when it was written.
 `juniper-canopy:0.8.0` after `0.8.1` had shipped (that one drift was closed by juniper-deploy#225).
 It now also reports currency, as an advisory warning by default; the note under §5 has the
 details. It caught the next drift the same day: `juniper-data:0.14.0` against a published 0.15.0.
+juniper-deploy#227 closed that one on 2026-09-23 at 01:05Z.
 
 ## 6. Open questions
 
@@ -472,7 +543,7 @@ details. It caught the next drift the same day: `juniper-data:0.14.0` against a 
   | private repositories, Personal | 1 — irrelevant; all five are public |
   | pull rate, authenticated Personal | **200 per 6 hours** |
   | pull rate, unauthenticated | **100 per 6 hours** per IPv4 address **or IPv6 /64 subnet** |
-  | how a pull is counted | **once per architecture** — a 2-arch index pulled on both arches is 2. **Not confirmed on re-read 2026-09-22**: the usage page does not state it (procedure §9) |
+  | how a pull is counted | **once per architecture** — a 2-arch index pulled on both arches is 2. **Confirmed 2026-09-22** on Docker's pulls page (procedure §9). An earlier re-read had marked it unconfirmed because only the usage page was read |
   | storage cap | none stated for public repositories |
 
   **The size objection is gone**: the CPU-only images are 270–312 MB compressed, not the
@@ -480,10 +551,14 @@ details. It caught the next drift the same day: `juniper-data:0.14.0` against a 
 
   **The live constraint is the anonymous rate, not storage.** 100 per 6 h is scoped to an
   IPv4 address *or an IPv6 /64* — so every Pi node behind one household connection shares
-  one bucket, and a 2-arch image may cost one pull per arch (unconfirmed, see the table). Wave 4 should therefore log
+  one bucket, and a multi-arch image costs one pull per architecture pulled (see the table). Wave 4 should therefore log
   **authenticated** pulls on the Pi nodes (200/6 h) rather than rely on the anonymous
   allowance, and that is a deployment note, not a workflow change. It also bears on OQ-3,
-  which until now was framed as a RAM question only.
+  which until now was framed as a RAM question only. Two further points (procedure §9). The
+  authenticated allowance is per account, so nodes sharing one account share its 200/6 h. And
+  Docker's separate abuse limit, which applies even to authenticated pulls, is per address and
+  *"in the order of thousands of requests per minute"*. That is far above what a few home nodes
+  generate.
 
   **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
   `DOCKERHUB_USERNAME`) secret in each of the five image repos —
@@ -495,7 +570,9 @@ details. It caught the next drift the same day: `juniper-data:0.14.0` against a 
   Option B of §3 of `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`.
   In each repository the secrets live in a `dockerhub` environment restricted to release tags,
   with no reviewer and no wait timer. A repository secret would be readable by every workflow on
-  every ref. Registration steps are in that procedure's §5.2B. **The ruling constrains the
+  every ref. Registration steps are in that procedure's §5.2B. The username need not be a secret:
+  step 3a there recommends an environment **variable**, which can be read back. Wave 4 must read
+  it from whichever context the owner chose, `vars.` or `secrets.`. **The ruling constrains the
   workflow change.** `publish-image.yml`'s `build` job also runs on pull requests and dispatches,
   and its `merge` job also runs on `push=true` dispatches. A tags-only environment named
   unconditionally on either job therefore rejects those runs. Wave 4 must name the environment

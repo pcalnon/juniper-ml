@@ -2,13 +2,20 @@
 
 **Session**: container-registry rollout — evaluating the 09-15 handoff, closing its sweep, and the residuals four validation lanes found
 **Predecessor**: `HANDOFF_2026-09-17_container-registry-wave-3-complete-and-everything-left-is-owner-gated.md` — **read it from `main`, not from a worktree** (see the first trap below)
-**Status**: **PARTLY CONSUMED 2026-09-22.** Items 2–4 are done, item 1 has narrowed, the Wave 4 bullet is superseded, and the published-worker defect in the title is resolved for the image (v0.6.1). Read the banner before the goal.
+**Successor**: `HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-owner-token.md`
+**Status**: **SUPERSEDED 2026-09-23 by the successor above**, which carries everything still open.
+Before that, it was partly consumed: items 2–4 done, item 1 narrowed, the Wave 4 bullet superseded,
+and the published-worker defect in the title resolved by v0.6.1. **This file is history only. Do
+not paste its goal and do not act on its items.** Some statements below were already stale when it
+was superseded. Its *"`releases/latest` is stale for 3 of 5 repos"* was four, and the expected
+values in its verification commands have moved.
 
 ---
 
 ## Status banner (added 2026-09-22, the same day, by the session that worked this handoff)
 
-**Do not paste the goal below unedited.** Since it was written:
+This banner records what changed after the goal below was written. It is history too; the
+successor carries what is still open. Since the goal was written:
 
 - **Item 3 is DONE: juniper-data#420** (merged 19:05:53Z, `6c81cc4c`). The wheel now excludes the
   test suite, and `ci.yml` asserts it on the built wheel. **v0.15.0 was cut at 18:55Z, before the
@@ -27,33 +34,38 @@
   starting it.
 - **"A published image is wrong right now" is RESOLVED for the image.** **v0.6.1** was released
   2026-09-22 at 23:03Z, from juniper-cascor-worker#194 (merged `38f39cb8`).
-  `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and run, prints `0.6.1 0.6.1`. At 23:31Z
-  the PyPI upload was still waiting at the owner's `pypi` gate. The 0.6.0 image and wheel still
-  report `0.4.0` and always will; the 0.6.0 wheel's `__init__.py` hard-codes `"0.4.0"`.
-  juniper-deploy still pins `0.6.0` (`docker-compose.yml:364`, `values.yaml:301`), and a
-  concurrent session has taken the repin.
+  `ghcr.io/pcalnon/juniper-cascor-worker:0.6.1`, pulled and run, prints `0.6.1 0.6.1`. The owner
+  approved the PyPI deploy, and PyPI has served 0.6.1 since 2026-09-23 00:37Z. GitHub's "Latest"
+  badge was moved to v0.6.1 on the owner's instruction. The 0.6.0 image and wheel still report
+  `0.4.0` and always will; the 0.6.0 wheel's `__init__.py` hard-codes `"0.4.0"`.
+  juniper-deploy still pins `0.6.0` (`docker-compose.yml:364`, `values.yaml:301`). The repin is
+  juniper-deploy#229, opened by a concurrent session and merged 2026-09-23 06:23Z.
 - **The Wave 4 bullet is superseded.** The owner ruled §3 of
   `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md` as
   **Option B**: the credential is an **environment** secret, not a repository secret
   (juniper-ml#2009). The five `dockerhub` environments were **created** between 19:45:59Z and
   19:46:21Z (juniper-ml#2011): tags `v*` and `juniper-*-v*` only, with no reviewer, no wait
-  timer and no secrets. The owner still owes the token, the ten `gh secret set --env dockerhub`
-  commands, and §6. **When Wave 4 edits the workflows, never name `dockerhub` unconditionally on
+  timer and no secrets. The owner still owes the token and its registration. The successor lists
+  the steps, which now include choosing whether the username is a secret or a variable. **When Wave 4 edits the workflows, never name `dockerhub` unconditionally on
   the existing `build` or `merge` job.** Both jobs also run on pull requests or dispatches, which a
   tags-only environment rejects. See the procedure's §3.
 - **New since:** the published juniper-data image cannot generate `equities` or `equities_seq`
   (yfinance is not in its lock). The stack's recurrence service depends on that generator. This
   is recorded in §5.2 of
-  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`, and it is
-  an owner decision, not a lockfile edit. **Pin currency**: the juniper-deploy#226 check flags
-  `juniper-data:0.14.0` as stale, and the bump is juniper-deploy#227, opened by a concurrent
-  session.
+  `notes/JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`. **The owner
+  ruled on 2026-09-22 that the image includes equities.** juniper-data#421 merged 2026-09-23 at
+  00:56Z and takes effect at the next data release. **Pin currency**: the juniper-deploy#226 check flagged
+  `juniper-data:0.14.0` as stale, and juniper-deploy#227 moved it to 0.15.0 (merged 2026-09-23
+  01:05Z).
 
 ---
 
 ## Handoff goal (paste everything between the rules as the new thread's first prompt)
 
 ---
+
+> **SUPERSEDED 2026-09-23. Do not paste this goal and do not act on it.** Its successor is named
+> at the top of this file, and carries everything still open.
 
 Continue the **container-registry rollout**. Wave 3 is complete, its pin drift is closed, and a
 five-repo hardening sweep shipped 2026-09-21 — but **a published image is wrong right now**, and
