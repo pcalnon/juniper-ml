@@ -14,7 +14,7 @@ Its §10 is this session's full re-evaluation; the goal below does not repeat it
 - `notes/JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_TRAIN-EVAL-TEST-PARTITION-DESIGN.md`, the design of record;
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-12_decision-11-release-train-complete-nine-on-pypi.md`, the predecessor's first successor.
 
-**Documents CHANGED** (all shipped in ⟨ML_PR⟩):
+**Documents CHANGED** (all shipped in juniper-ml#2043):
 
 - `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md`: new;
 - `util/ad-hoc/2026-09-22_partition_provenance_npz_roundtrip.py`: new;
@@ -43,7 +43,7 @@ Completed (2026-09-22/23):
 - juniper-cascor#672 (version single-sourced) and juniper-recurrence#179 (bench caps <0.16.0):
   both merged.
 - The Decision 12 spec v1, notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md,
-  published in ⟨ML_PR⟩. Review round 1 rated it UNSOUND as written. Its §14 records 14 unfolded
+  published in juniper-ml#2043. Review round 1 rated it UNSOUND as written. Its §14 records 14 unfolded
   findings: B-1..B-7 and R-1..R-7, with blockers B-1, B-2, B-3 and R-1.
 - Filed: juniper-data#423 (Decision 12), #424 (the §6.2 shortfall), #429 (arc_agi unloadable);
   juniper-ml#2034 (decision 4); juniper-cascor#677 (V-3); juniper-data-client#211 (bare curl).
@@ -79,8 +79,10 @@ Key context:
   test that imports a client helper passes on this box and fails in CI. Use a faithful fake plus
   a fake-versus-real agreement test that skips with a reason. Simulate the lane locally with an
   import shim on PYTHONPATH.
-- Only the generator route hashes generator_version into dataset_id. The stores did not until
-  #422, which is why the 09-12 claim "the floor protects by accident" was false.
+- Until #422, only the generator route hashed generator_version into dataset_id; the stores have
+  done so since #422 (on main, unreleased). That is why the 09-12 claim "the floor protects by
+  accident" was false when it was written, and why every released wheel up to 0.15.0 still
+  behaves the old way.
 ```
 
 ## 2. Verify the starting state
@@ -100,7 +102,7 @@ for p in juniper-ml juniper-data juniper-cascor juniper-canopy; do printf '%s ' 
 ## 3. Git status at handoff
 
 - Branch `worktree-rippling-wobbling-torvalds`, based on `origin/main` `ba035cc9`. Nothing is committed locally: every change shipped through API-signed PRs.
-- The working tree still shows this session's edits to the files listed under **Documents CHANGED**, as uncommitted modifications. They are identical to what ⟨ML_PR⟩ merged. Three new files (the spec, its script and this handoff) were added to the index with `git add -N` (intent to add) so pre-commit would see them.
+- The working tree still shows this session's edits to the files listed under **Documents CHANGED**, as uncommitted modifications. They are identical to what juniper-ml#2043 merged. Three new files (the spec, its script and this handoff) were added to the index with `git add -N` (intent to add) so pre-commit would see them.
 - Scratch (session-local, disposable): `/tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/ca1055b2-4023-4eac-827c-b44baf9a2861/scratchpad/`.
 
 ## 4. Traps this session hit

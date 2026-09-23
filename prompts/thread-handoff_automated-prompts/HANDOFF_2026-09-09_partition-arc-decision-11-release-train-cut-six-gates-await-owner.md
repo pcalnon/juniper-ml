@@ -300,7 +300,7 @@ change shipped as an API-signed PR.
 - `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-23_partition-arc-residue-stores-conformed-canopy-advisory-decision-12-spec-unsound.md`,
   new: this session's own handoff, which carries the goal for the next thread.
 
-**Documents CHANGED in juniper-ml** (all in ⟨ML_PR⟩): this file (header and §10); the 2026-09-12 successor
+**Documents CHANGED in juniper-ml** (all in juniper-ml#2043): this file (header and §10); the 2026-09-12 successor
 (a correction under its §8.4); the spec and its script
 `util/ad-hoc/2026-09-22_partition_provenance_npz_roundtrip.py` (both new); `docs/REFERENCE.md` (the
 Decision 12 and hf/kaggle entries under "What actually remains"); the plan (a dated update after §10's
@@ -338,7 +338,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
 | Chunk 7 (a) plots / attribution | **Done** (see S-5) | — |
 | Chunk 7 (b) design §7 snapshot provenance | **Done.** This is NOT Decision 12: cascor tags every run's metrics | `manager.py:2035` `metrics["split"] = self._reported_split_name()` |
 | Chunk 7 (c) re-baseline, decision 4 | **Not started** → juniper-ml#2034 | — |
-| Decision 12 | Ruled 2026-09-03 → tracked juniper-data#423. Spec v1 written; review round 1 rated it **UNSOUND as written**, so it is **not ratifiable** until v2 folds the findings | `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` §14; published in ⟨ML_PR⟩ |
+| Decision 12 | Ruled 2026-09-03 → tracked juniper-data#423. Spec v1 written; review round 1 rated it **UNSOUND as written**, so it is **not ratifiable** until v2 folds the findings | `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md` §14; published in juniper-ml#2043 |
 | Decision 5 | Implemented (cascor#622) | — |
 | V-2 | **Measured 2026-08-29**; see 10.4 item 1 | design §8 |
 | V-3 | Unmeasured → juniper-cascor#677 | cascor 0.11.0 CHANGELOG |
@@ -403,7 +403,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
   merged it on green.
 - Both CHANGELOG entries landed under `[Unreleased]`, not under a released heading. That was checked
   on each repo's `main` after the merge.
-- ⟨ML_PR⟩ carries the Decision 12 spec, its verification script, this §10, the 2026-09-12
+- juniper-ml#2043 carries the Decision 12 spec, its verification script, this §10, the 2026-09-12
   handoff's correction, and the `docs/REFERENCE.md` and partition-plan updates.
 
 **Owner decisions:**
@@ -443,7 +443,7 @@ and a dropped item read identically in a summary, so each was re-derived from so
     `gh workflow run notify-consumers.yml -R pcalnon/juniper-data -f version=0.15.0`, and expect a
     `repository_dispatch` run in juniper-recurrence.
 - juniper-ml#2034 (decision 4) and juniper-cascor#677 (V-3).
-- **Done in ⟨ML_PR⟩**: once #422 had merged, `docs/REFERENCE.md`'s hf/kaggle entry and the "still open"
+- **Done in juniper-ml#2043**: once #422 had merged, `docs/REFERENCE.md`'s hf/kaggle entry and the "still open"
   list in §10 of `notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` were
   updated. Both are dated additions; the old text stands as history.
 - Minor, noted but not ticketed:
