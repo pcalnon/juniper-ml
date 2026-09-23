@@ -1,0 +1,399 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8051",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8051",
+    "version": "0.8.1",
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "build_date": "2026-09-22T19:38:01Z"
+  },
+  "tab": "metrics",
+  "started_at": "2026-09-22T20:04:26Z",
+  "seconds": 60.0,
+  "tab_opened": true,
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 13,
+      "rt_ms": {
+        "n": 13,
+        "min": 7.2,
+        "p50": 23.7,
+        "p90": 43.3,
+        "max": 45.4,
+        "mean": 25.0
+      },
+      "gap_ms": {
+        "n": 12,
+        "min": 1436.9,
+        "p50": 5028.9,
+        "p90": 5488.2,
+        "max": 11010.0,
+        "mean": 4833.1
+      },
+      "overlaps": 0
+    },
+    "update_progress_detail": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 6.0,
+        "p50": 7.5,
+        "p90": 9.2,
+        "max": 169.8,
+        "mean": 27.6
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4697.3,
+        "p50": 5867.8,
+        "p90": 8000.9,
+        "max": 9017.9,
+        "mean": 6253.4
+      },
+      "overlaps": 0
+    },
+    "update_learning_rate": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 5.6,
+        "p50": 7.6,
+        "p90": 9.7,
+        "max": 163.5,
+        "mean": 26.6
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4703.2,
+        "p50": 5868.6,
+        "p90": 7998.9,
+        "max": 9014.6,
+        "mean": 6253.6
+      },
+      "overlaps": 0
+    },
+    "update_phase_duration": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 5.4,
+        "p50": 8.6,
+        "p90": 13.5,
+        "max": 145.9,
+        "mean": 25.6
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4706.0,
+        "p50": 5869.6,
+        "p90": 8006.6,
+        "max": 9012.2,
+        "mean": 6252.6
+      },
+      "overlaps": 0
+    },
+    "update_training_progress": {
+      "requests": 8,
+      "rt_ms": {
+        "n": 8,
+        "min": 4.9,
+        "p50": 8.0,
+        "p90": 10.0,
+        "max": 113.9,
+        "mean": 21.0
+      },
+      "gap_ms": {
+        "n": 7,
+        "min": 4705.4,
+        "p50": 5874.8,
+        "p90": 8007.5,
+        "max": 9007.8,
+        "mean": 6251.4
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 110,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 29,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 28,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 12,
+    "dataset-swap-events-store.data": 12,
+    "metrics-panel-metrics-store.data": 8,
+    "metrics-panel-replay-controls.style": 8,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 2,
+    "hdf5-snapshots-panel-selected-id.data": 1,
+    "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..": 1,
+    "metrics-panel-view-state.data": 1,
+    "network-visualizer-view-state.data": 1,
+    "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 1,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 1,
+    "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+    "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metr": 1,
+    "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-pan": 1,
+    "candidate-metrics-panel-loss-plot.figure": 1,
+    "pinned-params-store.data": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "metrics-panel-training-state-store",
+    "reads": 15,
+    "readable": 15,
+    "distinct_timestamps": 11,
+    "samples": [
+      {
+        "t": 0.9,
+        "ok": true,
+        "timestamp": 1790107475.0356054,
+        "keys": 61
+      },
+      {
+        "t": 10.5,
+        "ok": true,
+        "timestamp": 1790107485.674547,
+        "keys": 61
+      },
+      {
+        "t": 14.9,
+        "ok": true,
+        "timestamp": 1790107496.6688404,
+        "keys": 61
+      },
+      {
+        "t": 18.7,
+        "ok": true,
+        "timestamp": 1790107496.6688404,
+        "keys": 61
+      },
+      {
+        "t": 22.0,
+        "ok": true,
+        "timestamp": 1790107496.6688404,
+        "keys": 61
+      },
+      {
+        "t": 25.8,
+        "ok": true,
+        "timestamp": 1790107504.0935657,
+        "keys": 61
+      },
+      {
+        "t": 30.0,
+        "ok": true,
+        "timestamp": 1790107509.182115,
+        "keys": 61
+      },
+      {
+        "t": 34.6,
+        "ok": true,
+        "timestamp": 1790107514.6715198,
+        "keys": 61
+      },
+      {
+        "t": 39.1,
+        "ok": true,
+        "timestamp": 1790107519.906782,
+        "keys": 61
+      },
+      {
+        "t": 41.3,
+        "ok": true,
+        "timestamp": 1790107519.906782,
+        "keys": 61
+      },
+      {
+        "t": 44.2,
+        "ok": true,
+        "timestamp": 1790107524.3941398,
+        "keys": 61
+      },
+      {
+        "t": 48.1,
+        "ok": true,
+        "timestamp": 1790107529.400389,
+        "keys": 61
+      },
+      {
+        "t": 51.3,
+        "ok": true,
+        "timestamp": 1790107529.400389,
+        "keys": 61
+      },
+      {
+        "t": 55.3,
+        "ok": true,
+        "timestamp": 1790107534.877674,
+        "keys": 61
+      },
+      {
+        "t": 58.6,
+        "ok": true,
+        "timestamp": 1790107539.7611117,
+        "keys": 61
+      }
+    ]
+  },
+  "writer_responses": {
+    "carried_store": 11,
+    "no_update": 0,
+    "unparsed": 0,
+    "distinct_timestamps_delivered": 11
+  },
+  "census": {
+    "metrics-panel-metrics-store": {
+      "responses": 8,
+      "carried": 1,
+      "no_update": 7,
+      "unparsed": 0,
+      "distinct_payloads": 1
+    }
+  },
+  "phase_duration": {
+    "samples": [
+      {
+        "t": 3.0,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 38s",
+        "shown_s": 518,
+        "expected_s": 528.4,
+        "lag_s": 10.4
+      },
+      {
+        "t": 11.1,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 38s",
+        "shown_s": 518,
+        "expected_s": 536.5,
+        "lag_s": 18.5
+      },
+      {
+        "t": 16.5,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 8m 54s",
+        "shown_s": 534,
+        "expected_s": 541.9,
+        "lag_s": 7.9
+      },
+      {
+        "t": 20.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 0s",
+        "shown_s": 540,
+        "expected_s": 545.8,
+        "lag_s": 5.8
+      },
+      {
+        "t": 23.8,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 0s",
+        "shown_s": 540,
+        "expected_s": 549.3,
+        "lag_s": 9.3
+      },
+      {
+        "t": 27.7,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 8s",
+        "shown_s": 548,
+        "expected_s": 553.1,
+        "lag_s": 5.1
+      },
+      {
+        "t": 31.1,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 8s",
+        "shown_s": 548,
+        "expected_s": 556.5,
+        "lag_s": 8.5
+      },
+      {
+        "t": 36.1,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 12s",
+        "shown_s": 552,
+        "expected_s": 561.5,
+        "lag_s": 9.5
+      },
+      {
+        "t": 39.9,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 18s",
+        "shown_s": 558,
+        "expected_s": 565.3,
+        "lag_s": 7.3
+      },
+      {
+        "t": 42.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 18s",
+        "shown_s": 558,
+        "expected_s": 567.7,
+        "lag_s": 9.7
+      },
+      {
+        "t": 44.9,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 18s",
+        "shown_s": 558,
+        "expected_s": 570.3,
+        "lag_s": 12.3
+      },
+      {
+        "t": 49.8,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 27s",
+        "shown_s": 567,
+        "expected_s": 575.2,
+        "lag_s": 8.2
+      },
+      {
+        "t": 52.9,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 32s",
+        "shown_s": 572,
+        "expected_s": 578.4,
+        "lag_s": 6.4
+      },
+      {
+        "t": 56.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 32s",
+        "shown_s": 572,
+        "expected_s": 581.8,
+        "lag_s": 9.8
+      },
+      {
+        "t": 60.7,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 9m 38s",
+        "shown_s": 578,
+        "expected_s": 586.2,
+        "lag_s": 8.2
+      }
+    ],
+    "lag_s": {
+      "n": 15,
+      "min": 5.1,
+      "p50": 8.5,
+      "p90": 12.3,
+      "max": 18.5,
+      "mean": 9.1
+    }
+  }
+}

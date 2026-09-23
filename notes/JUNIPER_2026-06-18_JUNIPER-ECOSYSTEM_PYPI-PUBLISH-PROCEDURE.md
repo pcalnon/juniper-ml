@@ -558,6 +558,109 @@ pip install juniper-ml==0.2.0
 pip show juniper-ml
 ```
 
+### 11.7 The release-train ceremony (the automated path), and what it cannot check
+
+§11.1–§11.6 describe the manual path. Most releases now go through `util/release_train/` instead,
+which keeps both gates with the owner and automates only the middle:
+
+- **Gate 1**: the version bump and the CHANGELOG's `## [<version>]` section ride an owner-approved PR.
+- **The middle**: `ceremony.py` authors the notes, opens the central archive PR, cuts the Release, and
+  parks at the `pypi` environment.
+- **Gate 2**: the PyPI deploy waits there for its reviewer.
+
+**Run it from a clean checkout at `origin/main`.** The ceremony reads the CHANGELOG, and its own code,
+from `--repo-root`, not from GitHub. A working tree carrying stale or unmerged files renders the
+permanent notes from text and code that are not on `main`.
+
+```bash
+ECO=/home/pcalnon/Development/python/Juniper
+python3 util/release_train/detect.py --repo-root . --ecosystem-root "$ECO" --package <pkg> --json > manifest.json
+python3 util/release_train/ceremony.py --manifest manifest.json --package <pkg> --repo-root . --ecosystem-root "$ECO" --dry-run
+python3 util/ad-hoc/2026-09-12_ceremony_notes_preview.py --package <pkg> --version <new> \
+    --released-version <previous> --release-date <UTC date> --repo-root . --ecosystem-root "$ECO"
+python3 util/release_train/ceremony.py --manifest manifest.json --package <pkg> --repo-root . --ecosystem-root "$ECO" --execute
+```
+
+Notes on those commands:
+
+- `--manifest` is required.
+- `--dry-run` is the default, and it overrides `--execute`.
+- Add `--cross-repo` for a package owned by a sibling repo. Its Release is cut there, while the
+  archive PR still lands centrally in juniper-ml.
+- `detect.py` exits 1 whenever anything needs a release. That is its normal answer, not a failure.
+- The ceremony HALTs, correctly, if `main`'s latest CI run is not green.
+- **`.github/workflows/release-train.yml` also runs on a daily cron (13:00 UTC), but it cannot cut
+  a Release unless told to.** Its mode resolves as the dispatch input, then the repo variable
+  `RELEASE_TRAIN_MODE`, then `report`. With the variable unset, as it was on 2026-09-23, a scheduled
+  run is detection only: its proposal and ceremony jobs show as *skipped*. So a pending manual cut
+  is not racing the cron. Check the variable before assuming this still holds.
+
+**A Release body cannot be re-cut.** `ceremony.py` renders both the Release body and the archived
+`notes/releases/` file from the CHANGELOG's `## [<version>]` section, and nothing checks that the
+section describes the release. `--dry-run --json` lists the planned actions but omits the rendered
+notes, so read them with the preview script before `--execute`.
+
+Five shapes have reached, or nearly reached, that artifact. Rows 1–4 are from the juniper-ml 0.9.0
+and juniper-data 0.15.0 releases (2026-09-22); row 5 is from the juniper-ml 0.10.0 pre-flight
+(2026-09-23). The causes are unrelated, so no single control catches them all:
+
+| # | what happened | control |
+| --- | --- | --- |
+| 1 | An ad-hoc CHANGELOG editor partitioned on the rest of the file rather than the `[Unreleased]` slice. Its `### Changed` search matched a heading inside the already-released `## [0.8.0]`, so the 0.9.0 notes would have omitted the release's whole point. | Bound every scripted CHANGELOG edit to its section and assert the anchor exactly. `util/ad-hoc/2026-09-22_raise_data_floor_0_15_0.py` refuses to open a release section unless `[Unreleased]` is empty. Then preview. |
+| 2 | Three image changes merged with no CHANGELOG entry (juniper-data #405, #408, #392/#394). A juniper-data Release mints a container image as well as a wheel. | Diff the tag window against the section. The preview shows only what is *in* the CHANGELOG, so it cannot see this. |
+| 3 | `notes_render.py` derived "Breaking changes" from `### Removed` alone. juniper-data 0.15.0 would have published "Breaking changes: NO" directly above a `BREAKING (contract)` bullet. | Fixed in the renderer; the recognised markers are listed below. Read the Release Summary in the preview. |
+| 4 | A PR merged between the bump PR and `--execute` and filed its entry under `[Unreleased]`. A Release tags the branch **head**, so its code shipped in a release whose notes did not mention it (juniper-data#418, folded in by #419). | Re-check the tag window **immediately** before `--execute`. |
+| 5 | A PR authored against `[Unreleased]` merged 22 minutes **after** a release that had turned that slot into `## [0.9.0]`, and the squash filed four bullets under the **released** heading with no conflict (juniper-ml#2002). | Before cutting, check the **previous** release's section against its archive (below), then re-home what it lists (juniper-ml#2049). |
+
+The tag-window check (controls 2 and 4):
+
+```bash
+git log --oneline <last-tag>..origin/main                                     # every commit the tag will carry
+sed -n '/^## \[<version>\]/,/^## \[/p' CHANGELOG.md | grep -oE '#[0-9]{3,4}' | sort -u   # every PR the notes name
+```
+
+The released-section check (control 5) lists every bullet in the previous release's section that its Release
+never said. juniper-ml's `[0.9.0]` carried four such bullets (4 of 22):
+
+```bash
+python3 util/ad-hoc/2026-09-23_released_section_drift.py --changelog CHANGELOG.md \
+    --archive notes/releases/RELEASE_NOTES_v<previous>.md --version <previous>
+```
+
+**Date the release section in UTC.** The ceremony stamps the notes with today's UTC date
+(`ceremony._today`), and the `Verify AGENTS.md Last Updated` gate compares against UTC too. A section
+dated in local time near midnight UTC disagrees with the body rendered from it.
+
+**The Latest badge follows the registry.** Each repo has exactly one package marked `latest: true` in
+`util/release_train/registry.yaml`. That is its `v*`-tagged package, or juniper-recurrence's app, which
+has no `v*` tag. The ceremony cuts that package with `--latest` and every other with `--latest=false`,
+which is §11.4's rule. Until 2026-09-23 it passed `--latest=false` on every cut, the meta-package's
+included. Six repos' badges had fallen behind their newest release, juniper-ml's own among them
+(v0.6.0 against v0.10.0). They were moved by hand that day, on the owner's approval. Moving a badge
+(`gh release edit <tag> --latest`) fires nothing: every release-triggered workflow in the nine repos
+subscribes to `published` only (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, 24 workflows).
+
+**What the renderer counts as breaking** (`notes_render._is_breaking`):
+
+- a `### Removed` section, or a heading whose category word is `Breaking`;
+- a heading qualifier that says breaking, in any case, e.g. `### Changed (potentially breaking)`;
+- a bullet or sub-bullet that *opens* with `Breaking change(s)`, in any case and optionally bold;
+- an uppercase `BREAKING` anywhere in a bullet.
+
+`non-`, `not` or `no` directly before the word negates it. Lowercase mid-sentence prose is
+deliberately not a marker, because it is usually a denial ("this is not a breaking change").
+
+**Gate 2 belongs to the owner.** `PENDING_PYPI_APPROVAL` is the ceremony's success state.
+`current_user_can_approve` reads `true` for an agent's token, and an agent approving anyway defeats the
+gate's entire purpose. Hand the owner the run URL and stop.
+
+**Verify from the registry, not from a tally.** Use the version-specific endpoint
+(`/pypi/<pkg>/<version>/json` returns 200), because the aggregate endpoint lags behind the CDN. For a
+package that also publishes an image, check the registry's tag list as well. "I merged the bump" and
+"it is on PyPI" are separated by a ceremony that is easy to skip. juniper-model-core 0.3.2 sat bumped
+and unreleased until a final registry sweep caught it
+(`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_PARTITION-IMPLEMENTATION-PLAN.md` §10).
+
 ---
 
 ## 12. Troubleshooting

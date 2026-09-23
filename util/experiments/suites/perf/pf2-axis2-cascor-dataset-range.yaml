@@ -1,0 +1,83 @@
+# PF-2 AXIS 2 (re-spec §3): wall time against dataset size over the widest range the SUITE PATH
+# can reach -- 250 -> 5,800 points per spiral REQUESTED, about 23x (NOT the 40x the ruling
+# assumed; see the ceiling block below). Thresholds unratified; this file is the instrument, not
+# the verdict.
+#
+# notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md §3 specifies the axis;
+# the owner ruled its range 2026-09-22
+# (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md §5, D4):
+# "10,000 now, in-process later". Probe the top end through cascor's in-process generator ONLY IF
+# this curve shows a knee worth chasing.
+#
+# THE CEILING IS 5,882, NOT 10,000 -- measured 2026-09-23, and the ruling's premise was wrong.
+# The experiment driver stages its dataset through juniper-data, whose spiral params bound
+# n_points_per_spiral with `le=MAX_POINTS` (10000, juniper_data/generators/spiral/defaults.py:31).
+# The re-spec and the D4 ruling both read that as a 10,000 ceiling. It is not the REQUEST
+# ceiling: in juniper-data's additive sizing the request is the TRAIN count, the val and test
+# partitions are added on top (1.7x at this suite's train_ratio 0.8 / test_ratio 0.2 and the
+# default val_percent), and the inflated per-spiral count is re-validated against MAX_POINTS.
+# So MAX_POINTS binds the TOTAL rows per spiral. Bisected in the JuniperData env: 5,882
+# accepted, 5,883 rejected. A request of 10,000 became an internal 17,000 and died.
+#   It dies SILENTLY, which is a juniper-data defect worth knowing: the field check passes
+#   (10000 <= 10000), generation then raises a pydantic ValidationError, and the ValueError
+#   handler (juniper_data/api/app.py) returns 400 "Invalid request parameters" with the cause
+#   logged only at DEBUG. The cell reads `torn_down_early` after ~18 s, not `timed_out`.
+# 5,800 is the top cell: the widest round request under the ceiling, with 1.4% margin in case
+# the split defaults move. In TOTAL rows per spiral this suite still spans 425 -> ~9,860.
+# The owner's original 250 -> 500,000 request is reachable only through cascor's own in-process
+# generator, a SEPARATE implementation: figures from that path must never be quoted as
+# juniper-data's.
+#
+# WHAT THIS REPLACES, AND WHAT IT DOES NOT. `pf2-cascor-dataset-scaling.yaml` swept the same key
+# over 250 -> 2000 and measured an invariant (step_count identical at every size). That file's
+# question was WORK; this one's is WALL TIME, where size genuinely acts. Do not read step_count
+# here as the result. It is expected to be flat, and a flat column is not a finding.
+#
+# THE REPEAT KEY COMES FIRST, deliberately. run_suite executes the matrix product in key order
+# with the LAST key varying fastest, so a leading repeat key runs every size once per pass --
+# round-robin, not three of one size back to back. Ambient drift (this host has not been quiet in
+# six sessions) is then spread across sizes instead of accumulating in whichever size ran during
+# a load spike. It is not randomisation -- run_suite has no shuffle -- but it is the unbiased
+# ordering the harness CAN express. The description is stripped from the workload fingerprint,
+# so the three passes are recognised as repeats of one workload per size.
+#
+# THE WALL BREACH IS THE MEASUREMENT (re-spec §3). continue_on_failure: true, because the first
+# cell that exceeds max_wall_seconds is the answer and a suite that aborts on it throws the answer
+# away. A breached cell reads `timed_out` in REPORT.md's outcome column: read that column, or the
+# curve silently flattens at the budget instead of at the machine's limit.
+#
+# stall_seconds / max_wall_seconds / per_run_timeout_seconds mirror pf3-cascor-pool-scaling.yaml:
+# spiral-smoke caps max_epochs but NOT candidate_epochs, so the candidate phase is full-length and
+# the Q-2 detector sees no current_epoch progress while it runs; the 120 s default would label a
+# healthy large cell `stalled`. 2000 s keeps the DRIVER the component that stops a run.
+#
+# CALIBRATION, 2026-09-23 (cascor 0d2d826; probes via `--only`, which by design exits 1 unless
+# the FULL expansion has succeeded -- read the outcome column, not the exit status):
+#   * 10,000 -> torn_down_early at 17.6 s: juniper-data's 400 (the ceiling block above).
+#   * 5,800 (c005, pass 1) -> succeeded, 44.3 s wall at 1-minute load 22-28, step_count 8,
+#     mean step 1.63 s.
+# The top cell is ~45x inside max_wall_seconds, so NO BREACH IS EXPECTED anywhere in this range:
+# the axis will report the SHAPE of wall time against size, not where the machine stops. The
+# budgets are left generous because a ceiling costs nothing unless it is hit. Whole suite: 18
+# cells, expect roughly 10-15 min. The owner's in-process follow-up fires only on a knee in this
+# curve (ruling §5, D4), and a range with no breach cannot show where viability ends.
+#
+# RESULT, 2026-09-23 -- RUN: 18/18 succeeded, 3 round-robin passes, load 5-8. Wall time is FLAT
+# (24.1 s at 250 -> 24.4 s at 5,800, x1.01); training compute (step_sum) grows x1.31 with log-log
+# slopes of -0.15..0.31 between neighbours. NO KNEE, so the owner's in-process follow-up does not
+# fire. Full table: PF-2 re-spec §3 RESULT; reducer util/ad-hoc/2026-09-23_pf2_axis2_reduce.py.
+schema_version: 1
+suite:
+  name: pf2-axis2-cascor-dataset-range
+  description: "PF-2 axis 2: wall time vs n_points_per_spiral, 250 -> 10,000, 3 round-robin passes"
+  app: cascor
+  base_config: [../../../../../juniper-cascor/conf/experiments/spiral-smoke.yaml]
+  seed_policy: fixed
+execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 2400, stall_seconds: 1200, max_wall_seconds: 2000}
+matrix:
+  experiment.description:
+    - "PF-2 axis 2 pass 1"
+    - "PF-2 axis 2 pass 2"
+    - "PF-2 axis 2 pass 3"
+  dataset.params.n_points_per_spiral: [250, 500, 1000, 2000, 4000, 5800]
+outputs: {suite_dir: null, aggregate: [csv, markdown]}

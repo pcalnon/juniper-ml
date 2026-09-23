@@ -701,6 +701,16 @@ jobs:
           # on the refs POST (ml#770 R7), and that every refusal path writes nothing.
           # util/ is outside every pre-commit Python hook's scope, so this is the gate.
           python3 -m unittest -v tests/test_open_signed_pr.py
+          # tests/test_push_signed_commit.py: util/push_signed_commit.py -- the EXISTING-branch
+          # sibling of open_signed_pr.py (one signed commit onto an open PR's branch), promoted
+          # so the ad-hoc copies stop multiplying. Hermetic (gh is a PATH stub that ENFORCES
+          # expectedHeadOid like GitHub): pins the required FULL-sha --expected-head (a short
+          # sha refused before any API call), expectedHeadOid == the PINNED sha rather than a
+          # fresh read (a racing push must be refused, not clobbered), the missing-branch /
+          # default-branch / moved-head refusals, dry-run writing nothing, and the read-back
+          # (head moved, signature verified, parent == pin, blob shas, deletions gone).
+          # util/ is outside every pre-commit Python hook's scope, so this is the gate.
+          python3 -m unittest -v tests/test_push_signed_commit.py
           # tests/test_wait_for_checks.py: util/wait_for_checks.py -- the shared
           # required-context CI waiter. Hermetic (gh is a PATH stub replaying a
           # SCRIPTED SEQUENCE of rollups, one per poll). Pins the two traps that
@@ -1895,10 +1905,10 @@ jobs:
       # Wave 2 of the dep-docs PyPI migration (plan
       # notes/JUNIPER_2026-05-20_JUNIPER-ML_CI-TOOLS-PYPI-MIGRATION-PLAN.md):
       # invoke the PyPI-published juniper-ci-tools console script
-      # instead of the inline util/generate_dep_docs.sh. The inline
-      # script will be removed from the tree in Wave 4 once the new
-      # step has soaked. Pinned <0.2.0 so a future major bump can be
-      # adopted deliberately per-repo.
+      # instead of the inline util/generate_dep_docs.sh, which Wave 4
+      # deleted from the tree (#298). Pinned to one minor
+      # (>=0.9.0,<0.10.0) so each new minor is adopted deliberately
+      # per-repo.
       - name: Install juniper-ci-tools
         run: |
           python -m pip install --upgrade "pip>=26.1.1"

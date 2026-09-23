@@ -980,7 +980,8 @@ Tip: Phase 2 exit is "every P0 and P1 closed or explicitly deferred". Run `pytho
 | Experiment `grafana bridge failed — tearing the run back down` | Expected `--grafana-bridge` teardown; install `socat`/`docker` or omit the flag. |
 | Experiment port range exhausted after a failed `--config` | Staging aborted between `allocate_port` and `ports.json` (open #979) — clear `*.lock` under `JUNIPER_EXP_LOCK_ROOT` with no live listener. |
 | `compare_baseline` FAIL, same YAML / seed / host | Interpretable since #1733/#1743 — branch, `outcome`, measurement and coverage all checked out. Investigate the change; waive only once you know why. |
-| `compare_baseline` REFUSED "different branches" / "no completion_reason" | Not a regression. Candidate terminated differently, or the baseline predates the #1733 guard (`pf1-2026-09-04`). Use `pf1-2026-09-04b` or re-cut. |
+| `compare_baseline` REFUSED "different branches" / "no completion_reason" | Not a regression. Candidate terminated differently, or the baseline predates the #1733 guard (`pf1-2026-09-04`). Use the current tag, `pf1-2026-09-23-blas2`, or re-cut. |
+| `compare_baseline` REFUSED "host identity differs … (thread_budget)" | Expected against `pf1-2026-09-04` / `-04b` since ml#2002 (D2): PF-1 now runs capped at `blas_threads: 2`. Use `pf1-2026-09-23-blas2`. |
 | `compare_baseline` PASS with empty series / `timed_out` cells | **No longer possible** — A1/A2 refuse both. If you see it, the reader drifted; stop. |
 | `compare_baseline` REFUSED after a real work miss | **No longer possible** — A3 gives FAIL precedence. A real miss exits 1 even with an unreadable sibling `--suite`. |
 | `compare_baseline` REFUSED "covered N of M" / "DUPLICATE fingerprint" | A6/A7 — partial scenario coverage, or two blessed scenarios sharing a workload. Run the rest, or re-cut from distinct workloads. |

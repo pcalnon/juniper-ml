@@ -313,7 +313,9 @@ The 2026-09-08 session lost the fixture to a host reboot (`/tmp` is tmpfs; the t
   summary to `${RUN_DIR}/relay_repair_sequence.txt`; read that before the per-step artifacts. `2026-09-08_post_growth_sequence.bash` is the same idea for
   the idle-fixture instruments (storestorm, dataset seq, cardsprobe, the f035 re-drive, the two probes, supersession run 2).
 - **`2026-09-08_append_signed_commit.py`** is the verb `open_signed_pr.py` refuses by design: one GitHub-signed commit onto an EXISTING branch, pinned to
-  the branch's current head. Built to extend juniper-cascor#632 after the first fix proved incomplete.
+  the branch's current head. Built to extend juniper-cascor#632 after the first fix proved incomplete. **Superseded for new use by
+  `util/push_signed_commit.py`**, which pins `expectedHeadOid` to the head your edits are based on (`--expected-head`) rather than to a live read; this
+  script and its sibling existing-branch drivers are retained as provenance.
 - **`2026-09-09_tab_crosstalk_probe.py`** answers whether two canopy pages in ONE browser context keep the tabs they selected. They do NOT: canopy
   persists the active tab in `layout-state-store`, a `dcc.Store(storage_type="local")`, and a clientside callback drives `visualization-tabs.active_tab`
   from it — so localStorage, which every page of one context shares, makes the LAST page to pick a tab move all the others. Verdicts `CROSSTALK` /
@@ -551,6 +553,141 @@ the packaging fix and the mount-500 fix. Both parsers now merge repeated heading
 **Preview before `--execute`, every time.** `2026-09-12_ceremony_notes_preview.py` reported
 `Fixed: 1` for a section that visibly contained three bullets. Nothing else in the pipeline would
 have said a word, and a Release body cannot be re-cut.
+
+---
+
+## The 2026-09-10 canopy handoff re-evaluated: the relaunch, F-CANOPY-053, and two instrument repairs (operational, 2026-09-22)
+
+- **`2026-09-22_fixture_grow.py`** grows the arc's cascor fixture by one window the arc's own way:
+  re-stage `spirals/1000/0.25/1.5/2`, PATCH `max_hidden_units`, start, poll to a terminal FSM state, then
+  snapshot. It refuses when cascor holds no network, and it flags a uuid change. **Why it exists:** a
+  resumed snapshot restores the NETWORK, not the metrics buffer. Every "66 metrics rows" figure in the
+  2026-09-10 handoff was accumulated in-process by three growth windows and died with the process on
+  2026-09-19, so a relaunched stack serves a 52-unit network with an EMPTY history until a window runs.
+- **`2026-09-22_state_store_consumer_roundtrip.py`** puts the WRITER's delivered values next to the
+  RENDERER's held value. Per callback it records the round trip and the real re-request gap, both from
+  the browser's own `request.timing`. It also censuses response bodies (carried / `no_update` /
+  **unparsed**, with distinct values delivered) and reads the store in the renderer once a second, so
+  "delivered N distinct values, renderer held 1" is a single run's direct measurement. Outputs are
+  matched as whole Dash tokens: `metrics-panel-training-state-store.data` is a SUBSTRING of the
+  candidate panel's store id. The positive control is built in, because the Training Metrics tab's
+  store is read by the same method and does change. `--census-store` extends the census to any store
+  (the F-CANOPY-038 re-measure). `--grow-to N` runs a growth window on the probe's own clock.
+- **`2026-09-08_replay_block_redrive.py`** was repaired in place, fixing three defects:
+  1. It now waits for the metrics store to fill before driving. The 09-11 run read it empty, watched it
+     fill to 66 mid-run, and scored the index rows on the stale read.
+  2. Each row is scored on the store length its OWN step saw.
+  3. No row passes vacuously. On 09-22 step-back and start "passed" by expecting index 0 from an index
+     that never left 0, and the slider "passed" because rc-slider moved its own value.
+  It also gained a wire census of the server's `replay-state` responses (browser-side, not a server
+  log), and `--park-metrics-poll`, which
+  sets `metrics-store-interval.interval` to 1e9 ms. It uses `interval`, not `disabled`, because the
+  CAN-000 gate and the canopy#614 strand watchdog both write `disabled`.
+- **`e2e_f027_slots.py`** now also censuses `requested` and `executing`. Before, it named only `watched`
+  and `prioritized`, so a callback that is never READY was invisible to it. It gained two options:
+  `--focus SUBSTR`, which prints every queue's residency for matching callbacks, and
+  `--click-id/--click-at`, which clicks a control mid-watch. This is what found F-CANOPY-048's block:
+  `update_replay_ui` and the play label sat in `requested` in 6471 of 6471 samples, and
+  `handle_replay_controls` in 4030 of 6471, from the click on.
+- **`2026-09-22_f048_replay_cycle_cleanroom.py`**: canopy's replay-block shape with no canopy at all.
+  It has two arms (the slider as an Input, which forms a cycle, or as State) and an optional
+  always-pending callback. That callback is an `allow_duplicate` writer, whose `@hash` closure reaches
+  nothing, so it locks the cycle by starving the breaker, not by feeding the block (Lane B's correction).
+  **`2026-09-22_f048_laneB_variants.py`** holds Lane B's 30 discriminating runs.
+  - The cycle alone does NOT lock: NO-DEADLOCK in 2/2.
+  - The cycle plus the feeder locks 3/3 and the acyclic arm is live 3/3: FEEDER-CYCLE-LOCK under
+    rule v2. The renderer's circular-dependency breaker (`dash_renderer.dev.js` ~:3048-3068) fires
+    only when NOTHING else is pending.
+  - Its first feeder run is recorded as INDETERMINATE under a MIS-SPECIFIED v1 rule. "Toggled" tested
+    "shows ⏸" while the mount-time run had already set ⏸. That run was not re-scored; v2 was fixed
+    before a fresh run.
+- **`2026-09-22_canopy_idle_cpu_profile.py`**: a CDP sampling profile of the page's main thread, by
+  self time and by INCLUSIVE time, with columns so minified frames can be located. At idle the thread
+  is 0.1% idle, and 85% of self time is inside `dash_renderer.min.js`.
+- **`2026-09-22_headless_gpu_renderer_check.py`**: the unmasked WebGL renderer per launch
+  configuration. The arc's default launch renders through SwiftShader. `JUNIPER_E2E_BROWSER_GPU=1`
+  (read by `e2e_w3_params_driver.open_dashboard`, which every seg17-derived driver shares) opts into
+  the host GPU.
+- **The four `2026-09-22_laneA*` scripts** are the independent Lane A validators' own instruments for
+  F-CANOPY-053, F-CANOPY-038 and M-METRICS-18. By design each shares no code with the orchestrator's
+  instruments, so treat them as re-derivations, not as tools to extend.
+
+## F-CANOPY-054: the replay block moved clientside (operational, 2026-09-23)
+
+See the E2E ledger's Phase 8 (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`).
+
+- **`2026-09-23_f054_replay_tick_cleanroom.py`** runs four shapes of canopy's replay block with no canopy
+  (dash 4.2.0), with a server-latency knob and an always-pending `running=` feeder:
+  - `current`: canopy main 2f973ca2;
+  - `cs_tick`: only the tick clientside, the direction Phase 7 recorded;
+  - `cs_all`: canopy#670;
+  - `cs_all_input`: canopy#670 with the store as an Input.
+
+  **The verdict reads the Redux store, not the DOM.** In `cs_tick` every server refresh is evicted and
+  the DOM freezes on a stale "▶ 0 / 119" that looks exactly like a pause. **Keep its port range clear of
+  the trio's:** its first scored run counted up from 8201 and landed its second arm on the LIVE cascor
+  at 8202. It now starts at 18501 and skips ports in use (`_free_port`).
+- **`2026-09-23_f054_live_pause_check.py`**: the same rule against a live canopy leg. A Redux
+  subscription records every write of the replay state's `(mode, current_index)` and of
+  `replay-interval.disabled`, and resolves the path through `paths.strs`, which costs no layout walk per
+  store change on a page whose main thread is ~0.1% idle. F-CANOPY-054 is a SEQUENCE (a `paused` write,
+  then a late `playing` write), which a single read `settle` seconds after the click cannot see.
+  - Run it against a parent leg as a negative control first. On `2f973ca2` it scored F054-UNDONE 3/3.
+- **`2026-09-23_f054_mutation_check.py`** applies textual mutations, one at a time, to canopy#670's
+  `metrics_panel.py` and runs the two replay test files: nine with `--set v1`, 18 with `--set v2`.
+  - Bytecode is off, and `__pycache__` entries are cleared per run.
+  - It restores the file byte-for-byte and verifies by sha256.
+  - A mutation whose search text is absent is NOT-APPLIED, never "caught".
+  - **By default every test runs, and the verdict says which kind of test caught it.** `TestSourceBackstop`
+    pins source TEXT, so a mutation that deletes pinned text is caught whatever the behaviour. Under `-x`,
+    four v2 mutations were first caught by that backstop, which proves only that the text is pinned.
+    CAUGHT-BY-BEHAVIOUR needs a failing test outside the backstop. `--fail-fast` reproduces the old scoring.
+- **`2026-09-23_f054_pdup_cleanroom_v1_v2.py`** is Lane B2's contention clean room, adapted.
+  - It needs no ports: Playwright route interception serves Dash through Flask's test client.
+  - It runs K guarded pollers, and v1 and v2 paired, each read from a git OBJECT (`git show <ref>:path`,
+    or `:path` for the index), so a concurrent mutation check cannot leak into it.
+  - A trial is RECOVERED when the click's request was replaced in `prioritized` and the pause still
+    applied: that is the only path round 1's defect exercises.
+  - Its comment's `'13'` against `'11'` priority story is refuted (see the next bullet), but the drop
+    counts stand.
+- **dash 4.2.0's priority is INERT.** `getPriority` returns `"0"` for every callback: its first pass is
+  `filter(c => touched)` (`:1598`, `ramda/es/filter.js`), which drops its own start callback. So
+  `prioritized` is FIFO. Lane A2 found it (`2026-09-23_f054_r2_laneA2_priority_probe.py`).
+- **`2026-09-23_f054_v2_live_check.py`** drives every click DURING PLAYBACK on a live leg: pauses at 1x
+  and 4x, steps and seeks. It records the pool at each click and whether the click was seen waiting,
+  running or recovered.
+- **`2026-09-23_matrix_f054_rows.py`** records the seven replay rows' verdicts on `c0530279`. It follows
+  `2026-09-22_matrix_f053_rows.py`: it refuses a second run and refuses a row whose verdict is not the one
+  it was written against. **`2026-09-23_matrix_f054_rows_v2.py`** then moves them to `85415f3c`, the revised
+  fix, under the same two guards.
+- **`2026-09-23_archive_consensus_reports_by_round.py`** archives validator reports per ROUND.
+  - A subagent resumed with `SendMessage` appends to the same transcript, so "its last text" (the
+    2026-09-22 archiver's rule) silently becomes the round-2 progress line.
+  - This one splits each transcript at the round-2 brief (`--marker`).
+- **`2026-09-23_f054_r2_laneA2_*.py`**: Lane A2's independent round-2 harness (slot contention, a post-hoc
+  arm and the priority probe), built from the renderer source before it read any other lane.
+
+## The idle dispatch cuts and the top status bar (operational, 2026-09-23)
+
+The ledger's Phase 8 again.
+
+- **`2026-09-23_canopy_interval_census.py`**: every `dcc.Interval` in the built app, with its steady-state
+  tick rate and its consumers. A finite `max_intervals` counts as 0 in the steady state. The first version
+  counted `params-init-interval` (`max_intervals=1`) as perpetual.
+- **`2026-09-23_canopy_timer_park_ab.py`**: an in-page A/B that parks candidate timers
+  (`setProps({disabled: true})`) in alternating windows, BEFORE any code change.
+  - Run it in both orders (`--order forward|reverse`). The first run's baseline was still settling.
+  - "Store updates/s" is not a cost measure on a saturated page: it ROSE when a timer was parked, because
+    freed main-thread time goes to applying responses.
+- **`2026-09-23_idle_cuts_live_check.py`**: the cuts leg against a control leg, in alternating windows.
+  It checks the structure, the session path (a `replay-player-session` write must enable the drain) and
+  the latency.
+- **`2026-09-23_status_bar_apply_census.py`**: does `update_unified_status_bar` ever APPLY a response?
+  - It counts wire requests and responses, renderer `watched`/`executed` entries, and store changes.
+  - `--period-ms` adds the discriminating arm: the lane's period is set above the latency on the same
+    page, and the bar then applies.
+  - A bar showing exactly its layout defaults ("Stopped", "0", an empty latency) has never applied
+    anything.
 
 ---
 

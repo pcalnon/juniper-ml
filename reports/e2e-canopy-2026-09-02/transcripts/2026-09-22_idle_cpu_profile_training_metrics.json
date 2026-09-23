@@ -1,0 +1,474 @@
+{
+  "probe": "2026-09-22_canopy_idle_cpu_profile.py",
+  "canopy": "http://127.0.0.1:8051",
+  "tab": "Training Metrics",
+  "seconds": 20.0,
+  "total_ms": 22473.0,
+  "special_pct": {
+    "(program)": 4.4,
+    "(garbage collector)": 0.4,
+    "(idle)": 0.1
+  },
+  "top_scripts_pct": [
+    [
+      "dash_renderer.v4_2_0m1781825206.min.js",
+      84.5
+    ],
+    [
+      "react-dom@18.v4_2_0m1781825206.3.1.min.js",
+      9.8
+    ],
+    [
+      "polyfill@7.v4_2_0m1781825206.12.1.min.js",
+      0.2
+    ],
+    [
+      "(native)",
+      0.2
+    ],
+    [
+      "dash_html_components.v4_2_0m1781825206.min.js",
+      0.2
+    ],
+    [
+      "dash_bootstrap_components.v2_0_4m1777770598.min.js",
+      0.1
+    ],
+    [
+      "dash_core_components.v4_2_0m1781825206.js",
+      0.0
+    ],
+    [
+      "react@18.v4_2_0m1781825206.3.1.min.js",
+      0.0
+    ],
+    [
+      "websocket_client.js",
+      0.0
+    ]
+  ],
+  "top_functions": [
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:186053",
+      "pct": 26.58,
+      "ms": 5974.0
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:98367",
+      "pct": 17.31,
+      "ms": 3889.5
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:17819",
+      "pct": 13.3,
+      "ms": 2987.9
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "react-dom@18.v4_2_0m1781825206.3.1.min.js",
+      "line": "111:52",
+      "pct": 9.43,
+      "ms": 2118.4
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:47122",
+      "pct": 7.22,
+      "ms": 1623.3
+    },
+    {
+      "fn": "e",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:46211",
+      "pct": 6.05,
+      "ms": 1358.6
+    },
+    {
+      "fn": "notifyNestedSubs",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:31156",
+      "pct": 3.9,
+      "ms": 876.4
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:184313",
+      "pct": 3.06,
+      "ms": 687.9
+    },
+    {
+      "fn": "Tt",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:43836",
+      "pct": 1.81,
+      "ms": 407.2
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:186252",
+      "pct": 1.74,
+      "ms": 390.0
+    },
+    {
+      "fn": "d",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:35392",
+      "pct": 1.05,
+      "ms": 235.6
+    },
+    {
+      "fn": "ms",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:181347",
+      "pct": 0.41,
+      "ms": 92.7
+    },
+    {
+      "fn": "t",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:47316",
+      "pct": 0.26,
+      "ms": 59.3
+    },
+    {
+      "fn": "toString",
+      "script": "polyfill@7.v4_2_0m1781825206.12.1.min.js",
+      "line": "1:29833",
+      "pct": 0.24,
+      "ms": 54.8
+    },
+    {
+      "fn": "G",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:32907",
+      "pct": 0.23,
+      "ms": 51.6
+    },
+    {
+      "fn": "gs",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:181433",
+      "pct": 0.14,
+      "ms": 30.4
+    },
+    {
+      "fn": "fetch",
+      "script": "(native)",
+      "line": "0:0",
+      "pct": 0.12,
+      "ms": 28.0
+    },
+    {
+      "fn": "Xe",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:56768",
+      "pct": 0.1,
+      "ms": 23.6
+    },
+    {
+      "fn": "y",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:28571",
+      "pct": 0.08,
+      "ms": 17.0
+    },
+    {
+      "fn": "Qa",
+      "script": "react-dom@18.v4_2_0m1781825206.3.1.min.js",
+      "line": "142:350",
+      "pct": 0.07,
+      "ms": 16.4
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:50342",
+      "pct": 0.07,
+      "ms": 15.1
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:186185",
+      "pct": 0.07,
+      "ms": 15.0
+    },
+    {
+      "fn": "fa",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:99015",
+      "pct": 0.07,
+      "ms": 14.9
+    },
+    {
+      "fn": "Span",
+      "script": "dash_html_components.v4_2_0m1781825206.min.js",
+      "line": "1:3296",
+      "pct": 0.05,
+      "ms": 11.8
+    },
+    {
+      "fn": "DropdownMenuItem",
+      "script": "dash_bootstrap_components.v2_0_4m1777770598.min.js",
+      "line": "2:15364",
+      "pct": 0.05,
+      "ms": 10.9
+    },
+    {
+      "fn": "Xn",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:84968",
+      "pct": 0.05,
+      "ms": 10.8
+    },
+    {
+      "fn": "r",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:185833",
+      "pct": 0.04,
+      "ms": 9.7
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:167275",
+      "pct": 0.04,
+      "ms": 8.7
+    },
+    {
+      "fn": "e",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": "2:42258",
+      "pct": 0.04,
+      "ms": 8.6
+    },
+    {
+      "fn": "xk",
+      "script": "react-dom@18.v4_2_0m1781825206.3.1.min.js",
+      "line": "146:106",
+      "pct": 0.03,
+      "ms": 7.6
+    }
+  ],
+  "top_inclusive": [
+    {
+      "fn": "notifyNestedSubs",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 31156,
+      "pct": 90.53
+    },
+    {
+      "fn": "p",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 40703,
+      "pct": 78.98
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 42132,
+      "pct": 78.93
+    },
+    {
+      "fn": "o",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 30606,
+      "pct": 76.24
+    },
+    {
+      "fn": "d",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 35392,
+      "pct": 76.2
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 17819,
+      "pct": 75.8
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 186053,
+      "pct": 54.38
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 173719,
+      "pct": 45.05
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 171003,
+      "pct": 45.05
+    },
+    {
+      "fn": "i",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 176156,
+      "pct": 45.05
+    },
+    {
+      "fn": "i",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 134361,
+      "pct": 37.45
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 132691,
+      "pct": 37.44
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 146922,
+      "pct": 37.23
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 102926,
+      "pct": 34.46
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 98367,
+      "pct": 17.31
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 164740,
+      "pct": 17.12
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 166438,
+      "pct": 17.12
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 164793,
+      "pct": 17.11
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 165465,
+      "pct": 17.11
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 161146,
+      "pct": 17.11
+    },
+    {
+      "fn": "i",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 164828,
+      "pct": 17.11
+    },
+    {
+      "fn": "e",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 46211,
+      "pct": 15.62
+    },
+    {
+      "fn": "G",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 32907,
+      "pct": 14.53
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 35730,
+      "pct": 14.53
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 162419,
+      "pct": 14.32
+    },
+    {
+      "fn": "Cc",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 164599,
+      "pct": 14.32
+    },
+    {
+      "fn": "e",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 42258,
+      "pct": 14.31
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 49401,
+      "pct": 12.09
+    },
+    {
+      "fn": "ye",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 50791,
+      "pct": 11.84
+    },
+    {
+      "fn": "(anonymous)",
+      "script": "dash_renderer.v4_2_0m1781825206.min.js",
+      "line": 2,
+      "col": 51532,
+      "pct": 11.84
+    }
+  ]
+}

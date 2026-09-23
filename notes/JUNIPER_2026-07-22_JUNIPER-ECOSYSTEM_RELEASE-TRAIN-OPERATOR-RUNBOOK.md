@@ -548,9 +548,10 @@ of its workflow yet) — treat it as a genuine gate, not the old artifact.
 For each `BUMPED_NOT_RELEASED` package the ceremony (`ceremony.py:1-45`): runs the §8 preconditions,
 builds the central notes file, opens the **add-only** archive PR (always in juniper-ml — the central
 `notes/releases/` archive, plan §10.2), enables `gh pr merge --auto --squash` behind the required
-archive-guard check, **cuts the Release** on the owning repo (`gh release create <tag> --latest=false`;
-the Release **creates** the tag, so deliberately **no** `--verify-tag`, `ceremony.py:225-226`), and
-monitors the triggered publish run.
+archive-guard check, **cuts the Release** on the owning repo (`gh release create <tag> --latest` for
+the one package per repo that `registry.yaml` marks `latest: true`, `--latest=false` for every other,
+since 2026-09-23; the Release **creates** the tag, so deliberately **no** `--verify-tag`,
+`ceremony.py:225-226`), and monitors the triggered publish run.
 
 - **The archive PR auto-merges hands-free.** The archive branch **and** its single-file commit are
   created through the GitHub API — a `git/refs` POST plus a `createCommitOnBranch` GraphQL mutation

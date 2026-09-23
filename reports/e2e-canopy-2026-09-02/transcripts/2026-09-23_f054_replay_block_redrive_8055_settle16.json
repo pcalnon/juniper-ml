@@ -1,0 +1,640 @@
+{
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8055",
+    "git_sha": "c0530279de548208c47bba8823fc45239be00f87",
+    "build_date": "2026-09-23T06:01:05Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T06:10:00Z"
+  },
+  "steps": [
+    {
+      "label": "M-METRICS-13 play",
+      "component": "replay-play",
+      "clicked": true,
+      "expect": "play text -> \u23f8, interval enabled, mode playing",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 8,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 8
+        },
+        "position": "9 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 1000,
+        "slider_value": 9.565217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 65,
+      "requests_naming_replay": 3,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-13 pause",
+      "component": "replay-play",
+      "clicked": true,
+      "expect": "play text -> \u25b6, interval disabled, mode paused",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 13,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 13
+        },
+        "position": "14 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 1000,
+        "slider_value": 14.782608695652174,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 71,
+      "requests_naming_replay": 4,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-16 2x",
+      "component": "speed-2x",
+      "clicked": true,
+      "expect": "interval -> 500",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 2,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 500,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 74,
+      "requests_naming_replay": 4,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-16 4x",
+      "component": "speed-4x",
+      "clicked": true,
+      "expect": "interval -> 250",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 2,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 500,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 4,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 250,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 77,
+      "requests_naming_replay": 4,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-16 1x",
+      "component": "speed-1x",
+      "clicked": true,
+      "expect": "interval -> 1000",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 4,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 250,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 72,
+      "requests_naming_replay": 4,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-14 step-forward",
+      "component": "replay-step-forward",
+      "clicked": true,
+      "expect": "index +1 capped at max_index",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 19,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "19 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 16.52173913043478,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 65,
+      "requests_naming_replay": 3,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-12 step-back",
+      "component": "replay-step-back",
+      "clicked": true,
+      "expect": "index -1 floored at 0",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 19,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "19 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 16.52173913043478,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 67,
+      "requests_naming_replay": 3,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-15 end",
+      "component": "replay-end",
+      "clicked": true,
+      "expect": "index -> end_index",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 18,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "18 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 15.65217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 115,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "115 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 100,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 74,
+      "requests_naming_replay": 5,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-11 start",
+      "component": "replay-start",
+      "clicked": true,
+      "expect": "index -> start_index (0)",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 115,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "115 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 100,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 64,
+      "requests_naming_replay": 3,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-18 slider",
+      "component": "replay-slider",
+      "clicked": true,
+      "expect": "value maps to index, mode paused",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 11,
+          "start_index": 0,
+          "end_index": 115,
+          "tick_n": 18
+        },
+        "position": "11 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 9.565217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests_naming_replay": 2,
+      "replay_state_responses": []
+    }
+  ],
+  "fill": {
+    "waited_s": 13.1,
+    "len_after_wait": 116
+  },
+  "initial": {
+    "metrics_store_len": 116,
+    "replay_state": {
+      "mode": "stopped",
+      "speed": 1,
+      "current_index": 0,
+      "start_index": 0,
+      "end_index": null
+    },
+    "position": "0 / 115",
+    "play_text": "\u25b6",
+    "interval_disabled": true,
+    "interval_ms": 1000,
+    "slider_value": 0,
+    "controls": {
+      "present": true,
+      "display": "block",
+      "h": 95
+    }
+  },
+  "final": {
+    "metrics_store_len": 116,
+    "replay_state": {
+      "mode": "paused",
+      "speed": 1,
+      "current_index": 11,
+      "start_index": 0,
+      "end_index": 115,
+      "tick_n": 18
+    },
+    "position": "11 / 115",
+    "play_text": "\u25b6",
+    "interval_disabled": true,
+    "interval_ms": 1000,
+    "slider_value": 9.565217391304348,
+    "controls": {
+      "present": true,
+      "display": "block",
+      "h": 95
+    }
+  },
+  "verdicts": {
+    "M-METRICS-13": "PASS",
+    "M-METRICS-16": "PASS",
+    "M-METRICS-14": "PASS",
+    "M-METRICS-12": "PASS",
+    "M-METRICS-15": "PASS",
+    "M-METRICS-11": "PASS",
+    "M-METRICS-18": "PASS"
+  },
+  "server_side_by_step": {
+    "M-METRICS-13 play": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-13 pause": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-16 2x": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-16 4x": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-16 1x": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-14 step-forward": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-12 step-back": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-15 end": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-11 start": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-18 slider": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    }
+  },
+  "max_index_by_step": {
+    "M-METRICS-13 play": 115,
+    "M-METRICS-13 pause": 115,
+    "M-METRICS-16 2x": 115,
+    "M-METRICS-16 4x": 115,
+    "M-METRICS-16 1x": 115,
+    "M-METRICS-14 step-forward": 115,
+    "M-METRICS-12 step-back": 115,
+    "M-METRICS-15 end": 115,
+    "M-METRICS-11 start": 115,
+    "M-METRICS-18 slider": 115
+  },
+  "max_index": 115
+}

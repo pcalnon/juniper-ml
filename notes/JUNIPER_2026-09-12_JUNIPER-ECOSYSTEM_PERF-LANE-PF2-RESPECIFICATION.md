@@ -57,6 +57,28 @@ a request past them is a 422, not a clamp.
 > tested), raise `MAX_POINTS` in juniper-data as its own decision, or run outside the suite
 > harness.
 >
+> ## ⚠ SECOND CORRECTION 2026-09-23 — the suite path does not reach 10,000 either; it stops at 5,882
+>
+> The paragraph above, and the owner menu built from it (D4, ruled 2026-09-22 as "10,000 now"),
+> treat `MAX_POINTS` as the ceiling on the **request**. It is the ceiling on the **total rows per
+> spiral**. juniper-data's additive sizing (`juniper_data/core/split.py`) treats
+> `n_points_per_spiral` as the TRAIN count, adds the val and test partitions on top, and
+> re-validates the inflated count against `MAX_POINTS`. At the suite's split (`train_ratio` 0.8,
+> `test_ratio` 0.2, default `val_percent`) the inflation is 1.7×. So a request of 10,000 becomes
+> 17,000 internally and is rejected. Bisected in the JuniperData env: **5,882 accepted, 5,883
+> rejected**.
+>
+> **Found by running the top cell, not by reading.** The 10,000 probe ended `torn_down_early`
+> after 17.6 s. juniper-data answered **400 "Invalid request parameters"** and logged the cause
+> only at DEBUG. That is not the 422 this section predicts: the field check passes (10000 ≤
+> 10000), generation then raises a pydantic `ValidationError`, and the API's `ValueError`
+> handler turns it into a generic 400. A client cannot learn the real bound from the response.
+> That is a juniper-data defect in its own right.
+>
+> Axis 2 is built as `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`, capped
+> at **5,800** (about 23×; 425 → about 9,860 total rows per spiral). Every "10,000" in this
+> document means total rows, not a request.
+>
 > **How the error was made**, because the shape recurs: the 2026-09-10 probe note correctly
 > records that *`POST /v1/training/start` materialises the in-process spiral generator*. That is
 > true of **that route**, which the listener probes used directly. The experiment driver stages
@@ -125,6 +147,33 @@ dataset size, and **where it stops being viable**. Two design consequences:
 pass alone is then four orders of magnitude larger than anything this lane has measured. A probe
 should establish the largest cell that completes inside a chosen wall before the full sweep is
 committed, exactly as PF-1 reached 4000 epochs by probing 500 / 2000 / 5000.
+
+> ## RESULT 2026-09-23 — no knee inside the suite path's range; the in-process follow-up does not fire
+>
+> Suite: `util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`. 18 cells (6 sizes ×
+> 3 round-robin passes), cascor `0d2d826`, 1-minute load 5–8, all 18 succeeded.
+>
+> - Reducer: `util/ad-hoc/2026-09-23_pf2_axis2_reduce.py`.
+> - Evidence: `~/.local/state/juniper-experiments/suites/pf2-axis2-cascor-dataset-range-20260923T142812Z/`.
+>
+> | n/spiral | wall, median (s) | `step_sum`, median (s) |
+> |---|---|---|
+> | 250 | 24.14 | 4.125 |
+> | 500 | 21.73 | 4.109 |
+> | 1,000 | 23.95 | 4.558 |
+> | 2,000 | 24.10 | 4.127 |
+> | 4,000 | 24.24 | 5.130 |
+> | 5,800 | 24.35 | 5.409 |
+>
+> - **Wall time is flat**: ×1.01 across the 23× range. It is dominated by stack bring-up, data
+>   staging, collection and plots, not by the dataset.
+> - **Training compute grows ×1.31.** The log-log slope between neighbouring sizes stays between
+>   −0.15 and 0.31: strongly sublinear, **with no knee**.
+> - **Under the owner's D4 ruling** ("in-process later, only if the curve shows a knee"), **the
+>   in-process follow-up does not fire.**
+> - **Scope:** `spiral-smoke`'s budgets. That means 2 hidden units, `output_epochs` 50, and a
+>   `step_count` of 8 in every cell, fixed by the budget and never compared. How wall time scales
+>   with dataset size at LARGER budgets is a different question from the one ruled on.
 
 ---
 
@@ -209,7 +258,7 @@ budgets**: the interesting transition is already complete between 2 and 6.
 | axis | calibration | status |
 |---|---|---|
 | 1 — candidate phase | none beyond floor/wall | specifiable now |
-| 2 — wide dataset range | largest completing cell at a chosen wall | **owner call first** — the range is capped at 10,000 by juniper-data (§1 correction), so 250 → 500,000 needs a decision, not a calibration |
+| 2 — wide dataset range | largest completing cell at a chosen wall | **DONE 2026-09-23.** Ruled "10,000 now, in-process later"; built capped at 5,800 (the suite path's real ceiling is 5,882, per the second §1 correction); **RUN, no knee** (§3 RESULT), so the in-process follow-up does not fire |
 | 3 — spiral count | capacity budget that lets 2…10 differentiate | **DONE 2026-09-15 (§4.1)** — axis viable, but gate on **accuracy**; sample 2,3,4,5 not 2,6,10 |
 
 **Host condition.** All three are wall-clock measurements. The host has not been quiet in four

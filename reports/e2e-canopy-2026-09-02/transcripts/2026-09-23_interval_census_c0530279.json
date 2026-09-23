@@ -1,0 +1,600 @@
+{
+  "canopy_src": "/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--fix--f054-replay-block-clientside--20260923-0036--2f973ca2/src",
+  "rows": [
+    {
+      "id": "replay-player-panel-weight-drain",
+      "interval_ms": 500,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 2.0,
+      "consumers": 1,
+      "server_consumers": 0,
+      "clientside_consumers": 1,
+      "running_guarded": false,
+      "disabled_written_by": [],
+      "consumer_detail": [
+        {
+          "kind": "clientside",
+          "outputs": [
+            "replay-weight-buffer.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "metrics-panel-update-interval",
+      "interval_ms": 1000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 1.0,
+      "consumers": 0,
+      "server_consumers": 0,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [],
+      "consumer_detail": []
+    },
+    {
+      "id": "fast-update-interval",
+      "interval_ms": 1000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 1.0,
+      "consumers": 9,
+      "server_consumers": 2,
+      "clientside_consumers": 7,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "status-indicator.style",
+            "connection-status.children",
+            "latency-display.children",
+            "top-status-display.children"
+          ],
+          "n_outputs": 11,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-metrics-buffer.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-topology-buffer.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-state-buffer.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-cascade-add-buffer.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-dataset-swap-buffer.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-connection-status.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "ws-liveness-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "metrics-store-interval",
+      "interval_ms": 1000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 1.0,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": true,
+      "disabled_written_by": [
+        "clientside",
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "metrics-panel-metrics-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": true
+        }
+      ]
+    },
+    {
+      "id": "network-editor-panel-fsm-poll",
+      "interval_ms": 2000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.5,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "network-editor-panel-idle.style",
+            "network-editor-panel-active.style",
+            "network-editor-panel-idle-fsm-badge.children",
+            "network-editor-panel-topology-store.data"
+          ],
+          "n_outputs": 4,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "metrics-panel-stats-update-interval",
+      "interval_ms": 5000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.2,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "metrics-panel-training-state-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "redis-panel-refresh-interval",
+      "interval_ms": 5000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.2,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "redis-panel-status-badge.children",
+            "redis-panel-status-badge.color",
+            "redis-panel-mode-badge.children",
+            "redis-panel-mode-badge.color"
+          ],
+          "n_outputs": 13,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "slow-update-interval",
+      "interval_ms": 5000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.2,
+      "consumers": 3,
+      "server_consumers": 2,
+      "clientside_consumers": 1,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "network-info-panel.children",
+            "network-info-details-panel.children",
+            "stream-health-store.data",
+            "pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b792"
+          ],
+          "n_outputs": 4,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "metrics-store-interval.disabled@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "dataset-swap-events-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "apply-watchdog-interval",
+      "interval_ms": 5000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.2,
+      "consumers": 1,
+      "server_consumers": 0,
+      "clientside_consumers": 1,
+      "running_guarded": false,
+      "disabled_written_by": [],
+      "consumer_detail": [
+        {
+          "kind": "clientside",
+          "outputs": [
+            "apply-in-flight.data@8442f550632bed33ec2447ed2b988e7616554252663b4fa4ac431ebc20675d54"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "candidate-metrics-panel-update-interval",
+      "interval_ms": 10000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.1,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "candidate-metrics-panel-training-state-store.data",
+            "candidate-metrics-panel-pool-history-store.data"
+          ],
+          "n_outputs": 2,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "hdf5-snapshots-panel-refresh-interval",
+      "interval_ms": 10000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.1,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "hdf5-snapshots-panel-table-body.children",
+            "hdf5-snapshots-panel-status.children",
+            "hdf5-snapshots-panel-empty-state.style",
+            "hdf5-snapshots-panel-snapshots-store.data"
+          ],
+          "n_outputs": 4,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "cassandra-panel-interval",
+      "interval_ms": 10000,
+      "disabled": false,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.1,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "cassandra-panel-status-badge.children",
+            "cassandra-panel-status-badge.color",
+            "cassandra-panel-mode-badge.children",
+            "cassandra-panel-mode-badge.color"
+          ],
+          "n_outputs": 11,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "metrics-panel-replay-interval",
+      "interval_ms": 1000,
+      "disabled": true,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.0,
+      "consumers": 1,
+      "server_consumers": 0,
+      "clientside_consumers": 1,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "clientside",
+          "outputs": [
+            "metrics-panel-replay-state.data",
+            "metrics-panel-replay-interval.disabled",
+            "metrics-panel-replay-interval.interval",
+            "metrics-panel-replay-slider.value"
+          ],
+          "n_outputs": 7,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "tabpoll-topology",
+      "interval_ms": 5000,
+      "disabled": true,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.0,
+      "consumers": 2,
+      "server_consumers": 2,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "network-visualizer-topology-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "network-visualizer-raw-topology-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "tabpoll-dataset",
+      "interval_ms": 5000,
+      "disabled": true,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.0,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "dataset-plotter-dataset-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "tabpoll-workers",
+      "interval_ms": 5000,
+      "disabled": true,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.0,
+      "consumers": 1,
+      "server_consumers": 1,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "worker-panel-workers-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "tabpoll-boundaries",
+      "interval_ms": 5000,
+      "disabled": true,
+      "max_intervals": -1,
+      "ticks_per_s_default": 0.0,
+      "consumers": 2,
+      "server_consumers": 2,
+      "clientside_consumers": 0,
+      "running_guarded": false,
+      "disabled_written_by": [
+        "clientside"
+      ],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "decision-boundary-boundary-data.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "decision-boundary-dataset-data.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        }
+      ]
+    },
+    {
+      "id": "params-init-interval",
+      "interval_ms": 1000,
+      "disabled": false,
+      "max_intervals": 1,
+      "ticks_per_s_default": 0.0,
+      "consumers": 7,
+      "server_consumers": 6,
+      "clientside_consumers": 1,
+      "running_guarded": false,
+      "disabled_written_by": [],
+      "consumer_detail": [
+        {
+          "kind": "server",
+          "outputs": [
+            "dataset-plotter-dataset-selector.options",
+            "dataset-plotter-dataset-selector.value"
+          ],
+          "n_outputs": 2,
+          "running_guard": false
+        },
+        {
+          "kind": "clientside",
+          "outputs": [
+            "welcome-modal.is_open@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "nn-max-iterations-input.value",
+            "nn-max-total-epochs-input.value",
+            "nn-learning-rate-input.value",
+            "nn-max-hidden-units-input.value"
+          ],
+          "n_outputs": 29,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2",
+            "experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7",
+            "experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434"
+          ],
+          "n_outputs": 3,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "model-class-store.data"
+          ],
+          "n_outputs": 1,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "model-selection-store.data",
+            "model-class-store.data@99e66bb3b3fbd64a9e3fc6c7b5ab925121377db9527487b5a3d8d982c160c590",
+            "nn-model-summary.children",
+            "model-selection-modal.is_open@99e66bb3b3fbd64a9e3fc6c7b5ab925121377db9527487b5a3d8d982c160"
+          ],
+          "n_outputs": 5,
+          "running_guard": false
+        },
+        {
+          "kind": "server",
+          "outputs": [
+            "nn-dataset-section-title.children",
+            "nn-dataset-typed-fields.style",
+            "nn-dataset-schema-params.children"
+          ],
+          "n_outputs": 3,
+          "running_guard": false
+        }
+      ]
+    }
+  ],
+  "total_ticks_per_s": 6.6,
+  "server_dispatch_bound_per_s": 4.6
+}

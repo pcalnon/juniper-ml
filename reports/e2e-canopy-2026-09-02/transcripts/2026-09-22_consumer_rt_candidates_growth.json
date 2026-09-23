@@ -1,0 +1,605 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8051",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8051",
+    "version": "0.8.1",
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "build_date": "2026-09-22T19:38:01Z"
+  },
+  "tab": "candidates",
+  "started_at": "2026-09-22T19:55:20Z",
+  "seconds": 90.0,
+  "tab_opened": true,
+  "growth": {
+    "launched_at_s": 11.7,
+    "exit": 0,
+    "record": "reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_consumer_rt_candidates_growth_grow_58.json",
+    "tail": [
+      "[t=   8.1] fsm=STARTED phase=CANDIDATE hidden=55 metrics=70",
+      "[t=  10.1] fsm=STARTED phase=CANDIDATE hidden=56 metrics=73",
+      "[t=  15.2] fsm=STARTED phase=CANDIDATE hidden=57 metrics=76",
+      "[t=  16.2] fsm=STARTED phase=CANDIDATE hidden=58 metrics=79",
+      "[t=  17.2] fsm=COMPLETED phase=OUTPUT hidden=58 metrics=80",
+      "after: {'fsm': 'COMPLETED', 'phase': 'OUTPUT', 'hidden_units': 58, 'uuid': '1cd15120-8f71-4319-ab7d-a384bfd692a9', 'total_metrics': 80}",
+      "snapshot: http 200 {'status': 'success', 'data': {'id': 'snapshot_20260922T195609Z', 'path': '/home/pcalnon/Development/python/Juniper/juniper-cascor/cascor-snapshots/snapshot_20260922T195609Z.h5', 'timestamp': '20260922T195609Z', 'description': ''}, 'meta': {'timestamp': 1790106970.3746793, 'version': '0.6.0'}}",
+      "=> COMPLETED  (record -> reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_consumer_rt_candidates_growth_grow_58.json)"
+    ]
+  },
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 34,
+      "rt_ms": {
+        "n": 34,
+        "min": 20.6,
+        "p50": 30.5,
+        "p90": 41.3,
+        "max": 76.2,
+        "mean": 32.8
+      },
+      "gap_ms": {
+        "n": 33,
+        "min": 1349.5,
+        "p50": 1995.8,
+        "p90": 3619.7,
+        "max": 9420.6,
+        "mean": 2584.3
+      },
+      "overlaps": 0
+    },
+    "update_status_display": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 7.3,
+        "p50": 7.3,
+        "p90": 7.3,
+        "max": 7.3,
+        "mean": 7.3
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_epoch_progress": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 7.6,
+        "p50": 7.6,
+        "p90": 7.6,
+        "max": 7.6,
+        "mean": 7.6
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_pool_info": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 8.5,
+        "p50": 8.5,
+        "p90": 8.5,
+        "max": 8.5,
+        "mean": 8.5
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_loss_plot (State since #618)": {
+      "requests": 5,
+      "rt_ms": {
+        "n": 5,
+        "min": 29.9,
+        "p50": 92.9,
+        "p90": 123.4,
+        "max": 123.4,
+        "mean": 84.3
+      },
+      "gap_ms": {
+        "n": 4,
+        "min": 1884.5,
+        "p50": 19355.6,
+        "p90": 26929.7,
+        "max": 26929.7,
+        "mean": 13686.7
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 176,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 38,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 36,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 18,
+    "dataset-swap-events-store.data": 18,
+    "metrics-panel-metrics-store.data": 11,
+    "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 8,
+    "network-visualizer-topology-store.data": 6,
+    "metrics-panel-metrics-store.data@15586d300aa70069205f6b6c4219bfbeb86bfb1346f8fa1c90efa1e3e429297a": 6,
+    "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metr": 5,
+    "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-pan": 5,
+    "metrics-panel-progress-detail.children": 3,
+    "metrics-panel-current-lr.children": 3,
+    "metrics-panel-phase-duration.children": 3,
+    "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...met": 3,
+    "metrics-panel-replay-controls.style": 3,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 2,
+    "decision-boundary-boundary-data.data": 1,
+    "decision-boundary-dataset-data.data": 1,
+    "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 1,
+    "metrics-panel-training-state-store.data": 1,
+    "candidate-metrics-panel-history-section.children": 1,
+    "pinned-params-store.data": 1,
+    "..network-evolution-grid-container.children...network-evolution-stats.children..": 1,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "candidate-metrics-panel-training-state-store",
+    "reads": 20,
+    "readable": 20,
+    "distinct_timestamps": 1,
+    "samples": [
+      {
+        "t": 0.8,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 9.7,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 14.7,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 19.8,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 24.5,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 29.1,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 33.1,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 37.1,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 40.4,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 45.7,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 49.0,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 54.1,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 65.5,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 69.3,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 72.7,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 75.8,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 78.8,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 82.6,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 85.3,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      },
+      {
+        "t": 88.5,
+        "ok": true,
+        "timestamp": 1790106936.632211,
+        "keys": 61
+      }
+    ]
+  },
+  "writer_responses": {
+    "carried_store": 34,
+    "no_update": 0,
+    "unparsed": 1,
+    "distinct_timestamps_delivered": 34
+  },
+  "panel": {
+    "samples": [
+      {
+        "t": 2.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 10.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 17.0,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Started",
+          "pool_status": "Training",
+          "pool_phase": "Training",
+          "pool_size": 8,
+          "candidate_epoch": 1601
+        }
+      },
+      {
+        "t": 21.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Started",
+          "pool_status": "Training",
+          "pool_phase": "Training",
+          "pool_size": 8,
+          "candidate_epoch": 501
+        }
+      },
+      {
+        "t": 26.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Started",
+          "pool_status": "Training",
+          "pool_phase": "Selecting",
+          "pool_size": 8,
+          "candidate_epoch": 151
+        }
+      },
+      {
+        "t": 30.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 34.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 38.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 42.4,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 46.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 50.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 55.4,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 66.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 70.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 74.1,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 77.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 79.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 83.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 86.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 89.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      }
+    ],
+    "server_pool_status_seen": [
+      "Inactive",
+      "Training"
+    ],
+    "dom_badge_seen": [
+      "Inactive"
+    ]
+  }
+}

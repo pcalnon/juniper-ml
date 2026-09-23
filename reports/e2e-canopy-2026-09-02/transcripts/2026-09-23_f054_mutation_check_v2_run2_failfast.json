@@ -1,0 +1,172 @@
+{
+  "target": "/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--fix--f054-replay-block-clientside--20260923-0036--2f973ca2/src/frontend/components/metrics_panel.py",
+  "set": "v2",
+  "sha256": "01f12bae068cae07328485535240b46a13b81570d8236512c875203bd24904ce",
+  "baseline": {
+    "exit": 0,
+    "tail": []
+  },
+  "mutations": [
+    {
+      "name": "play-does-not-record-tick_n",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   KeyError: 'tick_n'",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658"
+      ]
+    },
+    {
+      "name": "tick-advances-one-not-the-delta",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert (8, 8, 'playing') == (10, 8, 'playing')",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_merged_ticks_advance_by_the_ticks_consumed"
+      ]
+    },
+    {
+      "name": "tick-ignores-mode (the F-054 core)",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'clicks': {...__', '1', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[none]"
+      ]
+    },
+    {
+      "name": "end-leaves-interval-running",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('stopped', 4...49 / 49', '\u25b6') == ('stopped', 4...49 / 49', '\u25b6')",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_stops_playback_and_the_interval"
+      ]
+    },
+    {
+      "name": "stray-tick-rewrites-state",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'current_in...PDATE__', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_an_already_consumed_tick_writes_nothing"
+      ]
+    },
+    {
+      "name": "label-glyphs-swapped",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: replay-play state=None metrics_len=None slider=0",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658"
+      ]
+    },
+    {
+      "name": "metrics-store-as-input",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('metrics-panel-replay-interval.n_intervals' in {'metrics-panel-metrics-store.data', 'metrics-panel-replay-end.n_clicks', 'metrics-panel-replay-interval.n_intervals',...ics-panel-replay-play.n_clicks', 'metrics-panel-replay-start.n_clicks', 'metrics-panel-replay-step-back.n_clicks', ...} and 'metrics-panel-metrics-store.data' not in {'metrics-panel-metrics-store.data', 'metrics-panel-replay-end.n_clicks', 'metrics-panel-replay-interval.n_intervals',...ics-panel-replay-play.n_clicks', 'metrics-panel-replay-start.n_clicks', 'metrics-panel-replay-step-back.n_clicks', ...})",
+        "FAILED tests/unit/frontend/test_f048_replay_cycle.py::TestReplayBlockReadiness::test_nothing_pending_can_hold_the_replay_controls"
+      ]
+    },
+    {
+      "name": "refill-callback-removed",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: replay block not found in the served dependencies: ['metrics-panel-replay-controls.style', 'clientside -> ..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval...metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position-index.children...metrics-panel-replay-position-max.children...metrics-panel-replay-play.children..']",
+        "FAILED tests/unit/frontend/test_f048_replay_cycle.py::TestReplayBlockReadiness::test_no_replay_callback_blocks_itself"
+      ]
+    },
+    {
+      "name": "state-input-not-copied",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: the function mutated an argument (the store's State object)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658"
+      ]
+    },
+    {
+      "name": "lost-events-dropped (round-1 defect 1)",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'order = lost.concat(order);' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "lost-events-after-the-triggers",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'order = lost.concat(order);' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "clicks-not-recorded",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'state.clicks = seen;' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "slider_w-not-recorded",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'state.slider_w = sliderOut;' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "NaN-is-a-seek (round-1 defect 2)",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('paused', None) == ('playing', 7)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_cleared_slider_box_is_not_a_seek"
+      ]
+    },
+    {
+      "name": "triggered-button-not-applied-at-least-once",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_triggered_click_applies_even_when_its_count_matches"
+      ]
+    },
+    {
+      "name": "recreated-button-not-reset",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_buttons_lost_click_applies"
+      ]
+    },
+    {
+      "name": "play-toggles-by-parity",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('playing', False) == ('paused', True)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_repeated_play_clicks_toggle_once"
+      ]
+    },
+    {
+      "name": "refill-writes-the-index (round-1 defect 3)",
+      "verdict": "CAUGHT",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: expected one allow_duplicate writer of metrics-panel-replay-position-max.children; found 0",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_the_refill_callback"
+      ]
+    }
+  ],
+  "restored": true
+}

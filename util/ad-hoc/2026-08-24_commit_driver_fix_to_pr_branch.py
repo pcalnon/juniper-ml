@@ -6,6 +6,7 @@ Application: one-shot signed-commit push of the CodeQL py/empty-except fix to PR
 Author: Paul Calnon
 Version: 0.1.0
 License: MIT License
+Superseded: for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 Single-use (2026-08-24): `open_signed_pr.py` refuses a second PR on a branch that
 already has one open, but a CORRECTION to an open PR only needs a second signed
