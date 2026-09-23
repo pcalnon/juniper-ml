@@ -127,8 +127,10 @@ Wall time is in every record and is **not** a result here. `fit_seconds` ranged 
   pool 4, 25 units, `candidate_epochs` 2000. A second, independent datum points the same way.
   PF-1's `step_count` is **1770** unpinned (baseline `pf1-2026-09-04b`, cascor at its 09-03 tree)
   and **1770** capped at 2 (`pf1-2026-09-23-blas2`, cascor `0d2d826`). A workload whose FIRST
-  output pass is large enough to parallelise could differ between `none` and `env2`. The flip
-  would then change its numerics, in the direction of fewer threads.
+  output pass is large enough to parallelise could still differ between `none` and `env2`, and
+  the flip would then change its numerics, in the direction of fewer threads. §5 records a same-day
+  probe at a ~60× larger first pass that found identical arithmetic. It does not rule out every
+  shape.
 - **Not a timing result.** Every `fit_seconds` in the evidence was taken at load 16–31.
 - **Not "deterministic" in general.** It is invariant here across repeats, within a fixed tree
   and seed.
@@ -141,11 +143,24 @@ Wall time is in every record and is **not** a result here. `fit_seconds` ranged 
 - **D2's gate asked for the same thing and is paid by the same data**, for the environment route
   it ruled for. Its item 4 was "epoch counts per phase". At widths 2 and 16 the environment route
   leaves every count, and every bit, where the default puts it.
-- **One question stays open, and it is about scope, not about this workload.** A workload whose
-  FIRST output pass is large enough to parallelise could differ between `none` and `env2`.
-  PF-2 axis 2's larger datasets are where to look. The test is structural and runs on a loaded
-  host: run one cell with the new default and one with `JUNIPER_CASCOR_BLAS_THREADS=off`, then
-  compare `step_count`.
+- **The scope question was probed the same day at a ~60× larger first pass. The numerics were
+  identical there too.**
+  - **Setup.** [`util/ad-hoc/2026-09-23_d1_scope_large_first_pass.yaml`](../util/ad-hoc/2026-09-23_d1_scope_large_first_pass.yaml)
+    ran PF-2 axis 2's top cell: 5,800 points per spiral, about 19,700 rows after juniper-data's
+    1.7× split inflation. It ran on the suite path against the pre-flip cascor `0d2d826`, with
+    `runtime.blas_threads: 2` against `null` (unset, the old default), over two interleaved passes.
+  - **Result.** All four runs report **bit-identical final metrics**. That covers train and
+    validation loss, accuracies, precision, recall, F1 and ROC-AUC, e.g. `train_loss`
+    0.21408724784851074 in every run. The reducer is
+    [`util/ad-hoc/2026-09-23_d1_scope_reduce.py`](../util/ad-hoc/2026-09-23_d1_scope_reduce.py).
+    Its first version reported "DIFFER" because it compared the per-run `timestamp`, and it now
+    excludes volatile fields. Evidence:
+    `~/.local/state/juniper-experiments/suites/d1-scope-large-first-pass-20260923T142003Z/`.
+  - **Limits, stated rather than hidden.** `step_count` (8) and hidden units (2) are BUDGET-BOUND
+    under `spiral-smoke`'s budgets, so they are not evidence here. PF-2 re-spec §4.1 records the
+    same 8. No seed control was run in this probe. A loss that agrees to 17 significant digits is
+    itself a sensitive fingerprint, but the claim is "identical arithmetic at these budgets", not
+    "identical counts".
 
 ## 6. Reproduction
 
