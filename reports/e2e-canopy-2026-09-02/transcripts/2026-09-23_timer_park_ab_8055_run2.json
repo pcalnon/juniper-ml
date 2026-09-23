@@ -1,0 +1,304 @@
+{
+  "probe": "2026-09-23_canopy_timer_park_ab.py",
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8055",
+    "git_sha": "c0530279de548208c47bba8823fc45239be00f87",
+    "build_date": "2026-09-23T13:14:21Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T13:23:32Z"
+  },
+  "tab": "Training Metrics",
+  "window_s": 30.0,
+  "order": "reverse",
+  "settle_s": 60.0,
+  "windows": [
+    {
+      "label": "A0",
+      "parked": [],
+      "seconds": 33.8,
+      "updates_per_s": 59.98,
+      "idle_pct": 0.15,
+      "responses": 68,
+      "L_p50_ms": 6450.9,
+      "L_p90_ms": 7687.5,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 34,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 38,
+            "disabled": false
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 55,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 59,
+            "disabled": false
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 21,
+        "replay-player-panel-weight-drain": 21
+      },
+      "void": false
+    },
+    {
+      "label": "DW",
+      "parked": [
+        "metrics-panel-update-interval",
+        "replay-player-panel-weight-drain"
+      ],
+      "seconds": 33.4,
+      "updates_per_s": 73.76,
+      "idle_pct": 0.1,
+      "responses": 81,
+      "L_p50_ms": 4735.2,
+      "L_p90_ms": 5622.7,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 55,
+            "disabled": true
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 60,
+            "disabled": true
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 55,
+            "disabled": true
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 60,
+            "disabled": true
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 0,
+        "replay-player-panel-weight-drain": 0
+      },
+      "void": false
+    },
+    {
+      "label": "A1",
+      "parked": [],
+      "seconds": 35.0,
+      "updates_per_s": 61.54,
+      "idle_pct": 0.11,
+      "responses": 72,
+      "L_p50_ms": 7598.6,
+      "L_p90_ms": 8410.6,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 56,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 61,
+            "disabled": false
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 73,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 81,
+            "disabled": false
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 17,
+        "replay-player-panel-weight-drain": 20
+      },
+      "void": false
+    },
+    {
+      "label": "W",
+      "parked": [
+        "replay-player-panel-weight-drain"
+      ],
+      "seconds": 33.1,
+      "updates_per_s": 78.67,
+      "idle_pct": 0.1,
+      "responses": 79,
+      "L_p50_ms": 5120.7,
+      "L_p90_ms": 8138.6,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 75,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 83,
+            "disabled": true
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 96,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 83,
+            "disabled": true
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 21,
+        "replay-player-panel-weight-drain": 0
+      },
+      "void": false
+    },
+    {
+      "label": "A2",
+      "parked": [],
+      "seconds": 34.2,
+      "updates_per_s": 53.85,
+      "idle_pct": 0.1,
+      "responses": 64,
+      "L_p50_ms": 7536.1,
+      "L_p90_ms": 8410.1,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 98,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 84,
+            "disabled": false
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 115,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 104,
+            "disabled": false
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 17,
+        "replay-player-panel-weight-drain": 20
+      },
+      "void": false
+    },
+    {
+      "label": "D",
+      "parked": [
+        "metrics-panel-update-interval"
+      ],
+      "seconds": 33.7,
+      "updates_per_s": 56.37,
+      "idle_pct": 0.08,
+      "responses": 64,
+      "L_p50_ms": 6454.8,
+      "L_p90_ms": 8599.4,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 116,
+            "disabled": true
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 108,
+            "disabled": false
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 116,
+            "disabled": true
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 128,
+            "disabled": false
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 0,
+        "replay-player-panel-weight-drain": 20
+      },
+      "void": false
+    },
+    {
+      "label": "A3",
+      "parked": [],
+      "seconds": 32.2,
+      "updates_per_s": 59.37,
+      "idle_pct": 0.15,
+      "responses": 63,
+      "L_p50_ms": 5585.4,
+      "L_p90_ms": 8316.6,
+      "edges": {
+        "start": {
+          "metrics-panel-update-interval": {
+            "n": 118,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 132,
+            "disabled": false
+          }
+        },
+        "end": {
+          "metrics-panel-update-interval": {
+            "n": 134,
+            "disabled": false
+          },
+          "replay-player-panel-weight-drain": {
+            "n": 151,
+            "disabled": false
+          }
+        }
+      },
+      "ticks_in_window": {
+        "metrics-panel-update-interval": 16,
+        "replay-player-panel-weight-drain": 19
+      },
+      "void": false
+    }
+  ],
+  "verdicts": {
+    "D": {
+      "verdict": "NEGLIGIBLE",
+      "L_p50_change_pct": -1.6,
+      "idle_change_pts": -0.04,
+      "updates_per_s_change": -0.24
+    },
+    "W": {
+      "verdict": "WORTH-IT",
+      "L_p50_change_pct": -32.3,
+      "idle_change_pts": -0.01,
+      "updates_per_s_change": 20.98
+    },
+    "DW": {
+      "verdict": "WORTH-IT",
+      "L_p50_change_pct": -32.6,
+      "idle_change_pts": -0.03,
+      "updates_per_s_change": 13.0
+    }
+  }
+}

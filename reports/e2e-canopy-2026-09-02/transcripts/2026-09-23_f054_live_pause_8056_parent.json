@@ -1,0 +1,425 @@
+{
+  "probe": "2026-09-23_f054_live_pause_check.py",
+  "canopy": "http://127.0.0.1:8056",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8056",
+    "git_sha": "2f973ca29599470b15f60221194b2fa207034caa",
+    "build_date": "2026-09-23T06:01:09Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T06:01:28Z"
+  },
+  "play_s": 10.0,
+  "settle_s": 16.0,
+  "runs": [
+    {
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8056",
+        "git_sha": "2f973ca29599470b15f60221194b2fa207034caa",
+        "build_date": "2026-09-23T06:01:09Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T06:01:28Z"
+      },
+      "store_len": 116,
+      "fill_wait_s": 22.2,
+      "watch": {
+        "found": true
+      },
+      "dom_before": [
+        1790143329032,
+        "\u25b6",
+        "0 / 115"
+      ],
+      "t_play": 1790143330687,
+      "play_clicked": true,
+      "play_latency_ms": 10721,
+      "t_pause": 1790143355547,
+      "pause_clicked": true,
+      "dom": [
+        [
+          1790143359171,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143360813,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143363254,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143364859,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143365965,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143367953,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143370412,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143372554,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143374264,
+          "\u23f8",
+          "0 / 115"
+        ]
+      ],
+      "series": [
+        [
+          1790143324165,
+          "stopped",
+          0
+        ],
+        [
+          1790143341408,
+          "playing",
+          0
+        ],
+        [
+          1790143369621,
+          "paused",
+          0
+        ],
+        [
+          1790143375182,
+          "playing",
+          1
+        ]
+      ],
+      "disabled": [
+        [
+          1790143324165,
+          true
+        ],
+        [
+          1790143341408,
+          false
+        ],
+        [
+          1790143369621,
+          true
+        ]
+      ],
+      "store_changes": 3562,
+      "verdict": "F054-UNDONE",
+      "pause_latency_ms": 14074,
+      "steps_during_play": 0,
+      "final_mode": "playing",
+      "final_index": 1,
+      "final_interval_disabled": true,
+      "dom_last": [
+        "\u23f8",
+        "0 / 115"
+      ],
+      "dom_label_agrees": true,
+      "dom_position_index_agrees": false,
+      "writes_after_pause": [
+        [
+          14074,
+          "paused",
+          0
+        ],
+        [
+          19635,
+          "playing",
+          1
+        ]
+      ]
+    },
+    {
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8056",
+        "git_sha": "2f973ca29599470b15f60221194b2fa207034caa",
+        "build_date": "2026-09-23T06:01:09Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T06:02:55Z"
+      },
+      "store_len": 116,
+      "fill_wait_s": 27.2,
+      "watch": {
+        "found": true
+      },
+      "dom_before": [
+        1790143421006,
+        "\u25b6",
+        "0 / 115"
+      ],
+      "t_play": 1790143422847,
+      "play_clicked": true,
+      "play_latency_ms": 10520,
+      "t_pause": 1790143446836,
+      "pause_clicked": true,
+      "dom": [
+        [
+          1790143449503,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143452171,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143454184,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143455763,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143457521,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143459398,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143461095,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143463186,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143464766,
+          "\u23f8",
+          "0 / 115"
+        ]
+      ],
+      "series": [
+        [
+          1790143417048,
+          "stopped",
+          0
+        ],
+        [
+          1790143433367,
+          "playing",
+          0
+        ],
+        [
+          1790143457376,
+          "paused",
+          0
+        ],
+        [
+          1790143460197,
+          "playing",
+          1
+        ]
+      ],
+      "disabled": [
+        [
+          1790143417048,
+          true
+        ],
+        [
+          1790143433367,
+          false
+        ],
+        [
+          1790143457376,
+          true
+        ]
+      ],
+      "store_changes": 3706,
+      "verdict": "F054-UNDONE",
+      "pause_latency_ms": 10540,
+      "steps_during_play": 0,
+      "final_mode": "playing",
+      "final_index": 1,
+      "final_interval_disabled": true,
+      "dom_last": [
+        "\u23f8",
+        "0 / 115"
+      ],
+      "dom_label_agrees": true,
+      "dom_position_index_agrees": false,
+      "writes_after_pause": [
+        [
+          10540,
+          "paused",
+          0
+        ],
+        [
+          13361,
+          "playing",
+          1
+        ]
+      ]
+    },
+    {
+      "serving": {
+        "ok": true,
+        "canopy": "http://127.0.0.1:8056",
+        "git_sha": "2f973ca29599470b15f60221194b2fa207034caa",
+        "build_date": "2026-09-23T06:01:09Z",
+        "version": "0.6.0",
+        "read_at": "2026-09-23T06:04:26Z"
+      },
+      "store_len": 116,
+      "fill_wait_s": 2.1,
+      "watch": {
+        "found": true
+      },
+      "dom_before": [
+        1790143498930,
+        "\u25b6",
+        "0 / 115"
+      ],
+      "t_play": 1790143500673,
+      "play_clicked": true,
+      "play_latency_ms": 11327,
+      "t_pause": 1790143525885,
+      "pause_clicked": true,
+      "dom": [
+        [
+          1790143529665,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143531568,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143533283,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143535109,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143536449,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143537921,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143539793,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143541327,
+          "\u23f8",
+          "0 / 115"
+        ],
+        [
+          1790143542960,
+          "\u23f8",
+          "1 / 115"
+        ],
+        [
+          1790143545820,
+          "\u23f8",
+          "1 / 115"
+        ]
+      ],
+      "series": [
+        [
+          1790143489898,
+          "stopped",
+          0
+        ],
+        [
+          1790143512000,
+          "playing",
+          0
+        ],
+        [
+          1790143532917,
+          "paused",
+          0
+        ],
+        [
+          1790143536318,
+          "playing",
+          1
+        ]
+      ],
+      "disabled": [
+        [
+          1790143489898,
+          true
+        ],
+        [
+          1790143512000,
+          false
+        ],
+        [
+          1790143532917,
+          true
+        ]
+      ],
+      "store_changes": 4275,
+      "verdict": "F054-UNDONE",
+      "pause_latency_ms": 7032,
+      "steps_during_play": 0,
+      "final_mode": "playing",
+      "final_index": 1,
+      "final_interval_disabled": true,
+      "dom_last": [
+        "\u23f8",
+        "1 / 115"
+      ],
+      "dom_label_agrees": true,
+      "dom_position_index_agrees": true,
+      "writes_after_pause": [
+        [
+          7032,
+          "paused",
+          0
+        ],
+        [
+          10433,
+          "playing",
+          1
+        ]
+      ]
+    }
+  ],
+  "verdicts": [
+    "F054-UNDONE",
+    "F054-UNDONE",
+    "F054-UNDONE"
+  ]
+}
