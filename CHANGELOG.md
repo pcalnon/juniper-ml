@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The publish-environment drift gate covers the `dockerhub` environments**
+  (`tests/test_publish_env_policy_drift.py`). Wave 4's Docker Hub credential will live in a
+  tags-only `dockerhub` environment in the five image repos (Option B, owner ruling 2026-09-22), and
+  nothing watched those settings. The gate now checks each one against its own tag set, `v*` and
+  `juniper-*-v*`, where `pypi` has six. It also checks that no `DOCKERHUB_*` secret or variable sits
+  at repository scope, where every workflow on every ref could read it. That check reads names only:
+  `gh` applies the `--jq` filter, so a variable's value never reaches the test. A third check
+  confirms that no repo outside the five has the environment. A missing environment is reported as
+  a failure, because a workflow run that names it makes GitHub recreate it with no protection rules.
+  The repair hint points at §5.2B of
+  `notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`, because
+  the `pypi` helper would add six patterns. Live, with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`, 33 tests
+  pass, up from 17, with every repo read. Three mutations fail as they should: one shared tag set, a
+  prefix pointed at the real `CROSS_REPO_DISPATCH_TOKEN`, and an environment name that exists. Per-PR
+  CI cannot read the image repos, so the `dockerhub` half is a local gate and skips there by name.
+  §6 and §10 of the procedure are updated.
+
 ### Changed
 
 - **PF-2 axis 2 is RUN, with no knee, so the owner's in-process follow-up does not fire**
