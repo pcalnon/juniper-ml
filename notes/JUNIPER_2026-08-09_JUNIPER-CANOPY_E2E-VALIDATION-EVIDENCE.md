@@ -7648,7 +7648,7 @@ folded in below.**
     named, which is owed.
 - Implementation reviewed by the orchestrator only: subagents were unavailable after the weekly limit.
 
-**F-CANOPY-054 — during playback a late `replay_tick` response, computed from the State of an earlier tick, overwrites a control's write: pause is undone or flickers, and the play label can stay ⏸ (P2, canopy repo; found 2026-09-22 on canopy#658's verify leg; OPEN).**
+**F-CANOPY-054 — during playback a late `replay_tick` response, computed from the State of an earlier tick, overwrites a control's write: pause is undone or flickers, and the play label can stay ⏸ (P2, canopy repo; found 2026-09-22 on canopy#658's verify leg; FIXED by canopy#670, merged 2026-09-23 as `48074653`; see Phase 8).**
 
 - **Unmasked by F-CANOPY-048's fix.** Before it, no control write ever applied, so nothing could race.
 - `replay_tick` (Input `replay-interval.n_intervals`; State `replay-state`, `metrics-store`; an
@@ -7667,6 +7667,11 @@ folded in below.**
   - Or version the state, and have the server refuse a tick computed from an older version.
   - Folding the tick into the merged callback is NOT a fix: same-identity eviction would then drop the
     ticks themselves (the F-035 class).
+  - **CORRECTED 2026-09-23 (Phase 8): the first direction alone would have made it worse, and the
+    prohibition holds only for a SERVER callback.** The merged callback read `replay-state.data` as an
+    Input, so a clientside tick re-requests it on every tick and evicts any click in flight: clean room
+    CLICK-DROPPED 3/3. The fix that shipped (canopy#670) folds the tick into ONE clientside callback, which
+    has no in-flight window to evict.
 
 ### F-CANOPY-038 — the suppression fires now: FIXED in behaviour
 
@@ -7856,3 +7861,622 @@ The verbatim reports are in `reports/e2e-canopy-2026-09-02/consensus/2026-09-22_
 10. **M-CANDIDATES-10/-11**, now re-drivable.
 11. Unchanged: M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16 fade half, and F-038's
     browser-level test gap.
+
+## Phase 8 — 2026-09-23: F-CANOPY-054 fixed by moving the replay block clientside and counting its events, F-CANOPY-055 filed (the top status bar never applies), and the idle weight drain gated
+
+This phase took Phase 7's still-owed items 1, 3 and 4. The trio is Phase 7's, unchanged: cascor `05c13d5` on
+`:8202` (fixture 2/68/2, uuid `1cd15120…`, 116 metrics rows) and juniper-data on `:8101`. Canopy verify
+legs were launched beside it with `util/ad-hoc/2026-09-04_canopy_verify_instance.bash`, each stamping the
+commit it serves on `/v1/health`:
+
+- for F-CANOPY-054, `:8055` served the fix as first opened, canopy#670 head **`c0530279`** ("v1" below), and
+  `:8056` served its parent, `main` **`2f973ca2`**, as the negative control;
+- for the dispatch cuts and the status bar, `:8055` served **`723ee812`** (v1 merged with `main` `0fca86e9`)
+  as the control and `:8056` served the cuts, **`668380ec`**, built on it.
+
+The fix changed after round 1 of review ("v2", frozen for round 2 as the local commit `85415f3c`). v2 was
+verified in clean rooms and unit tests, not on a leg, before it merged; its live check is below.
+
+`:8051` was not touched. It still serves the modules it imported on 2026-09-22 (`9bffaba1`), from a primary
+checkout that has since moved to `2f973ca2` on disk. Evidence: `reports/e2e-canopy-2026-09-02/transcripts/2026-09-23_*`.
+One session, one host, load 7.6–31 over the phase, browsers run one at a time.
+
+### The recorded fix direction was incomplete
+
+Phase 7 recorded two fix directions for F-CANOPY-054: "make the tick clientside" and "version the state".
+It also recorded one prohibition: "folding the tick into the merged callback is NOT a fix". Read against
+dash 4.2.0's renderer (`dash_renderer.dev.js` in `JuniperCanopy1`), the first direction on its own makes
+the defect worse, and the prohibition holds only for a server callback.
+
+- **Eviction.** The requestedCallbacks observer removes an in-flight (`watched` / `executing`) callback
+  whenever a new request of the same callback enters `requested` (the `wDuplicates` / `eDuplicates` step,
+  ~`:3024-3027`, removal ~`:3151`). The executingCallbacks observer then drops the late response, because
+  the callback is no longer `watched` (~`:2699`).
+- **The trigger.** canopy#658's merged controls callback read `replay-state.data` as an **Input**, so that a
+  tick would re-render the slider. A clientside tick writes the state every tick, so it would re-request
+  the merged callback every tick. Every click made during playback would then be evicted, because the
+  latency (~5 s) exceeds the tick period (250–1000 ms).
+- **Why a clientside callback is different.** `executeCallback` (~`:1173`) fills Inputs and State and calls
+  a clientside function synchronously inside `handleClientside` (~`:591`). What follows is promise
+  resolution within the same macrotask, so no timer tick, click or network response can land between its
+  read and its apply. A clientside callback that is the only writer of the state therefore cannot compute
+  from a stale state, and the tick can be folded into it.
+  - **Corrected by round 1.** As first written, this bullet also said such a callback "cannot be evicted".
+    That is false for its REQUEST. Clientside callbacks share the 12 execution slots (`:2846`), and a request
+    waiting in `prioritized` is replaced by the next request of the same callback without merging its
+    changed-prop ids (`pDuplicates`, `:3024`; only `requested` merges, `:3004-3007`). So a click can lose its
+    trigger before the callback runs. "The fix, revised (v2)" below is the consequence.
+
+### Clean room: four shapes, verdicts fixed before the first run
+
+`util/ad-hoc/2026-09-23_f054_replay_tick_cleanroom.py` runs dash 4.2.0 with no canopy. Every server callback
+sleeps L = 2.5 s. The store's primary writer is a `running=`-guarded poll on a 500 ms interval that is
+pending ~83% of the time, like canopy's metrics poll. Each run clicks play, waits 10 s, clicks pause and
+watches for 16 s. **The verdict reads the Redux store, not the DOM**, because in the tick-only shape every
+server refresh of the label and the position is evicted, and the DOM freezes on a stale "▶ 0 / 119" that
+looks exactly like a pause.
+
+| shape | verdict, 3 runs | pause applied | index steps during play | final | DOM = store |
+|---|---|---|---|---|---|
+| `current`, canopy main 2f973ca2 | **F054-UNDONE** 3/3 | +2.96–3.07 s | 0 (every tick evicted) | `playing` / 1, interval disabled | 3/3 |
+| `cs_tick`, the recorded direction | **CLICK-DROPPED** 3/3 | never | 6 | `playing` / 22, still advancing | **0/3** |
+| `cs_all`, the fix | **PAUSE-HELD** 3/3 | ≤ 58 ms | 10 | `paused` / 10 | 3/3 |
+| `cs_all_input`, the fix with the store as an Input | PAUSE-HELD 3/3 | ≤ 53 ms | 9, merged steps of 3 | `paused` / 9 | 3/3 |
+
+- **Every verdict matched its prediction (12/12).**
+- **Two secondary predictions missed, recorded as misses:**
+  - `cs_tick` was predicted to advance 8–10 steps during play and advanced 6. Its play click took ~4 s to
+    apply, so only ~6 s of the window was playback.
+  - `cs_all_input` was predicted to show a median pause latency above 0.5 s and showed 53 ms. Its
+    readiness cost appeared at the PLAY click instead (0.96–0.99 s, against 0.10–0.12 s for `cs_all`) and
+    as merged ticks (a largest single step of 3, against 1). The harness's timings are deterministic, so
+    all three runs sampled the same phase of the poll. That makes three identical runs one observation
+    of the phase, not three.
+- **Runs that were not scored:**
+  - A smoke run (`…_SMOKE.json`) read nothing from the store. dash 4.2.0 keeps the layout under
+    `layout.components`, and the first walker followed only `props.children`. Its DOM reads already showed
+    `▶ 10 / 119` for `cs_all` and `⏸ 1 / 119` for `current`.
+  - Scored run 1 aborted after one arm (`current`: F054-UNDONE). The harness counted ports up from 8201,
+    and its second arm landed on **8202, the live cascor leg**. The app could not bind, the browser loaded
+    cascor's root page (one GET, no state change; `/v1/health` ok and the fixture still 68 hidden units
+    afterwards), and the run died on the `#pos` wait, its traceback hidden by a log filter. The script now
+    skips ports in use and starts at 18501. **A clean-room port range must not overlap the trio's.**
+
+### The fix as first opened (v1): canopy#670 head `c0530279`
+
+- **One writer.** One clientside callback, `REPLAY_CONTROLS_JS`, is the only writer of
+  `metrics-panel-replay-state`. It handles the eight controls, the slider and the tick, then renders the
+  slider, the position and the play label from the state it just computed.
+- **Inputs, State, Outputs.** The Inputs are the eight controls, the slider and `replay-interval.n_intervals`.
+  The State is `replay-state.data` and `metrics-store.data`. The Outputs are the state, the interval flag
+  and period, the slider value and max, the position and the label.
+- **What changed besides the location.**
+  - **`metrics-store.data` is State.** With it as an Input, the controls waited on the store's
+    always-pending poll (canopy#658's recorded condition). Now no pending callback holds back their
+    READINESS; `test_nothing_pending_can_hold_the_replay_controls` asserts that on the served
+    `/_dash-dependencies`. (As first written this said "nothing pending can hold them". A ready run still
+    waits for a slot, and round 1 showed what that wait can lose.)
+    The cost: a refill re-renders the position text (a second clientside callback, `allow_duplicate`, whose
+    closure reaches nothing) but not the slider thumb, which catches up on the next control or tick.
+  - **Ticks are counted.** The state records the last `n_intervals` it consumed (`tick_n`, an optional key),
+    and a tick advances by the difference, because merged requests arrive as one.
+  - **The end stops the interval.** `replay_tick` set `stopped` and left the interval running.
+- **Removed.** `replay_tick`, the play-label callback and `MetricsPanel._handle_replay_controls_handler`.
+- **Tests.**
+  - `src/tests/unit/frontend/test_f054_replay_block_clientside.py` adds 43 tests: wiring on the built app, a
+    source backstop, and the registered JavaScript run under node against a verbatim copy of the old
+    handler over the whole 9 × 5 × 5 × 5 grid.
+  - All 43 fail on the parent, and so do the two readiness tests changed in `test_f048_replay_cycle.py`.
+  - `util/ad-hoc/2026-09-23_f054_mutation_check.py` turned the suite red with each of 9 textual mutations
+    (`…_f054_mutation_check.json`; the file was restored byte-for-byte).
+- **Sixty vacuous or dead tests removed** from canopy's `test_metrics_panel_handlers.py` (38) and
+  `test_metrics_panel_helpers_coverage.py` (22):
+  - 47, in seven classes, re-implemented the replay logic inline and asserted on their own copy. They
+    would pass with the production code deleted, and this PR deletes it.
+  - 12 guarded their body with `if func := callbacks.get(...)`, so they would have passed silently once the
+    callbacks were gone.
+  - 1 looked the callback up directly.
+- **Merge mechanics (v1).** The symbol-loss screen flagged 94 findings (86 distinct keys). All are waived
+  by an enumerated `Allow-Symbol-Loss` trailer in the one signed commit. canopy squashes with
+  `COMMIT_MESSAGES`, so the trailer reaches `main`. Lane A3 re-derived all 94 and the 86 keys exactly.
+- **Local verification (v1).** The unit lane passed: 6,525 passed, 1 skipped, 0 failed. Pre-commit passed
+  all 17 hooks.
+
+### Live verification: the negative control reproduces F-054, the fix holds
+
+`util/ad-hoc/2026-09-23_f054_live_pause_check.py` subscribes to the store. It records every change of the
+replay state's `(mode, current_index)` and of `replay-interval.disabled`, and resolves the path through
+`paths.strs` so it adds no layout walk per change. Each run: fill, play, wait for `playing` to apply, 10 s,
+pause, 16 s. It uses the clean room's rule plus `PLAY-NEVER-APPLIED`. Rule and predictions were fixed before
+the first run.
+
+| leg | verdicts | play applied | steps during play | pause applied | writes after the pause |
+|---|---|---|---|---|---|
+| `:8056` `2f973ca2` | **F054-UNDONE** 3/3 | +10.5–11.3 s | 0, 0, 0 | +7.0–14.1 s | `paused` / 0, then `playing` / 1 at +2.8–5.6 s; final `playing`, interval disabled |
+| `:8055` `c0530279` | **PAUSE-HELD** 3/3 | +0.86–1.85 s | 7, 6, 6 | +1.42–2.35 s | none after `paused`; final `paused`, interval disabled; DOM = store 3/3 |
+
+- **The negative control discriminates.** It was predicted at 2 of 3 or more and scored 3/3, with the clean
+  room's `current` signature exactly: every tick evicted during play, then the one tick the pause could
+  not evict landing after it.
+- **One prediction missed.** "The pause applied within 2 s, 3/3" held in 1 of 3 runs (1.42 s; the others
+  were 2.23 s and 2.35 s). The page's main thread is ~0.1% idle (Phase 7), and that delays a clientside
+  callback too. In run 3 a tick applied +0.6 s after the click and BEFORE the pause, which places part of
+  the delay at the click's own delivery into the page. Still 3–10× faster than the parent.
+- **Ticks run slow on a saturated page.** 6–7 steps in 10 s at 1×: `dcc.Interval`'s timer fires late.
+  Counting ticks keeps the index true to the ticks that fired, not to wall time.
+
+**The replay rows, re-driven.** `util/ad-hoc/2026-09-08_replay_block_redrive.py --settle 16` on `:8055
+c0530279` (`…_f054_replay_block_redrive_8055_settle16.json`, store 116 rows) scored **M-METRICS-11, -12, -13,
+-14, -15, -16 and -18 PASS, 7/7**:
+
+- play `▶ → ⏸` with the index advancing, then pause `⏸ → ▶` at index 18;
+- speed 1000 → 500 → 250 → 1000 ms;
+- step-forward 18 → 19, step-back 19 → 18;
+- end `115 / 115`, start `0 / 115`;
+- slider 9.6% → `11 / 115`.
+
+The probe's server-side census saw **zero** `replay-state` responses on every step: the block no longer
+crosses the wire.
+
+### Round 1: the fix could still drop a click
+
+Round 1 ran five lanes against v1. The reports are verbatim in
+`reports/e2e-canopy-2026-09-02/consensus/2026-09-23_validator_reports_round1.md`.
+
+- **Lanes A1 and A2 were killed** by the session limit at ~06:33Z, before reporting.
+- **Lane A3 re-derived every quantitative claim exactly**:
+  - 60 removed tests = 38 + 22: 47 inline, 12 guarded, 1 direct;
+  - 43 new tests, all failing on the parent;
+  - 94 symbol-loss findings with 86 keys, an exact match for the trailer.
+
+  It also found three stale references, and two merge blockers: the branch was behind `main`, and CodeQL
+  alert 295 (an unused `import dash`) was unresolved.
+- **Lanes B and B2 independently refuted "cannot be evicted".** Each read the renderer, then measured:
+  - **Mechanism.** The 12-slot cap (`:2846`) applies to clientside callbacks. A request waiting in
+    `prioritized` is replaced by the next request of the same callback (`pDuplicates`, `:3024`, removed at
+    `:3151`), and changed-prop ids merge only in `requested` (`:3004-3007`). v1 dispatched on
+    `ctx.triggered`, so a replaced click was never applied.
+  - **B, forced saturation** (12 server callbacks each sleeping 3 s): **PAUSE-LOST 3/3**, against
+    PAUSE-HELD 3/3 unsaturated. Under a dynamic load of 12 guarded pollers: 1 of 12 lost at L = 2.5 s, and
+    2 of 12 at L = 4 s.
+  - **B2, a clean room with K guarded pollers** (`pdup_cleanroom.py`, no ports): **28 drops**, 26 of 56
+    trials at K ≥ 13, rising with the pool-full share. Its click-counting variant held **15 of 15** at
+    K = 16.
+  - **Every drop had one trace:** the click waited in `prioritized`, a tick's request replaced it there,
+    and it never ran while playback continued.
+- **B found two smaller regressions:**
+  - Clearing the slider's number box sends `NaN`, which passed v1's `typeof` guard. The index became `NaN`
+    ("NaN / 119"), and a replay started from it never ended.
+  - A refill running in the same renderer pass as a click could overwrite the click's position text with
+    the pre-click index (reproduced 2/2).
+- **Neither lane found v1 worse than its parent.** Once a pause applied it held, where the parent undid
+  it 3/3. B would merge once the claims were corrected. B2 held, and named the minimal change that would
+  flip it: count clicks as ticks are counted, bound the claims, and re-verify with the pool contended.
+
+### The fix, revised (v2)
+
+v2 was frozen for round 2 as the local commit `85415f3c`. It did not land as it stood: round 2 revised it
+to v3 (below), and canopy#670 merged the v3 content as `48074653` (2026-09-23 16:25Z).
+
+- **Events come from values.**
+  - The state records each button's count as of its last applied click (`clicks`), and the slider value
+    this callback last wrote (`slider_w`).
+  - A count above its record, or a finite slider value other than `slider_w`, is an event. It is applied
+    at the next run, before that run's own triggers.
+  - A triggered button applies at least once. A count below its record reads as a re-created button.
+    **Round 2 overturned "at least once"**: it applied one click twice (D1, below), and v3 removes it.
+  - A replaced pause therefore applies when the request that replaced it runs, instead of never.
+- **Play toggles once per run,** however many clicks are pending, as stock Dash does for a merged double
+  click. A lost pause followed by the user pausing again then pauses. Counted by parity, the two would
+  cancel. (The first v2 draft used parity; this was changed before round 2.)
+- **A cleared slider box is not a seek.** A non-finite value writes the slider back from the state.
+- **The refill writes the "/ max" half alone.** The position is two spans, and only the controls write the
+  index.
+- **The absolute claims are bounded:**
+  - in the code comment, the CHANGELOG and the test docstrings: "no in-flight window once it runs; it can
+    lose a trigger before it runs";
+  - readiness, not slot waits, for the State change.
+- **Tests.**
+  - `test_f054_replay_block_clientside.py` grows from 43 tests to 56, adding `TestLostTriggers`, and all
+    56 fail on `main` `0fca86e9`.
+  - CI's unit lane, run locally on `85415f3c`, passed: 6,661 tests, 0 failures, 1 skip.
+  - `test_f048_replay_cycle.py`'s readiness docstring is bounded to readiness.
+- **Mutation checks** (`2026-09-23_f054_mutation_check.py --set v2`, 18 mutations, the file restored by
+  sha256 each time):
+  - Run 1 caught 16 of 18. The two survivors were both on the re-created-button path, so two tests were
+    added.
+  - Run 2 caught 18 of 18 under `-x`. But `-x` stops at the first failure, and four mutations were first
+    caught by `TestSourceBackstop`, which pins source TEXT.
+  - Run 3 runs every test and records which ones fail: **18 of 18 CAUGHT-BY-BEHAVIOUR**. None was caught
+    by the text pins alone.
+
+### v2 under slot contention: the paired clean room
+
+`util/ad-hoc/2026-09-23_f054_pdup_cleanroom_v1_v2.py` is B2's clean room adapted. It runs v1 (`c0530279`) and
+v2 (`85415f3c`) paired, each read from a git object, with K guarded pollers at L = 2.5 s, n = 6 per arm.
+Verdicts, predictions and an instrument check were fixed before the first run.
+
+| K | pool full | v1 1x | v2 1x | v1 4x | v2 4x |
+|---|---|---|---|---|---|
+| 0 | 0% | HELD 6/6 | HELD 6/6 | HELD 6/6 | HELD 6/6 |
+| 12 | 15–17% | HELD 6/6 | HELD 6/6 (1 recovered) | HELD 6/6 | HELD 6/6 (2 recovered) |
+| 13 | 39–42% | HELD 6/6 | HELD 6/6 (1 recovered) | **DROPPED 1**, HELD 4, VOID 1 | HELD 6/6 (5 recovered) |
+| 16 | 79–80% | **DROPPED 3**, HELD 3 | HELD 6/6 (2 recovered) | **DROPPED 1**, VOID 1 (arm aborted) | HELD 6/6 (5 recovered) |
+
+- **Overall V2-HOLDS.**
+  - The instrument check passed: 24 of 24 K=0 pauses were seen executing.
+  - v1: 5 DROPPED, all at K ≥ 13, each with B2's trace.
+  - v2: 48 of 48 HELD. **16 were RECOVERED**: the pause's own request was replaced in `prioritized`, and
+    the pause applied from the count within 54–1023 ms (median 322.5 ms).
+- **v1's two VOIDs are its worst case.** Forty seconds of repeated clicks could not pause it at K ≥ 13 at
+  4x, so the harness ended those arms early; `v1_k16_4x` has n = 2.
+- **Prediction misses, recorded as misses:**
+  - "More drops at 4x than at 1x" cannot be scored, because the 4x arm at K = 16 aborted.
+  - "v2's latency above v1's" held in 3 of 5 comparable arms. "One tick period plus a slot wait" was an
+    upper bound, not the latency.
+
+### Live verification of v2
+
+`:8055` was relaunched on `85415f3c` (stamped on `/v1/health`).
+`util/ad-hoc/2026-09-23_f054_v2_live_check.py` answers round 1's objection that the v1 live evidence
+exposed only four clicks to contention. It:
+
+- drives every click **during playback**: 5 pauses at 1x, 5 pauses at 4x, 2 step-forwards and seeks to 30%
+  and 70%, all at 4x;
+- records the pool at each click, and whether the click's request was seen waiting, seen running, or
+  recovered.
+
+Rule and predictions were fixed before the first run. The result: **PASS, 14 of 14 APPLIED.**
+
+- **Pause latency:** median 1.98 s, max 2.41 s (v1 measured 1.42–2.35 s at 1x). Both steps paused one
+  row on, and both seeks landed on their exact index. The DOM agreed with the store in 14 of 14.
+- **The pool at the click was 5–11 in every trial, and never 12.** So no click was replaced and
+  **0 were recovered**. The live page did not produce the replacement in this sample, which is within the
+  prediction (0–3). The clean room and Lane A2 remain the evidence for the recovery path.
+- **One prediction missed:** "tick counting exercised at 4x". Every `playing` write advanced by one row;
+  the timer's firings were not merged in this sample. Tick counting is covered by `TestTick` and by the
+  first clean room's `cs_all_input` (merged steps of 3).
+
+**The replay rows, re-driven on `85415f3c`** (`…_f054_v2_replay_block_redrive_8055_settle16.json`, store 116
+rows): **M-METRICS-11, -12, -13, -14, -15, -16 and -18 PASS, 7/7**, with zero `replay-state` responses on
+the wire.
+
+- play: 0 → 8, then pause at 19;
+- speed: 1000 → 500 → 250 → 1000 ms;
+- step-forward 19 → 20, step-back 20 → 19;
+- end `115 / 115`, start `0 / 115`.
+
+Between t = 85 s and t = 114 s, before the first click at 116 s, the console logged
+`net::ERR_INSUFFICIENT_RESOURCES` 27 times and "Callback failed: the server did not respond" 19 times.
+`/tmp` (tmpfs) had been transiently full from outside these runs, as Lane A2 also saw, and was at 67%
+afterwards. The page recovered, and every row passed. The live check's own page, loaded earlier, logged
+no errors.
+
+### Round 2: v2 could apply one click twice, and the renderer's priority is inert
+
+Round 2 was briefed on the corrections only. The reports are verbatim in
+`reports/e2e-canopy-2026-09-02/consensus/2026-09-23_validator_reports_round2.md`.
+
+- **Lane A2 re-created the measurement independently.** Its own harness was built from the renderer source
+  and the two git objects before it read any other lane, with rule and predictions fixed first.
+  - With all 12 slots held: v1 held **0/5**, v2 held **5/5**. v2 with its count recovery removed held
+    0/5, so the instrument can answer either way.
+  - Its v2 pauses applied at 4.51 s, when a slot freed, not "one tick late" as v2's comment and CHANGELOG
+    said.
+- **Lanes B and B2 independently found D1: one click applied twice.**
+  - The mechanism: a tick's request waiting in `prioritized` runs after the click has written `n_clicks`
+    but before the click's own request, which waits in `requested` behind `await wait(0)`
+    (`dash_renderer.dev.js:2961`, `:4031`). The tick's run applies the pause from the count. v2 then
+    applied the click's own run `max(0, 1) = 1` time, and the toggle undid the pause: F-054's symptom by a
+    new path.
+  - B's `double_pause` arm: v2 undone **3/3**, v1 held 3/3, v2 with the fix held 9/9. B's `double_step`:
+    one step click moved v2 two rows (D2).
+  - B2 reproduced it in 2 of 11 trials only under a construction (zero-delay timers run 60 ms late), and in
+    0 of 108 at natural timing. B2 also found D3: a slider trigger carrying v2's own written value seeks
+    one row low for ~11% of (row, max) pairs.
+- **B and B2 re-scored this phase's paired clean room for an undo:** 0 of 48 v2 trials. Both also showed
+  the instrument could not have seen one:
+  - HELD read the first `paused` record;
+  - the next trial's play click comes ~1.1 s later;
+  - the settle step re-pauses silently.
+
+  It now has an UNDONE verdict with a 3 s watch, and flags a re-pause.
+- **The renderer's priority is inert (A2 and B, independently).** `getPriority` returns `"0"` for every
+  callback in dash 4.2.0, because its first pass is `filter(c => touched)` (`:1598`; module 4 is
+  `ramda/es/filter.js`, `:1508`), which drops its own start callback. B's census saw `"0"` in 680 of 680
+  samples; A2's probe in 15 of 15. So `prioritized` is FIFO. B2's round-1 "19 callbacks outrank the
+  controls" (`'13'` against `'11'`) came from a port that inverted the filter. Every drop COUNT stands.
+  The explanation that terminal renders "lose every arbitration", in this ledger's F-CANOPY-027 entries and
+  in canopy's `dashboard_manager.py` starvation comment, is refuted and needs a FIFO-compatible
+  mechanism (still owed, below).
+- **Minor, from both lanes:** two LOST clicks of different controls apply in control order, not click
+  order (step forward, then play, both lost, ends paused). This is documented in v3's comment, not fixed.
+
+### The fix, revised again (v3)
+
+v3 is frozen as the local commit `a967a5bd`. It is both lanes' minimal change plus one addition:
+
+- **A trigger alone applies nothing.** A button applies exactly its pending count, and the event is
+  skipped at zero; the trigger only orders it. This fixes D1 and D2.
+- **A slider trigger equal to `slider_w` is skipped** (D3).
+- **Any run whose events all had nothing to do writes nothing.** This widens the tick-only early return,
+  and neither lane proposed it; round 3 was briefed to attack it.
+- **Wording:**
+  - "one tick late" is now "when the request that replaced it gets a slot";
+  - the one-toggle comment is bounded to both clicks pending in ONE run;
+  - the review numbers cite this archive.
+- **Tests:** three sequence tests (D1, D2, D3) replace the test that pinned "at least once". The new file
+  now has 58 tests, and all 58 fail on `main` `0fca86e9`.
+- **Mutation check v3** (`--set v3`, 20 mutations): **20 of 20 CAUGHT-BY-BEHAVIOUR**, including "v2's
+  rule restored", "the slider's own value is a seek" and "a no-op run re-renders".
+- **Lane B's clean room, re-run on v3** (orchestrator run of B's
+  `util/ad-hoc/2026-09-23_f054_r2_laneB_cleanroom.py`, with `v3` added to its refs;
+  `…_f054_r3_laneB_cleanroom_v2_v3.json`; 6 arms × 2 builds × 3 runs):
+  - `double_pause`: v2 PAUSE-UNDONE **3/3**, v3 PAUSE-HELD **3/3**;
+  - `double_step`: v2 +2 rows 3/3, v3 +1 row 3/3;
+  - `lost_pause`: HELD 3/3 on both, applied at the slot release (~2.54 s), so the recovery survives the
+    change;
+  - `nan_box` CLEAN, `same_pass` CONSISTENT and `shrink` NO-FALSE-SEEK, 3/3 on both.
+- **Live, v3** (`:8055` relaunched on `a967a5bd`, which includes `main`'s #669 and #667; the v2 live check
+  re-run, `…_f054_v3_live_check_8055.json`): **PASS, 14 of 14 APPLIED** during playback. Pause median
+  1.75 s (max 2.23 s), the pool 2–11 at the clicks, 0 recovered, the DOM agreed 14/14, and 0 console
+  errors.
+- **Round 3 (Lane B2, briefed on these corrections only): MERGE**
+  (`reports/e2e-canopy-2026-09-02/consensus/2026-09-23_validator_reports_round3.md`).
+  - **D1–D3 are fixed.** Node sequences on each commit: D1 `playing` → `paused` with `no_update` ×8; D2
+    22 → 21; D3 row 0 → row 1.
+  - **B2's paired browser clean room** (`k13_d60`, 10 trials a build, alternating):
+    - v3 HELD 20/20; the race occurred once and v3 wrote nothing.
+    - v2 18 HELD and 2 UNDONE; the race occurred twice and toggled twice.
+  - **The widened no-op return breaks nothing.** Mount, tab rebuild and refill were probed on v2, v3, and
+    v3 without it.
+  - **F1, minor:** skipping the slider's own value also skips a real drag that lands exactly on it, and
+    the replay does not pause. The value is a whole number only at row 0, the last row, or rows where the
+    max divides 100 × row. The alternative, "pause at the current index", is a follow-up.
+  - **Two wording imprecisions**, fixed as text-only canopy `683372b5`:
+    - a lost pause applies at the callback's next run to get a slot, and a later request can replace the
+      replacer;
+    - F1 is now named.
+  - Per §4 the review stops here: round 3 changed no number, disposition or behaviour.
+
+### F-CANOPY-055 — the top status bar never applies: F-035's class on a fourth writer
+
+**F-CANOPY-055 — the top status bar never applies a periodic response, so status, phase, step, hidden units and latency hold their layout defaults for the life of the page, and the Live Dataset Switch gate computed inside it never lands (P1, canopy repo; found 2026-09-23 by the one-browser census Phase 7 owed; OPEN).**
+
+`update_unified_status_bar` (`dashboard_manager.py`) is a server callback. It has:
+
+- Input `fast-update-interval`, 1 s, and no `running=` guard;
+- `prevent_initial_call=False`;
+- eleven Outputs: the status indicator, the connection status, the latency, the status text and style,
+  the phase text and style, the step and hidden-unit counters, `training-status-store.data` and
+  `live-dataset-switch-button.disabled`.
+
+At the page's current delivery latency every response is evicted, so all eleven hold their layout
+defaults for the life of the page. Phase 7 named it a candidate and owed a one-browser measurement first:
+A1 had seen the bar frozen for 100 s, and A2 had seen the latency apply 1 of 6–10 values, both with the WS
+refused and 2–3 browsers running.
+
+**The census** is `util/ad-hoc/2026-09-23_status_bar_apply_census.py`: one GPU browser, Training Metrics,
+idle, a 45 s settle, then a 60 s window. Rule and predictions were fixed before the first run. It counts:
+
+- the callback's requests and responses on the wire;
+- its entries into `watched` and `executed` in the renderer;
+- every change of three of its outputs in the store.
+
+| leg | requests / responses | watched / executed | store changes | bar throughout | verdict |
+|---|---|---|---|---|---|
+| `:8055` `723ee812` | 36 / 36 | 38 / 0 | 0 | `Stopped` · `0` · empty latency | **NEVER-APPLIES** |
+| `:8056` `668380ec` | 42 / 43 | 44 / 0 | 0 | `Stopped` · `0` · empty latency | **NEVER-APPLIES** |
+
+Those three values are exactly the layout's defaults. The server reported epoch 76, 68 hidden units and
+phase `output`.
+
+**The period arm discriminates the mechanism.** On the same page, after the baseline window,
+`fast-update-interval`'s period was set to 20 s through `setProps`, followed by a 150 s window (the rule
+and predictions were added to the docstring before its first run):
+
+- **Baseline, 1 s:** NEVER-APPLIES. 36 of 36 responses were delivered and 0 executed. The bar's wire
+  latency was 1.16 s at p50 (0.21–3.08 s), and more once the main thread's queue is added.
+- **Slowed, 20 s:** **APPLIES**. 7 requests, 8 executed, 6 latency changes. The bar reached the server's
+  state (`Completed — early stopped`, step `76`) and printed a latency.
+- **Every prediction held.** A response still unprocessed when the next request of the same callback
+  arrives is dropped (`wDuplicates`, `:3027`; discarded at `:2697-2704`). With the period above the
+  latency, each response lands.
+- **The slowed lane also cut the load** (wire latency fell to 0.17 s). So the arm shows that the ratio of
+  period to latency decides, not which side of the ratio moved.
+
+**Blast radius:**
+
+- The page's primary readout shows `Stopped` / `0` for the life of every page loaded at this latency.
+- **The Live Dataset Switch is inferred unreachable again**: F-CANOPY-025 regressed. canopy#514 fixed
+  F-025 by computing the gate inside this feeder, which is the button's only writer, and the button ships
+  `disabled=True`. So the allow arm cannot land while the feeder never applies. This is inferred from the
+  feeder, not driven: the allow arm needs a running training, and this phase does not start one on the
+  shared fixture.
+- `training-status-store` has no other reader, so it is stale only to the feeder itself.
+
+**Relation to earlier dispositions.** F-CANOPY-020 recorded this surface frozen and was withdrawn as the
+blast radius of F-004 and F-006. F-006 is FIXED and the bar is still frozen, so that disposition no longer
+covers it.
+
+**Fix direction (not implemented).** Use F-035's pattern. The F-027 objection that sank #657's first
+design does not reach it, because this lane is not tab-gated:
+
+- a dedicated global interval for the feeder, with a `running=` guard;
+- registered in `_GATED_POLL_INTERVALS` beside `metrics-store-interval`, so the CAN-000 clamp still
+  silences it;
+- covered by #614's watchdog.
+
+The fix is verified by re-running this census with its rule unchanged, plus a Live Switch allow-arm drive
+on a leg whose training may be started.
+
+### Cheap dispatch-rate cuts (Phase 7 item 3): the weight drain is the cost
+
+- **The census.** `util/ad-hoc/2026-09-23_canopy_interval_census.py` reads the built app's intervals and
+  their consumers (`…_interval_census_c0530279.json`). A finite `max_intervals` counts as 0 in the steady
+  state, because the first version counted `params-init-interval` (`max_intervals=1`) as perpetual. It
+  named two cuts, together 3.0 of the page's 6.6 nominal steady-state ticks/s:
+  - `metrics-panel-update-interval`, 1 Hz, with **no** consumer;
+  - `replay-player-panel-weight-drain`, 2 Hz, whose one clientside consumer returns `no_update` unless a
+    replay session is streaming weights. It is on no tab gate.
+- **An in-page A/B came before any code change.** `util/ad-hoc/2026-09-23_canopy_timer_park_ab.py` parks
+  timers with `setProps({disabled: true})` in alternating windows and scores each against its neighbours.
+  The rule and predictions were fixed before the first run.
+
+  | B window | run 1 (forward order, settle 25 s) | run 2 (reverse order, settle 60 s) |
+  |---|---|---|
+  | dead timer parked | MIXED, L +28.6% (on a still-settling baseline) | **NEGLIGIBLE**, L −1.6% |
+  | weight drain parked | **WORTH-IT**, L −41.9% | **WORTH-IT**, L −32.3% |
+  | both parked | **WORTH-IT**, L −31.7% | **WORTH-IT**, L −32.6% |
+
+  - One prediction was wrong in both runs: "store updates/s falls". It ROSE with the drain parked (+9.3 and
+    +21.0/s), because a saturated page spends freed main-thread time applying responses sooner.
+  - Idle % sat at 0.10–0.14% in every window and could not separate anything.
+- **The cuts: canopy branch `perf/idle-dispatch-cuts`, local commit `668380ec`, NOT yet a PR.** It was built
+  on `723ee812`. It must be rebuilt on `main` once canopy#670 merges: the metrics-panel layout snapshot is
+  one line, and both change it.
+  - The dead Interval is removed. Its `update_interval` config is still parsed and documented as driving
+    nothing.
+  - The drain ships `disabled=True`, and a clientside gate enables it only while `replay-player-session`
+    holds a `snapshot_id`.
+  - `test_idle_dispatch_cuts.py` adds 9 tests. 7 fail on the parent, and the 2 premise pins pass on both.
+    One of them, `test_every_interval_has_a_consumer`, guards the class.
+- **Live check** (`util/ad-hoc/2026-09-23_idle_cuts_live_check.py`; control `:8055` `723ee812` against cuts
+  `:8056` `668380ec`; five alternating windows; rule and predictions fixed before the first run):
+  - **STRUCTURE PASS**: no dead timer, and the drain disabled with 0 ticks over 10 s.
+  - **SESSION PASS**: a session write enabled the drain in 1.9 s, and clearing it disabled the drain in
+    1.8 s.
+  - **LATENCY CONSISTENT**: L p50 was 4.38 and 4.30 s on the cuts, against 6.34, 5.50 and 5.30 s on the
+    control (X/C 0.76). The cuts leg also processed 153–155 responses per window, against 109–131.
+  - Console errors: 0 on both legs.
+- **Not cut:** the timestamp-only store rewrite. The phase-duration clock depends on the rewrite, so
+  removing it needs its own design.
+
+### Consensus record (procedure §7)
+
+The reports are verbatim in `reports/e2e-canopy-2026-09-02/consensus/2026-09-23_validator_reports_round{1,2}.md`
+and `…_round3.md`. Each round was archived by `2026-09-23_archive_consensus_reports_by_round.py`.
+
+**F-CANOPY-054's fix, canopy#670:**
+
+- **Lane A:**
+  - A3 (round 1) re-derived every PR claim from the diff, CI and the screens.
+  - A2 (round 2) built an independent harness from the renderer source and the git objects: v1 0/5 vs
+    v2 5/5 under full contention, and the instrument answers either way.
+  - A1 was killed by the session limit before it reported.
+- **Lane B:** B and B2 in rounds 1 and 2, each briefed separately; B2 in round 3.
+- **Three rounds:**
+  - Round 1 refuted "cannot be evicted", which led to v2 (events from values).
+  - Round 2 found D1–D3 (one click applied twice), which led to v3 (a trigger alone applies nothing).
+    Both lanes found D1 independently, with the same fix.
+  - Round 3 (B2) gave MERGE. It raised one minor finding (F1) and two wording fixes, and changed no
+    number, disposition or behaviour, so the review stopped (§4).
+
+**The dash 4.2.0 priority finding:** A2 (a probe, 15/15) and B (a census, 680/680) found it
+independently, and the orchestrator confirmed it in the source (`filter`, `:1508`/`:1598`). Found in
+round 2.
+
+**F-CANOPY-055 and the dispatch cuts:** orchestrator only. The status-bar census ran on two legs, plus
+the period arm. The cuts had a census, two A/B runs in opposite orders, and a live check. No independent
+lane has checked them, which §2 counts as weaker.
+
+**Unresolved dissent:** none on a verdict. The one-toggle rule loses "pause, then resume" when both are
+pending in one run. Both reviewers called that a design choice (stock Dash does the same) and kept it.
+
+**What the evidence cannot support:**
+
+- How often canopy's real page loses a click or applies one twice. In 28 live clicks during playback the
+  pool never reached 12, so neither mechanism was observed live; the clean rooms force it.
+- That F-CANOPY-055's fix direction works (it is unimplemented), or that the Live Switch is unreachable
+  (inferred from the feeder, not driven).
+- That the cuts' ~24–32% latency reduction holds beyond an idle trio.
+- Any browser other than headless and GPU Chromium on one Linux host.
+
+### Matrix effect and counts
+
+- **M-METRICS-13**: FAIL (F-CANOPY-054) → **PASS @ `c0530279`** (v1), then **PASS @ `85415f3c`** (v2,
+  re-driven, plus 14/14 clicks during playback). v3 (`a967a5bd`) was live-checked 14/14.
+  `2026-09-23_matrix_f054_rows_v2.py` moved the verdict cells to `85415f3c`.
+- **M-METRICS-11, -12, -14, -15, -16 and -18**: PASS re-confirmed @ `c0530279` and again @ `85415f3c`, on
+  the clientside block.
+- **F-CANOPY-054**: FIXED by canopy#670, merged as `48074653`. The squash body carries all 28
+  `Allow-Symbol-Loss` lines.
+  - Landing took four server-side updates (heads `244d254f`, `96aa3bec`, `9c1a5488`, `bc357d09`), because
+    `main` moved four times meanwhile.
+  - One update was DIRTY: `7cd8a9d4` inserted CHANGELOG entries at the same point. It was fixed by taking
+    those entries verbatim in place and moving F-054's entry below F-048's, after proving it with
+    `git merge-tree`.
+- **F-CANOPY-055**: filed, P1, OPEN.
+  - No M- row covers the top bar. It is exercised by workflow steps W1-3, W1-7 and W14-5, whose DOM
+    readings it falsifies on any page loaded at this latency.
+  - F-CANOPY-025's allow arm (the Live Switch workflow) is inferred regressed.
+- **Counts**, from `e2e_finding_triage.py`: **66 findings**.
+  - 48 fixed (F-CANOPY-054 counted as fixed on merge), 1 accepted, 2 withdrawn.
+  - 15 open, 3 of them P1: F-CANOPY-055, F-CASCOR-001 and F-CASCOR-002.
+
+### Instruments added
+
+All are under `util/ad-hoc/`, dated `2026-09-23_`:
+
+- `f054_replay_tick_cleanroom.py`: the four-shape clean room, reading the store.
+- `f054_live_pause_check.py`: the store-series pause check for a live leg (v1).
+- `f054_mutation_check.py`: mutations of canopy#670's fix, nine for v1 and 18 for v2. It restores the file
+  and verifies by sha256. By default it names every failing test and separates CAUGHT-BY-BEHAVIOUR from
+  CAUGHT-BY-BACKSTOP; `--fail-fast` reproduces the first runs.
+- `f054_pdup_cleanroom_v1_v2.py`: Lane B2's contention clean room, adapted to run v1 and v2 paired from
+  git objects.
+- `f054_v2_live_check.py`: clicks during playback at 1x and 4x on a live leg, with the queue instrumented.
+- `matrix_f054_rows.py`: the replay rows' matrix update.
+- `canopy_interval_census.py`: the built app's intervals and their consumers.
+- `canopy_timer_park_ab.py`: the in-page timer-park A/B.
+- `idle_cuts_live_check.py`: the cuts' structure, session path and latency, against a control leg.
+- `status_bar_apply_census.py`: does the status bar apply a response; with `--period-ms`, the
+  discriminating period arm.
+- `archive_consensus_reports_by_round.py`: archives validator reports per ROUND. A resumed agent appends to
+  the same transcript, so "the last text" stops being its round-1 report.
+
+### Still owed after this phase
+
+Phase 7's list, with items 1, 3 and 4 closed or converted:
+
+1. **Hunt the F-053 regression** (Phase 7 item 2): what raised the page's delivery latency across
+   `f9defb4 → 9bffaba1`. This phase adds three data points:
+   - on the v1 leg, a CLIENTSIDE callback's click took 1.4–2.4 s to apply, and `dcc.Interval` fired at
+     ~0.65 Hz against a nominal 1 Hz: main-thread saturation seen without any server round trip;
+   - parking the weight drain cut L by about a third;
+   - the status bar's own wire latency was 1.16 s at p50.
+2. **Fix F-CANOPY-055** (new, P1), as its fix direction above describes. Then drive F-CANOPY-025's allow
+   arm on a leg whose training may be started.
+3. **The timestamp-only store rewrite** (the cut not taken): it needs a design that keeps the
+   phase-duration clock.
+4. **Owner: F-CANOPY-004's contract** (Phase 7 item 5).
+5. **`FULL_HISTORY_POLL_TICK_MODULUS` → 1** (Phase 7 item 6).
+6. **canopy#613's guard, source-derived and unobserved** (Phase 7 item 7): a mid-fetch `runningOff`
+   overwrites the CAN-000 apply clamp, and an evicted request's `completeJob` re-enables the lane during its
+   successor's flight.
+7. **F-CANOPY-049** and #674's follow-ups (Phase 7 item 8).
+8. **CAN-015's replay-player loop** (Phase 7 item 9). The CAN-015 player is a different component from the
+   metrics replay fixed here. Its loop is still exempted in canopy's cycle test.
+9. **M-CANDIDATES-10/-11** (Phase 7 item 10).
+10. Unchanged: M-DATASET-17..26 (the owner's question), the M-TOPOLOGY-16 fade half, and F-038's
+    browser-level test gap (Phase 7 item 11).
+11. **New, owner question.** The metrics replay drives nothing but itself. `replay-state` has no consumer
+    outside the replay block, before or after canopy#670, so playback moves the slider and the
+    `current / max` readout while every chart stays on the full history. `docs/USER_MANUAL.md` ("In-metrics
+    replay") documents only the bar, so the rows pass against their own contract. Is a replay that moves no
+    chart the intended product?
+12. **The starvation mechanism, re-derived under FIFO** (new, from round 2):
+    - F-CANOPY-027's explanation and canopy's `dashboard_manager.py` starvation comment say that
+      terminal render callbacks "lose every arbitration". dash 4.2.0's priority is `"0"` for every
+      callback, so that is not the mechanism.
+    - The measured starvation stands, and so do its fixes. What starved those renders under a FIFO queue
+      is unexplained: readiness holds are the first candidate.
+    - The canopy comment needs correcting once it is.
+13. **F1, from round 3 (minor, not filed).** A real slider drag that lands exactly on the value the
+    callback last wrote does not pause the replay (row 0, the last row, or rows where the max divides
+    100 × row). Pausing at the current index instead of skipping would keep "a seek pauses" and still
+    avoid the drift.
+14. **Minor, from round 1.** Neither is filed:
+    - the slider THUMB does not follow a refill until the next control or tick (v2's documented cost);
+    - the immediate write-back snaps the thumb in 25% steps while dragging over a 5-row history (Lane B);
+      the final seek is correct.
