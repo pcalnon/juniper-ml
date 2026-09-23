@@ -35,8 +35,9 @@ _spec.loader.exec_module(safe_merge)
 # the first execution of every required context, from `check-runs?filter=all` -- over the heads
 # whose first pass passed. Healthy heads per row: ml 30, data 30, cascor 29, canopy 27,
 # cascor-worker 30, data-client 30, deploy 30, recurrence 29. Independently written instruments
-# in the 2026-09-22 consensus round reproduced every row: round 1 matched seven exactly and read
-# juniper-ml on a later window; round 2 reproduced juniper-ml's pair on its own window.
+# in the 2026-09-22 consensus round reproduced every row: round 1 matched seven of these eight
+# exactly (eight of nine repos, counting cascor-client) and read juniper-ml on a later window;
+# round 2 reproduced juniper-ml's pair on its own window.
 #
 # WHY THE FIRST PASS, NOT v2's RAW SPAN. v2 (`util/ad-hoc/2026-09-08_measure_required_check_span_v2.py`)
 # reads check-runs with `filter=latest`, the latest per name WITHIN EACH WORKFLOW RUN, so an
@@ -52,9 +53,12 @@ _spec.loader.exec_module(safe_merge)
 # LOWER a max -- the unsafe side of a "budget > max" rule. The five unhealthy heads (canopy
 # #653/#651/#636, cascor #647, recurrence #175) all had first passes BELOW their repo's max.
 #
-# juniper-ml's row is the window #1981-#2014. Later reads gave (857, 1061), (733, 1061) and, at
-# 2026-09-23 00:33 UTC, (680, 1061), where the 2800 s budget exceeds 4x p90 by 80 s: #1981, a
-# 2005 s healthy pass, had slid out of the window. The pin keeps the demonstrated 2005 s and its
+# juniper-ml's row is the 30 newest merged PRs between 20:08 and 20:18 UTC on 2026-09-22:
+# #1981-#2014, less #2004 and #2013 (merged later), #2012 (still open) and #1994 (an issue).
+# Later reads gave (857, 1061),
+# (733, 1061) and, at 2026-09-23 00:33 UTC, (680, 1061), where the 2800 s budget exceeds 4x p90
+# by 80 s: #1981, a 2005 s healthy pass, had slid out of the window. The pin keeps the
+# demonstrated 2005 s and its
 # window's p90, because a window edge moving is not evidence the worst case improved. cascor's and
 # canopy's maxima also moved down from the 2026-09-09 pins (2561, 2370) through a window move,
 # and are NOT held: those came from v2, which inflates on later executions, so they are not known
@@ -597,6 +601,13 @@ class KillResilienceTest(SafeMergeTestBase):
         not the pre-start queue `util/safe_merge.py` says never to absorb; the span does not
         contain that at all. And ml's is not hypothetical: 1500 s refused ml#1828 live, on a
         PR whose 17 required contexts every one passed.
+
+        WITHDRAWN 2026-09-10 (see both rows' notes in util/safe_merge.py): "This is
+        contention" and "Its CI got heavier" -- the span separates neither cause in either
+        repo, and ml#1831 added a 181-line suite inside ml's own window -- and "which
+        `safe_merge` waits through" as the line between within-span stretch and pre-start
+        queue: both are waited through, and what separates them is measurement scope. What
+        stands is the refusal of ml#1828.
 
         So a number here is a SNAPSHOT with a shelf life measured in days. Re-measure and
         re-write both halves rather than trusting the pair below.
