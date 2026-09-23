@@ -30,8 +30,35 @@ _spec.loader.exec_module(safe_merge)
 
 
 # THE SINGLE SOURCE OF TRUTH FOR MEASURED CI SPANS. repo -> (p90, observed_max), required
-# contexts only, from `util/ad-hoc/2026-09-08_measure_required_check_span_v2.py -n 30`,
-# re-measured 2026-09-09.
+# contexts only, over the last 30 merged heads, RE-MEASURED 2026-09-22 with
+# `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py first-pass`: each head's FIRST PASS --
+# the first execution of every required context, from `check-runs?filter=all` -- over the heads
+# whose first pass passed. Healthy heads per row: ml 30, data 30, cascor 29, canopy 27,
+# cascor-worker 30, data-client 30, deploy 30, recurrence 29. Independently written instruments
+# in the 2026-09-22 consensus round reproduced every row: round 1 matched seven exactly and read
+# juniper-ml on a later window; round 2 reproduced juniper-ml's pair on its own window.
+#
+# WHY THE FIRST PASS, NOT v2's RAW SPAN. v2 (`util/ad-hoc/2026-09-08_measure_required_check_span_v2.py`)
+# reads check-runs with `filter=latest`, the latest per name WITHIN EACH WORKFLOW RUN, so an
+# execution AFTER the pass enters its span: a re-run attempt (its passed jobs are copied in with
+# their original timestamps), or a run started by a later event. Raw v2 put canopy's max at
+# 33,299 s (#653: its first pass FAILED at 10:08 UTC 2026-09-22 and two jobs were re-run at
+# 19:01) and recurrence's at 9,886 s (#175: concurrency cancelled part of its first pass and the
+# cancelled pre-commit run was re-run 2.7 h later). Neither later execution is part of the pass
+# safe_merge waits on, and both figures exceed 4x p90, so no budget could satisfy the rule over
+# them. No head is DROPPED for a repeat. An earlier rule dropped a head whenever a same-name
+# check-run started after another had completed; it set aside 18 heads, 13 of them healthy
+# (their only repeat was a successful `Guard PR base branch` run), and dropping heads can only
+# LOWER a max -- the unsafe side of a "budget > max" rule. The five unhealthy heads (canopy
+# #653/#651/#636, cascor #647, recurrence #175) all had first passes BELOW their repo's max.
+#
+# juniper-ml's row is the window #1981-#2014. Later reads gave (857, 1061), (733, 1061) and, at
+# 2026-09-23 00:33 UTC, (680, 1061), where the 2800 s budget exceeds 4x p90 by 80 s: #1981, a
+# 2005 s healthy pass, had slid out of the window. The pin keeps the demonstrated 2005 s and its
+# window's p90, because a window edge moving is not evidence the worst case improved. cascor's and
+# canopy's maxima also moved down from the 2026-09-09 pins (2561, 2370) through a window move,
+# and are NOT held: those came from v2, which inflates on later executions, so they are not known
+# to be healthy passes. #1981's 2005 s is.
 #
 # THIS CONSTANT EXISTS BECAUSE THE NUMBERS WERE PINNED TWICE AND DRIFTED APART. `KillResilienceTest`
 # and `TimeoutSizingTest` each carried their own copy; ml#1828 and ml#1851 updated the first and
@@ -41,19 +68,21 @@ _spec.loader.exec_module(safe_merge)
 # clears a smaller stale one too -- a pin going quietly vacuous rather than red.
 #
 # Add a repo here, not in a test body. juniper-cascor-client is deliberately ABSENT: its 3300 s
-# budget exceeds 4x its p90 (724 -> 2896), so it fails the upper bound by design pending an owner
-# ruling. Its historic exclusion note claimed a 15,616 s max that "is a QUEUED check, not CI
-# working"; that is REFUTED -- the figure was the v1 instrument counting bot check-runs, and its
-# real required-context max is 1511 s across 30 heads with 0 unmeasurable.
+# budget exceeded 4x its p90 when measured (724 -> 2896), and the OWNER RULED on 2026-09-15 that
+# the value stands and the row stays out of this pin. Re-measured 2026-09-22 it reads p90 1264 /
+# max 1626 over 30 healthy heads, so 3300 would now pass both halves -- recorded, not acted on:
+# re-including the row is the owner's call. Its historic exclusion note claimed a 15,616 s max
+# that "is a QUEUED check, not CI working"; that is REFUTED -- the figure was the v1 instrument
+# counting bot check-runs.
 MEASURED_SPANS = {
-    "juniper-ml": (997, 1657),
-    "juniper-data": (955, 2126),
-    "juniper-cascor": (1333, 2561),
-    "juniper-canopy": (1837, 2370),
-    "juniper-cascor-worker": (1010, 1283),
-    "juniper-data-client": (896, 1725),
-    "juniper-deploy": (262, 375),
-    "juniper-recurrence": (587, 1666),
+    "juniper-ml": (910, 2005),
+    "juniper-data": (1651, 2589),
+    "juniper-cascor": (1717, 2221),
+    "juniper-canopy": (1798, 2174),
+    "juniper-cascor-worker": (1576, 2059),
+    "juniper-data-client": (1545, 2565),
+    "juniper-deploy": (450, 965),
+    "juniper-recurrence": (1114, 1666),
 }
 
 
@@ -572,15 +601,35 @@ class KillResilienceTest(SafeMergeTestBase):
         So a number here is a SNAPSHOT with a shelf life measured in days. Re-measure and
         re-write both halves rather than trusting the pair below.
 
-        NUMBERS ARE FROM THE v2 INSTRUMENT, n=30, RE-MEASURED 2026-09-09. v1
+        AND IT HAPPENED AGAIN. Re-measured 2026-09-22, thirteen days later, THREE budgets no
+        longer cleared their own max. Each max is a single pass -- every workflow run on
+        attempt 1, each required context run once, none failed -- and each was mostly RUNNER
+        QUEUE, not CI work (measured in the 2026-09-22 consensus round: for 64-82% of the span
+        no job on the head was running while at least one waited for a runner):
+
+            juniper-data         p90  955 -> 1651   max 2126 -> 2589 (#405)   2400 -> 3300
+            juniper-data-client  p90  896 -> 1545   max 1725 -> 2565 (#206)   2400 -> 3300
+            juniper-deploy       p90  262 ->  450   max  375 ->  965 (#211)    700 -> 1400
+
+        Raised mid-window (data and data-client hit TIMEOUT_CEILING first). Whether a budget
+        should absorb that queue at all is an OPEN OWNER DECISION -- see the note above
+        `REPO_TIMEOUTS` in util/safe_merge.py, which records the dissent. This test COULD NOT
+        GO RED through those thirteen days: it asserts only against the pair recorded here, so
+        a live budget going stale is invisible to it until someone re-measures.
+
+        NUMBERS ARE FROM 2026-09-22, n=30 merged heads, each head's FIRST PASS over healthy
+        heads -- see `MEASURED_SPANS` for why and for `n` per row. Before that, the v2
+        instrument (`util/ad-hoc/2026-09-08_measure_required_check_span_v2.py`), n=30,
+        2026-09-09, which lets any later execution of a required context stretch the span. v1
         (`util/ad-hoc/2026-08-20_measure_required_check_span.py`) filtered nothing, so every
         bot and out-of-band check-run on the head SHA entered the span -- it overstated the
         observed max by 11x on cascor, 20x on canopy and 70x on cascor-worker. Re-measure
-        with `util/ad-hoc/2026-09-08_measure_required_check_span_v2.py --repo <r> -n 30`,
-        and record `n` alongside any number quoted here: the 2026-09-05 re-tier could not be
+        with `util/ad-hoc/2026-09-22_ci_budget_handoff_reprobe.py first-pass -n 30`, and
+        record `n` alongside any number quoted here: the 2026-09-05 re-tier could not be
         reproduced because its sample size was never written down.
         """
-        # repo -> (p90, observed_max), required contexts only, v2 instrument, n=30.
+        # repo -> (p90, observed_max), required contexts only, first pass over healthy heads,
+        # n=30 merged heads (the healthy count per row is in the MEASURED_SPANS note).
         # juniper-cascor-client is deliberately ABSENT -- see the note in safe_merge.py.
         for repo, (p90, observed_max) in MEASURED_SPANS.items():
             with self.subTest(repo=repo):
