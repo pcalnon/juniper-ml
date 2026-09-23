@@ -1,0 +1,54 @@
+arm v3a: ref=a967a5bd K=13 speed=4x sat=0ms/50ms fan=3 delay0=60ms L=2.5s
+  [v3a] trial 0: HELD pause_ms=62 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 2, 1, 'playing', 'paused')]
+  [v3a] trial 1: HELD pause_ms=48 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 4, 3, 'playing', 'paused')]
+  [v3a] trial 2: HELD pause_ms=404 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 6, 5, 'playing', 'paused')]
+  [v3a] trial 3: HELD pause_ms=58 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 7, 7, 'playing', 'playing'), (['replay-play.n_clicks'], 8, 7, 'playing', 'paused')]
+  [v3a] trial 4: HELD pause_ms=206 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 10, 9, 'playing', 'paused')]
+  [v3a] trial 5: HELD pause_ms=150 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 12, 11, 'playing', 'paused')]
+  [v3a] trial 6: HELD pause_ms=31 undone_ms=None by_count=1 race_runs=1 toggles=0 runs=[(['replay-interval.n_intervals'], 14, 13, 'playing', 'paused'), (['replay-interval.n_intervals', 'replay-play.n_clicks'], 14, 14, 'paused', 'NU')]
+  [v3a] trial 7: HELD pause_ms=83 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 16, 15, 'playing', 'paused')]
+  [v3a] trial 8: HELD pause_ms=219 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 18, 17, 'playing', 'paused')]
+  [v3a] trial 9: HELD pause_ms=90 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 20, 19, 'playing', 'paused')]
+  [v3a] SUMMARY {"arm": "v3a", "ref": "a967a5bd", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_race_run": 1, "trials_with_double_toggle": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 86.5, "pool_full_fraction": 0.458}
+arm v2a: ref=85415f3c K=13 speed=4x sat=0ms/50ms fan=3 delay0=60ms L=2.5s
+  [v2a] trial 0: HELD pause_ms=83 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 1, 1, 'playing', 'playing'), (['replay-play.n_clicks', 'replay-interval.n_intervals'], 2, 1, 'playing', 'paused')]
+  [v2a] trial 1: HELD pause_ms=112 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 4, 3, 'playing', 'paused')]
+  [v2a] trial 2: HELD pause_ms=165 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 6, 5, 'playing', 'paused')]
+  [v2a] trial 3: HELD pause_ms=620 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 8, 7, 'playing', 'paused')]
+  [v2a] trial 4: HELD pause_ms=197 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 10, 9, 'playing', 'paused')]
+  [v2a] trial 5: HELD pause_ms=329 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 11, 11, 'playing', 'NU'), (['replay-interval.n_intervals'], 12, 11, 'playing', 'paused')]
+  [v2a] trial 6: HELD pause_ms=45 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 14, 13, 'playing', 'paused')]
+  [v2a] trial 7: UNDONE pause_ms=66 undone_ms=92 by_count=1 race_runs=1 toggles=1 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused'), (['replay-play.n_clicks', 'replay-interval.n_intervals'], 16, 16, 'paused', 'playing'), (['replay-interval.n_intervals'], 16, 16, 'playing', 'playing'), (['replay-interval.n_intervals'], 16, 16, 'playing', 'playing')]
+  [v2a] trial 8: UNDONE pause_ms=84 undone_ms=310 by_count=1 race_runs=1 toggles=1 runs=[(['replay-interval.n_intervals'], 19, 18, 'playing', 'paused'), (['replay-play.n_clicks', 'replay-interval.n_intervals'], 19, 19, 'paused', 'playing'), (['replay-interval.n_intervals'], 19, 19, 'playing', 'playing'), (['replay-interval.n_intervals'], 19, 19, 'playing', 'playing')]
+  [v2a] trial 9: HELD pause_ms=150 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 22, 21, 'playing', 'paused')]
+  [v2a] SUMMARY {"arm": "v2a", "ref": "85415f3c", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 8, "UNDONE": 2}, "trials_with_race_run": 2, "trials_with_double_toggle": 2, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 157.5, "pool_full_fraction": 0.437}
+arm v3b: ref=a967a5bd K=13 speed=4x sat=0ms/50ms fan=3 delay0=60ms L=2.5s
+  [v3b] trial 0: HELD pause_ms=59 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 2, 1, 'playing', 'paused')]
+  [v3b] trial 1: HELD pause_ms=112 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 4, 3, 'playing', 'paused')]
+  [v3b] trial 2: HELD pause_ms=75 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 6, 5, 'playing', 'paused')]
+  [v3b] trial 3: HELD pause_ms=544 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 8, 7, 'playing', 'paused')]
+  [v3b] trial 4: HELD pause_ms=108 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 10, 9, 'playing', 'paused')]
+  [v3b] trial 5: HELD pause_ms=210 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 12, 11, 'playing', 'paused')]
+  [v3b] trial 6: HELD pause_ms=186 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 14, 13, 'playing', 'paused')]
+  [v3b] trial 7: HELD pause_ms=391 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused')]
+  [v3b] trial 8: HELD pause_ms=38 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 18, 17, 'playing', 'paused')]
+  [v3b] trial 9: HELD pause_ms=823 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 20, 19, 'playing', 'paused')]
+  [v3b] SUMMARY {"arm": "v3b", "ref": "a967a5bd", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_race_run": 0, "trials_with_double_toggle": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 149.0, "pool_full_fraction": 0.449}
+arm v2b: ref=85415f3c K=13 speed=4x sat=0ms/50ms fan=3 delay0=60ms L=2.5s
+  [v2b] trial 0: HELD pause_ms=744 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 2, 1, 'playing', 'paused'), (['replay-interval.n_intervals'], 2, 2, 'paused', 'NU')]
+  [v2b] trial 1: HELD pause_ms=449 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 4, 3, 'playing', 'paused')]
+  [v2b] trial 2: HELD pause_ms=44 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 6, 5, 'playing', 'paused')]
+  [v2b] trial 3: HELD pause_ms=274 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 8, 7, 'playing', 'paused')]
+  [v2b] trial 4: HELD pause_ms=198 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-play.n_clicks'], 10, 9, 'playing', 'paused'), (['replay-interval.n_intervals'], 10, 10, 'paused', 'NU')]
+  [v2b] trial 5: HELD pause_ms=425 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 12, 11, 'playing', 'paused')]
+  [v2b] trial 6: HELD pause_ms=364 undone_ms=None by_count=1 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 14, 13, 'playing', 'paused')]
+  [v2b] trial 7: HELD pause_ms=57 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals'], 15, 15, 'playing', 'playing'), (['replay-play.n_clicks'], 16, 15, 'playing', 'paused')]
+  [v2b] trial 8: HELD pause_ms=142 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 18, 17, 'playing', 'paused')]
+  [v2b] trial 9: HELD pause_ms=34 undone_ms=None by_count=0 race_runs=0 toggles=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 20, 19, 'playing', 'paused')]
+  [v2b] SUMMARY {"arm": "v2b", "ref": "85415f3c", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_race_run": 0, "trials_with_double_toggle": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 236.0, "pool_full_fraction": 0.427}
+{"arm": "v3a", "ref": "a967a5bd", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_race_run": 1, "trials_with_double_toggle": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 86.5, "pool_full_fraction": 0.458}
+{"arm": "v2a", "ref": "85415f3c", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 8, "UNDONE": 2}, "trials_with_race_run": 2, "trials_with_double_toggle": 2, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 157.5, "pool_full_fraction": 0.437}
+{"arm": "v3b", "ref": "a967a5bd", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_race_run": 0, "trials_with_double_toggle": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 149.0, "pool_full_fraction": 0.449}
+{"arm": "v2b", "ref": "85415f3c", "K": 13, "speed": "4x", "sat_ms_per_50": 0, "fan": 3, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_race_run": 0, "trials_with_double_toggle": 0, "trials_with_pause_applied_by_count": 4, "pause_ms_median": 236.0, "pool_full_fraction": 0.427}
+-> /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/6280349a-397b-4e22-9fc5-a32818ed1f58/scratchpad/laneB2/r3/r3_double_apply_v2_v3.json
+exit=0

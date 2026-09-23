@@ -612,6 +612,83 @@ have said a word, and a Release body cannot be re-cut.
   F-CANOPY-053, F-CANOPY-038 and M-METRICS-18. By design each shares no code with the orchestrator's
   instruments, so treat them as re-derivations, not as tools to extend.
 
+## F-CANOPY-054: the replay block moved clientside (operational, 2026-09-23)
+
+See the E2E ledger's Phase 8 (`notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`).
+
+- **`2026-09-23_f054_replay_tick_cleanroom.py`** runs four shapes of canopy's replay block with no canopy
+  (dash 4.2.0), with a server-latency knob and an always-pending `running=` feeder:
+  - `current`: canopy main 2f973ca2;
+  - `cs_tick`: only the tick clientside, the direction Phase 7 recorded;
+  - `cs_all`: canopy#670;
+  - `cs_all_input`: canopy#670 with the store as an Input.
+
+  **The verdict reads the Redux store, not the DOM.** In `cs_tick` every server refresh is evicted and
+  the DOM freezes on a stale "▶ 0 / 119" that looks exactly like a pause. **Keep its port range clear of
+  the trio's:** its first scored run counted up from 8201 and landed its second arm on the LIVE cascor
+  at 8202. It now starts at 18501 and skips ports in use (`_free_port`).
+- **`2026-09-23_f054_live_pause_check.py`**: the same rule against a live canopy leg. A Redux
+  subscription records every write of the replay state's `(mode, current_index)` and of
+  `replay-interval.disabled`, and resolves the path through `paths.strs`, which costs no layout walk per
+  store change on a page whose main thread is ~0.1% idle. F-CANOPY-054 is a SEQUENCE (a `paused` write,
+  then a late `playing` write), which a single read `settle` seconds after the click cannot see.
+  - Run it against a parent leg as a negative control first. On `2f973ca2` it scored F054-UNDONE 3/3.
+- **`2026-09-23_f054_mutation_check.py`** applies textual mutations, one at a time, to canopy#670's
+  `metrics_panel.py` and runs the two replay test files: nine with `--set v1`, 18 with `--set v2`.
+  - Bytecode is off, and `__pycache__` entries are cleared per run.
+  - It restores the file byte-for-byte and verifies by sha256.
+  - A mutation whose search text is absent is NOT-APPLIED, never "caught".
+  - **By default every test runs, and the verdict says which kind of test caught it.** `TestSourceBackstop`
+    pins source TEXT, so a mutation that deletes pinned text is caught whatever the behaviour. Under `-x`,
+    four v2 mutations were first caught by that backstop, which proves only that the text is pinned.
+    CAUGHT-BY-BEHAVIOUR needs a failing test outside the backstop. `--fail-fast` reproduces the old scoring.
+- **`2026-09-23_f054_pdup_cleanroom_v1_v2.py`** is Lane B2's contention clean room, adapted.
+  - It needs no ports: Playwright route interception serves Dash through Flask's test client.
+  - It runs K guarded pollers, and v1 and v2 paired, each read from a git OBJECT (`git show <ref>:path`,
+    or `:path` for the index), so a concurrent mutation check cannot leak into it.
+  - A trial is RECOVERED when the click's request was replaced in `prioritized` and the pause still
+    applied: that is the only path round 1's defect exercises.
+  - Its comment's `'13'` against `'11'` priority story is refuted (see the next bullet), but the drop
+    counts stand.
+- **dash 4.2.0's priority is INERT.** `getPriority` returns `"0"` for every callback: its first pass is
+  `filter(c => touched)` (`:1598`, `ramda/es/filter.js`), which drops its own start callback. So
+  `prioritized` is FIFO. Lane A2 found it (`2026-09-23_f054_r2_laneA2_priority_probe.py`).
+- **`2026-09-23_f054_v2_live_check.py`** drives every click DURING PLAYBACK on a live leg: pauses at 1x
+  and 4x, steps and seeks. It records the pool at each click and whether the click was seen waiting,
+  running or recovered.
+- **`2026-09-23_matrix_f054_rows.py`** records the seven replay rows' verdicts on `c0530279`. It follows
+  `2026-09-22_matrix_f053_rows.py`: it refuses a second run and refuses a row whose verdict is not the one
+  it was written against. **`2026-09-23_matrix_f054_rows_v2.py`** then moves them to `85415f3c`, the revised
+  fix, under the same two guards.
+- **`2026-09-23_archive_consensus_reports_by_round.py`** archives validator reports per ROUND.
+  - A subagent resumed with `SendMessage` appends to the same transcript, so "its last text" (the
+    2026-09-22 archiver's rule) silently becomes the round-2 progress line.
+  - This one splits each transcript at the round-2 brief (`--marker`).
+- **`2026-09-23_f054_r2_laneA2_*.py`**: Lane A2's independent round-2 harness (slot contention, a post-hoc
+  arm and the priority probe), built from the renderer source before it read any other lane.
+
+## The idle dispatch cuts and the top status bar (operational, 2026-09-23)
+
+The ledger's Phase 8 again.
+
+- **`2026-09-23_canopy_interval_census.py`**: every `dcc.Interval` in the built app, with its steady-state
+  tick rate and its consumers. A finite `max_intervals` counts as 0 in the steady state. The first version
+  counted `params-init-interval` (`max_intervals=1`) as perpetual.
+- **`2026-09-23_canopy_timer_park_ab.py`**: an in-page A/B that parks candidate timers
+  (`setProps({disabled: true})`) in alternating windows, BEFORE any code change.
+  - Run it in both orders (`--order forward|reverse`). The first run's baseline was still settling.
+  - "Store updates/s" is not a cost measure on a saturated page: it ROSE when a timer was parked, because
+    freed main-thread time goes to applying responses.
+- **`2026-09-23_idle_cuts_live_check.py`**: the cuts leg against a control leg, in alternating windows.
+  It checks the structure, the session path (a `replay-player-session` write must enable the drain) and
+  the latency.
+- **`2026-09-23_status_bar_apply_census.py`**: does `update_unified_status_bar` ever APPLY a response?
+  - It counts wire requests and responses, renderer `watched`/`executed` entries, and store changes.
+  - `--period-ms` adds the discriminating arm: the lane's period is set above the latency on the same
+    page, and the bar then applies.
+  - A bar showing exactly its layout defaults ("Stopped", "0", an empty latency) has never applied
+    anything.
+
 ---
 
 ## What does NOT belong here

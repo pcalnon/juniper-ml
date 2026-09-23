@@ -1,0 +1,382 @@
+{
+  "target": "/home/pcalnon/Development/python/Juniper/worktrees/juniper-canopy--fix--f054-replay-block-clientside--20260923-0036--2f973ca2/src/frontend/components/metrics_panel.py",
+  "set": "v3",
+  "fail_fast": false,
+  "sha256": "05b76b9579edd5b37573a61ca085a5fc1c23395074904a6592a96437a1752420",
+  "baseline": {
+    "exit": 0,
+    "tail": [],
+    "failed": []
+  },
+  "mutations": [
+    {
+      "name": "play-does-not-record-tick_n",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   KeyError: 'tick_n'",
+        "E   AssertionError: assert ('playing', 2, False) == ('playing', 30, False)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_play_then_the_first_tick_advances_exactly_one"
+      ]
+    },
+    {
+      "name": "tick-advances-one-not-the-delta",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert (8, 8, 'playing') == (10, 8, 'playing')",
+        "E   AssertionError: assert ('playing', 4...49 / 49', '\u23f8') == ('stopped', 4...49 / 49', '\u25b6')",
+        "E   AssertionError: assert ('playing', 20, False) == ('stopped', 20, True)"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_grown_history_is_not_a_seek",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_written_slider_value_is_not_a_seek",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_merged_before_the_pause_advances_then_pauses",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_merged_ticks_advance_by_the_ticks_consumed",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_index_is_honoured",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_stops_playback_and_the_interval"
+      ]
+    },
+    {
+      "name": "tick-ignores-mode (the F-054 core)",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'clicks': {...__', '1', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'clicks': {...__', '8', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'clicks': {..._', '49', ...] == ['__NO_UPDATE...PDATE__', ...]"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_pause_applies_at_the_next_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_seek_applies",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_an_applied_click_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_after_the_pause_cannot_undo_it",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_merged_after_the_pause_is_ignored",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[none]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[paused]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[stopped]"
+      ]
+    },
+    {
+      "name": "end-leaves-interval-running",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('stopped', 4...49 / 49', '\u25b6') == ('stopped', 4...49 / 49', '\u25b6')",
+        "E   AssertionError: assert ('stopped', 20, False) == ('stopped', 20, True)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_stops_playback_and_the_interval"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_index_is_honoured",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_stops_playback_and_the_interval"
+      ]
+    },
+    {
+      "name": "stray-tick-rewrites-state",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'current_in...PDATE__', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'current_in...PDATE__', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'current_in...PDATE__', ...] == ['__NO_UPDATE...PDATE__', ...]"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_an_applied_click_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_sliders_own_value_is_not_a_seek_when_it_triggers",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_after_the_pause_cannot_undo_it",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[none]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[paused]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[stopped]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_an_already_consumed_tick_writes_nothing"
+      ]
+    },
+    {
+      "name": "label-glyphs-swapped",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: replay-play state=None metrics_len=None slider=0",
+        "E   AssertionError: assert '\u23f8' == '\u25b6'",
+        "E   AssertionError: assert '\u23f8' == '\u25b6'"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[falsy-placeholder]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[metrics-refill]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[mount]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[not-an-input]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_several_controls_apply_in_trigger_order",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_play_toggles_and_arms_the_interval",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_the_click_renders_in_the_same_call",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_pause_applies_at_the_next_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_after_the_pause_cannot_undo_it",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_merged_before_the_pause_advances_then_pauses",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_one_tick_advances_like_the_old_replay_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_stops_playback_and_the_interval"
+      ]
+    },
+    {
+      "name": "metrics-store-as-input",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('metrics-panel-replay-interval.n_intervals' in {'metrics-panel-metrics-store.data', 'metrics-panel-replay-end.n_clicks', 'metrics-panel-replay-interval.n_intervals',...ics-panel-replay-play.n_clicks', 'metrics-panel-replay-start.n_clicks', 'metrics-panel-replay-step-back.n_clicks', ...} and 'metrics-panel-metrics-store.data' not in {'metrics-panel-metrics-store.data', 'metrics-panel-replay-end.n_clicks', 'metrics-panel-replay-interval.n_intervals',...ics-panel-replay-play.n_clicks', 'metrics-panel-replay-start.n_clicks', 'metrics-panel-replay-step-back.n_clicks', ...})",
+        "E   AssertionError: assert ['metrics-pan..._clicks', ...] == ['metrics-pan..._clicks', ...]",
+        "E   AssertionError: assert ['metrics-pan...y-state.data'] == ['metrics-pan...s-store.data']"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f048_replay_cycle.py::TestReplayBlockReadiness::test_nothing_pending_can_hold_the_replay_controls",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_inputs_are_the_controls_the_slider_and_the_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_registered_controls_match_the_class_constant",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_the_state_and_the_metrics_store_are_state"
+      ]
+    },
+    {
+      "name": "refill-callback-removed",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: replay block not found in the served dependencies: ['metrics-panel-replay-controls.style', 'clientside -> ..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval...metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position-index.children...metrics-panel-replay-position-max.children...metrics-panel-replay-play.children..']",
+        "E   AssertionError: expected one allow_duplicate writer of metrics-panel-replay-position-max.children; found 0",
+        "E   AssertionError: expected one allow_duplicate writer of metrics-panel-replay-position-max.children; found 0"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f048_replay_cycle.py::TestReplayBlockReadiness::test_no_replay_callback_blocks_itself",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestRefillPosition::test_a_refill_renders_the_max_alone",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_the_refill_callback"
+      ]
+    },
+    {
+      "name": "state-input-not-copied",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: the function mutated an argument (the store's State object)",
+        "E   AssertionError: the function mutated an argument (the store's State object)",
+        "E   AssertionError: the function mutated an argument (the store's State object)"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_dispatch_is_exact_not_substring",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_every_control_matches_canopy_658",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[falsy-placeholder]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[metrics-refill]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[mount]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[not-an-input]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_several_controls_apply_in_trigger_order",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_play_toggles_and_arms_the_interval",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_slider_maps_percent_to_index_and_pauses",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_speed_sets_the_interval_without_touching_mode_or_index[speed-1x-1.0-1000]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_speed_sets_the_interval_without_touching_mode_or_index[speed-2x-2.0-500]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_speed_sets_the_interval_without_touching_mode_or_index[speed-4x-4.0-250]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_start_and_end_jump_and_pause",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_step_back_pauses_and_clamps_at_zero",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_step_forward_pauses_and_clamps_at_max",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestEachControl::test_the_click_renders_in_the_same_call",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_cleared_slider_box_is_not_a_seek",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_grown_history_is_not_a_seek",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_click_while_paused_applies_behind_another",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_pause_applies_at_the_next_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_seek_applies",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_button_restarts_its_count",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_buttons_lost_click_applies",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_repeated_play_clicks_toggle_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_written_slider_value_is_not_a_seek",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_two_clicks_in_one_request_apply_twice",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_after_the_pause_cannot_undo_it",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_merged_after_the_pause_is_ignored",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_merged_before_the_pause_advances_then_pauses",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_speed_change_keeps_playing_and_the_tick_count",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_state_without_tick_n_advances_one",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_merged_ticks_advance_by_the_ticks_consumed",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_one_tick_advances_like_the_old_replay_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_play_then_the_first_tick_advances_exactly_one",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_index_is_honoured",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_the_end_stops_playback_and_the_interval"
+      ]
+    },
+    {
+      "name": "lost-events-dropped (round-1 defect 1)",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'order = lost.concat(order);' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "E   AssertionError: assert ('playing', 9, False, '\u23f8') == ('paused', 7, True, '\u25b6')",
+        "E   AssertionError: assert ('playing', 1) == ('paused', 2)"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_click_while_paused_applies_behind_another",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_pause_applies_at_the_next_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_seek_applies",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_buttons_lost_click_applies",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "lost-events-after-the-triggers",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'order = lost.concat(order);' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "E   AssertionError: assert ('paused', 9, True, '\u25b6') == ('paused', 7, True, '\u25b6')",
+        "E   AssertionError: assert ('paused', 23) == ('paused', 21)"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_pause_applies_at_the_next_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "clicks-not-recorded",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'state.clicks = seen;' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "E   AssertionError: assert [{'clicks': {...100, '7', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert ('paused', 1) == ('paused', 2)"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_click_while_paused_applies_behind_another",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_lost_pause_applies_at_the_next_tick",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_button_restarts_its_count",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_buttons_lost_click_applies",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_repeated_play_clicks_toggle_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_after_the_pause_cannot_undo_it",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_play_then_the_first_tick_advances_exactly_one"
+      ]
+    },
+    {
+      "name": "slider_w-not-recorded",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert 'state.slider_w = sliderOut;' in '\\n(function() {\\n    var clientside = window.dash_clientside = window.dash_clientside || {};\\n    var ns = clientside...nothing.\\n    return [state, noUpdate, noUpdate, sliderOut, 100, String(idx), String(maxIndex), label];\\n}\\n;\\n})();\\n'",
+        "E   KeyError: 'slider_w'",
+        "E   KeyError: 'slider_w'"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[falsy-placeholder]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[metrics-refill]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[mount]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestControlsMatchTheMergedServerCallback::test_no_event_renders_and_changes_nothing[not-an-input]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_written_slider_value_is_not_a_seek",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestSourceBackstop::test_events_are_derived_from_values"
+      ]
+    },
+    {
+      "name": "NaN-is-a-seek (round-1 defect 2)",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('paused', None) == ('playing', 7)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_cleared_slider_box_is_not_a_seek"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_cleared_slider_box_is_not_a_seek"
+      ]
+    },
+    {
+      "name": "recreated-button-not-reset",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   TypeError: string indices must be integers, not 'str'",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_button_restarts_its_count",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_buttons_lost_click_applies"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_button_restarts_its_count",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_recreated_buttons_lost_click_applies"
+      ]
+    },
+    {
+      "name": "play-toggles-by-parity",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert ('playing', False) == ('paused', True)",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_repeated_play_clicks_toggle_once"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_repeated_play_clicks_toggle_once"
+      ]
+    },
+    {
+      "name": "refill-writes-the-index (round-1 defect 3)",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: expected one allow_duplicate writer of metrics-panel-replay-position-max.children; found 0",
+        "E   AssertionError: expected one allow_duplicate writer of metrics-panel-replay-position-max.children; found 0",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_the_refill_callback"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestRefillPosition::test_a_refill_renders_the_max_alone",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestWiring::test_the_refill_callback"
+      ]
+    },
+    {
+      "name": "count-or-trigger-restored (round-2 D1/D2)",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'clicks': {...100, '7', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'clicks': {...00, '22', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once"
+      ]
+    },
+    {
+      "name": "the-sliders-own-value-is-a-seek (round-2 D3)",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'clicks': {...00, '26', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "FAILED tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_sliders_own_value_is_not_a_seek_when_it_triggers"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_sliders_own_value_is_not_a_seek_when_it_triggers"
+      ]
+    },
+    {
+      "name": "a-no-op-run-re-renders",
+      "verdict": "CAUGHT-BY-BEHAVIOUR",
+      "exit": 1,
+      "tail": [
+        "E   AssertionError: assert [{'clicks': {...100, '7', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'clicks': {...100, '0', ...] == ['__NO_UPDATE...PDATE__', ...]",
+        "E   AssertionError: assert [{'clicks': {...100, '7', ...] == ['__NO_UPDATE...PDATE__', ...]"
+      ],
+      "failed_tests": [
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_click_applied_from_its_count_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_a_step_applied_from_its_count_moves_once",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_an_applied_click_is_not_applied_again",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestLostTriggers::test_the_sliders_own_value_is_not_a_seek_when_it_triggers",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTheF054Sequence::test_a_tick_after_the_pause_cannot_undo_it",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[none]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[paused]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_a_tick_when_not_playing_writes_nothing[stopped]",
+        "tests/unit/frontend/test_f054_replay_block_clientside.py::TestTick::test_an_already_consumed_tick_writes_nothing"
+      ]
+    }
+  ],
+  "restored": true
+}
