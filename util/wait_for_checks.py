@@ -45,6 +45,27 @@ any session to run at any time. If it reports ``BEHIND``, the signing-safe fix i
 therefore GitHub-signed; a local merge + push is unsigned and ``required_signatures``
 rejects it fleet-wide).
 
+Wait budget
+-----------
+Omit ``--timeout`` and the CLI waits the repo's CI budget from ``timeout_for`` in
+``util/safe_merge.py`` -- its ``REPO_TIMEOUTS`` table holds the fleet's per-repo budgets (the
+measured spans behind them are pinned in ``tests/test_safe_merge.py`` ``MEASURED_SPANS``) -- so
+a direct invocation waits exactly as long as the merge path does. It prints that budget and its
+source on stderr: a measured row, ``safe_merge``'s own default for a repo it has not measured,
+or -- only when the table cannot be read at all -- ``FALLBACK`` to ``DEFAULT_TIMEOUT`` (1800 s).
+
+It used to be the default outright, and 1800 s sat BELOW eight of the nine measured budgets.
+A healthy canopy or cascor PR could therefore exit 2 while every required context was still
+legitimately running -- a timeout that reads exactly like a stuck check, which is the one
+distinction those budgets exist to draw. ``safe_merge`` always passes ``--timeout``, so the
+merge path never saw it; direct invocation, the way sessions are told to use this tool, did.
+
+Two consequences for callers. The budget line goes to STDERR, so a caller that merges stderr
+into a JSON parse (``2>&1``) must pass ``--timeout``. And budgets now reach 3300 s, close to the
+~3600 s lease of a background worker: a BACKGROUND invocation can be cut short by the lease
+before it exits 2, silently. For a long wait prefer ``util/safe_merge.py`` (kill-resilient, with
+an auto-merge net) or pass a shorter ``--timeout``.
+
 Usage
 -----
     python util/wait_for_checks.py --pr 1130
@@ -67,16 +88,23 @@ is why every ``gh`` call here checks its return code.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import shutil
 import subprocess  # nosec B404 - shells out to the `gh` CLI by design
 import sys
 import time
+from pathlib import Path
 
 DEFAULT_OWNER = "pcalnon"
 DEFAULT_REPO = "juniper-ml"
+# FALLBACK ONLY. With ``--timeout`` omitted the CLI waits the repo's measured budget from
+# util/safe_merge.py; this applies when that table cannot be read. See "Wait budget" above.
 DEFAULT_TIMEOUT = 1800
 DEFAULT_INTERVAL = 20
+# The measured per-repo budgets live beside this file. Read at call time, never copied here:
+# a second copy of those figures is how the CI-span pin drifted apart in juniper-ml#1862.
+SAFE_MERGE_PATH = Path(__file__).with_name("safe_merge.py")
 
 # Bounded retry for a flaky GitHub API. Delay-only: a persistent failure still
 # raises ProbeError, so this never masks a broken probe.
@@ -441,6 +469,39 @@ def wait_for(
     }
 
 
+def resolve_timeout(repo: str, explicit: int | None = None, *, budgets_path: Path | None = None) -> tuple[int, str]:
+    """The CLI's wait budget in seconds, and where it came from.
+
+    An explicit ``--timeout`` always wins. Otherwise ``timeout_for`` in util/safe_merge.py: the
+    repo's measured row, or that module's own default for a repo it has not measured -- and the
+    source says which, because a default labelled "measured" is the false authority this whole
+    table exists to avoid. ``DEFAULT_TIMEOUT`` only when the table cannot be read at all (this
+    file copied somewhere without its sibling, or the sibling broken), and the source string
+    says so: a silent fallback would hide exactly the regression this function exists to fix.
+    """
+    if explicit is not None:
+        return explicit, "--timeout"
+    path = SAFE_MERGE_PATH if budgets_path is None else budgets_path
+    name = "_wait_for_checks_budgets"
+    try:
+        spec = importlib.util.spec_from_file_location(name, path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"cannot load {path}")
+        mod = importlib.util.module_from_spec(spec)
+        # Registered before exec: a @dataclass in a path-loaded module looks itself up in
+        # sys.modules and fails at import without it.
+        sys.modules[name] = mod
+        spec.loader.exec_module(mod)
+        seconds = int(mod.timeout_for(repo))
+        if repo in getattr(mod, "REPO_TIMEOUTS", {}):
+            return seconds, f"measured budget for {repo} ({path.name} REPO_TIMEOUTS)"
+        return seconds, f"{path.name} DEFAULT_TIMEOUT -- {repo} has no measured budget"
+    except Exception as exc:  # any failure to read the table degrades to the fallback, loudly
+        return DEFAULT_TIMEOUT, f"FALLBACK {DEFAULT_TIMEOUT}s -- {path.name} budgets unreadable ({type(exc).__name__}: {exc})"
+    finally:
+        sys.modules.pop(name, None)
+
+
 _EXIT = {"green": 0, "failed": 1, "timeout": 2, "pr_closed": 0}
 
 
@@ -489,7 +550,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="return as soon as any required context fails, instead of waiting for the full picture",
     )
-    parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT, help=f"seconds before giving up (default {DEFAULT_TIMEOUT})")
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=None,
+        help=f"seconds before giving up (default: the repo's measured CI budget from util/safe_merge.py REPO_TIMEOUTS; {DEFAULT_TIMEOUT} only if that table cannot be read)",
+    )
     parser.add_argument("--interval", type=int, default=DEFAULT_INTERVAL, help=f"seconds between polls (default {DEFAULT_INTERVAL})")
     parser.add_argument("--json", action="store_true", dest="as_json", help="emit the result dict as JSON")
     parser.add_argument("--verbose", action="store_true", help="log per-poll counts to stderr")
@@ -501,16 +567,20 @@ def main(argv: list[str] | None = None) -> int:
     if args.interval < 1:
         print("error: --interval must be >= 1", file=sys.stderr)
         return 3
-    if args.timeout < 0:
+    if args.timeout is not None and args.timeout < 0:
         print("error: --timeout must be >= 0", file=sys.stderr)
         return 3
+    timeout, source = resolve_timeout(args.repo, args.timeout)
+    if args.timeout is None:
+        # Said out loud whenever it was not typed: the budget decides what an exit 2 means.
+        print(f"wait budget: {timeout}s ({source})", file=sys.stderr)
     try:
         res = wait_for(
             args.owner,
             args.repo,
             args.pr,
             anchor=args.anchor,
-            timeout=args.timeout,
+            timeout=timeout,
             interval=args.interval,
             fail_fast=args.fail_fast,
             verbose=args.verbose,
@@ -518,6 +588,8 @@ def main(argv: list[str] | None = None) -> int:
     except ProbeError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 3
+    res["timeout"] = timeout
+    res["timeout_source"] = source
 
     if args.as_json:
         print(json.dumps(res, indent=2, sort_keys=True))

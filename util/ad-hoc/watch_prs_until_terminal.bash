@@ -42,7 +42,11 @@
 # Usage:
 #   util/ad-hoc/watch_prs_until_terminal.bash juniper-ml:1480 juniper-canopy:537
 #
-# Env: OWNER (default pcalnon), PER_PR_TIMEOUT (default 2400 seconds).
+# Env: OWNER (default pcalnon). PER_PR_TIMEOUT (default UNSET: the waiter then
+#      waits each repo's measured CI budget from util/safe_merge.py REPO_TIMEOUTS,
+#      as the merge path does). It used to default to a flat 2400 s, below six of
+#      the nine budgets (up to 3300 s), so a healthy PR on those repos could report
+#      TIMEOUT while its required contexts were still legitimately running.
 #
 # Exit: 0 once all watched PRs are terminal, 1 if any timed out, 2 on bad
 #       invocation or a broken probe.
@@ -50,7 +54,7 @@
 set -uo pipefail
 
 OWNER="${OWNER:-pcalnon}"
-PER_PR_TIMEOUT="${PER_PR_TIMEOUT:-2400}"
+PER_PR_TIMEOUT="${PER_PR_TIMEOUT:-}"
 
 _HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WAITER="${_HERE}/../wait_for_checks.py"
@@ -71,14 +75,26 @@ for spec in "$@"; do
     repo="${spec%%:*}"
     pr="${spec##*:}"
 
+    # stdout carries the JSON and nothing else. With --timeout omitted the waiter
+    # prints its budget line on STDERR, so stderr must stay out of the parse.
+    timeout_args=()
+    if [[ -n "$PER_PR_TIMEOUT" ]]; then
+        timeout_args=(--timeout "$PER_PR_TIMEOUT")
+    fi
+    if ! errf="$(mktemp)"; then
+        echo "PROBE-ERROR ${repo}#${pr} could not create a temp file for the waiter's stderr"
+        exit 2
+    fi
     out="$(python3 "$WAITER" --pr "$pr" --repo "$repo" --owner "$OWNER" \
-        --json --timeout "$PER_PR_TIMEOUT" 2>&1)"
+        --json "${timeout_args[@]}" 2>"$errf")"
     waiter_rc=$?
+    err="$(<"$errf")"
+    rm -f "$errf"
 
     if ! jq -e . >/dev/null 2>&1 <<<"$out"; then
         # Exit 3 is the waiter's own hard-error code; anything unparseable is a
         # broken probe and must be LOUD, never silence.
-        echo "PROBE-ERROR ${repo}#${pr} waiter rc=${waiter_rc}, unparseable output: ${out:0:200}"
+        echo "PROBE-ERROR ${repo}#${pr} waiter rc=${waiter_rc}, unparseable output: ${out:0:200} stderr: ${err:0:200}"
         rc=2
         continue
     fi
@@ -102,7 +118,8 @@ for spec in "$@"; do
     if [[ "$status" == "timeout" ]]; then
         running="$(jq -r '(.running // []) | join(", ")' <<<"$out")"
         absent="$(jq -r '(.absent // []) | join(", ")' <<<"$out")"
-        echo "TIMEOUT ${repo}#${pr} after ${PER_PR_TIMEOUT}s — NOT a verdict. running=[${running}] absent=[${absent}]"
+        waited="$(jq -r '.timeout // "?"' <<<"$out")"
+        echo "TIMEOUT ${repo}#${pr} after ${waited}s — NOT a verdict. running=[${running}] absent=[${absent}]"
         rc=1
         continue
     fi

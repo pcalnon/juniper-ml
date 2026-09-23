@@ -1,0 +1,39 @@
+corpus            : 32 profiles under /home/pcalnon/.local/state/juniper-experiments/p01-logging-at8065ca0f-v3/prof
+worker self time  : 37.00 s  (sum of tottime over every function)
+
+ATTRIBUTABLE logging self time : 6.18 s over 4,938,286 calls
+                        share  : 16.70 %
+
+NOT attributable (named, NOT summed):
+  __format__ self time         : 0.01 s (0.03 % -- emitted records only)
+  f-string construction for discarded records: NOT SEPARATELY ATTRIBUTABLE from this
+    corpus (ROADMAP 3.1). It is inline in each calling function's own tottime.
+
+=== decision 1's gate: threshold 10 % ===
+  measured 16.70 %  ->  AT OR ABOVE -> P2 RUNS
+  NOTE: this is the share the instrument can ATTRIBUTE. It is a LOWER BOUND on total
+  logging cost, because discarded-record construction is invisible here by construction.
+  Decision 1 says the 10 % is 'measured on what the instrument can attribute', so this
+  is the figure it asks for -- but do not restate it as 'logging costs 16.7 %'.
+
+=== top 20 logging functions by self time ===
+     1.024 s     611,871  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:564(_log_at_level)
+     0.692 s     611,870  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:545(_filter_by_level)
+     0.507 s     611,870  /opt/miniforge3/envs/JuniperCascor1/lib/python3.14/inspect.py:1660(currentframe)
+     0.506 s      58,399  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:330(_console_dict)
+     0.480 s     116,798  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:281(_frame_info)
+     0.440 s     264,784  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:606(trace)
+     0.436 s     241,459  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:622(debug)
+     0.431 s     116,798  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:511(<lambda>)
+     0.426 s      58,399  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:348(_file_dict)
+     0.337 s   1,315,122  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:525(_resolve_level_number)
+     0.253 s      58,401  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:630(info)
+     0.162 s     291,995  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:327(<lambda>)
+     0.136 s      91,382  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:1084(isEnabledFor)
+     0.093 s      47,228  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:614(verbose)
+     0.081 s     116,798  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:278(<lambda>)
+     0.072 s     116,798  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:503(_logging_message)
+     0.052 s      91,382  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:496(get_level)
+     0.049 s     116,798  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:276(_date)
+     0.000 s          60  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:384(_is_valid_level_name)
+     0.000 s          32  /home/pcalnon/Development/python/Juniper/worktrees/juniper-cascor--p01--logging-corpus--20260922-0630--8065ca0f/src/log_config/logger/logger.py:473(set_level)
