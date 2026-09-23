@@ -12,24 +12,49 @@
 # environment route" (notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md),
 # and that is now built: run_suite.runtime_block_env maps this block onto the process
 # environment and experiment_stack.bash exports CASCOR_NUM_PROCESSES per cell at cascor
-# bring-up. The three legs below therefore differ in the runtime for the first time.
+# bring-up. The num_processes legs below therefore differ in the runtime for the first time.
 #
-# STILL DO NOT LAUNCH, for two REMAINING reasons -- neither of them the axis:
-#   1. D3's own ruling requires a ONE-CELL RUN confirming the cell's `thread_env` is non-null
-#      BEFORE the ~6.7 h matrix is committed -- `--only <cell_id>`, then read `thread_env` in
-#      that run's manifest.json. NOT `--dry-run`: it returns before cells are materialised and
-#      prints neither the runtime env nor the thread budget. That check is what would have
-#      caught the inert axis in the first place; run it, do not assume this comment.
-#   2. THE AXIS STILL DOES NOT DISCRIMINATE EVERYWHERE, so re-shape the matrix first. cascor
-#      clamps workers to `min(process_count, len(tasks))` (`cascade_correlation.py:2685`) where
-#      len(tasks) IS the pool size -- so at `candidate_pool_size: 2` the np=2 and np=4 legs are
-#      the SAME configuration, and 2 of these 12 cells are duplicates. Worse, np=1 takes the
-#      *sequential* branch (`:2472`) rather than a one-worker pool, so it is a different code
-#      path and not a point on the same speedup curve. Binding the variable was necessary but
-#      is not sufficient.
-#   3. A 1-minute load under 3. The host has not been quiet in five sessions (load 4.7-32 across
-#      2026-09-11..22), and every number this suite produces is wall-clock.
-# Thresholds remain unratified.
+# RE-SHAPED 2026-09-23 -- 4x3 = 12 cells became a TRIANGLE of 14. The three reasons:
+#   * np > pool is a DUPLICATE, not a data point. cascor clamps workers to
+#     `max(1, min(process_count, len(tasks)))` (`cascade_correlation.py:2685` at cascor 0d2d826)
+#     and len(tasks) IS the pool size, so every (pool, np > pool) cell re-runs (pool, np = pool).
+#     The old matrix had exactly ONE such pair (pool 2: np 2 and np 4) -- one redundant cell,
+#     not two. The `exclude` rows below drop all six np > pool cells of the wider axis.
+#   * np=1 is KEPT, as the SEQUENTIAL CONTROL -- not as a point on the pool curve. It takes
+#     `_execute_sequential_training` (`:2473`, only when no remote workers are registered), a
+#     different code path from a one-worker pool. Read it as its own series (the time an operator
+#     gets with parallelism off); compute the speedup CURVE over np in {2, 4, 8, 16} only.
+#   * np EXTENDED to 8 and 16. This suite's second purpose is OVERSUBSCRIPTION ONSET, and with
+#     `worker_thread_count: 1` plus the parent's `blas_threads: 2` (from spiral-smoke) the thread
+#     demand is np + 2 on 16 logical / 8 physical CPUs. np <= 4 could never have shown the onset,
+#     so the old axis answered half the question. np=16 is legal: cascor takes
+#     CASCOR_NUM_PROCESSES as `max(1, int(value))` with no upper bound.
+#   Cost is NOT re-measured: the ~6.7 h estimate was for the old 12 cells. The shape drops one
+#   cheap cell and adds three highly parallel ones, so expect roughly 7 h per pass.
+#
+# D3's ONE-CELL CHECK PASSED 2026-09-23, on c001-e9909d5d (pool 2, np 2; cascor 0d2d826). The
+# run's manifest.json records thread_env CASCOR_NUM_PROCESSES "2" (BLAS vars "2"), AND the
+# service log records `Training 2 candidates with 2 processes` for both candidate phases, so the
+# check proved DELIVERY, not just recording. Re-run it on any cell after changing the launcher or
+# the runtime-block mapping: `--only <cell_id>`, then read that run's manifest.json and its
+# logs/juniper-cascor.log. NOT `--dry-run`, which returns before cells are materialised.
+#   ⚠ The check EXITS 1 even when the cell succeeds, and that is documented design, not a fault:
+#   run_suite's exit 0 means every cell in the FULL expansion has succeeded, so the 13 unselected
+#   cells count as not-run (docs/REFERENCE.md § "Resume, --only, and exit codes"; under --resume,
+#   0 means "the suite is complete"). The exit status is not the check's verdict. The manifest
+#   and the service log are.
+#
+# STILL DO NOT LAUNCH THE MATRIX. The duplicate/sequential reason is closed by the re-shape above,
+# and D3's check has passed; one reason remains:
+#   EVERY NUMBER HERE IS WALL-CLOCK, and the host has not been quiet in six sessions (load
+#      4.7-32 across 2026-09-11..23). The loaded-host design (rulings §3: interleave or randomise
+#      arm order, with repeats) is only HALF expressible in run_suite: it has no shuffle, but it
+#      runs the matrix product in key order with the LAST key fastest, so a LEADING repeat key
+#      (e.g. `experiment.description: [pass 1, pass 2, pass 3]`, stripped from the workload
+#      fingerprint) runs every cell once per pass -- round-robin. pf2-axis2-cascor-dataset-range.yaml
+#      does exactly that. For this suite that means 42 cells, about 21 h. Otherwise, wait for a
+#      1-minute load under 3.
+# Thresholds remain unratified -- do not read a result against a threshold nobody approved.
 schema_version: 1
 suite:
   name: pf3-cascor-pool-scaling
@@ -53,5 +78,13 @@ suite:
 execution: {mode: sequential, continue_on_failure: true, per_run_timeout_seconds: 2400, stall_seconds: 1200, max_wall_seconds: 2000}
 matrix:
   training.params.candidate_pool_size: [2, 4, 8, 16]
-  runtime.num_processes: [1, 2, 4]
+  runtime.num_processes: [1, 2, 4, 8, 16]
+# np > pool duplicates np = pool (the :2685 clamp) -- see the RE-SHAPED block above.
+exclude:
+  - {training.params.candidate_pool_size: 2, runtime.num_processes: 4}
+  - {training.params.candidate_pool_size: 2, runtime.num_processes: 8}
+  - {training.params.candidate_pool_size: 2, runtime.num_processes: 16}
+  - {training.params.candidate_pool_size: 4, runtime.num_processes: 8}
+  - {training.params.candidate_pool_size: 4, runtime.num_processes: 16}
+  - {training.params.candidate_pool_size: 8, runtime.num_processes: 16}
 outputs: {suite_dir: null, aggregate: [csv, markdown]}
