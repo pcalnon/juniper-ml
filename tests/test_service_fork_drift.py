@@ -2,7 +2,12 @@
 
 ``juniper-data`` and ``juniper-cascor`` each maintain their own copy of the
 service-tier middleware and security code that ``juniper-service-core`` also
-ships. That is the single most productive defect shape in the 2026-08-14
+ships, and ``juniper-canopy`` maintains its own ``APIKeyAuth`` -- a fourth copy of
+the key-handling code, which this gate could not name until ``APD-ECO-008``
+(2026-09-22) and which is a site of the two key-handling guards only. The shared
+package's own copy is a site of those two guards as well (owner ruling
+2026-09-23): ``juniper-recurrence`` imports it, so a regression there reaches a
+service with no change of its own. That is the single most productive defect shape in the 2026-08-14
 ecosystem defect register: **a guard adopted in one copy of near-identical code
 and not in its siblings** (register §2.3, "Copy drift"). Five register findings
 are exactly this, and nothing in CI noticed any of them.
@@ -39,7 +44,8 @@ Scope, cross-repo gating, and cadence mirror ``test_ci_tools_drift.py`` /
 ``test_doc_tools_drift.py``: the sibling-walking assertions run under
 ``GITHUB_ACTIONS=true`` (the weekly ``docs-full-check`` job clones the siblings)
 or locally with ``JUNIPER_DRIFT_TEST_FORCE_LOCAL=1``. The registry's own
-structural checks and the matcher's negative control always run.
+structural checks, the matcher's negative control and the shared package's own
+sites (read from this checkout; ``SharedPackageGuardTest``) always run.
 """
 
 from __future__ import annotations
@@ -53,10 +59,32 @@ ENFORCED = "ENFORCED"
 KNOWN_GAP = "KNOWN_GAP"
 _VALID_STATUSES = frozenset({ENFORCED, KNOWN_GAP})
 
-# Sibling repos this gate reads. Kept small on purpose: these are the two
-# services that fork the service-core code. ``juniper-recurrence`` consumes the
-# shared package directly and so cannot drift this way.
-_FORK_REPOS = ("juniper-data", "juniper-cascor")
+# Repos a guard site may name. juniper-data and juniper-cascor fork the
+# service-core middleware and security code; juniper-canopy forks only
+# ``APIKeyAuth`` (APD-ECO-008), so it is a site of the two key-handling guards
+# and of nothing else. ``juniper-recurrence`` consumes the shared package
+# directly and so cannot drift this way -- which is exactly why the shared package
+# itself is a site: a regression there reaches recurrence silently.
+_FORK_REPOS = ("juniper-data", "juniper-cascor", "juniper-canopy", "juniper-ml")
+
+# The repo this file lives in. Its sites are read from THIS checkout, never from
+# ``<ecosystem root>/juniper-ml``: in a session worktree that path is the MAIN
+# checkout, so the gate would pass or fail on code the branch under test does not
+# contain. In CI the two coincide (``docs-full-check.yml`` checks juniper-ml out at
+# ``juniper-ml`` beside the clones), which is what would hide the mistake. Its sites
+# need no sibling, so they are also asserted on every run -- see
+# ``SharedPackageGuardTest``.
+_SELF_REPO = "juniper-ml"
+
+# The repos whose presence LOCATES the ecosystem root -- deliberately not all of
+# ``_FORK_REPOS``. Requiring every member means a single failed clone of one of
+# them finds no root at all, and a missing root is a SKIP: the whole gate, the
+# original two forks included, would go silently blind while the job stays green
+# (``docs-full-check.yml``'s clone step swallows a failed clone). Anchoring on the
+# original two keeps that failure LOUD instead: an absent canopy checkout fails
+# ``test_fork_files_named_by_the_registry_exist`` rather than skipping every
+# guard. The naive widening was caught by juniper-ml#2032's validation.
+_ROOT_ANCHOR_REPOS = ("juniper-data", "juniper-cascor")
 
 
 @dataclass(frozen=True)
@@ -95,6 +123,8 @@ _DATA_SECURITY = "juniper_data/api/security.py"
 _CASCOR_SECURITY = "src/api/security.py"
 _DATA_APP = "juniper_data/api/app.py"
 _CASCOR_APP = "src/api/app.py"
+_CANOPY_SECURITY = "src/security.py"
+_SERVICE_CORE_SECURITY = "juniper-service-core/juniper_service_core/security.py"
 
 
 GUARDS: tuple[Guard, ...] = (
@@ -133,8 +163,11 @@ GUARDS: tuple[Guard, ...] = (
     ),
     Guard(
         guard_id="blank-api-key-filter",
-        summary=("Blank / whitespace-only API keys must be filtered before auth is enabled, or an empty secret file enables auth that then accepts an empty X-API-Key -- strictly worse than auth being off, because the deployment believes it is protected."),
-        register_ids=("APD-DATA-003", "APD-CASCOR-006"),
+        summary=(
+            "Blank / whitespace-only API keys must be filtered before auth is enabled. Unfiltered in the two forks, an empty secret file enabled auth that then accepted an empty X-API-Key -- strictly worse than auth being off, because the deployment believed it was protected. "
+            "Unfiltered in canopy, a whitespace-only env key enabled auth on a key no ASCII header can carry, so HTTP refused every caller while the boot posture check reported the service OPEN: one rule, applied two ways by one service. The filter makes a blank key mean no key everywhere, as the posture check already said."
+        ),
+        register_ids=("APD-DATA-003", "APD-CASCOR-006", "APD-ECO-008"),
         status=ENFORCED,
         canonical="juniper-service-core/juniper_service_core/security.py",
         sites=(
@@ -149,12 +182,17 @@ GUARDS: tuple[Guard, ...] = (
             # shape instead of to an incidental call.
             ForkSite("juniper-data", _DATA_SECURITY, ("isinstance(k, str)", "k.strip()")),
             ForkSite("juniper-cascor", _CASCOR_SECURITY, ("isinstance(k, str)", "k.strip()")),
+            # APD-ECO-008: canopy's copy, fixed by juniper-canopy#660.
+            ForkSite("juniper-canopy", _CANOPY_SECURITY, ("isinstance(k, str)", "k.strip()")),
+            # The canonical copy itself (owner ruling 2026-09-23). Unwatched until then,
+            # although recurrence imports it and would inherit a regression unseen.
+            ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("isinstance(k, str)", "k.strip()")),
         ),
     ),
     Guard(
         guard_id="nonshortcircuit-key-compare",
         summary=("The API-key check walks EVERY configured key and accumulates into a flag, instead of `any(...)`, which stops at the first match. `compare_digest` already makes each individual comparison constant-time in the key's CONTENT; what `any()` leaks is the POSITION of the matching key within the iteration. juniper-data has never short-circuited; both forks did, and so did the shared package they were de-cascored from."),
-        register_ids=("APD-CASCOR-005",),
+        register_ids=("APD-CASCOR-005", "APD-ECO-008"),
         status=ENFORCED,
         canonical="juniper-data/juniper_data/api/security.py (juniper-service-core carries it too; the release train assigns its version)",
         sites=(
@@ -171,6 +209,12 @@ GUARDS: tuple[Guard, ...] = (
             # §5.3 trap).
             ForkSite("juniper-data", _DATA_SECURITY, ("matched = False", "return matched")),
             ForkSite("juniper-cascor", _CASCOR_SECURITY, ("matched = False", "return matched")),
+            # APD-ECO-008: canopy's copy, fixed by juniper-canopy#660. Canopy configures
+            # exactly one key, so this changes no timing there today; it holds the copy
+            # to the same shape as its siblings, which is the class this gate exists for.
+            ForkSite("juniper-canopy", _CANOPY_SECURITY, ("matched = False", "return matched")),
+            # The shared package, which recurrence imports (owner ruling 2026-09-23).
+            ForkSite(_SELF_REPO, _SERVICE_CORE_SECURITY, ("matched = False", "return matched")),
         ),
     ),
     Guard(
@@ -247,6 +291,15 @@ def guard_is_present(source: str, site: ForkSite) -> bool:
     return not markers_out_of_order(source, site)
 
 
+def _site_path(site: ForkSite, juniper_ml_root: Path, ecosystem_root: Path | None) -> Path | None:
+    """Where ``site``'s source lives: this checkout for ``_SELF_REPO``, else the sibling."""
+    if site.repo == _SELF_REPO:
+        return juniper_ml_root / site.path
+    if ecosystem_root is None:
+        return None
+    return ecosystem_root / site.repo / site.path
+
+
 def _find_ecosystem_root(juniper_ml_root: Path) -> Path | None:
     """Walk up looking for a directory holding the fork repos.
 
@@ -261,7 +314,7 @@ def _find_ecosystem_root(juniper_ml_root: Path) -> Path | None:
         if candidate == candidate.parent:
             break
         try:
-            if all((candidate / repo).is_dir() for repo in _FORK_REPOS):
+            if all((candidate / repo).is_dir() for repo in _ROOT_ANCHOR_REPOS):
                 return candidate
         except OSError:
             continue
@@ -288,6 +341,24 @@ class GuardRegistryStructureTest(unittest.TestCase):
                         self.assertTrue(marker.strip(), "an empty marker matches everything")
                     if site.ordered:
                         self.assertGreaterEqual(len(site.markers), 2, "an ordered site needs two markers; one can never be out of order, so the flag would be decorative")
+
+    def test_root_anchors_are_fork_repos(self):
+        """The root is located by a SUBSET of the fork repos, never by a repo no site can name."""
+        self.assertTrue(_ROOT_ANCHOR_REPOS, "an empty anchor set would treat any directory as the root")
+        self.assertLessEqual(set(_ROOT_ANCHOR_REPOS), set(_FORK_REPOS))
+        # The root is found by walking UP from this checkout, so this repo can never
+        # be one of the siblings that locate it.
+        self.assertNotIn(_SELF_REPO, _ROOT_ANCHOR_REPOS)
+
+    def test_self_sites_resolve_to_this_checkout(self):
+        """A juniper-ml site reads THIS tree, whatever the ecosystem root holds."""
+        site = ForkSite(_SELF_REPO, "x.py", ("alpha",))
+        here, elsewhere = Path("/checkout/under/test"), Path("/ecosystem")
+        self.assertEqual(_site_path(site, here, elsewhere), here / "x.py")
+        self.assertEqual(_site_path(site, here, None), here / "x.py")
+        sibling = ForkSite("juniper-data", "x.py", ("alpha",))
+        self.assertEqual(_site_path(sibling, here, elsewhere), elsewhere / "juniper-data" / "x.py")
+        self.assertIsNone(_site_path(sibling, here, None))
 
     def test_register_ids_look_like_register_ids(self):
         for guard in GUARDS:
@@ -338,9 +409,9 @@ class ServiceForkDriftTest(unittest.TestCase):
 
     def _read_site(self, site: ForkSite) -> str | None:
         """Return the site's source, or None when it cannot be read."""
-        if self.ecosystem_root is None:
+        path = _site_path(site, self.juniper_ml_root, self.ecosystem_root)
+        if path is None:
             return None
-        path = self.ecosystem_root / site.repo / site.path
         try:
             return path.read_text(encoding="utf-8")
         except OSError:
@@ -350,7 +421,7 @@ class ServiceForkDriftTest(unittest.TestCase):
         if os.environ.get("GITHUB_ACTIONS") != "true" and not os.environ.get("JUNIPER_DRIFT_TEST_FORCE_LOCAL"):
             self.skipTest("skipping local cross-repo lint (set JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 to override; siblings must be `git pull`ed to origin/main first)")
         if self.ecosystem_root is None:
-            self.skipTest(f"ecosystem root not found -- need sibling checkouts of {', '.join(_FORK_REPOS)}")
+            self.skipTest(f"ecosystem root not found -- need sibling checkouts of {', '.join(_ROOT_ANCHOR_REPOS)}")
 
     def test_enforced_guards_are_present_in_every_fork(self):
         """An ENFORCED guard missing from a fork is a silent regression."""
@@ -397,10 +468,40 @@ class ServiceForkDriftTest(unittest.TestCase):
         for guard in GUARDS:
             for site in guard.sites:
                 with self.subTest(guard=guard.guard_id, repo=site.repo):
-                    path = self.ecosystem_root / site.repo / site.path
+                    path = _site_path(site, self.juniper_ml_root, self.ecosystem_root)
                     self.assertTrue(
                         path.is_file(),
-                        f"{site.repo}/{site.path} does not exist. The registry is stale: " f"until the path is corrected, guard '{guard.guard_id}' is checking nothing.",
+                        f"{site.repo}/{site.path} does not exist. Either the registry is stale -- " f"until the path is corrected, guard '{guard.guard_id}' is checking nothing -- or the " f"{site.repo} checkout is missing (docs-full-check.yml's clone step swallows a failed clone). " f"This fails rather than skips on purpose: see _ROOT_ANCHOR_REPOS.",
+                    )
+
+
+class SharedPackageGuardTest(unittest.TestCase):
+    """The shared package's own sites, asserted on EVERY run.
+
+    They need no sibling checkout. Gating them behind ``_require_cross_repo`` with the
+    fork sites would make a regression in the canonical copy wait for the weekly
+    ``docs-full-check`` job, and juniper-recurrence imports that copy, so the
+    regression could ship in the meantime.
+    """
+
+    def test_guards_hold_in_the_shared_package(self):
+        juniper_ml_root = Path(__file__).resolve().parent.parent
+        self_sites = [(guard, site) for guard in GUARDS for site in guard.sites if site.repo == _SELF_REPO]
+        self.assertTrue(self_sites, "no guard names the shared package, so this test would check nothing")
+        for guard, site in self_sites:
+            with self.subTest(guard=guard.guard_id):
+                path = _site_path(site, juniper_ml_root, None)
+                self.assertTrue(path.is_file(), f"{site.path} does not exist in this checkout; until the registry is corrected, guard '{guard.guard_id}' checks nothing in the shared package.")
+                source = path.read_text(encoding="utf-8")
+                if guard.status == ENFORCED:
+                    self.assertTrue(
+                        guard_is_present(source, site),
+                        f"Guard '{guard.guard_id}' is missing from the shared package's {site.path} " f"(markers {list(site.markers)}{', in order' if site.ordered else ''}). juniper-recurrence imports " f"this copy, so the regression reaches it without any change of its own. " f"Register: {', '.join(guard.register_ids)}. What it protects: {guard.summary}",
+                    )
+                else:
+                    self.assertFalse(
+                        guard_is_present(source, site),
+                        f"Guard '{guard.guard_id}' now appears IMPLEMENTED in the shared package's " f"{site.path}, but the registry still lists it as a KNOWN_GAP. Promote the row to ENFORCED.",
                     )
 
 
