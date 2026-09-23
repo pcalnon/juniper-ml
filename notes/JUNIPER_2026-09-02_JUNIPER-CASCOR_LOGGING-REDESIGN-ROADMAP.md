@@ -314,25 +314,44 @@ harness, **dropping P2 does not drop P3's guardrail**.
 | **P2.2** Hoist the formatter closures | **Six** closures per *emitted* record plus **one per call**, against the two the design names: `_logging_message` ×2 (`logger.py:521,522`), a `_frame_info` and a `_date` closure inside **each** of `_console_dict` (`:302,303`) and `_file_dict` (`:320,321`), and `_get_log_level`'s lambda (`:391`, built at `:516`) — the last **before the filter**, so it is the most frequent of the seven. The two named in F-4a are the two *cheapest* | P0.4 |
 | **P2.3** Widen the invalidation set to match | The `:459` closure captures `formatter_string` and `dict_method` by value and is hoistable; but the dict builders read `cls._date_format`, `cls._field_names_*`, `cls._frame_file/_line/_func` and `cls._frame_unknown` **at call time**. Hoisting far enough to matter widens invalidation to all of them | P2.2 |
 
-**Why P2.1(c) matters.** `test_logger_frame_resolution.py` calls `_frame_info` **directly** — never
-through an emit method — and compares it against `getouterframes(frame)[1]`. Making `_frame_info`
-walk two hops fails `TestFrameResolutionEquivalence` (Lane B1 of the 2026-09-22 validation reports
-3 failures there and none in the other class, and that only the depth-0 and depth-1 probes can see
-a hop-count error — reported, not re-derived). Rewriting the test to accommodate the change would
-weaken it.
+**Why P2.1(c) matters.** `test_logger_frame_resolution.py` calls `_frame_info` **directly** (`:71`,
+`:90`, `:104`, `:109`) and compares it against `getouterframes(frame)[1]`. Making `_frame_info` walk
+two hops breaks all four assertions — and §5's SWOT names that suite as the step's *only* detector,
+because no consumer parses the `file:func:line` field (RECON N-4). Rewriting the test to accommodate
+the change would leave the step with no detector at all.
 
-> **CORRECTION 2026-09-23 — that suite is NOT P2.1's detector, and the SWOT below was wrong to
-> call it the "only" one.** Because it never drives an emit method, it passes both plausible P2.1
-> mistakes: capturing the frame inside `_log_at_level` **without** `.f_back` (every record then
-> names `logger.py`) and with one hop too many. Probed independently by Lanes B1 and B2 of the
-> 2026-09-22 handoff's validation: 6/6 pass in both variants. The detector is P0.4's
-> `test_path_a_resolves_the_real_caller` in
-> [cascor#680](https://github.com/pcalnon/juniper-cascor/pull/680), which drives the real emit
-> path in a child process and checks every record's `func:LINE` against the call site — mutation-
-> checked to fail both mistakes and to pass P2.1 done as prescribed. Also wrong above: "no consumer
-> parses the `file:func:line` field" — three juniper-ml scripts anchor on `func:LINE]` (RECON N-4's
-> correction). Earlier line citations (`:71`, `:90`, `:104`, `:109`) were stale; the calls sit at
-> `:79`, `:98`, `:112`, `:117` at cascor `0d2d826`.
+> **CORRECTION 2026-09-23 — the paragraph above is right that the suite calls `_frame_info`
+> directly, and wrong about what follows from it.** P2.1(c)'s prescription itself stands.
+>
+> - **That suite is NOT P2.1's detector, and the SWOT below was wrong to call it the "only" one.**
+>   Because it never drives an emit method, it passes both plausible P2.1 mistakes: capturing the
+>   frame inside `_log_at_level` **without** `.f_back` (every record then names `logger.py`) and
+>   with one hop too many. Lanes B1 and B2 of the 2026-09-22 handoff's validation probed this
+>   independently: 6/6 pass in both variants. The detector is P0.4's
+>   `test_path_a_resolves_the_real_caller` in
+>   [cascor#680](https://github.com/pcalnon/juniper-cascor/pull/680). It drives the real emit path
+>   in a child process and checks every record's `func:LINE` against the call site. It is
+>   mutation-checked to fail both mistakes and to pass P2.1 done as prescribed. So rewriting the
+>   suite to accommodate a two-hop `_frame_info` would *weaken* it; it would not leave the step
+>   without a detector.
+> - **"Breaks all four assertions" is not what was observed.** A two-hop `_frame_info` fails only
+>   `TestFrameResolutionEquivalence`. Lane B1 reports 3 failures there and none in the other class,
+>   and says that only the depth-0 and depth-1 probes can see a hop-count error. This is reported,
+>   not re-derived.
+> - **"No consumer parses the `file:func:line` field" is wrong.** Three juniper-ml scripts anchor
+>   on `func:LINE]` (RECON N-4's correction).
+> - **The line citations were stale.** The four calls sit at `:79`, `:98`, `:112`, `:117` at cascor
+>   `0d2d826`.
+> - **Forward hazard for P4. Lane B1 reported it, and the first fix pass dropped it.** P2.1 makes
+>   caller resolution depend on **call depth**: `_log_at_level` passes `cls._frm().f_back` because
+>   exactly one emit method sits between it and the user. The ruled P4 prototype adds a hop, since
+>   `BoundLogger.info()` calls `self._emit(...)`
+>   (`util/ad-hoc/2026-09-10_p41_a2bind_prototype.py:66-75`). If P4's `_emit` routes into
+>   `_log_at_level`, every record names the `BoundLogger` method rather than the user, which is the
+>   forgot-`.f_back` failure. `test_logger_frame_resolution.py` passes that failure, and cascor#680's
+>   emitter drives only `Logger.<level>`, so **neither detector would see it**. The structure was
+>   re-derived from the prototype. **P4.1 must extend cascor#680's emitter to emit through the
+>   `BoundLogger` path** (or resolve the frame from `_emit`'s own depth) before it ships.
 
 > **CORRECTION 2026-09-23 — P2.2 is SIX closures now, all after the filter.** The seventh, the
 > `_get_log_level` lambda "built before the filter", left the emit path with P1.1
@@ -475,6 +494,16 @@ per-logger config entry → global config → default.
 `_level_logger_name`, `_level_logger_config`, `_level_number_cache` — is a class attribute.
 **Per-instance levels therefore require making `isEnabledFor` an instance method, which breaks every
 `Logger.trace(...)` classmethod call site.** That is the decision, and it sets the phase's size.
+
+> **ADDED 2026-09-23 — P4.1 carries a frame-depth obligation once P2.1 has shipped.** The ruled
+> prototype's public methods call `self._emit(...)`
+> (`util/ad-hoc/2026-09-10_p41_a2bind_prototype.py:66-75`). That is one hop more than the classmethod
+> path, whose caller resolution P2.1 ties to call depth. If `_emit` routes into `_log_at_level`, every
+> record names the `BoundLogger` method rather than the user. Neither `test_logger_frame_resolution.py`
+> nor cascor#680's emitter (which drives only `Logger.<level>`) would see it. **Before P4.1 ships,
+> extend cascor#680's emitter to emit through the `BoundLogger` path.** The mechanism is in §5's
+> P2.1(c) CORRECTION block. Lane B1 of the 2026-09-22 handoff's validation reported the hazard, and
+> its structure was re-derived from the prototype.
 
 **Acceptance.** A per-logger level set by env and by config, demonstrated **in a forkserver child**.
 

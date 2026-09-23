@@ -455,3 +455,12 @@ lost.
 - **What this evidence cannot support**: any cost claim from a profiled share (row 8); any
   statement that P2.1 is SAFE beyond "the harness would catch a frame-depth error on the eight emit
   methods" — cascor#680 checks Path A's emit methods, not every path to `_frame_info`.
+  - **The concrete case: B1's P4 forward hazard.** The first fix pass dropped it. It was restored
+    2026-09-23 in the roadmap's P2.1(c) CORRECTION block
+    (`notes/JUNIPER_2026-09-02_JUNIPER-CASCOR_LOGGING-REDESIGN-ROADMAP.md` §5).
+  - **The mechanism.** The ruled P4 prototype puts `BoundLogger._emit` between the public method and
+    emission (`util/ad-hoc/2026-09-10_p41_a2bind_prototype.py:66-75`). After P2.1 that extra hop
+    would mis-attribute every record, and neither detector drives that path.
+  - **The obligation.** P4.1 must extend cascor#680's emitter before it ships.
+  - **Why it belongs here.** It is residue loss of the kind the procedure warns about: a lane
+    reported it, the reconciliation read it, and no document carried it.
