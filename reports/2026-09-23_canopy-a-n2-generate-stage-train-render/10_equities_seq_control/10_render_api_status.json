@@ -1,0 +1,34 @@
+{
+  "step": "render_api_status",
+  "t_utc": "2026-09-23T19:54:40.671Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/status",
+  "status": 200,
+  "response": {
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": true,
+    "failed": false,
+    "fsm_status": "trained",
+    "phase": "complete",
+    "network_connected": true,
+    "monitoring_active": false,
+    "pending_dataset": null,
+    "current_dataset": {
+      "dataset_type": "equities_seq",
+      "symbols": [
+        "AAPL",
+        "MSFT",
+        "GOOGL",
+        "AMZN",
+        "NVDA"
+      ],
+      "regression_target": "return",
+      "fundamentals_fill": "drop"
+    },
+    "current_epoch": 1,
+    "completion_reason": "converged"
+  },
+  "elapsed_s": 0.006
+}

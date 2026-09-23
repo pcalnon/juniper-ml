@@ -1,0 +1,78 @@
+{
+  "ids_before": 9,
+  "ids_after": 10,
+  "new_ids": [
+    "equities_seq-5.0.0-c7916412c2344e07"
+  ],
+  "meta": {
+    "equities_seq-5.0.0-c7916412c2344e07": {
+      "url": "http://127.0.0.1:8111/v1/datasets/equities_seq-5.0.0-c7916412c2344e07",
+      "status": 200,
+      "elapsed_s": 0.007,
+      "body": {
+        "dataset_id": "equities_seq-5.0.0-c7916412c2344e07",
+        "generator": "equities_seq",
+        "generator_version": "5.0.0",
+        "params": {
+          "symbols": [
+            "AAPL",
+            "MSFT",
+            "GOOGL",
+            "AMZN",
+            "NVDA"
+          ],
+          "start_date": "2000-01-01",
+          "end_date": null,
+          "purchase_date": "2000-01-03",
+          "basis_price_field": "close",
+          "fundamentals_fill": "drop",
+          "regression_target": "return",
+          "week52_window": 252,
+          "normalize_features": false,
+          "max_symbols": 14,
+          "incomplete_rows": null,
+          "allow_truncation": false,
+          "use_cache": true,
+          "train_ratio": 0.8,
+          "val_ratio": 0.1,
+          "test_ratio": 0.1,
+          "seed": 42,
+          "lookback": 64
+        },
+        "n_samples": 19530,
+        "n_features": 15,
+        "task_type": "classification",
+        "n_classes": 2,
+        "n_train": 15561,
+        "n_val": 1986,
+        "n_test": 1983,
+        "class_distribution": {
+          "0": 9237,
+          "1": 10293
+        },
+        "sequence": true,
+        "lookback": 64,
+        "time_unit": "calendar_days",
+        "dt_scaling": null,
+        "target_scaling": null,
+        "truncation": null,
+        "data_quality": null,
+        "artifact_formats": [
+          "npz"
+        ],
+        "created_at": "2026-09-23T19:53:28.381226Z",
+        "checksum": "5df27164ae8cb3f2e2fc77393e6719b86dcb14702a2713bf8fb3b2c9a8675f6d",
+        "dataset_name": null,
+        "dataset_version": null,
+        "parent_dataset_id": null,
+        "description": null,
+        "created_by": null,
+        "tags": [],
+        "ttl_seconds": null,
+        "expires_at": null,
+        "last_accessed_at": "2026-09-23T19:53:29.694783Z",
+        "access_count": 1
+      }
+    }
+  }
+}

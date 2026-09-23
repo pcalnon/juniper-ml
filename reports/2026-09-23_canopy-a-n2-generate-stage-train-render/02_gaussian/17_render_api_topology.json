@@ -1,0 +1,607 @@
+{
+  "step": "render_api_topology",
+  "t_utc": "2026-09-23T19:38:13.695Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/topology",
+  "status": 200,
+  "response": {
+    "input_units": 2,
+    "output_units": 2,
+    "hidden_units": 11,
+    "nodes": [
+      {
+        "id": "input_0",
+        "type": "input",
+        "layer": 0
+      },
+      {
+        "id": "input_1",
+        "type": "input",
+        "layer": 0
+      },
+      {
+        "id": "hidden_0",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_1",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_2",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_3",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_4",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_5",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_6",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_7",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_8",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_9",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "hidden_10",
+        "type": "hidden",
+        "layer": 1
+      },
+      {
+        "id": "output_0",
+        "type": "output",
+        "layer": 2
+      },
+      {
+        "id": "output_1",
+        "type": "output",
+        "layer": 2
+      }
+    ],
+    "connections": [
+      {
+        "from": "input_0",
+        "to": "hidden_0",
+        "weight": -0.4384288489818573
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_0",
+        "weight": -0.23589955270290375
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_1",
+        "weight": -0.46439629793167114
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_1",
+        "weight": -0.7370306849479675
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_1",
+        "weight": -1.3418794870376587
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_2",
+        "weight": -0.5521107316017151
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_2",
+        "weight": 0.8595265746116638
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_2",
+        "weight": -1.3325166702270508
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_2",
+        "weight": 1.7255511283874512
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_3",
+        "weight": -0.462988942861557
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_3",
+        "weight": 0.11567649990320206
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_3",
+        "weight": -0.8807124495506287
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_3",
+        "weight": -0.5725736618041992
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_3",
+        "weight": -1.1360880136489868
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_4",
+        "weight": -0.8887434601783752
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_4",
+        "weight": 0.6693445444107056
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_4",
+        "weight": -0.43400976061820984
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_4",
+        "weight": -1.222193717956543
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_4",
+        "weight": -1.1455585956573486
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_4",
+        "weight": -0.9809474945068359
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_5",
+        "weight": -1.341568112373352
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_5",
+        "weight": 0.9827576279640198
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_5",
+        "weight": 0.5758453011512756
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_5",
+        "weight": 0.019755592569708824
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_5",
+        "weight": 0.01245872676372528
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_5",
+        "weight": -0.41105303168296814
+      },
+      {
+        "from": "hidden_4",
+        "to": "hidden_5",
+        "weight": 0.516693115234375
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_6",
+        "weight": -0.36854660511016846
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_6",
+        "weight": 0.7045003771781921
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_6",
+        "weight": -0.9147682189941406
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_6",
+        "weight": 0.9336864948272705
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_6",
+        "weight": -0.5680221915245056
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_6",
+        "weight": -1.0324093103408813
+      },
+      {
+        "from": "hidden_4",
+        "to": "hidden_6",
+        "weight": -0.6443849802017212
+      },
+      {
+        "from": "hidden_5",
+        "to": "hidden_6",
+        "weight": -0.7149382829666138
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_7",
+        "weight": 0.8104552626609802
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_7",
+        "weight": -0.43498483300209045
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_7",
+        "weight": 0.28070804476737976
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_7",
+        "weight": 0.7624484896659851
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_7",
+        "weight": 0.09006235748529434
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_7",
+        "weight": 0.20031219720840454
+      },
+      {
+        "from": "hidden_4",
+        "to": "hidden_7",
+        "weight": -0.19186504185199738
+      },
+      {
+        "from": "hidden_5",
+        "to": "hidden_7",
+        "weight": 1.1126738786697388
+      },
+      {
+        "from": "hidden_6",
+        "to": "hidden_7",
+        "weight": 0.2994338572025299
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_8",
+        "weight": -0.1901814490556717
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_8",
+        "weight": 0.301260381937027
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_8",
+        "weight": 0.2680808901786804
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_8",
+        "weight": 0.1363653987646103
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_8",
+        "weight": -0.24306388199329376
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_8",
+        "weight": 0.3362581431865692
+      },
+      {
+        "from": "hidden_4",
+        "to": "hidden_8",
+        "weight": 0.1969926357269287
+      },
+      {
+        "from": "hidden_5",
+        "to": "hidden_8",
+        "weight": -0.1381988525390625
+      },
+      {
+        "from": "hidden_6",
+        "to": "hidden_8",
+        "weight": 0.17632098495960236
+      },
+      {
+        "from": "hidden_7",
+        "to": "hidden_8",
+        "weight": 0.37711745500564575
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_9",
+        "weight": -0.4651627540588379
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_9",
+        "weight": -0.27368611097335815
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_9",
+        "weight": -0.1984931379556656
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_9",
+        "weight": -1.03512442111969
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_9",
+        "weight": -0.8609764575958252
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_9",
+        "weight": -1.1530183553695679
+      },
+      {
+        "from": "hidden_4",
+        "to": "hidden_9",
+        "weight": -0.3808284103870392
+      },
+      {
+        "from": "hidden_5",
+        "to": "hidden_9",
+        "weight": 0.4316178560256958
+      },
+      {
+        "from": "hidden_6",
+        "to": "hidden_9",
+        "weight": 0.3232521712779999
+      },
+      {
+        "from": "hidden_7",
+        "to": "hidden_9",
+        "weight": 0.7258375287055969
+      },
+      {
+        "from": "hidden_8",
+        "to": "hidden_9",
+        "weight": -0.27274516224861145
+      },
+      {
+        "from": "input_0",
+        "to": "hidden_10",
+        "weight": -1.9317840337753296
+      },
+      {
+        "from": "input_1",
+        "to": "hidden_10",
+        "weight": 0.0711398497223854
+      },
+      {
+        "from": "hidden_0",
+        "to": "hidden_10",
+        "weight": 0.5379456877708435
+      },
+      {
+        "from": "hidden_1",
+        "to": "hidden_10",
+        "weight": -0.03308907523751259
+      },
+      {
+        "from": "hidden_2",
+        "to": "hidden_10",
+        "weight": -0.037396542727947235
+      },
+      {
+        "from": "hidden_3",
+        "to": "hidden_10",
+        "weight": 0.0622958205640316
+      },
+      {
+        "from": "hidden_4",
+        "to": "hidden_10",
+        "weight": 0.13096801936626434
+      },
+      {
+        "from": "hidden_5",
+        "to": "hidden_10",
+        "weight": 0.565106213092804
+      },
+      {
+        "from": "hidden_6",
+        "to": "hidden_10",
+        "weight": -0.05969209223985672
+      },
+      {
+        "from": "hidden_7",
+        "to": "hidden_10",
+        "weight": -0.35791727900505066
+      },
+      {
+        "from": "hidden_8",
+        "to": "hidden_10",
+        "weight": 0.22676217555999756
+      },
+      {
+        "from": "hidden_9",
+        "to": "hidden_10",
+        "weight": -0.14832176268100739
+      },
+      {
+        "from": "input_0",
+        "to": "output_0",
+        "weight": 0.004613995086401701
+      },
+      {
+        "from": "input_1",
+        "to": "output_0",
+        "weight": -0.08319848775863647
+      },
+      {
+        "from": "hidden_0",
+        "to": "output_0",
+        "weight": -0.2502363622188568
+      },
+      {
+        "from": "hidden_1",
+        "to": "output_0",
+        "weight": -0.039400361478328705
+      },
+      {
+        "from": "hidden_2",
+        "to": "output_0",
+        "weight": 0.0901806503534317
+      },
+      {
+        "from": "hidden_3",
+        "to": "output_0",
+        "weight": 0.2316109985113144
+      },
+      {
+        "from": "hidden_4",
+        "to": "output_0",
+        "weight": 0.08426675945520401
+      },
+      {
+        "from": "hidden_5",
+        "to": "output_0",
+        "weight": -0.21605969965457916
+      },
+      {
+        "from": "hidden_6",
+        "to": "output_0",
+        "weight": 0.06524857133626938
+      },
+      {
+        "from": "hidden_7",
+        "to": "output_0",
+        "weight": -0.046083830296993256
+      },
+      {
+        "from": "hidden_8",
+        "to": "output_0",
+        "weight": 0.01138780266046524
+      },
+      {
+        "from": "hidden_9",
+        "to": "output_0",
+        "weight": -0.8372131586074829
+      },
+      {
+        "from": "hidden_10",
+        "to": "output_0",
+        "weight": -0.13398976624011993
+      },
+      {
+        "from": "input_0",
+        "to": "output_1",
+        "weight": 0.00175760337151587
+      },
+      {
+        "from": "input_1",
+        "to": "output_1",
+        "weight": 0.0817977637052536
+      },
+      {
+        "from": "hidden_0",
+        "to": "output_1",
+        "weight": 0.25274404883384705
+      },
+      {
+        "from": "hidden_1",
+        "to": "output_1",
+        "weight": 0.050348591059446335
+      },
+      {
+        "from": "hidden_2",
+        "to": "output_1",
+        "weight": -0.08337108790874481
+      },
+      {
+        "from": "hidden_3",
+        "to": "output_1",
+        "weight": -0.22463157773017883
+      },
+      {
+        "from": "hidden_4",
+        "to": "output_1",
+        "weight": -0.08665946871042252
+      },
+      {
+        "from": "hidden_5",
+        "to": "output_1",
+        "weight": 0.2135011851787567
+      },
+      {
+        "from": "hidden_6",
+        "to": "output_1",
+        "weight": -0.07996843010187149
+      },
+      {
+        "from": "hidden_7",
+        "to": "output_1",
+        "weight": 0.03881502151489258
+      },
+      {
+        "from": "hidden_8",
+        "to": "output_1",
+        "weight": 0.012082469649612904
+      },
+      {
+        "from": "hidden_9",
+        "to": "output_1",
+        "weight": 0.8635345697402954
+      },
+      {
+        "from": "hidden_10",
+        "to": "output_1",
+        "weight": 0.13052669167518616
+      }
+    ]
+  },
+  "elapsed_s": 0.011
+}

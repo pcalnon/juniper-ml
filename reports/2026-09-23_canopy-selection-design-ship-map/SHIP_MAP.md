@@ -7,7 +7,8 @@ This is a read-only research agent's report, **archived verbatim**. The agent ma
 §5 guardrail and §7 row of `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`
 to the juniper-canopy PR that shipped it, verified in source on canopy `origin/main` (`2f973ca2`,
 then `7950bf9e`). It also listed every line of that design that `main` contradicts. It is the input
-for reconciling the design document. **Nothing here has been applied to the design yet.**
+for reconciling the design document. **Applied to the design on 2026-09-23** (see the second set of
+archivist's notes at the end, which also records where this report turned out wrong).
 
 Line numbers are as the agent read them, in the design at juniper-ml `91da4b0e` and in canopy at
 `7950bf9e`. Both drift, so locate by symbol. The mutants (M1–M20) ran on `git archive` copies
@@ -116,3 +117,30 @@ I changed no files in any repository. Five untracked `util/ad-hoc/` entries appe
 - The mutants M1–M20 were run by the agent and are **not independently reproduced**. Treat each "caught" or
   "not caught" as one agent's measurement, not a verified property. M6, "§4.5 has no test", is the one
   worth confirming first, since it names an untested shipped behaviour.
+
+**Archivist's notes, second set (2026-09-23, after the reconciliation).**
+
+- **Applied.** `notes/JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md` now carries a
+  status line under every §4.x heading, the §5 guardrail statuses, §7's shipped record, and a dated
+  correction under each line in section 2 above. The original text is kept, with the note after it.
+- **Two mutants reproduced**, with `util/ad-hoc/2026-09-23_mutation_check_m1_m6.py` on canopy
+  `48074653`:
+  - **M6** holds. With the restart modal regated against `DEFAULT_MODEL_KEY` instead of the selected model,
+    canopy's **whole CI unit lane** passed with 0 failures. canopy#675 adds
+    `TestX2RestartModalIsGatedAgainstTheSelectedModel`, which fails twice under M6.
+  - **M1** holds. Reverting the dataset dropdown's `clearable=True` fails only
+    `test_g2_either_clear_alone_opens_the_graph[withheld1]`.
+
+  The other mutants remain unreproduced.
+- **Where this report is wrong or out of date:**
+  - Section 2's L336-341 item says "the gate handler takes `generators=` (#595)". That is wrong: it
+    came with canopy#594, absent at `aa611561` and present at `7bc53cca`.
+  - The §4.3 "Y7 not shipped" finding and the OQ-N2 row are superseded. canopy#671 (`7cd8a9d4`) and
+    canopy#667 (`2c56e8a3`) both merged on 2026-09-23.
+  - Section 3's "Latest" badge "still v0.13.0" is out of date. `gh release list` now shows v0.15.0
+    as Latest. No release contains juniper-data#421; that part still holds.
+  - "The siblings use the alias only to look up schemas" is imprecise. `_apply_dataset_handler` also
+    uses it to choose the spiral branch.
+- **Verified since**, where the report had said it had not checked:
+  - juniper-data#402 moved `arc_agi` to `structured`.
+  - Y1 is fixed in source.

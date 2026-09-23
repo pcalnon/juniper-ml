@@ -1,0 +1,8 @@
+2026-09-23 14:30:47,288 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:30:47,294 [ERROR] juniper_canopy.backend.cascor_service_adapter: Failed to update cascor params via REST: No network created
+2026-09-23 14:30:47 | system | WARNING | Backend parameter application failed: No network created
+2026-09-23 14:30:47,294 [WARNING] system: Backend parameter application failed: No network created
+2026-09-23 14:30:47,306 [WARNING] juniper_canopy.backend.cascor_service_adapter: Failed to fetch canopy params: No network created
+2026-09-23 14:31:30,731 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 1468 frame(s) in last 60s (metrics=1009, state=11, topology=0, candidate_progress=448); status=healthy; last-frame-age=0.0s; reconnects=0
+2026-09-23 14:32:30,734 [INFO] juniper_canopy.backend.cascor_service_adapter: Metrics relay summary: 3624 frame(s) in last 60s (metrics=1804, state=28, topology=0, candidate_progress=1792); status=healthy; last-frame-age=0.2s; reconnects=0
+2026-09-23 14:33:19,387 [INFO] juniper_canopy.backend.cascor_service_adapter: Training complete event received from cascor

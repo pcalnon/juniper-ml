@@ -1,0 +1,178 @@
+# http://127.0.0.1:8061/dashboard/ status=200 captured 80.4s after navigation
+
+Juniper Canopy Dashboard
+
+Real-time monitoring for Cascade Correlation Neural Networks
+
+🌙
+●
+Status: Completed — converged
+|
+Phase: Complete
+|
+Step: 1
+|
+Latency: 4ms
+WS: Connected
+Training Controls
+▶ Start Training
+⏸ Pause Training
+⏯ Resume Training
+⏹ Stop Training
+↻ Reset Training
+Meta Parameters
+▼Neural Network
+
+Maximum Iterations:
+
+Maximum Total Epochs:
+
+Output Epochs (per pass):
+
+Output Weight Init:
+
+Zero
+
+Output Optimizer:
+
+Adam
+
+Activation Function:
+
+Tanh
+
+Learning Rate:
+
+Maximum Hidden Units:
+
+▼Multi-Node Layers
+Enable multi-node layers
+▼Network Growth Triggers
+Preset Epochs
+Convergence Detection
+
+Number of Epochs:
+
+Convergence Threshold:
+
+Patience (epochs):
+
+Model:
+
+Active: Recurrence (LMU)
+▸ change
+rank-3 (sequence) models only
+▼Current Dataset — Mackey-Glass (sequence)
+
+Type:
+
+Mackey-Glass (sequence)
+
+N Steps:
+
+Length T of the raw series before windowing.
+
+Lookback:
+
+Window length L (number of steps per sequence window).
+
+Horizon:
+
+Forecast horizon h (the target is h steps after the window end).
+
+Sample Dt:
+
+Constant per-step elapsed time (the regular Δt), measured in the generator's time_unit.
+
+Scaling:
+
+identity
+
+Advisory scaling reported in DatasetMeta: 'identity' (raw, no transform) or 'standardize' (train-split mean/std/min/max of dt + target). The NPZ stays RAW either way.
+
+Tau:
+
+Delay τ in time_unit; the canonical chaotic regime uses 17.
+
+Beta:
+
+Production coefficient β.
+
+Gamma:
+
+Decay coefficient γ.
+
+N Exp:
+
+Nonlinearity exponent n.
+
+X0:
+
+Constant history value x(t)=x0 for t in [-τ, 0].
+
+Init Noise Std:
+
+Std of an optional seeded Gaussian perturbation added to the history block; 0 yields an exact deterministic init. THIS IS THE KNOB THAT DECIDES WHETHER ``seed`` HAS ANY EFFECT: the seed is consumed only inside ``if init_noise_std > 0``, so at 0 every seed produces byte-identical output. Defaulted from DEFAULT_MACKEY_GLASS_INIT_NOISE_STD (juniper-data#319) so a deployment can make this generator seed-sensitive without editing code.
+
+Discard:
+
+Transient steps to integrate and drop before collecting n_steps (settles onto the attractor).
+
+Apply DatasetLive Dataset Switch
+▶Candidate Nodes
+Apply Parameters
+Network Information
+
+Input Nodes: 0
+
+Hidden Units: 0
+
+Output Nodes: 0
+
+Training Step: 1
+
+Epoch (in phase): —
+
+Iteration: —
+
+Training Phase: Idle
+
+Network Connected: Yes
+
+Monitoring: Inactive
+
+▶Network Information: Details
+Experimental Functions
+Enable Experimental Functions
+Training Metrics
+Dataset View
+Parameters
+Snapshots
+Replay
+Network Editor
+Redis
+Cassandra
+Tutorial
+About
+Training MetricsStatus: Idle
+💾 Save
+|
+Select layout...
+📂 Load
+🗑️
+Display Mode:
+Sliding Window
+Full History
+Between Hidden Units
+Window:
+Recurrence (LMU) — final regression metrics
+R²
+0.9999
+RMSE
+0.0024
+MSE
+0.0000
+MAE
+0.0019
+Loss
+0.0000

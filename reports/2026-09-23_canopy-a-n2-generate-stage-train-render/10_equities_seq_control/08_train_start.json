@@ -1,0 +1,30 @@
+{
+  "step": "train_start",
+  "t_utc": "2026-09-23T19:53:25.273Z",
+  "method": "POST",
+  "url": "http://127.0.0.1:8061/api/train/start",
+  "request_body": {
+    "dataset": {
+      "generator": "equities_seq",
+      "params": {
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "GOOGL",
+          "AMZN",
+          "NVDA"
+        ],
+        "regression_target": "return",
+        "fundamentals_fill": "drop"
+      }
+    }
+  },
+  "status": 200,
+  "response": {
+    "status": "started",
+    "ok": true,
+    "is_training": true,
+    "message": "recurrence fit started"
+  },
+  "elapsed_s": 0.01
+}

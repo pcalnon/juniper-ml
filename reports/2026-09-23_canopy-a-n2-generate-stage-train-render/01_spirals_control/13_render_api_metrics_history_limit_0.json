@@ -1,0 +1,455 @@
+{
+  "step": "render_api_metrics_history_limit_0",
+  "t_utc": "2026-09-23T19:33:20.536Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/metrics/history?limit=0",
+  "status": 200,
+  "response": {
+    "history": {
+      "_truncated_by_a_n2_slim": true,
+      "count": 4422,
+      "first_3": [
+        {
+          "epoch": 1,
+          "metrics": {
+            "loss": 0.7876380681991577,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 0
+          },
+          "phase": "output",
+          "timestamp": "2026-09-23T14:30:50.404577",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 26,
+          "metrics": {
+            "loss": 0.24140405654907227,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 0
+          },
+          "phase": "output",
+          "timestamp": "2026-09-23T14:30:50.420187",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 51,
+          "metrics": {
+            "loss": 0.2331370860338211,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 0
+          },
+          "phase": "output",
+          "timestamp": "2026-09-23T14:30:50.433961",
+          "eval_metrics": null
+        }
+      ],
+      "last_20": [
+        {
+          "epoch": 9551,
+          "metrics": {
+            "loss": 0.040948692709207535,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.585466",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9576,
+          "metrics": {
+            "loss": 0.04094873368740082,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.600385",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9601,
+          "metrics": {
+            "loss": 0.060227170586586,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.619500",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9626,
+          "metrics": {
+            "loss": 0.04133584722876549,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.633841",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9651,
+          "metrics": {
+            "loss": 0.04247556999325752,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.648251",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9676,
+          "metrics": {
+            "loss": 0.04112888500094414,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.665247",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9701,
+          "metrics": {
+            "loss": 0.04099920764565468,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.682676",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9726,
+          "metrics": {
+            "loss": 0.04095177724957466,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.699189",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9751,
+          "metrics": {
+            "loss": 0.04094918817281723,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.713340",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9776,
+          "metrics": {
+            "loss": 0.04094870015978813,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.727679",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9801,
+          "metrics": {
+            "loss": 0.040948692709207535,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.742028",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9826,
+          "metrics": {
+            "loss": 0.040948688983917236,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.756140",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9851,
+          "metrics": {
+            "loss": 0.040948688983917236,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.772553",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9876,
+          "metrics": {
+            "loss": 0.040948692709207535,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.787004",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9901,
+          "metrics": {
+            "loss": 0.04094875976443291,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.805841",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9926,
+          "metrics": {
+            "loss": 0.05951514467597008,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.826875",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9951,
+          "metrics": {
+            "loss": 0.04109757021069527,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.860668",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 9976,
+          "metrics": {
+            "loss": 0.04096867889165878,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.882438",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 10000,
+          "metrics": {
+            "loss": 0.04469863325357437,
+            "accuracy": null,
+            "val_loss": null,
+            "val_accuracy": null,
+            "f1": null,
+            "precision": null,
+            "recall": null,
+            "roc_auc": null
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "candidate",
+          "timestamp": "2026-09-23T14:33:17.901706",
+          "eval_metrics": null
+        },
+        {
+          "epoch": 11,
+          "metrics": {
+            "loss": 0.04743914678692818,
+            "accuracy": 0.963,
+            "val_loss": 0.046156998723745346,
+            "val_accuracy": 0.9725,
+            "f1": 0.9724998281239259,
+            "precision": 0.9728391356542617,
+            "recall": 0.9727563701832913,
+            "roc_auc": 0.9961991448075818
+          },
+          "network_topology": {
+            "hidden_units": 10
+          },
+          "phase": "output",
+          "timestamp": "2026-09-23T14:33:19.358575",
+          "eval_metrics": null
+        }
+      ]
+    }
+  },
+  "elapsed_s": 0.365
+}

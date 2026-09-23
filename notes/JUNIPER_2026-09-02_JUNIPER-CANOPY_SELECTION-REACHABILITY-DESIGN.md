@@ -3,7 +3,8 @@
 - **Project**: Juniper — juniper-canopy
 - **Author**: Paul Calnon
 - **Date**: 2026-09-02
-- **Status**: Design of record for the remediation — §10 answered and dispositioned (2026-09-02); scope extended to iteration 2 (§12)
+- **Status**: Design of record for the remediation — §10 answered and dispositioned (2026-09-02); scope extended to iteration 2 (§12); **implemented**: all five PRs of §7 have shipped on juniper-canopy `main`, and the parallel packaging workstream is merged in juniper-data but not yet released (§7)
+- **Last Updated**: 2026-09-23 — reconciled against the ship map, `reports/2026-09-23_canopy-selection-design-ship-map/SHIP_MAP.md`, with each claim re-verified in canopy source at `main` `3a6dea95`. Added: a status line under each §4.x heading, shipped statuses in §5 and §7, and dated corrections wherever `main` contradicts the text. Superseded text is kept and annotated, not rewritten.
 - **Amends**: [`JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`](JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md)
 - **Evaluation of record**: [`JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md`](JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-DEADLOCK-PROPOSALS.md)
 
@@ -66,6 +67,11 @@ dataset argument, and `:7206` gates Start solely on `model_is_trainable`. At `�
 trains on the last-staged dataset while the sidebar shows no dataset.** X5 (§4.8) closes this and
 is a prerequisite of `⊥`, not an enhancement.
 
+> **Superseded 2026-09-06 (canopy#593).** True when written. `_update_button_appearance_handler`
+> now takes `dataset_value` (and, since canopy#601, `model_state`) and disables Start whenever
+> either axis is unset (`selection_axis_unset`), so neither `(cascor, ⊥)` nor `(recurrence, ⊥)` is
+> startable from the sidebar. The same callback disables Apply Dataset at `⊥`. See §4.8.
+
 ---
 
 ## 3. Decisions
@@ -73,10 +79,10 @@ is a prerequisite of `⊥`, not an enhancement.
 | id     | decision                                                                                                                                                                                                                                                               |
 |--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **N1** | **Reachability is a stated invariant, not an emergent property.** `I-cover` and `I-safe` (§2) are written down, tested at handler level, and fail the build when violated. The design of record's silence on reachability is the root omission.                        |
-| **N2** | **Restore the unset dataset state (implements ratified D4/FR6, in part).** `clearable=True` on the sidebar dataset dropdown. §5.5 of the design of record specifies **two** affordances; only the dropdown ✕ is in scope here (see OQ-N6).                             |
+| **N2** | **Restore the unset dataset state (implements ratified D4/FR6, in part).** `clearable=True` on the sidebar dataset dropdown. §5.5 of the design of record specifies **two** affordances; only the dropdown ✕ is in scope here (see OQ-N6). **Superseded the same day by N11**: the model clear came into scope too. The ✕ shipped in canopy#593, the model clear in canopy#594. |
 | **N3** | **The gate stays symmetric and hard (upholds D2/FR5 unchanged).** No `disabled` predicate is relaxed. Family F2 would have amended this, and both adversarial rounds rejected that amendment (evaluation §5.1, §7).                                                    |
 | **N4** | **Name the consequence at the locus, in rendered content.** Never via `title=`, which §8 of the design of record rules out and which Y7 shows is a dead accessibility channel here.                                                                                    |
-| **N5** | **A model whose displayed identity differs from the live backend is a defect, not a display lag.** The UI reads `swapped` and `backend`. Silent misattribution is worse than a blocked control for a benchmarking platform (X1).                                       |
+| **N5** | **A model whose displayed identity differs from the live backend is a defect, not a display lag.** The UI reads `swapped` and `backend`. Silent misattribution is worse than a blocked control for a benchmarking platform (X1). **Shipped (canopy#592) reading `backend` against the model's provider, not `swapped`**, which is also False when the live model is re-selected (§4.4). |
 | **N6** | **Fail closed and say so.** The `ok=True`-then-fail-in-thread pattern (`recurrence_backend.py:154-156`) is not acceptable on a newly-reachable path.                                                                                                                   |
 | **N7** | ~~**OQ-6 remains open.**~~ **ANSWERED 2026-09-22: `model-primary`, resolved by clearing** (§5.6.1 of `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`; shipped in juniper-canopy#652). This design still does not *choose* the default — it made OQ-6 answerable, and that framing was exactly right: under `clearable=False` both policies in §5.6 were unimplementable, because both say *clear* and a null dataset was not expressible. The answer became available only once §4 made both axes clearable, and the handler's `enabled[0]` snap turns out to have been the workaround for that impossibility rather than a chosen policy — it was labelled "dataset-primary" while doing neither policy. |
 | **N8** | **The empty compatible∩available set is an explicit state.** It renders a recovery affordance, never `no_update`.                                                                                                                                                      |
@@ -90,7 +96,7 @@ exists to close.
 |-----|----------|
 | **N10** | **`⊥` at mount requires backend hydration first.** The dataset axis becomes unset-by-default (OQ-N2) **only once canopy hydrates it from the backend**. Without that, `⊥`-at-mount converts a usually-correct default into a post-reload state where Start and Apply Dataset are both disabled over a staged, ready backend — the X1 class on the dataset axis (§4.10). |
 | **N11** | **Both axes are clearable, and a cleared axis ungates its peer.** OQ-N6 ships the "clear model / show all" reset. A cleared model must render **ungated** dataset options; today the handler early-returns `no_update` and would freeze the dropdown at the previous model's gate (§4.11). |
-| **N12** | **A transient notice and a blocking state are different channels.** A successful gate repair is a **toast**; an unresolvable empty compatible∩available set is a **persistent inline alert**. Neither replaces N4's rendered annotation at the locus, because a toast alone is invisible to assistive technology (§4.3). |
+| **N12** | **A transient notice and a blocking state are different channels.** A successful gate repair is a **toast**; an unresolvable empty compatible∩available set is a **persistent inline alert**. Neither replaces N4's rendered annotation at the locus, because a toast alone is invisible to assistive technology (§4.3). **Shipped (canopy#595) with no `Toast`**: the transient notice is an auto-dismissing inline alert at the locus, and since canopy#652 it reports a clear, not a repair (§4.3). |
 | **N13** | **Demo mode dogfoods the platform, and degrades loudly.** It keeps auto-loading the default spiral dataset and continues to source it from juniper-data; the local generator survives only as a **visibly announced** degraded mode, never a silent parallel implementation (§4.12). |
 
 ---
@@ -98,6 +104,10 @@ exists to close.
 ## 4. Mechanism
 
 ### 4.1 The clear affordance (N2)
+
+> **Status (2026-09-23): SHIPPED** — canopy#593 (`aa611561`, 2026-09-06). The traversal's third step
+> changed with canopy#652 (2026-09-22): a conflict now clears the dataset and the operator picks
+> (note below), and canopy#656 (2026-09-22) made a gate re-fire at `⊥` silent.
 
 `dashboard_manager.py:1334` — `clearable=False` → `clearable=True`.
 
@@ -129,15 +139,39 @@ because `gate_dataset_options` reads the dataset as `State` (`:2609`), not `Inpu
 > list in which it is the enabled entry. `I-cover` is unaffected, because the pair is still reachable
 > in one pick. What changed is who takes the last step: the operator, not the gate. The quoted
 > line numbers above are those of 2026-09-02; locate by symbol.
+>
+> **Correction, 2026-09-23 (ship-map reconciliation).** The traversal's `enabled == ["equities_seq"]`
+> was true when written and stopped being true with canopy#612 (2026-09-10). The note above, written
+> 2026-09-23, was wrong to call `equities_seq` "the enabled entry". Recurrence's compatible set is
+> six rank-3 seeds, offered in registry order `multi_sine`, `mackey_glass`, `irregular_sine`, `ar_p`,
+> `delay_product`, `equities_seq` (pinned by `test_the_lmu_s_compatible_set_is_the_six_rank_3_seeds`),
+> and `equities_seq` is greyed wherever juniper-data lacks the `equities` extra. The pair is still
+> reachable in one pick. Since canopy#667 (OQ-N2) the dropdown also mounts at `⊥` (§4.10).
 
 ### 4.2 The null-dataset guard (X4)
+
+> **Status (2026-09-23): SHIPPED** — canopy#593 (`aa611561`, 2026-09-06): Apply Dataset is disabled
+> at `⊥`, and `_apply_dataset_handler`, `_restage_dataset` and the live swap each refuse `⊥` without
+> posting (`TestCommitPathsAreGuarded`).
 
 `_apply_dataset_handler:2845` must not POST `{"nn_dataset_type": None}` — `main.py:3994`'s
 `model_dump(exclude_none=True)` strips it into a vacuous 200 plus a false pending-banner. Guard it
 and disable **Apply Dataset** at `⊥` (N9). The correct idiom already exists at
 `_restage_dataset:5629-5631`.
 
+> **Correction, 2026-09-23.** Two statements here were wrong when written. The `⊥` POST is not
+> vacuous but destructive: the stripped body is `{}`, and cascor's `StageDatasetRequest` documents
+> an empty body as clearing any prior staging (the docstring is present at cascor's 2026-09-02
+> tip). And `_restage_dataset` was not the correct idiom: skipping the key sends the same empty
+> body. canopy#593 made both paths refuse `⊥` instead; its comments in `_apply_dataset_handler` and
+> `_restage_dataset` record why.
+
 ### 4.3 Consequence naming (N4)
+
+> **Status (2026-09-23): SHIPPED, with departures** — canopy#594 (Y9), canopy#595 (the notices and
+> the `role="status"` region), canopy#652 (the docstring) and canopy#671 (Y7's `aria-describedby`,
+> 2026-09-23). No `Toast` was built, and the transient notice now reports a clear rather than a move
+> (notes below the list).
 
 - **Fix the inverted docstring first.** `:2695` labels the snap "dataset-primary" when it is
   model-primary (evaluation §2.2). The notice is written from that description; correcting the
@@ -164,17 +198,60 @@ and disable **Apply Dataset** at `⊥` (N9). The correct idiom already exists at
 - Both in rendered DOM content (N4). Give the reason cell an `id` and point the row's control at
   it with `aria-describedby` (Y7).
 
+> **Shipped as, and superseded, 2026-09-23.** Checked against canopy `main`:
+>
+> - **The docstring** (first bullet) was fixed by canopy#652 (2026-09-22), after the notices it was
+>   meant to precede had shipped in canopy#595. `_gate_dataset_options_handler` no longer calls its
+>   conflict rule "dataset-primary".
+> - **D5's notice** (third bullet, and the table's first row) shipped in canopy#595 as
+>   `_dataset_repaired_notice`, naming the old and new value. canopy#652 replaced it with
+>   `_dataset_cleared_notice` ("Dataset cleared", naming what was dropped and why), because a
+>   conflict now clears the dataset instead of moving it (OQ-6, N7).
+> - **The toast is not a `Toast`.** canopy still has none. The transient notice is a dismissable
+>   `dbc.Alert` that auto-dismisses (`duration=8000`), rendered into `dataset-gate-notice`, a
+>   `role="status"`, `aria-live="polite"` region at the locus (canopy#595). It is therefore the
+>   accessible channel at the locus rather than a supplement to one. That region, and canopy#671's
+>   `aria-describedby`, retire the "zero `aria-*` attributes" statement above, which was true when
+>   written. The persistent alert shipped as specified (`_empty_dataset_set_notice`, no `duration`).
+> - **Y7's bullet** (last) shipped in canopy#671 (`7cd8a9d4`) for the model table, which is what it
+>   specified: each Compatibility cell has an id (`_model_compat_cell_id`), every row's Select is an
+>   `html.Button` carrying `aria-describedby` to it, and `title=` is dropped on disabled Selects.
+> - **What remains of Y7** lies outside this section's specification. The evaluation's Y7 also
+>   records that dash's dropdown emits no `aria-disabled`, and that is unchanged: canopy `src/` sets
+>   `aria-disabled` nowhere, so a greyed dataset option's reason suffix (`gated_dataset_options`) is
+>   still its only accessible signal. canopy#671 counts the dropdown half as shipped through the
+>   `role="status"` notice, but that notice announces what the gate did, not which options are
+>   greyed. The browser posture has not been re-measured since OQ-N5 (2026-09-02).
+
 ### 4.4 Model-state truth (N5 / X1)
+
+> **Status (2026-09-23): SHIPPED, with a deliberate departure** — canopy#592 (`b5ad897b`, 2026-09-06),
+> extended by canopy#601 (`5d7dd6aa`, 2026-09-09). The predicate is "does the live backend serve this
+> model", not `swapped is False` (note below).
 
 `_select_model_handler` currently mirrors only `nn_model` and `execution` (`:2893`; def at
 `:2876`). It must also read `swapped` and `backend`, and when `swapped is False` render the model
 summary as **not active**, with the reason. Canopy's own test already pins the response shape
 (`test_d8_d11_phase4_truth_up.py:64-82`).
 
+> **Superseded 2026-09-06 and 2026-09-09.** "Currently mirrors only `nn_model` and `execution`" was
+> true when written. canopy#592 made the summary read provider agreement through
+> `_selection_is_live`. canopy#601 moved that predicate to `model_registry.selection_is_live` and made
+> `_select_model_handler` return the whole `/api/model/select` payload into `model-state-store`,
+> which the Start gate and the train-gate notice read; the server refuses an inactive selection on
+> its own (`main._selection_inactive_reason`). The prescribed `swapped is False` test was not built,
+> on purpose: `swapped` is also False when the operator re-selects the model already live, so it
+> would report a running CasCor as inactive.
+> `TestG5ModelStateTruth.test_noop_reselect_of_the_live_model_still_reads_active` pins that case.
+
 **This ships first.** Unblocking selection without it converts the deadlock into silent benchmark
 misattribution.
 
 ### 4.5 The restart modal (X2)
+
+> **Status (2026-09-23): SHIPPED, with an owner-ruled departure; tested since 2026-09-23** —
+> canopy#593 (`aa611561`, 2026-09-06). The modal keeps an `enabled[0]` swap where the sidebar clears,
+> and its regate had no test until canopy#675 (`0254a7ec`, 2026-09-23) (note below).
 
 `restart-ds-type` has no writer for `.options` anywhere in the repo. Add
 `Output("restart-ds-type", "options")` + `State("model-selection-store", "data")` to
@@ -182,25 +259,77 @@ misattribution.
 does at `:2702`. Without this, the fix *activates* an inverted gate that `execute_restart`
 forwards.
 
+> **Superseded 2026-09-06 (canopy#593).** "No writer" was true when written. `open_restart_confirm_modal`
+> now has exactly the `Output` and `State` asked for, and `_open_restart_confirm_modal_handler`
+> composes `apply_availability_gate` over `gated_dataset_options` for the selected model on every
+> open. It landed with the ✕ in canopy#593, so §7's quarantine fallback was never needed. Three
+> things a reader should know:
+>
+> - **The fallback swap is deliberate.** Where the sidebar clears a conflicting dataset (OQ-6,
+>   canopy#652), the modal replaces it with `enabled[0]`. The owner ruled on 2026-09-22 to keep that
+>   swap, because the modal is a confirmation dialog that shows the swapped value before anything is
+>   re-staged: §5.6.1 point 4 of `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`.
+>   Registry order decides where it lands (§12.6). An unset sidebar dataset stays unset.
+> - **It had no test.** Regating the list against `DEFAULT_MODEL_KEY` instead of the selected model
+>   passed canopy's entire CI unit lane with zero failures at canopy `48074653` (the ship map's M6,
+>   reproduced 2026-09-23 with `util/ad-hoc/2026-09-23_mutation_check_m1_m6.py`). canopy#675
+>   (`0254a7ec`, 2026-09-23) added `TestX2RestartModalIsGatedAgainstTheSelectedModel`, which fails
+>   twice under that mutant.
+> - **Re-staging from the modal** refuses `⊥` (canopy#593) and sends the registry seed
+>   (canopy#668, 2026-09-23), so a seeded generator such as `equities` no longer 422s from here.
+>   Since canopy#674 (`894a2cc7`, 2026-09-23) the re-stage and the modal's parameter apply also send
+>   FR9's `nn_model` mirror. `/api/train/restart` itself carries no model identity, so a restart
+>   with nothing edited is not checked against the server's model.
+
 ### 4.6 The generator alias (X3)
+
+> **Status (2026-09-23): SHIPPED** — canopy#599 (`de253e93`, 2026-09-07): the one-shot body names
+> `generator_name_for_type(value)` and looks its params up under canopy's own value
+> (`TestX3OneShotBodyUsesTheResolvedName`).
 
 `_resolve_oneshot_start_body_handler` (`:2681`) must route its value through
 `generator_name_for_type`, as both sibling handlers do (`:2769`, `:2846`).
 
+> **Correction, 2026-09-23.** "As both sibling handlers do" was imprecise when written. The two
+> cited siblings, `_render_dataset_params_handler` and `_apply_dataset_handler`, use the alias only
+> for lookups (the generator's schema, and the spiral branch). Neither translates the value it
+> sends, and the staging payload must not be translated: cascor's `dataset_type` `Literal` takes
+> canopy's plural names. canopy#599 pins that asymmetry with
+> `test_the_STAGING_payload_must_NOT_be_translated`.
+
 ### 4.7 The empty-set state (N8)
+
+> **Status (2026-09-23): SHIPPED** — canopy#595 (`0096f567`, 2026-09-06); the conflict arm was changed
+> by canopy#652 and a re-fire at `⊥` by canopy#656, both 2026-09-22 (note below).
 
 `_gate_dataset_options_handler`'s `if current_value in enabled or not enabled: return options,
 dash.no_update` (`:2702-2706`) must distinguish its two arms. `not enabled` — no dataset is both
 compatible and available — is a **recovery state**: clear the dataset to `⊥`, render why, and gate
 Start.
 
+> **Superseded 2026-09-06 (canopy#595).** The quoted line is the code as it stood on 2026-09-02.
+> `_gate_dataset_options_handler` now has four outcomes: `not enabled` clears to `⊥` and renders the
+> persistent `_empty_dataset_set_notice` (Start and Apply are then disabled at `⊥`); `⊥` changes
+> nothing and reports no conflict (canopy#656); `current_value in enabled` changes nothing; and a
+> conflict clears to `⊥` with the transient `_dataset_cleared_notice` (canopy#652). The two
+> no-change outcomes still show the availability-unknown caveat when juniper-data could not be read.
+
 ### 4.8 Start requires a dataset (X5 / N9)
+
+> **Status (2026-09-23): SHIPPED** — canopy#593 (`aa611561`, 2026-09-06), in the same PR as §4.1:
+> `_update_button_appearance_handler` takes `dataset_value` and disables Start when either axis is
+> unset. canopy#601 (2026-09-09) added `model_state`, so Start is also disabled for a selection the
+> live backend does not serve.
 
 `_update_button_appearance_handler` (`:7187`, gate at `:7206`) must take the dataset value and
 disable Start at `⊥`. This is a **callback-signature change** and is a prerequisite of §4.1, not an
 enhancement — without it `(cascor, ⊥)` trains silently on a stale dataset (§2).
 
 ### 4.9 Staging the pair (X6)
+
+> **Status (2026-09-23): SHIPPED, inside canopy** — canopy#599 (the 501 guard), canopy#601 (the
+> Start refusal) and canopy#607 (`95284f37`, 2026-09-09: in-process `RecurrenceBackend.stage_dataset`
+> and the staging refusal), as the 2026-09-08 correction below anticipated (note after it).
 
 Apply Dataset fails on both branches today: default deployment reaches cascor, whose `Literal`
 (`juniper-cascor/src/api/models/training.py:235`) has no `equities_seq` → **502**; a configured
@@ -219,7 +348,25 @@ takes precedence over the one-shot body. The "full fix" this section asked for i
 canopy-only. See the consensus validation's §7 item 2 correction and
 `HANDOFF_2026-09-08_canopy-selection-n5-shipped-staging-is-canopy-only.md`.
 
+> **Shipped, 2026-09-23 reconciliation.** The correction's unnamed "follow-on staging PR" is
+> canopy#607 (`95284f37`, 2026-09-09). It gave `RecurrenceBackend` an in-process `stage_dataset`
+> and made `api_stage_dataset` answer 409 for a selection the live backend does not serve. The
+> route's 501 for a backend without `stage_dataset` came earlier, in canopy#599
+> (`TestX6StagingIsGuarded`). Since then, canopy#669 (`9262a866`, 2026-09-23) added FR9's `nn_model`
+> mirror: `api_stage_dataset`, `api_live_dataset_swap` and `api_set_params` answer 409 for a stale
+> tab and 422 for an unknown model, and the two dataset routes also 422 an incompatible dataset
+> (`_request_model_refusal`). The sidebar's two Apply paths send it, and since canopy#674
+> (`894a2cc7`, 2026-09-23) so do the live swap and the restart modal's re-stage and parameter apply.
+> canopy#674 also fixed the live swap's body, which had sent the spiral fields for every generator
+> and never a seeded generator's params: the swap and Apply Dataset now build one body, in
+> `_dataset_stage_payload`.
+
 ### 4.10 Dataset-axis hydration — the prerequisite for `⊥` at mount (N10 / OQ-N2)
+
+> **Status (2026-09-23): SHIPPED** — canopy#662 (`2f973ca2`) with juniper-cascor#676 (`e052ef80`),
+> then `⊥` at mount in canopy#667 (`2c56e8a3`), all 2026-09-23 and in the order N10 requires.
+> Departures: a sibling route rather than a `/api/train/status` field, and an `unknown` read mounts
+> on `DEFAULT_DATASET_TYPE` rather than `⊥` (the two blocks at the end of this section).
 
 **Measured**: canopy has *never* hydrated the dataset from the backend. There is no
 dataset-hydration callback, and `GET /api/train/status` carries no dataset field —
@@ -265,7 +412,22 @@ built, where it departs from the sketch above, and why:
   backends. A **Y3** guardrail was added beside it, because §5's table had no row that a Y3 defect
   could fail.
 
+**`⊥` at mount followed the same day: canopy#667 (`2c56e8a3`, 2026-09-23), OQ-N2.** The sidebar
+dataset dropdown and the restart modal's both mount at `value=None`. The mount hydration then lands
+on the backend's dataset for `pending` / `loaded`, stays at `⊥` for `none`, and falls back to
+`DEFAULT_DATASET_TYPE` for `unknown` (`_hydrated_dataset_value`). That fallback is the one place a
+seeded default survives, deliberately: `⊥` there would disable Start and Apply after every reload
+over a backend that may be staged and ready, which is the regression N10 forbids. A backend holding
+a dataset canopy does not offer mounts at `⊥` with an informational notice
+(`_unnameable_dataset_notice`). Demo mode still lands on spirals because the simulator reports them,
+not because of a seed.
+
 ### 4.11 Clearing the model must ungate the dataset (N11 / OQ-N6)
+
+> **Status (2026-09-23): SHIPPED** — canopy#594 (`7bc53cca`, 2026-09-06): "Clear model — show all
+> datasets" (`model-selection-clear`) writes `None` without posting, and the early return is gone.
+> Measured since: the model clear and the ✕ are independent cut vertices, each of which opens the
+> graph alone (§5 note 1, §8).
 
 OQ-N6 ships §5.5's second affordance, the "clear model / show all" reset. The registry is already
 correct — `gated_dataset_options(None)` returns all six datasets enabled (executed). The handler is
@@ -282,11 +444,19 @@ dropdown keeps the previous model's disabled set. **That is the mutual-gate trap
 model axis** — a defect this design exists to prevent, shipped by the affordance meant to relieve
 it. The early return must instead render ungated options composed with `apply_availability_gate`.
 
+> **Superseded 2026-09-06 (canopy#594).** The quoted early return is the 2026-09-02 code. It was
+> removed: a falsy model key now flows through `gated_dataset_options`, which enables every dataset,
+> composed with `apply_availability_gate` as asked (`TestG8ClearedModelUngatesTheDataset`).
+
 Consequence worth recording: with **both** axes clearable, OQ-6 becomes fully answerable for the
 first time. §5.6's *dataset-primary* policy ("keep dataset, clear model") is finally expressible,
 where under `clearable=False` neither policy was.
 
 ### 4.12 Demo mode (N13 / OQ-N2)
+
+> **Status (2026-09-23): SHIPPED, with a departure** — canopy#596 (`f8fb4a2c`, 2026-09-06). The signal
+> is a red connection badge ("WS: Demo — LOCAL data, not juniper-data"), not a banner, and it covers
+> all three fallback call sites (note below).
 
 Demo mode keeps auto-loading the default spiral dataset — `⊥`-at-mount is for normal operation
 only. Its dogfooding is largely already true: `demo_mode.py:551-554` calls juniper-data first
@@ -299,6 +469,14 @@ degraded-mode banner whenever the local generator is used — so demo mode never
 non-platform data. That satisfies the stated intent (no silent divergence from the platform) without
 breaking standalone or CI.
 
+> **Correction, 2026-09-23.** "The fallback" was three call sites when written, not one:
+> `DemoMode.__init__`, `DemoMode.regenerate_dataset` and `DemoMode.apply_params` each catch a
+> juniper-data failure and call `_generate_spiral_dataset_local` (all three are present in canopy as
+> of 2026-09-02). Each also logged a warning, so the old behaviour was silent in the UI, not in the
+> log. canopy#596 sets `local_dataset_fallback` inside `_generate_spiral_dataset_local`, so every
+> site raises it; `main._demo_dataset_source` publishes it on `/api/stream_health`, and the
+> connection badge turns red instead of the grey "WS: Demo".
+
 ---
 
 ## 5. Test plan
@@ -308,21 +486,65 @@ Specified to **fail on today's code**, which the guardrail everyone first propos
 
 | id      | test                                                                                                     | status before                              | status after                                                                |
 |---------|----------------------------------------------------------------------------------------------------------|--------------------------------------------|-----------------------------------------------------------------------------|
-| **G1a** | BFS the composed transition relation; assert `Reach ⊇ compatible ∩ available`                            | fails (5 of 6)                             | passes                                                                      |
-| **G1b** | same BFS; assert `Reach ⊆ compatible ∪ {(m, ⊥)}`                                                         | passes                                     | passes — **fails under F2**                                                 |
-| **G1c** | G1a/G1b over a synthetic **≥3-component** registry                                                       | fails (2 unreachable)                      | passes                                                                      |
-| **G1d** | G1a/G1b with an **injected all-unavailable** generator list                                              | fails (parks)                              | passes **vacuously for `⊥`** — asserts the recovery state, not reachability |
-| **G2**  | no committed pair with `compatible()` False is reachable                                                 | passes                                     | passes                                                                      |
-| **G3**  | empty compatible∩available renders recovery, not `no_update`                                             | fails                                      | passes                                                                      |
-| **G4**  | canopy `DATASET_TYPES` maps onto juniper-data `GENERATOR_REGISTRY` **through `generator_name_for_type`** | **fails** (`spirals`/`moons` are not keys) | passes                                                                      |
-| **G5**  | model summary reflects `swapped is False`                                                                | fails                                      | passes                                                                      |
-| **G6**  | Start disabled at `⊥`                                                                                    | fails                                      | passes                                                                      |
-| **G7**  | the mount dataset value equals the backend's staged dataset (§4.10)                                      | **fails** — no hydration exists at all     | passes — **shipped** in canopy#662                                   |
-| **G8**  | a **cleared model** renders ungated dataset options, not `no_update` (§4.11)                             | **fails** — options freeze at the old gate | passes                                                                      |
-| **G9**  | demo mode's local-generator fallback is visibly announced (§4.12)                                        | **fails** — degrades silently              | passes                                                                      |
-| **G10** | every juniper-data generator is either seeded in `DATASET_TYPES` or on a named exclusion list (§12)       | **fails** — 10 unseeded, none excluded     | passes                                                                      |
-| **G11** | every seeded generator has bounded `default_params` (§12)                                                | fails for any new seed without them        | passes                                                                      |
-| **Y3**  | a reload shows the model the server recorded, and gates Start on it (§4.10's model half) — added 2026-09-23; this table had no row a Y3 defect could fail | **fails** — the model axis had no read side | passes — **shipped** in canopy#662 |
+| **G1a** | BFS the composed transition relation; assert `Reach ⊇ compatible ∩ available`                            | fails (5 of 6)                             | passes — **shipped** in canopy#593 (`TestG1Reachability`); stays green if one clear alone is reverted (note 1) |
+| **G1b** | same BFS; assert `Reach ⊆ compatible ∪ {(m, ⊥)}`                                                         | passes                                     | passes — **fails under F2** — **shipped** in canopy#593; never reaches the gate's conflict branch (note 2) |
+| **G1c** | G1a/G1b over a synthetic **≥3-component** registry                                                       | fails (2 unreachable)                      | passes — **shipped** in canopy#598 (`TestG1cThreeComponents`) |
+| **G1d** | G1a/G1b with an **injected all-unavailable** generator list                                              | fails (parks)                              | passes **vacuously for `⊥`** — asserts the recovery state, not reachability — **shipped** in canopy#595 (`TestG1dNothingAvailable`) |
+| **G2**  | no committed pair with `compatible()` False is reachable                                                 | passes                                     | passes — **shipped** as G1b's property; the tests named `test_g2_*` pin something else (note 3) |
+| **G3**  | empty compatible∩available renders recovery, not `no_update`                                             | fails                                      | passes — **shipped** in canopy#595 (`TestG3EmptySetRecovery`) |
+| **G4**  | canopy `DATASET_TYPES` maps onto juniper-data `GENERATOR_REGISTRY` **through `generator_name_for_type`** | **fails** (`spirals`/`moons` are not keys) — *wrong: as worded it passed (note 5)* | passes — **shipped, re-specified** in canopy#599 (`TestG4GeneratorNameResolution`) |
+| **G5**  | model summary reflects `swapped is False`                                                                | fails                                      | passes — **shipped** in canopy#592 as provider agreement, not `swapped` (note 6) |
+| **G6**  | Start disabled at `⊥`                                                                                    | fails                                      | passes — **shipped** in canopy#593 (`TestG6StartRequiresACompleteSelection`) |
+| **G7**  | the mount dataset value equals the backend's staged dataset (§4.10)                                      | **fails** — no hydration exists at all     | passes — **shipped** in canopy#662 (`TestG7MountDatasetIsTheBackendsDataset`, `TestG7AcrossTheRealSeams`) |
+| **G8**  | a **cleared model** renders ungated dataset options, not `no_update` (§4.11)                             | **fails** — options freeze at the old gate | passes — **shipped** in canopy#594 (`TestG8ClearedModelUngatesTheDataset`) |
+| **G9**  | demo mode's local-generator fallback is visibly announced (§4.12)                                        | **fails** — degrades silently — *in the UI only; it logged a warning (note 7)* | passes — **shipped** in canopy#596 (`test_demo_mode_local_fallback.py`) |
+| **G10** | every juniper-data generator is either seeded in `DATASET_TYPES` or on a named exclusion list (§12)       | **fails** — 10 unseeded, none excluded     | passes — **shipped** in canopy#612 (`TestG10EveryUpstreamGeneratorIsSeededOrNamed`), against a dated snapshot (note 8) |
+| **G11** | every seeded generator has bounded `default_params` (§12)                                                | fails for any new seed without them        | passes — *vacuously until canopy#665*; **shipped, re-specified** in canopy#665 (`TestG11EverySeedIsBounded`) (note 9) |
+| **Y3**  | a reload shows the model the server recorded, and gates Start on it (§4.10's model half) — added 2026-09-23; this table had no row a Y3 defect could fail | **fails** — the model axis had no read side | passes — **shipped** in canopy#662 (`TestY3TheModelAxisHasAReadSide`) |
+
+> **Shipped status, 2026-09-23.** Every row has shipped; the classes named are in canopy's
+> `src/tests/regression/`. The caveats below were checked against canopy source, and the two
+> measurements are marked as such.
+>
+> 1. **G1a stays green if either clear alone is reverted.** The dataset ✕ and the model clear
+>    (§4.11) are independent cut vertices, and each opens the graph by itself. Reverting
+>    `clearable=True` fails only `test_g2_either_clear_alone_opens_the_graph[withheld1]` (measured
+>    2026-09-23 with `util/ad-hoc/2026-09-23_mutation_check_m1_m6.py`). A removed model clear is caught
+>    by `TestG8ClearedModelUngatesTheDataset.test_the_clear_control_exists_in_the_layout`. The G1a
+>    helper's docstring (`_dataset_dropdown_is_clearable`) said the opposite until canopy#675
+>    (`0254a7ec`, 2026-09-23) corrected it.
+> 2. **G1b cannot see a gate that keeps an incompatible dataset.** Its search selects only models the
+>    table enables, which are compatible with the current dataset, so it never takes the gate's
+>    conflict branch. `TestDatasetRepairNotice` pins that branch directly, and G7's
+>    `test_the_hydrated_dataset_is_gated_against_the_HYDRATED_model` pins it at mount.
+> 3. **G2 shipped as a property, and its name was reused.** "No invalid committed pair is reachable"
+>    is what G1b (and the G1c / G1d invalid-state tests) assert. The tests *named* `test_g2_*`
+>    (canopy#593, rewritten in canopy#594) pin something else: the deadlock returns only when both
+>    clears are withheld.
+> 4. **G1's start state.** `_explore` still starts at the `unknown` fallback pair `(cascor, spirals)`,
+>    not at the `⊥` mount of canopy#667. A 2026-09-23 probe
+>    (`util/ad-hoc/2026-09-23_explore_start_probe_test.py`) measured every mount state (`⊥`, the
+>    fallback pair, a hydrated pair) reaching the same 31 states, so G1a and G1b do not depend on it.
+> 5. **G4's "status before" was wrong when written**, and canopy#599 re-specified the test. Through
+>    `generator_name_for_type`, `spirals` and `moons` already resolved to registry keys, so G4 as
+>    worded passed on the unfixed code (canopy's test module records this as refutation R3). It now
+>    asserts that the resolution is total and the alias map has no dead entries. It does not compare
+>    against juniper-data's registry; G10's `test_every_seeded_value_resolves_to_a_known_generator`
+>    does, against a snapshot.
+> 6. **G5** shipped as provider agreement (`selection_is_live`) rather than `swapped is False`;
+>    `test_noop_reselect_of_the_live_model_still_reads_active` pins the case the literal wording gets
+>    wrong (§4.4).
+> 7. **G9's "degrades silently"** was true of the UI only: each of the three fallback sites logged a
+>    warning (§4.12).
+> 8. **G10** checks `KNOWN_UPSTREAM_GENERATORS`, a snapshot of juniper-data's registry taken
+>    2026-09-09 and re-checked 2026-09-22. An upstream generator added later is caught at runtime by
+>    `/api/dataset/generators`, not in CI.
+> 9. **G11's "passes" was vacuous until canopy#665** (2026-09-23): no test iterated every seed, and
+>    canopy#610's `TestEquitiesSeedIsGenerableAndFinite` covered the equities pair only.
+>    `TestG11EverySeedIsBounded` iterates `DATASET_TYPES` and requires each seed's generator to be
+>    classified in `SEEDED_GENERATOR_BOUNDS` (14 entries), binding `symbols` only for the two universe
+>    importers. That is §12.6's restatement of G11; canopy's comment above `SEEDED_GENERATOR_BOUNDS`
+>    records why the literal wording in this row overshoots.
 
 Two specification notes that cost round 1 a defect each:
 
@@ -339,6 +561,10 @@ Two specification notes that cost round 1 a defect each:
 `compatible_datasets` and `model_options` have one. G1c/G1d cannot be written without adding it,
 and `dataset_default_params` is on G1's path via `:2682`. `_gate_dataset_options_handler` also
 needs its generator list injectable, since it calls live HTTP and fails open under test.
+
+> **Done, 2026-09-06/07.** True when written. All five resolvers take injectable registries
+> (`models=` / `dataset_types=`) since canopy#598, and `_gate_dataset_options_handler` has taken
+> `generators=` since canopy#594 and `models=` / `dataset_types=` since canopy#598.
 
 **G1 must live at handler level.** Written over `model_registry` alone it goes green on the
 deadlocked code — measured.
@@ -379,18 +605,48 @@ fewer datasets, because its output is wrong rather than absent.
 
 | PR    | contents                                                                                            | rationale                                                                                                                                |
 |-------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| **1** | §4.4 (X1 model-state truth) + **G5**                                                                | Correctness of reporting leads. Independently correct; shippable alone.                                                                  |
-| **2** | §4.10 hydration, **both** axes (X1's dataset-side sibling, Y3) + **G7** — **SHIPPED** canopy#662 + cascor#676 (2026-09-23), with a Y3 guardrail | Prerequisite for `⊥`-at-mount. Landing it separately keeps the reload regression from ever existing (N10).                                |
-| **3** | §4.1 ✕ + §4.11 model clear + §4.2 / §4.8 guards + §4.3 naming and channels + §4.7 empty-set + **G1a–G1d, G3, G6, G8** | The reachability fix proper, now with both axes clearable. **Land G1a red first**, then green it. §4.8 and §4.11 are prerequisites, not follow-ups. |
-| **4** | §4.5 restart modal + §4.6 alias + §4.9 staging + **G2, G4**                                         | Activated by PR 3; smaller and independently reviewable.                                                                                 |
-| **5** | §12 generator expansion — Y5 first, then the seeds + `default_params` + the `mackey_glass` seed flag + **G10, G11** | Iteration 2 (§11). Depends on PRs 1–2 for honest attribution and on Y5 for a usable params panel.                                          |
-| **∥** | juniper-data packaging: the `equities` extra into `requirements.lock`, and any other extra a newly-seeded generator needs | Parallel and non-blocking. Without it several datasets are correctly `available=false` in the container (§9).                              |
+| **1** | §4.4 (X1 model-state truth) + **G5** — **SHIPPED** canopy#592 (2026-09-06) | Correctness of reporting leads. Independently correct; shippable alone.                                                                  |
+| **2** | §4.10 hydration, **both** axes (X1's dataset-side sibling, Y3) + **G7** — **SHIPPED** canopy#662 + cascor#676 (2026-09-23), with a Y3 guardrail; `⊥` at mount followed in canopy#667 | Prerequisite for `⊥`-at-mount. Landing it separately keeps the reload regression from ever existing (N10).                                |
+| **3** | §4.1 ✕ + §4.11 model clear + §4.2 / §4.8 guards + §4.3 naming and channels + §4.7 empty-set + **G1a–G1d, G3, G6, G8** — **SHIPPED** canopy#593, canopy#594, canopy#595, canopy#598 (2026-09-06/07); §4.3's Y7 item in canopy#671 (2026-09-23) | The reachability fix proper, now with both axes clearable. **Land G1a red first**, then green it. §4.8 and §4.11 are prerequisites, not follow-ups. |
+| **4** | §4.5 restart modal + §4.6 alias + §4.9 staging + **G2, G4** — **SHIPPED** canopy#593 (§4.5), canopy#599, canopy#601, canopy#607 (2026-09-06 to 09-09); §4.5 untested until canopy#675 (2026-09-23) | Activated by PR 3; smaller and independently reviewable.                                                                                 |
+| **5** | §12 generator expansion — Y5 first, then the seeds + `default_params` + the `mackey_glass` seed flag + **G10, G11** — **SHIPPED** canopy#609 through canopy#665 (2026-09-10 to 09-23); the seed flag proved unnecessary | Iteration 2 (§11). Depends on PRs 1–2 for honest attribution and on Y5 for a usable params panel.                                          |
+| **∥** | juniper-data packaging: the `equities` extra into `requirements.lock`, and any other extra a newly-seeded generator needs — **MERGED, NOT RELEASED**: juniper-data#421 (2026-09-23); no juniper-data release contains it | Parallel and non-blocking. Without it several datasets are correctly `available=false` in the container (§9).                              |
 
 §4.12 (demo mode, **G9**) rides with PR 3, since `⊥`-at-mount is what makes demo mode's behaviour
 a distinguishable case.
 
 If PR 4 cannot land with PR 3, the restart modal must be **quarantined** (its dataset field
 disabled) in PR 3 rather than left inverted.
+
+> **Shipped record, 2026-09-23.** All juniper-canopy unless prefixed; merge dates UTC, from `gh`.
+>
+> - **PR 1**: canopy#592 (`b5ad897b`, 2026-09-06). canopy#601 (`5d7dd6aa`, 2026-09-09) completed N5:
+>   the Start gate reads the same provider-agreement predicate as the label, and the server refuses
+>   an inactive selection.
+> - **PR 2**: canopy#662 (`2f973ca2`) with juniper-cascor#676 (`e052ef80`), both 2026-09-23. OQ-N2's
+>   `⊥` at mount followed in canopy#667 (`2c56e8a3`, 2026-09-23), after the hydration, as N10
+>   requires (§4.10).
+> - **PR 3**: canopy#593 (`aa611561`: §4.1, §4.2, §4.8, G1a / G1b, G6, and PR 4's §4.5),
+>   canopy#594 (`7bc53cca`: §4.11, Y9, G8), canopy#595 (`0096f567`: §4.3's notices, §4.7, G1d, G3)
+>   and canopy#598 (`f56f46c2`: G1c), 2026-09-06/07, with §4.12 and G9 in canopy#596 (`f8fb4a2c`).
+>   The one item left was §4.3's Y7 bullet, which canopy#671 (`7cd8a9d4`, 2026-09-23) shipped for the
+>   model table as specified. Y7's dropdown half stays open outside this design's specification
+>   (§4.3). OQ-N5's browser acceptance step ran twice (§10).
+> - **PR 4**: §4.5 landed early, in canopy#593 with the ✕, so the quarantine above was never needed.
+>   §4.6 and G4 in canopy#599 (`de253e93`, 2026-09-07); §4.9 in canopy#599, canopy#601 and
+>   canopy#607 (`95284f37`, 2026-09-09). §4.5 had no test until canopy#675 (`0254a7ec`, 2026-09-23).
+> - **PR 5**: Y5 in canopy#609 (`39998791`); the `equities_seq` seed repair in canopy#610 (`94ff71c9`);
+>   the five rank-3 seeds and G10 in canopy#612 (`8cfb29ac`); `gaussian` and `checkerboard` in
+>   canopy#616 (`b7883d5d`); `equities` in canopy#621 (`b01f33f7`) and canopy#622 (`1597c679`); G11
+>   in canopy#665 (`7950bf9e`, 2026-09-23); the §12.9 follow-ons in canopy#625 (`f7bbc4ee`),
+>   canopy#632 (`812f26c0`) and canopy#644 (`ba3b16ff`). The `mackey_glass` seed flag was never built
+>   and is not needed: `seed` is in `INFRASTRUCTURE_FIELDS`, so the form neither renders nor forwards
+>   it (§12.6, item 3).
+> - **∥**: juniper-data#421 (`68c3cd7c`) merged 2026-09-23T00:56Z, and `requirements.lock` on
+>   juniper-data `main` pins `yfinance==1.7.0`. Probed 2026-09-23: no juniper-data tag contains that
+>   commit, and v0.15.0 (released 2026-09-22T18:55Z, the latest on GitHub and on PyPI) does not; its
+>   lock has no `yfinance`. The container gains `equities` and `equities_seq` only once a release
+>   carries it and the deployment picks that release up.
 
 ---
 
@@ -401,6 +657,16 @@ restores the deadlock without leaving an inconsistent state. The invariant tests
 to revert — if a rollback is needed, mark G1 `xfail` with a reason rather than deleting it, so the
 gap stays visible.
 
+> **Correction, 2026-09-23.** This paragraph was written for the original three-PR plan, in which PR 2
+> was the reachability fix, and it went stale the same day. §7's 2026-09-02 revision renumbered the
+> PRs (PR 2 is now hydration, canopy#662) and put the model clear (§4.11) in the same PR as the ✕.
+> With both clears shipped, reverting the ✕'s keyword alone does **not** restore the deadlock: the
+> model clear opens the graph by itself. Reverting `clearable=True` fails only
+> `test_g2_either_clear_alone_opens_the_graph[withheld1]`, and G1a stays green (measured 2026-09-23,
+> §5 note 1). Only withholding both clears restores it, which is what
+> `test_g2_the_deadlock_returns_only_when_BOTH_clears_are_withheld` pins. The advice not to delete
+> the invariant tests stands.
+
 ---
 
 ## 9. What this does not fix
@@ -409,6 +675,11 @@ gap stays visible.
   `juniper-data/requirements.lock`. In the deployed stack the LMU has zero *available* datasets
   regardless of this work. §4.7 makes that state legible rather than a silent park; it does not
   make the dataset available. Fixing it is a juniper-data packaging change.
+  - **Superseded in two steps (2026-09-23 note).** True when written. canopy#612 (2026-09-10)
+    seeded five numpy-only rank-3 synthetics, so the LMU has five available datasets in the
+    container whatever the lockfile holds (§12.5). juniper-data#421 (`68c3cd7c`, merged 2026-09-23)
+    put `yfinance` into `requirements.lock` on juniper-data `main`, but no juniper-data release
+    contains it yet (§7, ∥), so an image built from the latest release (v0.15.0) still lacks it.
 - ~~**Ten unseeded generators**~~ — **moved into scope** as iteration 2 by the §11 revision;
   specified in §12. The caveat stands and is carried there: whether the LMU can actually train on
   the five rank-3 generators end-to-end is **unvalidated**, and the evaluation grades the
@@ -417,6 +688,16 @@ gap stays visible.
 - **Y1–Y9** (evaluation §6.4), including further missing `RecurrenceBackend` methods — a count the
   round could not agree on (0 / 9 / 11 depending on baseline) and which is recorded as a lead, not
   a fact — and the vacuous snapshot save/restore.
+  - **Superseded in part (2026-09-23 note).** Fixed on canopy `main` since: Y1 (canopy#633 for the
+    experimental-functions pair; canopy#643 for the four dataset-swap methods `RecurrenceBackend`
+    lacked, plus `test_backend_protocol_conformance.py`, which requires every attribute `main.py`
+    reads off `backend` to be declared or explicitly conditional), Y3 (canopy#662), Y4 and Y8
+    (canopy#671), Y5 (canopy#609) and Y9 (canopy#594). Y7 in part: the `role="status"` notice region (canopy#595)
+    and the model table's `aria-describedby` (canopy#671); the dropdown's missing `aria-disabled`
+    remains (§4.3). No fix was found in canopy source or its CHANGELOG for Y2, the vacuous snapshot
+    save/restore under recurrence, or for Y6 by name. The nearest Y6 coverage is G10, which checks
+    canopy's registry against a dated snapshot of juniper-data's (`KNOWN_UPSTREAM_GENERATORS`), not
+    the live one.
 
 ---
 
@@ -445,6 +726,10 @@ gap stays visible.
     first). The demo-only code to minimise is the local fallback — which §4.12 makes **loud** rather
     than deleting, since its own comment names Docker-standalone and CI smoke tests as its purpose.
     That keeps the intent (never silently run on non-platform data) without breaking those lanes.
+  - **Shipped 2026-09-23 (note)**, in the order this disposition requires: hydration in canopy#662
+    (with juniper-cascor#676), then `⊥` at mount in canopy#667 (§4.10). The local fallback, three
+    call sites rather than the one cited above, is announced by a red connection badge (canopy#596,
+    §4.12).
 
 - **OQ-N3** — *(narrowed)* §4.8 settles that Start must be gated at `⊥`. Remaining: should Apply
   Dataset be disabled at `⊥` (§4.2 assumes yes), or should `⊥` be non-committable by construction?
@@ -481,6 +766,12 @@ gap stays visible.
   - **Still not observed**: the `⊥`-dataset and `⊥`-model states, because they do not exist until
     §4.1 and §4.11 ship. Re-run this falsifier as an acceptance step for PR 3 — the traversal in
     §4.1 is so far established only by executing handlers, never in a DOM.
+  - **Observed since (2026-09-23 note).** The `⊥`-dataset state and the §4.1 traversal to
+    `(recurrence, equities_seq)` were observed in a live browser at canopy `aa61156` on 2026-09-05
+    (`reports/2026-09-05_canopy-deadlock-consensus/browser_acceptance.md`), and the `⊥`-model state
+    at `f8fb4a2` on 2026-09-07 (`browser_acceptance_prb.md`, same directory). The second run also
+    found that the D5 notice of the time could not be triggered from the model table; canopy#652
+    later replaced that notice (§4.3).
   - **Method constraints for the PR-3 re-run** (carried forward from this run): the operator's
     canopy on 8050 must **not** be restarted or killed; bring up an isolated instance on spare
     ports, overriding `JUNIPER_E2E_RUN_DIR` as well as the ports so a concurrent session's pid
@@ -509,9 +800,11 @@ gap stays visible.
     return. Consequence worth having: with both axes clearable, OQ-6 becomes answerable for the
     first time, because §5.6's *dataset-primary* policy ("keep dataset, clear model") is finally
     expressible.
+  - **Shipped 2026-09-06 (note)** in canopy#594 (§4.11). OQ-6 was then answered on 2026-09-22 (N7).
 
 **Status**: all six answered and dispositioned. OQ-N1 and OQ-N3 are closed outright; OQ-N2, N4, N5
-and N6 are accepted with the prerequisites recorded above and specified in §4.
+and N6 are accepted with the prerequisites recorded above and specified in §4. As of 2026-09-23 all
+four have shipped, OQ-N4 with the departures recorded at §4.3 (the §4.x status lines and §7).
 
 ---
 
@@ -578,6 +871,34 @@ observed once. A generator that cannot complete that sequence is seeded **disabl
 (the existing availability-gate idiom), not seeded silently broken. That is the difference between
 closing a capability gap and moving it somewhere less visible.
 
+> **Observed, 2026-09-23 (A-N2).** The loop ran once per seed, through canopy's own HTTP routes (the
+> ones the dashboard's buttons and callbacks use), on an isolated stack. That stack ran data, cascor
+> and canopy from worktrees at `origin/main`, each leg's import proven, plus the recurrence service.
+> Evidence: `reports/2026-09-23_canopy-a-n2-generate-stage-train-render/README.md`, with one
+> dashboard screenshot per run.
+>
+> - **Seven of the eight §12 seeds complete it through Start.** They are `gaussian`, `checkerboard`
+>   and the five rank-3 seeds, and both controls (`spirals`, `equities_seq`) pass too. The LMU's R²
+>   values match §12.6's direct fits.
+> - **`equities` generates and stages, but Start refuses it (409)** whenever the live CasCor network
+>   is narrower than its 15 features. The refusal reads "`dataset (15, 2) exceeds network capacity
+>   (2, 2); resize the network first`". Start continues the current model, and cascor pads a
+>   narrower dataset but refuses a wider one. The loop completes through the restart modal's
+>   **Start fresh**.
+>   - After the refusal, cascor has already switched its loaded dataset, and the routes serve the
+>     previous run's results under an `equities` label.
+>   - `mnist` (784 features) should hit the same refusal by the same code path. It was not run.
+>
+>   So the failing step is the Start path, not the generator. Whether that means disabling the seed
+>   (this section's rule), fixing Start, or pointing the operator at Start fresh is an owner decision.
+> - **Adjacent: Start fresh discards parameters applied just before it.** The restart modal applies
+>   edited parameters (`set_params`) and then restarts. With Start fresh on, cascor rebuilds a
+>   vanilla network at its own defaults, so the edits are silently lost. This was observed through
+>   the two routes the modal calls, not by clicking the modal.
+> - **Caveat on the LMU rows.** The recurrence leg was the installed `juniper-recurrence` console
+>   script (0.5.0, an editable install of the primary checkout). It ran with
+>   juniper-recurrence-model **0.1.5**, not the 0.3.x line `juniper-ml[recurrence]` installs.
+
 ### 12.5 Deployment reality
 
 Several of these will legitimately be `available=false` in the container until the parallel
@@ -593,6 +914,12 @@ proceed independently.
 > normal state of the deployed product. The five rank-3 synthetics seeded in **canopy#612** are
 > numpy-only and declare no `is_available` hook, so they are available everywhere; that is the
 > substantive fix, and the packaging workstream is no longer on the LMU's critical path.
+>
+> **Superseded on juniper-data `main`, 2026-09-23.** juniper-data#421 (`68c3cd7c`, merged 2026-09-23)
+> put the `equities` extra into `requirements.lock` (`yfinance==1.7.0`). It is merged, not released:
+> no juniper-data tag contains it, and v0.15.0, the latest release, has no `yfinance` in its lock
+> (probed 2026-09-23). Until a release carries it, `equities` and `equities_seq` stay greyed, with
+> the producer's install hint, in a container built from a release.
 
 ### 12.6 Execution record and corrections (2026-09-09)
 
@@ -631,6 +958,13 @@ fixed, **could not fit**. Two independent defects, each fatal at a different sta
 | 3 — `mackey_glass` seed inert | **Does not reach canopy.** `seed` is in `INFRASTRUCTURE_FIELDS`, so the schema-driven form neither renders nor forwards it, and juniper-data's synthetic base pins `seed: int = Field(default=0)`. Runs are reproducible. Latent, not absent: it would bite if `seed` were ever added to the form. |
 | 4 — `csv_import` excluded | **Confirmed by execution** — calling it with defaults raises a `ValidationError` (`file_path` required). It is on G10's list. |
 | 5 — `arc_agi` rank unverified | **Answered, and the answer is that it has no fixed rank.** Rank-2 at defaults (`(6, 900)`, 30×30 flattened), but `flatten_pairs` — a plain boolean the params panel **renders** — flips it to rank-3. `DatasetTypeSpec.ndim` is static and cannot express that; a rank-3 `arc_agi` is compatible with nothing (cascor is rank-2 only, recurrence is regression-only). **This is a new trap the design did not contain.** It stays unseeded until the registry can express a variable-rank generator. |
+
+> **Superseded for items 2 and 5, 2026-09-23.** Item 2: G11 is now enforced over every seed by
+> `TestG11EverySeedIsBounded` (canopy#665), which reads `SEEDED_GENERATOR_BOUNDS`: the restatement
+> above, given a constant. `TestEquitiesSeedIsGenerableAndFinite` (canopy#610) still pins what the
+> two equities seeds need in order to generate and fit. Item 5: the params panel no longer renders
+> `flatten_pairs` (canopy#625), and `arc_agi`'s blocker proved to be its `y`, not its rank (§12.9.1,
+> §12.9.2).
 
 **§12.1's table is CORRECT** — and worth recording that the first census contradicted it and the
 census was wrong. `dt[:, 0]` is a `0.0` no-previous-step sentinel; including it makes every
@@ -765,6 +1099,11 @@ Apply. When a defaults channel gains a consumer, ask what else re-sends that val
 The change is a no-op for every cascor seed shipped today: all seven carry `default_params={}`,
 asserted rather than assumed (`test_an_unseeded_dataset_is_unchanged`).
 
+> **Superseded 2026-09-13 (canopy#625).** True when written, with one overstatement: the cited test
+> asserts one of the seven (`xor`), not all of them. `mnist` has since seeded
+> `default_params={"flatten": True}`, so canopy sends the value that makes its `ndim=2` declaration
+> true (§12.9.1). Six of the seven now carry `{}`.
+
 **`equities` needed a third key the rank-3 sibling never did.** Beyond `symbols` and
 `fundamentals_fill`, it needs **`normalize_features=True`**: its columns are raw market
 quantities, and unnormalised CasCor's first output pass reports a loss of **5.83e+21** against
@@ -782,6 +1121,10 @@ string for two generators and saying nothing useful for the rest, behind a comme
 field did not exist. canopy#622 derives the label from the wire and renders the producer's hint
 verbatim in the params panel — label and panel deliberately split, because a `pip install` command
 does not fit in a dropdown option.
+
+> **2026-09-23.** The `equities` extra has been in the lockfile on juniper-data `main` since
+> juniper-data#421, but not yet in any juniper-data release (§12.5), so the greyed option and its
+> install hint are still what a container built from a release shows.
 
 **§12 final state**, against §12.1's ten:
 
@@ -852,6 +1195,13 @@ not see the refusal VR-5 relies on.
 > still returns `ok=True` once the fit thread starts, so a refusal still arrives asynchronously, as a
 > failed status rather than at the control. **VR-5's primary rejection is unaffected**: under VR-5
 > `I-safe` becomes unfalsifiable, as argued above. Only this compounding argument has weakened.
+>
+> **Precision, 2026-09-23.** canopy#651 shipped both halves of the reporting defect, in two places:
+> `_completion_reason_label` maps recurrence's three tokens (`max_epochs`, `early_stopping`,
+> `converged`), and the missing `Failed` branch is in `_build_unified_status_bar_content`, which
+> renders the error through `_failure_reason_label`. Re-checked on canopy `main`:
+> `RecurrenceBackend.start_training` still returns `ok=True` right after `thread.start()`, so the
+> note's "other half" stands.
 
 **VR-2: a range misdescribes the domain; a set does not.** Rank is an integer and 2 and 3 are
 adjacent, so "strictly between" is uninhabitable — a range promises a density that cannot exist.
@@ -860,6 +1210,10 @@ adjacent, so "strictly between" is uninhabitable — a range promises a density 
 rather than now: `src/tests/regression/test_selection_reachability_guardrails.py:604` already
 exercises `input_ndim=frozenset({4})`, and a future generator reachable at `{2,4}` would be
 actively misdescribed by `2 ≤ rank ≤ 4`.
+
+> **Line drift, 2026-09-23.** The `frozenset({4})` case is the `m_vol` entry of `SYNTH_MODELS`,
+> G1c's synthetic registry in `test_selection_reachability_guardrails.py`; the `:604` above has
+> moved. The argument is unchanged.
 
 **VR-3 fails because the operator is asymmetric and fails silently.** `:545` is `scalar in set`.
 `frozenset`, `tuple` and `range` all evaluate `False`; only `list` raises. A container `ndim` would
@@ -928,6 +1282,15 @@ backend. Nothing exercises `False`.
 Filed as **canopy#623**. **This is the item §12 should have produced, and the variable-rank
 question is what surfaced it.**
 
+> **Fixed 2026-09-13 and 2026-09-21; true when written.** canopy#625 (`f7bbc4ee`) closed canopy#623:
+> `SHAPE_DETERMINING_FIELDS` withholds `flatten` for `mnist` and `flatten_pairs` for `arc_agi` from
+> the rendered form, keyed per generator as §12.9.3 asked, and `mnist` now seeds `flatten: True`.
+> canopy#644 (`ba3b16ff`) enforced the forward half: `_apply_dataset_handler` filters the form's
+> params through the same `form_excluded_fields`, so a control left over in a stale tab cannot send
+> `flatten: False`, and `test_a_fabricated_control_id_cannot_override_the_withheld_knob` exercises
+> exactly that. The two tests cited above are still present and test other layers: the schema
+> parser still maps a boolean to a checkbox, and the stage route still forwards `flatten: True`.
+
 #### 12.9.2 `arc_agi`'s blocker is its `y`, not its rank
 
 The second finding retires the question rather than answering it. **Solving rank would not make
@@ -952,6 +1315,12 @@ one step short of the cause. The entry should name the `y`-shape and `task_type`
 `task_type` question belongs upstream alongside the other `arc_agi` corrections in
 `JUNIPER_2026-09-01_JUNIPER-DATA_ASYNC-JOB-PATTERN-DECISION-ANALYSIS.md`.
 
+> **Done upstream, 2026-09-15; true when written.** juniper-data#402 (`f3797634`, released in
+> v0.15.0) registers `arc_agi` with `task_type` `TASK_TYPE_STRUCTURED` ("structured"), its comment
+> naming the grid `y`. canopy's `UNSEEDED_GENERATORS["arc_agi"]` gives the `y`-shape as the reason
+> (since canopy#625) and records the upstream move. No model's `supported_task_types` contains
+> "structured", so the incompatibility is now explicit, and `arc_agi` stays unseeded.
+
 #### 12.9.3 What to ship
 
 **Not a registry change.** `compatible()` is untouched.
@@ -970,6 +1339,10 @@ one step short of the cause. The entry should name the `y`-shape and `task_type`
    becomes correct, costs two seeds and two aliases, introduces **zero** new concepts, and uses the
    defaults channel canopy#621 shipped. It is cheap *then* and premature *now*.
 
+> **Shipped, 2026-09-23 note.** Item 1 in canopy#625 (render) and canopy#644 (forward), keyed per
+> generator through `form_excluded_fields`; item 2 in canopy#625; item 3 needed no change, and
+> `compatible()` is untouched (§12.9.1).
+
 **Two unrelated defects surfaced in passing**, both in the same "the panel renders every scalar the
 schema declares" class, and neither belongs to §12:
 
@@ -978,6 +1351,10 @@ schema declares" class, and neither belongs to §12:
   `INFRASTRUCTURE_FIELDS` (`src/dataset_schema.py:83`) predates those four fields.
 - `sizing_mode` renders as a **free text box** — the schema emits `type: string` with no enum — so a
   typo becomes a 422 from juniper-data.
+
+> **Fixed 2026-09-16; true when written.** canopy#632 (`812f26c0`, closing canopy#630) added
+> `sizing_mode`, `val_percent`, `test_percent` and `val_ratio` to `INFRASTRUCTURE_FIELDS`, so none of
+> the four renders or is forwarded, which also removes the free-text `sizing_mode` box.
 
 **Corrected §12 final state**, superseding §12.8's table on the `arc_agi` row only:
 
@@ -989,3 +1366,7 @@ schema declares" class, and neither belongs to §12:
 `arc_agi` is no longer waiting on a design decision. The decision was taken here: **the registry
 expresses a single rank, and a generator whose rank the operator can flip has that knob withheld
 rather than described.**
+
+> **2026-09-23.** The table's `arc_agi` row describes juniper-data before juniper-data#402
+> (2026-09-15), which re-registered `arc_agi` as "structured" (§12.9.2). The row's conclusion is
+> unchanged: no model accepts it, and it stays unseeded.

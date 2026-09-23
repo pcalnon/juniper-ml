@@ -1,0 +1,198 @@
+# http://127.0.0.1:8061/dashboard/ status=200 captured 46.6s after navigation
+
+Juniper Canopy Dashboard
+
+Real-time monitoring for Cascade Correlation Neural Networks
+
+🌙
+●
+Status: Completed — early stopped
+|
+Phase: Output Training
+|
+Step: 11
+|
+Hidden Units: 10 / 10
+Latency: 4ms
+WS: Connected
+Training Controls
+▶ Start Training
+⏸ Pause Training
+⏯ Resume Training
+⏹ Stop Training
+↻ Reset Training
+Meta Parameters
+▼Neural Network
+
+Maximum Iterations:
+
+Maximum Total Epochs:
+
+Output Epochs (per pass):
+
+Output Weight Init:
+
+Zero
+
+Output Optimizer:
+
+Adam
+
+Activation Function:
+
+Tanh
+
+Learning Rate:
+
+Maximum Hidden Units:
+
+▼Multi-Node Layers
+Enable multi-node layers
+▼Network Growth Triggers
+Preset Epochs
+Convergence Detection
+
+Number of Epochs:
+
+Convergence Threshold:
+
+Patience (epochs):
+
+Model:
+
+Active: CasCor (Cascade-Correlation)
+▸ change
+rank-2 (tabular) models only
+▼Current Dataset — Spirals
+
+Spiral:
+
+Rotations:
+
+Number:
+
+Dataset:
+
+Elements:
+
+Noise:
+
+Type:
+
+Spirals
+Apply DatasetLive Dataset Switch
+▶Candidate Nodes
+Apply Parameters
+Network Information
+
+Input Nodes: 2
+
+Hidden Units: 10 / 10
+
+Output Nodes: 2
+
+Training Step: 11
+
+Epoch (in phase): —
+
+Iteration: 9 / 1000000
+
+Training Phase: Idle
+
+Network Connected: Yes
+
+Monitoring: Inactive
+
+▶Network Information: Details
+Experimental Functions
+Enable Experimental Functions
+Training Metrics
+Candidate Metrics
+Network Topology
+Network Evolution
+Decision Boundary
+Dataset View
+Workers
+Parameters
+Snapshots
+Replay
+Network Editor
+Redis
+Cassandra
+Tutorial
+About
+Training MetricsStatus: OutputGrowth Iteration 9/1000000 | Best Corr: 0.2554 | Candidates: 40/40Phase Duration: 6m 42s
+💾 Save
+|
+Select layout...
+📂 Load
+🗑️
+⏮
+◀
+▶
+▶
+⏭
+|
+1x
+2x
+4x
+0 / 499
+Display Mode:
+Sliding Window
+Full History
+Between Hidden Units
+Window:
+Training Step
+11
+Loss
+0.0474
+Accuracy
+96.30%
+Hidden Units
+10 / 10
+Learning Rate
+0.100000
+Cascade Iteration
+9/10
+Candidate Epoch
+0
+2k
+4k
+6k
+8k
+10k
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+Training Loss Over Time
+Output Training
+Candidate Training
+Validation Loss
+Iteration
+Loss
++Unit #10
+0
+2k
+4k
+6k
+8k
+10k
+0%
+20%
+40%
+60%
+80%
+100%
+Classification Metrics
+Accuracy
+F1
+Precision
+Recall
+ROC-AUC
+Validation Accuracy
+Iteration
+Score
++Unit #10
