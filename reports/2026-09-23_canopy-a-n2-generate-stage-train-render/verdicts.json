@@ -1,0 +1,277 @@
+[
+  {
+    "case": "01_spirals_control",
+    "model": "cascor",
+    "value": "spirals",
+    "generator": "spiral",
+    "generate": [
+      "PASS",
+      "spiral-3.0.0-16e3f162cf258238 train/val/test 1000/400/300, 2 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; COMPLETED (early_stopped) in 152.06 s"
+    ],
+    "render": [
+      "PASS",
+      "history 0->4422 rows; current_dataset=spirals, /api/dataset num_features=2; dashboard status bar at last sample (dashboard_final_timeline.json): 'Completed \u2014 early stopped'"
+    ],
+    "final_metric": "loss=0.04744 train_acc=0.963 val_acc=0.9725 test_f1=0.95; hidden=10",
+    "train_wall_s": 152.06,
+    "case_wall_s": 156.62
+  },
+  {
+    "case": "02_gaussian",
+    "model": "cascor",
+    "value": "gaussian",
+    "generator": "gaussian",
+    "generate": [
+      "PASS",
+      "gaussian-3.0.0-cc2b5b8f05c7b9d9 train/val/test 100/40/30, 2 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; COMPLETED (early_stopped) in 5.76 s"
+    ],
+    "render": [
+      "PASS",
+      "history 4422->4432 rows; current_dataset=gaussian, /api/dataset num_features=2; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 early stopped'"
+    ],
+    "final_metric": "loss=0.00292 train_acc=1 val_acc=1 test_f1=1; hidden=11",
+    "train_wall_s": 5.76,
+    "case_wall_s": 7.46
+  },
+  {
+    "case": "03_checkerboard",
+    "model": "cascor",
+    "value": "checkerboard",
+    "generator": "checkerboard",
+    "generate": [
+      "PASS",
+      "checkerboard-3.0.0-01064f5fe366ae03 train/val/test 200/80/60, 2 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; COMPLETED (max_iterations) in 12.54 s"
+    ],
+    "render": [
+      "PASS",
+      "history 4432->4477 rows; current_dataset=checkerboard, /api/dataset num_features=2; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 max iterations'"
+    ],
+    "final_metric": "loss=0.2479 train_acc=0.5 val_acc=0.4875 test_f1=0.663; hidden=19",
+    "train_wall_s": 12.54,
+    "case_wall_s": 14.48
+  },
+  {
+    "case": "04_equities",
+    "model": "cascor",
+    "value": "equities",
+    "generator": "equities",
+    "generate": [
+      "PASS",
+      "equities-5.0.0-efb9b8316674e4ce train/val/test 15881/1986/1983, 15 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "FAIL",
+      "start -> 409: {\"detail\": \"Training could not be started: Training cannot be started: _pad_dataset_for_network: dataset (15, 2) exceeds network capacity (2, 2); resize the network first\"}"
+    ],
+    "render": [
+      "N/A",
+      "no run to render -- history 4477->4477 rows; current_dataset=equities, /api/dataset num_features=15; dashboard status bar at last sample (dashboard_after_refused_start_timeline.json): 'Completed \u2014 max iterations'"
+    ],
+    "final_metric": "loss=0.2479 train_acc=0.5 val_acc=0.4875 test_f1=0.663; hidden=19",
+    "train_wall_s": null,
+    "case_wall_s": 17.78
+  },
+  {
+    "case": "04_equities__restart-fresh",
+    "model": "cascor",
+    "value": "equities",
+    "generator": "equities",
+    "generate": [
+      "PASS",
+      "re-served equities-5.0.0-efb9b8316674e4ce (POST /v1/datasets 201, artifact GET 200)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "restart-fresh -> 200; COMPLETED (below_threshold) in 33.28 s"
+    ],
+    "render": [
+      "PASS",
+      "history 4477->804 rows; current_dataset=equities, /api/dataset num_features=15; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 converged'"
+    ],
+    "final_metric": "loss=0.2489 train_acc=0.5262 val_acc=0.5342 test_f1=0.488; hidden=1",
+    "train_wall_s": 33.28,
+    "case_wall_s": 37.24
+  },
+  {
+    "case": "05_multi_sine",
+    "model": "recurrence",
+    "value": "multi_sine",
+    "generator": "multi_sine",
+    "generate": [
+      "PASS",
+      "multi_sine-3.0.0-8dfa94a78568d243 train/val/test 1574/197/197, 1 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; trained (converged) in 0.42 s"
+    ],
+    "render": [
+      "PASS",
+      "history 0->1 rows; /api/dataset names multi_sine-3.0.0-8dfa94a78568d243; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 converged'"
+    ],
+    "final_metric": "r2=1 mse=1.73e-15",
+    "train_wall_s": 0.42,
+    "case_wall_s": 0.61
+  },
+  {
+    "case": "06_mackey_glass",
+    "model": "recurrence",
+    "value": "mackey_glass",
+    "generator": "mackey_glass",
+    "generate": [
+      "PASS",
+      "mackey_glass-3.0.0-f3f55d08e42c7141 train/val/test 1574/197/197, 1 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; trained (converged) in 0.21 s"
+    ],
+    "render": [
+      "PASS",
+      "history 1->1 rows; /api/dataset names mackey_glass-3.0.0-f3f55d08e42c7141; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 converged'"
+    ],
+    "final_metric": "r2=0.9999 mse=5.96e-06",
+    "train_wall_s": 0.21,
+    "case_wall_s": 0.29
+  },
+  {
+    "case": "07_irregular_sine",
+    "model": "recurrence",
+    "value": "irregular_sine",
+    "generator": "irregular_sine",
+    "generate": [
+      "PASS",
+      "irregular_sine-3.0.0-4a5904b53d15aa7d train/val/test 1574/197/197, 1 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; trained (converged) in 0.21 s"
+    ],
+    "render": [
+      "PASS",
+      "history 1->1 rows; /api/dataset names irregular_sine-3.0.0-4a5904b53d15aa7d; dashboard status bar at last sample (dashboard_timeline.json): 'Stopped'"
+    ],
+    "final_metric": "r2=0.9918 mse=0.0162",
+    "train_wall_s": 0.21,
+    "case_wall_s": 0.33
+  },
+  {
+    "case": "08_ar_p",
+    "model": "recurrence",
+    "value": "ar_p",
+    "generator": "ar_p",
+    "generate": [
+      "PASS",
+      "ar_p-3.0.0-623a212735964d0a train/val/test 1574/197/197, 1 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; trained (converged) in 0.42 s"
+    ],
+    "render": [
+      "PASS",
+      "history 1->1 rows; /api/dataset names ar_p-3.0.0-623a212735964d0a; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 converged'"
+    ],
+    "final_metric": "r2=0.0429 mse=0.0122",
+    "train_wall_s": 0.42,
+    "case_wall_s": 0.61
+  },
+  {
+    "case": "09_delay_product",
+    "model": "recurrence",
+    "value": "delay_product",
+    "generator": "delay_product",
+    "generate": [
+      "PASS",
+      "delay_product-3.0.0-10ae313fa6bdef23 train/val/test 1574/197/197, 1 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; trained (converged) in 0.21 s"
+    ],
+    "render": [
+      "PASS",
+      "history 1->1 rows; /api/dataset names delay_product-3.0.0-10ae313fa6bdef23; dashboard status bar at last sample (dashboard_timeline.json): 'Stopped'"
+    ],
+    "final_metric": "r2=0.005281 mse=2.48",
+    "train_wall_s": 0.21,
+    "case_wall_s": 0.3
+  },
+  {
+    "case": "10_equities_seq_control",
+    "model": "recurrence",
+    "value": "equities_seq",
+    "generator": "equities_seq",
+    "generate": [
+      "PASS",
+      "equities_seq-5.0.0-c7916412c2344e07 train/val/test 15561/1986/1983, 15 feature(s)"
+    ],
+    "stage": [
+      "PASS",
+      "POST /api/stage_dataset -> 200"
+    ],
+    "train": [
+      "PASS",
+      "start -> 200; trained (converged) in 75.38 s"
+    ],
+    "render": [
+      "PASS",
+      "history 1->1 rows; /api/dataset names equities_seq-5.0.0-c7916412c2344e07; dashboard status bar at last sample (dashboard_timeline.json): 'Completed \u2014 converged'"
+    ],
+    "final_metric": "r2=0.00842 mse=0.000441",
+    "train_wall_s": 75.38,
+    "case_wall_s": 75.56
+  }
+]

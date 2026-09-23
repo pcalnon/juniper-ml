@@ -26,16 +26,32 @@ Nothing here reads a git checkout.
     python3 -m venv /tmp/v && /tmp/v/bin/pip install 'juniper-ml[clients,tools,recurrence]==0.8.0'
     /tmp/v/bin/python util/ad-hoc/2026-09-21_decision11_wheel_contract_probe.py
 
-Exit code is the number of FAILed checks (0 = all passed / skipped).
+Coverage takes TWO venvs, because ``[servers]`` is not in the client install and each venv
+SKIPs the other half. Record each run, then union them::
+
+    /tmp/va/bin/python <this> --json-out a.json      # juniper-ml[clients,tools,recurrence]
+    /tmp/vb/bin/python <this> --json-out b.json      # juniper-ml[servers]
+    python3 <this> --union a.json b.json
+
+Exit status (changed 2026-09-23 -- it used to be the FAIL count alone, so a SKIP scored as a
+pass and a venv holding none of the packages exited 0):
+
+- a single run: the FAIL count, or 1 if nothing PASSed at all; ``--strict`` also counts SKIPs.
+- ``--union``: FAILs in any run, plus every check that SKIPped in EVERY run -- a check no venv
+  could run is uncovered, not passed.
 """
 
 from __future__ import annotations
 
+import argparse
 import importlib
 import importlib.util
 import io
+import json
+import re
 import sys
 import traceback
+from pathlib import Path
 from typing import Callable
 
 import numpy as np
@@ -850,26 +866,59 @@ def c_ml_metapackage() -> str:
     return f"juniper-ml {d.version}: 0 importable modules, {len(reqs)} extra-scoped requirements"
 
 
-def c_ml_floors_resolve_to_d11() -> str:
+def _vt(version: str) -> "tuple[int, ...]":
+    """``"0.15.0"`` -> ``(0, 15, 0)``: each component's LEADING digits, stopping at the first
+    component that has a suffix (``0rc1``) or none. Pre-release ordering is ignored, which is
+    right for a floor: ``0.11.0rc1`` reads as ``0.11.0``."""
+    parts = []
+    for part in version.split("+")[0].split("."):
+        match = re.match(r"\d+", part)
+        if match is None:
+            break
+        parts.append(int(match.group()))
+        if match.end() != len(part):
+            break
+    return tuple(parts)
+
+
+def _floors_hold(want: "dict[str, str]") -> "dict[str, str]":
     import importlib.metadata as md
 
-    want = {
-        "juniper-data-client": "0.5.0",
-        "juniper-cascor-client": "0.8.0",
-        "juniper-model-core": "0.3.2",
-        "juniper-recurrence": "0.5.0",
-        "juniper-recurrence-client": "0.3.0",
-        "juniper-recurrence-model": "0.3.0",
-    }
-    got = {}
-    for name in want:
-        try:
-            got[name] = md.version(name)
-        except md.PackageNotFoundError:
-            got[name] = None
-    missing = [k for k, v in got.items() if v is None]
-    assert not missing, f"not installed here: {missing}"
-    return f"installed set: {got}"
+    got = {name: md.version(name) for name in want}
+    below = {name: f"{got[name]} < {floor}" for name, floor in want.items() if _vt(got[name]) < _vt(floor)}
+    assert not below, f"installed BELOW the decision-11 version: {below}"
+    return got
+
+
+# The client-side set. Presence alone was all this asserted until 2026-09-23 -- ``want`` held
+# versions nothing compared -- and it was gated on juniper-ml alone, so a [servers] venv FAILed it.
+ML2_FLOORS = {
+    "juniper-data-client": "0.5.0",
+    "juniper-cascor-client": "0.8.0",
+    "juniper-model-core": "0.3.2",
+    "juniper-recurrence": "0.5.0",
+    "juniper-recurrence-client": "0.3.0",
+    "juniper-recurrence-model": "0.3.0",
+}
+
+# The [servers] set as juniper-ml 0.10.0 floors it. juniper-data 0.15.0 is the R-5 raise: 0.14.0
+# still serves equities at 3.0.0, and a floor that admits it lets an old venv keep it.
+ML3_FLOORS = {"juniper-data": "0.15.0", "juniper-canopy": "0.8.1", "juniper-cascor": "0.11.0"}
+
+
+def c_ml_floors_resolve_to_d11() -> str:
+    return f"installed set, every one at or above its decision-11 version: {_floors_hold(ML2_FLOORS)}"
+
+
+def c_ml_servers_floors_serve_equities_5() -> str:
+    from juniper_data.api.routes import generators as g
+
+    got = _floors_hold(ML3_FLOORS)
+    equities = {name[: -len("_VERSION")].lower(): getattr(g, name) for name in dir(g) if name.startswith("EQUITIES") and name.endswith("_VERSION")}
+    assert equities, "no EQUITIES*_VERSION constants found"
+    stale = {k: v for k, v in equities.items() if _vt(v) < (5, 0, 0)}
+    assert not stale, f"equities generators below 5.0.0 (the #404 correction): {stale}"
+    return f"{got}; {equities}"
 
 
 # --------------------------------------------------------------------------------------
@@ -913,11 +962,46 @@ CHECKS: list[tuple[str, Callable[[], str], tuple[str, ...]]] = [
     ("CP-4  canopy missing-module inventory (DEFECT PROBE)", c_cp_missing_top_level_modules, ("juniper_canopy",)),
     ("CP-5  canopy validation_gate.decide (0.8.x only)", c_cp_validation_gate_decide, ("juniper_canopy", "validation_gate")),
     ("ML-1  juniper-ml is a pure meta-package", c_ml_metapackage, ("dist:juniper-ml",)),
-    ("ML-2  juniper-ml resolved set", c_ml_floors_resolve_to_d11, ("dist:juniper-ml",)),
+    ("ML-2  juniper-ml resolved set", c_ml_floors_resolve_to_d11, ("dist:juniper-ml", *(f"dist:{name}" for name in ML2_FLOORS))),
+    ("ML-3  juniper-ml [servers] floors + equities 5.0.0", c_ml_servers_floors_serve_equities_5, ("dist:juniper-ml", *(f"dist:{name}" for name in ML3_FLOORS), "juniper_data.api.routes.generators")),
 ]
 
 
-def main() -> int:
+def union(paths: "list[str]") -> int:
+    """Merge per-venv ``--json-out`` records: FAIL anywhere fails; SKIP everywhere is uncovered."""
+    runs = [json.loads(Path(path).read_text()) for path in paths]
+    order = [cid for cid, _fn, _reqs in CHECKS]
+    statuses: "dict[str, list[str]]" = {cid: [] for cid in order}
+    for run_record in runs:
+        print(f"run: python {run_record['python']}  prefix {run_record['prefix']}")
+        for row in run_record["results"]:
+            statuses.setdefault(row["id"], []).append(row["status"])
+    print("=" * 100)
+    n_fail = n_uncovered = n_pass = 0
+    for cid, seen in statuses.items():
+        if "FAIL" in seen:
+            verdict = "FAIL"
+            n_fail += 1
+        elif "PASS" in seen:
+            verdict = "PASS"
+            n_pass += 1
+        else:
+            verdict = "UNCOVERED"
+            n_uncovered += 1
+        print(f"  [{verdict:9}] {cid}: {'/'.join(seen) or 'absent from every run'}")
+    print("=" * 100)
+    print(f"UNION over {len(runs)} run(s): PASS={n_pass}  FAIL={n_fail}  UNCOVERED={n_uncovered}  (of {len(statuses)} checks)")
+    return n_fail + n_uncovered
+
+
+def main(argv: "list[str] | None" = None) -> int:
+    parser = argparse.ArgumentParser(description="Behavioural decision-11 contract probe over the published wheels.")
+    parser.add_argument("--json-out", help="write this run's per-check results as JSON, for --union")
+    parser.add_argument("--union", nargs="+", metavar="JSON", help="merge --json-out records from several venvs instead of running checks")
+    parser.add_argument("--strict", action="store_true", help="a single run also counts SKIPs as failures")
+    args = parser.parse_args(argv)
+    if args.union:
+        return union(args.union)
     print(f"python: {sys.version.split()[0]}   prefix: {sys.prefix}")
     print("=" * 100)
     for cid, fn, reqs in CHECKS:
@@ -927,7 +1011,15 @@ def main() -> int:
     n_pass = sum(1 for s, _, _ in RESULTS if s == "PASS")
     n_skip = sum(1 for s, _, _ in RESULTS if s == "SKIP")
     print(f"PASS={n_pass}  FAIL={n_fail}  SKIP={n_skip}")
-    return n_fail
+    if args.json_out:
+        record_out = {"python": sys.version.split()[0], "prefix": sys.prefix, "results": [{"id": cid, "status": status, "detail": detail} for status, cid, detail in RESULTS]}
+        Path(args.json_out).write_text(json.dumps(record_out, indent=2) + "\n")
+    if n_skip:
+        print(f"NOTE: {n_skip} check(s) SKIPPED here -- a SKIP is not a pass; cover them with --union across venvs")
+    if n_pass == 0:
+        print("NOTHING PASSED -- this venv holds none of the packages under test")
+        return max(n_fail, 1)
+    return n_fail + (n_skip if args.strict else 0)
 
 
 if __name__ == "__main__":

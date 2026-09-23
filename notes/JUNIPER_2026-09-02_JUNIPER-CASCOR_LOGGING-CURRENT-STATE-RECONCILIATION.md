@@ -136,6 +136,21 @@ plain `logging.FileHandler` at **DEBUG** writing **the same file**. `Fix C1` (`l
 rewrites the YAML's relative `filename:` to an absolute path so the destination is not CWD-dependent.
 Records carry **no** `+` and a **millisecond** timestamp `(2026-09-01 05:35:56,045)`.
 
+> **CORRECTION 2026-09-23 — Path B is SECOND resolution; the millisecond records are Path C.** The
+> YAML sets `datefmt: "%Y-%m-%d %H:%M:%S"` (`conf/logging_config.yaml:48`), and a stdlib
+> `Formatter` with a `datefmt` emits no milliseconds. Path C's `RotatingFileHandler` sets **no**
+> `datefmt` (`api/observability.py:118`), so it gets the default `,mmm`. The example above,
+> `(2026-09-01 05:35:56,045)`, is `auth_posture.py: enforce_auth_posture:121` — a Path C record.
+> Measured on real captures by juniper-ml `util/ad-hoc/2026-09-22_p04_log_shape_survey.py`: the
+> 2026-09-01 service run's `.1` holds 77,796 Path A, **10,351 second-resolution** stdlib records
+> (Path B) and **24 millisecond** ones (Path C); the P0.1 direct-CLI run holds 1,218 Path B
+> records, all second-resolution, and no Path C at all. **So B and C ARE distinguishable on disk**,
+> by timestamp precision — the paragraph below and N-4's timestamp row are corrected to match. Two
+> further facts from the same survey: the run-verdict markers (`fit: Training completed.`,
+> `train_candidates: Executing …`, `Completed solving SpiralProblem instance`) are **Path B**
+> records, not Path A; and Path B's ERROR-and-above records also reach stdout in the YAML's
+> `formatter_console` shape, which has a **two-digit year** (`%y`).
+
 ### Path C — the API tier's JSON logging
 
 `src/api/observability.py:75` — a **local fork** of `juniper_observability.configure_logging`, adding a
@@ -159,6 +174,9 @@ One experiment run, `~/.local/state/juniper-experiments/20260901T103548Z-befc/lo
 (`api/observability.py:119`) is byte-identical to Path B's `formatter_file`
 (`conf/logging_config.yaml:47`), so the 10,375 non-`+` records above are Path B ∪ Path C. Any
 per-path byte census must either instrument the writers or report `A` vs `{B ∪ C}`.
+**[Superseded 2026-09-23 — see the correction above: the FORMAT strings are identical but the
+`datefmt` is not, so precision separates them — `,mmm` is Path C. P0.3(a) can split B from C
+without instrumentation.]**
 
 **Every Path-A record is written to disk twice** — once by `open()`/`write()`, once by `print()` into
 a redirected stdout — in two *different* formats (the console formatter omits the function name:
@@ -428,6 +446,33 @@ the record layout. That is the hazard: the guardrail must live in juniper-ml, no
 **The prefix exists in three places, not one**: `constants_logging.py:152` (Path A file),
 `conf/logging_config.yaml:47` (Path B), and a **hardcoded third copy** at `api/observability.py:119`
 (Path C). Any "hold the format stable" guardrail that scopes only Path A misses two of them.
+
+> **CORRECTION 2026-09-23 — three rows of this section, measured by a mechanical census rather than
+> a grep.** juniper-ml `util/ad-hoc/2026-09-22_p04_log_marker_census.py` parses every juniper-ml
+> file that names a cascor log (33 files, 18 carrying anchors, 104 anchors) and resolves each anchor
+> against cascor's source.
+>
+> - **The `[file.py: func:LINE]` row is wrong: three scripts DO anchor on it** — 8 anchors in
+>   `2026-08-16_h2h_collect.py` (`fit:1918`, `fit:1936`, `calculate_accuracy:\d+\]`,
+>   `summary:\d+\]`), `2026-08-16_h2h_marker_sentinel.bash` (`fit:1918|fit:1936`) and
+>   `2026-08-18_h2h_pair_compare.py` (`grow_network:\d+\]`, `calculate_accuracy:\d+\]`,
+>   `fit:\d+\]`). They predate the 2026-08-20 "methodology rule 5" and the grep that concluded
+>   "none" searched for `funcName`, `split`, `awk -F']'` and `cut -d']'` — not for a regex of the
+>   form `\w+:\d+\]`. The two with PINNED line numbers (`fit:1918` / `fit:1936`) have already been
+>   silently dead since `cascade_correlation.py` moved.
+> - **The timestamp row's three strict parsers fail on Path C only**, not on Path B — Path B is
+>   second resolution (§3's correction).
+> - **The message-text row is 35 markers from 18 scripts**, 10 of whose anchors are already GONE
+>   from cascor (8 diagnostic-branch `DIAG` markers, and 2 `_reload_dataset:`-prefixed messages
+>   that no longer exist in that form on `main`).
+> - **The prefix has a fourth copy**, `conf/logging_config-CANOPY.yaml`, which no loader reads; and
+>   **the `+` sentinel is in no formatter string at all** — it is written by `_log_at_level`'s code
+>   (`logger.py:581-582`). Current anchors: Path A's file/console prefixes are
+>   `src/cascor_constants/constants_logging/constants_logging.py:152` / `:156`, Path C's is
+>   `api/observability.py:118`.
+> - **"The guardrail must live in juniper-ml" is superseded.** Roadmap P0.4 enforces the envelope
+>   and the marker inventory IN CASCOR CI, where a breaking change fails its own PR —
+>   [cascor#680](https://github.com/pcalnon/juniper-cascor/pull/680).
 
 Note also that Path A and Path B/C emit **different timestamp formats into the same file**, and 3 of
 the 6 parsers cannot read the millisecond form.

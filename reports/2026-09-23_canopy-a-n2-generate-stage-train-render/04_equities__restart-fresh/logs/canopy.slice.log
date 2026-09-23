@@ -1,0 +1,7 @@
+2026-09-23 14:42:47,557 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via WS: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs']
+2026-09-23 14:42:47,562 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated via REST: ['candidate_epochs']
+2026-09-23 14:42:47,566 [INFO] juniper_canopy.backend.cascor_service_adapter: Cascor params updated: ['max_iterations', 'epochs_max', 'max_hidden_units', 'output_epochs', 'candidate_epochs']
+2026-09-23 14:42:47 | system | INFO | Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:42:47,566 [INFO] system: Parameters updated: {'nn_max_iterations': 8, 'nn_max_total_epochs': 60, 'nn_max_hidden_units': 32, 'nn_output_epochs': 60, 'cn_training_iterations': 40}
+2026-09-23 14:43:22,512 [INFO] juniper_canopy.backend.cascor_service_adapter: Training complete event received from cascor
+2026-09-23 14:43:23,933 [WARNING] juniper_canopy.backend.cascor_service_adapter: Failed to get decision boundary: JuniperCascorClientError: HTTP 500: Failed to compute decision boundary

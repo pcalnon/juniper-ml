@@ -1,0 +1,72 @@
+{
+  "ids_before": 7,
+  "ids_after": 8,
+  "new_ids": [
+    "ar_p-3.0.0-623a212735964d0a"
+  ],
+  "meta": {
+    "ar_p-3.0.0-623a212735964d0a": {
+      "url": "http://127.0.0.1:8111/v1/datasets/ar_p-3.0.0-623a212735964d0a",
+      "status": 200,
+      "elapsed_s": 0.024,
+      "body": {
+        "dataset_id": "ar_p-3.0.0-623a212735964d0a",
+        "generator": "ar_p",
+        "generator_version": "3.0.0",
+        "params": {
+          "n_steps": 2000,
+          "lookback": 32,
+          "horizon": 1,
+          "sample_dt": 1.0,
+          "train_ratio": 0.8,
+          "val_ratio": 0.1,
+          "seed": 0,
+          "scaling": "identity",
+          "coefficients": [
+            0.5,
+            -0.3
+          ],
+          "const": 0.0,
+          "sigma": 0.1,
+          "burn_in": 100
+        },
+        "n_samples": 1968,
+        "n_features": 1,
+        "task_type": "regression",
+        "n_classes": null,
+        "n_train": 1574,
+        "n_val": 197,
+        "n_test": 197,
+        "class_distribution": null,
+        "sequence": true,
+        "lookback": 32,
+        "time_unit": "steps",
+        "dt_scaling": {
+          "method": "identity"
+        },
+        "target_scaling": {
+          "y": {
+            "method": "identity"
+          }
+        },
+        "truncation": null,
+        "data_quality": null,
+        "artifact_formats": [
+          "npz"
+        ],
+        "created_at": "2026-09-23T19:49:44.279549Z",
+        "checksum": "75689f817ac99899df8cbe74f5d0cedb804efe08f979f76e16c4888f66550d0a",
+        "dataset_name": null,
+        "dataset_version": null,
+        "parent_dataset_id": null,
+        "description": null,
+        "created_by": null,
+        "tags": [],
+        "ttl_seconds": null,
+        "expires_at": null,
+        "last_accessed_at": "2026-09-23T19:49:44.298753Z",
+        "access_count": 1
+      }
+    }
+  }
+}

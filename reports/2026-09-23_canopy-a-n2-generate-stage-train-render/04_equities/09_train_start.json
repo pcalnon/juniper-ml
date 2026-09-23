@@ -1,0 +1,11 @@
+{
+  "step": "train_start",
+  "t_utc": "2026-09-23T19:40:48.787Z",
+  "method": "POST",
+  "url": "http://127.0.0.1:8061/api/train/start",
+  "status": 409,
+  "response": {
+    "detail": "Training could not be started: Training cannot be started: _pad_dataset_for_network: dataset (15, 2) exceeds network capacity (2, 2); resize the network first"
+  },
+  "elapsed_s": 15.595
+}

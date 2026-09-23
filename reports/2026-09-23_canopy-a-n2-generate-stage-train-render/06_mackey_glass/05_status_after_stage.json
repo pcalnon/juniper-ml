@@ -1,0 +1,27 @@
+{
+  "step": "status_after_stage",
+  "t_utc": "2026-09-23T19:47:14.075Z",
+  "method": "GET",
+  "url": "http://127.0.0.1:8061/api/status",
+  "status": 200,
+  "response": {
+    "is_training": false,
+    "is_running": false,
+    "is_paused": false,
+    "completed": true,
+    "failed": false,
+    "fsm_status": "trained",
+    "phase": "complete",
+    "network_connected": true,
+    "monitoring_active": false,
+    "pending_dataset": {
+      "nn_dataset_type": "mackey_glass"
+    },
+    "current_dataset": {
+      "dataset_type": "multi_sine"
+    },
+    "current_epoch": 1,
+    "completion_reason": "converged"
+  },
+  "elapsed_s": 0.003
+}

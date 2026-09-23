@@ -1,0 +1,108 @@
+INFO:     Started server process [3802524]
+INFO:     Waiting for application startup.
+2026-09-23 14:27:15,278 [INFO] juniper_data: JuniperData API v0.15.0 starting
+2026-09-23 14:27:15,278 [WARNING] juniper_data: juniper-data is running OPEN — no API-key authentication is configured and require_auth is False, so protected routes will serve UNAUTHENTICATED. Set require_auth=True and populate the API-key secret to fail closed in a secured deployment.
+2026-09-23 14:27:15,279 [INFO] juniper_data: Storage path: /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/317c1df2-5970-4312-96f5-ab61df517bb2/scratchpad/a-n2-run/data/datasets
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8111 (Press CTRL+C to quit)
+INFO:     127.0.0.1:57376 - "GET /v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44666 - "GET /v1/health/live HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42236 - "GET /v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42248 - "GET /v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51650 - "GET /v1/datasets?limit=10000 HTTP/1.1" 422 Unprocessable Content
+INFO:     127.0.0.1:40208 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40220 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:40220 - "GET /v1/datasets/spiral-3.0.0-16e3f162cf258238/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47980 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47992 - "GET /v1/datasets/spiral-3.0.0-16e3f162cf258238 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58426 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58442 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46298 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46306 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47096 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47100 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55016 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55022 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:55022 - "GET /v1/datasets/gaussian-3.0.0-cc2b5b8f05c7b9d9/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55992 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55996 - "GET /v1/datasets/gaussian-3.0.0-cc2b5b8f05c7b9d9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56298 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56300 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35786 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35796 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:35796 - "GET /v1/datasets/checkerboard-3.0.0-01064f5fe366ae03/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54204 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54218 - "GET /v1/datasets/checkerboard-3.0.0-01064f5fe366ae03 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40132 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38190 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55490 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+2026-09-23 14:40:52,122 [INFO] juniper_data.generators.equities.generator: equities: [1/5] AAPL -> 4318 rows
+2026-09-23 14:40:54,574 [INFO] juniper_data.generators.equities.generator: equities: [2/5] MSFT -> 4252 rows
+2026-09-23 14:40:57,536 [INFO] juniper_data.generators.equities.generator: equities: [3/5] GOOGL -> 2667 rows
+2026-09-23 14:41:00,744 [INFO] juniper_data.generators.equities.generator: equities: [4/5] AMZN -> 4316 rows
+2026-09-23 14:41:03,596 [INFO] juniper_data.generators.equities.generator: equities: [5/5] NVDA -> 4297 rows
+INFO:     127.0.0.1:55492 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:55492 - "GET /v1/datasets/equities-5.0.0-efb9b8316674e4ce/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51196 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51212 - "GET /v1/datasets/equities-5.0.0-efb9b8316674e4ce HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47600 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47612 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51876 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51890 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51890 - "GET /v1/datasets/equities-5.0.0-efb9b8316674e4ce/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34238 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47536 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47542 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55902 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55910 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:55910 - "GET /v1/datasets/multi_sine-3.0.0-8dfa94a78568d243/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55916 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55930 - "GET /v1/datasets/multi_sine-3.0.0-8dfa94a78568d243 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34168 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34170 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56846 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52412 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52426 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:52426 - "GET /v1/datasets/mackey_glass-3.0.0-f3f55d08e42c7141/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52430 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52438 - "GET /v1/datasets/mackey_glass-3.0.0-f3f55d08e42c7141 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44644 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44648 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44652 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35818 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35830 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:35830 - "GET /v1/datasets/irregular_sine-3.0.0-4a5904b53d15aa7d/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35840 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35856 - "GET /v1/datasets/irregular_sine-3.0.0-4a5904b53d15aa7d HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40228 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38406 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38416 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48214 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48224 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:48224 - "GET /v1/datasets/ar_p-3.0.0-623a212735964d0a/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48226 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48234 - "GET /v1/datasets/ar_p-3.0.0-623a212735964d0a HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52942 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52956 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59640 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44516 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44522 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:44522 - "GET /v1/datasets/delay_product-3.0.0-10ae313fa6bdef23/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44532 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44542 - "GET /v1/datasets/delay_product-3.0.0-10ae313fa6bdef23 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42654 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42662 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57616 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55536 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+2026-09-23 14:53:25,415 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [1/5] AAPL -> 4318 rows
+2026-09-23 14:53:25,521 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [2/5] MSFT -> 4252 rows
+2026-09-23 14:53:25,647 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [3/5] GOOGL -> 2667 rows
+2026-09-23 14:53:25,775 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [4/5] AMZN -> 4316 rows
+2026-09-23 14:53:25,892 [INFO] juniper_data.generators.equities_seq.generator: equities_seq: [5/5] NVDA -> 4297 rows
+INFO:     127.0.0.1:55538 - "POST /v1/datasets HTTP/1.1" 201 Created
+INFO:     127.0.0.1:55538 - "GET /v1/datasets/equities_seq-5.0.0-c7916412c2344e07/artifact HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47816 - "GET /v1/datasets?limit=1000&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47820 - "GET /v1/datasets/equities_seq-5.0.0-c7916412c2344e07 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47824 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56678 - "GET /v1/generators HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56692 - "GET /v1/generators HTTP/1.1" 200 OK

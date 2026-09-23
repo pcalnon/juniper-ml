@@ -1,0 +1,269 @@
+{
+  "case": "04_equities",
+  "model": "cascor",
+  "value": "equities",
+  "role": "\u00a712 rank-2 (\u00a712.8)",
+  "tag": "",
+  "start_route": "start",
+  "started_utc": "2026-09-23T19:40:48.264Z",
+  "csrf_enabled": true,
+  "model_select": {
+    "status": 200,
+    "backend": "service"
+  },
+  "caps": {
+    "status": 200,
+    "applied": [
+      "cn_training_iterations"
+    ],
+    "skipped_detail": null,
+    "error": null
+  },
+  "effective_params_before": {
+    "nn_max_iterations": 8,
+    "nn_output_epochs": 60,
+    "nn_max_total_epochs": 860,
+    "cn_training_iterations": 40,
+    "nn_max_hidden_units": 32,
+    "cn_pool_size": 40,
+    "nn_patience": 50
+  },
+  "stage": {
+    "status": 200,
+    "elapsed_s": 0.009,
+    "payload": {
+      "nn_dataset_type": "equities",
+      "nn_dataset_params": {
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "GOOGL",
+          "AMZN",
+          "NVDA"
+        ],
+        "fundamentals_fill": "drop",
+        "normalize_features": true
+      },
+      "nn_model": "cascor"
+    }
+  },
+  "history_len_before": 4477,
+  "start": {
+    "status": 409,
+    "elapsed_s": 15.595,
+    "response": {
+      "detail": "Training could not be started: Training cannot be started: _pad_dataset_for_network: dataset (15, 2) exceeds network capacity (2, 2); resize the network first"
+    },
+    "body": null
+  },
+  "train_outcome": "start refused",
+  "render_status_codes": {
+    "/api/train/status": 200,
+    "/api/status": 200,
+    "/api/metrics": 200,
+    "/api/metrics/history?limit=0": 200,
+    "/api/dataset": 200,
+    "/api/state": 200,
+    "/api/selection": 200,
+    "/api/topology": 200,
+    "/api/network/stats": 200,
+    "/api/decision_boundary": 503,
+    "/api/stream_health": 200
+  },
+  "history_len_after": 4477,
+  "history_last": {
+    "epoch": 22,
+    "metrics": {
+      "loss": 0.24790020287036896,
+      "accuracy": 0.5,
+      "val_loss": 0.24800443649291992,
+      "val_accuracy": 0.4875,
+      "f1": 0.48354589828373484,
+      "precision": 0.4875,
+      "recall": 0.4871050934880722,
+      "roc_auc": 0.5222437137330754
+    },
+    "network_topology": {
+      "hidden_units": 19
+    },
+    "phase": "output",
+    "timestamp": "2026-09-23T14:39:43.705281",
+    "eval_metrics": null
+  },
+  "history_new_rows": 0,
+  "metrics": {
+    "epoch": 22,
+    "metrics": {
+      "loss": 0.24790020287036896,
+      "accuracy": 0.5,
+      "val_loss": 0.24800443649291992,
+      "val_accuracy": 0.4875,
+      "f1": 0.48354589828373484,
+      "precision": 0.4875,
+      "recall": 0.4871050934880722,
+      "roc_auc": 0.5222437137330754
+    },
+    "network_topology": {
+      "hidden_units": 19
+    },
+    "phase": null,
+    "timestamp": "2026-09-23T14:41:04.398232",
+    "eval_metrics": {
+      "enabled": true,
+      "average": "macro",
+      "split": "validation",
+      "n_samples": 80,
+      "n_classes": 2,
+      "undefined": {},
+      "final": {
+        "f1": 0.6632996632996633,
+        "precision": 0.6685714285714286,
+        "recall": 0.6640711902113459,
+        "roc_auc": 0.692992213570634,
+        "average": "macro",
+        "n_samples": 60,
+        "n_classes": 2,
+        "undefined": {},
+        "split": "test",
+        "final": true
+      }
+    }
+  },
+  "dataset_view": {
+    "num_samples": 19850,
+    "num_features": 15,
+    "num_classes": 2,
+    "loaded": true,
+    "train_samples": 15881,
+    "val_samples": 1986,
+    "test_samples": 1983,
+    "inputs": {
+      "_truncated_by_a_n2_slim": true,
+      "rows": 15881,
+      "cols": 15,
+      "first_3": [
+        [
+          0.015729747712612152,
+          0.01557526458054781,
+          0.015670647844672203,
+          0.015678171068429947,
+          0.23515881597995758,
+          0.0174309890717268,
+          0.010755774565041065,
+          0.028002992272377014,
+          0.00163684890139848,
+          0.15025822818279266,
+          0.0,
+          0.0,
+          0.9362549781799316,
+          0.5059760808944702,
+          0.0
+        ],
+        [
+          0.015609459020197392,
+          0.015545622445642948,
+          0.015613209456205368,
+          0.015790661796927452,
+          0.14096781611442566,
+          0.0174309890717268,
+          0.010755774565041065,
+          0.028002992272377014,
+          0.0016484205843880773,
+          0.15025822818279266,
+          0.0,
+          0.0,
+          0.9402390718460083,
+          0.5099601745605469,
+          0.008403361774981022
+        ],
+        [
+          0.015642641112208366,
+          0.015705062076449394,
+          0.015711376443505287,
+          0.016016684472560883,
+          0.11692755669355392,
+          0.0174309890717268,
+          0.010755774565041065,
+          0.028002992272377014,
+          0.0016716711688786745,
+          0.15025822818279266,
+          0.0,
+          0.0,
+          0.9442231059074402,
+          0.5139442086219788,
+          0.016806723549962044
+        ]
+      ]
+    },
+    "targets": {
+      "_truncated_by_a_n2_slim": true,
+      "rows": 15881,
+      "cols": null,
+      "first_3": [
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  "current_dataset": {
+    "dataset_type": "equities",
+    "symbols": [
+      "AAPL",
+      "MSFT",
+      "GOOGL",
+      "AMZN",
+      "NVDA"
+    ],
+    "fundamentals_fill": "drop",
+    "normalize_features": true
+  },
+  "final_status": {
+    "fsm_status": "COMPLETED",
+    "phase": "output",
+    "is_running": false,
+    "is_training": false,
+    "completed": true,
+    "failed": false,
+    "current_epoch": 22,
+    "hidden_units": 19,
+    "completion_reason": "max_iterations"
+  },
+  "topology_shape": {
+    "hidden_units": 19,
+    "nodes": 23,
+    "connections": 251
+  },
+  "generated": [
+    {
+      "dataset_id": "equities-5.0.0-efb9b8316674e4ce",
+      "generator": "equities",
+      "generator_version": "5.0.0",
+      "n_train": 15881,
+      "n_val": 1986,
+      "n_test": 1983,
+      "n_features": 15,
+      "n_classes": 2
+    }
+  ],
+  "log_slices": {
+    "data": {
+      "bytes": 980,
+      "excerpt_lines": 5
+    },
+    "cascor": {
+      "bytes": 2087,
+      "excerpt_lines": 17
+    },
+    "canopy": {
+      "bytes": 1691,
+      "excerpt_lines": 4
+    },
+    "recurrence": {
+      "bytes": 0,
+      "excerpt_lines": 0
+    }
+  },
+  "case_wall_s": 17.78,
+  "finished_utc": "2026-09-23T19:41:06.045Z"
+}

@@ -1,0 +1,601 @@
+INFO:     127.0.0.1:49716 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "PATCH /v1/training/params HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "GET /v1/training/params HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "GET /v1/training/params HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "POST /v1/training/dataset HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49716 - "GET /v1/training/status HTTP/1.1" 200 OK
+2026-09-23 14:42:48,187 - api.lifecycle.state_machine - INFO - State transition: COMPLETED -> Stopped (RESET)
++[logger.py: 840] (2026-09-23 14:42:48) [WARNING] Logger: __init__: Logging already configured globally, skipping YAML configuration
++[cascade_correlation.py: 621] (2026-09-23 14:42:48) [INFO] CascadeCorrelationNetwork: __init__: Initialization completed
+INFO:     127.0.0.1:49716 - "POST /v1/training/start HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32884 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=13.653821, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=14.671741, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Correlation result: UUID: c5557ff9-128e-43ed-8e08-cc4ea41d7cf8, epoch: 22, correlation: 0.02124220986873054
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=15.112290, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=15.266474, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=15.266659, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=15.180144, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: c5557ff9-128e-43ed-8e08-cc4ea41d7cf8, epoch: 62, correlation: 0.023416628179422985
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: c5557ff9-128e-43ed-8e08-cc4ea41d7cf8, epoch: 67, correlation: 0.02350271313153541
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=15.044470, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=14.881807, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=14.705636, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:04) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037315, Worker UUID: 0afce724-14b7-4674-a8bb-cf605397a497, Candidate Index: 0, Candidate UUID: c5557ff9-128e-43ed-8e08-cc4ea41d7cf8, Correlation: 0.023797
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.014099
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 05498e83-3c3e-4e71-bba7-1d4321e20e79, epoch: 3, correlation: 0.014099476384870992
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.964439, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 05498e83-3c3e-4e71-bba7-1d4321e20e79, epoch: 12, correlation: 0.021440954108412656
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 05498e83-3c3e-4e71-bba7-1d4321e20e79, epoch: 14, correlation: 0.021821843429738502
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=11.299154, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=11.926268, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=12.261820, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 05498e83-3c3e-4e71-bba7-1d4321e20e79, epoch: 44, correlation: 0.023454494220182347
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=12.441082, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=7.787963, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=8.368216, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Correlation result: UUID: 005ead55-f2b3-4251-a8a7-69c6d540c499, epoch: 25, correlation: 0.023234796794227398
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=8.558064, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:03) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.023409
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=8.624349, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=8.644256, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=8.647563, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=8.646806, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:04) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037323, Worker UUID: 8bd87da7-f035-4b3c-a686-1b9a8ede03ae, Candidate Index: 3, Candidate UUID: 005ead55-f2b3-4251-a8a7-69c6d540c499, Correlation: 0.023765
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.730404, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 0449fcd3-e844-4646-ae05-d6934676f309, epoch: 15, correlation: 0.023086940314227682
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=10.831220, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=11.399465, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=11.742325, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=11.962034, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=12.105001, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:05) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037323, Worker UUID: 84f8821f-0a20-4562-8d58-fc7a25ca6cd1, Candidate Index: 16, Candidate UUID: 0449fcd3-e844-4646-ae05-d6934676f309, Correlation: 0.023971
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: e09dfff2-94b1-445f-9641-0565bf4c8aed, epoch: 7, correlation: 0.018229615202422722
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: e09dfff2-94b1-445f-9641-0565bf4c8aed, epoch: 9, correlation: 0.018614514095149345
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=15.970879, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 610] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Calculating correlation: UUID: e09dfff2-94b1-445f-9641-0565bf4c8aed, epoch: 14INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=15.220745, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=16.341908, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=16.976072, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.020422
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.020502
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=17.332928, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=17.517609, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 51, correlation: 0.021540903375855205
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 54, correlation: 0.02166502315960553
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 57, correlation: 0.021779949844095703
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=17.587828, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=17.578165, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 78, correlation: 0.022401082637336502
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=17.510780, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=17.400698, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=17.258587, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 104, correlation: 0.022904075304224208
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 107, correlation: 0.022950219299263355
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=17.092291, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, epoch: 120, correlation: 0.02312936192384098
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 120 - Norm Output: shape=(15881,) l2=16.907787, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:04) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037324, Worker UUID: 53a3c213-2ba3-4663-a56c-43a691fbdb66, Candidate Index: 4, Candidate UUID: 3b9ad2da-d1fa-459c-9cd5-bf3b5db43a3c, Correlation: 0.023154
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=12.581059, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, epoch: 14, correlation: 0.020787527093642216
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=13.111165, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=13.355697, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:03) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=14.974900, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=15.357965, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 2918ec99-b46f-4ec2-a842-49ca490e0e5d, epoch: 22, correlation: 0.021578148837217502
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 2918ec99-b46f-4ec2-a842-49ca490e0e5d, epoch: 28, correlation: 0.021810742204029218
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=15.581935, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=15.698678, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=15.738531, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=15.720756, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=15.658371, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 2918ec99-b46f-4ec2-a842-49ca490e0e5d, epoch: 71, correlation: 0.022758067934635022
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 2918ec99-b46f-4ec2-a842-49ca490e0e5d, epoch: 77, correlation: 0.022841614225630552
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=15.560637, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 2918ec99-b46f-4ec2-a842-49ca490e0e5d, epoch: 89, correlation: 0.022990572940956633
++[cascade_correlation.py: 3753] (2026-09-23 14:43:04) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037320, Worker UUID: 968add82-e3a5-4e7a-9ae3-170134074cb0, Candidate Index: 2, Candidate UUID: 2918ec99-b46f-4ec2-a842-49ca490e0e5d, Correlation: 0.023002
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=15.448516, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=15.738039, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: 0c70234d-eb6d-4297-baa2-08c1619e465f, epoch: 30, correlation: 0.022550254687666416
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=15.879375, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: 0c70234d-eb6d-4297-baa2-08c1619e465f, epoch: 32, correlation: 0.022601294099628216
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: 0c70234d-eb6d-4297-baa2-08c1619e465f, epoch: 36, correlation: 0.022694090009763062
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=15.926321, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=15.909480, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=15.847487, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=10.615403, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, epoch: 11, correlation: 0.019898004220795212
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=11.635276, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, epoch: 28, correlation: 0.022623824194154093
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=11.988495, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, epoch: 35, correlation: 0.022983635797409523
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=12.089441, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=12.072094, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, epoch: 56, correlation: 0.023506851369342278
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=11.993239, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=11.880868, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=11.750194, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, epoch: 89, correlation: 0.023806409655737257
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=11.610156, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, epoch: 93, correlation: 0.02382717442273058
++[cascade_correlation.py: 3753] (2026-09-23 14:43:04) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037334, Worker UUID: ae885ae5-bfce-4ef5-919f-c5533599686d, Candidate Index: 6, Candidate UUID: eb84ee66-61d0-46f8-a54f-22ee10c16b2d, Correlation: 0.023850
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=8.470984, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: dcdf2b21-97eb-4b51-961e-144d9075be1b, epoch: 17, correlation: 0.023348868598854093
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=9.364014, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: dcdf2b21-97eb-4b51-961e-144d9075be1b, epoch: 22, correlation: 0.02355337316409929
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=9.832396, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=10.144223, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: dcdf2b21-97eb-4b51-961e-144d9075be1b, epoch: 45, correlation: 0.023864850212810592
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=10.376867, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=12.426156, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=13.895432, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=14.677700, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=15.129657, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=15.391388, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 769fca3a-57c6-4173-a8a2-a9b5876ac435, epoch: 53, correlation: 0.022575431596409436
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=15.530936, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=15.586224, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=15.580503, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=15.529091, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=15.442665, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=15.329052, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 120 - Norm Output: shape=(15881,) l2=15.194215, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 130 - Norm Output: shape=(15881,) l2=15.042884, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 140 - Norm Output: shape=(15881,) l2=14.878943, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:05) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037317, Worker UUID: e4566794-fcda-4d79-8632-94ab3d022b0a, Candidate Index: 1, Candidate UUID: 769fca3a-57c6-4173-a8a2-a9b5876ac435, Correlation: 0.023664
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=10.756532, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=13.306942, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=15.144526, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=16.275537, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=17.037539, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=17.578367, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:05) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000502
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=17.972672, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: f977c64e-d3ca-40cf-a402-0b041ca696d7, epoch: 61, correlation: 0.022234098685911554
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=18.263031, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: f977c64e-d3ca-40cf-a402-0b041ca696d7, epoch: 78, correlation: 0.022540961230775838
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=18.475952, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=18.629059, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=18.734671, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=18.801714, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 120 - Norm Output: shape=(15881,) l2=18.836910, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:05) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037348, Worker UUID: 374cbb9f-c82d-4bdd-94a6-ecd8863328c4, Candidate Index: 10, Candidate UUID: f977c64e-d3ca-40cf-a402-0b041ca696d7, Correlation: 0.023003
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=8.211515, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=8.827474, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: 1c8b0b67-5de1-4783-a493-ed71ba4c2083, epoch: 21, correlation: 0.0225942243121689
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=8.911438, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: 1c8b0b67-5de1-4783-a493-ed71ba4c2083, epoch: 36INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
++[candidate_unit.py: 612] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Correlation result: UUID: 44742a4c-dea4-425b-a7d5-8ddea793ca5b, epoch: 3, correlation: 0.018583240934188543
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=13.623846, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=13.913348, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=13.995538, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=13.968601, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=13.882089, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=13.763074, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:04) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.023409
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=13.627047, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=13.483039, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:04) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=13.336279, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=13.189699, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:05) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037338, Worker UUID: 663d998c-2ec0-4400-85d4-55606dd0ff3b, Candidate Index: 5, Candidate UUID: 44742a4c-dea4-425b-a7d5-8ddea793ca5b, Correlation: 0.023701
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=11.082962, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=12.202341, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=12.819224, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=13.191782, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=13.420329, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=23.527840, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037338, Worker UUID: d02e3492-5eb2-4926-9aee-f2a08517ee9e, Candidate Index: 36, Candidate UUID: 68747088-3a9e-4058-ada4-57af4a81644c, Correlation: 0.022275
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, epoch: 3, correlation: 0.00023894864225974563
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, epoch: 9, correlation: 0.0002664826854094341
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=12.678335, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=12.753973, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, epoch: 26, correlation: 0.0003464304220100558
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=12.836679, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 1034] (2026-09-23 14:43:19) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, epoch: 39, correlation: 0.00040943349252878393
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=12.926270, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, epoch: 41, correlation: 0.00041927598674140927
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, epoch: 44, correlation: 0.0004340933974439617
++[candidate_unit.py: 1034] (2026-09-23 14:43:19) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037338, Worker UUID: ce025365-b1b9-4a57-9423-c23449a4cd0d, Candidate Index: 3, Candidate UUID: 5d550580-f8ec-49e9-92a4-f83b9eb1e5a3, Correlation: 0.000469
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: a6909564-dfd4-4d7c-8820-52dc3e34ca20, epoch: 8, correlation: 2.8671441433450263e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=11.062784, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=11.081360, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=14.440530, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=14.881503, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=15.133420, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=15.260584, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 43248905-fcd2-419e-ba95-b8d5de87f747, epoch: 64, correlation: 0.022747729979850258
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=15.299626, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=15.273515, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 43248905-fcd2-419e-ba95-b8d5de87f747, epoch: 83, correlation: 0.02308019250238149
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 43248905-fcd2-419e-ba95-b8d5de87f747, epoch: 87, correlation: 0.023137491029042227
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=15.197756, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:07) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000502
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=15.083433, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 43248905-fcd2-419e-ba95-b8d5de87f747, epoch: 107, correlation: 0.02337995442254692
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=14.938881, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 120 - Norm Output: shape=(15881,) l2=14.770638, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 43248905-fcd2-419e-ba95-b8d5de87f747, epoch: 124, correlation: 0.023542719904091302
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 130 - Norm Output: shape=(15881,) l2=14.584039, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 140 - Norm Output: shape=(15881,) l2=14.383575, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:07) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037315, Worker UUID: 3af1acb7-e7da-4c6a-95a5-e852e67f3c7c, Candidate Index: 33, Candidate UUID: 43248905-fcd2-419e-ba95-b8d5de87f747, Correlation: 0.023697
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 2d105622-2d55-4393-91b2-f82c1938921a, epoch: 8, correlation: 0.0001640607502321435
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.936379, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=9.882988, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=9.833001, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=9.787282, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=13.832977, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=13.931532, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:06) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037351, Worker UUID: 4f7f0a8d-57fc-4e71-96c4-4465191937f4, Candidate Index: 25, Candidate UUID: eac0d44b-ade3-4b26-9250-699d4708bc66, Correlation: 0.023610
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=11.346689, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=11.990852, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=12.367607, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:06) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.023502
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=12.611910, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=12.779833, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=12.899262, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037351, Worker UUID: 5f462b19-7c95-4249-9359-9dac23451929, Candidate Index: 38, Candidate UUID: 38ecdce8-9e75-414f-95d5-21b4caa0b3fb, Correlation: 0.023694
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 1beb6a9b-c128-41f9-bc47-47a0e4fea4b5, epoch: 7, correlation: 5.022336902558409e-05
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 1beb6a9b-c128-41f9-bc47-47a0e4fea4b5, epoch: 8, correlation: 5.030409345046007e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.110299, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=9.137357, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=9.165118, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=9.193591, Norm Error: shape=(15881,) l2=62.872589
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037351, Worker UUID: 39c34924-0743-48b0-ad24-3314bb84876c, Candidate Index: 5, Candidate UUID: 1beb6a9b-c128-41f9-bc47-47a0e4fea4b5, Correlation: 0.000054
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 0094dae5-78fd-4905-8f79-ce16897d87a2, epoch: 1, correlation: 2.410094097853359e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=7.703246, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 606] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Forward pass: UUID: 0094dae5-78fd-4905-8f79-ce16897d87a2, epoch: 19INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50892 - "GET /v1/training/status HTTP/1.1" 200 OK
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, epoch: 36, correlation: 0.022564550231808866
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=13.443128, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Correlation result: UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, epoch: 48, correlation: 0.02291029710118409
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 50 - Norm Output: shape=(15881,) l2=13.435243, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=13.365711, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:05) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 762] (2026-09-23 14:43:05) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=13.254725, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:06) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000422
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=13.115281, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=12.956182, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, epoch: 94, correlation: 0.02343159604093374
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, epoch: 99, correlation: 0.023461140950264844
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=12.783656, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=12.602248, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, epoch: 111, correlation: 0.02352353782445026
++[cascade_correlation.py: 3753] (2026-09-23 14:43:06) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037324, Worker UUID: 00c9f985-f11f-4c13-866b-b3bdc9536994, Candidate Index: 19, Candidate UUID: f5155e01-5d0d-43a4-88ca-5df716b780c2, Correlation: 0.023528
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=7.773866, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=7.783130, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=7.792678, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=7.802518, Norm Error: shape=(15881,) l2=62.872589
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037324, Worker UUID: 9833760e-33e9-43f8-8aee-fddaf3fe2097, Candidate Index: 0, Candidate UUID: 27a8e24d-2016-4712-91d4-cdb37430a11e, Correlation: 0.000049
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=14.283091, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Correlation result: UUID: 947e3120-2b9e-4bba-a138-2e1241aa6e98, epoch: 13, correlation: 7.282483850274766e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=14.276980, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=9.860770, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 1034] (2026-09-23 14:43:07) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.024090
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: efe20228-2c2d-47c1-a5d1-89ae60318177, epoch: 77, correlation: 0.024090419781348463
++[candidate_unit.py: 1034] (2026-09-23 14:43:07) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.024097
++[candidate_unit.py: 689] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Final Correlation: UUID: efe20228-2c2d-47c1-a5d1-89ae60318177, Final correlation value: 0.024097, Best Corr Index: 1
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037339, Worker UUID: 6b53a6d4-8194-4eb8-99f2-61dcfd34cb2f, Candidate Index: 32, Candidate UUID: efe20228-2c2d-47c1-a5d1-89ae60318177, Correlation: 0.024097
++[cascade_correlation.py: 3576] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: train_candidate_worker: Returning from Candidate Unit Training: Worker ID: 4037339, Worker UUID: 6b53a6d4-8194-4eb8-99f2-61dcfd34cb2f, Candidate ID: 32, Candidate UUID: efe20228-2c2d-47c1-a5d1-89ae60318177, Candidate Correlation: 0.024097
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: a85c88c7-f0ad-481f-be81-2038d512d86a, epoch: 4, correlation: 9.95282805024028e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=11.453811, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=11.558659, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=11.665696, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=11.774952, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: a85c88c7-f0ad-481f-be81-2038d512d86a, epoch: 42, correlation: 0.00011703173819530409
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: a85c88c7-f0ad-481f-be81-2038d512d86a, epoch: 47, correlation: 0.0001195467422995392
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: a85c88c7-f0ad-481f-be81-2038d512d86a, epoch: 50, correlation: 0.00012108502081212959
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037339, Worker UUID: 4785a2a4-c8a0-467c-8393-390c4430fd04, Candidate Index: 7, Candidate UUID: a85c88c7-f0ad-481f-be81-2038d512d86a, Correlation: 0.000122
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 6edd344c-52c6-4f9c-857b-8ffb10664a3e, epoch: 4, correlation: 5.073250906422602e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=7.968917, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 6edd344c-52c6-4f9c-857b-8ffb10664a3e, epoch: 15, correlation: 5.2422206846079355e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=7.946177, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 6edd344c-52c6-4f9c-857b-8ffb10664a3e, epoch: 27, correlation: 5.422933167215449e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=7.923932, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=7.902168, Norm Error: shape=(15881,) l2=62.872589
++[cascade_correlation.py: 3753] (2026-09-23 14:43:20) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037339, Worker UUID: 926ed6b4-0916-4d09-b1d1-a8fd2aa565df, Candidate Index: 17, Candidate UUID: 6edd344c-52c6-4f9c-857b-8ffb10664a3e, Correlation: 0.000058
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=6.934035, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Correlation result: UUID: cee6f7bf-9eb6-4f52-9a06-6c6b052ba246, epoch: 15, correlation: 2.8250212287663357e-06
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=6.940217, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=6.946401, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=17.440769, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=17.374277, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=17.275864, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=17.151012, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 120 - Norm Output: shape=(15881,) l2=17.003962, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 130 - Norm Output: shape=(15881,) l2=16.838074, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: bbdb52a7-2886-433d-b49d-19695d09e16c, epoch: 140, correlation: 0.022540985695632353
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 140 - Norm Output: shape=(15881,) l2=16.656073, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037343, Worker UUID: 259c0415-e4cb-4dc3-bce9-9c20a73e6262, Candidate Index: 28, Candidate UUID: bbdb52a7-2886-433d-b49d-19695d09e16c, Correlation: 0.022632
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=10.613727, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=10.616400, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 7434653a-094d-42b2-90df-76851289a6d9, epoch: 29, correlation: 1.0646259923644094e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=10.619362, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=10.622567, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 612] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Correlation result: UUID: 7434653a-094d-42b2-90df-76851289a6d9, epoch: 49, correlation: 1.58169417284224e-05
++[cascade_correlation.py: 3753] (2026-09-23 14:43:20) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037343, Worker UUID: 7b7d6007-a3fe-493b-af8f-4b0e45f74a05, Candidate Index: 12, Candidate UUID: 7434653a-094d-42b2-90df-76851289a6d9, Correlation: 0.000016
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.171064, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=9.183029, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=9.195235, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=19.122972, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=19.177536, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 50f5f61a-6e9d-485d-b311-f6efdab65a4d, epoch: 97, correlation: 0.02268422888959264
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 100 - Norm Output: shape=(15881,) l2=19.183594, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 110 - Norm Output: shape=(15881,) l2=19.150190, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 120 - Norm Output: shape=(15881,) l2=19.084156, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 50f5f61a-6e9d-485d-b311-f6efdab65a4d, epoch: 128, correlation: 0.02302715019422525
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 130 - Norm Output: shape=(15881,) l2=18.990761, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 140 - Norm Output: shape=(15881,) l2=18.874180, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037344, Worker UUID: a2360a55-353d-4d11-a78e-767d535a2569, Candidate Index: 24, Candidate UUID: 50f5f61a-6e9d-485d-b311-f6efdab65a4d, Correlation: 0.023184
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.528337, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=9.519814, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5470a8de-73aa-43fa-af32-a8c45c9d684f, epoch: 28, correlation: 2.8283742279327993e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=9.511893, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=9.504562, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 5470a8de-73aa-43fa-af32-a8c45c9d684f, epoch: 46, correlation: 3.191075422249684e-05
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037344, Worker UUID: 059febc1-d0c6-4ac6-b73f-d2c323bb8deb, Candidate Index: 9, Candidate UUID: 5470a8de-73aa-43fa-af32-a8c45c9d684f, Correlation: 0.000033
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=11.187820, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=11.209606, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=11.232136, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: 7c70dee1-3d3e-48e6-945a-abd3779bbdbe, epoch: 75, correlation: 0.023165666250267714
++[candidate_unit.py: 762] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=15.031551, Norm Error: shape=(15881,) l2=62.903046
++[cascade_correlation.py: 3753] (2026-09-23 14:43:07) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037361, Worker UUID: 9c9d477e-5043-468b-937b-1c67474d3781, Candidate Index: 31, Candidate UUID: 7c70dee1-3d3e-48e6-945a-abd3779bbdbe, Correlation: 0.023347
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 07a8c0aa-48d7-4dbe-9f8e-6661573b868c, epoch: 6, correlation: 5.484229201865351e-05
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 07a8c0aa-48d7-4dbe-9f8e-6661573b868c, epoch: 8, correlation: 5.520041129409149e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=9.436815, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 07a8c0aa-48d7-4dbe-9f8e-6661573b868c, epoch: 19, correlation: 5.715257134340985e-05
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=9.467658, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=9.497775, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=9.527184, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 07a8c0aa-48d7-4dbe-9f8e-6661573b868c, epoch: 50, correlation: 6.23213650237942e-05
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037361, Worker UUID: 4867e547-e915-4103-8f25-360da9d3d011, Candidate Index: 4, Candidate UUID: 07a8c0aa-48d7-4dbe-9f8e-6661573b868c, Correlation: 0.000062
++[candidate_unit.py: 1034] (2026-09-23 14:43:19) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000422
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=17.545918, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=17.746756, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=17.948973, Norm Error: shape=(15881,) l2=62.872589
++[candidate_unit.py: 612] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Correlation result: UUID: 77e0da46-5a07-4da5-a3d8-11cd9f88b9c0, epoch: 32, correlation: 0.0005250935061502442
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=18.152405, Norm Error: shape=(15881,) l2=62.872589
++[cascade_correlation.py: 3753] (2026-09-23 14:43:20) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037361, Worker UUID: a0a8f0d0-ba81-48e2-b995-f60c26c2dc68, Candidate Index: 15, Candidate UUID: 77e0da46-5a07-4da5-a3d8-11cd9f88b9c0, Correlation: 0.000574
++[candidate_unit.py: 1034] (2026-09-23 14:43:20) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 612] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Correlation result: UUID: d9cf49de-14e4-4279-b383-15a1e2df2cbd, epoch: 9, correlation: 0.00040922638519807363
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=13.179155, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 1034] (2026-09-23 14:43:20) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000422
++[candidate_unit.py: 612] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Correlation result: UUID: d9cf49de-14e4-4279-b383-15a1e2df2cbd, epoch: 19, correlation: 0.0004223914061785943
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=13.287352, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 1034] (2026-09-23 14:43:20) [INFO] CandidateUnit: _calculate_correlation: Final correlation effectiveness: 0.000409
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=13.395823, Norm Error: shape=(15881,) l2=62.872814
++[cascade_correlation.py: 3753] (2026-09-23 14:43:19) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037317, Worker UUID: 14c57ecc-5223-4b36-aeea-a7c1c87f3359, Candidate Index: 1, Candidate UUID: a038d2f6-8e66-4baf-9ea6-beb9fbf91408, Correlation: 0.000040
++[candidate_unit.py: 612] (2026-09-23 14:43:19) [INFO] CandidateUnit: train: Correlation result: UUID: 80278e6c-2883-4020-9113-a206bbf56716, epoch: 7, correlation: 0.00011424390419742253
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 10 - Norm Output: shape=(15881,) l2=10.115944, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 20 - Norm Output: shape=(15881,) l2=10.061396, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 30 - Norm Output: shape=(15881,) l2=10.008508, Norm Error: shape=(15881,) l2=62.872814
++[candidate_unit.py: 762] (2026-09-23 14:43:20) [INFO] CandidateUnit: train: Epoch 40 - Norm Output: shape=(15881,) l2=9.957261, Norm Error: shape=(15881,) l2=62.872814
++[cascade_correlation.py: 3753] (2026-09-23 14:43:20) [INFO] CascadeCorrelationNetwork: _train_candidate_unit: Completed Training CandidateUnit object: Worker ID: 4037317, Worker UUID: 495f2e11-2209-426d-b6b2-6a5e996c27a0, Candidate Index: 22, Candidate UUID: 80278e6c-2883-4020-9113-a206bbf56716, Correlation: 0.000131
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 57, correlation: 0.022831710705301544
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 58
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 58
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 58, correlation: 0.022845542727044876
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 59
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 59
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 59, correlation: 0.022859064155240277
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 60
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 60
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 60, correlation: 0.022872249200325146
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 60 - Norm Output: shape=(15881,) l2=15.948901, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 61
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 61
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 61, correlation: 0.02288514424219185
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 62
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 62
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 62, correlation: 0.022897732246432222
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 63
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 63
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 63, correlation: 0.022910064657535575
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 64
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 64
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 64, correlation: 0.02292211209210697
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 65
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 65
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 65, correlation: 0.022933912146610475
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 66
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 66
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 66, correlation: 0.02294545294181404
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 67
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 67
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 67, correlation: 0.022956771768041992
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 68
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 68
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 68, correlation: 0.02296784592410023
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 69
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 69
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 69, correlation: 0.022978701959535015
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 70
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 70
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 70, correlation: 0.02298935279081614
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 70 - Norm Output: shape=(15881,) l2=16.150841, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 71
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 71
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 71, correlation: 0.02299978608826205
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 72
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 72
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 72, correlation: 0.02301004531027393
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 73
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 73
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 73, correlation: 0.023020091694249237
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 74
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 74
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 74, correlation: 0.02302997129699315
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 75
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 75
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 75, correlation: 0.023039666603228346
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 76
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 76
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 76, correlation: 0.023049189951408016
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 77
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 77
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 77, correlation: 0.023058556243243343
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 78
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 78
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 78, correlation: 0.02306774102167959
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 79
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 79
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 79, correlation: 0.023076792876364337
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 80
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 80
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 80, correlation: 0.02308568065303299
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 80 - Norm Output: shape=(15881,) l2=16.292459, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 81
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 81
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 81, correlation: 0.023094426680213612
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 82
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 82
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 82, correlation: 0.02310304493418543
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 83
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 83
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 83, correlation: 0.023111515714066482
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 84
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 84
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 84, correlation: 0.02311987034667003
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 85
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 85
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 85, correlation: 0.023128083387770504
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 86
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 86
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 86, correlation: 0.02313616766582175
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 87
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 87
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 87, correlation: 0.02314414208723557
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 88
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 88
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 88, correlation: 0.023151997195159726
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 89
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 89
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 89, correlation: 0.023159745819491904
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 90
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 90
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 90, correlation: 0.023167376180697665
++[candidate_unit.py: 762] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Epoch 90 - Norm Output: shape=(15881,) l2=16.386826, Norm Error: shape=(15881,) l2=62.903046
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 91
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 91
++[candidate_unit.py: 612] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 91, correlation: 0.023174902682684885
++[candidate_unit.py: 606] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 92
++[candidate_unit.py: 610] (2026-09-23 14:43:06) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 92
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 92, correlation: 0.02318232533892861
++[candidate_unit.py: 606] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 93
++[candidate_unit.py: 610] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 93
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 93, correlation: 0.023189635654224005
++[candidate_unit.py: 606] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 94
++[candidate_unit.py: 610] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 94
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 94, correlation: 0.023196861113978246
++[candidate_unit.py: 606] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 95
++[candidate_unit.py: 610] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 95
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 95, correlation: 0.023204003230624055
++[candidate_unit.py: 606] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 96
++[candidate_unit.py: 610] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 96
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 96, correlation: 0.023211030430734123
++[candidate_unit.py: 606] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 97
++[candidate_unit.py: 610] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Calculating correlation: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 97
++[candidate_unit.py: 612] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Correlation result: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 97, correlation: 0.02321797468802967
++[candidate_unit.py: 606] (2026-09-23 14:43:07) [INFO] CandidateUnit: train: Forward pass: UUID: cc529441-f50d-4384-b680-f31a409731d0, epoch: 98
+...[excerpt truncated at 600 lines]

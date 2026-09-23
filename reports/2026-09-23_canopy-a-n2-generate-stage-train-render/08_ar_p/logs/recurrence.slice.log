@@ -1,0 +1,3 @@
+2026-09-23 14:49:44,311 [INFO] juniper_recurrence.routers.training: training start: dataset=ar_p-3.0.0-623a212735964d0a split=train windows=1574 d=16 theta=None readout=linear
+2026-09-23 14:49:44,476 [INFO] juniper_recurrence.routers.training: training complete: dataset=ar_p-3.0.0-623a212735964d0a epochs=1 duration=0.165s metrics={'mse': 0.012242626372316393, 'rmse': 0.1106464024372975, 'mae': 0.08826007658924385, 'r2': 0.04290334272721197, 'loss': 0.012242626372316393}
+INFO:     127.0.0.1:41448 - "POST /v1/train HTTP/1.1" 200 OK

@@ -1,0 +1,2 @@
+2026-09-23 14:47:14,255 [INFO] juniper_recurrence.routers.training: training complete: dataset=mackey_glass-3.0.0-f3f55d08e42c7141 epochs=1 duration=0.124s metrics={'mse': 5.957741702031115e-06, 'rmse': 0.0024408485618798875, 'mae': 0.0019373407454300984, 'r2': 0.9998908210499093, 'loss': 5.957741702031115e-06}
+INFO:     127.0.0.1:35516 - "POST /v1/train HTTP/1.1" 200 OK
