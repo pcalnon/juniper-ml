@@ -1,0 +1,79 @@
+[t=    576ms] navigating to http://127.0.0.1:8051
+[t=    592ms]   serving: {"ok": true, "canopy": "http://127.0.0.1:8051", "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088", "build_date": "2026-09-22T19:38:01Z", "version": "0.8.1", "read_at": "2026-09-22T20:35:22Z"}
+[t=    953ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=    964ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=   1004ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=   1005ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=   3699ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=   4056ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=   4398ms]   welcome modal not present/visible
+[t=   6769ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=   7608ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=   9584ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=   9976ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=  15549ms] subscribed; watching 60s on tab 'Training Metrics'
+[t=  17340ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=  18714ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=  30056ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=  31705ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=  63616ms]   CONSOLE[error] WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403
+[t=  64792ms]   CONSOLE[error] [CascorWS] Error: Event
+[t=  77139ms] state changes observed: 5454   samples: 5454
+[t=  77141ms] 
+[t=  77141ms] === renderer slot availability (cap 12) ===
+[t=  77141ms]   available=0      1634 samples  ( 30.0%)
+[t=  77141ms]   available=1       882 samples  ( 16.2%)
+[t=  77142ms]   available=2       295 samples  (  5.4%)
+[t=  77142ms]   available=3       575 samples  ( 10.5%)
+[t=  77142ms]   available=4       360 samples  (  6.6%)
+[t=  77142ms]   available=5       303 samples  (  5.6%)
+[t=  77142ms]   available=6       477 samples  (  8.7%)
+[t=  77142ms]   available=7       317 samples  (  5.8%)
+[t=  77142ms]   available=8       405 samples  (  7.4%)
+[t=  77142ms]   available=9       166 samples  (  3.0%)
+[t=  77142ms]   available=10       29 samples  (  0.5%)
+[t=  77142ms]   available=11       11 samples  (  0.2%)
+[t=  77142ms]   POOL FULL (available==0): 1634/5454 samples = 30.0%
+[t=  77142ms] 
+[t=  77142ms] prioritized queue length: min=0 max=25 last=0
+[t=  77142ms] completed: 89 -> 447  (+358)
+[t=  77142ms] 
+[t=  77142ms] === slot holders (samples spent in `watched`) ===
+[t=  77142ms]      4925  ..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-sta
+[t=  77142ms]      4296  dataset-swap-events-store.data
+[t=  77142ms]      3876  button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491
+[t=  77142ms]      3763  metrics-panel-metrics-store.data
+[t=  77142ms]      3670  metrics-panel-training-state-store.data
+[t=  77142ms]      3600  ..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.
+[t=  77142ms]      3056  metrics-panel-replay-controls.style
+[t=  77142ms]      2991  ..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-pa
+[t=  77142ms]      2935  metrics-panel-phase-duration.children
+[t=  77142ms]      2789  metrics-panel-current-lr.children
+[t=  77142ms]      2570  metrics-panel-progress-detail.children
+[t=  77142ms]       982  ws-connection-status.data
+[t=  77142ms]       965  ws-liveness-store.data
+[t=  77142ms]       950  ws-dataset-swap-buffer.data
+[t=  77142ms]       887  ws-cascade-add-buffer.data
+[t=  77142ms]       769  ..sidebar-pinned-list.children...sidebar-pinned-card.style..
+[t=  77142ms] 
+[t=  77142ms] === starving in `prioritized` (samples spent waiting, never picked) ===
+[t=  77142ms]      1578  button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491
+[t=  77142ms]      1331  ws-liveness-store.data
+[t=  77142ms]      1110  ws-connection-status.data
+[t=  77142ms]       931  ws-dataset-swap-buffer.data
+[t=  77142ms]       847  apply-in-flight.data@8442f550632bed33ec2447ed2b988e7616554252663b4fa4ac431ebc20675d54
+[t=  77142ms]       756  ws-cascade-add-buffer.data
+[t=  77142ms]       742  dataset-swap-events-store.data
+[t=  77142ms]       654  metrics-store-interval.disabled@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c
+[t=  77142ms]       654  ws-state-buffer.data
+[t=  77142ms]       583  ws-topology-buffer.data
+[t=  77142ms]       566  ..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.
+[t=  77142ms]       564  ws-metrics-buffer.data
+[t=  77142ms]       529  ..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-sta
+[t=  77142ms]       473  replay-weight-buffer.data
+[t=  77142ms]       429  metrics-panel-metrics-store.data
+[t=  77142ms]       269  metrics-panel-training-state-store.data
+[t=  77142ms]       139  network-visualizer-view-state.data
+[t=  77142ms]       123  metrics-panel-view-state.data
+[t=  77142ms]       112  ..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-
+[t=  77142ms]       100  network-visualizer-depth-label.children

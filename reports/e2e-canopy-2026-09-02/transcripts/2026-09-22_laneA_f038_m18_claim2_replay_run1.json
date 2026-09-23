@@ -1,0 +1,822 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "32b889980fc2d19d",
+    "argv": [
+      "claim2",
+      "--tag",
+      "run1"
+    ],
+    "step": "claim2"
+  },
+  "provenance_before": {
+    "captured_utc": "2026-09-22T21:17:30.898+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "provenance_after": {
+    "captured_utc": "2026-09-22T21:21:00.624+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "browser": {
+    "launch_args": [
+      "--disable-dev-shm-usage",
+      "--enable-gpu",
+      "--ignore-gpu-blocklist",
+      "--use-angle=vulkan",
+      "--enable-features=Vulkan"
+    ],
+    "headless": true,
+    "webgl_about_blank": {
+      "webgl": "webgl2",
+      "vendor": "Google Inc. (NVIDIA)",
+      "renderer": "ANGLE (NVIDIA, Vulkan 1.4.312 (NVIDIA NVIDIA GeForce RTX 2080 (0x00001E87)), NVIDIA)"
+    }
+  },
+  "served_writers_of_replay_state": [
+    {
+      "output": "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..",
+      "inputs": [
+        "metrics-panel-replay-play.n_clicks",
+        "metrics-panel-replay-step-back.n_clicks",
+        "metrics-panel-replay-step-forward.n_clicks",
+        "metrics-panel-replay-start.n_clicks",
+        "metrics-panel-replay-end.n_clicks",
+        "metrics-panel-speed-1x.n_clicks",
+        "metrics-panel-speed-2x.n_clicks",
+        "metrics-panel-speed-4x.n_clicks",
+        "metrics-panel-replay-slider.value"
+      ],
+      "state": [
+        "metrics-panel-replay-state.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    },
+    {
+      "output": "metrics-panel-replay-state.data@20746ef195c5a2fd48cbd84d7caa62edc7fea9908e0b01043dc8e8cb041486e2",
+      "inputs": [
+        "metrics-panel-replay-interval.n_intervals"
+      ],
+      "state": [
+        "metrics-panel-replay-state.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    }
+  ],
+  "tab_activation": {
+    "t_tab_click": 4.726,
+    "before": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "after": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "tab_matches": 1,
+    "open_dialogs_after_click": []
+  },
+  "store_ready": {
+    "t": 17.802,
+    "client_store_len": 95,
+    "poll_seq": 99
+  },
+  "phases_s": {
+    "wait_store": [
+      12.791,
+      17.802
+    ],
+    "slider_keys": [
+      18.234,
+      68.991
+    ],
+    "slider_drag": [
+      68.991,
+      134.928
+    ],
+    "play_click": [
+      134.928,
+      174.893
+    ],
+    "positive_control_display_mode": [
+      174.893,
+      206.607
+    ]
+  },
+  "notes": [
+    "drag from x=629 by 282px (track width 939)"
+  ],
+  "summary": {
+    "requests_naming_replay_state": 0,
+    "requests_WRITING_replay_state": 0,
+    "replay_state_writes_by_class": {},
+    "requests_naming_replay_state_by_output": {},
+    "positive_control_display_mode": {
+      "t": 174.893,
+      "hidden_after_s": 2,
+      "shown_again_after_s": 2
+    },
+    "positive_control_wire_rows": [
+      {
+        "seq": 497,
+        "t_req": 183.981,
+        "http": 200,
+        "trigger": [
+          "metrics-panel-display-mode.value"
+        ],
+        "container_style_write": "carried",
+        "value": {
+          "display": "none"
+        }
+      },
+      {
+        "seq": 538,
+        "t_req": 200.059,
+        "http": 200,
+        "trigger": [
+          "metrics-panel-display-mode.value"
+        ],
+        "container_style_write": "carried",
+        "value": {
+          "display": "inline-flex",
+          "alignItems": "center"
+        }
+      }
+    ],
+    "all_update_component_requests": 559
+  },
+  "phase_request_counts": {
+    "wait_store": {
+      "requests": 19,
+      "by_output": [
+        [
+          "metrics-panel-progress-detail.children",
+          1
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          1
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          1
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          1
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          1
+        ],
+        [
+          "hdf5-snapshots-panel-selected-id.data",
+          1
+        ],
+        [
+          "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..",
+          1
+        ],
+        [
+          "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..",
+          1
+        ],
+        [
+          "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..",
+          1
+        ],
+        [
+          "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..",
+          1
+        ],
+        [
+          "candidate-metrics-panel-loss-plot.figure",
+          1
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          1
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          1
+        ],
+        [
+          "dataset-swap-events-store.data",
+          1
+        ],
+        [
+          "metrics-panel-view-state.data",
+          1
+        ],
+        [
+          "network-visualizer-view-state.data",
+          1
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          1
+        ],
+        [
+          "..sidebar-pinned-list.children...sidebar-pinned-card.style..",
+          1
+        ],
+        [
+          "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..",
+          1
+        ]
+      ]
+    },
+    "slider_keys": {
+      "requests": 115,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          24
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          24
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          11
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          11
+        ],
+        [
+          "dataset-swap-events-store.data",
+          11
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          6
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          5
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          5
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          5
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          5
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          5
+        ],
+        [
+          "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...network-visualizer-output-count.children...network-visualizer-connection-count.children...network-visualizer-topology-hash.data...network-visualizer-new-node-highlight.data..",
+          1
+        ],
+        [
+          "pinned-params-store.data",
+          1
+        ],
+        [
+          "..sidebar-pinned-list.children...sidebar-pinned-card.style..",
+          1
+        ]
+      ]
+    },
+    "slider_drag": {
+      "requests": 158,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          37
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          37
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          13
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          13
+        ],
+        [
+          "dataset-swap-events-store.data",
+          13
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          10
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          7
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          7
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          7
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          7
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          7
+        ]
+      ]
+    },
+    "play_click": {
+      "requests": 99,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          22
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          22
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          8
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          8
+        ],
+        [
+          "dataset-swap-events-store.data",
+          8
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          6
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          5
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          5
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          5
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          5
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          5
+        ]
+      ]
+    },
+    "positive_control_display_mode": {
+      "requests": 74,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          17
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          17
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          6
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          6
+        ],
+        [
+          "dataset-swap-events-store.data",
+          6
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          4
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          3
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          3
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          3
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          3
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          3
+        ],
+        [
+          "..metrics-panel-display-mode-store.data...metrics-panel-window-size-container.style..",
+          2
+        ],
+        [
+          "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..",
+          1
+        ]
+      ]
+    }
+  },
+  "replay_rows": [],
+  "snapshots": [
+    {
+      "label": "after_tab",
+      "t": 10.168,
+      "wire_seq": 72,
+      "dom": {
+        "t_page_ms": 11571,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 0,
+        "poll_seq": 69
+      }
+    },
+    {
+      "label": "store_ready",
+      "t": 17.802,
+      "wire_seq": 99,
+      "dom": {
+        "t_page_ms": 17014,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 0,
+        "poll_seq": 69
+      }
+    },
+    {
+      "label": "keys+0.5s",
+      "t": 49.002,
+      "wire_seq": 162,
+      "dom": {
+        "t_page_ms": 50006,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 155
+      }
+    },
+    {
+      "label": "keys+3s",
+      "t": 53.728,
+      "wire_seq": 175,
+      "dom": {
+        "t_page_ms": 53198,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 170
+      }
+    },
+    {
+      "label": "keys+8s",
+      "t": 59.419,
+      "wire_seq": 190,
+      "dom": {
+        "t_page_ms": 59192,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 170
+      }
+    },
+    {
+      "label": "keys+15s",
+      "t": 67.415,
+      "wire_seq": 207,
+      "dom": {
+        "t_page_ms": 67772,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 205
+      }
+    },
+    {
+      "label": "drag+0.5s",
+      "t": 118.198,
+      "wire_seq": 332,
+      "dom": {
+        "t_page_ms": 119298,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 341
+      }
+    },
+    {
+      "label": "drag+5s",
+      "t": 125.019,
+      "wire_seq": 350,
+      "dom": {
+        "t_page_ms": 125305,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 341
+      }
+    },
+    {
+      "label": "drag+12s",
+      "t": 133.527,
+      "wire_seq": 369,
+      "dom": {
+        "t_page_ms": 133707,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 375
+      }
+    },
+    {
+      "label": "play+0.5s",
+      "t": 148.971,
+      "wire_seq": 407,
+      "dom": {
+        "t_page_ms": 148793,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 402
+      }
+    },
+    {
+      "label": "play+3s",
+      "t": 152.515,
+      "wire_seq": 411,
+      "dom": {
+        "t_page_ms": 152355,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 402
+      }
+    },
+    {
+      "label": "play+8s",
+      "t": 158.577,
+      "wire_seq": 428,
+      "dom": {
+        "t_page_ms": 159361,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 424
+      }
+    },
+    {
+      "label": "play+20s",
+      "t": 172.582,
+      "wire_seq": 463,
+      "dom": {
+        "t_page_ms": 173673,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 471
+      }
+    },
+    {
+      "label": "final",
+      "t": 206.607,
+      "wire_seq": 550,
+      "dom": {
+        "t_page_ms": 206855,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 528
+      }
+    }
+  ],
+  "console_errors_warnings": []
+}

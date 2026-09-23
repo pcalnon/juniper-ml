@@ -205,6 +205,22 @@ blocking and persistent. canopy#652 pins that distinction in
 `dataset-primary` remains implementable and is not foreclosed; D5's "swappable" property is
 intact. This records which way the switch is set, not that it was welded.
 
+**4. Scope: the restart modal is a recorded exception (owner ruling, 2026-09-22).**
+canopy#652 changed the **sidebar** gate only. The restart-confirmation modal's opener
+(`open_restart_confirm_modal` in `src/frontend/dashboard_manager.py`) still replaces a stranded,
+non-`⊥` dataset with the first enabled option. It does this when an availability change strands the
+dataset between the gate firing and the modal opening. The question "does model-primary-by-clearing
+bind this site too?" was put to the owner. The ruling is **no: keep the swap in the modal.** The modal
+is a confirmation dialog, and it shows the operator the swapped value before anything is re-staged:
+Confirm re-stages exactly what the modal displays, and refuses `⊥`. Its existing rationale, "never
+seed the field with a value its own list disables", therefore stands.
+
+Two consequences follow. **Registry order still matters**, because it decides the modal's fallback;
+see the §12.6 note in
+[`JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md`](JUNIPER_2026-09-02_JUNIPER-CANOPY_SELECTION-REACHABILITY-DESIGN.md).
+And **the two sites now intentionally differ.** Anyone reconciling them should read this paragraph
+first rather than "fixing" either to match the other.
+
 > **Identifier collision, for anyone grepping.** `OQ-6` names a *different* open question in
 > the juniper-recurrence lineage — the NPZ 3-D contract, refactor-owned, in
 > `JUNIPER_2026-06-04_JUNIPER-RECURRENCE_RECURSE-OQ4-RECURRENT-CASCOR-PROPOSALS.md` and

@@ -1,0 +1,327 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8056",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8056",
+    "version": "0.6.0",
+    "git_sha": "17588539f115c7ae594008b4db384eed71f6ec22",
+    "build_date": "2026-09-23T00:36:22Z"
+  },
+  "tab": "metrics",
+  "started_at": "2026-09-23T00:40:27Z",
+  "seconds": 60.0,
+  "tab_opened": true,
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 12,
+      "rt_ms": {
+        "n": 12,
+        "min": 17.8,
+        "p50": 21.8,
+        "p90": 24.9,
+        "max": 24.9,
+        "mean": 22.2
+      },
+      "gap_ms": {
+        "n": 11,
+        "min": 3590.0,
+        "p50": 4992.0,
+        "p90": 6096.9,
+        "max": 10600.4,
+        "mean": 5361.6
+      },
+      "overlaps": 0
+    },
+    "update_progress_detail": {
+      "requests": 5,
+      "rt_ms": {
+        "n": 5,
+        "min": 7.0,
+        "p50": 7.7,
+        "p90": 8.1,
+        "max": 8.1,
+        "mean": 7.6
+      },
+      "gap_ms": {
+        "n": 4,
+        "min": 4801.8,
+        "p50": 9666.5,
+        "p90": 10103.1,
+        "max": 10103.1,
+        "mean": 7509.9
+      },
+      "overlaps": 0
+    },
+    "update_learning_rate": {
+      "requests": 5,
+      "rt_ms": {
+        "n": 5,
+        "min": 7.5,
+        "p50": 7.7,
+        "p90": 8.5,
+        "max": 8.5,
+        "mean": 7.9
+      },
+      "gap_ms": {
+        "n": 4,
+        "min": 4805.1,
+        "p50": 9665.1,
+        "p90": 10105.3,
+        "max": 10105.3,
+        "mean": 7510.3
+      },
+      "overlaps": 0
+    },
+    "update_phase_duration": {
+      "requests": 5,
+      "rt_ms": {
+        "n": 5,
+        "min": 7.9,
+        "p50": 8.1,
+        "p90": 11.3,
+        "max": 11.3,
+        "mean": 9.2
+      },
+      "gap_ms": {
+        "n": 4,
+        "min": 4804.5,
+        "p50": 9662.2,
+        "p90": 10106.1,
+        "max": 10106.1,
+        "mean": 7509.8
+      },
+      "overlaps": 0
+    },
+    "update_training_progress": {
+      "requests": 5,
+      "rt_ms": {
+        "n": 5,
+        "min": 6.2,
+        "p50": 8.5,
+        "p90": 11.3,
+        "max": 11.3,
+        "mean": 8.6
+      },
+      "gap_ms": {
+        "n": 4,
+        "min": 4807.6,
+        "p50": 9668.5,
+        "p90": 10099.6,
+        "max": 10099.6,
+        "mean": 7508.3
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 99,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 30,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 30,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 12,
+    "dataset-swap-events-store.data": 12,
+    "metrics-panel-metrics-store.data": 8,
+    "metrics-panel-replay-controls.style": 5,
+    "pinned-params-store.data": 1,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "metrics-panel-training-state-store",
+    "reads": 11,
+    "readable": 11,
+    "distinct_timestamps": 7,
+    "samples": [
+      {
+        "t": 8.9,
+        "ok": true,
+        "timestamp": 1790123874.0356994,
+        "keys": 31
+      },
+      {
+        "t": 15.4,
+        "ok": true,
+        "timestamp": 1790123874.0356994,
+        "keys": 31
+      },
+      {
+        "t": 19.6,
+        "ok": true,
+        "timestamp": 1790124059.8167481,
+        "keys": 61
+      },
+      {
+        "t": 24.3,
+        "ok": true,
+        "timestamp": 1790124065.206825,
+        "keys": 61
+      },
+      {
+        "t": 28.7,
+        "ok": true,
+        "timestamp": 1790124065.206825,
+        "keys": 61
+      },
+      {
+        "t": 33.1,
+        "ok": true,
+        "timestamp": 1790124074.8466578,
+        "keys": 61
+      },
+      {
+        "t": 38.0,
+        "ok": true,
+        "timestamp": 1790124074.8466578,
+        "keys": 61
+      },
+      {
+        "t": 43.8,
+        "ok": true,
+        "timestamp": 1790124084.4603426,
+        "keys": 61
+      },
+      {
+        "t": 47.9,
+        "ok": true,
+        "timestamp": 1790124089.9060335,
+        "keys": 61
+      },
+      {
+        "t": 53.5,
+        "ok": true,
+        "timestamp": 1790124094.897031,
+        "keys": 61
+      },
+      {
+        "t": 58.1,
+        "ok": true,
+        "timestamp": 1790124094.897031,
+        "keys": 61
+      }
+    ]
+  },
+  "writer_responses": {
+    "carried_store": 11,
+    "no_update": 0,
+    "unparsed": 0,
+    "distinct_timestamps_delivered": 11
+  },
+  "candidate_lane": {
+    "samples": 11,
+    "disabled_true": 11,
+    "disabled_false": 0,
+    "unreadable": 0,
+    "candidate_writer_requests_seen": 0
+  },
+  "phase_duration": {
+    "samples": [
+      {
+        "t": 12.5,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 2m 53s",
+        "shown_s": 173,
+        "expected_s": 194.4,
+        "lag_s": 21.4
+      },
+      {
+        "t": 16.7,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 2m 53s",
+        "shown_s": 173,
+        "expected_s": 198.6,
+        "lag_s": 25.6
+      },
+      {
+        "t": 21.4,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 2m 53s",
+        "shown_s": 173,
+        "expected_s": 203.3,
+        "lag_s": 30.3
+      },
+      {
+        "t": 26.4,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 2m 53s",
+        "shown_s": 173,
+        "expected_s": 208.3,
+        "lag_s": 35.3
+      },
+      {
+        "t": 30.9,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 24s",
+        "shown_s": 204,
+        "expected_s": 212.8,
+        "lag_s": 8.8
+      },
+      {
+        "t": 36.1,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 24s",
+        "shown_s": 204,
+        "expected_s": 218.0,
+        "lag_s": 14.0
+      },
+      {
+        "t": 40.8,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 34s",
+        "shown_s": 214,
+        "expected_s": 222.7,
+        "lag_s": 8.7
+      },
+      {
+        "t": 45.4,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 34s",
+        "shown_s": 214,
+        "expected_s": 227.2,
+        "lag_s": 13.2
+      },
+      {
+        "t": 50.1,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 43s",
+        "shown_s": 223,
+        "expected_s": 232.0,
+        "lag_s": 9.0
+      },
+      {
+        "t": 56.3,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 49s",
+        "shown_s": 229,
+        "expected_s": 238.2,
+        "lag_s": 9.2
+      },
+      {
+        "t": 61.0,
+        "status": "Completed",
+        "phase": "output",
+        "shown_text": "Phase Duration: 3m 54s",
+        "shown_s": 234,
+        "expected_s": 242.9,
+        "lag_s": 8.9
+      }
+    ],
+    "lag_s": {
+      "n": 11,
+      "min": 8.7,
+      "p50": 13.2,
+      "p90": 30.3,
+      "max": 35.3,
+      "mean": 16.8
+    }
+  }
+}

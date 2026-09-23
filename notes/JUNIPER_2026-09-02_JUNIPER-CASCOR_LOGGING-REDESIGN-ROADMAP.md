@@ -615,7 +615,31 @@ allocates a closure per call **even when suppressed**, a new per-call cost at ~8
 
 Ruled by the owner **2026-09-09** unless noted. This subsection is the canonical record.
 
-1. **Pre-authorised, threshold 10 %.** If P0.2 puts the total logging share of worker self time
+1. **RESOLVED 2026-09-22 — measured 16.70 %, so P2 RUNS.** P0.1 and P0.2 are done: 32 profiles at
+   cascor `8065ca0f`, i.e. after every Phase 1 merge. Worker self time **37.00 s**; attributable
+   logging self time **6.18 s** over 4,938,286 calls; share **16.70 %**, which is at or above the
+   pre-authorised threshold. Evidence archived at
+   [`reports/p01-logging-corpus-2026-09-22/`](../reports/p01-logging-corpus-2026-09-22/README.md);
+   instruments `util/ad-hoc/2026-09-22_p01_logging_corpus_run.bash` and
+   `util/ad-hoc/2026-09-22_p02_logging_share_decompose.py`; cell
+   `util/ad-hoc/2026-09-22_p01_logging_corpus_cell.yaml`.
+   - **The §3.1 caveat holds and is why this is a LOWER BOUND.** 16.70 % is what the instrument can
+     *attribute*; discarded-record f-string construction is inline in each caller's own self time
+     and is not separately attributable. Do not restate it as "logging costs 16.7 %".
+   - **The August headline has been overtaken.** `Tensor.__format__` was 27.98 s cumulative over
+     1.81 M calls (33 %) in
+     [`…GATED-MEASUREMENTS-RESULTS.md`](JUNIPER_2026-08-29_JUNIPER-ECOSYSTEM_GATED-MEASUREMENTS-RESULTS.md)
+     §3; it is now **0.13 s over 2,912 calls**, after cascor#598's `_tensor_brief` and P1.4 (#670).
+     **The cost has moved out of call-site message construction and into the logger internals** —
+     `_log_at_level` 1.02 s, `_filter_by_level` 0.69 s, eager `currentframe` 0.51 s over 611,870
+     calls. P2 and P3 are where it now lives, which is what the 16.70 % is authorising.
+   - **The August cell cannot run any more**, and P0.1 could not be a like-for-like repeat: it
+     predates the val split, so juniper-data refuses `0.8 + 0.1 + 0.2 = 1.1`; and `val_ratio: 0.0`
+     gets past juniper-data but is then refused by cascor at `cascade_correlation.py:1671` as an
+     **empty** `x_val`. The CLI tolerates a *missing* val, not an *empty* one. Split used:
+     0.8 / 0.1 / 0.1, train held at August's value.
+
+   *(Original pre-authorisation, for the record:)* **Pre-authorised, threshold 10 %.** If P0.2 puts the total logging share of worker self time
    below **10 %**, P2 is **cancelled** and recorded as cancelled; at or above, it runs. P0 closes
    without a second ask either way. Note the standing caveat (§3.1): P0.2 may report the *emitted*
    share and the discard *count*, and **must not** promise the construction cost of discarded

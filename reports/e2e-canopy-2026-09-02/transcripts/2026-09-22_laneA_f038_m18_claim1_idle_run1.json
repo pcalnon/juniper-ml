@@ -1,0 +1,1320 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "ea7917af281a8482",
+    "argv": [
+      "claim1",
+      "--seconds",
+      "90",
+      "--control",
+      "--tag",
+      "run1"
+    ],
+    "step": "claim1"
+  },
+  "provenance_before": {
+    "captured_utc": "2026-09-22T21:10:41.198+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "provenance_after": {
+    "captured_utc": "2026-09-22T21:13:28.525+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "browser": {
+    "launch_args": [
+      "--disable-dev-shm-usage",
+      "--enable-gpu",
+      "--ignore-gpu-blocklist",
+      "--use-angle=vulkan",
+      "--enable-features=Vulkan"
+    ],
+    "headless": true,
+    "webgl_about_blank": {
+      "webgl": "webgl2",
+      "vendor": "Google Inc. (NVIDIA)",
+      "renderer": "ANGLE (NVIDIA, Vulkan 1.4.312 (NVIDIA NVIDIA GeForce RTX 2080 (0x00001E87)), NVIDIA)"
+    }
+  },
+  "served_writers_of_metrics_store": [
+    {
+      "output": "metrics-panel-metrics-store.data",
+      "inputs": [
+        "metrics-store-interval.n_intervals",
+        "metrics-panel-display-mode-store.data"
+      ],
+      "state": [
+        "ws-liveness-store.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": false,
+      "clientside": false,
+      "websocket": false
+    },
+    {
+      "output": "metrics-panel-metrics-store.data@15586d300aa70069205f6b6c4219bfbeb86bfb1346f8fa1c90efa1e3e429297a",
+      "inputs": [
+        "ws-metrics-buffer.data"
+      ],
+      "state": [
+        "metrics-panel-display-mode-store.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    }
+  ],
+  "tab_activation": {
+    "t_tab_click": 4.785,
+    "before": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "after": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "tab_matches": 1,
+    "open_dialogs_after_click": []
+  },
+  "phases_s": {
+    "idle": [
+      4.785,
+      94.785
+    ],
+    "control_window_10": [
+      108.173,
+      153.173
+    ]
+  },
+  "summary": {
+    "rest_poll_all_capture": {
+      "window_s": [
+        null,
+        null
+      ],
+      "responses": 21,
+      "by_class": {
+        "carried": 2,
+        "no_update": 19
+      },
+      "by_branch": {
+        "write (fetched list != State)": 2,
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 19
+      },
+      "distinct_carried_payload_shas": {
+        "92e4bfae13963661": 1,
+        "637d2923f70cf52e": 1
+      },
+      "distinct_state_shas_sent": {
+        "4f53cda18c2baa0c": 1,
+        "92e4bfae13963661": 14,
+        "637d2923f70cf52e": 6
+      }
+    },
+    "rest_poll_idle_window": {
+      "window_s": [
+        4.785,
+        94.785
+      ],
+      "responses": 11,
+      "by_class": {
+        "carried": 1,
+        "no_update": 10
+      },
+      "by_branch": {
+        "write (fetched list != State)": 1,
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 10
+      },
+      "distinct_carried_payload_shas": {
+        "92e4bfae13963661": 1
+      },
+      "distinct_state_shas_sent": {
+        "4f53cda18c2baa0c": 1,
+        "92e4bfae13963661": 10
+      }
+    },
+    "rest_poll_first_60s_after_tab": {
+      "window_s": [
+        4.785,
+        64.785
+      ],
+      "responses": 7,
+      "by_class": {
+        "carried": 1,
+        "no_update": 6
+      },
+      "by_branch": {
+        "write (fetched list != State)": 1,
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 6
+      },
+      "distinct_carried_payload_shas": {
+        "92e4bfae13963661": 1
+      },
+      "distinct_state_shas_sent": {
+        "4f53cda18c2baa0c": 1,
+        "92e4bfae13963661": 6
+      }
+    },
+    "rest_poll_idle_after_first_fill": {
+      "window_s": [
+        12.378,
+        94.785
+      ],
+      "responses": 10,
+      "by_class": {
+        "no_update": 10
+      },
+      "by_branch": {
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 10
+      },
+      "distinct_carried_payload_shas": {},
+      "distinct_state_shas_sent": {
+        "92e4bfae13963661": 10
+      }
+    },
+    "rest_poll_control_window": {
+      "window_s": [
+        108.173,
+        153.173
+      ],
+      "responses": 6,
+      "by_class": {
+        "no_update": 5,
+        "carried": 1
+      },
+      "by_branch": {
+        "Stage 2 identity suppression (State == fetched, fetched non-empty)": 5,
+        "write (fetched list != State)": 1
+      },
+      "distinct_carried_payload_shas": {
+        "637d2923f70cf52e": 1
+      },
+      "distinct_state_shas_sent": {
+        "92e4bfae13963661": 2,
+        "637d2923f70cf52e": 4
+      }
+    },
+    "ws_append_writer": {
+      "responses": 0,
+      "by_class": {}
+    },
+    "reference_fetches_distinct": [
+      {
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "n": 34
+      },
+      {
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "n": 12
+      }
+    ],
+    "reference_fetch_errors": [],
+    "all_update_component_requests": 457,
+    "requests_by_output_top": [
+      [
+        "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+        80
+      ],
+      [
+        "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+        79
+      ],
+      [
+        "dataset-swap-events-store.data",
+        33
+      ],
+      [
+        "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+        33
+      ],
+      [
+        "metrics-panel-training-state-store.data",
+        33
+      ],
+      [
+        "metrics-panel-progress-detail.children",
+        19
+      ],
+      [
+        "metrics-panel-phase-duration.children",
+        19
+      ],
+      [
+        "metrics-panel-current-lr.children",
+        19
+      ],
+      [
+        "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+        19
+      ],
+      [
+        "metrics-panel-replay-controls.style",
+        19
+      ],
+      [
+        "..sidebar-pinned-list.children...sidebar-pinned-card.style..",
+        3
+      ],
+      [
+        "..experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..",
+        2
+      ],
+      [
+        "..nn-growth-preset-epochs-input.disabled...nn-growth-convergence-threshold-input.disabled..",
+        2
+      ],
+      [
+        "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..",
+        2
+      ],
+      [
+        "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..",
+        2
+      ],
+      [
+        "..apply-params-button.disabled...params-status.children..",
+        2
+      ],
+      [
+        "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..",
+        2
+      ],
+      [
+        "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..",
+        2
+      ],
+      [
+        "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309",
+        2
+      ],
+      [
+        "pinned-params-store.data",
+        2
+      ],
+      [
+        "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..",
+        2
+      ],
+      [
+        "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..",
+        2
+      ],
+      [
+        "candidate-metrics-panel-loss-plot.figure",
+        2
+      ],
+      [
+        "..theme-state.data...dark-mode-toggle.children..",
+        1
+      ],
+      [
+        "loaded-snapshot-swap-events-store.data",
+        1
+      ]
+    ]
+  },
+  "rest_poll_rows": [
+    {
+      "seq": 80,
+      "t_req": 12.377,
+      "t_done": 12.399,
+      "latency_s": 0.022,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 6,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "4f53cda18c2baa0c",
+        "len": 0
+      },
+      "class": "carried",
+      "why": "id_in_response_map",
+      "http": 200,
+      "resp_bytes": 28570,
+      "carried": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "carried_equals_state_py_eq": false,
+      "carried_equals_ref_py_eq": true,
+      "state_equals_ref_py_eq": false,
+      "ref": {
+        "t": 11.227,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "write (fetched list != State)"
+    },
+    {
+      "seq": 102,
+      "t_req": 19.177,
+      "t_done": 19.218,
+      "latency_s": 0.041,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 7,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 21.261,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 127,
+      "t_req": 34.175,
+      "t_done": 34.208,
+      "latency_s": 0.033,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 8,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 36.303,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 140,
+      "t_req": 40.937,
+      "t_done": 40.966,
+      "latency_s": 0.029,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 9,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 41.32,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 162,
+      "t_req": 49.046,
+      "t_done": 49.076,
+      "latency_s": 0.03,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 10,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 51.362,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 177,
+      "t_req": 56.249,
+      "t_done": 56.284,
+      "latency_s": 0.035,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 11,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 56.382,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 199,
+      "t_req": 63.816,
+      "t_done": 63.843,
+      "latency_s": 0.027,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 12,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 61.404,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 212,
+      "t_req": 70.009,
+      "t_done": 70.055,
+      "latency_s": 0.046,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 13,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 71.449,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 227,
+      "t_req": 74.739,
+      "t_done": 74.766,
+      "latency_s": 0.027,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 14,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 76.473,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 239,
+      "t_req": 81.342,
+      "t_done": 81.383,
+      "latency_s": 0.041,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 15,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 81.488,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 264,
+      "t_req": 89.148,
+      "t_done": 89.18,
+      "latency_s": 0.032,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 16,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 91.525,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 281,
+      "t_req": 95.935,
+      "t_done": 95.962,
+      "latency_s": 0.027,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 17,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 96.549,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 301,
+      "t_req": 104.547,
+      "t_done": 104.597,
+      "latency_s": 0.05,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 18,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 106.595,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 318,
+      "t_req": 110.206,
+      "t_done": 110.239,
+      "latency_s": 0.033,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 19,
+      "mode": "window",
+      "window_size": 500,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 111.627,
+        "limit": 500,
+        "sha": "92e4bfae13963661",
+        "len": 95
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 341,
+      "t_req": 120.976,
+      "t_done": 121.0,
+      "latency_s": 0.024,
+      "trigger": [
+        "metrics-store-interval.n_intervals",
+        "metrics-panel-display-mode-store.data"
+      ],
+      "n_intervals": 21,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "92e4bfae13963661",
+        "len": 95,
+        "first": {
+          "epoch": 1,
+          "phase": "output",
+          "timestamp": "2026-09-22T14:43:24.599965"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "carried",
+      "why": "id_in_response_map",
+      "http": 200,
+      "resp_bytes": 3163,
+      "carried": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "carried_equals_state_py_eq": false,
+      "carried_equals_ref_py_eq": true,
+      "state_equals_ref_py_eq": false,
+      "ref": {
+        "t": 121.675,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "write (fetched list != State)"
+    },
+    {
+      "seq": 366,
+      "t_req": 128.35,
+      "t_done": 128.37,
+      "latency_s": 0.02,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 22,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 126.697,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 384,
+      "t_req": 135.237,
+      "t_done": 135.261,
+      "latency_s": 0.024,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 23,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 136.752,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 401,
+      "t_req": 141.588,
+      "t_done": 141.602,
+      "latency_s": 0.014,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 24,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 141.779,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 418,
+      "t_req": 148.656,
+      "t_done": 148.67,
+      "latency_s": 0.014,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 25,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 146.803,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 433,
+      "t_req": 154.017,
+      "t_done": 154.036,
+      "latency_s": 0.019,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 26,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 151.823,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    },
+    {
+      "seq": 450,
+      "t_req": 161.389,
+      "t_done": 161.407,
+      "latency_s": 0.018,
+      "trigger": [
+        "metrics-store-interval.n_intervals"
+      ],
+      "n_intervals": 27,
+      "mode": "window",
+      "window_size": 10,
+      "ws_live": false,
+      "state": {
+        "sha": "637d2923f70cf52e",
+        "len": 10,
+        "first": {
+          "epoch": 66,
+          "phase": "candidate",
+          "timestamp": "2026-09-22T15:23:04.945595"
+        },
+        "last": {
+          "epoch": 69,
+          "phase": "output",
+          "timestamp": "2026-09-22T15:23:09.884473"
+        }
+      },
+      "class": "no_update",
+      "why": "id_absent_from_response_map",
+      "http": 200,
+      "resp_bytes": 28,
+      "state_equals_ref_py_eq": true,
+      "ref": {
+        "t": 161.88,
+        "limit": 10,
+        "sha": "637d2923f70cf52e",
+        "len": 10
+      },
+      "branch": "Stage 2 identity suppression (State == fetched, fetched non-empty)"
+    }
+  ],
+  "ws_append_rows": [],
+  "redux_vs_state_agreement": [],
+  "snapshots": [
+    {
+      "label": "idle_start",
+      "t": 12.839,
+      "wire_seq": 82,
+      "dom": {
+        "t_page_ms": 12950,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 0,
+        "poll_seq": 80
+      }
+    },
+    {
+      "label": "idle_30s",
+      "t": 44.149,
+      "wire_seq": 150,
+      "dom": {
+        "t_page_ms": 43863,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 127
+      }
+    },
+    {
+      "label": "idle_60s",
+      "t": 75.062,
+      "wire_seq": 227,
+      "dom": {
+        "t_page_ms": 75351,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 227
+      }
+    },
+    {
+      "label": "idle_90s",
+      "t": 106.549,
+      "wire_seq": 310,
+      "dom": {
+        "t_page_ms": 106976,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 301
+      }
+    },
+    {
+      "label": "control_end",
+      "t": 164.299,
+      "wire_seq": 457,
+      "dom": {
+        "t_page_ms": 164480,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 10,
+        "poll_seq": 433
+      }
+    }
+  ],
+  "console_errors_warnings": []
+}

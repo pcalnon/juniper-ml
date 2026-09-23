@@ -1,0 +1,228 @@
+{
+  "cascor": "http://127.0.0.1:8202",
+  "health": {
+    "status": "ok",
+    "version": "0.11.0",
+    "service": "juniper-cascor",
+    "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+    "build_date": "2026-09-22T19:37:53Z"
+  },
+  "samples": [
+    {
+      "fsm": "STARTED",
+      "phase": "OUTPUT",
+      "hidden_units": 62,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 95,
+      "t": 0.1
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "OUTPUT",
+      "hidden_units": 62,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 97,
+      "t": 1.1
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "OUTPUT",
+      "hidden_units": 62,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 97,
+      "t": 2.1
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "OUTPUT",
+      "hidden_units": 62,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 97,
+      "t": 3.1
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 63,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 100,
+      "t": 4.1
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 63,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 100,
+      "t": 5.1
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 64,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 103,
+      "t": 6.2
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 64,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 103,
+      "t": 7.2
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 65,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 106,
+      "t": 8.2
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 65,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 106,
+      "t": 9.2
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 66,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 109,
+      "t": 10.2
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 67,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 112,
+      "t": 11.2
+    },
+    {
+      "fsm": "STARTED",
+      "phase": "CANDIDATE",
+      "hidden_units": 68,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 115,
+      "t": 12.2
+    },
+    {
+      "fsm": "COMPLETED",
+      "phase": "OUTPUT",
+      "hidden_units": 68,
+      "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+      "total_metrics": 116,
+      "t": 13.2
+    }
+  ],
+  "before": {
+    "fsm": "COMPLETED",
+    "phase": "OUTPUT",
+    "hidden_units": 62,
+    "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+    "total_metrics": 95
+  },
+  "stage": {
+    "http": 200,
+    "body": {
+      "status": "success",
+      "data": {
+        "status": "staged",
+        "config": {
+          "dataset_type": "spirals",
+          "n_samples": 1000,
+          "noise": 0.25,
+          "rotations": 1.5,
+          "n_spirals": 2
+        }
+      },
+      "meta": {
+        "timestamp": 1790123860.8302588,
+        "version": "0.6.0"
+      }
+    }
+  },
+  "patch": {
+    "http": 200,
+    "body": {
+      "status": "success",
+      "data": {
+        "learning_rate": 0.01,
+        "candidate_learning_rate": 0.005,
+        "max_hidden_units": 68,
+        "epochs_max": 205725,
+        "max_iterations": 1000,
+        "patience": 50,
+        "candidate_pool_size": 8,
+        "correlation_threshold": 0.01,
+        "convergence_threshold": 0.001,
+        "candidate_patience": 50,
+        "candidate_convergence_threshold": 0.001,
+        "candidate_epochs": 3000,
+        "output_epochs": 25,
+        "init_output_weights": "zero",
+        "optimizer_type": "Adam",
+        "activation_function_name": "Tanh",
+        "auto_snap_best": false,
+        "auto_snap_min_epochs": 50,
+        "multi_candidate": false,
+        "candidate_selection": "top",
+        "selected_candidates": 1,
+        "top_candidates": 1,
+        "random_candidates": 0,
+        "applied": [
+          "max_hidden_units"
+        ],
+        "skipped": []
+      },
+      "meta": {
+        "timestamp": 1790123860.833003,
+        "version": "0.6.0"
+      }
+    }
+  },
+  "start": {
+    "http": 200,
+    "body": {
+      "status": "success",
+      "data": {
+        "status": "training_started",
+        "timestamp": 1790123860.914335
+      },
+      "meta": {
+        "timestamp": 1790123860.9143572,
+        "version": "0.6.0"
+      }
+    }
+  },
+  "after": {
+    "fsm": "COMPLETED",
+    "phase": "OUTPUT",
+    "hidden_units": 68,
+    "uuid": "1cd15120-8f71-4319-ab7d-a384bfd692a9",
+    "total_metrics": 116
+  },
+  "verdict": "COMPLETED",
+  "snapshot": {
+    "http": 200,
+    "body": {
+      "status": "success",
+      "data": {
+        "id": "snapshot_20260923T003754Z",
+        "path": "/home/pcalnon/Development/python/Juniper/juniper-cascor/cascor-snapshots/snapshot_20260923T003754Z.h5",
+        "timestamp": "20260923T003754Z",
+        "description": ""
+      },
+      "meta": {
+        "timestamp": 1790123874.8629353,
+        "version": "0.6.0"
+      }
+    }
+  }
+}

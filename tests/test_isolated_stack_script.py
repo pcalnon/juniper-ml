@@ -1205,6 +1205,49 @@ class TestDataUpLive(unittest.TestCase):
                 if child_pid is not None:
                     self._force_kill(child_pid)
 
+    def test_rebuilds_venv_when_only_an_aged_out_skeleton_remains(self) -> None:
+        # systemd-tmpfiles ages /tmp by FILE (``Q /tmp ... 10d``): a ten-day-old venv
+        # loses every file and keeps its directories. That skeleton passed the old
+        # ``[[ -d ]]`` test, the create was skipped, and ``source bin/activate`` failed
+        # (found 2026-09-22). The skeleton must be rebuilt, not trusted.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            run_dir = root / "run"
+            data_dir = root / "juniper-data"
+            marker_dir = root / "markers"
+            bin_dir = root / "bin"
+            data_dir.mkdir()
+            marker_dir.mkdir()
+            bin_dir.mkdir()
+            data_venv = run_dir / ".venv-data"
+            # Exactly the shape found on disk: directories, no files at all.
+            (data_venv / "bin").mkdir(parents=True)
+            (data_venv / "include").mkdir()
+            (data_venv / "lib" / "python3.14" / "site-packages" / "juniper_data-0.13.0.dist-info").mkdir(parents=True)
+            self._write_python314_stub(bin_dir, marker_dir)
+            self._write_curl_ok(bin_dir)
+
+            result = self._run_data_up(
+                run_dir=run_dir,
+                data_dir=data_dir,
+                marker_dir=marker_dir,
+                bin_dir=bin_dir,
+            )
+            pid_path = run_dir / "juniper-data.pid"
+            child_pid: int | None = None
+            try:
+                self.assertEqual(result.returncode, 0, msg=result.stderr + result.stdout)
+                self.assertIn("not a usable venv", result.stdout)
+                self.assertTrue((marker_dir / "venv.log").exists(), "the skeleton must be rebuilt with python3.14 -m venv")
+                self.assertIn(str(data_venv), (marker_dir / "venv.log").read_text())
+                self.assertFalse((data_venv / "lib").exists(), "the stale skeleton must be removed before the rebuild")
+                self.assertTrue((marker_dir / "pip.log").exists(), "pip install must run into the rebuilt venv")
+                self.assertTrue(pid_path.exists())
+                child_pid = int(pid_path.read_text().strip())
+            finally:
+                if child_pid is not None:
+                    self._force_kill(child_pid)
+
     def test_stock_build_omits_python_gil(self) -> None:
         # On a stock (non-free-threaded) CPython, PYTHON_GIL=0 is FATAL at startup
         # ("config_read_gil: Disabling the GIL is not supported by this build") — the

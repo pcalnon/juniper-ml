@@ -982,6 +982,13 @@ owner-only) and nothing outside pull-request merges.
    are acted on. Additionally, a PR opened with `GITHUB_TOKEN` does **not** auto-trigger CI (GitHub's
    recursion guard), so a proposal PR shows no checks until re-triggered (close/reopen, or push an empty
    commit). When the App token IS minted, PRs are opened by the App identity and CI runs normally.
+   > **Observed 2026-09-22 on the same token path** (juniper-ml's 18 `GITHUB_TOKEN` lockfile PRs,
+   > census in `HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`
+   > § Re-evaluation 2026-09-22): all ran zero jobs at opening, but in two shapes. 5 got no
+   > `pull_request` run when opened (one, #1139, got runs only after the owner pushed main into
+   > its branch), and 13 had their runs **created and parked at `action_required`**.
+   > For a parked PR the cheapest re-trigger is re-running those runs from the Actions tab, which is
+   > how 12 of the 13 were released.
 2. **Issues permission (HALT-issue degradation) — RETIRED 2026-07-30.** Owner-verified: the App's
    repository permissions include **Issues: Read and write** (and were already granted pre-verification),
    the installation carries it, and the mint steps pass no `permission-*` narrowing — so minted tokens

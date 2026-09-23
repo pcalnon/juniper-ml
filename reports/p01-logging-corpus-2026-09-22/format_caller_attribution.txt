@@ -1,0 +1,19 @@
+# corpus: 32 profiles under /home/pcalnon/.local/state/juniper-experiments/p01-logging-at8065ca0f-v3/prof
+# target: callee key containing '__format__'
+# matched callees: ['<function Tensor.__format__ at 0x7a36fc3cdbc0>', "<method '__format__' of 'float' objects>", '_tensor.py:1144(__format__)']
+# target cumulative time:     0.13 s over 2,912 calls
+
+    cum_s    share         calls  caller
+     0.05   40.59%         1,453  _tensor.py:1144(__format__)
+     0.05   38.93%            58  candidate_unit.py:159(__init__)
+     0.01    9.75%         1,152  <method 'format' of 'str' objects>
+     0.00    1.14%           192  _tensor_str.py:131(__init__)
+     0.00    1.14%             2  candidate_unit.py:389(_roll_sequence_number)
+     0.00    0.64%             2  resource_sharer.py:49(send)
+     0.00    0.00%             1  connection.py:410(_recv)
+     0.00    0.00%             0  _tensor_str.py:723(_str)
+     0.00    0.00%             0  <method 'sendmsg' of '_socket.socket' objects>
+
+# attributed to callers: 0.12 s (92.2% of target)
+# shown in top 12: 0.12 s (92.2% of target)
+# NOT shown (tail of 0 callers): 0.00 s

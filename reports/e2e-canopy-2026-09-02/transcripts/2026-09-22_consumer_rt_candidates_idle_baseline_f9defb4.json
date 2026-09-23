@@ -1,0 +1,692 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8055",
+    "version": "0.6.0",
+    "git_sha": "f9defb4bad3997e93a977afd244e589a22206325",
+    "build_date": "2026-09-22T20:01:43Z"
+  },
+  "tab": "candidates",
+  "started_at": "2026-09-22T20:01:57Z",
+  "seconds": 60.0,
+  "tab_opened": true,
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 36,
+      "rt_ms": {
+        "n": 36,
+        "min": 24.7,
+        "p50": 4828.8,
+        "p90": 17837.3,
+        "max": 20333.5,
+        "mean": 6847.5
+      },
+      "gap_ms": {
+        "n": 35,
+        "min": 308.8,
+        "p50": 1002.6,
+        "p90": 1552.5,
+        "max": 11029.6,
+        "mean": 1318.0
+      },
+      "overlaps": 25
+    },
+    "update_status_display": {
+      "requests": 3,
+      "rt_ms": {
+        "n": 3,
+        "min": 260.1,
+        "p50": 512.4,
+        "p90": 1991.9,
+        "max": 1991.9,
+        "mean": 921.5
+      },
+      "gap_ms": {
+        "n": 2,
+        "min": 9606.0,
+        "p50": 30931.2,
+        "p90": 30931.2,
+        "max": 30931.2,
+        "mean": 20268.6
+      },
+      "overlaps": 0
+    },
+    "update_epoch_progress": {
+      "requests": 3,
+      "rt_ms": {
+        "n": 3,
+        "min": 782.0,
+        "p50": 1064.7,
+        "p90": 1961.4,
+        "max": 1961.4,
+        "mean": 1269.4
+      },
+      "gap_ms": {
+        "n": 2,
+        "min": 9580.4,
+        "p50": 30930.7,
+        "p90": 30930.7,
+        "max": 30930.7,
+        "mean": 20255.5
+      },
+      "overlaps": 0
+    },
+    "update_pool_info": {
+      "requests": 3,
+      "rt_ms": {
+        "n": 3,
+        "min": 143.4,
+        "p50": 883.9,
+        "p90": 970.8,
+        "max": 970.8,
+        "mean": 666.1
+      },
+      "gap_ms": {
+        "n": 2,
+        "min": 7772.5,
+        "p50": 31004.5,
+        "p90": 31004.5,
+        "max": 31004.5,
+        "mean": 19388.5
+      },
+      "overlaps": 0
+    },
+    "update_loss_plot (State since #618)": {
+      "requests": 4,
+      "rt_ms": {
+        "n": 4,
+        "min": 54.1,
+        "p50": 1169.2,
+        "p90": 16398.7,
+        "max": 16398.7,
+        "mean": 4615.4
+      },
+      "gap_ms": {
+        "n": 3,
+        "min": 6851.3,
+        "p50": 24491.7,
+        "p90": 31061.4,
+        "max": 31061.4,
+        "mean": 20801.4
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 242,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 35,
+    "metrics-panel-metrics-store.data": 35,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 35,
+    "training-status-store.data": 34,
+    "network-info-panel.children": 10,
+    "network-info-details-panel.children": 10,
+    "stream-health-store.data": 10,
+    "pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c": 10,
+    "dataset-swap-events-store.data": 9,
+    "..hdf5-snapshots-panel-table-body.children...hdf5-snapshots-panel-status.children...hdf5-snapshots-panel-empty-state.style...hdf5-snapshots-panel-snapshots-stor": 4,
+    "hdf5-snapshots-panel-dataset-swaps-content.children": 4,
+    "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..": 4,
+    "candidate-metrics-panel-pool-history-store.data": 3,
+    "metrics-panel-progress-detail.children": 2,
+    "metrics-panel-current-lr.children": 2,
+    "metrics-panel-phase-duration.children": 2,
+    "metrics-panel-replay-controls.style": 2,
+    "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...met": 2,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 2,
+    "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metr": 2,
+    "live-dataset-switch-button.disabled": 2,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 2,
+    "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-pan": 2,
+    "..dataset-plotter-seq-grid-plot.figure...dataset-plotter-seq-grid-container.style..": 1,
+    "..dataset-plotter-scatter-plot.figure...dataset-plotter-distribution-plot.figure...dataset-plotter-sample-count.children...dataset-plotter-feature-count.childre": 1,
+    "..decision-boundary-plot.figure...decision-boundary-status.children..": 1,
+    "..dataset-plotter-seq-char-dt-hist.figure...dataset-plotter-seq-char-target-dist.figure...dataset-plotter-seq-char-stats.children...dataset-plotter-seq-char-com": 1,
+    "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..": 1,
+    "..dataset-plotter-seq-target-plot.figure...dataset-plotter-seq-target-plot.style..": 1,
+    "..sidebar-meta-params-card.style...sidebar-nn-section.style...sidebar-nn-top-params.style...sidebar-nn-growth-triggers.style...sidebar-nn-multi-node-layers.styl": 1,
+    "..sidebar-col.width...visualization-col.width..": 1,
+    "network-visualizer-raw-topology-store.data": 1,
+    "dataset-plotter-dataset-store.data": 1,
+    "worker-panel-workers-store.data": 1,
+    "decision-boundary-boundary-data.data": 1,
+    "decision-boundary-dataset-data.data": 1,
+    "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 1,
+    "metrics-panel-training-state-store.data": 1,
+    "network-visualizer-topology-store.data": 1,
+    "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+    "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 1,
+    "pinned-params-store.data": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "candidate-metrics-panel-training-state-store",
+    "reads": 24,
+    "readable": 24,
+    "distinct_timestamps": 3,
+    "samples": [
+      {
+        "t": 0.0,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 1.2,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 2.4,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 3.6,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 5.3,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 6.5,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 7.6,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 9.8,
+        "ok": true,
+        "timestamp": null,
+        "keys": 0
+      },
+      {
+        "t": 14.2,
+        "ok": true,
+        "timestamp": 1790107343.862867,
+        "keys": 61
+      },
+      {
+        "t": 19.8,
+        "ok": true,
+        "timestamp": 1790107343.862867,
+        "keys": 61
+      },
+      {
+        "t": 22.4,
+        "ok": true,
+        "timestamp": 1790107343.862867,
+        "keys": 61
+      },
+      {
+        "t": 25.0,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 26.4,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 27.9,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 29.5,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 33.5,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 37.7,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 41.8,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 45.8,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 50.7,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 52.4,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 54.4,
+        "ok": true,
+        "timestamp": 1790107357.7082562,
+        "keys": 61
+      },
+      {
+        "t": 55.6,
+        "ok": true,
+        "timestamp": 1790107388.5074463,
+        "keys": 61
+      },
+      {
+        "t": 57.0,
+        "ok": true,
+        "timestamp": 1790107388.5074463,
+        "keys": 61
+      }
+    ]
+  },
+  "writer_responses": {
+    "carried_store": 36,
+    "no_update": 0,
+    "unparsed": 0,
+    "distinct_timestamps_delivered": 35
+  },
+  "panel": {
+    "samples": [
+      {
+        "t": 0.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 1.4,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 2.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 4.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 5.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 6.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 8.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 13.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      },
+      {
+        "t": 16.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 20.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "0"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 23.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 25.4,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 26.7,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 28.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 32.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      },
+      {
+        "t": 36.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      },
+      {
+        "t": 40.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      },
+      {
+        "t": 44.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      },
+      {
+        "t": 48.8,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      },
+      {
+        "t": 51.2,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 53.3,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 54.5,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 55.9,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": "Completed",
+          "pool_status": "Inactive",
+          "pool_phase": "Idle",
+          "pool_size": 8,
+          "candidate_epoch": 0
+        }
+      },
+      {
+        "t": 60.6,
+        "dom": {
+          "badge": "Inactive",
+          "phase": "Idle",
+          "pool_size": "8"
+        },
+        "server": {
+          "status": null,
+          "pool_status": null,
+          "pool_phase": null,
+          "pool_size": null,
+          "candidate_epoch": null
+        }
+      }
+    ],
+    "server_pool_status_seen": [
+      "Inactive",
+      "None"
+    ],
+    "dom_badge_seen": [
+      "Inactive"
+    ]
+  }
+}
