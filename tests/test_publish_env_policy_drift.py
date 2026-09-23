@@ -22,6 +22,31 @@ Two invariants matter more than the rest:
    while successfully setting a ref policy -- the environment then looks *more*
    configured while actually being weaker.
 
+**The ``dockerhub`` environment (added 2026-09-23)** is the same control on a different path.
+Wave 4 of the container-registry rollout will push release images to Docker Hub, and the owner
+ruled (2026-09-22, Option B of
+``notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md`` §3) that
+its credential lives in a ``dockerhub`` environment, readable only by a job that names it, and only
+on a release tag. Each environment differs from ``pypi`` in both sets, so each carries its own:
+
+* **Its own repo set**: the five image repos of that procedure's §5.1, not the registry's eight.
+  Three registry repos ship no image, and an environment there would be a foothold with no purpose.
+* **Its own tag set**: ``v*`` and ``juniper-*-v*`` only. ``pypi`` also admits ``rc*`` / ``hf*``.
+* **No reviewer is required**, by the same ruling: the Release is already the owner's act, so a
+  second manual gate would only delay every image publish. The gate does not assert the absence of
+  one either, because adding a reviewer tightens the path rather than loosening it.
+* **The credential must never sit at repository scope**, where every workflow on every ref can read
+  it. That is the exposure Option B was chosen to avoid, and a ``gh secret set`` that dropped its
+  ``--env dockerhub`` creates it silently. The repository-scope check reads NAMES only: ``gh``
+  applies a ``--jq`` name filter, so a variable's value never reaches this process.
+
+Its repair is NOT the ``pypi`` helper named below, which adds all six patterns. Re-run §5.2B steps 1-2
+of the procedure named above.
+
+In per-PR CI the ``dockerhub`` half verifies nothing: the token reaches juniper-ml only, and
+juniper-ml ships no image, so every one of the five is named as unverified and the class skips.
+It is a LOCAL gate. Run it with ``JUNIPER_DRIFT_TEST_FORCE_LOCAL=1``.
+
 Modes (mirroring ``tests/test_ci_tools_drift.py`` and
 ``tests/test_docs_full_check_ecosystem.py``):
 
@@ -79,6 +104,36 @@ EXPECTED_TAG_PATTERNS = frozenset(
 # operation, which is exactly what the ref policy exists to avoid needing.
 ENVS_REQUIRING_REVIEWERS = ("pypi",)
 
+# The Docker Hub credential environment (Option B, owner ruling 2026-09-22).  Its
+# repo set is the five image repos of the registration procedure's §5.1 -- NOT the
+# registry: juniper-ml, juniper-cascor-client and juniper-data-client ship no image.
+# juniper-deploy publishes a test-runner image, and whether that goes to Docker Hub
+# is an open owner question (the procedure's §10), so it is deliberately absent
+# here; adding it is a decision, and this list is where it gets recorded.
+DOCKERHUB_ENV = "dockerhub"
+DOCKERHUB_REPOS = ("juniper-cascor", "juniper-cascor-worker", "juniper-canopy", "juniper-data", "juniper-recurrence")
+
+# Only the two live release conventions: the ruling mirrored pypi's LIVE shapes,
+# not its reserved rc* / hf* pairs, and §5.2B step 2 added exactly these two.
+DOCKERHUB_TAG_PATTERNS = frozenset({"v*", "juniper-*-v*"})
+
+# Any secret or variable name with this prefix belongs in the dockerhub
+# environment and nowhere else.
+DOCKERHUB_CREDENTIAL_PREFIX = "DOCKERHUB_"
+
+EXPECTED_TAGS_BY_ENV = {
+    "pypi": EXPECTED_TAG_PATTERNS,
+    "testpypi": EXPECTED_TAG_PATTERNS,
+    DOCKERHUB_ENV: DOCKERHUB_TAG_PATTERNS,
+}
+
+# The pypi helper applies all six patterns, which would put rc* / hf* on dockerhub.
+REPAIR_HINT_BY_ENV = {
+    "pypi": "util/ad-hoc/2026-08-17_apply_env_tag_policies.bash --apply <repo> pypi",
+    "testpypi": "util/ad-hoc/2026-08-17_apply_env_tag_policies.bash --apply <repo> testpypi",
+    DOCKERHUB_ENV: "notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md §5.2B steps 1-2 (two tag rules; NOT the pypi helper, which adds six)",
+}
+
 
 def _repo_root() -> Path:
     """Locate the juniper-ml checkout root from this file."""
@@ -124,13 +179,15 @@ def check_environment(env_payload: dict, policies: list, *, env_name: str) -> li
         names = ", ".join(sorted(str(p.get("name")) for p in branch_policies))
         violations.append(f"branch-type deployment policy present ({names}) -- D3 requires tag-only; this re-opens branch dispatch")
 
+    expected = EXPECTED_TAGS_BY_ENV[env_name]
     found_tags = {str(p.get("name")) for p in policies if (p.get("type") or "branch") == "tag"}
-    missing = EXPECTED_TAG_PATTERNS - found_tags
+    missing = expected - found_tags
     if missing:
         violations.append(f"missing tag pattern(s): {', '.join(sorted(missing))}")
-    unexpected = found_tags - EXPECTED_TAG_PATTERNS
+    unexpected = found_tags - expected
     if unexpected:
-        violations.append(f"unexpected tag pattern(s): {', '.join(sorted(unexpected))} -- widen EXPECTED_TAG_PATTERNS deliberately or remove them")
+        constant = "DOCKERHUB_TAG_PATTERNS" if env_name == DOCKERHUB_ENV else "EXPECTED_TAG_PATTERNS"
+        violations.append(f"unexpected tag pattern(s): {', '.join(sorted(unexpected))} -- widen {constant} deliberately or remove them")
 
     # Invariant 2: the reviewer gate must not have been cleared by a PUT.
     if env_name in ENVS_REQUIRING_REVIEWERS:
@@ -153,6 +210,40 @@ def _gh_json(path: str):
     if proc.returncode != 0:
         raise RuntimeError(f"gh api {path} failed: {proc.stderr.strip()[:200]}")
     return json.loads(proc.stdout)
+
+
+def check_repo_scope_credentials(secret_names, variable_names) -> list:
+    """Return a violation per ``DOCKERHUB_*`` name found at REPOSITORY scope.
+
+    Pure, like ``check_environment``: it takes names, never values.  Option B put the
+    credential in the ``dockerhub`` environment so that only a release-tag job naming it
+    can read it; a copy at repository scope is readable by every workflow on every ref.
+    """
+    violations: list = []
+    for kind, names in (("secret", secret_names), ("variable", variable_names)):
+        for name in sorted(str(n) for n in names or []):
+            if name.upper().startswith(DOCKERHUB_CREDENTIAL_PREFIX):
+                violations.append(f"repository-scope {kind} {name} -- readable by every workflow on every ref; it belongs only in the {DOCKERHUB_ENV} environment (Option B)")
+    return violations
+
+
+def _gh_names(path: str, collection: str) -> list:
+    """List the ``name`` of each item in ``collection`` at ``path``, and nothing else.
+
+    The ``--jq`` filter runs inside ``gh``, so a variables endpoint's VALUES never reach
+    this process, let alone a log.  If a token were ever pasted into a variable, this
+    probe must not be what prints it.  Raises RuntimeError on failure.
+    """
+    proc = subprocess.run(
+        ["gh", "api", path, "--jq", f"[.{collection}[].name]"],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"gh api {path} failed: {proc.stderr.strip()[:200]}")
+    return json.loads(proc.stdout or "[]")
 
 
 class RegistryResolutionTest(unittest.TestCase):
@@ -188,6 +279,34 @@ class ExpectedPatternContractTest(unittest.TestCase):
     def test_no_catch_all_pattern(self) -> None:
         """A bare `*` would admit every tag and silently defeat the gate."""
         self.assertNotIn("*", EXPECTED_TAG_PATTERNS)
+        self.assertNotIn("*", DOCKERHUB_TAG_PATTERNS)
+
+    def test_every_env_has_a_tag_set_and_a_repair_hint(self) -> None:
+        for env_name in (*PUBLISH_ENVS, DOCKERHUB_ENV):
+            self.assertIn(env_name, EXPECTED_TAGS_BY_ENV)
+            self.assertIn(env_name, REPAIR_HINT_BY_ENV)
+
+
+class DockerhubContractTest(unittest.TestCase):
+    """Always-on: the dockerhub environment's own repo set and tag set are coherent."""
+
+    def test_dockerhub_tags_are_exactly_the_two_live_release_shapes(self) -> None:
+        self.assertEqual(DOCKERHUB_TAG_PATTERNS, frozenset({"v*", "juniper-*-v*"}))
+
+    def test_dockerhub_is_never_wider_than_pypi(self) -> None:
+        """A tag that may not publish a wheel must not publish an image either."""
+        self.assertLessEqual(DOCKERHUB_TAG_PATTERNS, EXPECTED_TAG_PATTERNS)
+
+    def test_dockerhub_repos_are_the_five_image_repos(self) -> None:
+        self.assertEqual(len(DOCKERHUB_REPOS), 5)
+        self.assertEqual(len(set(DOCKERHUB_REPOS)), 5, "duplicate repo in DOCKERHUB_REPOS")
+        self.assertLessEqual(set(DOCKERHUB_REPOS), _registry_repos(), "every image repo also publishes a registry package")
+        for repo in ("juniper-ml", "juniper-cascor-client", "juniper-data-client"):
+            self.assertNotIn(repo, DOCKERHUB_REPOS, f"{repo} ships no container image")
+
+    def test_juniper_deploy_is_absent_until_the_owner_decides(self) -> None:
+        """juniper-deploy-test on Docker Hub is an open owner question (the procedure's §10)."""
+        self.assertNotIn("juniper-deploy", DOCKERHUB_REPOS)
 
 
 class DetectorNegativeControlTest(unittest.TestCase):
@@ -242,6 +361,55 @@ class DetectorNegativeControlTest(unittest.TestCase):
         env = {**self.COMPLIANT_ENV, "deployment_branch_policy": {"protected_branches": True, "custom_branch_policies": False}}
         violations = check_environment(env, [], env_name="testpypi")
         self.assertTrue(any("protected_branches" in v for v in violations), violations)
+
+    # ---- dockerhub: its own tag set, and no reviewer required ------------------------------
+
+    # The ruled shape (§5.2B steps 1-2 of the registration procedure): custom policy, the
+    # two tag rules, and branch_policy as the ONLY protection rule.
+    DOCKERHUB_ENV_PAYLOAD = {
+        "deployment_branch_policy": {"protected_branches": False, "custom_branch_policies": True},
+        "protection_rules": [{"type": "branch_policy"}],
+    }
+    DOCKERHUB_POLICIES = [{"name": p, "type": "tag"} for p in sorted(DOCKERHUB_TAG_PATTERNS)]
+
+    def test_ruled_dockerhub_environment_passes(self) -> None:
+        self.assertEqual(check_environment(self.DOCKERHUB_ENV_PAYLOAD, self.DOCKERHUB_POLICIES, env_name=DOCKERHUB_ENV), [])
+
+    def test_pypi_pattern_set_on_dockerhub_is_flagged(self) -> None:
+        """What the pypi repair helper would leave behind: rc* / hf* do not belong on dockerhub."""
+        violations = check_environment(self.DOCKERHUB_ENV_PAYLOAD, self.COMPLIANT_POLICIES, env_name=DOCKERHUB_ENV)
+        self.assertTrue(any("unexpected tag pattern" in v and "rc*" in v and "DOCKERHUB_TAG_PATTERNS" in v for v in violations), violations)
+
+    def test_dockerhub_pattern_set_is_not_enough_for_pypi(self) -> None:
+        """The converse, proving the sets are per-environment rather than one shared set."""
+        violations = check_environment(self.COMPLIANT_ENV, self.DOCKERHUB_POLICIES, env_name="pypi")
+        self.assertTrue(any("missing tag pattern" in v and "rc*" in v for v in violations), violations)
+
+    def test_dockerhub_missing_a_live_pattern_is_flagged(self) -> None:
+        policies = [p for p in self.DOCKERHUB_POLICIES if p["name"] != "juniper-*-v*"]
+        violations = check_environment(self.DOCKERHUB_ENV_PAYLOAD, policies, env_name=DOCKERHUB_ENV)
+        self.assertTrue(any("missing tag pattern" in v and "juniper-*-v*" in v for v in violations), violations)
+
+    def test_branch_policy_on_dockerhub_is_flagged(self) -> None:
+        """The same critical case as pypi: both tags intact, `main` added, and every branch run can read the token."""
+        policies = [*self.DOCKERHUB_POLICIES, {"name": "main", "type": "branch"}]
+        violations = check_environment(self.DOCKERHUB_ENV_PAYLOAD, policies, env_name=DOCKERHUB_ENV)
+        self.assertTrue(any("branch-type deployment policy present" in v for v in violations), violations)
+
+    def test_null_policy_on_dockerhub_is_flagged(self) -> None:
+        violations = check_environment({"deployment_branch_policy": None, "protection_rules": []}, [], env_name=DOCKERHUB_ENV)
+        self.assertTrue(any("ANY ref" in v for v in violations), violations)
+
+    def test_repo_scope_credential_is_flagged(self) -> None:
+        """A `gh secret set` / `gh variable set` that dropped its `--env dockerhub`."""
+        violations = check_repo_scope_credentials(["CROSS_REPO_DISPATCH_TOKEN", "DOCKERHUB_TOKEN"], ["dockerhub_username"])
+        self.assertEqual(len(violations), 2, violations)
+        self.assertTrue(any("secret DOCKERHUB_TOKEN" in v for v in violations), violations)
+        self.assertTrue(any("variable dockerhub_username" in v for v in violations), violations)
+
+    def test_repo_scope_without_credential_passes(self) -> None:
+        """The live state of every image repo at 2026-09-23: other secrets, no DOCKERHUB_* name."""
+        self.assertEqual(check_repo_scope_credentials(["CROSS_REPO_DISPATCH_TOKEN", "SOPS_AGE_KEY"], []), [])
 
 
 class LivePublishEnvironmentPolicyTest(unittest.TestCase):
@@ -304,7 +472,7 @@ class LivePublishEnvironmentPolicyTest(unittest.TestCase):
         self.assertEqual(
             failures,
             [],
-            "publish environment ref-policy drift detected:\n  " + "\n  ".join(failures) + "\nRepair: util/ad-hoc/2026-08-17_apply_env_tag_policies.bash --apply <repo> <env>",
+            "publish environment ref-policy drift detected:\n  " + "\n  ".join(failures) + "\nRepair: " + " / ".join(REPAIR_HINT_BY_ENV[env] for env in PUBLISH_ENVS),
         )
 
     def test_non_publishing_repos_have_no_publish_environment(self) -> None:
@@ -319,6 +487,114 @@ class LivePublishEnvironmentPolicyTest(unittest.TestCase):
             for env_name in PUBLISH_ENVS:
                 if env_name in names:
                     failures.append(f"{repo}: environment '{env_name}' exists but {repo} publishes no package (owner decision D4 deleted it)")
+        self.assertEqual(failures, [], "\n  ".join(failures))
+
+
+class LiveDockerhubEnvironmentPolicyTest(unittest.TestCase):
+    """Gated: the five ``dockerhub`` environments stay tag-gated, and the credential stays out of repository scope.
+
+    Read-only: ``gh api`` GETs only.  The repository-scope listings go through ``_gh_names``, so
+    no variable VALUE is ever read into this process.
+    """
+
+    readable: list = []
+    unreadable: list = []
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        if os.environ.get("GITHUB_ACTIONS") != "true" and not os.environ.get("JUNIPER_DRIFT_TEST_FORCE_LOCAL"):
+            raise unittest.SkipTest("skipping live dockerhub environment lint (set JUNIPER_DRIFT_TEST_FORCE_LOCAL=1 to override)")
+        if shutil.which("gh") is None:
+            raise unittest.SkipTest("gh not on PATH")
+
+        # Same partition as the pypi class, over the IMAGE repos.  None of them is juniper-ml,
+        # so per-PR CI reads none and this class skips there -- by name, not silently.
+        cls.readable = []
+        cls.unreadable = []
+        for repo in DOCKERHUB_REPOS:
+            try:
+                _gh_json(f"repos/{OWNER}/{repo}/environments")
+            except Exception:
+                cls.unreadable.append(repo)
+            else:
+                cls.readable.append(repo)
+
+        if not cls.readable:
+            raise unittest.SkipTest(f"gh api could not read environments for ANY image repo (per-PR CI reaches juniper-ml only; run locally with JUNIPER_DRIFT_TEST_FORCE_LOCAL=1): {', '.join(cls.unreadable)}")
+
+    def _report_coverage(self, label: str, verified: list, unverified: list) -> None:
+        # Never let bounded coverage read as full coverage (no silent caps).
+        if unverified:
+            print(f"\n[dockerhub drift] {label}: verified {len(verified)} repo(s): {', '.join(verified) or '-'}")
+            print(f"[dockerhub drift] {label}: NOT verified (token lacks access): {', '.join(unverified)}")
+
+    def test_every_dockerhub_environment_is_tag_gated(self) -> None:
+        failures: list = []
+        for repo in self.readable:
+            try:
+                env_payload = _gh_json(f"repos/{OWNER}/{repo}/environments/{DOCKERHUB_ENV}")
+                policy_doc = _gh_json(f"repos/{OWNER}/{repo}/environments/{DOCKERHUB_ENV}/deployment-branch-policies")
+            except RuntimeError as exc:
+                # The repo IS readable, so the environment itself is missing.  That is worse than it
+                # looks: a workflow run that names a missing environment makes GitHub create it with
+                # no protection rules at all, admitting every ref (GitHub Docs, "Managing environments
+                # for deployment").
+                failures.append(f"{repo}/{DOCKERHUB_ENV}: could not read environment ({exc}) -- a job naming a missing environment recreates it UNPROTECTED")
+                continue
+            policies = (policy_doc or {}).get("branch_policies") or []
+            for violation in check_environment(env_payload, policies, env_name=DOCKERHUB_ENV):
+                failures.append(f"{repo}/{DOCKERHUB_ENV}: {violation}")
+
+        self._report_coverage("environments", self.readable, self.unreadable)
+        self.assertEqual(
+            failures,
+            [],
+            "dockerhub environment ref-policy drift detected:\n  " + "\n  ".join(failures) + "\nRepair: " + REPAIR_HINT_BY_ENV[DOCKERHUB_ENV],
+        )
+
+    def test_no_dockerhub_credential_at_repository_scope(self) -> None:
+        failures: list = []
+        verified: list = []
+        unverified: list = list(self.unreadable)
+        for repo in self.readable:
+            try:
+                secret_names = _gh_names(f"repos/{OWNER}/{repo}/actions/secrets", "secrets")
+                variable_names = _gh_names(f"repos/{OWNER}/{repo}/actions/variables", "variables")
+            except RuntimeError:
+                # Listing secrets needs more than read access; name the gap, never pass on it.
+                unverified.append(repo)
+                continue
+            verified.append(repo)
+            failures.extend(f"{repo}: {violation}" for violation in check_repo_scope_credentials(secret_names, variable_names))
+
+        self._report_coverage("repository scope", verified, unverified)
+        if not verified:
+            raise unittest.SkipTest(f"could not list repository-scope secrets/variables in ANY image repo: {', '.join(unverified)}")
+        self.assertEqual(
+            failures,
+            [],
+            "Docker Hub credential found at REPOSITORY scope:\n  " + "\n  ".join(failures) + "\nRepair: delete that copy with no --env, then re-run its line from notes/JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_DOCKERHUB-SECRET-REGISTRATION-PROCEDURE.md §5.2B step 3 (§6 has the note). If a TOKEN value was ever stored in a variable, it is exposed: §8 first.",
+        )
+
+    def test_repos_without_an_image_have_no_dockerhub_environment(self) -> None:
+        """Anti-sprawl: the credential environment exists only where an image is published."""
+        failures: list = []
+        verified: list = []
+        unverified: list = []
+        for repo in sorted((_registry_repos() | set(NON_PUBLISHING_REPOS)) - set(DOCKERHUB_REPOS)):
+            try:
+                doc = _gh_json(f"repos/{OWNER}/{repo}/environments")
+            except RuntimeError:
+                unverified.append(repo)
+                continue
+            verified.append(repo)
+            names = {str(e.get("name")) for e in (doc or {}).get("environments") or []}
+            if DOCKERHUB_ENV in names:
+                failures.append(f"{repo}: environment '{DOCKERHUB_ENV}' exists but {repo} is not in DOCKERHUB_REPOS -- add the repo deliberately, or delete the environment")
+
+        self._report_coverage("anti-sprawl", verified, unverified)
+        if not verified:
+            raise unittest.SkipTest(f"could not enumerate environments of ANY non-image repo: {', '.join(unverified)}")
         self.assertEqual(failures, [], "\n  ".join(failures))
 
 
