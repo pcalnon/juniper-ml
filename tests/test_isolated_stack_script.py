@@ -40,6 +40,7 @@ import time
 import unittest
 from pathlib import Path
 
+from tests.process_cleanup import force_kill, is_running, proc_stat
 from tests.redacted_env import RedactedEnv
 
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "isolated_stack.bash"
@@ -991,20 +992,6 @@ class TestDataUpLive(unittest.TestCase):
     (wait_for_health/probe_health helpers).
     """
 
-    def _force_kill(self, pid: int) -> None:
-        for kill_target in (lambda: os.killpg(pid, signal.SIGKILL), lambda: os.kill(pid, signal.SIGKILL)):
-            try:
-                kill_target()
-                break
-            except ProcessLookupError:
-                return
-            except PermissionError:
-                continue
-        for _ in range(20):
-            if not Path(f"/proc/{pid}").exists():
-                return
-            time.sleep(0.05)
-
     def _write_python314_stub(self, bin_dir: Path, marker_dir: Path) -> None:
         """Stub ``python3.14 -m venv DEST`` that builds a minimal activatable venv."""
         # The stub's body is a shell script written to disk; marker_dir is interpolated.
@@ -1153,7 +1140,7 @@ class TestDataUpLive(unittest.TestCase):
                 self.assertTrue((run_dir / "logs").is_dir(), "LOG_DIR must be created")
             finally:
                 if child_pid is not None:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_skips_venv_create_when_venv_already_exists(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1203,7 +1190,7 @@ class TestDataUpLive(unittest.TestCase):
                 self.assertEqual(_read_marker_when_written(marker_dir / "python.env").strip(), "PYTHON_GIL=0")
             finally:
                 if child_pid is not None:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_rebuilds_venv_when_only_an_aged_out_skeleton_remains(self) -> None:
         # systemd-tmpfiles ages /tmp by FILE (``Q /tmp ... 10d``): a ten-day-old venv
@@ -1246,7 +1233,7 @@ class TestDataUpLive(unittest.TestCase):
                 child_pid = int(pid_path.read_text().strip())
             finally:
                 if child_pid is not None:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_stock_build_omits_python_gil(self) -> None:
         # On a stock (non-free-threaded) CPython, PYTHON_GIL=0 is FATAL at startup
@@ -1293,7 +1280,7 @@ class TestDataUpLive(unittest.TestCase):
                 self.assertEqual(_read_marker_when_written(marker_dir / "python.env").strip(), "PYTHON_GIL=")
             finally:
                 if child_pid is not None:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_missing_python314_aborts_before_venv(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1342,10 +1329,6 @@ class TestDataUpLive(unittest.TestCase):
         self.assertIn("PYTHON_GIL=0", data_up)
         self.assertIn('echo "$!" >"${RUN_DIR}/juniper-data.pid"', data_up)
         self.assertIn('python3.14 -m venv "${DATA_VENV}"', data_up)
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 class TestActivateCondaNounset(unittest.TestCase):
@@ -1511,20 +1494,6 @@ class TestStopPort(unittest.TestCase):
         self.assertTrue(Path(f"/proc/{pid}").exists(), f"detached pid {pid} missing")
         return pid
 
-    def _force_kill(self, pid: int) -> None:
-        for kill_target in (lambda: os.killpg(pid, signal.SIGKILL), lambda: os.kill(pid, signal.SIGKILL)):
-            try:
-                kill_target()
-                break
-            except ProcessLookupError:
-                return
-            except PermissionError:
-                continue
-        for _ in range(20):
-            if not Path(f"/proc/{pid}").exists():
-                return
-            time.sleep(0.05)
-
     def _run_stop_port(self, *, ss_script: str, port: str, name: str) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as tmp:
             bin_dir = Path(tmp) / "bin"
@@ -1574,7 +1543,7 @@ class TestStopPort(unittest.TestCase):
                 time.sleep(0.05)
             self.assertFalse(Path(f"/proc/{pid}").exists(), f"pid {pid} still alive after stop_port")
         finally:
-            self._force_kill(pid)
+            force_kill(pid)
 
     def test_nothing_listening_is_a_noop(self) -> None:
         result = self._run_stop_port(ss_script="exit 0\n", port="65112", name="juniper-canopy")
@@ -1882,20 +1851,6 @@ class TestDoUpPartialFailureTeardown(unittest.TestCase):
     Mirrors experiment_stack's ``failed=1`` + teardown pattern.
     """
 
-    def _force_kill(self, pid: int) -> None:
-        for kill_target in (lambda: os.killpg(pid, signal.SIGKILL), lambda: os.kill(pid, signal.SIGKILL)):
-            try:
-                kill_target()
-                break
-            except ProcessLookupError:
-                return
-            except PermissionError:
-                continue
-        for _ in range(20):
-            if not Path(f"/proc/{pid}").exists():
-                return
-            time.sleep(0.05)
-
     def test_cascor_missing_conda_tears_down_data_listener(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2013,7 +1968,7 @@ class TestDoUpPartialFailureTeardown(unittest.TestCase):
                     )
             finally:
                 if child_pid is not None:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
 
 #: Source above this line is what the atomic-publish guard scans. Kept as a module
@@ -2088,3 +2043,108 @@ class TestStubMarkersArePublishedAtomically(unittest.TestCase):
         pattern = self.ASYNC_MARKER_PATTERNS[0][0]
         self.assertRegex('printf "%s" "$@" >"{marker_dir}/python.args"', pattern)
         self.assertNotRegex('printf "%s" "$@" >"{marker_dir}/python.args.partial"', pattern)
+
+
+class TestForceKill(unittest.TestCase):
+    """``force_kill`` must leave nothing running that could write into a test's temp dir (juniper-ml#2046).
+
+    The helper lives in ``tests/process_cleanup.py`` and serves this suite and
+    ``tests/test_experiment_stack_script.py``; its cases live here because this suite's red
+    ``main`` is what exposed it. Each case launches the shape a real call site hands the helper,
+    and asserts that shape as a precondition before anything else. That is load-bearing: the
+    helpers this replaced killed a ``setsid`` leader correctly, so a case built from one would
+    have passed against them and pinned nothing about the nohup'd non-leaders they failed on.
+    """
+
+    #: A distinctive argv, so a FAILED case's cleanup can tell its own sleep from a reused pid.
+    SLEEP = "60.2046"
+
+    def _launch(self, wrapper: str, inner: str) -> int:
+        """``<wrapper> bash -c INNER &`` from a non-interactive shell, as the scripts launch; return ``$!``.
+
+        ``inner`` travels as an argument, never through a quoting layer.
+        """
+        result = subprocess.run(
+            ["/bin/bash", "-c", f'{wrapper} /bin/bash -c "$1" </dev/null >/dev/null 2>&1 & echo $!', "launch", inner],
+            capture_output=True,
+            text=True,
+            timeout=SCRIPT_TIMEOUT_SECONDS,
+        )
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        pid = int(result.stdout.strip().splitlines()[-1])
+        self.addCleanup(self._kill_if_still_ours, pid)
+        return pid
+
+    def _pid_written_to(self, path: Path) -> int:
+        pid = int(_read_marker_when_written(path).strip())
+        self.addCleanup(self._kill_if_still_ours, pid)
+        return pid
+
+    def _kill_if_still_ours(self, pid: int) -> None:
+        """Cleanup for a FAILED case: SIGKILL ``pid`` only while its argv still carries ``SLEEP``."""
+        try:
+            if self.SLEEP.encode() in Path(f"/proc/{pid}/cmdline").read_bytes():
+                os.kill(pid, signal.SIGKILL)
+        except OSError:
+            # Gone before cleanup ran, which is the passing case: nothing left to reap.
+            pass
+
+    @staticmethod
+    def _parent_is_in_group(pid: int, pgrp: int) -> bool:
+        info = proc_stat(pid)
+        parent = proc_stat(info[1]) if info is not None else None
+        return parent is not None and parent[2] == pgrp
+
+    def test_kills_a_live_pid_that_leads_no_process_group(self) -> None:
+        # The data_up / do_up shape: a bare ``nohup … &`` from a non-interactive shell.
+        pid = self._launch("nohup", f"exec sleep {self.SLEEP}")
+        self.assertTrue(is_running(pid), f"launched pid {pid} is not running")
+        self.assertNotEqual(os.getpgid(pid), pid, "precondition: the pid must NOT lead a process group")
+        force_kill(pid)
+        self.assertFalse(is_running(pid), f"pid {pid} leads no process group and survived force_kill")
+
+    def test_kills_what_the_pid_has_in_flight(self) -> None:
+        # A stub mid-publish: it has forked a writer and is waiting on it, as it does for each ``mv``.
+        with tempfile.TemporaryDirectory() as tmp:
+            child_file = Path(tmp) / "child.pid"
+            pid = self._launch("nohup", f'sleep {self.SLEEP} & echo "$!" >"{child_file}"; wait')
+            child = self._pid_written_to(child_file)
+            info = proc_stat(child)
+            self.assertIsNotNone(info, f"child {child} is already gone")
+            self.assertEqual(info[1], pid, "precondition: the writer must be the pid's own child")
+            force_kill(pid)
+            self.assertFalse(is_running(pid), f"pid {pid} survived force_kill")
+            self.assertFalse(is_running(child), f"pid {pid}'s child {child} was left running -- the orphaned writer that races rmtree")
+
+    def test_kills_the_whole_group_a_leader_owns(self) -> None:
+        # The TestStopPort shape: a ``setsid`` leader, here owning a group member whose parent
+        # has exited, so it is no longer a descendant and only the group can reach it.
+        with tempfile.TemporaryDirectory() as tmp:
+            member_file = Path(tmp) / "member.pid"
+            orphaner = f'sleep {self.SLEEP} & echo "$!" >"{member_file}"'
+            leader = self._launch("setsid", f"/bin/bash -c '{orphaner}'; exec sleep {self.SLEEP}")
+            member = self._pid_written_to(member_file)
+            self.assertEqual(os.getpgid(leader), leader, "precondition: the pid must lead its process group")
+            self.assertEqual(os.getpgid(member), leader, "precondition: the member must be in that group")
+            # Wait for the bash that backgrounded the member to exit and hand it to a reaper.
+            deadline = time.monotonic() + 5
+            while self._parent_is_in_group(member, leader) and time.monotonic() < deadline:
+                time.sleep(0.02)
+            self.assertFalse(self._parent_is_in_group(member, leader), "precondition: the member's parent must be OUTSIDE the group, so it is no descendant")
+            self.assertTrue(is_running(member), f"precondition: group member {member} must be running")
+            force_kill(leader)
+            self.assertFalse(is_running(leader), f"leader {leader} survived force_kill")
+            self.assertFalse(is_running(member), f"group member {member} survived -- only the group reaches it")
+
+    def test_is_a_no_op_for_a_pid_that_is_already_gone(self) -> None:
+        # The usual state at the call sites: stop_port or do_down has already killed the listener.
+        pid = self._launch("nohup", "exit 0")
+        deadline = time.monotonic() + 5
+        while is_running(pid) and time.monotonic() < deadline:
+            time.sleep(0.02)
+        self.assertFalse(is_running(pid), "precondition: the pid must already be gone")
+        force_kill(pid)
+
+
+if __name__ == "__main__":
+    unittest.main()
