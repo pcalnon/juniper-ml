@@ -89,8 +89,8 @@ measured, or superseded. Along the way:
   primaries with `JUNIPER_E2E_PROJECT_DIR=/home/pcalnon/Development/python/Juniper bash util/isolated_stack.bash --up`.
   The script derives the wrong root from a `.claude/worktrees` checkout. It also now rebuilds a data venv
   that systemd-tmpfiles aged into an empty skeleton.
-- **Fixture 2/62/2, uuid `1cd15120…`, 95 metrics rows (65 output / 30 candidate)**, with snapshots
-  `snapshot_20260922T{194346Z,195609Z,202310Z}`. **A resumed snapshot restores the network but NOT the
+- **Fixture 2/68/2, uuid `1cd15120…`, 116 metrics rows**, with snapshots
+  `snapshot_20260922T{194346Z,195609Z,202310Z}` and `snapshot_20260923T003754Z` (the 68-unit one). **A resumed snapshot restores the network but NOT the
   metrics history**, which lives in cascor's process. After any relaunch, run one window with
   `util/ad-hoc/2026-09-22_fixture_grow.py --to <N+2>`.
 - **Browser harness**:

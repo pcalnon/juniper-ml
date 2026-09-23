@@ -7391,7 +7391,9 @@ the record is at the end of this phase.
   - 54 → 58, inside a probe window: `…T195609Z`
   - 58 → 62, inside a validator's window: `…T202310Z`
 
-  It is now **2/62/2, uuid unchanged, 95 metrics rows (`output` 65 / `candidate` 30)**.
+  It was **2/62/2, uuid unchanged, 95 metrics rows (`output` 65 / `candidate` 30)** through the `9bffaba1`
+  measurements. canopy#657's verify window then grew it to **2/68/2, 116 metrics rows**,
+  `snapshot_20260923T003754Z`.
 - **Harness conditions that bear on every browser number below**:
   - Host load was 5–15 on 16 cores throughout, with up to four concurrent headless browsers.
   - Canopy's per-IP WebSocket cap (`max_connections_per_ip = 5`) refused the WS handshake in some
