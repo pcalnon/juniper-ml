@@ -1635,7 +1635,7 @@ jobs:
   #
   # THE LIVE SOAK HAS SINCE FOUND WHAT THE BACKTEST COULD NOT SEE: the backtest scored merged
   # commits, and none of its 40 exercised C2 or C4. Live record 2026-09-18 00:37 to 2026-09-23
-  # 00:50 UTC, every PR head: 10 distinct findings, 2 true and 8 false, and all 8 false ones were
+  # 00:33 UTC, every PR head: 10 distinct findings, 2 true and 8 false, and all 8 false ones were
   # still present at their PR's FINAL head -- a required version would have wrongly blocked 8 of
   # the 62 PRs it examined. Six are C4 reading a deliberate heading rename ("... — NOT CHOSEN", a
   # strikethrough, a corrected figure) as a LOST heading; two are C2 firing on a wrapped prose
@@ -1648,8 +1648,12 @@ jobs:
   # the step's FINAL `exit 0` with `exit "$rc"` and adding this job's NAME as a required context.
   # Deleting that `exit 0` is NOT enough: the `if` before it is then the last command and returns
   # 0 either way, so the check still cannot fail. Decide at the same time whether rc 2 ("refused to
-  # report") should fail, and whether the early `exit 0` on a failed diff should. Until then this
-  # job is green by construction and reports through annotations and the job summary.
+  # report") should fail, and whether the early `exit 0` on a failed diff should. And change the
+  # base to HEAD^1, the test-merge commit's first parent: `github.event.pull_request.base.sha` can
+  # lag it, and then the screen also examines markdown only main changed (#1980 changed one
+  # markdown file and was screened on 8) -- a required check would block a PR for another PR's
+  # damage. Until then this job is green by construction and reports through annotations and the
+  # job summary.
   # ═══════════════════════════════════════════════════════════════════════════════════════════════
   markdown-structure-advisory:
     name: Markdown Structure (advisory soak)
