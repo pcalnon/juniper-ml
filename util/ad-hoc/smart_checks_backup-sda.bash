@@ -118,3 +118,5 @@ elif [[ ( ( "${START_TESTS}" == "${FALSE}" ) && ( "${CHECK_RESULT}" == "${FALSE}
 else
     echo "Error: This code should be unreachable."
 fi
+
+
