@@ -144,7 +144,7 @@ Each rule below is load-bearing for §7/§8. Citations name the document that re
 `/var/lib/docker/volumes` (16 Juniper volumes) and `/opt/miniforge3/envs` (**62 GB**, measured
 2026-09-21; the record's 47 GB is stale) are in **no** tier; the tar lane covers ten repos but not `juniper-legacy` (18 GB, no `.git`) or the parent-level `notes/ prompts/ util/ backups/` (per `APPLICATION_REPOS` at `util/juniper-backup.bash:102`; the 08-21 handoff's §3 table marked both as tar-covered at the time); GitHub-side state has no local copy; the `sops-backup-key.sh` escrow was never confirmed run; offsite was never ruled on
 (`HANDOFF_2026-08-21_backup-systematization-design-arc.md` §2.1, §3, O-2, O-5). Owner items still open from YAM §8.25–§8.27:
-`sda` SMART never read (it now guards the only local copy), the read-only loop probe of the destroyed `sdc4`, the sdc2 grow, cloud reporting (deferred), the user-lane removal PR, the watchdog `ProgramState` check, the dead `yamaguchi_records_sync.bash`.
+`sda` SMART **read 2026-09-23 and PASSED** (note 10.2a) — closed, the read-only loop probe of the destroyed `sdc4`, the sdc2 grow, cloud reporting (deferred), the user-lane removal PR, the watchdog `ProgramState` check, the dead `yamaguchi_records_sync.bash`.
 
 ### 3.5 Contradictions in the record that this design settles
 
@@ -2213,7 +2213,7 @@ Notes on the criteria above:
 Notes on the decisions above:
 
 - **(D-12a)** The earlier row said "unchanged from the record" and then named five items, letting the rest dissolve — the failure shape `HANDOFF_2026-09-07_duplicati-arc-outstanding-work.md` §6.1 recorded. Every open item of that handoff's §1 and of `JUNIPER_2026-08-25_JUNIPER-ECOSYSTEM_DUPLICATI-YAMAGUCHI-BACKUP-CERTIFICATION.md` §8.27.6 gets one of three dispositions — **carried**, **out of scope**, or **closed by §** — and none may be left unstated.
-  Carried today: `sda` SMART never read (it guards the only local copy); the `sdc4` read-only loop probe; the sdc2 grow; cloud reporting (deferred); the user-lane removal PR (P4 step 4); the dead `yamaguchi_records_sync.bash`; the drift-guard tests in 7 repos; `yamaguchi_run_script_after.bash` as alerting candidate A, never revoked; `duplicati_first_backup.bash`'s hardcoded gate; the YAM §8.21.5 residuals; the unconfirmed `sops-backup-key.sh` escrow run (inherited
+  Closed 2026-09-23: `sda` SMART — run and PASSED (note 10.2a). Carried today: the `sdc4` read-only loop probe; the sdc2 grow; cloud reporting (deferred); the user-lane removal PR (P4 step 4); the dead `yamaguchi_records_sync.bash`; the drift-guard tests in 7 repos; `yamaguchi_run_script_after.bash` as alerting candidate A, never revoked; `duplicati_first_backup.bash`'s hardcoded gate; the YAM §8.21.5 residuals; the unconfirmed `sops-backup-key.sh` escrow run (inherited
   O-2). Closed by this design: the watchdog `ProgramState` check (§7.6).
 - **(D-13a)** The owner prompt said "Dropbox syncs only the contents of `Backups/`"; §4.4 corrected that to nine excluded folders with everything else at the root syncing, and no decision item then asked what the root *should* be. This one does.
 - **(D-14a)** R-8 asks only for **read**; the group-write form lets a cloud-side deletion (compromised account, linked phone, another machine) or an accidental local `rm -rf` propagate into the local master and on to T1c. State the limit honestly: `pcalnon` is root-equivalent via `sudo`/`docker` anyway, so the read-only form buys protection against **accident and commodity malware**, not against a deliberate local adversary. It conflicts with R-7's
@@ -2286,10 +2286,14 @@ So an existing fileset **can** cross a passphrase rotation, which is what makes 
 the backups" a real option rather than a wish. Three hazards ride with it, and each touches one of the
 owner's two criteria:
 
-1. **`--reupload` deletes the originals at the destination.** The sole local copy sits on `sda`, a disk
-   that has never had a SMART test (§12, carried). This is why the ruling is **stage → verify → swap**
-   and not in-place, and why nothing here contradicts §8's rule that nothing under
-   `/mnt/Backups/Ubuntu/` is deleted or moved.
+1. **`--reupload` deletes the originals at the destination.** The sole local copy sits on `sda`, whose
+   SMART state was unknown when this was written and is now **read and PASSED** (2026-09-23, note 10.2a).
+   A healthy disk does **not** make an in-place rewrite safe, for a second reason the health report
+   itself supplies: `sda` is a **drive-managed SMR** drive (`WDC WD40EZAZ-00SF3B0`, "Western Digital
+   Blue (SMR)"), so `--reupload` against the live destination is a full band-rewrite of the only copy —
+   slow enough that it must not be mistaken for a hung operation. This is why the ruling is
+   **stage → verify → swap** and not in-place, and why nothing here contradicts §8's rule that nothing
+   under `/mnt/Backups/Ubuntu/` is deleted or moved.
 2. **The local database must be deleted before and recreated after.** A Recreate across 877 volumes is
    long, and §5.3 records that an *aborted* per-job Recreate is precisely what produced the database
    this whole arc began by misreading.
@@ -2299,18 +2303,42 @@ owner's two criteria:
 
 | # | Step | Gate before proceeding |
 | --- | --- | --- |
-| 1 | SMART test `sda`; restore-drill the CURRENT set | a drill passes on the current passphrase |
+| 1 | SMART test `sda` — **DONE 2026-09-23, PASSED** (note 10.2a). Restore-drill the CURRENT set — **still outstanding** | the drill passes on the current passphrase |
 | 2 | Scrub the leaked copies: the S-7 file, the `.env` comment block, and D-8's journal scrub after P1 | S-3, S-6 and S-7 counts all read zero |
 | 3 | Mint the new passphrase; place it at `/etc/credstore/duplicati-passphrase` root:root 0600 | never in `.env`, never on argv, never echoed |
-| 4 | Copy the 877 volumes to staging (≈203 GiB free required) | per-file hashes match the source |
+| 4 | Copy the 877 volumes to staging on **`nvme0n1p5` (`/`)** — **not** `sda` (note 10.2b); ≈203 GiB required | per-file hashes match the source |
 | 5 | `recompress … --reencrypt --new-passphrase` against the **staging** copy only | exit 0, and every volume re-encrypted |
 | 6 | Recreate the local database against staging; restore-drill from staging | a drill passes on the NEW passphrase |
 | 7 | Swap staging in as the live destination | the old set is retained untouched until step 6 passed |
 | 8 | Delete-forever the old ciphertext server-side (Dropbox retains deleted files 30 d on Basic/Plus/Family, 180 d on Professional) | only after step 7 is verified |
 
-**Step 1 is first and is not optional.** Steps 4–7 are a bulk rewrite of the only local copy of
-202.8 GiB, guarded by a disk whose health has never once been read. A rotation that loses the data it
-was protecting has failed at the thing it was for.
+**Step 1 is first, is not optional, and is currently HALF DONE**: the SMART half passed on
+2026-09-23, the restore drill has not run, so step 2 is not yet unblocked. Steps 4–7 remain a bulk
+rewrite of the only local copy of 202.8 GiB. A rotation that loses the data it was protecting has
+failed at the thing it was for.
+
+- **(10.2a)** **`sda` SMART, read 2026-09-23 — PASSED.** Evidence:
+  `reports/smart/smart-xall_results-sda_2026-09-23_07:53:18.out`, produced by
+  `util/ad-hoc/smart_checks_backup-sda.bash`. An **Extended offline** self-test completed without error
+  at lifetime **28,938 h** against **28,941 h** at capture, so the scan is current and covered the
+  surface. The header alone does **not** show this: `Self-test execution status: (0)` also means *"no
+  self-test has ever been run"*, and only the self-test **log** disambiguates the two — read the log,
+  never the status line. `Reallocated_Sector_Ct`, `Current_Pending_Sector`, `Offline_Uncorrectable`,
+  `Reallocated_Event_Count` and `UDMA_CRC_Error_Count` are all **0**; the ATA error log and the Pending
+  Defects log are both empty; every SATA Phy event counter is 0; temperature 39 °C with an
+  under/over-limit count of 0/0. Age is the only soft spot and it reads better than the hours suggest —
+  28,941 power-on hours (~3.3 years) but only **1,803 Head Flying Hours** and ~10.4 TB written in life.
+  This **closes** the §12 / D-12a carried item "sda SMART never read".
+- **(10.2b)** **Staging goes on `nvme0n1p5` (`/`), not on `sda`.** `sda1` has 3.1 TiB free and is the
+  obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
+  the original and the re-encrypted copy in **one failure domain** for the whole of steps 4–7. The clean
+  SMART report above does not change that — it lowers the probability, not the consequence, and the
+  criterion the owner set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
+  needed, sits on a different physical device, is **ext4** so ownership and modes survive for D-14's
+  read-only model, and is **outside the `/home/pcalnon` backup source**. `sdc3` (`/home`, 1.2 TiB free)
+  satisfies the failure-domain test but fails the last one: staging there would sweep 203 GiB of
+  ciphertext into the next fileset unless an exclusion were added first — the same class of mistake as
+  S-7.
 
 ---
 
