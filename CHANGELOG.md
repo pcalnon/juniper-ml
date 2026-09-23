@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Release notes: "Breaking changes" missed three registered house styles, and both section
+  parsers dropped every heading qualifier from the rendered body** (`util/release_train/notes_render.py`,
+  `util/release_train/ceremony.py`). The rule honoured only `### Removed` and an uppercase
+  `BREAKING`. juniper-canopy's CHANGELOG has zero uppercase `BREAKING` and marks breaks with
+  `**Breaking Change:**` / `Breaking change:` labels, often on sub-bullets, and with
+  `### Breaking Changes in [...]` headings. A substring test also read `NON-BREAKING` as a break.
+  Separately, `parse_unreleased` (drafts) and `changelog_version_section` (finals) keyed a `###`
+  heading by its first word only. So `### Changed (potentially breaking)`, which appears five times
+  across four registered CHANGELOGs, rendered as `### Changed` under "Breaking changes: NO", and
+  `### Technical Notes` rendered as `### Technical`. A shared `heading_key()` now keys a qualified
+  heading by its full text. An unqualified heading keeps its first-word key, so today's output is
+  byte-identical. The verdict reads labels, headings, qualifiers and uppercase markers, and honours
+  `non-` / `not` / `no` negation at a word boundary. Also fixed: `changelog_version_section("0.3.2")`
+  returned 0.3.21's section, because the version pattern ended in an optional `\]`. That was
+  harmless for a forward cut and wrong for any re-render. Measured over all 226 version sections of
+  the 18 registry packages (`util/ad-hoc/2026-09-22_breaking_marker_corpus_diff.py`): 6 verdict
+  flips, all NO -> YES and all genuine, and zero YES -> NO. 21 new tests;
+  `util/ad-hoc/2026-09-22_breaking_marker_mutation_check.py` kills 10/10 mutants.
+  `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` gains §11.7: the ceremony
+  as actually run, and five failure shapes with their controls.
+
 ## [0.10.0] - 2026-09-23
 
 ### Added
