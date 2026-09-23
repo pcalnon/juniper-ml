@@ -312,9 +312,12 @@ def cmd_provenance(_args: argparse.Namespace) -> int:
             [
                 CASCOR_ENV_PY,
                 "-c",
-                "import importlib.metadata as m\n"
-                "import juniper_recurrence, juniper_recurrence_model, juniper_recurrence_client, juniper_data_client\n"
-                "for mod in (juniper_recurrence, juniper_recurrence_model, juniper_recurrence_client, juniper_data_client): print(mod.__name__, mod.__file__)\n"
+                "import importlib.metadata as m\n" +
+                "import juniper_recurrence, " +
+                "juniper_recurrence_model, " +
+                "juniper_recurrence_client, " +
+                "juniper_data_client\n" +
+                "for mod in (juniper_recurrence, juniper_recurrence_model, juniper_recurrence_client, juniper_data_client): print(mod.__name__, mod.__file__)\n" +
                 "for d in ('juniper-recurrence', 'juniper-recurrence-model', 'juniper-recurrence-client', 'juniper-data-client', 'torch'): print(d, m.version(d))\n",
             ],
             cwd=str(RUN_DIR),
