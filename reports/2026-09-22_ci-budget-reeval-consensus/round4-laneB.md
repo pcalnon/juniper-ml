@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2035 at `0ffe15dc`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -29,7 +29,7 @@ The code fixes work. The rewritten C2 rule does not do what it says: it cannot s
 - The `(?=\s)` change also drops two real fenced commands: a bare `pytest` (`juniper-ci-tools/README.md:240`) and `python3.14 -m venv` (`notes/JUNIPER_2026-07-21_JUNIPER-ECOSYSTEM_ISOLATED-STACK-E2E-CHECKLIST.md:72`).
 - **Fix:**
   - Add the SOPS fence, verbatim, as a control, plus a corpus control: remove each of the 22 fence pairs and C2 must fire, apart from an explicit list.
-  - Define "prose" positively. For example: the previous line ends mid-sentence (a letter, digit or `,` once trailing `*_\`` is stripped) and has no shell token (` -x`, `--`, `|`, `&gt;`, `$`, `=`, `&amp;&amp;`). Simulated, this misses 0 of the 22, keeps #1969, clears #1980 and #2007, and keeps every fixture. Its trade-off: it fires on a wrapped line that starts a new sentence with a command word.
+  - Define "prose" positively. For example: the previous line ends mid-sentence (a letter, digit or `,` once trailing `*_\`` is stripped) and has no shell token (` -x`, `--`, `|`, `>`, `$`, `=`, `&&`). Simulated, this misses 0 of the 22, keeps #1969, clears #1980 and #2007, and keeps every fixture. Its trade-off: it fires on a wrapped line that starts a new sentence with a command word.
   - Use `(?=\s|$)` and `python3(\.\d+)?`.
   - Correct the "remaining cost" sentence and how #1980 is explained.
 
@@ -50,7 +50,7 @@ There is also a mild tilt toward HOLD: SHIP's paragraph contains a concession ("
 
 **m2: The GIT STATE section (handoff ~lines 286–289) says only 5 lane scripts are tracked** and "everything else there is untracked". `0ffe15dc` tracks 7 files there, including both `round3-fix/` checks. **Fix:** list them.
 
-**m3: PREFLIGHT line 55.** "`git log --oneline -- &lt;this file&gt;` names both" is false from any HEAD other than main. In this worktree it prints only `58a43ec7` (#1866); on `origin/main` it prints `7b226ca0`. **Fix:** add `origin/main`. The anchor on the next line, `&lt;ml#2017 mergeCommit&gt;..origin/main`, is now always non-empty (#2013, #2029, and the follow-up itself). Anchor it on the last commit that touched this file.
+**m3: PREFLIGHT line 55.** "`git log --oneline -- <this file>` names both" is false from any HEAD other than main. In this worktree it prints only `58a43ec7` (#1866); on `origin/main` it prints `7b226ca0`. **Fix:** add `origin/main`. The anchor on the next line, `<ml#2017 mergeCommit>..origin/main`, is now always non-empty (#2013, #2029, and the follow-up itself). Anchor it on the last commit that touched this file.
 
 **m4: The measurement trap at handoff lines 243–245** says a probe's `measured_at` is "the moment it enumerated". The reprobe sets `measured_at` once, when the script starts. Under the PREFLIGHT's `all`, the soak probe runs after spans, first-pass and alarm, minutes later, so its stamp is early. **Fix:** stamp each probe separately, or say the stamp is exact only when one probe runs.
 
@@ -74,8 +74,8 @@ There is also a mild tilt toward HOLD: SHIP's paragraph contains a concession ("
   - #2017 prints DONE and exits 0.
   - `juniper-nonexistent-repo:1` prints PROBE-ERROR on one line with the cause visible, and exits 2.
   - `PER_PR_TIMEOUT=1` on #2033, then the nonexistent repo, exits 2.
-- **Replay fetch:** `git fetch origin pull/&lt;N&gt;/head` reaches all 33 flagged heads. HEAD^1 is usable because the soak job checks out with `fetch-depth: 0`.
-- **PREFLIGHT:** the `S=&lt;dir&gt;; python3 …` form works, and the exit-2 legend matches `main()`.
+- **Replay fetch:** `git fetch origin pull/<N>/head` reaches all 33 flagged heads. HEAD^1 is usable because the soak job checks out with `fetch-depth: 0`.
+- **PREFLIGHT:** the `S=<dir>; python3 …` form works, and the exit-2 legend matches `main()`.
 - **GIT STATE and Validation record:**
   - The 15 modified tracked files are byte-identical to `0ffe15dc`.
   - The local `r2a_spans.py` (`686c877f`) differs from main's (`42c3873c`), as stated.
@@ -109,4 +109,4 @@ Round 4 changes a NUMBER / DISPOSITION / ACTION: yes -- ACTION (NON-OWNER 1's C2
 
 Also `r4b_waiter.json` in the session scratchpad.
 
-**Worktrees:** none. The fetches (two base SHAs, and `pull/&lt;N&gt;/head` for the 10 flagged PRs) added objects and wrote `FETCH_HEAD` only. Nothing tracked changed. I ran one trivial heredoc by mistake; it printed a string and nothing else. About 50 REST calls in total.
+**Worktrees:** none. The fetches (two base SHAs, and `pull/<N>/head` for the 10 flagged PRs) added objects and wrote `FETCH_HEAD` only. Nothing tracked changed. I ran one trivial heredoc by mistake; it printed a string and nothing else. About 50 REST calls in total.

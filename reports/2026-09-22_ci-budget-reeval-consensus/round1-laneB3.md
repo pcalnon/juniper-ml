@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `53d05121`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -31,7 +31,7 @@ Repo root: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktree
 
   None mentions the cheaper fix, approving the parked runs. Fix: apply the same correction, scoped to what was measured.
 - **E2 (minor): the waiter mislabels the unmeasured fallback as measured.** At `util/wait_for_checks.py:483`, `resolve_timeout('juniper-not-measured')` returns `(2400, 'measured budget for juniper-not-measured (...)')`. The test at `tests/test_wait_for_checks.py:660` checks only the seconds, so it misses this. Also, line 478 loads `safe_merge.py` without registering it in `sys.modules`: that is the known `@dataclass` trap, though the new tests would catch it.
-- **E3 (minor): another script has the same flat default.** `util/ad-hoc/watch_prs_until_terminal.bash:53` defaults to 2400 s, now below 6 of the 9 budgets (it was 4). It also parses JSON out of merged stdout+stderr (`:75`, `2&gt;&amp;1`). So the obvious fix, dropping `--timeout`, would break on the new `wait budget:` stderr line.
+- **E3 (minor): another script has the same flat default.** `util/ad-hoc/watch_prs_until_terminal.bash:53` defaults to 2400 s, now below 6 of the 9 budgets (it was 4). It also parses JSON out of merged stdout+stderr (`:75`, `2>&1`). So the obvious fix, dropping `--timeout`, would break on the new `wait budget:` stderr line.
 - **E4 (minor): `ci.yml:1618-1620` still justifies the soak with "ZERO false positives".** It was not updated with the live record.
 - **E5 (informational): four of nine budgets now sit at the 3300 s ceiling.** Data has 711 s of headroom and data-client 735 s. The next time either goes stale, raising cannot fix it. Nothing detects staleness, and the budgets went stale twice in 13 days.
 
@@ -50,7 +50,7 @@ Repo root: `/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktree
   - The walkthrough (`…CI-BUDGET-ARC-DECISIONS-WALKTHROUGH.md` §7 item 2) says to drop the trailing `exit 0`. That leaves an `if` as the last command, and it returns 0.
 
   `soak_step_tail_sim.py` ran the real step under `bash -eo pipefail` with a stand-in screen that exits 1. With the `exit 0` removed, the step still exits 0 and only emits the warning. Fix: end the step with `exit "$rc"`, and put this in the owner's promotion decision.
-- **C (minor): one finding is counted twice.** The two #1973 entries are the same lost heading, split only because the detail text reads `31 -&gt; 38` in one run and `31 -&gt; 39` in another. The correct tally is 9 distinct findings, 2 true and 7 false, with the C4 false positives spread across 5 PRs. Also, #1983 is a content correction, not a status rename. Its in-file link (`…DEFECT-REGISTER.md:23`) was already updated at the first flagged head (`b9377f64`, read via the API) and in the squash commit `78e36d8e`.
+- **C (minor): one finding is counted twice.** The two #1973 entries are the same lost heading, split only because the detail text reads `31 -> 38` in one run and `31 -> 39` in another. The correct tally is 9 distinct findings, 2 true and 7 false, with the C4 false positives spread across 5 PRs. Also, #1983 is a content correction, not a status rename. Its in-file link (`…DEFECT-REGISTER.md:23`) was already updated at the first flagged head (`b9377f64`, read via the API) and in the squash commit `78e36d8e`.
 - **D (confirmed): "would have failed 7 PRs" is correct, and understated.** All 7 false-positive PRs were flagged at their final head, and every squash commit reproduces the finding, so a required check would have blocked the merge itself. No waiver exists: neither the checker nor `util/markdown_structure_delta.py` reads any `Allow-` trailer. About 48 PRs that touched markdown merged in the window, so roughly 15% would have been blocked falsely. #1999 was red only at intermediate heads; its final head `be82d281` was clean.
 - **The denominators hold.**
   - 184 soak check-runs across 184 heads, fetched with `filter=all`, so it really is once per head.

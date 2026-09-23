@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `53d05121`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -53,7 +53,7 @@ Short names used below: HANDOFF is the frozen `…/round1/HANDOFF_frozen_round1.
 - **What is wrong:** I classified the frozen `claims/rerun_split.json` with `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/laneB1/classify_rerun_setasides.py`.
   - The tool set aside 18 heads. 13 of them are only a success-then-success repeat of `Guard PR base branch` (for example cascor#656 at 1735 s and worker#188 at 809 s), not re-runs after a failure.
   - Each is dropped whole, including a valid pass.
-  - Under the rule "budget &gt; observed max", a lower max is the unsafe direction.
+  - Under the rule "budget > observed max", a lower max is the unsafe direction.
   - No set-aside head exceeded its repo's clean max on 09-22, so the new budgets stand. The problem is the instrument future sessions are told to use.
 - **Fix:** measure the first-attempt span instead of dropping the head. Treat guard-only repeats as clean. Carry the tool's own MISCLASSIFY caveat into the prompt.
 
@@ -92,7 +92,7 @@ Short names used below: HANDOFF is the frozen `…/round1/HANDOFF_frozen_round1.
 10. **"0 breaches … all nine repos" (OWNER 1).** On juniper-ml a breach goes to Slack with no annotation (`pr-budget-alarm.yml:148-166`), so the probe cannot see it there. Row 9 itself claims only the eight siblings.
 11. **Preflight gaps.**
     - `all` is run without `--fetch`, and a STALE-LOCAL slack row exits 0.
-    - `&lt;scratch&gt;` is never defined.
+    - `<scratch>` is never defined.
     - There is no guidance for exit 2, and the run makes about 2,500 REST calls while other sessions share the same token.
     - The script's docstring omits `rerun-split` and `settings`.
 12. **Naming rule.** These role references in the foot section have no filename: lines 384, 401, 421, 479-481 ("walkthrough", "workflow header", "Both texts") and 526 ("the backup arc").

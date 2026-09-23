@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `53d05121`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -13,10 +13,10 @@
 
 Of the six assigned checks, all are confirmed except five low-to-medium defects, ranked at the end.
 
-**Setup.** My entry point was file content plus running the repo's own tools. I ran `git fetch origin` in this worktree only. The worktree's ten #2017 paths are byte-identical to 53d05121 (`git diff --stat 53d05121 -- &lt;10 paths&gt;` is empty). #2017 is **OPEN** at 53d05121 and unmerged (`gh pr view 2017`). None of these files moved between e3186919 and d0582a21 (current main). I edited no tracked file, did not run the reprobe, and did not read the round-1 claims.
+**Setup.** My entry point was file content plus running the repo's own tools. I ran `git fetch origin` in this worktree only. The worktree's ten #2017 paths are byte-identical to 53d05121 (`git diff --stat 53d05121 -- <10 paths>` is empty). #2017 is **OPEN** at 53d05121 and unmerged (`gh pr view 2017`). None of these files moved between e3186919 and d0582a21 (current main). I edited no tracked file, did not run the reprobe, and did not read the round-1 claims.
 
 ### 1. File-content claims at e3186919 — CONFIRMED
-Read with `laneA3/show_lines.py e3186919 &lt;path&gt;` and `git grep`:
+Read with `laneA3/show_lines.py e3186919 <path>` and `git grep`:
 - **`ci.yml:1061`**: "`main` measures ZERO structural problems as of 2026-09-15".
 - **`docs/REFERENCE.md:3145`**: "`main` measured **zero** structural problems from 2026-09-15".
 - **`docs/REFERENCE.md:2923`**: runs `tests/test_markdown_structure_screen.py`, inside "### Running every suite" (heading at :2753).
@@ -53,7 +53,7 @@ Read with `laneA3/show_lines.py e3186919 &lt;path&gt;` and `git grep`:
   - `--timeout 5`: 0 bytes on stderr, source `--timeout`.
   - A lone copy of the file: `FALLBACK 1800s … FileNotFoundError`.
   - `--help` shows the new default text.
-- **Callers**: `safe_merge.py:802` always passes `--timeout`. `bot_pr_merge_sweep.py` passes 150. `watch_prs_until_terminal.bash` passes `$PER_PR_TIMEOUT` (default 2400), so the new stderr line cannot pollute its `2&gt;&amp;1` JSON parse. The shepherd never invokes the waiter.
+- **Callers**: `safe_merge.py:802` always passes `--timeout`. `bot_pr_merge_sweep.py` passes 150. `watch_prs_until_terminal.bash` passes `$PER_PR_TIMEOUT` (default 2400), so the new stderr line cannot pollute its `2>&1` JSON parse. The shepherd never invokes the waiter.
 - **"Eight of nine"** holds under both main's budgets and the PR's.
 
 ### 3. Budget re-pin — CONFIRMED
@@ -64,7 +64,7 @@ Read with `laneA3/show_lines.py e3186919 &lt;path&gt;` and `git grep`:
 | main | PR | exit 1, 6 failures, exactly data / data-client / deploy, in both pins, lower bound only ("2400 not greater than 2589", "2400 … 2565", "700 … 965") |
 | PR | PR | 78 OK |
 | main | main | 78 OK (confirms the pin "stayed green") |
-| PR | main | deploy's upper bound fails (1400 &gt; 1048), so the table and test must move together, and they do |
+| PR | main | deploy's upper bound fails (1400 > 1048), so the table and test must move together, and they do |
 
 All nine rows agree across `MEASURED_SPANS`, the 09-22 `REPO_TIMEOUTS` comments, the new REFERENCE.md row, the `KillResilienceTest` docstring and the frozen artifact. That covers the 4×p90 windows, the mids (4596 / 4372 / 1382), the clean-head counts where stated twice, and all nine budgets being in-window. The one exception is defect 3.
 
@@ -74,7 +74,7 @@ All nine rows agree across `MEASURED_SPANS`, the 09-22 `REPO_TIMEOUTS` comments,
 - **Growth**: `measure-growth … --days 30 --ref origin/main` reproduces 8 rows exactly (growing commits, p90, max, slack, margin).
 - **juniper-ml**: headroom 9727, p90 427, max 498 and margin +7727 are confirmed. I read **22** growing commits and a start of **36,960**, where the table says 24 and the prose says 36,792 (defect 2).
 - **juniper-data via the API, no clone** (`laneA3/api_growth_crosscheck.py`): 11 commits, 24,965 → 26,479, 4 grew (+767, +18, +1304, +558), 2 shrank, p90 = max = 1304. Exact match.
-- **Also confirmed**: "four negative"; "seven of nine have ≤4 growing commits"; `SLACK_FLOOR = 2000` at `p5_cut.py:65` and `p5_promote_ready.py:64`; and REFERENCE.md's "do not start a relocation because headroom &lt; `max`".
+- **Also confirmed**: "four negative"; "seven of nine have ≤4 growing commits"; `SLACK_FLOOR = 2000` at `p5_cut.py:65` and `p5_promote_ready.py:64`; and REFERENCE.md's "do not start a relocation because headroom < `max`".
 - **Instrument note**: git reads a date-only `--since` at the current time of day, so the window moves during the day. Demonstrated: at 15:44 CDT, a576a90a (08-23 15:22 CDT) falls outside the window and 6e33d1dd (17:32 CDT) falls inside.
 
 ### 5. Structure count — CONFIRMED, and the instrument can fire
@@ -84,10 +84,10 @@ All nine rows agree across `MEASURED_SPANS`, the 09-22 `REPO_TIMEOUTS` comments,
 - **Positive control**: the same screen run on `bcc89c45:docs/REFERENCE.md` (the ml#1746 damage) reports 2 swallowed H2s and exits 1. So the zero is a real measurement for that class. The screen's documented limit (fences nested in containers) remains.
 
 ### 6. `allow_update_branch` — CONFIRMED
-`gh api repos/pcalnon/&lt;repo&gt;` returns a literal `false` on all nine, with `permissions.admin` true, so the field is authoritative.
+`gh api repos/pcalnon/<repo>` returns a literal `false` on all nine, with `permissions.admin` true, so the field is authoritative.
 
 ### Extra checks
-- **C4 finding on #2009 reproduced**: `md_structure_check.py --base 5c697282 &lt;2 files&gt;` exits 1 with "5 heading(s) LOST (count 19 -&gt; 19)". All five are status renames, which confirms the false-positive class.
+- **C4 finding on #2009 reproduced**: `md_structure_check.py --base 5c697282 <2 files>` exits 1 with "5 heading(s) LOST (count 19 -> 19)". All five are status renames, which confirms the false-positive class.
 - **v2 defect is real in code**: v2 line 184 fetches `check-runs?per_page=100` with no `filter`, so the API default `latest` applies.
 - **Alarm workflow**: `pr-budget-alarm.yml` is a blob on all nine repos' main.
 

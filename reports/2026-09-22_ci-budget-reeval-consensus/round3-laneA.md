@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `f0b3cc73`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -46,7 +46,7 @@ ml#2017 merged while round 3 was still running, and the soak re-read's figures a
    - In the workflow on main, the failed-query branch exits before the level line is printed.
 8. **CONFIRMED (watcher).**
    - Both merged PRs print DONE. The waiter's stderr reads `wait budget: 2800s (measured budget for juniper-ml …)`, and the JSON carries `timeout` 2800 with a measured `timeout_source`; data#405 resolves to 3300.
-   - Merging stderr into stdout breaks the JSON parse (`2&gt;&amp;1 | jq -e .` returns 5; stdout alone returns 0), so keeping them apart matters.
+   - Merging stderr into stdout breaks the JSON parse (`2>&1 | jq -e .` returns 5; stdout alone returns 0), so keeping them apart matters.
    - The TIMEOUT line was checked by reading the code only; merged PRs never reach it.
 9. **Cross-file:** see the table below.
 

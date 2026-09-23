@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `d873aed6`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -77,7 +77,7 @@ Disagreements:
 
 **Minor**
 3. #1139: say "5 got no run at opening; #1139 got runs only after the owner's push `5d343118`".
-4. Change 56 → 57 PRs and "7 of the 56 merges" → "7 of 57 PRs (50 merged)". The trap "ask commits/&lt;sha&gt;/pulls" should add that it returns `[]` for a PR closed without merging.
+4. Change 56 → 57 PRs and "7 of the 56 merges" → "7 of 57 PRs (50 merged)". The trap "ask commits/<sha>/pulls" should add that it returns `[]` for a PR closed without merging.
 5. In `test_safe_merge.py`, change "28 clean heads" to "30 healthy heads".
 6. Change "#1981-#2015" to "#1981-#2014" in both files.
 7. Describe the superseded rule as "a sequential re-run of the same check", or keep "any repeat" and quote 16 healthy heads instead of 13.

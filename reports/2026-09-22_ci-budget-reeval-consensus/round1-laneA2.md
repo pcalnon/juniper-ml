@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `53d05121`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -16,7 +16,7 @@ Most of the claims hold, and no budget at 53d05121 breaks the sizing rule under 
 **Instrument.** I wrote my own scripts and did not reuse the v2 tool or the reprobe tool. They read three sources:
 - `check-runs?filter=all` for every execution of each required context.
 - `actions/runs?head_sha=` to tie each check run to its workflow run, trigger event and run attempt.
-- `actions/runs/&lt;id&gt;/jobs?filter=all` to get the attempt number of each job, and to split each job's wait into queue time and run time.
+- `actions/runs/<id>/jobs?filter=all` to get the attempt number of each job, and to split each job's wait into queue time and run time.
 
 Other details:
 - **Required contexts:** in all 9 repos, the union of ruleset contexts equals what `rules/branches/main` reports. No repo has classic branch protection.
@@ -104,12 +104,12 @@ Limits:
 - Each max is a single observation.
 
 ### Defects, most severe first
-1. **Medium:** the claims' rule drops healthy heads (13 of 18). That is the unsafe direction, since dropping heads can only hide a healthy max. It is not biting in this sample. A rule keyed on attempt &gt; 1 or on "first pass did not pass" would avoid it.
+1. **Medium:** the claims' rule drops healthy heads (13 of 18). That is the unsafe direction, since dropping heads can only hide a healthy max. It is not biting in this sample. A rule keyed on attempt > 1 or on "first pass did not pass" would avoid it.
 2. **Medium-low:** the claimed mechanism is only half right. `filter=latest` keeps the latest check run per name **within each workflow run** (verified on 21 of 21 heads). So a re-run attempt does replace the earlier attempt, but a workflow run triggered again by a new event is not replaced and still enters the v2 span.
    - Example: recurrence#175's 9,886 s includes 50 s from the cancelled set of runs; keeping only the latest per name would give 9,836.
-   - Consequence: a fix that deduplicates by name, or drops attempt &gt; 1, would not remove tails caused by a new trigger.
+   - Consequence: a fix that deduplicates by name, or drops attempt > 1, would not remove tails caused by a new trigger.
 3. **Low:** the ml figure depends on one PR at the edge of the sample. The sample is also ordered by creation, not merge time.
-4. **Low:** the "thinnest margin in the table" comment in `util/safe_merge.py` at 53d05121 is wrong (334 s &lt; 341 s).
+4. **Low:** the "thinnest margin in the table" comment in `util/safe_merge.py` at 53d05121 is wrong (334 s < 341 s).
 5. **Low:** "every required context ran once and passed" is false for data#405.
 6. **Low:** the recurrence#175 description hides the cancelled and restarted runs.
 

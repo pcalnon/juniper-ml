@@ -8,11 +8,13 @@ Validation of the re-evaluation of
 **This directory is evidence, not the conclusion.** The reconciliation — what each round
 changed, the dissent and the owner's ruling, and what the evidence cannot support — is the
 handoff's § Validation record 2026-09-22 and its "Corrections from consensus round N"
-subsections. The files here are each lane's final report, copied verbatim from the session
-transcript by `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round4-fix/archive_round_reports.py`,
-which refuses credential-shaped text. A subagent's report otherwise lives only in a local,
-unversioned transcript. The only change is presentational: a bare JSON verdict is wrapped in a
-`json` fence.
+subsections. The files here are each lane's final message, copied verbatim from the lane's own
+session transcript by `util/ad-hoc/2026-09-22_ci-budget-reeval-consensus/round4-fix/archive_round_reports.py`,
+which cross-checks it against the task notification the orchestrator received and refuses
+credential-shaped text. A subagent's report otherwise lives only in a local, unversioned
+transcript. (The first archive was taken from the notifications, which HTML-escape `<`, `>` and
+`&`; round 5 caught that, and every file was re-taken from the lane's own transcript.) The only
+change is presentational: a bare JSON verdict is wrapped in a `json` fence.
 
 ## Rounds
 
@@ -35,6 +37,7 @@ Each round after the first was briefed on the previous round's corrections only.
 | 3 | ml#2017 `f0b3cc73` | Rubric: prompt-validator, iteration 3 | `round3-rubric.md` |
 | 4 | ml#2035 `0ffe15dc` | A: re-derive the round-3 claims | `round4-laneA.md` |
 | 4 | ml#2035 `0ffe15dc` | B: find what the round-3 fixes broke | `round4-laneB.md` |
+| 5 | ml#2035 `bdd60b20` | one reviewer: re-derive the round-4 claims and find what the corrections broke | `round5.md` |
 
 ## Two things the record says that the reports alone do not
 

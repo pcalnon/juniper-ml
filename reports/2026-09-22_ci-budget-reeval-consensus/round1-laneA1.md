@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `53d05121`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -20,7 +20,7 @@ The re-evaluation's PR numbers, merge SHAs, dates and diff attributions all chec
 
 ## 1. Closure and attribution claims: all CONFIRMED
 
-`a1_pr_ancestry.py` compares `gh api pulls/N` merge SHAs with `git merge-base --is-ancestor &lt;sha&gt; origin/main` (tip `d0582a21`). Each SHA matches its PR and is an ancestor of main:
+`a1_pr_ancestry.py` compares `gh api pulls/N` merge SHAs with `git merge-base --is-ancestor <sha> origin/main` (tip `d0582a21`). Each SHA matches its PR and is an ancestor of main:
 
 | PR | Merge SHA | Merged (UTC) | Notes |
 |---|---|---|---|
@@ -33,7 +33,7 @@ The re-evaluation's PR numbers, merge SHAs, dates and diff attributions all chec
 | #1963 | `2804d494` | 09-19 | Adds the walkthrough |
 | #1851 | `3cab4783` | 09-09 | |
 
-What each PR actually contains, from `git show &lt;sha&gt; -- &lt;file&gt;` and `git log -S`:
+What each PR actually contains, from `git show <sha> -- <file>` and `git log -S`:
 
 - **ml#1944** has `OWNER RULED 2026-09-15: the VALUE STANDS at 3300` in `util/safe_merge.py`.
   - It also has the App-token arm in `lockfile-update.yml`: `create-github-app-token`, gated on `vars.RELEASE_TRAIN_APP_ID`, with the token passed to create-pull-request.

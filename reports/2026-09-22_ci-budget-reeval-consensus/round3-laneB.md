@@ -3,9 +3,9 @@
 - **Procedure**: [`notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md`](../../notes/JUNIPER_2026-08-30_JUNIPER-ECOSYSTEM_INDEPENDENT-AGENT-CONSENSUS-PROCEDURE.md)
 - **Document under test**: [`HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md`](../../prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_ci-budget-instrument-corrected-and-the-fleet-slack-deficit.md) and the PR carrying it
 - **Frozen at**: ml#2017 at `f0b3cc73`
-- **Archived**: the lane's final report, copied verbatim from the session transcript on
-  2026-09-23. Nothing below the rule is edited; the reconciliation is the handoff's
-  § Validation record 2026-09-22.
+- **Archived**: the lane's final message, copied verbatim from its own session transcript
+  on 2026-09-23 and cross-checked against the task notification. Nothing below the rule
+  is edited; the reconciliation is the handoff's § Validation record 2026-09-22.
 
 ---
 
@@ -75,12 +75,12 @@ The round-2 fix broke one probe and left a blind spot in the C2 rule, a wrong so
   - `PER_PR_TIMEOUT=abc` prints PROBE-ERROR with the usage text and exits 2.
 
 **m3: the replay procedure works as written, with one missing step.**
-- The sandbox allowed both `git -C &lt;this worktree&gt; worktree add --detach …/worktrees/juniper-ml--round3-replay--&lt;pr&gt; &lt;head&gt;` and `cd &lt;replay worktree&gt; &amp;&amp; python3 &lt;screen by absolute path&gt;`.
+- The sandbox allowed both `git -C <this worktree> worktree add --detach …/worktrees/juniper-ml--round3-replay--<pr> <head>` and `cd <replay worktree> && python3 <screen by absolute path>`.
 - Both findings reproduced exactly as the CI logs show them: #2024 C4 lost "### F. Dropped by THIS document and restored 2026-09-22 by a peer re-probe" (heading count 16 → 17), and #1980 C2 flagged "git). A table…".
-- The missing step: `1814a269` was not in the local object store. #1980's branch is deleted, so the PREFLIGHT `git fetch origin` cannot bring it. Add `git fetch origin &lt;head sha&gt;`.
-- I also tested a route that needs no worktree: write `git show &lt;head&gt;:&lt;path&gt;` into a temp directory and run the unmodified screen there with `GIT_DIR` set. It reproduced all four findings I replayed (#1969, #1980, #2007, #2024; exit 1 each).
+- The missing step: `1814a269` was not in the local object store. #1980's branch is deleted, so the PREFLIGHT `git fetch origin` cannot bring it. Add `git fetch origin <head sha>`.
+- I also tested a route that needs no worktree: write `git show <head>:<path>` into a temp directory and run the unmodified screen there with `GIT_DIR` set. It reproduced all four findings I replayed (#1969, #1980, #2007, #2024; exit 1 each).
 
-**m4:** "Set S in the same command" invites `S=&lt;dir&gt; python3 … "${S:?…}"`. That form aborts, because the expansion happens before the assignment (exit 127 here). It fails safe. Write `S=&lt;dir&gt;; python3 …` instead.
+**m4:** "Set S in the same command" invites `S=<dir> python3 … "${S:?…}"`. That form aborts, because the expansion happens before the assignment (exit 127 here). It fails safe. Write `S=<dir>; python3 …` instead.
 
 **m5:** The PREFLIGHT says the merge request "must put OWNER DECISION 2 to the owner", but DECISION 2 already records the raises as ruled. It should say to cite the 2026-09-22 SHIP ruling instead.
 
