@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from r2a_common import budget_line, gql, rest, rest_pages, ts  # noqa: E402
+from r2a_common import budget_line, gql, rest, ts  # noqa: E402
 
 PASSED = {"SUCCESS", "SKIPPED", "NEUTRAL", "success", "skipped", "neutral"}
 
