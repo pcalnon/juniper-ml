@@ -1,0 +1,15 @@
+
+
+
+define dynamic workflow that dispatches agents to perform prompts, prompts that are written and validated dynamically if necessary, given an initial set of notes file, design path documents that define current, active goals.
+as work is performed on these design paths, the documents should be maintained in an up-to-date state. 
+as design docs are completed or superceeded, the dynamic workflow's goal set should be updated accordingly.
+
+agents should be dispatched and managed in a manner that optimizes progress on the set of design path notes files while simultaneously ensuring that the current session and weekly limits are met but not exceeded by their expiration times.
+
+agents should be handed a fresh worktree to perform their development.
+when the agent's work arc is complete and its worktree meets criterea for removal, the workflow should specifiy that the worktree be removed.
+
+open decisions should be sent to me, with the associated tasks listed as blocked on my response
+with the agents working on the blocked tasks being reassigned to other tasks to continue the managed progress cadence. 
+
