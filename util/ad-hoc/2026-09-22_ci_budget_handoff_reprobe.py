@@ -111,6 +111,7 @@ def gh_json(path: str, attempts: int = 3):
             if attempt == attempts:
                 raise Unmeasurable(f"{path}: {exc}") from exc
             time.sleep(2 * attempt)
+    raise Unmeasurable(f"{path}: no attempts were made (attempts={attempts})")
 
 
 def gh_pages(path: str, key: str | None = None, limit_pages: int = 30) -> list:
