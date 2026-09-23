@@ -7,7 +7,7 @@
 **Version**: 0.2.0
 **Document Type**: SPECIFICATION
 **Last Updated**: 2026-09-23
-**Status**: SPEC v2 — DRAFT, **not ready for ratification**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. A **fresh** consensus round (§15) reviews v2 before the owner rules on anything, and this text is frozen while it runs.
+**Status**: SPEC v2 — DRAFT, **not ratifiable**. v1 (0.1.0, merged in juniper-ml#2043) was rated **UNSOUND** by consensus review round 1 in its identity, versioning and legality layers. v2 folds all fourteen of that round's findings into §1–§13; §14 records where each one went. **Review round 2 (§15, 2026-09-23) found v2 not ready for ratification**: round 1's blockers are fixed, but ten clusters of MAJOR findings remain, in versioning, identity, the OQ-1 dependency and the release plan. §1–§13 below are v2 as that round reviewed them, left unedited. v3 folds §15's findings, and a round 3 reviews it before the owner rules on anything.
 **History**: Decision 12 was ruled on 2026-09-03. On 2026-09-22 the owner asked for it to be **specified before it is built**. No producer or gate code has moved. §12 lists six questions: OQ-4 is answered by a fix, and the other five belong to the owner. This document recommends an answer to each and decides none of them. §8.3 and §9.4 are written for both answers to OQ-2.
 
 **Tracks**: [juniper-data#423](https://github.com/pcalnon/juniper-data/issues/423)
@@ -649,7 +649,52 @@ Citations fixed in place during round 1, all re-checked at v2's pins: **C-1** th
 
 ## 15. Review round 2
 
-**Pending.** A fresh consensus round runs against v2 as committed, with the text frozen for its duration, and at least one lane aimed at the identity, versioning and legality layers. Its findings are recorded here, not folded silently into §1–§13, and a round of its own reviews whatever v3 changes.
+Consensus review round 2 ran on 2026-09-23 against v2 as committed (juniper-ml#2060, `8c9d65f`), with the text frozen for its duration. Four lanes were each told to refute it:
+
+- **S1** re-probed every factual claim, and did not trust the citation checker's rows to check what the text claims;
+- **S2** attacked the identity, versioning, legality, digest and encoding layers;
+- **S3** tried to execute §11 as a work plan;
+- **S4** checked that each of round 1's findings was folded and that nothing load-bearing was amputated.
+
+**Each lane's final report is archived verbatim** under `reports/partition-provenance-spec-v2-review-2026-09-23/`, as `S1-grounding.md`, `S2-soundness.md`, `S3-executability.md` and `S4-fold-completeness.md`, and holds the vectors and scratch-script names behind each finding. The ids below (S1-F1, S4-D3 and so on) are those reports' own.
+
+| lane | verdict | MAJOR | MINOR | NIT |
+| --- | --- | --- | --- | --- |
+| S1 grounding | GROUNDED WITH FINDINGS | 2 | 4 | 7 |
+| S2 soundness | **not ready for ratification**: versioning unsound but fixable; identity, legality and encoding sound with findings; digest sound | 3 | 5 | 3 |
+| S3 executability | EXECUTABLE WITH GAPS | 5 | 6 | 1 |
+| S4 fold completeness | COMPLETE WITH FINDINGS | 3 | 11 | 10 |
+
+**What held.**
+- Round 1's four blockers are fixed. A newer or corrupted `schema_version` can no longer skip the integrity checks.
+- Every class row, `pre_carve_order` derivation and seed rule is true of the code at the pins. No truthful artifact of today's code was refused.
+- S1 reproduced all nine golden digests and the fingerprint from §6's prose alone, with an implementation of its own.
+- The consumer census was re-swept by S1, and nothing was missing or mislocated.
+
+**v2 is not ratifiable.** Deduplicated, the round's MAJOR findings fall into ten clusters. Where two lanes found the same defect independently, both ids are given.
+
+| cluster | finding | lanes | v3 must |
+| --- | --- | --- | --- |
+| **R2-1** versioning | G0 checks the core fields' types and `digest.algorithm` **before** the scheme check, so a core change under a new `digest.scheme`, the one path §7.1 sanctions, is refused rather than reported `unverifiable`. At an unknown scheme, the requested-id compare is skipped too | S2-F1, S4-D1 | Split G0: first decoding, the version fields, a string `digest.scheme` and `dataset_id` against the requested id; the core types and the algorithm after the scheme. Freeze where `digest.scheme` lives, and add the missing vector |
+| **R2-2** versioning | v1's §7.1 rules for when `schema_version` increments and what a gate must judge were dropped with no replacement. The two version fields are in neither layer, and the gate's own B2.c bumps the version for an added field, the opposite of v1's rule | S4-D2 | Restore an increment rule and the obligation to judge every schema up to the gate's own, and freeze the version fields |
+| **R2-3** legality | Class rows are keyed on generator **name**, not version. A generator that gains a legal behaviour at a new version is refused (mnist with a train fit; csv_import with a seeded sample). L6 and L7 apply to unknown generators, contradicting §8 | S2-F3 | Key class rows on generator and known version range, restrict L6 and L7 to known generators, widen the `min_reader_version` trigger, and run producer CI against the oldest supported gate |
+| **R2-4** identity | The exact store-prefix rule is a two-entry table, so a third store built through the real `external_dataset_id` gets a non-overridable G4 refusal, contradicting §8. The rule is not in the frozen core either | S2-F2 | Carry the prefix in the core, check it exactly only for known stores, and freeze the prefix rules and the `"unshuffled"` marker |
+| **R2-5** decision | The body decides OQ-1 while the header says it decides nothing: `FIRST_EMITTING_VERSION`, W11 and the §11.2 versions are written unconditionally. W11's premise, that every artifact at or above the listed version carries a block, is asserted rather than produced, and an intermediate `main` or a missed bump would make its refusal permanent | S4-D3, S3-F3 (and S2-F6) | Make W11 and the table conditional on OQ-1, write the "no" branch, bump each generator's VERSION in the same PR as its emission, and fill W11 from W6's own verified list |
+| **R2-6** release | juniper-data **0.16.0 is already taken**: #433 merged five minutes before `8c9d65f` and ships without a block. A `>=0.16.0` floor would admit a producer that emits none | S1-F1, S4-D13 | The block ships in 0.17.0, and every floor and sentence that names 0.16.0 moves |
+| **R2-7** release | W10 makes `juniper-ml[all]` unresolvable. The only published juniper-recurrence (0.5.0) requires `juniper-data-client<0.6.0`, and `publish.yml` checks only `[clients]` and `[tools]` | S1-F2, S3-F1 | Make a recurrence release carrying W4's widened cap a precondition of W10, and add an `[all]` dry-run resolve |
+| **R2-8** release | juniper-data's CI installs the client from git `main`, not the published release, so a gate fix merged but unreleased passes the producer while consumers still refuse | S3-F2 | A W6 CI job that tests against the published client |
+| **R2-9** release | "0.6.1 is a PATCH" conflicts with the owner rule of juniper-cascor-client#155: W11 turns a tolerated `absent` into a non-overridable refusal, a behaviour change | S3-F4 | Drop the caps argument, and either release 0.7.0 or put the question in §16 |
+| **R2-10** consumers | The status and override surfaces are unnamed. The caveat W7 is told to copy (`_validation_warning`) is written but never read in cascor | S3-F5 | For each consumer and both OQ-2 answers, name the status field, the setting and a caveat slot that something reads, and add a canopy line to §16 |
+
+**MINOR findings, recorded here and folded in v3:**
+- **Integrity.** `fit_scope` is derivable for 16 of 18 sources but is trusted, so §13 item 2 is false (S2-F5). Legality can be switched off by editing two integers (S2-F4). Two decode failures escape G0 as the wrong exception type (S2-F7). Unknown nested keys are unspecified, and the gate treats them inconsistently (S2-F8).
+- **Figures and citations.** §4.2's sizes are v1's block, not v2's (S1-F4). §7.3's 511 s is a defective run (S1-F5). §5.3 overstates what `test_normaliser_fit_scope.py:172` pins (S1-F6). The stores emit `<f4` only, so "parity with the stores" does not justify `<f8`, `<i8` and `|b1` (S4-D5, S1-F7). recurrence's `[bench]` caps `juniper-data<0.16.0` (S1-F3).
+- **Consumers.** The fake depends on uuid ids in more places than `:417` (S3-F6). Wiring the gate into cascor breaks about 20 tests (S3-F7). The nonce and store-id interfaces are loose (S3-F8). Floors conflict with `==0.5.0` lock pins, and nothing adopts 0.6.1 (S3-F9). Two of the owner's possible answers have no plan (S3-F10). The document omits AGENTS/README edits, CHANGELOGs, image tags and operator notes (S3-F11).
+- **Fold record.** §14 leaves two departures from round 1's proposals unlabelled (S4-D4, S1-F11). The census re-run has no recorded method (S4-D6). §9.1 went stale when W12 was added (S4-D7), and §4.3's reader list is incomplete (S4-D8). The vector coverage is overstated (S4-D9). §9.3 omits the stripped-block refusal (S4-D10). OQ-6 argues against the kind of switch W11 adds (S4-D11). §5.3 contradicts §3.1 note 4 (S4-D12). v1's pins were amputated (S4-D14).
+
+**NITs** (S1-F7 to F13, S2-F9 to F11, S3-F12, S4-D15) are listed in the reports and folded with the rest.
+
+**Disposition.** v3 folds every finding above into §1–§13, and a new §14-style table maps each id to where it went. A **round 3** then reviews v3's corrections, again with the text frozen, before the owner rules on anything (§16).
 
 ## 16. Ruling record
 
@@ -684,3 +729,4 @@ Citations fixed in place during round 1, all re-checked at v2's pins: **C-1** th
   - juniper-canopy#559 and PR #663;
   - juniper-cascor-client#155 and juniper-canopy#584: SemVer versus consumer caps.
 - **Evidence**: `util/ad-hoc/2026-09-22_partition_provenance_npz_roundtrip.py`, `util/ad-hoc/2026-09-23_partition_provenance_v2_reference_gate.py`, `util/ad-hoc/2026-09-23_partition_provenance_dtype_inventory.py`, `util/ad-hoc/2026-09-23_partition_provenance_v2_citation_check.py`.
+- **Review round 2**: the four lane reports, verbatim, in `reports/partition-provenance-spec-v2-review-2026-09-23/` (extracted with `util/ad-hoc/2026-09-23_extract_agent_final_reports.py`).
