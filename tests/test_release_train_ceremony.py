@@ -124,6 +124,7 @@ class _Recorder:
 
     def __init__(self):
         self.calls = []
+        self.release_latest = []  # the ``latest`` kwarg of each create_release, kept out of ``calls`` so its tuples stay stable
 
     def open_archive_pr(self, repo, base, branch, relpath, content, title, body):
         self.calls.append(("open_archive_pr", repo, branch, relpath))
@@ -133,8 +134,9 @@ class _Recorder:
         self.calls.append(("enable_automerge", repo, pr))
         return True
 
-    def create_release(self, repo, tag, title, notes_relpath, content):
+    def create_release(self, repo, tag, title, notes_relpath, content, *, latest=False):
         self.calls.append(("create_release", repo, tag, notes_relpath))
+        self.release_latest.append(latest)
         return f"https://github.com/pcalnon/{repo}/releases/tag/{tag}"
 
     def upsert_halt_issue(self, repo, title, body):
@@ -1603,6 +1605,73 @@ class CreateReleaseTempNotesTest(unittest.TestCase):
         self.assertFalse(seen["path"].exists(), "the temp notes file must be cleaned up after the release cut")
         # the checkout was never dirtied by a stray archived notes file
         self.assertFalse((repo / "notes" / "releases" / "RELEASE_NOTES_v0.6.0.md").exists())
+
+
+class LatestBadgeTest(unittest.TestCase):
+    """Procedure S11.4: a repo's badge-owning package is cut with --latest, every other with --latest=false.
+
+    Until 2026-09-23 the ceremony passed --latest=false on EVERY cut, the meta-package's included, so six
+    repos' "Latest" badges fell behind their newest release (juniper-ml's read v0.6.0 at v0.10.0). The flag
+    now follows the registry's per-repo ``latest`` field, end to end: entry -> plan -> action -> the seam's
+    ``create_release`` kwarg -> the gh argv. Each link is pinned, because a break at any one of them is
+    silent -- a Release still gets cut, and only the badge is wrong."""
+
+    def _gh_recorder(self):
+        calls: list = []
+
+        def rec_gh(args, timeout=90):
+            calls.append(list(args))
+            return "https://github.com/pcalnon/juniper-data/releases/tag/v0.16.0"
+
+        def rec_git(repo_dir, args, timeout=120, check=True):
+            return ""
+
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(tmp, ignore_errors=True))
+        allowed = ce.publishing_repo_slugs(d.load_registry(UTIL_DIR / "registry.yaml"), "pcalnon")
+        return calls, ce.make_live_sources("pcalnon", tmp, tmp.parent, allowed_repos=allowed, gh=rec_gh, git=rec_git)
+
+    def test_plan_carries_the_registry_flag_into_the_cut_action(self):
+        for flag, expected in ((True, "--latest "), (False, "--latest=false ")):
+            with self.subTest(latest=flag):
+                plan = _plan(entry=_entry(latest=flag))
+                self.assertIs(plan.latest, flag)
+                self.assertIs(plan.to_dict()["latest"], flag)
+                cut = next(a for a in plan.actions if a.kind == "cut_release")
+                self.assertIs(cut.detail["latest"], flag)
+                self.assertIn(expected, cut.summary)
+
+    def test_an_entry_without_the_flag_is_cut_badge_safe(self):
+        plan = _plan()  # _entry() sets no ``latest``: the dataclass default
+        self.assertFalse(plan.latest)
+        self.assertIn("--latest=false", next(a for a in plan.actions if a.kind == "cut_release").summary)
+
+    def test_execute_hands_the_flag_to_create_release(self):
+        for flag in (True, False):
+            with self.subTest(latest=flag):
+                rec = _Recorder()
+                src = _sources(recorder=rec, run_status=PENDING_RUN)
+                plan = ce.plan_ceremony(_entry(latest=flag), _manifest_pkg(), src, REPO_ROOT, REPO_ROOT.parent, "2026-07-17")
+                ce.execute_ceremony(plan, src, monitor_kwargs={"timeout_seconds": 0, "sleep": lambda s: None})
+                self.assertEqual(rec.release_latest, [flag])
+
+    def test_live_seam_emits_bare_latest_only_when_asked(self):
+        calls, src = self._gh_recorder()
+        src.create_release("juniper-data", "v0.16.0", "juniper-data v0.16.0", "notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md", "notes\n", latest=True)
+        src.create_release("juniper-data", "v0.16.0", "juniper-data v0.16.0", "notes/releases/RELEASE_NOTES_juniper-data_v0.16.0.md", "notes\n")
+        with_flag, without = [a for a in calls if a[:2] == ["release", "create"]]
+        self.assertIn("--latest", with_flag)
+        self.assertNotIn("--latest=false", with_flag)
+        self.assertIn("--latest=false", without)
+        self.assertNotIn("--latest", without)
+        for argv in (with_flag, without):
+            ce._assert_gh_allowed(argv, ce.publishing_repo_slugs(d.load_registry(UTIL_DIR / "registry.yaml"), "pcalnon"))  # the R7 gate admits both
+
+    def test_the_real_registry_decides_per_package(self):
+        entries = {e.pypi_name: e for e in d.load_registry(UTIL_DIR / "registry.yaml")}
+        self.assertTrue(_plan(entry=entries["juniper-data"], pkg=_manifest_pkg(pypi_name="juniper-data", repo="juniper-data")).latest)
+        self.assertTrue(_plan(entry=entries["juniper-ml"], pkg=_manifest_pkg(pypi_name="juniper-ml")).latest)
+        self.assertFalse(_plan(entry=entries["juniper-service-core"], pkg=_manifest_pkg()).latest)
 
 
 class ArchiveNotesTrailingNewlineTest(unittest.TestCase):

@@ -631,6 +631,15 @@ python3 util/ad-hoc/2026-09-23_released_section_drift.py --changelog CHANGELOG.m
 (`ceremony._today`), and the `Verify AGENTS.md Last Updated` gate compares against UTC too. A section
 dated in local time near midnight UTC disagrees with the body rendered from it.
 
+**The Latest badge follows the registry.** Each repo has exactly one package marked `latest: true` in
+`util/release_train/registry.yaml`. That is its `v*`-tagged package, or juniper-recurrence's app, which
+has no `v*` tag. The ceremony cuts that package with `--latest` and every other with `--latest=false`,
+which is §11.4's rule. Until 2026-09-23 it passed `--latest=false` on every cut, the meta-package's
+included. Six repos' badges had fallen behind their newest release, juniper-ml's own among them
+(v0.6.0 against v0.10.0). They were moved by hand that day, on the owner's approval. Moving a badge
+(`gh release edit <tag> --latest`) fires nothing: every release-triggered workflow in the nine repos
+subscribes to `published` only (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, 24 workflows).
+
 **What the renderer counts as breaking** (`notes_render._is_breaking`):
 
 - a `### Removed` section, or a heading whose category word is `Breaking`;
