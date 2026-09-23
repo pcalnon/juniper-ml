@@ -433,7 +433,12 @@ def changelog_version_section(changelog_text: str, version: str) -> "OrderedDict
     if not changelog_text:
         return result
     lines = changelog_text.splitlines()
-    vpat = re.compile(r"^##\s*\[?" + re.escape(version) + r"\]?", re.IGNORECASE)
+    # The version must END at the bracket / whitespace / end of line. With a bare optional `\]?`,
+    # "0.3.2" prefix-matched "## [0.3.21]" -- and since the older heading sits lower in the file,
+    # the first match returned 0.3.21's section for 0.3.2 (and 0.3.19's for 0.3.1), measured on
+    # juniper-cascor's CHANGELOG. Harmless for a forward release, whose heading is topmost; wrong
+    # for any re-render of an older version.
+    vpat = re.compile(r"^##\s*\[?" + re.escape(version) + r"(?:\]|\s|$)", re.IGNORECASE)
     start = None
     for i, line in enumerate(lines):
         if vpat.match(line.strip()):
@@ -446,13 +451,13 @@ def changelog_version_section(changelog_text: str, version: str) -> "OrderedDict
     for line in lines[start:]:
         if re.match(r"^##\s", line) and not re.match(r"^###", line):
             break  # next version section
-        hm = re.match(r"^###\s+([A-Za-z]+)", line.strip())
-        if hm:
+        key = notes_render.heading_key(line)  # shared with parse_unreleased: drafts and finals key alike
+        if key is not None:
             if current_cat is not None:
                 bullets = notes_render._split_bullets(body)
                 if bullets:
                     result.setdefault(current_cat, []).extend(bullets)
-            current_cat = hm.group(1)
+            current_cat = key
             body = []
             continue
         if current_cat is not None:

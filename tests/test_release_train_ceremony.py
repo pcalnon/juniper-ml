@@ -1884,6 +1884,183 @@ class BreakingFieldTest(unittest.TestCase):
         body = self._render([("Fixed", ["- a breaking-news parser; this breaks nothing"])])
         self.assertIn("**Breaking changes:** NO", body)
 
+    # ── round 3: the house styles the uppercase-only rule missed ─────────────────────────────
+    # The five tests above were drawn from the two releases the first fix was built for, so they
+    # encoded its blind spot. juniper-canopy's CHANGELOG has ZERO uppercase BREAKING and marks
+    # breaks with labels and headings; these shapes are canopy's own (0.1.0, 0.2.0, 0.2.1, 0.5.0).
+
+    def test_bold_breaking_change_label_reports_breaking(self):
+        body = self._render([("Changed", ["**Breaking Change:** code depending on the old keys needs updating"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_sentence_case_label_reports_breaking(self):
+        body = self._render([("Changed", ["Breaking change: the frontend now requires WebSocket support"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_label_on_an_indented_sub_bullet_reports_breaking(self):
+        """canopy nests the label under a parent bullet; the parser folds it into the parent."""
+        body = self._render([("Changed", ["reorganised the config tree\n  - **Breaking Change:** file locations changed"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_breaking_changes_heading_reports_breaking(self):
+        body = self._render([("Breaking Changes in [0.0.4]", ["renamed the metrics keys"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_qualified_heading_reports_breaking(self):
+        """Five registered headings read `### Changed (potentially breaking)`; three of their
+        sections rendered NO before the parsers kept the qualifier."""
+        body = self._render([("Changed (potentially breaking)", ["the default port moved"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_prose_mentioning_a_breaking_change_mid_sentence_does_not_flip_the_field(self):
+        """The label is anchored to the START of a line; mid-sentence it is usually a denial."""
+        body = self._render([("Fixed", ["restored the old key, so this is not a breaking change"])])
+        self.assertIn("**Breaking changes:** NO", body)
+
+    def test_non_breaking_uppercase_does_not_flip_the_field(self):
+        """The old substring test read NON-BREAKING as a break."""
+        body = self._render([("Changed", ["**NON-BREAKING:** widened the accepted range"])])
+        self.assertIn("**Breaking changes:** NO", body)
+
+    def test_negated_qualifier_does_not_flip_the_field(self):
+        body = self._render([("Changed (non-breaking)", ["widened the accepted range"])])
+        self.assertIn("**Breaking changes:** NO", body)
+
+    def test_a_real_marker_beside_a_negated_one_still_reports_breaking(self):
+        body = self._render([("Changed", ["NON-BREAKING for readers; **BREAKING (contract)** for writers"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+    def test_negation_needs_a_word_boundary(self):
+        """`...NO BREAKING` negates; `CASINO BREAKING` does not end in the word NO."""
+        body = self._render([("Changed", ["**CASINO BREAKING (contract):** the payout table changed"])])
+        self.assertIn("**Breaking changes:** YES", body)
+
+
+class HeadingKeyTest(unittest.TestCase):
+    """Both section parsers key a `###` heading through `notes_render.heading_key`.
+
+    They used to keep only the first word, so `### Changed (potentially breaking)` reached the
+    Release body as `### Changed` -- the qualifier dropped from a body that cannot be re-cut -- and
+    `### Technical Notes` rendered as `### Technical`."""
+
+    TEXT = textwrap.dedent("""\
+        # Changelog
+
+        ## [Unreleased]
+
+        ### Changed (potentially breaking)
+
+        - the default port moved
+
+        ### Changed
+
+        - a log line now names the port
+
+        ### Technical Notes
+
+        - measured on the stack
+
+        ## [0.5.0] - 2026-09-22
+
+        ### Changed (potentially breaking)
+
+        - the default port moved
+
+        ### Changed
+
+        - a log line now names the port
+
+        ### Technical Notes
+
+        - measured on the stack
+
+        ## [0.4.0] - 2026-09-01
+
+        ### Fixed
+
+        - older
+        """)
+
+    EXPECTED_KEYS = ["Changed (potentially breaking)", "Changed", "Technical Notes"]
+
+    def test_unqualified_heading_keys_by_its_category_word(self):
+        self.assertEqual(notes_render.heading_key("### Fixed"), "Fixed")
+
+    def test_qualified_heading_keeps_its_full_text(self):
+        self.assertEqual(notes_render.heading_key("### Changed (potentially breaking)"), "Changed (potentially breaking)")
+
+    def test_punctuation_only_suffix_is_not_a_qualifier(self):
+        self.assertEqual(notes_render.heading_key("### Changed:"), "Changed")
+
+    def test_non_headings_return_none(self):
+        for line in ("#### Deeper", "## [0.1.0] - 2026-01-01", "- ### not a heading", "plain prose"):
+            with self.subTest(line=line):
+                self.assertIsNone(notes_render.heading_key(line))
+
+    def test_draft_parser_keeps_qualified_and_plain_blocks_apart(self):
+        sections = notes_render.parse_unreleased(self.TEXT)
+        self.assertEqual(list(sections), self.EXPECTED_KEYS)
+        self.assertEqual(sections["Changed (potentially breaking)"], ["the default port moved"])
+        self.assertEqual(sections["Changed"], ["a log line now names the port"])
+
+    def test_final_parser_keys_exactly_like_the_draft_parser(self):
+        """The ceremony renders FINAL notes from the version section; drafts and finals must agree."""
+        self.assertEqual(ce.changelog_version_section(self.TEXT, "0.5.0"), notes_render.parse_unreleased(self.TEXT))
+
+    def test_rendered_body_keeps_the_qualifier_and_the_verdict_follows_it(self):
+        body = notes_render._render_standard(
+            pypi_name="juniper-data",
+            version="0.5.0",
+            bump="minor",
+            date="2026-09-22",
+            sections=ce.changelog_version_section(self.TEXT, "0.5.0"),
+            template_text="",
+            repo_root=None,
+            final=True,
+        )
+        self.assertIn("### Changed (potentially breaking)", body)
+        self.assertIn("### Technical Notes", body)
+        self.assertIn("**Breaking changes:** YES", body)
+        self.assertIn("**Primary focus:** behavioural changes, technical", body)
+
+    def test_a_qualified_security_heading_still_selects_the_security_template(self):
+        self.assertTrue(notes_render.is_security_release(OrderedDict([("Security (CVE-2026-0001)", ["patched"])])))
+
+
+class VersionSectionPrefixTest(unittest.TestCase):
+    """`changelog_version_section("0.3.2")` returned 0.3.21's section: the version pattern ended in
+    an OPTIONAL `\\]`, so it prefix-matched the longer version, which sits higher in the file.
+    Measured on juniper-cascor's CHANGELOG (0.3.1 likewise returned 0.3.19's section)."""
+
+    TEXT = textwrap.dedent("""\
+        ## [0.3.21] - 2026-02-01
+
+        ### Added
+
+        - the later release
+
+        ## [0.3.2] - 2026-01-01
+
+        ### Fixed
+
+        - the earlier release
+
+        ## 0.3.1 - 2025-12-01
+
+        ### Fixed
+
+        - an unbracketed heading
+        """)
+
+    def test_a_version_does_not_prefix_match_a_longer_one(self):
+        self.assertEqual(ce.changelog_version_section(self.TEXT, "0.3.2"), OrderedDict([("Fixed", ["the earlier release"])]))
+
+    def test_the_longer_version_still_finds_itself(self):
+        self.assertEqual(ce.changelog_version_section(self.TEXT, "0.3.21"), OrderedDict([("Added", ["the later release"])]))
+
+    def test_an_unbracketed_version_heading_is_still_found(self):
+        self.assertEqual(ce.changelog_version_section(self.TEXT, "0.3.1"), OrderedDict([("Fixed", ["an unbracketed heading"])]))
+
 
 if __name__ == "__main__":
     unittest.main()
