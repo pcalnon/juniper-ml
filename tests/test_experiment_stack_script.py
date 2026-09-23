@@ -58,6 +58,7 @@ import time
 import unittest
 from pathlib import Path
 
+from tests.process_cleanup import force_kill
 from tests.redacted_env import RedactedEnv
 
 SCRIPT_PATH = Path(__file__).resolve().parent.parent / "util" / "experiment_stack.bash"
@@ -160,21 +161,6 @@ def _stage_conda_fixture(root: Path) -> Path:
             # it the probe's command substitution would block on the sleep below.
             _write_stub(bin_dir / bin_name, "#!/usr/bin/env bash\n" 'if [[ "${1-}" == "-c" ]]; then echo 1; exit 0; fi\n' "exec sleep 60\n")
     return conda_dir
-
-
-def _force_kill(pid: int) -> None:
-    for kill_target in (lambda: os.killpg(pid, signal.SIGKILL), lambda: os.kill(pid, signal.SIGKILL)):
-        try:
-            kill_target()
-            break
-        except ProcessLookupError:
-            return
-        except PermissionError:
-            continue
-    for _ in range(20):
-        if not Path(f"/proc/{pid}").exists():
-            return
-        time.sleep(0.05)
 
 
 def _stage_live_path_stubs(root: Path, listeners_dir: Path) -> Path:
@@ -1583,10 +1569,6 @@ class TestMissingConfigReleasesPortLocks(unittest.TestCase):
             )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class TestReleaseHeldLocksOnAllocateFail(unittest.TestCase):
     """Mid-allocate failure must clear earlier lockdirs (release_held_locks was dead)."""
 
@@ -1657,20 +1639,6 @@ class TestDoUpFailClosedTeardown(unittest.TestCase):
     (Named distinctly from ``TestDoUpPartialFailureTeardown`` below, which covers the
     require_env_bin missing-binary arm — same subject, different failure class.)
     """
-
-    def _force_kill(self, pid: int) -> None:
-        for kill_target in (lambda: os.killpg(pid, signal.SIGKILL), lambda: os.kill(pid, signal.SIGKILL)):
-            try:
-                kill_target()
-                break
-            except ProcessLookupError:
-                return
-            except PermissionError:
-                continue
-        for _ in range(20):
-            if not Path(f"/proc/{pid}").exists():
-                return
-            time.sleep(0.05)
 
     def test_health_timeout_with_live_listener_tears_down(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1759,7 +1727,7 @@ class TestDoUpFailClosedTeardown(unittest.TestCase):
                 self.assertTrue((run_dirs[0] / "artifacts").exists())
             finally:
                 if child_pid is not None:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_bridge_failure_after_healthy_services_tears_down(self) -> None:
         """A failed bridge after healthy services must teardown (not orphan via set -e).
@@ -1866,7 +1834,7 @@ class TestDoUpFailClosedTeardown(unittest.TestCase):
                 self.assertTrue((run_dirs[0] / "teardown.json").exists(), msg=result.stdout)
             finally:
                 for child_pid in child_pids:
-                    self._force_kill(child_pid)
+                    force_kill(child_pid)
 
 
 class _LiveUpHarness(unittest.TestCase):
@@ -1974,7 +1942,7 @@ class TestDataUpLive(_LiveUpHarness):
                 self.assertIn("PYTHON_GIL=0", launch_env)
             finally:
                 if child_pid is not None:
-                    _force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_stock_build_omits_python_gil(self) -> None:
         """A stock (non-free-threaded) CPython must never be handed ``PYTHON_GIL=0``.
@@ -2030,7 +1998,7 @@ class TestDataUpLive(_LiveUpHarness):
                 self.assertIn("PYTHON_GIL=\n", launch_env)
             finally:
                 if child_pid is not None:
-                    _force_kill(child_pid)
+                    force_kill(child_pid)
 
 
 class TestCascorUpLive(_LiveUpHarness):
@@ -2075,7 +2043,7 @@ class TestCascorUpLive(_LiveUpHarness):
                 self.assertIn(f"PWD={cascor_src}", (marker_dir / "cascor.env").read_text())
             finally:
                 if child_pid is not None:
-                    _force_kill(child_pid)
+                    force_kill(child_pid)
 
     def test_missing_uvicorn_aborts_before_launch(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2133,7 +2101,7 @@ class TestRecurrenceUpLive(_LiveUpHarness):
                 self.assertIn("68260", args)
             finally:
                 if child_pid is not None:
-                    _force_kill(child_pid)
+                    force_kill(child_pid)
 
 
 class TestDoUpPartialFailureTeardown(unittest.TestCase):
