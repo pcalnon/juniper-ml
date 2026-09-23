@@ -1,0 +1,77 @@
+arm k16t_d0: K=16 speed=4x sat=0ms/50ms fan=0 delay0=0ms L=2.5s
+  [k16t_d0] trial 0: HELD pause_ms=202 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 2, 1, 'playing', 'paused')]
+  [k16t_d0] trial 1: HELD pause_ms=613 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 4, 3, 'playing', 'paused')]
+  [k16t_d0] trial 2: HELD pause_ms=652 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 6, 5, 'playing', 'paused')]
+  [k16t_d0] trial 3: HELD pause_ms=940 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 8, 7, 'playing', 'paused')]
+  [k16t_d0] trial 4: HELD pause_ms=136 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 10, 9, 'playing', 'paused')]
+  [k16t_d0] trial 5: HELD pause_ms=611 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 12, 11, 'playing', 'paused')]
+  [k16t_d0] trial 6: HELD pause_ms=111 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 14, 13, 'playing', 'paused')]
+  [k16t_d0] trial 7: HELD pause_ms=889 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused'), (['replay-interval.n_intervals'], 16, 16, 'paused', 'NU')]
+  [k16t_d0] trial 8: HELD pause_ms=975 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 18, 17, 'playing', 'paused')]
+  [k16t_d0] trial 9: HELD pause_ms=765 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 20, 19, 'playing', 'paused')]
+  [k16t_d0] SUMMARY {"arm": "k16t_d0", "K": 16, "speed": "4x", "sat_ms_per_50": 0, "fan": 0, "delay0_ms": 0, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 9, "pause_ms_median": 632.5, "pool_full_fraction": 0.827}
+arm k16t_d60: K=16 speed=4x sat=0ms/50ms fan=0 delay0=60ms L=2.5s
+  [k16t_d60] trial 0: HELD pause_ms=120 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 2, 1, 'playing', 'paused')]
+  [k16t_d60] trial 1: HELD pause_ms=595 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 4, 3, 'playing', 'paused')]
+  [k16t_d60] trial 2: HELD pause_ms=570 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 6, 5, 'playing', 'paused')]
+  [k16t_d60] trial 3: HELD pause_ms=942 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 8, 7, 'playing', 'paused'), (['replay-interval.n_intervals'], 8, 8, 'paused', 'NU')]
+  [k16t_d60] trial 4: HELD pause_ms=982 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 10, 9, 'playing', 'paused')]
+  [k16t_d60] trial 5: HELD pause_ms=2568 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 11, 11, 'playing', 'playing'), (['replay-interval.n_intervals'], 12, 11, 'playing', 'paused'), (['replay-interval.n_intervals'], 12, 12, 'paused', 'NU')]
+  [k16t_d60] trial 6: HELD pause_ms=682 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 14, 13, 'playing', 'paused'), (['replay-interval.n_intervals'], 14, 14, 'paused', 'NU')]
+  [k16t_d60] trial 7: HELD pause_ms=1060 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused')]
+  [k16t_d60] trial 8: HELD pause_ms=254 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 18, 17, 'playing', 'paused')]
+  [k16t_d60] trial 9: HELD pause_ms=703 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 19, 19, 'playing', 'playing'), (['replay-interval.n_intervals'], 20, 19, 'playing', 'paused')]
+  [k16t_d60] SUMMARY {"arm": "k16t_d60", "K": 16, "speed": "4x", "sat_ms_per_50": 0, "fan": 0, "delay0_ms": 60, "trials": 10, "latency_s": 2.5, "verdicts": {"HELD": 10}, "trials_with_double_application": 0, "trials_with_pause_applied_by_count": 8, "pause_ms_median": 692.5, "pool_full_fraction": 0.804}
+arm k13_d60: K=13 speed=4x sat=0ms/50ms fan=3 delay0=60ms L=2.5s
+  [k13_d60] trial 0: UNDONE pause_ms=58 undone_ms=449 by_count=1 double=1 runs=[(['replay-interval.n_intervals'], 2, 1, 'playing', 'paused'), (['replay-play.n_clicks'], 2, 2, 'paused', 'playing'), (['replay-interval.n_intervals'], 2, 2, 'playing', 'playing'), (['replay-interval.n_intervals'], 2, 2, 'playing', 'playing')]
+  [k13_d60] trial 1: HELD pause_ms=148 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 6, 5, 'playing', 'paused')]
+  [k13_d60] trial 2: HELD pause_ms=437 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 8, 7, 'playing', 'paused')]
+  [k13_d60] trial 3: HELD pause_ms=79 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks', 'replay-interval.n_intervals'], 10, 9, 'playing', 'paused')]
+  [k13_d60] trial 4: HELD pause_ms=63 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 12, 11, 'playing', 'paused')]
+  [k13_d60] trial 5: HELD pause_ms=31 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 14, 13, 'playing', 'paused')]
+  [k13_d60] trial 6: HELD pause_ms=340 undone_ms=None by_count=1 double=0 runs=[(['replay-interval.n_intervals'], 16, 15, 'playing', 'paused')]
+  [k13_d60] trial 7: HELD pause_ms=63 undone_ms=None by_count=0 double=0 runs=[(['replay-play.n_clicks'], 18, 17, 'playing', 'paused')]
+  [k13_d60] trial 8: HELD pause_ms=162 undone_ms=None by_count=0 double=0 runs=[(['replay-interval.n_intervals', 'replay-play.n_clicks'], 20, 19, 'playing', 'paused')]
+Traceback (most recent call last):
+  File "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/partitioned-twirling-stream/util/ad-hoc/2026-09-23_f054_r2_laneB2_double_apply_cleanroom.py", line 329, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/partitioned-twirling-stream/util/ad-hoc/2026-09-23_f054_r2_laneB2_double_apply_cleanroom.py", line 324, in main
+    asyncio.run(main_async(ap.parse_args()))
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/asyncio/base_events.py", line 725, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/partitioned-twirling-stream/util/ad-hoc/2026-09-23_f054_r2_laneB2_double_apply_cleanroom.py", line 309, in main_async
+    out["arms"][name] = await run_arm(pw, name, int(k), speed, sat, a.trials, a.latency, js, a.seed, fan, delay0)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/pcalnon/Development/python/Juniper/juniper-ml/.claude/worktrees/partitioned-twirling-stream/util/ad-hoc/2026-09-23_f054_r2_laneB2_double_apply_cleanroom.py", line 262, in run_arm
+    t_click = await page.evaluate("Date.now()")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/site-packages/playwright/async_api/_generated.py", line 8887, in evaluate
+    await self._impl_obj.evaluate(
+        expression=expression, arg=mapping.to_impl(arg)
+    )
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/site-packages/playwright/_impl/_page.py", line 464, in evaluate
+    return await self._main_frame.evaluate(expression, arg)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/site-packages/playwright/_impl/_frame.py", line 320, in evaluate
+    await self._channel.send(
+    ...<6 lines>...
+    )
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "/opt/miniforge3/envs/JuniperCanopy1/lib/python3.13/site-packages/playwright/_impl/_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.Error: Page.evaluate: Target crashed 
+exit=1
