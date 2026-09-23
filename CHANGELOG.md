@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The 2026-09-17 D6 instrument and note are committed.** For five days they existed only in a
+  worktree that nothing protected
+  (`util/ad-hoc/2026-09-17_epochs_completed_spread.py`,
+  `notes/JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`, both new).
+  0.9.0's entry said `.claude/worktrees/optimized-giggling-koala` was locked. **It was not**:
+  its `.git/worktrees/` metadata has no `locked` file, so `git worktree remove` would have
+  deleted the only copy of both files. The instrument is committed unchanged except for one
+  unused `import statistics`, which CodeQL flagged and which blocked the merge. It is kept
+  because it is the provenance of the retained
+  `~/.local/state/juniper-experiments/suites/d6-epochs-spread-20260917/spread.json`. Under the
+  ad-hoc retention policy (`util/ad-hoc/README.md`) retirement is owner-directed only, so
+  committing was the only move open to a session. The note is verbatim under a banner. The
+  banner names `JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md` as
+  the record, and says the older instrument reads `torch.get_num_threads()` and has no ICV
+  reading or control arm, so it cannot separate an inert axis from a real invariance. That
+  note's §1 now records the resolution.
+
 - **`util/push_signed_commit.py` -- one GitHub-signed commit onto an EXISTING branch, pinned to the
   head you built on.** `util/open_signed_pr.py` covers "new branch + PR" and refuses an existing
   branch by design, and no existing-branch driver had ever been promoted, so copies multiplied under

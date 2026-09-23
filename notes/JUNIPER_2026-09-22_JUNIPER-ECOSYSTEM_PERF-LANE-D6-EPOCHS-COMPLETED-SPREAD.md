@@ -83,6 +83,22 @@ sweeps that share a blind spot is not evidence of absence.
 This session did not take them — they are another session's uncommitted work in a locked
 worktree, and moving them is that session's call, not this one's.
 
+> **RESOLVED 2026-09-22, and the premise of the paragraph above was false.** The worktree was
+> **not locked**: `.git/worktrees/optimized-giggling-koala/` has no `locked` file, though about
+> 20 sibling worktrees have one. The 09-11 handoff asserted the lock and this section repeated
+> it without probing. Nothing protected the only copy.
+>
+> Both files are now committed at their original paths:
+> [`util/ad-hoc/2026-09-17_epochs_completed_spread.py`](../util/ad-hoc/2026-09-17_epochs_completed_spread.py)
+> is the worktree copy minus one unused import that CodeQL flagged (original sha256 `a65150de…`),
+> and
+> [`JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md`](JUNIPER_2026-09-17_JUNIPER-ECOSYSTEM_PERF-LANE-EPOCHS-COMPLETED-SPREAD.md)
+> is verbatim under a banner. The banner names this document as the record and says what the
+> older instrument cannot show. **Committing was the only option a session could take.**
+> `util/ad-hoc/README.md` makes retiring a script owner-directed only, and deleting the
+> instrument would have left the 09-17 `spread.json` with no record of how it was produced.
+> The "uncommitted" label in §6's table records the state when this document was written.
+
 ---
 
 ## 2. Result: zero spread, everywhere, at 1-minute load 32.26
