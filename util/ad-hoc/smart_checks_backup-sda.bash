@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#
+# shellcheck disable=SC2034
+#   The DEVICE_* block below is a deliberate PALETTE: every disk and partition on this host is
+#   named so CURRENT_DEVICE can be repointed by editing one line. shellcheck counts the ones not
+#   currently selected as unused (13 x SC2034), which is true and is the point -- they document
+#   what may be selected. The repo's hook runs at --severity=warning and SC2034 is a warning, so
+#   without this the file cannot be committed. No other finding is suppressed: SC2034 is the ONLY
+#   code shellcheck reports here.
 #####################################################################################################################################################################################################################################################
 #
 #####################################################################################################################################################################################################################################################
