@@ -283,6 +283,7 @@ def cmd_run(args):
                 if all(M.http_get(f"http://127.0.0.1:{port}/{v}/")[0] == 200 for v in ("v1", "v2")):
                     break
             except Exception:
+                # not serving yet; keep polling until the startup deadline
                 pass
             if time.time() - t0 > 60 or srv.poll() is not None:
                 raise SystemExit("server did not come up")

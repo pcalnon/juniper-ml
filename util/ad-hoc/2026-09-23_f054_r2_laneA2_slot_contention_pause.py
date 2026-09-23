@@ -641,6 +641,7 @@ def wait_inflight_zero(port, limit=20.0):
             if http_get(f"http://127.0.0.1:{port}/__inflight")[1].strip() == "0":
                 return round(time.time() - t0, 2)
         except Exception:
+            # the harness server is busy or restarting; poll again until the limit
             pass
         time.sleep(0.25)
     return None
@@ -756,6 +757,7 @@ def cmd_run(args):
                 if all(http_get(f"http://127.0.0.1:{port}/{v}/")[0] == 200 for v in VARIANTS):
                     break
             except Exception:
+                # not serving yet; keep polling until the startup deadline
                 pass
             if time.time() - t0 > 60 or srv.poll() is not None:
                 raise SystemExit("server did not come up")

@@ -255,8 +255,8 @@ class Server:
             print(f"route error {url}: {exc!r}", flush=True)
             try:
                 await route.abort()
-            except Exception:
-                pass
+            except Exception as abort_exc:  # the route was already handled or closed
+                print(f"route abort failed {url}: {abort_exc!r}", flush=True)
 
 
 async def last_state(page):

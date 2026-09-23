@@ -30,7 +30,8 @@ import sys
 
 
 def main(path):
-    d = json.load(open(path, encoding="utf-8"))
+    with open(path, encoding="utf-8") as fh:
+        d = json.load(fh)
     total = {}
     for name, arm in d["arms"].items():
         slog = arm["state_log"]

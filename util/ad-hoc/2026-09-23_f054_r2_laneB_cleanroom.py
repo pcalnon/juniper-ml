@@ -57,11 +57,19 @@ import asyncio
 import hashlib
 import importlib.util
 import json
+import math
 import sys
 import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+
+
+def _is_nan(v) -> bool:
+    """A NaN read back from the page (Playwright returns JS NaN as a float NaN)."""
+    return isinstance(v, float) and math.isnan(v)
+
+
 _spec = importlib.util.spec_from_file_location("gitobj", HERE / "2026-09-23_f054_r2_laneB_gitobj.py")
 gitobj = importlib.util.module_from_spec(_spec)
 sys.modules["gitobj"] = gitobj
@@ -252,6 +260,7 @@ def other_browsers() -> int:
                 if b"chrome-headless-shell" in (p / "cmdline").read_bytes():
                     n += 1
             except OSError:
+                # the process exited between listing /proc and reading it
                 pass
     return n
 
@@ -349,7 +358,7 @@ async def _run_arm(browser, srv, arm, version, rows):
         await asyncio.sleep(0.6)
         d = await page.evaluate("() => window.__prop('metrics-panel-replay-state', 'data')")
         sv = await page.evaluate("() => window.__prop('metrics-panel-replay-slider', 'value')")
-        res.update(after_clear={"mode": d["mode"], "index": d["current_index"], "index_is_nan": d["current_index"] != d["current_index"], "slider": sv, "slider_is_nan": sv != sv, "pos": await page.evaluate(pos_text(version))})
+        res.update(after_clear={"mode": d["mode"], "index": d["current_index"], "index_is_nan": _is_nan(d["current_index"]), "slider": sv, "slider_is_nan": _is_nan(sv), "pos": await page.evaluate(pos_text(version))})
         await click(page, "replay-play")
         await asyncio.sleep(2.5)
         d2 = await page.evaluate("() => window.__prop('metrics-panel-replay-state', 'data')")

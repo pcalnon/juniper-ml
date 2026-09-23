@@ -206,6 +206,7 @@ class Server:
             try:
                 await route.abort()
             except Exception:
+                # the route was already handled or closed; the error is printed above
                 pass
 
 

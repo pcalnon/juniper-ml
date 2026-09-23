@@ -25,7 +25,8 @@ import sys
 
 
 def main(path):
-    d = json.load(open(path, encoding="utf-8"))
+    with open(path, encoding="utf-8") as fh:
+        d = json.load(fh)
     tot = {"v1": [0, 0], "v2": [0, 0]}
     for name, arm in d["arms"].items():
         v = arm["summary"]["version"]
