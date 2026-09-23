@@ -28,8 +28,13 @@
 #      change, diff the suite and its subject against origin/main; if both are identical, it is
 #      the host.
 #   2. A long-lived worktree drifts BEHIND main, and these suites run against whatever the
-#      worktree holds. This one was 44 files behind when the script was written. A green run
-#      here does not prove a green run on a branch cut from current main.
+#      worktree holds. This one was **24 commits / 66 files** behind when the script was written,
+#      and 39 / 126 a few hours later. (An earlier version of this comment said "44 files" --
+#      that was the number of CHANGELOG *lines* a clobbering commit deleted, a figure from an
+#      adjacent incident pasted in as a file count. Measure with
+#      `git rev-list --count <worktree-HEAD>..origin/main` and `git diff --name-only ... | wc -l`
+#      rather than trusting any number written here.) A green run here does not prove a green run
+#      on a branch cut from current main.
 #   3. THIS SCRIPT DOES NOT FIX THE BIGGEST GAP, which is that a dev box is host-ADVANTAGED.
 #      It runs the same suites in the same privileged environment, so a test that passes here
 #      for a reason CI does not share still passes here. Two instances, both from #2002 and
