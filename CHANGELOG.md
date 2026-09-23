@@ -41,6 +41,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The release-train ceremony cut every Release with `--latest=false`, so six repos' "Latest"
+  badges fell behind** (`util/release_train/ceremony.py`, `util/release_train/detect.py`,
+  `util/release_train/registry.yaml`). The flag was right for juniper-ml's sub-packages and wrong
+  for everything else, the meta-package included, although §11.4 of
+  `notes/JUNIPER_2026-06-18_JUNIPER-ECOSYSTEM_PYPI-PUBLISH-PROCEDURE.md` gives it `--latest`. On
+  2026-09-23 the badges read juniper-ml v0.6.0 (newest v0.10.0), juniper-data v0.13.0 (v0.15.0),
+  juniper-data-client v0.4.2 (v0.5.0), juniper-cascor v0.10.0 (v0.11.0), juniper-canopy v0.5.0
+  (v0.8.1) and juniper-recurrence `juniper-recurrence-model-v0.1.4` (`juniper-recurrence-v0.5.0`).
+  The registry now marks one package per repo `latest: true`. Seven are the `v*`-tagged packages,
+  and the eighth is juniper-recurrence's app, since that repo has no `v*` tag. The ceremony cuts that
+  package with `--latest` and every other with `--latest=false`. Only a YAML boolean `true` counts,
+  so a quoted `"true"` reads false. Tests pin the whole chain, from the entry to the plan, the
+  `cut_release` action, `create_release`'s kwarg and the gh argv, plus exactly one flagged package
+  per repo. Five mutations, one per link and one on the registry data, each fail the new tests. The
+  six badges were moved by hand the same day, on the owner's approval. That fires nothing, because
+  all 24 release-triggered workflows in the nine repos subscribe to `published` only
+  (`util/ad-hoc/2026-09-23_release_trigger_types_census.py`, new). The procedure's §11.7 records it.
 - **Release notes: "Breaking changes" missed three registered house styles, and both section
   parsers dropped every heading qualifier from the rendered body** (`util/release_train/notes_render.py`,
   `util/release_train/ceremony.py`). The rule honoured only `### Removed` and an uppercase
