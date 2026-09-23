@@ -181,7 +181,18 @@ Key context:
 | markdown structure debt | ~~**17 / 2** — both known screen false positives~~ **ZERO** — re-measured 2026-09-22 after ml#1944 narrowed the screen and ml#2000 corrected that narrowing. **ZERO is the invariant; the DENOMINATOR is not** — it read 1084 paths on 09-15, 1119 that morning and 1127 that evening. Re-run the screen rather than quoting a total from here |
 | `Sequence Safety` comment drift | **zero** across all nine repos |
 | residue §4 | **adjudicated, zero content losses** |
-| `or {}` population (ml `util/`) | ~~**397 sites / 96 files**; 294 `read`-class, ~117 live~~ **the unit was wrong.** One coherent post-ml#2001 measurement, 2026-09-22: **400 rows / 102 files** (297 `read`-class) collapse to **75 distinct guards / 18 files** outside `util/ad-hoc/`, **+7 the census structurally cannot see** = **82, a FLOOR**. By in-file evidence: `same-key` 9 (7 of them run_suite's already-gated `doc`), `helper` 2, `file-level` 51, `none` 13. **Take rows and guards from the SAME run** — an earlier draft of this row paired pre-fix rows with post-fix guards, which is the §2a unit error in a new costume |
+| `or {}` population (ml `util/`) | ~~**397 sites / 96 files**; 294 `read`-class, ~117 live~~ **the unit was wrong.** One coherent post-ml#2001 measurement, 2026-09-22: **400 rows / 102 files** (297 `read`-class) collapse to **75 guards / 18 files** outside `util/ad-hoc/`. By evidence tier: `same-key` 9, `helper` 2, `file-level` 51, `none` 13. ~~**+7** = **82, a FLOOR**~~ — see the note below |
+
+> **The "82 floor" in that row was the unit error AGAIN — a third time, on criteria rather
+> than units.** Two earlier drafts of this row paired pre-fix rows with post-fix guards;
+> the replacement then added **75** (from `2026-09-22_falsy_guard_next_batch.py`) to **+7**
+> (from `2026-09-11_falsy_guard_triage.py --blind-spot`). Those come from different filters:
+> `next_batch` matches `reads_untrusted or risk == "read"`, the triage matches
+> `risk == "read"` alone, so the triage counts **73** and prints its own floor as
+> **73 + 7 = 80**. They differ by exactly `util/release_train/propose.py:918` and `:1070`.
+> **No tool prints 82.** Take a floor from ONE tool — 80, or 75 non-ad-hoc guards — and say
+> which. Corrected 2026-09-22 after adversarial validation caught it; the lesson is in
+> `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_structure-screen-was-blind-to-its-founding-incident-and-five-open-items-in-run-suite.md` §1.
 
 ### Verification commands
 
