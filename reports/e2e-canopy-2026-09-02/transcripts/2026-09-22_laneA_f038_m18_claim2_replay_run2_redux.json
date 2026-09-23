@@ -1,0 +1,1958 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "2cb0387f13eccf08",
+    "argv": [
+      "claim2",
+      "--redux",
+      "--tag",
+      "run2_redux"
+    ],
+    "step": "claim2"
+  },
+  "provenance_before": {
+    "captured_utc": "2026-09-22T21:22:08.322+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 2,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "provenance_after": {
+    "captured_utc": "2026-09-22T21:25:45.812+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 0,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "browser": {
+    "launch_args": [
+      "--disable-dev-shm-usage",
+      "--enable-gpu",
+      "--ignore-gpu-blocklist",
+      "--use-angle=vulkan",
+      "--enable-features=Vulkan"
+    ],
+    "headless": true,
+    "webgl_about_blank": {
+      "webgl": "webgl2",
+      "vendor": "Google Inc. (NVIDIA)",
+      "renderer": "ANGLE (NVIDIA, Vulkan 1.4.312 (NVIDIA NVIDIA GeForce RTX 2080 (0x00001E87)), NVIDIA)"
+    }
+  },
+  "served_writers_of_replay_state": [
+    {
+      "output": "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..",
+      "inputs": [
+        "metrics-panel-replay-play.n_clicks",
+        "metrics-panel-replay-step-back.n_clicks",
+        "metrics-panel-replay-step-forward.n_clicks",
+        "metrics-panel-replay-start.n_clicks",
+        "metrics-panel-replay-end.n_clicks",
+        "metrics-panel-speed-1x.n_clicks",
+        "metrics-panel-speed-2x.n_clicks",
+        "metrics-panel-speed-4x.n_clicks",
+        "metrics-panel-replay-slider.value"
+      ],
+      "state": [
+        "metrics-panel-replay-state.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    },
+    {
+      "output": "metrics-panel-replay-state.data@20746ef195c5a2fd48cbd84d7caa62edc7fea9908e0b01043dc8e8cb041486e2",
+      "inputs": [
+        "metrics-panel-replay-interval.n_intervals"
+      ],
+      "state": [
+        "metrics-panel-replay-state.data",
+        "metrics-panel-metrics-store.data"
+      ],
+      "prevent_initial_call": true,
+      "clientside": false,
+      "websocket": false
+    }
+  ],
+  "tab_activation": {
+    "t_tab_click": 5.148,
+    "before": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "after": {
+      "aria_selected": null,
+      "class": "active nav-link"
+    },
+    "tab_matches": 1,
+    "open_dialogs_after_click": []
+  },
+  "store_ready": {
+    "t": 23.211,
+    "client_store_len": 95,
+    "poll_seq": 108
+  },
+  "phases_s": {
+    "wait_store": [
+      16.191,
+      23.211
+    ],
+    "slider_keys": [
+      32.196,
+      75.91
+    ],
+    "slider_drag": [
+      75.91,
+      146.809
+    ],
+    "play_click": [
+      146.809,
+      188.772
+    ],
+    "positive_control_display_mode": [
+      188.772,
+      214.285
+    ]
+  },
+  "notes": [
+    "drag from x=629 by 282px (track width 939)"
+  ],
+  "summary": {
+    "requests_naming_replay_state": 0,
+    "requests_WRITING_replay_state": 0,
+    "replay_state_writes_by_class": {},
+    "requests_naming_replay_state_by_output": {},
+    "positive_control_display_mode": {
+      "t": 188.772,
+      "hidden_after_s": 1,
+      "shown_again_after_s": 1
+    },
+    "positive_control_wire_rows": [
+      {
+        "seq": 544,
+        "t_req": 197.731,
+        "http": 200,
+        "trigger": [
+          "metrics-panel-display-mode.value"
+        ],
+        "container_style_write": "carried",
+        "value": {
+          "display": "none"
+        }
+      },
+      {
+        "seq": 585,
+        "t_req": 210.601,
+        "http": 200,
+        "trigger": [
+          "metrics-panel-display-mode.value"
+        ],
+        "container_style_write": "carried",
+        "value": {
+          "display": "inline-flex",
+          "alignItems": "center"
+        }
+      }
+    ],
+    "all_update_component_requests": 602
+  },
+  "phase_request_counts": {
+    "wait_store": {
+      "requests": 24,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          3
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          2
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          2
+        ],
+        [
+          "dataset-swap-events-store.data",
+          2
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          2
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          1
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          1
+        ],
+        [
+          "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..",
+          1
+        ],
+        [
+          "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309",
+          1
+        ],
+        [
+          "metrics-panel-view-state.data",
+          1
+        ],
+        [
+          "network-visualizer-view-state.data",
+          1
+        ],
+        [
+          "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..",
+          1
+        ],
+        [
+          "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..",
+          1
+        ],
+        [
+          "candidate-metrics-panel-loss-plot.figure",
+          1
+        ],
+        [
+          "..sidebar-pinned-list.children...sidebar-pinned-card.style..",
+          1
+        ],
+        [
+          "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..",
+          1
+        ],
+        [
+          "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...network-visualizer-output-count.children...network-visualizer-connection-count.children...network-visualizer-topology-hash.data...network-visualizer-new-node-highlight.data..",
+          1
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          1
+        ]
+      ]
+    },
+    "slider_keys": {
+      "requests": 115,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          25
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          25
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          9
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          9
+        ],
+        [
+          "dataset-swap-events-store.data",
+          9
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          7
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          6
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          6
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          6
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          6
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          6
+        ],
+        [
+          "..sidebar-pinned-list.children...sidebar-pinned-card.style..",
+          1
+        ]
+      ]
+    },
+    "slider_drag": {
+      "requests": 172,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          38
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          38
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          14
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          14
+        ],
+        [
+          "dataset-swap-events-store.data",
+          14
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          9
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          9
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          9
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          9
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          9
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          9
+        ]
+      ]
+    },
+    "play_click": {
+      "requests": 115,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          25
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          25
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          8
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          8
+        ],
+        [
+          "dataset-swap-events-store.data",
+          8
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          7
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          7
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          7
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          7
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          7
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          6
+        ]
+      ]
+    },
+    "positive_control_display_mode": {
+      "requests": 69,
+      "by_output": [
+        [
+          "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..",
+          16
+        ],
+        [
+          "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491",
+          16
+        ],
+        [
+          "metrics-panel-training-state-store.data",
+          5
+        ],
+        [
+          "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..",
+          5
+        ],
+        [
+          "dataset-swap-events-store.data",
+          5
+        ],
+        [
+          "metrics-panel-metrics-store.data",
+          4
+        ],
+        [
+          "metrics-panel-progress-detail.children",
+          3
+        ],
+        [
+          "metrics-panel-current-lr.children",
+          3
+        ],
+        [
+          "metrics-panel-phase-duration.children",
+          3
+        ],
+        [
+          "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..",
+          3
+        ],
+        [
+          "metrics-panel-replay-controls.style",
+          3
+        ],
+        [
+          "..metrics-panel-display-mode-store.data...metrics-panel-window-size-container.style..",
+          2
+        ],
+        [
+          "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..",
+          1
+        ]
+      ]
+    }
+  },
+  "replay_rows": [],
+  "snapshots": [
+    {
+      "label": "after_tab",
+      "t": 14.953,
+      "wire_seq": 84,
+      "dom": {
+        "t_page_ms": 14666,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 0,
+          "max": 100,
+          "drag_value": 0
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 8,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children.."
+            ]
+          },
+          "prioritized": {
+            "n": 25,
+            "relevant": [
+              "metrics-panel-replay-controls.style",
+              "replay-player-panel-last-sample-readout.children",
+              "replay-weight-buffer.data"
+            ]
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 12,
+            "relevant": [
+              "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..",
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 30,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children.."
+            ]
+          },
+          "completed": 87
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "4f53cda18c2baa0c",
+          "len": 0
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 0,
+        "poll_seq": 80
+      }
+    },
+    {
+      "label": "store_ready",
+      "t": 23.211,
+      "wire_seq": 108,
+      "dom": {
+        "t_page_ms": 29629,
+        "slider_aria_valuenow": "0",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 0,
+          "max": 100,
+          "drag_value": 0
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 8,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 7,
+            "relevant": [
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 153
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 108
+      }
+    },
+    {
+      "label": "keys+0.5s",
+      "t": 51.877,
+      "wire_seq": 167,
+      "dom": {
+        "t_page_ms": 51618,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 10,
+          "max": 100,
+          "drag_value": 10
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 4,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 10,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 291
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 155
+      }
+    },
+    {
+      "label": "keys+3s",
+      "t": 56.53,
+      "wire_seq": 177,
+      "dom": {
+        "t_page_ms": 56086,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 10,
+          "max": 100,
+          "drag_value": 10
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 4,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 10,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 328
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 175
+      }
+    },
+    {
+      "label": "keys+8s",
+      "t": 64.454,
+      "wire_seq": 199,
+      "dom": {
+        "t_page_ms": 64293,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 10,
+          "max": 100,
+          "drag_value": 10
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 5,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..",
+              "replay-weight-buffer.data"
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 10,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 372
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 192
+      }
+    },
+    {
+      "label": "keys+15s",
+      "t": 73.876,
+      "wire_seq": 223,
+      "dom": {
+        "t_page_ms": 73684,
+        "slider_aria_valuenow": "10",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 10,
+          "max": 100,
+          "drag_value": 10
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 4,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 11,
+            "relevant": [
+              "metrics-panel-replay-controls.style",
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 434
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 229
+      }
+    },
+    {
+      "label": "drag+0.5s",
+      "t": 127.97,
+      "wire_seq": 354,
+      "dom": {
+        "t_page_ms": 127986,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 5,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 6,
+            "relevant": [
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 766
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 354
+      }
+    },
+    {
+      "label": "drag+5s",
+      "t": 135.071,
+      "wire_seq": 374,
+      "dom": {
+        "t_page_ms": 134795,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 20,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..",
+              "metrics-panel-replay-controls.style",
+              "replay-weight-buffer.data"
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 3,
+            "relevant": [
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 806
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 374
+      }
+    },
+    {
+      "label": "drag+12s",
+      "t": 144.315,
+      "wire_seq": 398,
+      "dom": {
+        "t_page_ms": 144802,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 13,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 10,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 863
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 389
+      }
+    },
+    {
+      "label": "play+0.5s",
+      "t": 159.788,
+      "wire_seq": 438,
+      "dom": {
+        "t_page_ms": 159288,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 4,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 11,
+            "relevant": [
+              "metrics-panel-replay-controls.style",
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 961
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 441
+      }
+    },
+    {
+      "label": "play+3s",
+      "t": 164.052,
+      "wire_seq": 450,
+      "dom": {
+        "t_page_ms": 164132,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 5,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 10,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 997
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 441
+      }
+    },
+    {
+      "label": "play+8s",
+      "t": 171.354,
+      "wire_seq": 470,
+      "dom": {
+        "t_page_ms": 170273,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 3,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 7,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 1050
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 460
+      }
+    },
+    {
+      "label": "play+20s",
+      "t": 185.676,
+      "wire_seq": 509,
+      "dom": {
+        "t_page_ms": 185439,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 3,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 7,
+            "relevant": [
+              "metrics-panel-replay-controls.style"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 1149
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 499
+      }
+    },
+    {
+      "label": "final",
+      "t": 214.285,
+      "wire_seq": 598,
+      "dom": {
+        "t_page_ms": 213700,
+        "slider_aria_valuenow": "41",
+        "slider_thumbs": 1,
+        "position_text": "0 / 0",
+        "play_text": "\u25b6",
+        "replay_controls_display": "block",
+        "window_size_container_display": "flex",
+        "training_metrics_tab_selected": null,
+        "dom_id_counts": {
+          "slider": 1,
+          "position": 1,
+          "play": 1
+        }
+      },
+      "redux": {
+        "available": true,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "slider": {
+          "value": 41,
+          "max": 100,
+          "drag_value": 41
+        },
+        "replay_interval": {
+          "disabled": true,
+          "interval": 1000,
+          "n_intervals": 0
+        },
+        "position_children": "0 / 0",
+        "play_children": "\u25b6",
+        "callbacks": {
+          "requested": {
+            "n": 5,
+            "relevant": [
+              "metrics-panel-replay-play.children",
+              "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+              "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval.."
+            ]
+          },
+          "prioritized": {
+            "n": 0,
+            "relevant": []
+          },
+          "blocked": {
+            "n": 0,
+            "relevant": []
+          },
+          "executing": {
+            "n": 0,
+            "relevant": []
+          },
+          "watched": {
+            "n": 11,
+            "relevant": [
+              "metrics-panel-replay-controls.style",
+              "metrics-panel-metrics-store.data"
+            ]
+          },
+          "executed": {
+            "n": 0,
+            "relevant": []
+          },
+          "stored": {
+            "n": 33,
+            "relevant": [
+              "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..",
+              "replay-player-panel-last-sample-readout.children"
+            ]
+          },
+          "completed": 1352
+        },
+        "layout_id_counts": {
+          "metrics-panel-replay-state": 1,
+          "metrics-panel-metrics-store": 1,
+          "metrics-panel-replay-slider": 1,
+          "metrics-panel-replay-position": 1
+        },
+        "metrics_store": {
+          "sha": "92e4bfae13963661",
+          "len": 95,
+          "first": {
+            "epoch": 1,
+            "phase": "output",
+            "timestamp": "2026-09-22T14:43:24.599965"
+          },
+          "last": {
+            "epoch": 69,
+            "phase": "output",
+            "timestamp": "2026-09-22T15:23:09.884473"
+          }
+        }
+      },
+      "client_store_len_from_latest_poll_state": {
+        "len": 95,
+        "poll_seq": 593
+      }
+    }
+  ],
+  "console_errors_warnings": []
+}

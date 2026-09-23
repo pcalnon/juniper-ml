@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`util/push_signed_commit.py` -- one GitHub-signed commit onto an EXISTING branch, pinned to the
+  head you built on.** `util/open_signed_pr.py` covers "new branch + PR" and refuses an existing
+  branch by design, and no existing-branch driver had ever been promoted, so copies multiplied under
+  `util/ad-hoc/`: at `7b226ca0`, twelve files commit onto an existing branch -- six with their own
+  `createCommitOnBranch` mutation (one of them a one-off probe), six reusing
+  `open_signed_pr.create_signed_commit` -- and ten of the twelve read `expectedHeadOid` LIVE, which
+  keeps GitHub's guard against a push in the next instant and discards the one that matters: a push
+  that landed while you were editing, which the whole-file upload then silently reverts. The promoted
+  tool requires `--expected-head` as a FULL 40-char sha (an abbreviation is refused before any API
+  call; GitHub does not expand one, so it reads as a lost race), sends that pin as `expectedHeadOid`,
+  refuses a missing branch (404 only) and the default branch, and reads the commit back (head moved,
+  signature verified, parent == pin, blob shas, deletions gone). It reuses `open_signed_pr`'s helpers
+  and carries no copy of the mutation. Hermetic suite `tests/test_push_signed_commit.py` (its `gh` stub enforces
+  `expectedHeadOid` like GitHub), wired into `ci.yml`; `docs/REFERENCE.md` documents both. The
+  ad-hoc drivers are **retained** as provenance (owner policy 2026-08-25) with a "Superseded" header
+  line each; retiring them is an owner decision.
+
+## [0.10.0] - 2026-09-23
+
+### Changed
+
+- **BREAKING (resolution): `[servers]` now floors `juniper-data>=0.15.0`, because 0.14.0 still serves the
+  `equities` generators at the contract 0.15.0 replaced.** Read from the published wheels, not a
+  checkout: 0.14.0 ships `equities` and `equities_seq` at `VERSION = "3.0.0"`, 0.15.0 at `"5.0.0"`.
+  The two majors between them are the owner rulings of juniper-data#395 -- `adj_close` leaves the
+  default feature matrix because `close / adj_close` encodes dividends paid *after* each row, and
+  the SEC share history becomes an as-of join on the FILED date, so a restated period no longer
+  rewrites when a value became knowable -- and the regression fix of juniper-data#404. PyPI never
+  served the intermediate 4.0.0, so an upgrade goes straight from 3.0.0 to 5.0.0. The old floor did
+  not *deliver* 0.14.0 -- a fresh resolve already takes 0.15.0 -- but it *admitted* it: in a clean
+  venv holding `juniper-data==0.14.0`, `pip install "juniper-ml[servers]==0.9.0"` installs canopy,
+  cascor and their dependencies and leaves juniper-data at 0.14.0, so "5.0.0 is what `pip install`
+  serves" was true only of an unconstrained install. The same shape as 0.9.0's `juniper-canopy`
+  floor, ruled the same way. Pre-flighted against real PyPI before the change --
+  `juniper-canopy>=0.8.1` + `juniper-cascor>=0.11.0` + `juniper-data>=0.15.0` resolves in 60 packages with
+  `juniper-service-core` 0.7.0 and `juniper-model-core` 0.3.2, both inside the existing caps, and
+  the two juniper-data wheels declare identical base dependencies, so the raise adds no requirement
+  edge. **Version bumped 0.9.0 -> 0.10.0 with it**, for the reason 0.9.0 gave:
+  `docs/REFERENCE.md`'s compatibility matrix labels each row by the juniper-ml version carrying
+  that floor set, so the `0.9.x` row is kept and a `0.10.x` row added. Minor per the pre-1.0
+  convention at `util/release_train/detect.py:827`, since forbidding a previously-admitted version
+  is breaking. Applied by `util/ad-hoc/2026-09-22_raise_data_floor_0_15_0.py`, which asserts each
+  site's exact text, requires exactly one match apiece, and refuses to open this section unless
+  `[Unreleased]` is empty.
+
 ## [0.9.0] - 2026-09-22
 
 ### Added

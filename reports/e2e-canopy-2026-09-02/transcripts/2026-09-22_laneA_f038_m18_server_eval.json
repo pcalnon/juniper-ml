@@ -1,0 +1,122 @@
+{
+  "script": {
+    "path": "util/ad-hoc/2026-09-22_laneA_f038_m18_check.py",
+    "sha256_16": "2cb0387f13eccf08",
+    "argv": [
+      "server-eval"
+    ],
+    "step": "server-eval"
+  },
+  "provenance": {
+    "captured_utc": "2026-09-22T21:22:00.809+00:00",
+    "canopy": {
+      "http": 200,
+      "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+      "build_date": "2026-09-22T19:38:01Z",
+      "version": "0.8.1",
+      "training_active": false,
+      "active_connections": 2,
+      "status": "ok"
+    },
+    "cascor": {
+      "http": 200,
+      "git_sha": "05c13d55d1c49b0d353d689599916e0fdc4e57e0",
+      "build_date": "2026-09-22T19:37:53Z",
+      "version": "0.11.0",
+      "status": "ok"
+    }
+  },
+  "history_rows": 95,
+  "history_sha": "92e4bfae13963661",
+  "handle_replay_controls_output": "..metrics-panel-replay-state.data...metrics-panel-replay-interval.disabled...metrics-panel-replay-interval.interval..",
+  "update_replay_ui_output": "..metrics-panel-replay-slider.value...metrics-panel-replay-slider.max...metrics-panel-replay-position.children..",
+  "code_derived_expectation": {
+    "slider_value_10": {
+      "current_index": 9,
+      "mode": "paused",
+      "interval_disabled": true
+    },
+    "play_click_1": {
+      "mode": "playing",
+      "interval_disabled": false,
+      "interval_ms": 1000
+    },
+    "update_replay_ui_on_fill_default_state": {
+      "position": "0 / 94"
+    }
+  },
+  "cases": {
+    "slider_value_10": {
+      "http": 200,
+      "response": {
+        "multi": true,
+        "response": {
+          "metrics-panel-replay-state": {
+            "data": {
+              "mode": "paused",
+              "speed": 1.0,
+              "current_index": 9,
+              "start_index": 0,
+              "end_index": 94
+            }
+          },
+          "metrics-panel-replay-interval": {
+            "disabled": true,
+            "interval": 1000
+          }
+        }
+      }
+    },
+    "play_click_1": {
+      "http": 200,
+      "response": {
+        "multi": true,
+        "response": {
+          "metrics-panel-replay-state": {
+            "data": {
+              "mode": "playing",
+              "speed": 1.0,
+              "current_index": 0,
+              "start_index": 0,
+              "end_index": 94
+            }
+          },
+          "metrics-panel-replay-interval": {
+            "disabled": false,
+            "interval": 1000
+          }
+        }
+      }
+    },
+    "update_replay_ui_after_slider": {
+      "http": 200,
+      "response": {
+        "multi": true,
+        "response": {
+          "metrics-panel-replay-slider": {
+            "value": 9.574468085106384,
+            "max": 100
+          },
+          "metrics-panel-replay-position": {
+            "children": "9 / 94"
+          }
+        }
+      }
+    },
+    "update_replay_ui_on_fill_default_state": {
+      "http": 200,
+      "response": {
+        "multi": true,
+        "response": {
+          "metrics-panel-replay-slider": {
+            "value": 0.0,
+            "max": 100
+          },
+          "metrics-panel-replay-position": {
+            "children": "0 / 94"
+          }
+        }
+      }
+    }
+  }
+}

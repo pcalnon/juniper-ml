@@ -122,6 +122,14 @@ behaves identically whether the current value is `None` or `'spirals'` — what 
 concrete dataset it leaves a *complete but invalid* one. Clearing is also not itself re-gated,
 because `gate_dataset_options` reads the dataset as `State` (`:2609`), not `Input`.
 
+> **The third step no longer happens by itself (2026-09-23).** juniper-canopy#652 deleted the
+> snap. OQ-6 was ratified as model-primary, resolved by clearing: see §5.6.1 of
+> `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`. From `(recurrence, ⊥)`,
+> the re-fired gate now leaves the dataset at `⊥`, and **the operator picks** `equities_seq` from a
+> list in which it is the enabled entry. `I-cover` is unaffected, because the pair is still reachable
+> in one pick. What changed is who takes the last step: the operator, not the gate. The quoted
+> line numbers above are those of 2026-09-02; locate by symbol.
+
 ### 4.2 The null-dataset guard (X4)
 
 `_apply_dataset_handler:2845` must not POST `{"nn_dataset_type": None}` — `main.py:3994`'s
@@ -232,6 +240,31 @@ better than today, and free of the reload regression.
 
 **Ordering is not negotiable**: hydration lands *before* `⊥` becomes the mount state (§7).
 
+**SHIPPED 2026-09-23: juniper-canopy#662 (design PR 2) and juniper-cascor#676.** What was
+built, where it departs from the sketch above, and why:
+
+- **A sibling route, not a `/api/train/status` field.** `GET /api/selection` returns both axes. The
+  model half has exactly `POST /api/model/select`'s response shape, so `model-state-store` can hold
+  either one and its existing readers need no change. That model half is **Y3**, the read side the
+  model axis never had. The dataset half is new.
+- **"The staged dataset" needed a producer-side change.** cascor tracked `_current_dataset_config`,
+  but exposed it only as a live swap's `before_cfg`. cascor#676 adds an additive `current_dataset`
+  field to `/v1/training/status` with three readings: `null` (nothing loaded),
+  `{"dataset_type": null}` (loaded but unnamed), and the config it was loaded from. The recurrence
+  backend records the dataset of its latest fit. The demo simulator reads its dataset's `source`
+  stamp.
+- **`source` is the field to branch on**, not `value`. A pending dataset wins, because Start
+  consumes it. After that come `loaded`, `none` (the backend holds nothing) and `unknown` (it
+  cannot say: a cascor without #676, or an unreadable status). The last two both carry a `null`
+  value and must be kept apart. This is the whole difference between `⊥`-at-mount being honest and
+  it re-creating the reload regression above.
+- **The gate's own mount trigger was removed.** It scheduled a second first-paint pass against the
+  *seed* model beside the hydrated pass. The first-paint pass now comes from the hydration's store
+  write, which happens on every mount, including after a failed read.
+- **G7** is asserted through the registered callbacks and end to end through the real route and
+  backends. A **Y3** guardrail was added beside it, because §5's table had no row that a Y3 defect
+  could fail.
+
 ### 4.11 Clearing the model must ungate the dataset (N11 / OQ-N6)
 
 OQ-N6 ships §5.5's second affordance, the "clear model / show all" reset. The registry is already
@@ -284,11 +317,12 @@ Specified to **fail on today's code**, which the guardrail everyone first propos
 | **G4**  | canopy `DATASET_TYPES` maps onto juniper-data `GENERATOR_REGISTRY` **through `generator_name_for_type`** | **fails** (`spirals`/`moons` are not keys) | passes                                                                      |
 | **G5**  | model summary reflects `swapped is False`                                                                | fails                                      | passes                                                                      |
 | **G6**  | Start disabled at `⊥`                                                                                    | fails                                      | passes                                                                      |
-| **G7**  | the mount dataset value equals the backend's staged dataset (§4.10)                                      | **fails** — no hydration exists at all     | passes                                                                      |
+| **G7**  | the mount dataset value equals the backend's staged dataset (§4.10)                                      | **fails** — no hydration exists at all     | passes — **shipped** in canopy#662                                   |
 | **G8**  | a **cleared model** renders ungated dataset options, not `no_update` (§4.11)                             | **fails** — options freeze at the old gate | passes                                                                      |
 | **G9**  | demo mode's local-generator fallback is visibly announced (§4.12)                                        | **fails** — degrades silently              | passes                                                                      |
 | **G10** | every juniper-data generator is either seeded in `DATASET_TYPES` or on a named exclusion list (§12)       | **fails** — 10 unseeded, none excluded     | passes                                                                      |
 | **G11** | every seeded generator has bounded `default_params` (§12)                                                | fails for any new seed without them        | passes                                                                      |
+| **Y3**  | a reload shows the model the server recorded, and gates Start on it (§4.10's model half) — added 2026-09-23; this table had no row a Y3 defect could fail | **fails** — the model axis had no read side | passes — **shipped** in canopy#662 |
 
 Two specification notes that cost round 1 a defect each:
 
@@ -346,7 +380,7 @@ fewer datasets, because its output is wrong rather than absent.
 | PR    | contents                                                                                            | rationale                                                                                                                                |
 |-------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
 | **1** | §4.4 (X1 model-state truth) + **G5**                                                                | Correctness of reporting leads. Independently correct; shippable alone.                                                                  |
-| **2** | §4.10 hydration, **both** axes (X1's dataset-side sibling, Y3) + **G7**                              | Prerequisite for `⊥`-at-mount. Landing it separately keeps the reload regression from ever existing (N10).                                |
+| **2** | §4.10 hydration, **both** axes (X1's dataset-side sibling, Y3) + **G7** — **SHIPPED** canopy#662 + cascor#676 (2026-09-23), with a Y3 guardrail | Prerequisite for `⊥`-at-mount. Landing it separately keeps the reload regression from ever existing (N10).                                |
 | **3** | §4.1 ✕ + §4.11 model clear + §4.2 / §4.8 guards + §4.3 naming and channels + §4.7 empty-set + **G1a–G1d, G3, G6, G8** | The reachability fix proper, now with both axes clearable. **Land G1a red first**, then green it. §4.8 and §4.11 are prerequisites, not follow-ups. |
 | **4** | §4.5 restart modal + §4.6 alias + §4.9 staging + **G2, G4**                                         | Activated by PR 3; smaller and independently reviewable.                                                                                 |
 | **5** | §12 generator expansion — Y5 first, then the seeds + `default_params` + the `mackey_glass` seed flag + **G10, G11** | Iteration 2 (§11). Depends on PRs 1–2 for honest attribution and on Y5 for a usable params panel.                                          |
@@ -616,6 +650,15 @@ order decides where an operator lands on selecting Recurrence. The synthetics ar
 `equities_seq` so that target is `multi_sine` (generate 0.00s, fit 0.10s, r² 1.000) rather than
 `equities_seq` (40.5s, r² −0.004, unavailable in the container).
 
+> **Superseded for the sidebar, 2026-09-23.** juniper-canopy#652 (OQ-6 ratified, §5.6.1 of
+> `JUNIPER_2026-06-17_JUNIPER-CANOPY_MODEL-DATASET-SELECTION-DESIGN.md`) deleted that snap: a
+> conflict now CLEARS the dataset to `⊥`, and the operator picks from the gated list. On selecting
+> Recurrence the sidebar lands on `⊥`, not on `enabled[0]`. **Registry order still decides two
+> things:** the order the dropdown offers the options in, and the **restart modal's** fallback,
+> which keeps its `enabled[0]` swap by owner ruling of 2026-09-22 (item 22 of the 09-22 handoff; a
+> recorded exception to OQ-6, see §5.6.1 of the same document). So the seeding order above is still
+> worth keeping, but for those two reasons, not for where the sidebar lands.
+
 **Per-generator validation, as §12.4 requires** — generate then fit, observed once, at the
 recurrence service's effective LMU defaults (`d=16`, data-driven `theta`, `ridge=0.0`):
 
@@ -802,6 +845,13 @@ path**. `src/backend/recurrence_backend.py:205-206` returns `ok=True` immediatel
 `thread.start()`, and `_completion_reason_label` (`src/frontend/dashboard_manager.py:6923-6929`)
 maps five cascor reasons only — which is item X10/N6 of this arc, still open. The operator would
 not see the refusal VR-5 relies on.
+
+> **Half of this paragraph is stale as of juniper-canopy#651 (2026-09-22).** `_completion_reason_label`
+> now maps recurrence's three completion tokens and has the `Failed` branch it lacked, so the
+> operator DOES see why a recurrence fit ended. The other half stands: `RecurrenceBackend.start_training`
+> still returns `ok=True` once the fit thread starts, so a refusal still arrives asynchronously, as a
+> failed status rather than at the control. **VR-5's primary rejection is unaffected**: under VR-5
+> `I-safe` becomes unfalsifiable, as argued above. Only this compounding argument has weakened.
 
 **VR-2: a range misdescribes the domain; a set does not.** Rank is an integer and 2 and 3 are
 adjacent, so "strictly between" is uninhabitable — a range promises a density that cannot exist.

@@ -13,6 +13,7 @@
 # Status:        ad-hoc -- one-off
 # Retire when:   RETAINED -- ad-hoc scripts are kept as provenance of record (owner policy 2026-08-25)
 # Related:       juniper-canopy#650, juniper-ml#1966
+# Superseded:    for new use by util/push_signed_commit.py (append to an existing branch) and util/open_signed_pr.py (create a branch); RETAINED here as provenance.
 #
 # Description:
 #    Push a SIGNED commit (additions + deletions) to a new branch via GitHub's GraphQL

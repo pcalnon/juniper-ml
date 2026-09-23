@@ -10,6 +10,7 @@ Created:     2026-08-21
 Status:      ad-hoc -- investigation (one-off)
 Retire when: RETAINED (owner policy 2026-08-25 — no retirement deadline). Previously: defect D4 in util/safe_merge.py is closed either way.
 Related:     notes/JUNIPER_2026-08-19_JUNIPER-ECOSYSTEM_SAFE-MERGE-KILL-FORENSICS.md (D4)
+Superseded:  for new use by util/push_signed_commit.py, which pins --expected-head the same way, refuses a short sha and reads the commit back; RETAINED here as provenance (owner policy 2026-08-25).
 
 The question
 ------------

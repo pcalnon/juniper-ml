@@ -7,6 +7,7 @@ Application: util/ad-hoc
 Author:      Paul Calnon
 License:     MIT License
 Created:     2026-09-10
+Superseded:  for new use by util/push_signed_commit.py (pinned --expected-head, read-back); RETAINED here as provenance (owner policy 2026-08-25).
 
 Why this exists
 ---------------

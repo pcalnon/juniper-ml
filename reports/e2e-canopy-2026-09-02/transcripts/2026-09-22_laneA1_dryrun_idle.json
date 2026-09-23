@@ -1,0 +1,3483 @@
+{
+ "script": "util/ad-hoc/2026-09-22_laneA1_candidate_panel_dom_check.py",
+ "argv": [
+  "--no-grow",
+  "--min-seconds",
+  "30",
+  "--out",
+  "reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_laneA1_dryrun_idle.json"
+ ],
+ "canopy": "http://127.0.0.1:8051",
+ "cascor": "http://127.0.0.1:8202",
+ "started_utc": "2026-09-22T20:10:34Z",
+ "preflight": {
+  "t": 1790107834.6388178,
+  "canopy_health": {
+   "status": "ok",
+   "service": "juniper-canopy",
+   "timestamp": 1790107834.640245,
+   "version": "0.8.1",
+   "active_connections": 4,
+   "training_active": false,
+   "demo_mode": false,
+   "juniper_data_available": true,
+   "backend_status": "ok",
+   "backend_status_stale": false,
+   "backend_status_age_seconds": 0.682,
+   "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+   "build_date": "2026-09-22T19:38:01Z"
+  },
+  "cascor": {
+   "fsm": "COMPLETED",
+   "fsm_phase": "OUTPUT",
+   "training_active": false,
+   "hidden_units": 58
+  },
+  "api_state": {
+   "status": "Completed",
+   "phase": "output",
+   "candidate_pool_status": "Inactive",
+   "candidate_pool_phase": "Idle",
+   "candidate_pool_size": 8,
+   "candidate_epoch": 0,
+   "candidate_total_epochs": 0,
+   "current_epoch": 64,
+   "max_hidden_units": 58
+  }
+ },
+ "preexisting_window": false,
+ "nav": {
+  "url": "http://127.0.0.1:8051/dashboard/",
+  "attached_s": 3.96
+ },
+ "mount": {
+  "first": {
+   "t_ms": 1790107841559,
+   "text": {
+    "candidate-metrics-panel-status-badge": "",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Training Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "nav-link"
+   },
+   "badge_visible": false,
+   "badge_pane_cls": "fade tab-pane"
+  },
+  "rendered": {
+   "t_ms": 1790107849979,
+   "text": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "No active candidate pool",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Training Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "nav-link"
+   },
+   "badge_visible": false,
+   "badge_pane_cls": "fade tab-pane"
+  },
+  "badge_rendered": true
+ },
+ "modal": {
+  "seen": true,
+  "click": {
+   "method": "trusted locator.click(force=True)",
+   "s": 18.02
+  },
+  "dismissed": true,
+  "hidden_after_s": 20.32,
+  "visible_after": false
+ },
+ "tab": {
+  "role_tab_matches": 1,
+  "how_found": "get_by_role('tab', name='Candidate Metrics', exact=True)",
+  "before_click": {
+   "tag": "A",
+   "role": "tab",
+   "aria_selected": null,
+   "cls": "nav-link",
+   "text": "Candidate Metrics",
+   "id": "react-aria1950313229-:r0:-tab-null",
+   "tablist": "visualization-tabs",
+   "outer": "<a role=\"tab\" id=\"react-aria1950313229-:r0:-tab-null\" aria-controls=\"react-aria1950313229-:r0:-tabpane-null\" tabindex=\"-1\" class=\"nav-link\" href=\"#\" style=\"cursor: pointer;\">Candidate Metrics</a>"
+  },
+  "snapshot_before_click": {
+   "t_ms": 1790107885888,
+   "text": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "No active candidate pool",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Training Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "nav-link"
+   },
+   "badge_visible": false,
+   "badge_pane_cls": "fade tab-pane"
+  },
+  "click": {
+   "method": "trusted locator.click(force=True)",
+   "s": 7.16
+  },
+  "after_click": {
+   "tag": "A",
+   "role": "tab",
+   "aria_selected": null,
+   "cls": "active nav-link",
+   "text": "Candidate Metrics",
+   "id": "react-aria1950313229-:r0:-tab-null",
+   "tablist": "visualization-tabs",
+   "outer": "<a role=\"tab\" id=\"react-aria1950313229-:r0:-tab-null\" aria-controls=\"react-aria1950313229-:r0:-tabpane-null\" tabindex=\"-1\" class=\"active nav-link\" href=\"#\" style=\"cursor: pointer;\">Candidate Metrics</a>"
+  },
+  "snapshot_after_click": {
+   "t_ms": 1790107902078,
+   "text": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0",
+    "candidate-metrics-panel-pool-info": "No active candidate pool",
+    "top-status-display": "Stopped",
+    "top-phase-display": "Idle",
+    "top-epoch-display": "0",
+    "top-hidden-units-display": "0"
+   },
+   "title": "Updating...",
+   "tab_selector": "role=tab",
+   "active_tabs": [
+    "Candidate Metrics"
+   ],
+   "cand_tab": {
+    "aria_selected": null,
+    "cls": "active nav-link"
+   },
+   "badge_visible": true,
+   "badge_pane_cls": "fade tab-pane active show"
+  },
+  "verified": true,
+  "verify_s": 9.03,
+  "verification_rule": "tab element aria-selected=='true' or class 'active'; the badge's enclosing .tab-pane has class 'active'; badge.checkVisibility() true; and the only active tab in that tablist is 'Candidate Metrics'"
+ },
+ "observer_install": "installed",
+ "t0": 1790107903.7221076,
+ "stop_reason": "done",
+ "final_snapshot": {
+  "t_ms": 1790107971817,
+  "text": {
+   "candidate-metrics-panel-status-badge": "Inactive",
+   "candidate-metrics-panel-phase": "Idle",
+   "candidate-metrics-panel-pool-size": "0",
+   "candidate-metrics-panel-pool-info": "No active candidate pool",
+   "top-status-display": "Stopped",
+   "top-phase-display": "Idle",
+   "top-epoch-display": "0",
+   "top-hidden-units-display": "0"
+  },
+  "title": "Updating...",
+  "tab_selector": "role=tab",
+  "active_tabs": [
+   "Candidate Metrics"
+  ],
+  "cand_tab": {
+   "aria_selected": null,
+   "cls": "active nav-link"
+  },
+  "badge_visible": true,
+  "badge_pane_cls": "fade tab-pane active show"
+ },
+ "growth": {
+  "launched": false,
+  "mode": "no-grow"
+ },
+ "analysis": {
+  "n_samples": 1,
+  "n_samples_server_training": 0,
+  "crosstab_badge_vs_candidate_pool_status": [
+   {
+    "dom": "Inactive",
+    "server": "Inactive",
+    "n": 1
+   }
+  ],
+  "crosstab_phase_vs_candidate_pool_phase": [
+   {
+    "dom": "Idle",
+    "server": "Idle",
+    "n": 1
+   }
+  ],
+  "crosstab_pool_size_vs_candidate_pool_size": [
+   {
+    "dom": "0",
+    "server": 8,
+    "n": 1
+   }
+  ],
+  "crosstab_top_status_vs_status": [
+   {
+    "dom": "Stopped",
+    "server": "Completed",
+    "n": 1
+   }
+  ],
+  "distinct_dom_values": {
+   "candidate-metrics-panel-status-badge": [
+    "Inactive"
+   ],
+   "candidate-metrics-panel-phase": [
+    "Idle"
+   ],
+   "candidate-metrics-panel-pool-size": [
+    "0"
+   ],
+   "top-status-display": [
+    "Stopped"
+   ],
+   "top-phase-display": [
+    "Idle"
+   ],
+   "top-epoch-display": [
+    "0"
+   ],
+   "top-hidden-units-display": [
+    "0"
+   ]
+  },
+  "distinct_pool_info_values": [
+   "No active candidate pool"
+  ],
+  "distinct_server_values": {
+   "status": [
+    "Completed"
+   ],
+   "candidate_pool_status": [
+    "Inactive"
+   ],
+   "candidate_pool_phase": [
+    "Idle"
+   ],
+   "candidate_pool_size": [
+    "8"
+   ]
+  },
+  "during_server_training": {
+   "candidate-metrics-panel-status-badge": [],
+   "candidate-metrics-panel-phase": [],
+   "candidate-metrics-panel-pool-size": [],
+   "top-status-display": [],
+   "top-phase-display": [],
+   "top-epoch-display": [],
+   "top-hidden-units-display": []
+  },
+  "during_server_training_pool_info": [],
+  "active_tab_per_sample": {
+   "[\"Candidate Metrics\"]": 1
+  },
+  "badge_visible_per_sample": {
+   "True": 1
+  },
+  "samples_off_mount_during_training": 0,
+  "sample_gap_s": null,
+  "dom_eval_ms": {
+   "max": 1241,
+   "median": 1241
+  },
+  "server_timeline_n": 69,
+  "server_timeline_training_entries": 0,
+  "server_training_intervals_rel_s": [],
+  "server_timeline_distinct": {
+   "status": [
+    "Completed"
+   ],
+   "candidate_pool_status": [
+    "Inactive"
+   ],
+   "candidate_pool_phase": [
+    "Idle"
+   ],
+   "candidate_pool_size": [
+    "8"
+   ]
+  },
+  "cascor_fsm_distinct": [
+   "COMPLETED/OUTPUT"
+  ],
+  "observer_changes_per_id": {
+   "candidate-metrics-panel-status-badge": 1,
+   "candidate-metrics-panel-phase": 1,
+   "candidate-metrics-panel-pool-size": 1,
+   "candidate-metrics-panel-pool-info": 1,
+   "top-status-display": 1,
+   "top-phase-display": 1,
+   "top-epoch-display": 1,
+   "top-hidden-units-display": 1,
+   "__tab": 1
+  },
+  "observer_distinct_values": {
+   "candidate-metrics-panel-status-badge": [
+    "Inactive"
+   ],
+   "candidate-metrics-panel-phase": [
+    "Idle"
+   ],
+   "candidate-metrics-panel-pool-size": [
+    "0"
+   ],
+   "candidate-metrics-panel-pool-info": [
+    "No active candidate pool"
+   ],
+   "top-status-display": [
+    "Stopped"
+   ],
+   "top-phase-display": [
+    "Idle"
+   ],
+   "top-epoch-display": [
+    "0"
+   ],
+   "top-hidden-units-display": [
+    "0"
+   ],
+   "__tab": [
+    "Candidate Metrics"
+   ]
+  },
+  "observer_panel_changes": {
+   "candidate-metrics-panel-status-badge": [
+    [
+     -0.002,
+     "Inactive"
+    ]
+   ],
+   "candidate-metrics-panel-phase": [
+    [
+     -0.002,
+     "Idle"
+    ]
+   ],
+   "candidate-metrics-panel-pool-size": [
+    [
+     -0.002,
+     "0"
+    ]
+   ]
+  },
+  "observer_tab_changes": [
+   [
+    -0.002,
+    "Candidate Metrics"
+   ]
+  ],
+  "observer_panel_changes_inside_server_training": [],
+  "observer_control_changes_inside_window": {
+   "top-status-display": 0,
+   "top-phase-display": 0,
+   "top-epoch-display": 0,
+   "top-hidden-units-display": 0
+  },
+  "wire_candidate_outputs": {
+   "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..": {
+    "requests": 41,
+    "responses": 40,
+    "failed": 0
+   },
+   "candidate-metrics-panel-history-section.children": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "candidate-metrics-panel-loss-plot.figure": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   },
+   "candidate-metrics-panel-pool-info.children": {
+    "requests": 1,
+    "responses": 1,
+    "failed": 0
+   }
+  },
+  "wire_top_status_outputs": {
+   "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..": {
+    "requests": 59,
+    "responses": 58
+   }
+  },
+  "wire_total": {
+   "requests": 342,
+   "responses": 338,
+   "failed": 0
+  },
+  "wire_store_pool_status_values": {
+   "Inactive": 37
+  },
+  "wire_badge_children_values": {
+   "Inactive": 1
+  },
+  "wire_pool_size_children_values": {
+   "0": 1
+  }
+ },
+ "samples": [
+  {
+   "i": 0,
+   "t": 1790107903.7221131,
+   "el": 0.0,
+   "dom_ms": 1241,
+   "srv_t": 1790107904.9633179,
+   "dom": {
+    "t_ms": 1790107904961,
+    "text": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0"
+    },
+    "title": "Updating...",
+    "tab_selector": "role=tab",
+    "active_tabs": [
+     "Candidate Metrics"
+    ],
+    "cand_tab": {
+     "aria_selected": null,
+     "cls": "active nav-link"
+    },
+    "badge_visible": true,
+    "badge_pane_cls": "fade tab-pane active show"
+   },
+   "srv": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   }
+  }
+ ],
+ "server_timeline": [
+  {
+   "t_rel": -0.0,
+   "t": 1790107903.721886,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 1.0,
+   "t": 1790107904.722008,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 2.0,
+   "t": 1790107905.7221158,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 3.0,
+   "t": 1790107906.7222285,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 4.0,
+   "t": 1790107907.7223518,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 5.0,
+   "t": 1790107908.7224526,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 6.0,
+   "t": 1790107909.7225723,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 7.0,
+   "t": 1790107910.7226818,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 8.0,
+   "t": 1790107911.7227921,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 9.0,
+   "t": 1790107912.7228932,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 10.0,
+   "t": 1790107913.7229993,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 11.0,
+   "t": 1790107914.7231174,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 12.0,
+   "t": 1790107915.723223,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 13.0,
+   "t": 1790107916.7233343,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 14.0,
+   "t": 1790107917.7234328,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 15.0,
+   "t": 1790107918.7235413,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 16.0,
+   "t": 1790107919.7236423,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 17.0,
+   "t": 1790107920.7237887,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 18.0,
+   "t": 1790107921.7238896,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 19.0,
+   "t": 1790107922.7239957,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 20.0,
+   "t": 1790107923.724107,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 21.0,
+   "t": 1790107924.7242205,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 22.0,
+   "t": 1790107925.7243288,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 23.0,
+   "t": 1790107926.7244372,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 24.0,
+   "t": 1790107927.7245898,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 25.0,
+   "t": 1790107928.7247133,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 26.0,
+   "t": 1790107929.7248192,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 27.0,
+   "t": 1790107930.7249382,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 28.0,
+   "t": 1790107931.7250419,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 29.0,
+   "t": 1790107932.7251382,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 30.0,
+   "t": 1790107933.7252579,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 31.0,
+   "t": 1790107934.725374,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 32.0,
+   "t": 1790107935.7254782,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 33.0,
+   "t": 1790107936.7255905,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 34.0,
+   "t": 1790107937.7256913,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 35.0,
+   "t": 1790107938.7258081,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 36.0,
+   "t": 1790107939.7259052,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 37.0,
+   "t": 1790107940.726011,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 38.0,
+   "t": 1790107941.726118,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 39.0,
+   "t": 1790107942.7262204,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 40.0,
+   "t": 1790107943.7263348,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 41.0,
+   "t": 1790107944.7264335,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 42.0,
+   "t": 1790107945.726536,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 43.0,
+   "t": 1790107946.726635,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 44.0,
+   "t": 1790107947.7267437,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 45.0,
+   "t": 1790107948.7268684,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 46.01,
+   "t": 1790107949.7274404,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 47.01,
+   "t": 1790107950.7275393,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 48.01,
+   "t": 1790107951.7276185,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 49.01,
+   "t": 1790107952.7277572,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 50.01,
+   "t": 1790107953.7278574,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 51.01,
+   "t": 1790107954.7280195,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 52.01,
+   "t": 1790107955.7281296,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 53.01,
+   "t": 1790107956.7286482,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 54.01,
+   "t": 1790107957.7287457,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 55.01,
+   "t": 1790107958.728853,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 56.01,
+   "t": 1790107959.7289603,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 57.01,
+   "t": 1790107960.729067,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 58.01,
+   "t": 1790107961.7291644,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 59.01,
+   "t": 1790107962.7292683,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 60.01,
+   "t": 1790107963.729368,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 61.01,
+   "t": 1790107964.7294767,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 62.01,
+   "t": 1790107965.7296064,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 63.01,
+   "t": 1790107966.7297337,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 64.01,
+   "t": 1790107967.7298446,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 65.01,
+   "t": 1790107968.7299647,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 66.01,
+   "t": 1790107969.730062,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 67.01,
+   "t": 1790107970.7301795,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  },
+  {
+   "t_rel": 68.01,
+   "t": 1790107971.730284,
+   "api_state": {
+    "status": "Completed",
+    "phase": "output",
+    "candidate_pool_status": "Inactive",
+    "candidate_pool_phase": "Idle",
+    "candidate_pool_size": 8,
+    "candidate_epoch": 0,
+    "candidate_total_epochs": 0,
+    "current_epoch": 64,
+    "max_hidden_units": 58
+   },
+   "cascor": {
+    "fsm": "COMPLETED",
+    "fsm_phase": "OUTPUT",
+    "training_active": false,
+    "hidden_units": 58
+   }
+  }
+ ],
+ "observer": {
+  "installed_ms": 1790107903720,
+  "log": [
+   {
+    "t_ms": 1790107903720,
+    "why": "install",
+    "changed": {
+     "candidate-metrics-panel-status-badge": "Inactive",
+     "candidate-metrics-panel-phase": "Idle",
+     "candidate-metrics-panel-pool-size": "0",
+     "candidate-metrics-panel-pool-info": "No active candidate pool",
+     "top-status-display": "Stopped",
+     "top-phase-display": "Idle",
+     "top-epoch-display": "0",
+     "top-hidden-units-display": "0",
+     "__tab": "Candidate Metrics"
+    }
+   }
+  ]
+ },
+ "wire_candidate_events": [
+  {
+   "t": 1790107841.5203614,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -62.202
+  },
+  {
+   "t": 1790107844.6868896,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..",
+   "t_rel": -59.035
+  },
+  {
+   "t": 1790107844.7597597,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..",
+   "t_rel": -58.962
+  },
+  {
+   "t": 1790107844.783868,
+   "kind": "request",
+   "output": "candidate-metrics-panel-pool-info.children",
+   "t_rel": -58.938
+  },
+  {
+   "t": 1790107844.864353,
+   "kind": "request",
+   "output": "candidate-metrics-panel-history-section.children",
+   "t_rel": -58.858
+  },
+  {
+   "t": 1790107853.7929194,
+   "kind": "request",
+   "output": "candidate-metrics-panel-loss-plot.figure",
+   "t_rel": -49.929
+  },
+  {
+   "t": 1790107892.1884513,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -11.534
+  },
+  {
+   "t": 1790107895.409104,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -8.313
+  },
+  {
+   "t": 1790107897.4216511,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -6.3
+  },
+  {
+   "t": 1790107899.9047525,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -3.817
+  },
+  {
+   "t": 1790107902.1820104,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": -1.54
+  },
+  {
+   "t": 1790107903.8927567,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 0.171
+  },
+  {
+   "t": 1790107905.2146475,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 1.493
+  },
+  {
+   "t": 1790107841.9478877,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 28,
+   "values": {},
+   "t_rel": -61.774
+  },
+  {
+   "t": 1790107906.6973994,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 2.975
+  },
+  {
+   "t": 1790107845.3163679,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..",
+   "http": 200,
+   "bytes": 333,
+   "values": {
+    "candidate-metrics-panel-status-badge": "Inactive",
+    "candidate-metrics-panel-phase": "Idle",
+    "candidate-metrics-panel-pool-size": "0"
+   },
+   "t_rel": -58.406
+  },
+  {
+   "t": 1790107845.3173215,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..",
+   "http": 200,
+   "bytes": 163,
+   "values": {
+    "candidate-metrics-panel-progress-section": [
+     "style"
+    ],
+    "candidate-metrics-panel-epoch-progress": [
+     "label",
+     "value"
+    ]
+   },
+   "t_rel": -58.405
+  },
+  {
+   "t": 1790107909.3237197,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 5.602
+  },
+  {
+   "t": 1790107845.3181963,
+   "kind": "response",
+   "output": "candidate-metrics-panel-pool-info.children",
+   "http": 200,
+   "bytes": 250,
+   "values": {
+    "candidate-metrics-panel-pool-info": [
+     "children"
+    ]
+   },
+   "t_rel": -58.404
+  },
+  {
+   "t": 1790107911.939004,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 8.217
+  },
+  {
+   "t": 1790107845.3189588,
+   "kind": "response",
+   "output": "candidate-metrics-panel-history-section.children",
+   "http": 200,
+   "bytes": 253,
+   "values": {
+    "candidate-metrics-panel-history-section": [
+     "children"
+    ]
+   },
+   "t_rel": -58.403
+  },
+  {
+   "t": 1790107854.7923338,
+   "kind": "response",
+   "output": "candidate-metrics-panel-loss-plot.figure",
+   "http": 200,
+   "bytes": 7510,
+   "values": {
+    "candidate-metrics-panel-loss-plot": [
+     "figure"
+    ]
+   },
+   "t_rel": -48.93
+  },
+  {
+   "t": 1790107914.1653442,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 10.443
+  },
+  {
+   "t": 1790107893.4570215,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": -10.265
+  },
+  {
+   "t": 1790107915.6916032,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 11.969
+  },
+  {
+   "t": 1790107897.7934742,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": -5.929
+  },
+  {
+   "t": 1790107917.1399984,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 13.418
+  },
+  {
+   "t": 1790107899.6372545,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": -4.085
+  },
+  {
+   "t": 1790107919.5099144,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 15.788
+  },
+  {
+   "t": 1790107901.7874799,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": -1.935
+  },
+  {
+   "t": 1790107921.030216,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 17.308
+  },
+  {
+   "t": 1790107904.9604993,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 1.238
+  },
+  {
+   "t": 1790107905.8035793,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 2.081
+  },
+  {
+   "t": 1790107923.1239066,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 19.402
+  },
+  {
+   "t": 1790107906.8713493,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 3.149
+  },
+  {
+   "t": 1790107924.9046948,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 21.183
+  },
+  {
+   "t": 1790107908.5886245,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 4.867
+  },
+  {
+   "t": 1790107926.7199416,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 22.998
+  },
+  {
+   "t": 1790107911.750589,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 8.028
+  },
+  {
+   "t": 1790107928.9417038,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 25.22
+  },
+  {
+   "t": 1790107913.2471373,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 9.525
+  },
+  {
+   "t": 1790107915.9822164,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 12.26
+  },
+  {
+   "t": 1790107930.7949586,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 27.073
+  },
+  {
+   "t": 1790107917.6381433,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 13.916
+  },
+  {
+   "t": 1790107932.8733094,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 29.151
+  },
+  {
+   "t": 1790107919.5802011,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 15.858
+  },
+  {
+   "t": 1790107921.250356,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 17.528
+  },
+  {
+   "t": 1790107934.429616,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 30.708
+  },
+  {
+   "t": 1790107922.9638817,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 19.242
+  },
+  {
+   "t": 1790107926.1400902,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 22.418
+  },
+  {
+   "t": 1790107937.0060487,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 33.284
+  },
+  {
+   "t": 1790107927.3539183,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 23.632
+  },
+  {
+   "t": 1790107938.7708025,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 35.049
+  },
+  {
+   "t": 1790107929.0460627,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 25.324
+  },
+  {
+   "t": 1790107940.789199,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 37.067
+  },
+  {
+   "t": 1790107930.5553994,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 26.833
+  },
+  {
+   "t": 1790107942.8491144,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 39.127
+  },
+  {
+   "t": 1790107933.1226885,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 29.401
+  },
+  {
+   "t": 1790107934.2925274,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 30.57
+  },
+  {
+   "t": 1790107944.676595,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 40.954
+  },
+  {
+   "t": 1790107936.574603,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 32.852
+  },
+  {
+   "t": 1790107946.415512,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 42.693
+  },
+  {
+   "t": 1790107940.2981105,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 36.576
+  },
+  {
+   "t": 1790107941.214245,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 37.492
+  },
+  {
+   "t": 1790107948.884997,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 45.163
+  },
+  {
+   "t": 1790107942.8498755,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 39.128
+  },
+  {
+   "t": 1790107950.7972527,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 47.075
+  },
+  {
+   "t": 1790107944.4372108,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 40.715
+  },
+  {
+   "t": 1790107946.717261,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 42.995
+  },
+  {
+   "t": 1790107952.9352477,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 49.213
+  },
+  {
+   "t": 1790107948.3570724,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 44.635
+  },
+  {
+   "t": 1790107954.6902602,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 50.968
+  },
+  {
+   "t": 1790107951.0913403,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 47.369
+  },
+  {
+   "t": 1790107956.4832318,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 52.761
+  },
+  {
+   "t": 1790107952.2876675,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 48.566
+  },
+  {
+   "t": 1790107955.9311829,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3318,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 52.209
+  },
+  {
+   "t": 1790107959.1105895,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 55.388
+  },
+  {
+   "t": 1790107956.6507776,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3319,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 52.929
+  },
+  {
+   "t": 1790107957.8846662,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 54.163
+  },
+  {
+   "t": 1790107961.0573876,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 57.335
+  },
+  {
+   "t": 1790107963.4797673,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 59.758
+  },
+  {
+   "t": 1790107960.7448156,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 57.023
+  },
+  {
+   "t": 1790107965.5507755,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 61.829
+  },
+  {
+   "t": 1790107963.577077,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 59.855
+  },
+  {
+   "t": 1790107965.086165,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 61.364
+  },
+  {
+   "t": 1790107968.877478,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 65.155
+  },
+  {
+   "t": 1790107966.7618816,
+   "kind": "response",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "http": 200,
+   "bytes": 3320,
+   "values": {
+    "candidate-metrics-panel-training-state-store": {
+     "status": "Completed",
+     "phase": "output",
+     "candidate_pool_status": "Inactive",
+     "candidate_pool_phase": "Idle",
+     "candidate_pool_size": 8,
+     "candidate_epoch": 0,
+     "candidate_total_epochs": 0,
+     "current_epoch": 64,
+     "max_hidden_units": 58
+    },
+    "candidate-metrics-panel-pool-history-store": [
+     "data"
+    ]
+   },
+   "t_rel": 63.04
+  },
+  {
+   "t": 1790107970.1716268,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 66.45
+  },
+  {
+   "t": 1790107971.750767,
+   "kind": "request",
+   "output": "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..",
+   "t_rel": 68.029
+  }
+ ],
+ "wire_counts": {
+  "requests": {
+   "..theme-state.data...dark-mode-toggle.children..": 1,
+   "..experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 2,
+   "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..": 59,
+   "dataset-swap-events-store.data": 25,
+   "loaded-snapshot-swap-events-store.data": 1,
+   "..start-button.disabled...start-button.children...pause-button.disabled...pause-button.children...stop-button.disabled...stop-button.children...resume-button.disabled...resume-button.children...reset-button.disabled...reset-button.children...apply-dataset-button.disabled..": 1,
+   "..nn-growth-preset-epochs-input.disabled...nn-growth-convergence-threshold-input.disabled..": 2,
+   "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..": 2,
+   "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..": 2,
+   "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..": 26,
+   "..apply-params-button.disabled...params-status.children..": 2,
+   "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 3,
+   "metrics-panel-layout-dropdown.options": 1,
+   "metrics-panel-training-state-store.data": 10,
+   "network-visualizer-topology-store.data": 2,
+   "..network-evolution-grid-container.children...network-evolution-stats.children..": 1,
+   "decision-boundary-boundary-data.data": 2,
+   "decision-boundary-dataset-data.data": 2,
+   "..dataset-plotter-seq-group-signals.style...dataset-plotter-seq-group-windows.style..": 1,
+   "dataset-plotter-dataset-store.data": 2,
+   "worker-panel-workers-store.data": 2,
+   "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 2,
+   "..replay-player-panel-idle.style...replay-player-panel-active.style...replay-player-panel-snapshot-id.children...replay-player-panel-fsm-badge.children...replay-player-panel-scrubber.min...replay-player-panel-scrubber.max...replay-player-panel-scrubber.value...replay-player-panel-range.min...replay-player-panel-range.max...replay-player-panel-range.value...replay-player-panel-epoch-readout.children...replay-player-panel-range-readout.children...replay-player-panel-speed.value...replay-player-panel-speed-readout.children...replay-player-panel-weights-badge.children...replay-player-panel-weights-badge.style..": 1,
+   "..redis-panel-status-badge.children...redis-panel-status-badge.color...redis-panel-mode-badge.children...redis-panel-mode-badge.color...redis-panel-error-display.children...redis-panel-version.children...redis-panel-uptime.children...redis-panel-clients.children...redis-panel-latency.children...redis-panel-memory.children...redis-panel-ops-sec.children...redis-panel-hit-rate.children...redis-panel-keyspace.children..": 1,
+   "..cassandra-panel-status-badge.children...cassandra-panel-status-badge.color...cassandra-panel-mode-badge.children...cassandra-panel-mode-badge.color...cassandra-panel-contact-points.children...cassandra-panel-keyspace.children...cassandra-panel-hosts-table.children...cassandra-panel-keyspace-count.children...cassandra-panel-table-count.children...cassandra-panel-replication-strategies.children...cassandra-panel-error-area.children..": 1,
+   "network-visualizer-raw-topology-store.data": 2,
+   "hdf5-snapshots-panel-detail-panel.children": 1,
+   "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..": 2,
+   "train-gate-notice.children": 1,
+   "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 2,
+   "last-button-click.data": 1,
+   "training-control-outcome-alert.children": 1,
+   "..dataset-shortfall-modal.is_open...dataset-shortfall-modal-body.children...dataset-shortfall-context.data..": 1,
+   "network-visualizer-stats-bar.style": 1,
+   "dataset-plotter-stats-summary.style": 1,
+   "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..": 41,
+   "..dataset-plotter-dataset-selector.options...dataset-plotter-dataset-selector.value..": 1,
+   "..nn-max-iterations-input.value...nn-max-total-epochs-input.value...nn-learning-rate-input.value...nn-max-hidden-units-input.value...nn-multi-node-layers-checkbox.value...nn-growth-trigger-radio.value...nn-growth-preset-epochs-input.value...nn-growth-convergence-threshold-input.value...nn-patience-input.value...nn-spiral-rotations-input.value...nn-spiral-number-input.value...nn-dataset-elements-input.value...nn-dataset-noise-input.value...cn-pool-size-input.value...cn-correlation-threshold-input.value...cn-selected-candidates-input.value...cn-training-complete-radio.value...cn-training-iterations-input.value...cn-training-convergence-threshold-input.value...cn-patience-input.value...cn-multi-candidate-checkbox.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...cn-candidate-selection-radio.value...cn-top-candidates-input.value...cn-random-candidates-input.value...nn-output-epochs-input.value...nn-optimizer-type-dropdown.value...nn-activation-function-dropdown.value...nn-init-output-weights-dropdown.value...applied-params-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 1,
+   "model-class-store.data": 1,
+   "..nn-dataset-type-dropdown.options...nn-dataset-type-dropdown.value...dataset-gate-notice.children..": 1,
+   "..network-editor-panel-idle.style...network-editor-panel-active.style...network-editor-panel-idle-fsm-badge.children...network-editor-panel-topology-store.data..": 1,
+   "network-visualizer-selection-info.style@bba8d96724560bd4a65d4c287bce63ac0687d5b7fef980c67619277eb3ea4915": 1,
+   "..hdf5-snapshots-panel-table-body.children...hdf5-snapshots-panel-status.children...hdf5-snapshots-panel-empty-state.style...hdf5-snapshots-panel-snapshots-store.data..": 1,
+   "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..": 1,
+   "metrics-panel-progress-detail.children": 4,
+   "metrics-panel-phase-duration.children": 4,
+   "metrics-panel-current-lr.children": 4,
+   "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..": 4,
+   "..dataset-plotter-seq-signal-select.options...dataset-plotter-seq-signal-select.value...dataset-plotter-seq-window-single.options...dataset-plotter-seq-window-single.value...dataset-plotter-seq-signal-single.options...dataset-plotter-seq-signal-single.value...dataset-plotter-seq-window-multi.options...dataset-plotter-seq-window-multi.value..": 1,
+   "dataset-plotter-seq-controls.style": 1,
+   "..worker-panel-status-badge.children...worker-panel-status-badge.color...worker-panel-error-display.children...worker-panel-total.children...worker-panel-idle.children...worker-panel-busy.children...worker-panel-stale.children...worker-panel-tasks-done.children...worker-panel-avg-health.children...worker-panel-worker-list.children..": 1,
+   "metrics-panel-replay-controls.style": 4,
+   "..dataset-plotter-seq-char-dt-hist.figure...dataset-plotter-seq-char-target-dist.figure...dataset-plotter-seq-char-stats.children...dataset-plotter-seq-char-companion.style..": 1,
+   "..dataset-plotter-seq-grid-plot.figure...dataset-plotter-seq-grid-container.style..": 1,
+   "..decision-boundary-plot.figure...decision-boundary-status.children..": 1,
+   "pinned-params-store.data": 2,
+   "replay-player-panel-control-trigger.data": 1,
+   "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..": 1,
+   "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..": 1,
+   "candidate-metrics-panel-pool-info.children": 1,
+   "candidate-metrics-panel-history-section.children": 1,
+   "..network-editor-panel-topology-readout.children...network-editor-panel-remove-idx.options..": 1,
+   "..nn-dataset-section-title.children...nn-dataset-typed-fields.style...nn-dataset-schema-params.children..": 1,
+   "..nn-multi-node-layers-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1...cn-multi-candidate-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1..": 1,
+   "..cn-candidate-selection-radio.style...cn-top-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb...cn-random-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb..": 1,
+   "parameters-panel-params-store.data": 1,
+   "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..": 1,
+   "..dataset-plotter-scatter-plot.figure...dataset-plotter-distribution-plot.figure...dataset-plotter-sample-count.children...dataset-plotter-feature-count.children...dataset-plotter-class-count.children...dataset-plotter-balance-info.children..": 1,
+   "..dataset-plotter-seq-target-plot.figure...dataset-plotter-seq-target-plot.style..": 1,
+   "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 58,
+   "metrics-panel-metrics-store.data": 17,
+   "metrics-panel-view-state.data": 1,
+   "network-visualizer-view-state.data": 1,
+   "hdf5-snapshots-panel-selected-id.data": 1,
+   "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+   "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..": 1,
+   "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..": 1,
+   "candidate-metrics-panel-loss-plot.figure": 1,
+   "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...network-visualizer-output-count.children...network-visualizer-connection-count.children...network-visualizer-topology-hash.data...network-visualizer-new-node-highlight.data..": 1,
+   "..sidebar-meta-params-card.style...sidebar-nn-section.style...sidebar-nn-top-params.style...sidebar-nn-growth-triggers.style...sidebar-nn-multi-node-layers.style...sidebar-nn-spiral-dataset.style...sidebar-nn-cn-divider.style...sidebar-cn-section.style...sidebar-cn-pool-params.style...sidebar-cn-pool-training.style...sidebar-cn-multi-candidate.style...sidebar-apply-section.style...sidebar-params-divider.style...sidebar-network-info-section.style...nn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...cn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...sidebar-meta-params-header.children..": 1,
+   "..sidebar-col.width...visualization-col.width..": 1
+  },
+  "responses": {
+   "..theme-state.data...dark-mode-toggle.children..": 1,
+   "..experimental-functions-toggle.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-flags-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...experimental-functions-alert.children@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 2,
+   "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.children...top-phase-display.style...top-epoch-display.children...top-hidden-units-display.children...training-status-store.data...live-dataset-switch-button.disabled..": 58,
+   "dataset-swap-events-store.data": 25,
+   "loaded-snapshot-swap-events-store.data": 1,
+   "..start-button.disabled...start-button.children...pause-button.disabled...pause-button.children...stop-button.disabled...stop-button.children...resume-button.disabled...resume-button.children...reset-button.disabled...reset-button.children...apply-dataset-button.disabled..": 1,
+   "..nn-growth-preset-epochs-input.disabled...nn-growth-convergence-threshold-input.disabled..": 2,
+   "..cn-training-iterations-input.disabled...cn-training-convergence-threshold-input.disabled..": 2,
+   "..cn-top-candidates-input.disabled...cn-random-candidates-input.disabled..": 2,
+   "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc943b152e9ffab528d79e809b79210b5c..": 26,
+   "..apply-params-button.disabled...params-status.children..": 2,
+   "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 3,
+   "metrics-panel-layout-dropdown.options": 1,
+   "metrics-panel-training-state-store.data": 10,
+   "network-visualizer-topology-store.data": 2,
+   "..network-evolution-grid-container.children...network-evolution-stats.children..": 1,
+   "decision-boundary-boundary-data.data": 2,
+   "decision-boundary-dataset-data.data": 2,
+   "..dataset-plotter-seq-group-signals.style...dataset-plotter-seq-group-windows.style..": 1,
+   "dataset-plotter-dataset-store.data": 2,
+   "worker-panel-workers-store.data": 2,
+   "..parameters-panel-network-table.children...parameters-panel-dataset-table.children...parameters-panel-candidate-table.children..": 2,
+   "..replay-player-panel-idle.style...replay-player-panel-active.style...replay-player-panel-snapshot-id.children...replay-player-panel-fsm-badge.children...replay-player-panel-scrubber.min...replay-player-panel-scrubber.max...replay-player-panel-scrubber.value...replay-player-panel-range.min...replay-player-panel-range.max...replay-player-panel-range.value...replay-player-panel-epoch-readout.children...replay-player-panel-range-readout.children...replay-player-panel-speed.value...replay-player-panel-speed-readout.children...replay-player-panel-weights-badge.children...replay-player-panel-weights-badge.style..": 1,
+   "..redis-panel-status-badge.children...redis-panel-status-badge.color...redis-panel-mode-badge.children...redis-panel-mode-badge.color...redis-panel-error-display.children...redis-panel-version.children...redis-panel-uptime.children...redis-panel-clients.children...redis-panel-latency.children...redis-panel-memory.children...redis-panel-ops-sec.children...redis-panel-hit-rate.children...redis-panel-keyspace.children..": 1,
+   "..cassandra-panel-status-badge.children...cassandra-panel-status-badge.color...cassandra-panel-mode-badge.children...cassandra-panel-mode-badge.color...cassandra-panel-contact-points.children...cassandra-panel-keyspace.children...cassandra-panel-hosts-table.children...cassandra-panel-keyspace-count.children...cassandra-panel-table-count.children...cassandra-panel-replication-strategies.children...cassandra-panel-error-area.children..": 1,
+   "network-visualizer-raw-topology-store.data": 2,
+   "hdf5-snapshots-panel-detail-panel.children": 1,
+   "..hdf5-snapshots-panel-restore-modal.is_open...hdf5-snapshots-panel-restore-modal-body.children...hdf5-snapshots-panel-restore-pending-id.data..": 2,
+   "train-gate-notice.children": 1,
+   "metrics-panel-training-state-store.data@2b32a42ba6970d9589370a449d59dee938045a7dfaec6ac7a9b3207d8633a309": 2,
+   "last-button-click.data": 1,
+   "training-control-outcome-alert.children": 1,
+   "..dataset-shortfall-modal.is_open...dataset-shortfall-modal-body.children...dataset-shortfall-context.data..": 1,
+   "network-visualizer-stats-bar.style": 1,
+   "dataset-plotter-stats-summary.style": 1,
+   "..candidate-metrics-panel-training-state-store.data...candidate-metrics-panel-pool-history-store.data..": 40,
+   "..dataset-plotter-dataset-selector.options...dataset-plotter-dataset-selector.value..": 1,
+   "..nn-max-iterations-input.value...nn-max-total-epochs-input.value...nn-learning-rate-input.value...nn-max-hidden-units-input.value...nn-multi-node-layers-checkbox.value...nn-growth-trigger-radio.value...nn-growth-preset-epochs-input.value...nn-growth-convergence-threshold-input.value...nn-patience-input.value...nn-spiral-rotations-input.value...nn-spiral-number-input.value...nn-dataset-elements-input.value...nn-dataset-noise-input.value...cn-pool-size-input.value...cn-correlation-threshold-input.value...cn-selected-candidates-input.value...cn-training-complete-radio.value...cn-training-iterations-input.value...cn-training-convergence-threshold-input.value...cn-patience-input.value...cn-multi-candidate-checkbox.value@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c...cn-candidate-selection-radio.value...cn-top-candidates-input.value...cn-random-candidates-input.value...nn-output-epochs-input.value...nn-optimizer-type-dropdown.value...nn-activation-function-dropdown.value...nn-init-output-weights-dropdown.value...applied-params-store.data@a81ee1f2da530dcd9ef3955870794e22defacf5c1313013a8434c2308bd7120c..": 1,
+   "model-class-store.data": 1,
+   "..nn-dataset-type-dropdown.options...nn-dataset-type-dropdown.value...dataset-gate-notice.children..": 1,
+   "..network-editor-panel-idle.style...network-editor-panel-active.style...network-editor-panel-idle-fsm-badge.children...network-editor-panel-topology-store.data..": 1,
+   "network-visualizer-selection-info.style@bba8d96724560bd4a65d4c287bce63ac0687d5b7fef980c67619277eb3ea4915": 1,
+   "..replay-player-panel-swap-events-graph.figure...replay-player-panel-swap-events-count.children..": 1,
+   "metrics-panel-progress-detail.children": 4,
+   "metrics-panel-phase-duration.children": 4,
+   "metrics-panel-current-lr.children": 4,
+   "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...metrics-panel-candidate-epoch-progress.label..": 4,
+   "..dataset-plotter-seq-signal-select.options...dataset-plotter-seq-signal-select.value...dataset-plotter-seq-window-single.options...dataset-plotter-seq-window-single.value...dataset-plotter-seq-signal-single.options...dataset-plotter-seq-signal-single.value...dataset-plotter-seq-window-multi.options...dataset-plotter-seq-window-multi.value..": 1,
+   "dataset-plotter-seq-controls.style": 1,
+   "..worker-panel-status-badge.children...worker-panel-status-badge.color...worker-panel-error-display.children...worker-panel-total.children...worker-panel-idle.children...worker-panel-busy.children...worker-panel-stale.children...worker-panel-tasks-done.children...worker-panel-avg-health.children...worker-panel-worker-list.children..": 1,
+   "metrics-panel-replay-controls.style": 4,
+   "..dataset-plotter-seq-char-dt-hist.figure...dataset-plotter-seq-char-target-dist.figure...dataset-plotter-seq-char-stats.children...dataset-plotter-seq-char-companion.style..": 1,
+   "..dataset-plotter-seq-grid-plot.figure...dataset-plotter-seq-grid-container.style..": 1,
+   "..decision-boundary-plot.figure...decision-boundary-status.children..": 1,
+   "pinned-params-store.data": 2,
+   "replay-player-panel-control-trigger.data": 1,
+   "..hdf5-snapshots-panel-table-body.children...hdf5-snapshots-panel-status.children...hdf5-snapshots-panel-empty-state.style...hdf5-snapshots-panel-snapshots-store.data..": 1,
+   "..candidate-metrics-panel-status-badge.children...candidate-metrics-panel-status-badge.style...candidate-metrics-panel-phase.children...candidate-metrics-panel-pool-size.children..": 1,
+   "..candidate-metrics-panel-progress-section.style...candidate-metrics-panel-epoch-progress.value...candidate-metrics-panel-epoch-progress.label..": 1,
+   "candidate-metrics-panel-pool-info.children": 1,
+   "candidate-metrics-panel-history-section.children": 1,
+   "..network-editor-panel-topology-readout.children...network-editor-panel-remove-idx.options..": 1,
+   "..nn-dataset-section-title.children...nn-dataset-typed-fields.style...nn-dataset-schema-params.children..": 1,
+   "..nn-multi-node-layers-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1...cn-multi-candidate-checkbox.value@ca5428fc4be8facddd90f385a34d8c1ce20881788f34f266d642848951e663f1..": 1,
+   "..cn-candidate-selection-radio.style...cn-top-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb...cn-random-candidates-input.disabled@0ff0dbefef4a130bdb46a16babc7bcf91cddd5234db36713451773a44b0d3ffb..": 1,
+   "parameters-panel-params-store.data": 1,
+   "..replay-player-panel-status.children...replay-player-session.data@3f2f882a40abfc4b25555e443502be292679355e3fa341039c7baf5dca87c7ff..": 1,
+   "..dataset-plotter-scatter-plot.figure...dataset-plotter-distribution-plot.figure...dataset-plotter-sample-count.children...dataset-plotter-feature-count.children...dataset-plotter-class-count.children...dataset-plotter-balance-info.children..": 1,
+   "..dataset-plotter-seq-target-plot.figure...dataset-plotter-seq-target-plot.style..": 1,
+   "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 57,
+   "metrics-panel-metrics-store.data": 16,
+   "metrics-panel-view-state.data": 1,
+   "network-visualizer-view-state.data": 1,
+   "hdf5-snapshots-panel-selected-id.data": 1,
+   "..network-evolution-weight-norms-container.style...network-evolution-weight-norms.figure..": 1,
+   "..metrics-panel-oneshot-result.children...metrics-panel-oneshot-result.style...metrics-panel-classification-metrics.style...metrics-panel-loss-plot.style...metrics-panel-accuracy-plot.style..": 1,
+   "..metrics-panel-loss-plot.figure...metrics-panel-accuracy-plot.figure...metrics-panel-current-epoch.children...metrics-panel-current-loss.children...metrics-panel-current-accuracy.children...metrics-panel-hidden-units.children...metrics-panel-status.children...metrics-panel-status.style..": 1,
+   "candidate-metrics-panel-loss-plot.figure": 1,
+   "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...network-visualizer-output-count.children...network-visualizer-connection-count.children...network-visualizer-topology-hash.data...network-visualizer-new-node-highlight.data..": 1,
+   "..sidebar-meta-params-card.style...sidebar-nn-section.style...sidebar-nn-top-params.style...sidebar-nn-growth-triggers.style...sidebar-nn-multi-node-layers.style...sidebar-nn-spiral-dataset.style...sidebar-nn-cn-divider.style...sidebar-cn-section.style...sidebar-cn-pool-params.style...sidebar-cn-pool-training.style...sidebar-cn-multi-candidate.style...sidebar-apply-section.style...sidebar-params-divider.style...sidebar-network-info-section.style...nn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...cn-subsection-collapse.is_open@f423fbcde5be4def0fb795766ad7840137a0765bca14f6318a676a15902b0450...sidebar-meta-params-header.children..": 1,
+   "..sidebar-col.width...visualization-col.width..": 1
+  },
+  "failed": {}
+ },
+ "console": [
+  {
+   "t": 1790107835.5872037,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107835.601171,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107838.564983,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107838.9739964,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107842.9743857,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107843.2089124,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107849.479416,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107850.687222,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107861.13851,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107868.855712,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107876.7081091,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107878.9679074,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107899.6312373,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107900.64945,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107917.9792173,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107919.706871,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  },
+  {
+   "t": 1790107952.0760376,
+   "type": "error",
+   "text": "WebSocket connection to 'ws://127.0.0.1:8051/ws/control' failed: Error during WebSocket handshake: Unexpected response code: 403"
+  },
+  {
+   "t": 1790107953.1926768,
+   "type": "error",
+   "text": "[CascorWS] Error: Event"
+  }
+ ]
+}
