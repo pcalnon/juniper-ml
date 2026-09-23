@@ -2330,6 +2330,19 @@ failed at the thing it was for.
   under/over-limit count of 0/0. Age is the only soft spot and it reads better than the hours suggest —
   28,941 power-on hours (~3.3 years) but only **1,803 Head Flying Hours** and ~10.4 TB written in life.
   This **closes** the §12 / D-12a carried item "sda SMART never read".
+
+
+- **(10.2b)** **Staging goes on `nvme0n1p5` (`/`), not on `sda`.** `sda1` has 3.1 TiB free and is the
+  obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
+  the original and the re-encrypted copy in **one failure domain** for the whole of steps 4–7. The clean
+  SMART report above does not change that — it lowers the probability, not the consequence, and the
+  criterion the owner set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
+  needed, sits on a different physical device, is **ext4** so ownership and modes survive for D-14's
+  read-only model, and is **outside the `/home/pcalnon` backup source**. `sdc3` (`/home`, 1.2 TiB free)
+  satisfies the failure-domain test but fails the last one: staging there would sweep 203 GiB of
+  ciphertext into the next fileset unless an exclusion were added first — the same class of mistake as
+  S-7.
+
 - **(10.2c)** **Step 1's drill cannot precede P0, and does not add a second drill.** The SMART half ran
   early and correctly; the drill half cannot, for a reason that is easy to miss because the two halves sit
   in one row. A drill needs a **job index**, and P0 step 0(c) already records that the index must come from
@@ -2344,16 +2357,6 @@ failed at the thing it was for.
   `--restore-with-local-blocks` (`--no-local-blocks` is **deprecated** in 2.4.0.0 because not using local
   blocks is now the default), select by `--time=`, compare **SHA-256 and length** on ≥ 15 files, include a
   negative control that must fail, and treat the **exit code as not evidence**.
-- **(10.2b)** **Staging goes on `nvme0n1p5` (`/`), not on `sda`.** `sda1` has 3.1 TiB free and is the
-  obvious-looking target, which is exactly the trap: it holds the sole local copy, so staging there puts
-  the original and the re-encrypted copy in **one failure domain** for the whole of steps 4–7. The clean
-  SMART report above does not change that — it lowers the probability, not the consequence, and the
-  criterion the owner set is that access is *never* lost. `/` has 376 GiB free against the ~203 GiB
-  needed, sits on a different physical device, is **ext4** so ownership and modes survive for D-14's
-  read-only model, and is **outside the `/home/pcalnon` backup source**. `sdc3` (`/home`, 1.2 TiB free)
-  satisfies the failure-domain test but fails the last one: staging there would sweep 203 GiB of
-  ciphertext into the next fileset unless an exclusion were added first — the same class of mistake as
-  S-7.
 
 ---
 
