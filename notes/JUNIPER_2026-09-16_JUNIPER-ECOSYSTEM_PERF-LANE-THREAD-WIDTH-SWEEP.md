@@ -120,7 +120,14 @@ right — nobody had validated 2 — but the validation returns "indistinguishab
 >   do not depend on that.
 > - **§2.1's "3.3× gap at identical OpenMP width" does not evidence what it is used for.**
 >   `thread w16`'s 12.295 s is dominated by its own 9.799 s of later passes. On the **true
->   first pass** the two arms are 2.1772 (`thread w16`) and 2.0404 (`env w16`) — within noise.
+>   first pass** the two arms are **2.1772** (`thread w16`) and **2.3404** (`env w16`), medians
+>   of 3 — within noise, and if anything `env` is marginally *slower*, i.e. the gap does not
+>   merely shrink, it fails to appear at all.
+>   > **Sub-correction, same day**: an earlier version of this block paired 2.1772 against
+>   > **2.0404**. That is `env w16`'s **r0**, not its median — the three repeats are
+>   > 2.0404 / 6.6713 / 2.3404. Comparing a median against a single repeat is exactly the
+>   > error this correction exists to fix, committed inside the correction itself. The
+>   > conclusion ("within noise") is unchanged; the number was not defensible.
 >   The mechanism claim itself (only `thread` also moves torch's *global*) is **not** refuted,
 >   and `thread w16` really is far slower overall — but the slowness lives in the **later
 >   passes**, not the initial one, and §2.1 attributes it to the initial one.

@@ -1,0 +1,975 @@
+{
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8055",
+    "git_sha": "2f2f50405b31888fdb289d1c8bf580e10553e0da",
+    "build_date": "2026-09-23T00:43:10Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T00:43:21Z"
+  },
+  "steps": [
+    {
+      "label": "M-METRICS-13 play",
+      "component": "replay-play",
+      "clicked": true,
+      "expect": "play text -> \u23f8, interval enabled, mode playing",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": false,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 51,
+      "requests_naming_replay": 7,
+      "replay_state_responses": [
+        {
+          "t": 1790124290.2593534,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 0
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-13 pause",
+      "component": "replay-play",
+      "clicked": true,
+      "expect": "play text -> \u25b6, interval disabled, mode paused",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "0 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "0 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 38,
+      "requests_naming_replay": 7,
+      "replay_state_responses": [
+        {
+          "t": 1790124310.652683,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124313.1383975,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124315.2887328,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124316.893752,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 0
+        },
+        {
+          "t": 1790124318.4633534,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124321.345666,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-16 2x",
+      "component": "speed-2x",
+      "clicked": true,
+      "expect": "interval -> 500",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 2,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 500,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 50,
+      "requests_naming_replay": 10,
+      "replay_state_responses": [
+        {
+          "t": 1790124341.1718998,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124347.5541866,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124349.360054,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124351.6441293,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-16 4x",
+      "component": "speed-4x",
+      "clicked": true,
+      "expect": "interval -> 250",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 2,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 500,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 2,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 250,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 39,
+      "requests_naming_replay": 12,
+      "replay_state_responses": [
+        {
+          "t": 1790124368.4155977,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124368.415699,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124370.2963717,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124372.00415,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124372.9338298,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124374.1601803,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124375.847803,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124377.4505417,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124377.5276148,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124379.7121048,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124380.955174,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124381.9135768,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-16 1x",
+      "component": "speed-1x",
+      "clicked": true,
+      "expect": "interval -> 1000",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 4,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 250,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 4,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 1000,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 43,
+      "requests_naming_replay": 11,
+      "replay_state_responses": [
+        {
+          "t": 1790124401.3692715,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124404.0456336,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124406.4182851,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124410.2559853,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124412.2786667,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124413.9901116,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124415.374385,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124416.7535975,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 1
+        },
+        {
+          "t": 1790124416.8670237,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124418.0850248,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124419.358997,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-14 step-forward",
+      "component": "replay-step-forward",
+      "clicked": true,
+      "expect": "index +1 capped at max_index",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": false,
+        "interval_ms": 1000,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "2 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 1.7391304347826086,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 37,
+      "requests_naming_replay": 7,
+      "replay_state_responses": [
+        {
+          "t": 1790124435.632675,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124438.135805,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124439.481227,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124441.2427034,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 2
+        },
+        {
+          "t": 1790124441.2705417,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124443.0040076,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124445.4965034,
+          "carried": true,
+          "mode": "playing",
+          "current_index": 2
+        },
+        {
+          "t": 1790124449.7156599,
+          "carried": false,
+          "mode": null,
+          "current_index": null
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-12 step-back",
+      "component": "replay-step-back",
+      "clicked": true,
+      "expect": "index -1 floored at 0",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "playing",
+          "speed": 1,
+          "current_index": 2,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "2 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 1.7391304347826086,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u23f8",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 44,
+      "requests_naming_replay": 4,
+      "replay_state_responses": [
+        {
+          "t": 1790124471.1112323,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 1
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-15 end",
+      "component": "replay-end",
+      "clicked": true,
+      "expect": "index -> end_index",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0.8695652173913043,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 1,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "1 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 100,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 36,
+      "requests_naming_replay": 3,
+      "replay_state_responses": [
+        {
+          "t": 1790124502.8310251,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 115
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-11 start",
+      "component": "replay-start",
+      "clicked": true,
+      "expect": "index -> start_index (0)",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 115,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "115 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 100,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 31,
+      "requests_naming_replay": 2,
+      "replay_state_responses": [
+        {
+          "t": 1790124525.9501102,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 0
+        }
+      ]
+    },
+    {
+      "label": "M-METRICS-18 slider",
+      "component": "replay-slider",
+      "clicked": true,
+      "expect": "value maps to index, mode paused",
+      "before": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "0 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 116,
+        "replay_state": {
+          "mode": "paused",
+          "speed": 1,
+          "current_index": 11,
+          "start_index": 0,
+          "end_index": 115
+        },
+        "position": "11 / 115",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 9.565217391304348,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests_naming_replay": 5,
+      "replay_state_responses": [
+        {
+          "t": 1790124554.7930758,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 9
+        },
+        {
+          "t": 1790124554.7932143,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 10
+        },
+        {
+          "t": 1790124554.8636932,
+          "carried": true,
+          "mode": "paused",
+          "current_index": 11
+        }
+      ]
+    }
+  ],
+  "fill": {
+    "waited_s": 19.3,
+    "len_after_wait": 116
+  },
+  "initial": {
+    "metrics_store_len": 116,
+    "replay_state": {
+      "mode": "stopped",
+      "speed": 1,
+      "current_index": 0,
+      "start_index": 0,
+      "end_index": null
+    },
+    "position": "0 / 115",
+    "play_text": "\u25b6",
+    "interval_disabled": true,
+    "interval_ms": 1000,
+    "slider_value": 0,
+    "controls": {
+      "present": true,
+      "display": "block",
+      "h": 95
+    }
+  },
+  "final": {
+    "metrics_store_len": 116,
+    "replay_state": {
+      "mode": "paused",
+      "speed": 1,
+      "current_index": 11,
+      "start_index": 0,
+      "end_index": 115
+    },
+    "position": "11 / 115",
+    "play_text": "\u25b6",
+    "interval_disabled": true,
+    "interval_ms": 1000,
+    "slider_value": 9.565217391304348,
+    "controls": {
+      "present": true,
+      "display": "block",
+      "h": 95
+    }
+  },
+  "verdicts": {
+    "M-METRICS-13": "FAIL",
+    "M-METRICS-16": "PASS",
+    "M-METRICS-14": "FAIL (index already 1, and the click's write never applied: mode playing -> playing)",
+    "M-METRICS-12": "PASS",
+    "M-METRICS-15": "FAIL",
+    "M-METRICS-11": "PASS",
+    "M-METRICS-18": "PASS"
+  },
+  "server_side_by_step": {
+    "M-METRICS-13 play": {
+      "responses": 1,
+      "carried": 1,
+      "modes": [
+        "playing"
+      ]
+    },
+    "M-METRICS-13 pause": {
+      "responses": 6,
+      "carried": 6,
+      "modes": [
+        "playing",
+        "playing",
+        "playing",
+        "paused",
+        "playing",
+        "playing"
+      ]
+    },
+    "M-METRICS-16 2x": {
+      "responses": 4,
+      "carried": 4,
+      "modes": [
+        "playing",
+        "playing",
+        "playing",
+        "playing"
+      ]
+    },
+    "M-METRICS-16 4x": {
+      "responses": 12,
+      "carried": 12,
+      "modes": [
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing"
+      ]
+    },
+    "M-METRICS-16 1x": {
+      "responses": 11,
+      "carried": 11,
+      "modes": [
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing",
+        "playing"
+      ]
+    },
+    "M-METRICS-14 step-forward": {
+      "responses": 8,
+      "carried": 7,
+      "modes": [
+        "playing",
+        "playing",
+        "playing",
+        "paused",
+        "playing",
+        "playing",
+        "playing"
+      ]
+    },
+    "M-METRICS-12 step-back": {
+      "responses": 1,
+      "carried": 1,
+      "modes": [
+        "paused"
+      ]
+    },
+    "M-METRICS-15 end": {
+      "responses": 1,
+      "carried": 1,
+      "modes": [
+        "paused"
+      ]
+    },
+    "M-METRICS-11 start": {
+      "responses": 1,
+      "carried": 1,
+      "modes": [
+        "paused"
+      ]
+    },
+    "M-METRICS-18 slider": {
+      "responses": 3,
+      "carried": 3,
+      "modes": [
+        "paused",
+        "paused",
+        "paused"
+      ]
+    }
+  },
+  "max_index_by_step": {
+    "M-METRICS-13 play": 115,
+    "M-METRICS-13 pause": 115,
+    "M-METRICS-16 2x": 115,
+    "M-METRICS-16 4x": 115,
+    "M-METRICS-16 1x": 115,
+    "M-METRICS-14 step-forward": 115,
+    "M-METRICS-12 step-back": 115,
+    "M-METRICS-15 end": 115,
+    "M-METRICS-11 start": 115,
+    "M-METRICS-18 slider": 115
+  },
+  "max_index": 115
+}

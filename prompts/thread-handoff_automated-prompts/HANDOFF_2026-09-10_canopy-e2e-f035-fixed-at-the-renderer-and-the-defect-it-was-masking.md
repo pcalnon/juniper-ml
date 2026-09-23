@@ -25,6 +25,149 @@ under `reports/e2e-canopy-2026-09-02/transcripts/`. **In juniper-canopy**: `src/
 
 ---
 
+## ★ RE-EVALUATED 2026-09-22 — read this first; it supersedes §0, §2, §3 and §5 below
+
+**Session**: <https://claude.ai/code/session_0171uABjF34XxFiu1n1L9wcG> · worktree
+`juniper-ml/.claude/worktrees/lively-humming-pixel`. **Evaluated against**:
+
+- canopy `main` `9bffaba1` (v0.8.1). `origin/main` has since moved to `886147b5`, canopy#656, which
+  touches only the dataset-availability gate;
+- cascor `05c13d5` (v0.11.0);
+- juniper-data 0.15.0.
+
+The full record is **Phase 7** of `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`
+(the ledger). The verbatim validator reports are under `reports/e2e-canopy-2026-09-02/consensus/`.
+
+**Verdict: outstanding work remained, and most of it is now done.** Every §3 item was resolved,
+measured, or superseded. Along the way:
+
+- **Filed and fixed the same day**:
+  - F-CANOPY-053 (P1): the Candidate Metrics panel never applied a periodic write. A regression since
+    `f9defb4`; canopy#657.
+- **Closed**:
+  - F-CANOPY-048: the replay block's two-callback cycle; canopy#658.
+  - F-CANOPY-052, closed on the row's own script, with its mechanism corrected.
+  - F-CANOPY-038, in behaviour.
+  - F-CASCOR-004: juniper-cascor#674.
+- **Filed, open**: F-CANOPY-054 (P2), unmasked by #658.
+- **Refuted before it shipped**: the first F-053 fix design, which would have re-broken F-CANOPY-027.
+
+**Documents CHANGED by this re-evaluation**:
+
+- `notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md`: Phase 7, plus in-place
+  corrections to the F-CANOPY-038, -048, -052 and F-CASCOR-004 headers and the 09-08 F-038 passage;
+- `notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md`: M-CANDIDATES-01..07/-09 and
+  M-METRICS-11..16/-18;
+- `util/ad-hoc/README.md`;
+- `util/isolated_stack.bash` and `tests/test_isolated_stack_script.py`: the aged-venv rebuild;
+- this file.
+
+**Added**:
+
+- 17 files under `util/ad-hoc/2026-09-22_*`: 14 scripts, plus Lane B's three #674 probes in
+  `2026-09-22_pr674_laneB/`;
+- repairs to `2026-09-08_replay_block_redrive.py`, `e2e_f027_slots.py` and `e2e_w3_params_driver.py`;
+- 49 evidence artifacts under `reports/e2e-canopy-2026-09-02/transcripts/2026-09-22_*`;
+- the verbatim validator reports under `reports/e2e-canopy-2026-09-02/consensus/`.
+
+### §3, item by item
+
+| # | item (this document's §3) | status 2026-09-22 |
+|---|---|---|
+| 1 | run M-CANDIDATES-07's own script against a leg serving #618 | **DONE.** RENDER **PASS 4/4** on `9bffaba1`, all 30 candidate points, 4.8–12.5 s, so **F-CANOPY-052 is FIXED**. Its recorded mechanism was also corrected: its own wire census shows the callback was never dispatched, which is a readiness block, not eviction. THEME **FAIL 3/3** at F-CANOPY-004's 16 s contract: `theme-state` lands about 20 s after the toggle and the figure re-themes at about 30 s. The row stays FAIL on that new cause |
+| 2 | M-METRICS-11..16/-18: (a) why `update_replay_ui` did not apply; (b) fix the probe | **(b) DONE**: the probe waits for the fill, scores each step on its own read, refuses vacuous passes, and counts server-side writes. **(a) ANSWERED**: `update_replay_ui` is never *ready*. It and `handle_replay_controls` form a two-callback cycle, and dash-renderer's cycle breaker fires only when nothing else is pending, which canopy's pollers never allow. Evidence: A and the play label were in `requested` in 6471/6471 queue samples, B in 4030/6471 from the click. A clean room locked 3/3 with the cycle plus an always-pending callback, against 3/3 live without the cycle. Lane B confirmed this with 30 variant runs and corrected the explanation: the lock needs the cycle plus a callback pending at every pass. **-18 goes BLOCKED → FAIL** on `9bffaba1`. **Fixed by canopy#658** (the two callbacks merged into one), verified live at `2f2f5040`: six of seven rows PASS at the 16 s settle. **M-METRICS-13 still FAILs, on the new F-CANOPY-054**: a late `replay_tick` response undoes the pause |
+| 3 | the three sibling consumers: measure, then demote or fix the writer | **SUPERSEDED by F-CANOPY-053 (P1).** The consumers are not "surviving on a margin": their writer's periodic writes NEVER apply (0/225 at the 1000 ms period, 23/24 at 10 000 ms), and the consumers are readiness-blocked behind it. It is a **regression since `f9defb4`**, where the rows were proven live on 2026-08-24. The first fix design (`running=` on the lane) was **refuted**: on this tab-gated lane it would re-break F-CANOPY-027. canopy#657 was redesigned instead: a 10 s period, write only real changes, hold the last good value. **Merged as `d7d641b9`** and verified live on `17588539`: the rows track the server with a ~10–20 s lag, and the lane stays gated off-tab (11/11 samples) |
+| 4 | F-CASCOR-004 / F-CANOPY-049 | cascor half: **FIXED, juniper-cascor#674 merged as `f9818b01`** after two review rounds. Round 1 found a false asyncio ERROR on 3.14 and a 1006-for-1011 on the sans-I/O stack Docker runs, and both were fixed. Round 2 had the live probe pass on both stacks. The drop probe's transport-counter rule ran for the first time and returned STATE-RECEIVED on `main`, as predicted; the NumPy trigger is gone. **F-CANOPY-049 is untouched** |
+| 5 | the 27–37 s full-history regression | **MEASURED**: the full refetch lands every **32.4 s** (p50, n=3) against about 5 s before #613, with the guarded lane cycling every 6.5 s. Recommendation, not taken: `FULL_HISTORY_POLL_TICK_MODULUS` → 1 |
+| 6 | the ~4–5 s re-enable overhead | **EXPLAINED BY MEASUREMENT.** It is the page's response-delivery latency: p50 5.09 s at idle against a ~30 ms network leg. A CPU profile shows the main thread 0.1% idle, 85% of it in dash-renderer's dispatch bookkeeping |
+| 7 | re-baseline after #614/#618 | **DONE by construction.** Every leg used on 09-10 and 09-11 is gone; everything was re-measured on `main` |
+| 8 | Phase 5 items 3/5/6/7/9 | 3 → the Candidate Metrics rows re-driven one tab per browser (F-053). 5 → the M-DATASET-17..26 owner question stands. 6 → retired: F-035 is closed on source + clean room, and the dispatch probe's verdict strings are quoted nowhere. 7 → **F-CANOPY-038 FIXED** in behaviour (1 carried + 10 `no_update` per 90 s; test gap stands). 9 → the M-TOPOLOGY-16 fade half is still owed |
+
+### §0 PREFLIGHT is stale — what is true now
+
+- **No legs on `:8052/:8053/:8054`.** The trio stopped cleanly on 2026-09-19. It was relaunched from the
+  primaries with `JUNIPER_E2E_PROJECT_DIR=/home/pcalnon/Development/python/Juniper bash util/isolated_stack.bash --up`.
+  The script derives the wrong root from a `.claude/worktrees` checkout. It also now rebuilds a data venv
+  that systemd-tmpfiles aged into an empty skeleton.
+- **Fixture 2/68/2, uuid `1cd15120…`, 116 metrics rows**, with snapshots
+  `snapshot_20260922T{194346Z,195609Z,202310Z}` and `snapshot_20260923T003754Z` (the 68-unit one). **A resumed snapshot restores the network but NOT the
+  metrics history**, which lives in cascor's process. After any relaunch, run one window with
+  `util/ad-hoc/2026-09-22_fixture_grow.py --to <N+2>`.
+- **Browser harness**:
+  - `JUNIPER_E2E_BROWSER_GPU=1` gives the host GPU; the default is SwiftShader.
+  - Keep concurrent browsers at 3 or fewer: canopy's per-IP WS cap is 5, and validators hit 403s.
+  - `JUNIPER_E2E_CANOPY_URL` must still be exported.
+
+### Still owed, in order
+
+1. **F-CANOPY-054** (P2, new): make `replay_tick` clientside, or version the state so the server refuses
+   a stale tick. Then re-drive M-METRICS-13. Folding the tick into the merged callback is NOT a fix:
+   same-identity eviction would drop the ticks.
+2. **M-CANDIDATES-10/-11**: now re-drivable, since cards exist on `main`. CAN-015's replay-player loop is
+   the latent trigger shape F-048's review named, exempted by name in canopy#658's cycle test.
+3. **Hunt the F-053 regression**: what across the 132 commits `f9defb4 → 9bffaba1` raised the page's
+   latency. Profile both builds; take a dispatch-rate census by source.
+4. **Cheap cuts to the dispatch rate** (round 2's list):
+   - the dead 1 Hz `metrics-panel-update-interval`, which nothing consumes;
+   - the ungated 500 ms `replay-player-panel-weight-drain`;
+   - `/api/state` rewrites whose only change is `timestamp`.
+   Then re-profile idle against the 0.1% baseline. The structural remedy remains the WS migration
+   (JR-CAN-PERF-004), e.g. via `dash_clientside.set_props`.
+5. **The top status bar**: one-browser measurement, then file or fold. It is a candidate fourth writer
+   of the same class, observed frozen only under WS-refused, multi-browser conditions.
+6. **Owner: re-evaluate F-CANOPY-004's contract.** Interaction re-render was measured at 22–30 s against
+   ≤16 s, and idle latency L at p50 5 s.
+7. `FULL_HISTORY_POLL_TICK_MODULUS` → 1: a decision, with the measurement ready.
+8. **canopy#613's guard, source-derived and not observed**:
+   - `runningOff` from a mid-fetch completion overwrites the CAN-000 apply clamp;
+   - an EVICTED request's `completeJob` re-enables the lane during its successor's flight, so #614's
+     "self-healing, bounded to one cycle" is wrong.
+9. **F-CANOPY-049** (canopy's half of F-CASCOR-004): distinguish a heartbeat from a payload.
+10. **#674 review follow-ups**: the same swallow-and-forget pattern lives in juniper-service-core's
+    WebSocket manager (`juniper_service_core/websocket/manager.py`) and in canopy's browser-facing
+    `src/communication/websocket_manager.py`.
+11. Unchanged: the M-DATASET-17..26 owner question, the M-TOPOLOGY-16 fade half, and F-038's
+    browser-level test gap.
+
+### Verify the starting state (replaces §5)
+
+```bash
+cd /home/pcalnon/Development/python/Juniper/juniper-ml          # or a fresh worktree
+python3 util/ad-hoc/e2e_finding_triage.py --note notes/JUNIPER_2026-08-09_JUNIPER-CANOPY_E2E-VALIDATION-EVIDENCE.md | tail -6
+grep -cE '^\| [A-Z0-9.-]+ .*\| BLOCKED' notes/JUNIPER_2026-08-08_JUNIPER-CANOPY_E2E-CLICK-BY-CLICK-TEST-MATRIX.md   # 20
+gh pr view 657 -R pcalnon/juniper-canopy --json state,mergedAt; gh pr view 674 -R pcalnon/juniper-cascor --json state,mergedAt
+ss -ltn | grep -E ':(8051|8101|8202)\b'; curl -s http://127.0.0.1:8051/v1/health | grep -o '"git_sha":"[0-9a-f]*"'
+curl -s http://127.0.0.1:8202/v1/network            # uuid 1cd15120…, hidden_units 62
+```
+
+Expected output:
+
+- ledger: **65 findings — 47 fixed / 1 accepted / 2 withdrawn / 15 open (0 P0, 2 P1, 13 P2)**;
+- matrix: **298 rows, BLOCKED 20**;
+- canopy `main` carries #657 (`d7d641b9`) and #658 (`9fbd697a`);
+- cascor `main` carries #674 (`f9818b01`).
+
+The `:8202` cascor leg still serves `05c13d5`, which is BEFORE #674. Relaunch it before any cascor WS
+measurement.
+
+### Traps learned this session
+
+1. **The wire tells the two renderer mechanisms apart.** Responses delivered but never applied means
+   eviction (F-035, F-053's writer). No request at all means a readiness block (F-052, F-053's consumers,
+   F-048). An A/B that stops a trigger cannot separate them, because it lifts both.
+2. **`running=` on a TAB-GATED interval defeats the gate.** It releases in `completeJob()` after every
+   run, including the 204 `no_update` ones at load and on tab changes. #613 was safe only because its
+   lane is global.
+3. **A verdict predicate can be mis-specified even when fixed before the run.** "Label shows ⏸" is not
+   "label changed", and a mount-time run had already set ⏸. The run was recorded INDETERMINATE, and a
+   corrected rule was fixed before a fresh run. Never re-score archived data.
+4. **An expected-result cell can state CONTENT while its verdict was scored on LIVENESS.** Mount defaults
+   satisfy "Pool size; default `0`". The criterion that was applied must be written into the row.
+5. Relaunch traps: a resumed snapshot has no history; `/tmp` ages files, not directories; the per-IP WS
+   cap is 5.
+
+---
+
 ## 0. PREFLIGHT
 
 1. **`uptime -s` before trusting any leg.** The host has not rebooted since **2026-09-07 23:12**, so every

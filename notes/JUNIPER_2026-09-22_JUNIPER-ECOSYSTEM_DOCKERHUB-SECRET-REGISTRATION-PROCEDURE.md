@@ -7,8 +7,23 @@
 `dockerhub` environment, so §5.2B is the path and §5.2A is not used. **§5.2B steps 1–2 DONE
 2026-09-22 in all five repos**: each `dockerhub` environment exists, admits tags `v*` and
 `juniper-*-v*` only, and has no reviewer, no wait timer and no secrets yet (verified under §6). The
-owner action still outstanding is §4 (create the token), then §5.2B **step 3** (the ten
-`gh secret set` commands), then §6.
+owner actions still outstanding, in order. Run every command in **your own terminal**, never through
+a Claude session. A `!` command there has no terminal for the hidden prompts, and any workaround
+puts the token in the session transcript.
+
+1. §2: confirm the Docker Hub account, its username, and that new repositories default to public.
+2. §5.2B step 3a: choose whether `DOCKERHUB_USERNAME` is a variable (recommended) or a secret.
+3. §4: create the token, then test it before registering it.
+4. §5.2B step 3: five username commands, then five token commands.
+5. §6: verify.
+6. Tell the working session four things:
+   - that the §4 step 5 login succeeded;
+   - which form step 3a used;
+   - your Docker ID;
+   - the token's expiry date, for §10.
+
+   Never tell it the token.
+
 **Unblocks:** Wave 4 of
 [`JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`](JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md)
 §6 OQ-1, ruled 2026-09-11.
@@ -18,14 +33,16 @@ owner action still outstanding is §4 (create the token), then §5.2B **step 3**
 ## 1. What this is, and what it is not
 
 Wave 4 adds `docker.io` as a **second** push target beside GHCR (plan D-2 phase 2). The plan's
-own words on sequencing:
+words on sequencing, as they read before its 2026-09-22 amendment, which changed "repository
+secret" to "secret":
 
 > **Owner action before any Wave 4 workflow change**: register a `DOCKERHUB_TOKEN` (and
 > `DOCKERHUB_USERNAME`) repository secret in each of the five image repos […] **Until those
 > exist the second login+push cannot be added, and adding it early would fail every release.**
 
 The quote's *"repository secret"* is **superseded**. §3 ruled on 2026-09-22 that the credential is
-an **environment** secret, and the plan was amended to match. The sequencing point stands.
+an **environment** secret, and the plan was amended to match. Whether the username needs to be a
+secret at all is a separate, open choice (§5.2B step 3a). The sequencing point stands.
 
 **This document covers the credential registration only.** It does **not** change any workflow.
 That ordering is not fussiness: the publish workflows are `release`-triggered, so a login step
@@ -48,8 +65,13 @@ integration at all** — the only `docker.io` hit is buildx error text quoted in
 | --- | --- | --- |
 | A Docker Hub account exists | the namespace `docker.io/<user>/<image>` is derived from it | **UNKNOWN — owner must confirm** |
 | Its **username**, exactly as Docker Hub spells it | becomes `DOCKERHUB_USERNAME`; Docker Hub usernames are lowercase and this is the push namespace, not a display name | **UNKNOWN** |
-| The account tier | Personal (free) is sufficient — see §6 | assumed Personal |
-| Five repositories exist or can be auto-created on first push | Personal allows **unlimited public** repos | assumed |
+| The account tier | Personal (free) is sufficient — see §9 | assumed Personal |
+| Five repositories exist or can be auto-created on first push | Personal allows **unlimited public** repos. A first push creates the repository with the namespace's **default privacy** | **owner: confirm the default is Public** (note below), or pre-create the five as public |
+
+> **Where the default lives** (Docker's Hub *Settings* page,
+> <https://docs.docker.com/docker-hub/settings/>, read 2026-09-23): sign in to
+> Docker Hub, select **My Hub**, choose your account in the top-left drop-down, then **Settings →
+> Default privacy**, where **Default repository privacy** is Public or Private.
 
 > **`pcalnon` is a GitHub User, not an Organization** (`gh api orgs/pcalnon` → 404, verified
 > 2026-09-22). There is therefore **no organization-secret scope** available. Every secret below
@@ -116,9 +138,9 @@ and delays every publish by 5 minutes.
 `environment: dockerhub` to **both** jobs in `publish-image.yml`: "two extra lines per repo and
 … the whole of the extra work". **Taken literally, that breaks CI in all five repositories.**
 GitHub matches an environment's branch and tag rules "against the `GITHUB_REF` of the workflow
-run". The same page says it is adding a `refs/pull/*/merge` rule that "would also allow workflows
-triggered by `pull_request` events" to use the environment. So without such a rule, a
-pull-request run cannot use it. The branch policy is itself a protection rule: the API lists
+run". The same page says that "adding another branch rule for refs/pull/*/merge would also allow
+workflows triggered by pull_request events to deploy to the environment". So without such a rule,
+a pull-request run cannot use it. The branch policy is itself a protection rule: the API lists
 `branch_policy` among the protection rules of juniper-cascor's `pypi` environment, next to
 `required_reviewers` and `wait_timer`. And "the job won't start until all of the environment's
 protection rules pass". (GitHub Docs, *Deployments and environments* and *Control deployments*,
@@ -143,9 +165,10 @@ choosing between them belongs to the Wave 4 change (§7), not to this procedure:
    (`docker buildx imagetools create`). The environment is then only ever checked against a
    release tag. The credential sits in one job that runs no build step. Docker Hub receives the
    same digest that was verified on GHCR, and §7's "two credential points" become one. **This is
-   an outline, not a tested design.** Two things are unproven here: whether provenance
-   attestations are copied across, and how to re-run a Docker Hub failure after GHCR has already
-   published.
+   an outline, not a tested design.** How to re-run a Docker Hub failure after GHCR has already
+   published is still unproven. The attestation question is answered at the index level: on
+   2026-09-22, `docker buildx imagetools create --dry-run` from the worker 0.6.1 GHCR index
+   produced both arch manifests **and** both attestation manifests. A real push is untested.
 2. **A conditional environment name on the existing jobs**, for example
    `environment: ${{ github.event_name == 'release' && 'dockerhub' || '' }}`. **Unverified:**
    GitHub's documentation does not say what an empty environment name does. Test it in a
@@ -164,20 +187,84 @@ unattended.
 
 ## 4. Create the access token (Docker Hub side)
 
-Do this **once**. The same token value is registered into all five repos.
+Do this **once**. The same token value is registered into all five repos. §9's Pi-node token is
+a different, read-only token.
 
-1. Sign in to <https://hub.docker.com/> as the account from §2.
-2. **Account Settings → Personal access tokens → Generate new token.**
+**Never paste the token into a Claude session.** A pasted token is in the session transcript on
+disk. If that happens, treat it as exposed (§8: delete it at Docker Hub first) and start again.
+
+1. Sign in to Docker Home (<https://app.docker.com/>) as the account from §2.
+2. Select your avatar (top right) → **Account settings** → **Personal access tokens** →
+   **Generate new token**. That is the path Docker's *Personal access tokens* page gives, read
+   2026-09-22.
 3. Set:
-   - **Description**: `juniper-ci-image-publish-2026-09-22` — dated and purpose-named, so a later
+   - **Description**: `juniper-ci-image-publish-<date>` — dated and purpose-named, so a later
      audit can tell what it is without guessing.
    - **Expiration**: set one. A never-expiring CI credential is a credential nobody ever reviews.
-     12 months is reasonable; **write the expiry date into §10 of this document when you set it**,
-     because nothing else will remind you.
-   - **Access permissions**: **Read & Write**. *Not* Read/Write/Delete, and not Admin.
-     The workflow pushes tags and manifests; it never deletes. The plan is explicit:
-     *"Scope the token to Read & Write, not Admin."*
-4. **Copy the token immediately.**
+     12 months is reasonable. **The expiry date must reach §10:** tell the working session the
+     date and it records it by PR, or edit §10 yourself, because nothing else will remind you.
+   - **Access permissions**: **Read & Write**: read and write, **without** delete, and not
+     admin. Docker's page lists the permissions as *Read*, *Write* and *Delete*; pick the option
+     that grants the first two and not the third. The workflow pushes tags and manifests; it
+     never deletes. The plan is explicit: *"Scope the token to Read & Write, not Admin."*
+4. **Copy the token immediately, into your password manager, before closing Docker's dialog.**
+   Docker's page: *"You won't be able to retrieve the token once you exit the screen."* From here
+   on, copy it from the password manager just before each prompt that asks for it.
+5. **Test it now, before registering anything.** A bad token found here costs one retry; found
+   after §5.2B, it costs five overwrites. Test in a **throwaway** Docker config, so your normal
+   `~/.docker/config.json` is untouched. It may already hold a Docker Hub login, which a normal
+   `docker login` would overwrite and the logout would then remove. **Run the block in bash, one
+   line at a time.** Pasted as a whole, the lines after the login can be read as the password.
+
+   **First, check the machine has no Docker credential helper:**
+   `command -v docker-credential-pass docker-credential-secretservice docker-credential-osxkeychain`
+   must print nothing. When a config holds no logins, docker stores new credentials in the
+   platform's default helper if it is installed: `pass` or `secretservice` on Linux, `osxkeychain`
+   on macOS. That store is shared by every config, so the token would land there, where the
+   throwaway directory's `rm` cannot reach it. If your real login is also kept there, the test would
+   overwrite it and then delete it. This workstation had no helper on 2026-09-23. If yours has
+   one, run the test on a machine without it.
+
+   ```bash
+   JDH_TEST="$(mktemp -d -t juniper-dh-test.XXXXXX)"
+   docker --config "${JDH_TEST:?}" login --username '<Docker ID>'
+   docker --config "${JDH_TEST:?}" logout
+   case "$JDH_TEST" in */juniper-dh-test.*) rm -rf "$JDH_TEST" ;; esac; unset JDH_TEST
+   ```
+
+   - **Line 1** makes the throwaway directory.
+   - **Line 2** logs in to it. Type nothing until `Password:` appears, then paste the token. If the
+     line fails at once, a paste would land at the shell prompt and in its history (§8).
+   - **Line 3** is a **bare** logout, with no registry name (note below).
+   - **Line 4** deletes the directory, and only a path made by line 1's template.
+
+   Every docker line names the throwaway directory through `JDH_TEST`, a name used for nothing
+   else, and `${JDH_TEST:?}` refuses to run when it is unset. So no line can fall back to your real
+   `~/.docker`, not even one run on its own later.
+   - `Login Succeeded` means the token is valid. It does not prove the token can push, so check its
+     scope in Docker's token list; Docker's page says *"You can also view the scope of the
+     tokens"*. The value you pasted should begin `dckr_pat_`, as in Docker's own examples. Anything
+     else is probably the account password.
+   - **`incorrect username or password`**: check that you typed the Docker ID, not an email. To
+     retry, run line 4, then the **whole block again from line 1**, never the login line alone. If
+     it fails the same way again, run line 4, delete the token at Docker Hub and start §4 again.
+   - **If the shell is lost before line 4**, for example a closed terminal, a successful login's
+     token is still in the throwaway directory's `config.json`. Remove every such directory with
+     `rm -rf "${TMPDIR:-/tmp}"/juniper-dh-test.*`.
+   - **Any other error** (network, a Docker Hub outage) says nothing about the token. Run line 4,
+     and retry the whole block later.
+   - **Then clear the clipboard.** §5.2B step 3a types the usernames, so nothing should be on it.
+
+> **Use bare `docker logout`, NOT `docker logout docker.io`** — corrected 2026-09-22.
+> `docker login docker.io` stores the credential under the key `https://index.docker.io/v1/`.
+> `docker logout docker.io` then prints *"Removing login credentials for docker.io"* and exits 0,
+> but it leaves that entry in place, so a Read & Write token stays in `config.json` (unencrypted
+> unless a credential helper is set). Bare `docker logout` removes it. Verified on docker 29.7.2
+> against a throwaway `DOCKER_CONFIG`. §6 and §11 used to say `docker logout docker.io`.
+>
+> **Do not add `--password-stdin`.** With no password flag, `docker login` prompts without
+> echoing, and the token never reaches argv. `--password-stdin` typed at a terminal gives no
+> prompt, shows the pasted token on screen, and waits for Ctrl-D. It is for scripts, not people.
 
 > **The token is displayed EXACTLY ONCE.** There is no "show again". If you navigate away before
 > copying it, the only recovery is to delete it and generate another — and a half-registered
@@ -209,8 +296,8 @@ juniper-recurrence
 ### 5.2A Repository secrets (Option A) — NOT CHOSEN; do not run
 
 > Kept as the record of what Option A would have needed. Running it would create the repo-wide
-> exposure that §3 ruled against. Go to §5.2B. The warning below about `--body` applies there
-> too.
+> exposure that §3 ruled against. Go to §5.2B. The warning below about `--body` applies to the
+> token there too.
 
 `gh secret set` reads the value from stdin, so the token never appears in your shell history or
 in `ps` output. Run one command per repo, pasting the token at the prompt:
@@ -235,7 +322,8 @@ gh secret set DOCKERHUB_USERNAME --repo pcalnon/juniper-cascor
 > step 3.** Re-running step 1 only updates an environment that already exists. Do not re-run
 > step 2: both tag rules are already present in every repository (§6 has the read-back).
 
-Create the environment first, then set the secrets against it:
+Steps 1–2 create the environment; step 3 sets the credential against it. Steps 1–2 are kept as
+the record of what was run, shown for juniper-cascor and run identically in the other four:
 
 ```bash
 # 1. create the environment with no reviewer and no wait timer
@@ -248,13 +336,56 @@ gh api -X POST repos/pcalnon/juniper-cascor/environments/dockerhub/deployment-br
   -f name='v*' -f type=tag
 gh api -X POST repos/pcalnon/juniper-cascor/environments/dockerhub/deployment-branch-policies \
   -f name='juniper-*-v*' -f type=tag
-
-# 3. the secrets, scoped to that environment
-gh secret set DOCKERHUB_TOKEN    --repo pcalnon/juniper-cascor --env dockerhub
-gh secret set DOCKERHUB_USERNAME --repo pcalnon/juniper-cascor --env dockerhub
 ```
 
-Repeat all four steps for the other four repos.
+**Step 3a: the username, in all five repositories, before any token.** Choose one form for all
+five:
+
+- **An environment variable. Recommended.** The username is not a credential: it is the public
+  push namespace, `docker.io/<Docker ID>/<image>`. A variable's value can be read back (§6), so a
+  typo shows before a release depends on it. A secret's value never can be read back. Docker's own
+  `docker/login-action` README pairs `vars.DOCKERHUB_USERNAME` with `secrets.DOCKERHUB_TOKEN`
+  (read 2026-09-22). Wave 4 then reads `vars.DOCKERHUB_USERNAME`.
+- **An environment secret**, as the plan's OQ-1 wording has it. Wave 4 then reads
+  `secrets.DOCKERHUB_USERNAME`.
+
+Type the Docker ID into the command; do not paste it. `--body` is safe here because the username
+is public. It is never safe for the token (the warning under §5.2A). §4 step 5 ended by clearing
+the clipboard, and the usernames are typed, so the token cannot land in a username by mistake. A token
+stored in a variable is unmasked and readable by anyone with access to the repository.
+
+```bash
+# 3a. the username, variable form (recommended)
+gh variable set DOCKERHUB_USERNAME --repo pcalnon/juniper-cascor        --env dockerhub --body '<Docker ID>'
+gh variable set DOCKERHUB_USERNAME --repo pcalnon/juniper-cascor-worker --env dockerhub --body '<Docker ID>'
+gh variable set DOCKERHUB_USERNAME --repo pcalnon/juniper-canopy        --env dockerhub --body '<Docker ID>'
+gh variable set DOCKERHUB_USERNAME --repo pcalnon/juniper-data          --env dockerhub --body '<Docker ID>'
+gh variable set DOCKERHUB_USERNAME --repo pcalnon/juniper-recurrence    --env dockerhub --body '<Docker ID>'
+```
+
+For the secret form, run the same five lines with `gh secret set` in place of `gh variable set`.
+Use one form, not both.
+
+**Step 3b: the token, in all five repositories.** For each line, copy the command and run it.
+Only then copy the token from your password manager, and paste it at the masked prompt. The order
+matters. If the command is still on the clipboard at the prompt, the secret stores the command
+text, and every check in §6 still passes.
+
+```bash
+# 3b. the token: no --body, paste at the prompt
+gh secret set DOCKERHUB_TOKEN --repo pcalnon/juniper-cascor        --env dockerhub
+gh secret set DOCKERHUB_TOKEN --repo pcalnon/juniper-cascor-worker --env dockerhub
+gh secret set DOCKERHUB_TOKEN --repo pcalnon/juniper-canopy        --env dockerhub
+gh secret set DOCKERHUB_TOKEN --repo pcalnon/juniper-data          --env dockerhub
+gh secret set DOCKERHUB_TOKEN --repo pcalnon/juniper-recurrence    --env dockerhub
+```
+
+If your password manager has a command-line client, you can pipe it instead:
+`<client> | gh secret set DOCKERHUB_TOKEN --repo pcalnon/<repo> --env dockerhub`. That avoids the
+clipboard entirely. `gh secret set` reads standard input when you give it no `--body`.
+
+**After the fifth token, clear the clipboard and any clipboard history** before you talk to the
+working session. The token is the last thing you copied.
 
 > **Step 2 is not optional.** An environment created with `custom_branch_policies=true` and *no*
 > policies added permits **nothing** — a job declaring it will never run. An environment created
@@ -266,23 +397,32 @@ Repeat all four steps for the other four repos.
 ## 6. Verify the registration — without printing the secret
 
 GitHub's API **never returns a secret's value**. It returns names and timestamps only, which is
-exactly what you want to check: that the name is spelled correctly and that it exists in all five
-repos.
+exactly what you want to check for the token: that the name is spelled correctly and that it
+exists in all five repos. A **variable's** value *is* returned, which is why §5.2B step 3a
+recommends a variable for the username.
 
 ```bash
-# Repository scope. Option B was ruled (§3), so this must show NO DOCKERHUB_* name. A
-# `gh secret set` that dropped `--env dockerhub` puts the secret here, readable by the whole
-# repo -- the exposure §3 ruled out. If one appears, delete it (§8) before going on.
+# Repository scope. Option B was ruled (§3), so NEITHER list may show a DOCKERHUB_* name. A
+# command that dropped `--env dockerhub` lands here, readable by every workflow in the repo --
+# the exposure §3 ruled out. If one appears, fix only that entry (the note after this block).
+# Variables print with their VALUES (variables are not secret). ANY variable value that begins
+# dckr_pat_ is the token, so it is exposed: go to §8, "If the token is ever exposed".
 for r in juniper-cascor juniper-cascor-worker juniper-canopy juniper-data juniper-recurrence; do
-  printf '%-24s ' "$r"
-  gh api "repos/pcalnon/$r/actions/secrets" --jq '[.secrets[].name] | join(",")'
+  printf '%-24s secrets=%s  variables=%s\n' "$r" \
+    "$(gh api "repos/pcalnon/$r/actions/secrets" --jq '[.secrets[].name] | join(",")')" \
+    "$(gh api "repos/pcalnon/$r/actions/variables" --jq '[.variables[] | .name + "=" + .value] | join(",")')"
 done
 
-# Environment scope (Option B, the ruled path). Expect DOCKERHUB_TOKEN and DOCKERHUB_USERNAME in each.
+# Environment scope, the ruled path. Expect in each repo:
+#   secrets   DOCKERHUB_TOKEN, plus DOCKERHUB_USERNAME if step 3a chose a secret;
+#   variables DOCKERHUB_USERNAME=<your Docker ID> if step 3a chose a variable.
+# The variable's VALUE is printed, and it must be your Docker ID. A value that begins dckr_pat_
+# is the token: it is exposed (§8, "If the token is ever exposed"). Any other wrong value is a
+# typo: re-run that repo's §5.2B step 3a line.
 for r in juniper-cascor juniper-cascor-worker juniper-canopy juniper-data juniper-recurrence; do
-  printf '%-24s ' "$r"
-  gh api "repos/pcalnon/$r/environments/dockerhub/secrets" --jq '[.secrets[].name] | join(",")' 2>/dev/null \
-    || echo "NO dockerhub ENVIRONMENT"
+  printf '%-24s secrets=%s  variables=%s\n' "$r" \
+    "$(gh api "repos/pcalnon/$r/environments/dockerhub/secrets" --jq '[.secrets[].name] | join(",")' 2>/dev/null || echo 'NO dockerhub ENVIRONMENT')" \
+    "$(gh api "repos/pcalnon/$r/environments/dockerhub/variables" --jq '[.variables[] | .name + "=" + .value] | join(",")' 2>/dev/null || echo '-')"
 done
 
 # Prove the environment is tag-restricted and its policy list NON-EMPTY -- in each repo.
@@ -296,13 +436,26 @@ for r in juniper-cascor juniper-cascor-worker juniper-canopy juniper-data junipe
 done
 ```
 
+**If a `DOCKERHUB_*` entry appears at repository scope, fix only that entry.**
+
+- If it is a variable, of any name, whose value begins `dckr_pat_`, the token is exposed. Follow
+  §8, *If the token is ever exposed*, through its last step, instead of what follows here.
+- Otherwise, delete that one copy with **no** `--env`: use
+  `gh secret delete <NAME> --repo pcalnon/<repo>` for a secret, or
+  `gh variable delete <NAME> --repo pcalnon/<repo>` for a variable. Then re-run that entry's line
+  from §5.2B step 3 and run this section again.
+- In this case, **run nothing else in §8.** Its full-rollback block deletes the correct
+  environment copies and the environment itself.
+
 **Baseline before you start** (verified 2026-09-22): all five repos hold exactly
-`CROSS_REPO_DISPATCH_TOKEN,SOPS_AGE_KEY`, except `juniper-recurrence`, which holds **none**. If a
-`DOCKERHUB_*` name appears before you have done anything, stop — someone else registered it and
-you need to know who and with what scope.
+`CROSS_REPO_DISPATCH_TOKEN,SOPS_AGE_KEY` at repository scope, except `juniper-recurrence`, which
+holds **none**; none of the five has a repository variable. If a `DOCKERHUB_*` name appears before
+you have done anything, stop — someone else registered it and you need to know who and with what
+scope.
 
 **Read back 2026-09-22, after steps 1–2 and before any secret.** Each repository was checked on its
-own, in the environment object, its rule list and both secret scopes:
+own, in the environment object, its rule list and both secret scopes. No environment held a
+variable either:
 
 | repository | `deployment_branch_policy` | protection rules | tag rules | env secrets | repo secrets |
 | --- | --- | --- | --- | --- | --- |
@@ -313,29 +466,33 @@ own, in the environment object, its rule list and both secret scopes:
 | juniper-recurrence | custom, not protected-branches | `branch_policy` | `v*`, `juniper-*-v*` | none | none |
 
 `branch_policy` being the **only** protection rule confirms there is no `required_reviewers` and
-no `wait_timer`. The existing publish environments were not disturbed: juniper-ml's
+no `wait_timer`. All five also report `can_admins_bypass: true`, GitHub's default. It lets an
+administrator deliberately start a job that is waiting on the environment's rules; it is not
+automatic. A tag-rule rejection does not wait: it fails at once with zero steps, as an admin's
+ordinary dispatch did in juniper-ml#1151 (§3). The existing
+publish environments were not disturbed: juniper-ml's
 `tests/test_publish_env_policy_drift.py`, run live with `JUNIPER_DRIFT_TEST_FORCE_LOCAL=1`, passed
 17 of 17, including `test_every_publish_environment_is_tag_gated`.
 
 > **That drift gate does not cover `dockerhub`.** It reads only the environments named in
-> `PUBLISH_ENVS = ("pypi", "testpypi")`. Nothing would notice if a `dockerhub` environment later
-> gained a branch rule or was deleted outright. Deleting it also deletes its secrets, so once
-> Wave 4 has added the Docker Hub login, the next release would fail at that step. The gap is
-> recorded in §10.
+> `PUBLISH_ENVS = ("pypi", "testpypi")`, and only in the repositories the release-train registry
+> lists. Nothing would notice if a `dockerhub` environment later gained a branch rule or was
+> deleted outright. Deleting it also deletes its secrets and variables, so once Wave 4 has added
+> the Docker Hub login, the next release would fail at that step. The gap is recorded in §10.
 
-**The name must match the workflow exactly.** A secret registered as `DOCKER_HUB_TOKEN` or
-`DOCKERHUB_PAT` is not a typo that CI will catch for you: `secrets.DOCKERHUB_TOKEN` simply
-evaluates to the empty string, `docker/login-action` fails with an unhelpful auth error, and it
-fails **at release time**.
+**The name, and its context, must match the workflow exactly.** A secret registered as
+`DOCKER_HUB_TOKEN` or `DOCKERHUB_PAT` is not a typo that CI will catch for you:
+`secrets.DOCKERHUB_TOKEN` simply evaluates to the empty string, `docker/login-action` fails with an
+unhelpful auth error, and it fails **at release time**. The same happens when the context is
+wrong. A username stored as a variable is `vars.DOCKERHUB_USERNAME`, and
+`secrets.DOCKERHUB_USERNAME` then evaluates to the empty string. The reverse holds as well.
 
-**Then prove the credential actually works**, before any workflow depends on it — a registered
-secret is not a *valid* secret:
-
-```bash
-# from a machine with docker; reads the token from stdin, never from argv
-docker login docker.io --username '<DOCKERHUB_USERNAME>' --password-stdin
-docker logout docker.io
-```
+**The token itself was proven in §4 step 5**, before registration. That test needs no repeat,
+because the token has not changed. What no check here can prove is that the value pasted into
+each of the five `DOCKERHUB_TOKEN` secrets is that token. GitHub never returns a secret's value,
+and a mis-paste passes every check in this section. It surfaces only at the first Wave 4 release.
+§5.2B step 3b's order (run the command, then copy the token) is the defence, or piping from a
+password-manager client, which bypasses the clipboard altogether.
 
 ---
 
@@ -351,7 +508,8 @@ one job to **each** of the five `publish-image.yml` files. The job:
 
 1. names `environment: dockerhub`, runs after `merge`, and runs on release runs only;
 2. logs in to Docker Hub, which is the **only** credential point (GHCR is read from, and its
-   packages are public);
+   packages are public). The login reads `secrets.DOCKERHUB_TOKEN`, and the username from
+   `vars.` or `secrets.`, whichever §5.2B step 3a chose;
 3. copies the manifest list that the `merge` job verified, by digest, applying the Docker Hub refs
    in the same `X.Y.Z` / `X.Y` / `latest` scheme (plan D-3).
 
@@ -374,19 +532,51 @@ None of this should be written before §6 passes.
 
 ## 8. Revocation and rollback
 
-**To roll back before any workflow uses the secret** — nothing depends on it, so simply delete it:
+**If the token is ever exposed**, revoke it at the Docker Hub end **first**: Docker Home → avatar →
+**Account settings** → **Personal access tokens**, then delete it. Exposure means any of:
+
+- a log or a screenshot;
+- a paste into any chat or Claude session;
+- a GitHub variable;
+- your shell history, if it was pasted at the bash prompt instead of the hidden one.
+
+Revoking at Docker Hub invalidates the token everywhere at once, which makes the leaked copy
+worthless. Deleting the GitHub secret only stops *this* repo from using it; it does not make the
+credential stop working. Then:
+
+1. Create a new token (§4) and register it with §5.2B step 3b. Re-running `gh secret set`
+   overwrites the old value, so no delete is needed.
+2. Clean up the leaked copy:
+   - **A variable at repository scope.** Run
+     `gh variable delete <NAME> --repo pcalnon/<repo>`, with no `--env`. Then re-run
+     that repository's §5.2B step 3a line, with its `--env dockerhub`, so the environment has the
+     username.
+   - **A variable in the environment, where step 3a chose a variable.** Re-run that repository's
+     step 3a line with the Docker ID.
+   - **A variable in the environment, where step 3a chose a secret.** Delete the stray variable
+     with `gh variable delete DOCKERHUB_USERNAME --repo pcalnon/<repo> --env dockerhub`.
+   - **Shell history.** Run `history -d <number>` in that same shell, because bash rewrites its
+     history file on exit. Then check that `~/.bash_history` no longer holds the token.
+3. Re-run §6. Nothing below is needed.
+
+**One entry at the wrong scope** is a targeted fix, not a rollback. Follow §6's note: delete that
+one copy with no `--env`, re-run its line from §5.2B step 3, and re-check. Nothing below is needed
+for that.
+
+**A wrong value in an environment entry** needs no delete. Re-running its line from §5.2B step 3
+overwrites it.
+
+**Full rollback: only to abandon the Docker Hub credential**, before any workflow uses it. Nothing
+depends on it yet, so this is safe. It is also destructive. The last line deletes the environment
+and its tag rules, and recreating them means re-running §5.2B steps 1–2 and re-verifying under §6.
 
 ```bash
-gh secret delete DOCKERHUB_TOKEN    --repo pcalnon/<repo> --env dockerhub   # Option B (ruled)
-gh secret delete DOCKERHUB_USERNAME --repo pcalnon/<repo> --env dockerhub
-gh api -X DELETE repos/pcalnon/<repo>/environments/dockerhub   # the whole environment, secrets included
-gh secret delete DOCKERHUB_TOKEN    --repo pcalnon/<repo>            # Option A -- only to remove a mis-scoped copy (§6)
+# FULL ROLLBACK ONLY -- never for a mis-scoped entry, a wrong value, or an exposed token (above)
+gh secret delete   DOCKERHUB_TOKEN    --repo pcalnon/<repo> --env dockerhub
+gh variable delete DOCKERHUB_USERNAME --repo pcalnon/<repo> --env dockerhub   # if step 3a chose a variable
+gh secret delete   DOCKERHUB_USERNAME --repo pcalnon/<repo> --env dockerhub   # if step 3a chose a secret
+gh api -X DELETE repos/pcalnon/<repo>/environments/dockerhub   # the whole environment: secrets, variables, tag rules
 ```
-
-**If the token is ever exposed** — in a log, a screenshot, a paste — revoke it at the Docker Hub
-end **first** (Account Settings → Personal access tokens → Delete), because that invalidates it
-everywhere at once. Deleting the GitHub secret only stops *this* repo from using it; it does not
-make the credential stop working. Then re-run §4 and §5 with a fresh token.
 
 **A rotation is five repos, not one.** Whatever you do to the token, do it in all five, and
 re-run §6 afterwards — a partially rotated credential fails on whichever repo releases next,
@@ -397,15 +587,31 @@ which may be weeks later.
 ## 9. Rate-limit posture — re-verified 2026-09-22
 
 The plan's OQ-1 table was read on 2026-09-11. Re-checked today against
-<https://docs.docker.com/docker-hub/usage/>:
+<https://docs.docker.com/docker-hub/usage/> and its *pulls* page,
+<https://docs.docker.com/docker-hub/usage/pulls/>:
 
 | posture | value | status |
 | --- | --- | --- |
 | unauthenticated | **100 per 6 h**, per **IPv4 address or IPv6 /64 subnet** | **confirmed 2026-09-22** |
 | authenticated, Personal | **200 per 6 h** | **confirmed 2026-09-22** |
 | Pro / Team | unlimited | confirmed 2026-09-22 |
-| public repositories, Personal | unlimited | not re-checked today |
-| *a pull is counted once per **architecture*** | plan asserts this | **NOT confirmed** — the usage page does not state it. Treat as unverified. |
+| public repositories, Personal | unlimited (private: up to 1) | **confirmed 2026-09-23** |
+| *a pull is counted once per **architecture*** | plan asserts this | **confirmed 2026-09-22** on the pulls page (quoted below) |
+
+This table's last row said *"NOT confirmed"* until round 2 of the validation recorded in
+`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_worker-0-6-1-shipped-equities-joins-the-data-image-lock-and-wave-4-waits-on-the-owner-token.md`.
+Only the usage page had been read, and the pulls page answers it: *"A pull for a multi-arch image
+will count as one pull for each different architecture."* Two more points:
+
+- **Nodes that share an account share its allowance.** The table's authenticated rows are per
+  account: *Personal (authenticated)* gets 200 pulls per 6 hours. Every node logged in with the
+  same Personal account draws on that one 200/6 h, not 200 each.
+- **The abuse limit is per address, but far above this use.** The usage page describes a separate
+  abuse rate limit, applied *"per IPv4 address or per IPv6 /64 subnet"* to all users and *"in the
+  order of thousands of requests per minute"*. The pulls page warns that *"even if you are
+  authenticated, pulls attributed to a single IPv4 address or IPv6 /64 subnet may cause abuse
+  rate limiting"*, in a note about third-party platforms that pull for many users. A few home
+  nodes are nowhere near that rate.
 
 **The deployment consequence is unchanged and is the reason this matters**: every Pi node behind
 one household connection shares a single **anonymous** bucket of 100/6 h, because the limit is
@@ -413,6 +619,19 @@ scoped to the IPv4 address or IPv6 /64, not to the machine. Wave 4's Pi nodes sh
 `docker login` and draw on the authenticated 200/6 h. That is a **deployment** step, not a
 workflow change, and it is easy to lose because it lives in neither the workflow nor this
 procedure's five repos. It also bears on **OQ-3**.
+
+**Do not use the CI token on the Pi nodes.** §4's token is Read & Write because it pushes images.
+A node only pulls, so give the nodes their **own** token. Make it the way §4 does, with three
+differences:
+
+- **Access permissions**: read only. Choose the narrowest option Docker offers that still pulls
+  the images.
+- **Description**: its own, e.g. `juniper-pi-pull-<date>`, and its own expiry, recorded in §10.
+- **Not registered in GitHub at all.** It goes only on the nodes, where `docker login` stores it in
+  `~/.docker/config.json`, unencrypted unless a credential helper is set.
+
+That way a compromised node cannot push an image under the Juniper namespace, and the two tokens
+can be rotated independently.
 
 ---
 
@@ -423,33 +642,42 @@ procedure's five repos. It also bears on **OQ-3**.
 | ~~Option A vs Option B (§3)~~ | **RULED 2026-09-22: Option B** |
 | ~~Create the five `dockerhub` environments and their tag rules (§5.2B steps 1–2)~~ | **DONE 2026-09-22**; read back under §6 |
 | Where Wave 4 names the environment (§3, §7) | Wave 4 design: a release-only job (shape 1), or a conditional name once proven (shape 2) |
-| A drift gate for `dockerhub` (§6) | `tests/test_publish_env_policy_drift.py` reads only `pypi` / `testpypi`; extending it needs a per-environment expected tag set (`v*`, `juniper-*-v*` here, six patterns there) |
-| The Docker Hub account and username (§2) | owner — not discoverable from the repos |
-| Token expiry date, once set (§4) | **write it here when you create the token** |
+| A drift gate for `dockerhub` (§6) | `tests/test_publish_env_policy_drift.py` reads only `pypi` / `testpypi`, in the eight repos of `util/release_train/registry.yaml`; three of them ship no image. Extending it needs its own repo set (§5.1's five) and its own tag set (`v*`, `juniper-*-v*`; `pypi` has six) |
+| The Docker Hub account, its username, and public-by-default repositories (§2) | owner — not discoverable from the repos |
+| `DOCKERHUB_USERNAME`: variable or secret (§5.2B step 3a) | owner, before step 3. A variable is recommended; Wave 4 reads `vars.` or `secrets.` to match |
+| CI token expiry date (§4) | **not set yet**. The owner tells the working session, which records it here by PR, or edits this row |
 | Whether `juniper-deploy-test` should also publish to Docker Hub (§5.1) | owner — it is a test runner, not a service image |
-| Pi-node `docker login` (§9) | deployment work, tracked against OQ-3 |
+| Pi-node `docker login` (§9) | deployment work, tracked against OQ-3, using a **separate read-only** token, never the CI one. Its expiry goes here too |
 
 ---
 
 ## 11. Verification summary
 
 ```bash
-# 1. names only, never values: the secrets are in the ENVIRONMENT, and NOT at repo scope
-gh api repos/pcalnon/juniper-cascor/environments/dockerhub/secrets --jq '[.secrets[].name]'
-gh api repos/pcalnon/juniper-cascor/actions/secrets --jq '[.secrets[].name]'   # no DOCKERHUB_*
+# 1. the ENVIRONMENT holds the credential (secret names only, never values) ...
+gh api repos/pcalnon/juniper-cascor/environments/dockerhub/secrets   --jq '[.secrets[].name]'
+gh api repos/pcalnon/juniper-cascor/environments/dockerhub/variables --jq '[.variables[] | .name + "=" + .value]'   # the Docker ID, if 3a chose a variable
+#    ... and repository scope holds no DOCKERHUB_* name, in either list
+gh api repos/pcalnon/juniper-cascor/actions/secrets   --jq '[.secrets[].name]'
+gh api repos/pcalnon/juniper-cascor/actions/variables --jq '[.variables[].name]'
 
 # 2. the environment is tag-scoped and its policy list NON-EMPTY (§6 loops all five repos)
 gh api repos/pcalnon/juniper-cascor/environments/dockerhub/deployment-branch-policies \
   --jq '[.branch_policies[] | .type + ":" + .name]'
 
-# 3. the credential is valid, not merely present
-docker login docker.io --username '<user>' --password-stdin   # then: docker logout docker.io
+# 3. the token is valid, not merely present: proven ONCE, by §4 step 5, before registering.
+#    Do not repeat it here; that would handle the token again for nothing.
 
-# 4. nothing was published by accident — Wave 4 has not shipped
-gh api repos/pcalnon/juniper-cascor/actions/workflows --jq '[.workflows[].name]'
+# 4. Wave 4 has not shipped: prints 0 until a workflow reads the credential
+gh api repos/pcalnon/juniper-cascor/contents/.github/workflows/publish-image.yml --jq '.content' | base64 -d | grep -c DOCKERHUB_
 ```
 
 **Related:** plan §6 OQ-1 and D-2 (`JUNIPER_2026-09-05_JUNIPER-ECOSYSTEM_CONTAINER-REGISTRY-PUBLISHING-PLAN.md`);
 `memory/project_publish_path_authorization_2026-08-17.md` (stale on branch policies — see §3);
 `memory/project_grafana_admin_password_init_only_2026-05-10.md` (show-once credentials);
-`memory/reference_ps_cmdline_leaks_aescrypt_passphrase.md` (why `--password-stdin`).
+`memory/reference_ps_cmdline_leaks_aescrypt_passphrase.md` (why the token never goes on the
+command line); `memory/reference_docker_logout_registry_name_leaves_credentials.md` (why the
+logout is bare). External, read 2026-09-22/23: Docker's *Personal access tokens* page
+(<https://docs.docker.com/security/access-tokens/personal-access-tokens/>), its usage and pulls
+pages (§9), its Hub *Settings* page (§2), and the
+`docker/login-action` README (the `vars.` / `secrets.` split in §5.2B step 3a).

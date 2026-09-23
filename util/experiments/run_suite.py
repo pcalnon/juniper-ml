@@ -25,8 +25,13 @@ Usage:
     python util/experiments/run_suite.py --suite SUITE.yaml [--dry-run] [--resume SUITE_ID]
                                          [--only CELL_ID ...]
 
-Exit codes: 0 = every executed cell succeeded; 1 = suite completed with failed
-cells (or aggregation found none succeeded); 2 = misuse / suite-validation error.
+Exit codes: 0 = every cell in the FULL EXPANSION has succeeded (in this invocation or
+an earlier one resumed with --resume); 1 = suite completed with failed or not-run cells
+(or aggregation found none succeeded); 2 = misuse / suite-validation error.
+So a partial --only run exits 1 even when every selected cell succeeded -- by design:
+under --resume, 0 means "the suite is now complete". Read the cell's outcome instead
+(docs/REFERENCE.md § "Resume, --only, and exit codes"; this line said "every executed
+cell" until 2026-09-23, which is not what aggregate() does).
 
 Test seams: ``JUNIPER_SUITE_LAUNCHER`` / ``JUNIPER_SUITE_DRIVER`` override the
 launcher script and driver script paths; ``JUNIPER_SUITE_PYTHON`` overrides the

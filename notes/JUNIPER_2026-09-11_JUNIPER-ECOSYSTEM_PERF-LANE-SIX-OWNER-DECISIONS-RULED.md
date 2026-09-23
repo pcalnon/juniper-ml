@@ -3,7 +3,7 @@
 **Project**: Juniper — performance lane
 **Author**: Paul Calnon
 **Date**: 2026-09-11
-**Status**: all six RULED by the owner in session; four carry an execution gate before they land
+**Status**: all six RULED by the owner in session; four carry an execution gate before they land. **The four `Not decided:` clauses were RULED 2026-09-22/23 — §5.**
 **License**: MIT License
 
 ---
@@ -65,6 +65,12 @@ epochs and lose overall.
 **Not decided**: which repair mechanism (training-thread pin vs process-wide default). That follows
 from the sweep.
 
+> **RULED 2026-09-23 (§5): the process-wide default, but only AFTER the epoch-count debt is
+> paid.** The default is set only when the variables are unset, so a width the D2 launcher
+> exports still wins. The mechanism already exists and currently defaults to "do nothing" for
+> cascor#531's reason, so the ruling reverses that policy, and it lands only if an epoch-count
+> measurement shows the cap does not move the count.
+
 ### D2 — the `runtime:` block: IMPLEMENT via the environment-variable route, GATED on investigation
 
 **Ruled**: implement, and implement it as the **launcher exporting the BLAS variables** at cascor
@@ -91,6 +97,9 @@ the penalty proves impossible to decouple from the width setting**.
 4. **Epoch counts per phase**, for the same reason as D1.
 
 **Not decided**: the key's final name, and whether a second per-thread knob is also offered.
+
+> **RULED 2026-09-22 (§5): ratified as-is** (`blas_threads`, `num_processes`,
+> `eval_metrics_enabled`), and **no second knob**.
 
 ### D3 — PF-3: UNBLOCK VIA D2, still await a quiet host
 
@@ -119,6 +128,11 @@ epochs**, where the work genuinely is emergent. Two additions, both the owner's:
 (clear the scrapeability floor at the smallest cell, stay inside `max_wall_seconds` at the largest)
 rather than a guessed number.
 
+> **Axis 2's RANGE was RULED 2026-09-22 (§5)**: 250 → 10,000 on the suite path now. The top end
+> goes through cascor's in-process generator later, and only if the curve shows a knee. The cell
+> counts and budgets stay a calibration, as stated above. **The suite path's real ceiling turned
+> out to be 5,882, not 10,000** (§5.3), so the suite built from this ruling stops at 5,800.
+
 ### D5 — the CI hazard: MOVE THE FLOOR CHECK to the execution path
 
 **Ruled**: relocate the cascor version-floor check out of `run_suite.load_suite` and onto the
@@ -146,6 +160,9 @@ safe. Only **1 of the 5** cascor micro files is affected (`test_micro_candidate.
 are genuinely fixed-count and need no gate either way.
 
 **Not decided**: whether the gate is built. This ruling buys the measurement, not the gate.
+
+> **RULED 2026-09-22 (§5): build it ADVISORY first.** It never fails a build; it counts how often
+> it fires on real cascor PRs, and that count decides whether it later blocks.
 
 ---
 
@@ -176,3 +193,99 @@ Put to the owner and ruled 2026-09-11, in the session that shipped
 menu selection, and are transcribed here in the owner's own terms. D2's ruling was given **after**
 the decoupling alternative and the 1.52× correction were both put; it is a reaffirmation, not an
 uninformed choice.
+
+---
+
+## 5. The four `Not decided:` clauses, RULED 2026-09-22/23
+
+Four of §2's rulings ended with an explicit **Not decided** clause. The 09-22 handoff
+(`prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-22_perf-lane-d2-binds-d6-discharged-and-two-host-advantaged-tests.md`
+§1) found all four still open. Reading "ruled" as "closed" had hidden that for eleven days. They
+were put to the owner as a menu on 2026-09-22 and ruled in one sitting, except D1, which was
+put a second time and ruled 2026-09-23 (§5.2). The table records the
+options that were put **and declined**, so each ruling reads as a choice rather than a default.
+
+| | clause | ruling | put and declined |
+|---|---|---|---|
+| **D2** | the key's final name; whether a second per-thread knob is offered | **Ratified as-is**: `runtime.blas_threads`, `runtime.num_processes`, `runtime.eval_metrics_enabled`. **No second knob.** | rename the width key and keep a deprecated alias; add a per-thread knob that pins only the training thread |
+| **D1** | which repair mechanism | **Process default, after the debt is paid.** cascor's existing `configure_blas_threads()` (called at both entrypoints, before anything imports BLAS) changes its default from "do nothing" to **2** for `OMP_NUM_THREADS` / `MKL_NUM_THREADS` / `OPENBLAS_NUM_THREADS`, still **only if unset**. It lands **only after** the width-sweep arm emits `epochs_completed` per phase and the count does not move with the cap (§5.2) | flip the default now, on wall time alone; pin on the training thread; leave the defect unrepaired |
+| **D4** | the range of axis 2 | **10,000 now, in-process later.** Sweep 250 → 10,000 points per spiral on the suite path now, and probe the top end through cascor's in-process generator **only if** that curve shows a knee | cap at 10,000 with no follow-up; raise `MAX_POINTS` in juniper-data; in-process only |
+| **D6** | whether the gate is built | **Advisory first.** Build it non-blocking, count how often it fires on real cascor PRs, then decide whether it blocks | build it blocking; do not build it |
+
+### 5.1 D2: what ratification buys
+
+- **Nothing migrates.** The three names already have committed users:
+  `juniper-cascor/conf/experiments/{spiral-smoke,spiral-baseline,xor-staged}.yaml`, seven
+  `util/ad-hoc/*.yaml` suites, and `reports/p01-logging-corpus-2026-09-22/cell.yaml`. The
+  deadline pressure that made this urgent (every new user raises the cost of a rename) is gone.
+- **"No second knob" leaves §2 D2 as it was.** A per-thread knob would reach the training
+  thread and never the candidate workers. That decoupling is why the environment route was chosen
+  in the first place.
+
+### 5.2 D1: constraints the repair must honour
+
+- **It was ruled twice, and the second ruling is the one that stands.** The first menu described
+  the process default as new work. It is not: `juniper-cascor/src/parallelism/blas_threads.py`
+  already provides `configure_blas_threads()`, which `main.py` and `api/__init__.py` both call
+  before anything imports BLAS. It is opt-in through `JUNIPER_CASCOR_BLAS_THREADS`, it only sets
+  variables that are unset, and it defaults to **"do nothing"** on purpose. That default exists
+  because cascor#531 measured the capped candidate phase at 1.52×, and
+  `tests/unit/test_blas_thread_policy.py::test_default_is_a_no_op` pins it. The session caught
+  the omission, put the corrected question on 2026-09-22, and on 2026-09-23 the owner ruled **"pay the debt,
+  then flip"**.
+- **The debt is the D1/D2 gate's missing epoch counts.** Both gates required epoch counts per
+  phase, and `util/ad-hoc/2026-09-16_thread_width_arm.py` emitted **stage** counts instead. The
+  09-16 finding that "#531's penalty does not reproduce" therefore rests on wall time alone, which
+  cannot tell *no effect* from *two effects cancelling*. #531's second channel was epoch count:
+  the cap changed BLAS reduction order and so moved where patience-based early stopping
+  terminated. So: add per-phase `epochs_completed` to the arm, re-run the sweep, and flip the
+  default only if the count does not move with the cap. The count is structural, so this can run
+  on a loaded host.
+- **"Only if unset" is load-bearing.** The D2 launcher delivers `runtime.blas_threads` to the
+  cascor process through the inherited environment. An unconditional assignment in cascor would
+  silently override the width every suite names, which is exactly the class of defect D2 closed.
+- **Size the benefit against one phase.** The defect costs the **initial output pass only**: the
+  training thread is re-pinned to 2 during the first candidate-result collection and stays there.
+  Capping that pass is worth **−49.2%** of it (2.2838 s → 1.1593 s, medians of 3; the width
+  sweep's §2 correction in
+  [`JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md`](JUNIPER_2026-09-16_JUNIPER-ECOSYSTEM_PERF-LANE-THREAD-WIDTH-SWEEP.md)).
+  It is not a whole-run regime.
+- **The width value is already answered, though not by §2.** §2 ruled only "measure first". The
+  width sweep did the measuring and found 2 to 8 indistinguishable, so its verdict was "keep 2"
+  (its §1): no evidence to change 2, which is weaker than evidence that 2 is optimal. What happens
+  to the constructor pin at `cascade_correlation.py:1180`
+  (`max(2, worker_thread_count * 2)`) once a process default exists is an implementation question.
+  The cascor PR must answer it rather than leave two mechanisms that disagree.
+
+### 5.3 D4 axis 2: what the ruling does not relax
+
+- **The suite path stops at 5,882, not at the 10,000 the ruling was given.** The driver stages
+  its dataset through juniper-data, whose `MAX_POINTS` (10,000) is a Pydantic bound. See §1 of
+  [`JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`](JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md).
+  The menu put to the owner, and that document, both treated 10,000 as the request ceiling. **It
+  bounds the TOTAL rows per spiral.** juniper-data's additive sizing treats the request as the
+  train count and adds val and test on top: 1.7× at the suite's split, so a request of 10,000
+  becomes an internal 17,000 and is rejected. Bisected 2026-09-23: 5,882 accepted, 5,883
+  rejected. The rejection is a 400 "Invalid request parameters" with the cause logged only at
+  DEBUG, so the cell reads `torn_down_early` after about 18 s. **The built suite
+  (`util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`) therefore stops at 5,800**,
+  a range of about 23×. That is still roughly three times wider than the 8× range that measured an
+  invariant, but it is not the 40× that was ruled on. The in-process follow-up is unaffected: it
+  never touches juniper-data.
+- **The PF-2 re-spec's §3 obligations still hold**: `continue_on_failure: true`, a raised
+  `max_wall_seconds`, and any breach reported explicitly in the aggregate. The same document's
+  section on the wall-ordering survey applies too.
+- **An in-process follow-up measures cascor's own generator, not juniper-data's.** They are
+  separate implementations (re-spec §1), so those figures must never be quoted as juniper-data
+  figures.
+
+### 5.4 D6: what "advisory" means here
+
+- **Scope**: `juniper-cascor/src/tests/performance/test_micro_candidate.py`, budgets **100 and 200
+  only**. At 10 and 50 the count equals the request, so a gate there asserts a tautology.
+- **The reference records the cascor SHA and the thread pin.** Without them, an intended numeric
+  change reads as a flake, which is how work gates get switched off.
+- **The advisory period answers the question D6's measurement could not.** §4 of
+  [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PERF-LANE-D6-EPOCHS-COMPLETED-SPREAD.md)
+  asks whether the gate's tree-sensitivity is its value (it catches silent numeric drift) or its
+  cost (it fires on intended changes). How often it fires on real PRs is that answer.

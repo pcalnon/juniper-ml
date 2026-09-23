@@ -149,7 +149,7 @@ EXPECTED_EXTRAS = {
     "servers": {
         "juniper-canopy>=0.8.1",
         "juniper-cascor>=0.11.0",
-        "juniper-data>=0.14.0",
+        "juniper-data>=0.15.0",
     },
     "tools": {
         "juniper-ci-tools>=0.1.0",

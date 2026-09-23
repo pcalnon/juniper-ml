@@ -1,0 +1,620 @@
+{
+  "canopy": "http://127.0.0.1:8051",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8051",
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "build_date": "2026-09-22T19:38:01Z",
+    "version": "0.8.1",
+    "read_at": "2026-09-22T20:15:09Z"
+  },
+  "steps": [
+    {
+      "label": "M-METRICS-13 play",
+      "component": "replay-play",
+      "clicked": true,
+      "expect": "play text -> \u23f8, interval enabled, mode playing",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 37,
+      "requests_naming_replay": 2,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-13 pause",
+      "component": "replay-play",
+      "clicked": true,
+      "expect": "play text -> \u25b6, interval disabled, mode paused",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 39,
+      "requests_naming_replay": 2,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-16 2x",
+      "component": "speed-2x",
+      "clicked": true,
+      "expect": "interval -> 500",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 39,
+      "requests_naming_replay": 2,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-16 4x",
+      "component": "speed-4x",
+      "clicked": true,
+      "expect": "interval -> 250",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 43,
+      "requests_naming_replay": 3,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-16 1x",
+      "component": "speed-1x",
+      "clicked": true,
+      "expect": "interval -> 1000",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 44,
+      "requests_naming_replay": 2,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-14 step-forward",
+      "component": "replay-step-forward",
+      "clicked": true,
+      "expect": "index +1 capped at max_index",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 30,
+      "requests_naming_replay": 0,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-12 step-back",
+      "component": "replay-step-back",
+      "clicked": true,
+      "expect": "index -1 floored at 0",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 27,
+      "requests_naming_replay": 0,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-15 end",
+      "component": "replay-end",
+      "clicked": true,
+      "expect": "index -> end_index",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 33,
+      "requests_naming_replay": 1,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-11 start",
+      "component": "replay-start",
+      "clicked": true,
+      "expect": "index -> start_index (0)",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests": 34,
+      "requests_naming_replay": 1,
+      "replay_state_responses": []
+    },
+    {
+      "label": "M-METRICS-18 slider",
+      "component": "replay-slider",
+      "clicked": true,
+      "expect": "value maps to index, mode paused",
+      "before": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 0,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "after": {
+        "metrics_store_len": 80,
+        "replay_state": {
+          "mode": "stopped",
+          "speed": 1,
+          "current_index": 0,
+          "start_index": 0,
+          "end_index": null
+        },
+        "position": "0 / 0",
+        "play_text": "\u25b6",
+        "interval_disabled": true,
+        "interval_ms": 1000,
+        "slider_value": 10,
+        "controls": {
+          "present": true,
+          "display": "block",
+          "h": 95
+        }
+      },
+      "requests_naming_replay": 1,
+      "replay_state_responses": []
+    }
+  ],
+  "fill": {
+    "waited_s": 15.6,
+    "len_after_wait": 80
+  },
+  "initial": {
+    "metrics_store_len": 80,
+    "replay_state": {
+      "mode": "stopped",
+      "speed": 1,
+      "current_index": 0,
+      "start_index": 0,
+      "end_index": null
+    },
+    "position": "0 / 0",
+    "play_text": "\u25b6",
+    "interval_disabled": true,
+    "interval_ms": 1000,
+    "slider_value": 0,
+    "controls": {
+      "present": true,
+      "display": "block",
+      "h": 95
+    }
+  },
+  "final": {
+    "metrics_store_len": 80,
+    "replay_state": {
+      "mode": "stopped",
+      "speed": 1,
+      "current_index": 0,
+      "start_index": 0,
+      "end_index": null
+    },
+    "position": "0 / 0",
+    "play_text": "\u25b6",
+    "interval_disabled": true,
+    "interval_ms": 1000,
+    "slider_value": 10,
+    "controls": {
+      "present": true,
+      "display": "block",
+      "h": 95
+    }
+  },
+  "verdicts": {
+    "M-METRICS-13": "FAIL",
+    "M-METRICS-16": "FAIL",
+    "M-METRICS-14": "FAIL",
+    "M-METRICS-12": "FAIL (index already 0, and the click's write never applied: mode stopped -> stopped)",
+    "M-METRICS-15": "FAIL",
+    "M-METRICS-11": "FAIL (index already 0, and the click's write never applied: mode stopped -> stopped)",
+    "M-METRICS-18": "FAIL (slider value 0 -> 10 but the replay state/position never followed)"
+  },
+  "server_side_by_step": {
+    "M-METRICS-13 play": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-13 pause": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-16 2x": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-16 4x": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-16 1x": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-14 step-forward": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-12 step-back": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-15 end": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-11 start": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    },
+    "M-METRICS-18 slider": {
+      "responses": 0,
+      "carried": 0,
+      "modes": []
+    }
+  },
+  "max_index_by_step": {
+    "M-METRICS-13 play": 79,
+    "M-METRICS-13 pause": 79,
+    "M-METRICS-16 2x": 79,
+    "M-METRICS-16 4x": 79,
+    "M-METRICS-16 1x": 79,
+    "M-METRICS-14 step-forward": 79,
+    "M-METRICS-12 step-back": 79,
+    "M-METRICS-15 end": 79,
+    "M-METRICS-11 start": 79,
+    "M-METRICS-18 slider": 79
+  },
+  "max_index": 79
+}

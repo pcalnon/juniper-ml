@@ -1,0 +1,43 @@
+{
+  "probe": "2026-09-23_status_bar_apply_census.py",
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8055",
+    "git_sha": "723ee8121284b004a32130a0a7d6aa410b491600",
+    "build_date": "2026-09-23T13:34:18Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T14:06:52Z"
+  },
+  "tab": "Training Metrics",
+  "settle_s": 45.0,
+  "seconds": 60.0,
+  "install": {
+    "found": true,
+    "initial": {
+      "latency-display": "\"\"",
+      "top-status-display": "\"Stopped\"",
+      "top-epoch-display": "\"0\""
+    }
+  },
+  "elapsed_s": 61.2,
+  "dom_status_text": "Stopped",
+  "server_status": {
+    "is_running": false,
+    "phase": "output",
+    "current_epoch": 76,
+    "hidden_units": 68
+  },
+  "wire": {
+    "requests": 36,
+    "responses": 36
+  },
+  "renderer": {
+    "watched_entries": 38,
+    "executed_entries": 0,
+    "store_notifications": 6473
+  },
+  "store_changes": [],
+  "latency_display_changes": 0,
+  "verdict": "NEVER-APPLIES"
+}

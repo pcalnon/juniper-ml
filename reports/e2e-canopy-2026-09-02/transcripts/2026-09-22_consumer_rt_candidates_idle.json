@@ -1,0 +1,294 @@
+{
+  "probe": "2026-09-22_state_store_consumer_roundtrip.py",
+  "canopy": "http://127.0.0.1:8051",
+  "serving": {
+    "ok": true,
+    "url": "http://127.0.0.1:8051",
+    "version": "0.8.1",
+    "git_sha": "9bffaba12ccc78e62c5f6b437fb0a9eccf46f088",
+    "build_date": "2026-09-22T19:38:01Z"
+  },
+  "tab": "candidates",
+  "started_at": "2026-09-22T19:49:04Z",
+  "seconds": 60.0,
+  "tab_opened": true,
+  "callbacks": {
+    "fetch_training_state (WRITER)": {
+      "requests": 26,
+      "rt_ms": {
+        "n": 26,
+        "min": 18.1,
+        "p50": 26.1,
+        "p90": 36.3,
+        "max": 41.0,
+        "mean": 27.4
+      },
+      "gap_ms": {
+        "n": 25,
+        "min": 616.8,
+        "p50": 1879.8,
+        "p90": 2621.8,
+        "max": 9986.2,
+        "mean": 2185.7
+      },
+      "overlaps": 0
+    },
+    "update_status_display": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 7.4,
+        "p50": 7.4,
+        "p90": 7.4,
+        "max": 7.4,
+        "mean": 7.4
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_epoch_progress": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 8.1,
+        "p50": 8.1,
+        "p90": 8.1,
+        "max": 8.1,
+        "mean": 8.1
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_pool_info": {
+      "requests": 1,
+      "rt_ms": {
+        "n": 1,
+        "min": 9.3,
+        "p50": 9.3,
+        "p90": 9.3,
+        "max": 9.3,
+        "mean": 9.3
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    },
+    "update_loss_plot (State since #618)": {
+      "requests": 0,
+      "rt_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "gap_ms": {
+        "n": 0,
+        "min": null,
+        "p50": null,
+        "p90": null,
+        "max": null,
+        "mean": null
+      },
+      "overlaps": 0
+    }
+  },
+  "unmatched_update_requests": 99,
+  "unmatched_outputs": {
+    "..status-indicator.style...connection-status.children...latency-display.children...top-status-display.children...top-status-display.style...top-phase-display.ch": 28,
+    "button-states.data@e9ac75821785c897a072728798de6b4e35bd731e55212c7535db3d2f306fc491": 28,
+    "..network-info-panel.children...network-info-details-panel.children...stream-health-store.data...pending-dataset-banner.is_open@44870bcb4e362d7d00b182a2f54d22fc": 12,
+    "dataset-swap-events-store.data": 12,
+    "metrics-panel-metrics-store.data": 9,
+    "candidate-metrics-panel-history-section.children": 1,
+    "network-visualizer-topology-store.data": 1,
+    "metrics-panel-progress-detail.children": 1,
+    "metrics-panel-current-lr.children": 1,
+    "metrics-panel-phase-duration.children": 1,
+    "..metrics-panel-progress-bars.style...metrics-panel-grow-progress.value...metrics-panel-grow-progress.label...metrics-panel-candidate-epoch-progress.value...met": 1,
+    "metrics-panel-replay-controls.style": 1,
+    "pinned-params-store.data": 1,
+    "..network-visualizer-graph.figure...network-visualizer-graph.config...network-visualizer-input-count.children...network-visualizer-hidden-count.children...netwo": 1,
+    "..sidebar-pinned-list.children...sidebar-pinned-card.style..": 1
+  },
+  "failed_update_requests": 0,
+  "store_in_renderer": {
+    "store": "candidate-metrics-panel-training-state-store",
+    "reads": 25,
+    "readable": 25,
+    "distinct_timestamps": 1,
+    "samples": [
+      {
+        "t": 8.9,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 10.3,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 14.8,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 17.9,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 20.2,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 22.9,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 24.8,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 26.6,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 29.0,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 30.9,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 33.1,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 35.3,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 37.0,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 38.7,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 41.1,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 43.6,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 45.2,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 47.2,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 48.9,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 50.6,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 52.8,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 54.8,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 56.8,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 58.4,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      },
+      {
+        "t": 60.2,
+        "ok": true,
+        "timestamp": 1790106560.696314,
+        "keys": 61
+      }
+    ]
+  }
+}
