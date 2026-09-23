@@ -1,0 +1,44 @@
+run: python 3.12.11  prefix /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/25de1349-d50d-48ac-9374-fd39dd06944e/scratchpad/venvA
+run: python 3.12.11  prefix /tmp/claude-1000/-home-pcalnon-Development-python-Juniper-juniper-ml/25de1349-d50d-48ac-9374-fd39dd06944e/scratchpad/venvB
+====================================================================================================
+  [PASS     ] DC-1  data-client NPZ_SPLITS: PASS/SKIP
+  [PASS     ] DC-2  data-client validate tolerates _full: PASS/SKIP
+  [PASS     ] DC-3  data-client 3-D validate + dt-less X_full: PASS/SKIP
+  [PASS     ] DC-4  data-client rank probe keys off X_train: PASS/SKIP
+  [PASS     ] DC-5  data-client fake emits 6 keys: PASS/SKIP
+  [PASS     ] RM-1  recurrence-model entity-major 3-D: PASS/SKIP
+  [PASS     ] RM-2  recurrence-model split='full' path: PASS/SKIP
+  [PASS     ] RM-3  recurrence-model load_sequence_npz from disk: PASS/SKIP
+  [PASS     ] RM-4  recurrence-model legacy _full passthrough: PASS/SKIP
+  [PASS     ] RM-5  recurrence-model val-less artifact: PASS/SKIP
+  [PASS     ] MC-1  model-core folds are index-based: PASS/SKIP
+  [PASS     ] MC-2  model-core exposes no _full symbol: PASS/PASS
+  [PASS     ] RC-1  recurrence crossval router imports: PASS/SKIP
+  [PASS     ] RC-2  recurrence split field: PASS/SKIP
+  [PASS     ] RC-3  recurrence main imports: PASS/SKIP
+  [PASS     ] RC-4  recurrence load split=full end-to-end: PASS/SKIP
+  [PASS     ] RL-1  recurrence-client crossval signature: PASS/SKIP
+  [PASS     ] JD-1  juniper-data generator_version floor: SKIP/PASS
+  [PASS     ] JD-2  juniper-data spiral emits 6 keys: SKIP/PASS
+  [PASS     ] JD-3  juniper-data ALL runnable generators: SKIP/PASS
+  [PASS     ] JD-4  juniper-data compute_shape_meta: SKIP/PASS
+  [PASS     ] JD-5  juniper-data partition_and_assemble: SKIP/PASS
+  [UNCOVERED] JD-8  juniper-data service -> client roundtrip: SKIP/SKIP
+  [PASS     ] JD-6  juniper-data HF store (DEFECT PROBE): SKIP/PASS
+  [PASS     ] JD-7  juniper-data Kaggle store (DEFECT PROBE): SKIP/PASS
+  [PASS     ] CC-1  cascor _resolve_validation_split rules: SKIP/PASS
+  [UNCOVERED] CC-2  cascor data_provider tolerance: SKIP/SKIP
+  [UNCOVERED] CC-3  cascor data_provider never requires _full: SKIP/SKIP
+  [PASS     ] CC-4  cascor x_full derived three-way: SKIP/PASS
+  [PASS     ] CC-5  cascor version metadata: SKIP/PASS
+  [PASS     ] CC-6  cascor get_dataset three counts: SKIP/PASS
+  [PASS     ] CP-1  canopy backend imports: SKIP/PASS
+  [PASS     ] CP-2  canopy get_dataset sums three: SKIP/PASS
+  [PASS     ] CP-3  canopy wheel top-level inventory: SKIP/PASS
+  [PASS     ] CP-4  canopy missing-module inventory (DEFECT PROBE): SKIP/PASS
+  [PASS     ] CP-5  canopy validation_gate.decide (0.8.x only): SKIP/PASS
+  [PASS     ] ML-1  juniper-ml is a pure meta-package: PASS/PASS
+  [PASS     ] ML-2  juniper-ml resolved set: PASS/SKIP
+  [PASS     ] ML-3  juniper-ml [servers] floors + equities 5.0.0: SKIP/PASS
+====================================================================================================
+UNION over 2 run(s): PASS=36  FAIL=0  UNCOVERED=3  (of 39 checks)
