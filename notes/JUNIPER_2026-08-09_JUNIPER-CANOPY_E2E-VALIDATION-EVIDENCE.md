@@ -6522,7 +6522,7 @@ nothing either**:
 | step-forward · step-back · end · start (M-METRICS-14/-12/-15/-11) | `mode=stopped`, `current_index=0` → identical | 40–54 / 2–3 |
 | slider, handle focused, 10 × ArrowRight (M-METRICS-18) | `value` **0 → 10**, position `0 / 0` → `0 / 0` | 2 named replay |
 
-**F-CANOPY-048 — the replay controls never apply: `handle_replay_controls`' output is retired every time, including the data-independent play toggle and the speed buttons (P2, canopy repo; found 2026-09-08; supersedes the BLOCKED reading of M-METRICS-11..16/-18; mechanism located 2026-09-22 — a two-callback cycle the renderer's breaker never breaks; FIXED by canopy#658, verified live — see Phase 7).**
+**F-CANOPY-048 — the replay controls never apply: `handle_replay_controls`' output is retired every time, including the data-independent play toggle and the speed buttons (P2, canopy repo; found 2026-09-08; supersedes the BLOCKED reading of M-METRICS-11..16/-18; mechanism located 2026-09-22 — a two-callback cycle the renderer's breaker never breaks; FIXED by canopy#658 9fbd697a, verified live — see Phase 7).**
 Nine Inputs feed `handle_replay_controls`, one of them `replay-slider.value`; `update_replay_ui` rewrites
 `replay-slider.value` on **every** write of `metrics-panel-metrics-store` — the 1 Hz fast-lane rewrite that
 F-CANOPY-035 is about — and reads `replay-state` as an Input in turn.
@@ -7619,7 +7619,7 @@ folded in below.**
   - Caveat: "stuck in `requested`" alone does not prove a cycle. `ws-connection-indicator` sat there
     with none. For this block it is the parked-poll run, plus the enumeration of its writers, that
     requires the cycle.
-- **Fix: canopy#658** (head `2f2f5040`; merge commit recorded in the still-owed list). It merges A and B into one callback branching on
+- **Fix: canopy#658, merged as `9fbd697a`** (head `2f2f5040`; 21/21 required checks green). It merges A and B into one callback branching on
   `ctx.triggered_id`, which Dash exempts from its own readiness check (`differenceBasedOnId`, `:1661`).
   The label callback and `replay_tick` are kept. Conditions recorded with it:
   - The merged callback is still locked by any always-pending PRIMARY writer of the metrics store. It

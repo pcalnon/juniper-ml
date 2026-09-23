@@ -144,7 +144,7 @@ Expected output:
 
 - ledger: **65 findings — 47 fixed / 1 accepted / 2 withdrawn / 15 open (0 P0, 2 P1, 13 P2)**;
 - matrix: **298 rows, BLOCKED 20**;
-- canopy `main` carries #657 (`d7d641b9`) and #658;
+- canopy `main` carries #657 (`d7d641b9`) and #658 (`9fbd697a`);
 - cascor `main` carries #674 (`f9818b01`).
 
 The `:8202` cascor leg still serves `05c13d5`, which is BEFORE #674. Relaunch it before any cascor WS

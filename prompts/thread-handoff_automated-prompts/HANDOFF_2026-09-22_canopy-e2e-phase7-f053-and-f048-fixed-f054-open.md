@@ -41,7 +41,7 @@ led by F-CANOPY-054 and the latency root cause behind F-053.
   pending.
   - canopy#658 merges the callbacks and adds a whole-app cycle test.
   - Verified live: six of seven replay rows PASS at the 16 s settle.
-  - MERGE STATE: see the verification below.
+  - Merged as `9fbd697a`.
 - **F-CANOPY-054 (P2, OPEN, new)**: a late `replay_tick` response, computed from pre-click State,
   undoes a pause. M-METRICS-13 FAILs on it.
 - **F-CANOPY-052** closed on M-CANDIDATES-07's own script, with its mechanism corrected to readiness.
@@ -93,4 +93,4 @@ ss -ltn | grep -E ':(8051|8055|8101|8202)\b'; curl -s http://127.0.0.1:8202/v1/n
 
 **Git state at handoff**: every change is on juniper-ml PR branch `docs/canopy-e2e-phase7-2026-09-22`
 (#2030), as five signed API commits. The local worktree holds the same changes STAGED, not committed.
-canopy#657 and cascor#674 are MERGED. canopy#658 has auto-merge ARMED; confirm it merged.
+canopy#657 (`d7d641b9`), canopy#658 (`9fbd697a`) and cascor#674 (`f9818b01`) are MERGED.
