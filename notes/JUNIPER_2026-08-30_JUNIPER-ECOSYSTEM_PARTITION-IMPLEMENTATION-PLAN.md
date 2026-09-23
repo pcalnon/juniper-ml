@@ -505,3 +505,18 @@ its own. It was cut by explicit owner decision on 2026-09-10.
 - **Plan §9 S-7** → juniper-canopy#559, still OPEN. Note that §9's `S-<n>` scheme numbers *design*
   findings and is unrelated to the release-straggler `S-<n>` scheme used in the 2026-09-09 handoff;
   the two collide completely, and that handoff's §5 renders both in one table.
+
+> **Update, 2026-09-23.** The three items above, re-derived for §10 of
+> `prompts/thread-handoff_automated-prompts/HANDOFF_2026-09-09_partition-arc-decision-11-release-train-cut-six-gates-await-owner.md`,
+> which dispositions every §5 row of that file:
+>
+> - **S-1**: the owner ruled on 2026-09-22 to **conform** the stores. juniper-data#422 did so and was
+>   merged on 2026-09-23 as `ce436819`, closing #411. It is **not yet released**: juniper-data 0.15.0 on
+>   PyPI still ships the two-way stores.
+> - **Decision 12**: tracked as juniper-data#423, and specified as a v1 draft in
+>   [`JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md`](JUNIPER_2026-09-22_JUNIPER-ECOSYSTEM_PARTITION-PROVENANCE-SPEC.md).
+>   Review round 1 rated the draft unsound as written. It is recorded in that file's §14, which
+>   follows this plan's §9 precedent: record the findings, and do not correct the design in place
+>   while its review is open. Still unimplemented.
+> - **S-7**: the owner ruled on 2026-09-22 for an **advisory** check. juniper-canopy#663 implemented
+>   it and was merged on 2026-09-23 as `cc3588a8`, closing #559. It is not yet released.
