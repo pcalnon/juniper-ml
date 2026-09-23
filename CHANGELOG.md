@@ -26,6 +26,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ad-hoc drivers are **retained** as provenance (owner policy 2026-08-25) with a "Superseded" header
   line each; retiring them is an owner decision.
 
+- **PF-2 axis 2 is built, and the suite path's real ceiling is 5,882 points per spiral, not the
+  10,000 it was ruled on** (`util/experiments/suites/perf/pf2-axis2-cascor-dataset-range.yaml`,
+  new). The owner ruled D4's axis-2 range on 2026-09-22 as "10,000 now, in-process later". Running
+  the top cell found the ceiling is lower: juniper-data's additive sizing treats
+  `n_points_per_spiral` as the TRAIN count and adds val and test on top, 1.7x at the suite's split,
+  and `MAX_POINTS` (10,000) bounds that inflated TOTAL. A request of 10,000 becomes an internal
+  17,000 and is rejected. Bisected: 5,882 accepted, 5,883 rejected. The rejection is a 400 "Invalid
+  request parameters" with the cause logged only at DEBUG (a juniper-data defect: the field check
+  passes and generation then fails), so the cell reads `torn_down_early` after about 18 s. The
+  suite therefore sweeps 250 → 5,800 (about 23x, not 40x). It runs three **round-robin** passes:
+  the repeat key leads the matrix, so every size runs once per pass. That is the loaded-host
+  ordering `run_suite` can express, since it has no shuffle. Calibrated: the 5,800 cell completed
+  in 44.3 s at 1-minute load 22-28, about 45x inside the wall budget, so this axis reports the
+  shape of wall time against size, not where viability ends. The PF-2 re-spec
+  (`notes/JUNIPER_2026-09-12_JUNIPER-ECOSYSTEM_PERF-LANE-PF2-RESPECIFICATION.md`) carries a second
+  §1 correction.
+- **D1's epoch-count debt is paid: a BLAS cap of 2 leaves every count, and every bit, where the
+  old default put it** (`notes/JUNIPER_2026-09-23_JUNIPER-ECOSYSTEM_PERF-LANE-D1-EPOCH-COUNT-DEBT.md`,
+  `util/ad-hoc/2026-09-23_d1_epoch_count_sweep.py`, `util/ad-hoc/2026-09-23_d1_epoch_debt_reduce.py`,
+  all new). The owner ruled D1 on 2026-09-23 as "pay the debt, then flip": change cascor's
+  `configure_blas_threads()` default from "do nothing" to 2 only if the cap does not move the epoch
+  count. The 09-16 width sweep emitted stage counts rather than epoch counts. Every structural
+  count it had was also pinned to its budget: 4 of 4 hidden units in all 39 arms, and an output
+  loop with no early exit. So it could not have seen #531's count channel at all. The new
+  instrument calibrates its budgets first, so that 94 of 100 candidates early-stop, and it adds a
+  seed-change positive control. **Verdict CLEAR** (3 interleaved repeats, all five arms
+  deterministic): a cap of 2 reproduces today's default bit-for-bit. Every per-candidate count,
+  every phase's winning candidate and the final loss (0.0067392201) match. The seed control and a
+  training thread held at 16 throughout both move the counts, so #531's count channel is real,
+  and the new default steers away from it. The flip is juniper-cascor#683.
+
+### Changed
+
+- **Owner rulings recorded for the four `Not decided:` clauses of D1, D2, D4 and D6**
+  (`notes/JUNIPER_2026-09-11_JUNIPER-ECOSYSTEM_PERF-LANE-SIX-OWNER-DECISIONS-RULED.md`, new §5 plus
+  a pointer under each clause). D2: `blas_threads` / `num_processes` / `eval_metrics_enabled`
+  ratified as-is, with no second knob. D4 axis 2: 10,000 now, in-process later (the suite path's
+  real ceiling then turned out to be 5,882). D6: build the gate advisory first. D1 was ruled
+  twice, because the first menu described the process default as new work when cascor already
+  had it, defaulting to "do nothing" for cascor#531's reason.
+- **PF-3 re-shaped, and D3's one-cell check passed**
+  (`util/experiments/suites/perf/pf3-cascor-pool-scaling.yaml`). The matrix is now a 14-cell
+  triangle instead of the 4x3 = 12 rectangle:
+  - np > pool is dropped, because cascor's `min(process_count, len(tasks))` clamp makes those
+    cells duplicates;
+  - np=1 is kept as an explicitly labelled SEQUENTIAL control, because it takes a different code
+    path;
+  - np is extended to 8 and 16, because the suite's second purpose, oversubscription onset,
+    cannot appear at np <= 4 on 16 logical CPUs.
+
+  D3's check, on c001 (pool 2, np 2), passed. `thread_env` records `CASCOR_NUM_PROCESSES` "2",
+  and the service log shows `Training 2 candidates with 2 processes`, so delivery was proven, not
+  just recording.
+- **PF-1's successor baseline is `pf1-2026-09-23-blas2`** (state outside the repo; docs:
+  `docs/REFERENCE.md`, `docs/DEVELOPER_CHEATSHEET_JUNIPER-ML.md`,
+  `util/experiments/suites/perf/README.md`). It is capped at `blas_threads: 2`, which
+  `spiral-smoke.yaml` now binds, and pinned to cascor `0d2d826`. `step_count` is 1770 in all 5
+  cells, `early_stopped`, with speed sd 3.1%. It records the same 1770 as the unpinned
+  `pf1-2026-09-04b`. Comparing against `-04b` now correctly REFUSES on `thread_budget`, and the
+  troubleshooting rows say so. The old tags are retained, because supersession is by name.
+
+### Fixed
+
+- **`run_suite.py`'s docstring promised the wrong exit status.** It said "0 = every executed cell
+  succeeded"; `aggregate()` returns 0 only when every cell in the FULL expansion has succeeded,
+  as `docs/REFERENCE.md` § "Resume, --only, and exit codes" documents. A one-cell `--only` check
+  therefore exits 1 on success, by design. Docstring only; no behaviour change.
+
 ## [0.10.0] - 2026-09-23
 
 ### Changed
