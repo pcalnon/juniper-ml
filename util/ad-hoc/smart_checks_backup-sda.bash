@@ -35,7 +35,6 @@ export DEVICE_SDC3="/dev/sdc3"
 export DEVICE_SDC4="/dev/sdc4"
 export DEVICE_SDD="/dev/sdd"
 export DEVICE_SDD1="/dev/sdd1"
-export DEVICE_SDD1="/dev/sdd1"
 export CURRENT_DEVICE="${DEVICE_SDA}"
 export DEVICE_LABEL="${CURRENT_DEVICE##*/}"
 
@@ -119,3 +118,5 @@ elif [[ ( ( "${START_TESTS}" == "${FALSE}" ) && ( "${CHECK_RESULT}" == "${FALSE}
 else
     echo "Error: This code should be unreachable."
 fi
+
+
