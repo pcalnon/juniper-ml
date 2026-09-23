@@ -1,0 +1,152 @@
+{
+  "probe": "2026-09-23_status_bar_apply_census.py",
+  "canopy": "http://127.0.0.1:8055",
+  "serving": {
+    "ok": true,
+    "canopy": "http://127.0.0.1:8055",
+    "git_sha": "723ee8121284b004a32130a0a7d6aa410b491600",
+    "build_date": "2026-09-23T13:34:18Z",
+    "version": "0.6.0",
+    "read_at": "2026-09-23T14:13:32Z"
+  },
+  "tab": "Training Metrics",
+  "settle_s": 45.0,
+  "seconds": 60.0,
+  "period_ms": 20000,
+  "baseline": {
+    "install": {
+      "found": true,
+      "initial": {
+        "latency-display": "\"\"",
+        "top-status-display": "\"Stopped\"",
+        "top-epoch-display": "\"0\""
+      }
+    },
+    "elapsed_s": 60.8,
+    "wire": {
+      "requests": 36,
+      "responses": 36,
+      "latency_s_median": 1.16,
+      "latency_s_min": 0.212,
+      "latency_s_max": 3.075,
+      "latency_samples": 35
+    },
+    "renderer": {
+      "watched_entries": 38,
+      "executed_entries": 0,
+      "store_notifications": 6455
+    },
+    "store_changes": [],
+    "latency_display_changes": 0,
+    "dom_bar": {
+      "top-status-display": "Stopped",
+      "top-epoch-display": "0",
+      "latency-display": ""
+    },
+    "verdict": "NEVER-APPLIES"
+  },
+  "set_period": {
+    "ok": true,
+    "via": "memoizedProps.setProps",
+    "hops": 546
+  },
+  "slowed": {
+    "install": {
+      "found": true,
+      "initial": {
+        "latency-display": "\"\"",
+        "top-status-display": "\"Stopped\"",
+        "top-epoch-display": "\"0\""
+      }
+    },
+    "elapsed_s": 150.2,
+    "wire": {
+      "requests": 7,
+      "responses": 7,
+      "latency_s_median": 0.17,
+      "latency_s_min": 0.163,
+      "latency_s_max": 0.295,
+      "latency_samples": 7
+    },
+    "renderer": {
+      "watched_entries": 8,
+      "executed_entries": 8,
+      "store_notifications": 12825
+    },
+    "store_changes": [
+      [
+        1790172941811,
+        "latency-display",
+        "\"Latency: 13ms\""
+      ],
+      [
+        1790172941812,
+        "top-status-display",
+        "\"Completed \u2014 early stopped\""
+      ],
+      [
+        1790172941812,
+        "top-epoch-display",
+        "\"76\""
+      ],
+      [
+        1790172960910,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1790172980554,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ],
+      [
+        1790173000565,
+        "latency-display",
+        "\"Latency: 5ms\""
+      ],
+      [
+        1790173040312,
+        "latency-display",
+        "\"Latency: 4ms\""
+      ],
+      [
+        1790173080476,
+        "latency-display",
+        "\"Latency: 6ms\""
+      ]
+    ],
+    "latency_display_changes": 6,
+    "dom_bar": {
+      "top-status-display": "Completed \u2014 early stopped",
+      "top-epoch-display": "76",
+      "latency-display": "Latency: 6ms"
+    },
+    "verdict": "APPLIES"
+  },
+  "server_status": {
+    "is_running": false,
+    "phase": "output",
+    "current_epoch": 76,
+    "hidden_units": 68
+  },
+  "wire": {
+    "requests": 36,
+    "responses": 36
+  },
+  "renderer": {
+    "watched_entries": 38,
+    "executed_entries": 0,
+    "store_notifications": 6455
+  },
+  "store_changes": [],
+  "latency_display_changes": 0,
+  "verdict": "NEVER-APPLIES",
+  "install": {
+    "found": true,
+    "initial": {
+      "latency-display": "\"\"",
+      "top-status-display": "\"Stopped\"",
+      "top-epoch-display": "\"0\""
+    }
+  }
+}
